@@ -1022,6 +1022,9 @@ the method calls the objects sync_metadata method that copies (overwrites if
 previously defined) the ensemble attributes to each member.  That assure
 atomic saves will not lose their association with a unique ensemble
 indexing scheme.</p>
+<p>A final feature of note is that an ensemble can be marked dead.
+If the entire ensemble is set dead this function returns 
+immediately and does nothing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

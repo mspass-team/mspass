@@ -430,26 +430,49 @@
                 <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
 
         <span class="c1"># 1.2 read the attributes in the metadata schema</span>
+        <span class="c1"># col_dict is a hashmap used to store the normalized records by the normalized_id in object_doc</span>
         <span class="n">col_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># log_error_msg is used to record all the elog entries generated during the reading process</span>
+        <span class="c1"># After the mspass_object is created, we would post every elog entry with the messages in the log_error_msg.</span>
+        <span class="n">log_error_msg</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">col</span> <span class="o">=</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="c1"># explanation of the 4 conditions in the following if statement</span>
             <span class="c1"># 1.2.1. col is not None and is a normalized collection name</span>
             <span class="c1"># 1.2.2. normalized key id exists in the wf document</span>
             <span class="c1"># 1.2.3. k is not one of the exclude keys</span>
             <span class="c1"># 1.2.4. col is in the normalize list provided by user</span>
-            <span class="k">if</span> <span class="n">col</span> <span class="ow">and</span> <span class="n">col</span> <span class="o">!=</span> <span class="n">wf_collection</span> <span class="ow">and</span> <span class="n">col</span><span class="o">+</span><span class="s1">&#39;_id&#39;</span> <span class="ow">in</span> <span class="n">object_doc</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude_keys</span> <span class="ow">and</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">normalize</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">col</span>
+                <span class="ow">and</span> <span class="n">col</span> <span class="o">!=</span> <span class="n">wf_collection</span>
+                <span class="ow">and</span> <span class="n">col</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span> <span class="ow">in</span> <span class="n">object_doc</span>
+                <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude_keys</span>
+                <span class="ow">and</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">normalize</span>
+            <span class="p">):</span>
+                <span class="c1"># try to find the corresponding record in the normalized collection from the database</span>
                 <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">col_dict</span><span class="p">:</span>
-                    <span class="n">col_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
-                        <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">col</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span><span class="p">]})</span>
+                    <span class="n">col_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">col</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span><span class="p">]})</span>
                 <span class="c1"># might unable to find the normalized document by the normalized_id in the object_doc</span>
-                <span class="c1"># TODO: this is not covered by test</span>
+                <span class="c1"># we skip reading this attribute</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">col_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]:</span>
                     <span class="k">continue</span>
-                <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">col_dict</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">unique_name</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span>
+                <span class="c1"># this attribute may be missing in the normalized record we retrieve above</span>
+                <span class="c1"># in this case, we skip reading this attribute</span>
+                <span class="c1"># however, if it is a required attribute for the normalized collection</span>
+                <span class="c1"># we should post an elog entry to the associated wf object created after.</span>
+                <span class="n">unique_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">unique_name</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">unique_k</span> <span class="ow">in</span> <span class="n">col_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">is_required</span><span class="p">(</span><span class="n">unique_k</span><span class="p">):</span>
+                        <span class="n">log_error_msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="s2">&quot;Attribute </span><span class="si">{}</span><span class="s2"> is required in collection </span><span class="si">{}</span><span class="s2">, but is missing in the document with id=</span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">unique_k</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">col</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">col_dict</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">unique_k</span><span class="p">]</span>
 
         <span class="c1"># 1.3 schema check normalized data according to the read mode</span>
         <span class="n">is_dead</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">log_error_msg</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">fatal_keys</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cautious&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">md</span><span class="p">:</span>
@@ -539,6 +562,10 @@
 
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">clear_modified</span><span class="p">()</span>
+
+            <span class="c1"># 4.post complaint elog entries if any</span>
+            <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">log_error_msg</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;read_data&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">mspass_object</span></div>
 
@@ -2344,6 +2371,12 @@
             <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
                 <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
+        <span class="c1"># explicitly mark empty ensembles dead.  Otherwise assume if </span>
+        <span class="c1"># we got this far we can mark it live</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">ensemble</span></div>
 
 <div class="viewcode-block" id="Database.save_ensemble_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_ensemble_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_ensemble_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ensemble_object</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span> <span class="n">storage_mode</span><span class="o">=</span><span class="s1">&#39;gridfs&#39;</span><span class="p">,</span> <span class="n">dir_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dfile_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2369,6 +2402,10 @@
 <span class="sd">        atomic saves will not lose their association with a unique ensemble</span>
 <span class="sd">        indexing scheme.</span>
 
+<span class="sd">        A final feature of note is that an ensemble can be marked dead.</span>
+<span class="sd">        If the entire ensemble is set dead this function returns </span>
+<span class="sd">        immediately and does nothing.</span>
+
 
 <span class="sd">        :param ensemble_object: the ensemble you want to save.</span>
 <span class="sd">        :type ensemble_object: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or</span>
@@ -2388,6 +2425,8 @@
 <span class="sd">        :param data_tag: a user specified &quot;data_tag&quot; key to tag the saved wf document.</span>
 <span class="sd">        :type data_tag: :class:`str`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ensemble_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dfile_list</span><span class="p">:</span>
             <span class="n">dfile_list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">))]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dir_list</span><span class="p">:</span>
