@@ -216,7 +216,9 @@ class Database(pymongo.database.Database):
         alg_id="0",
         define_as_raw=False,
         retrieve_history_record=False,
+        method=0,
         fill_value=None,
+        interpolation_samples=0
     ):
         """
         This is the core MsPASS reader for constructing Seismogram or TimeSeries
@@ -290,8 +292,17 @@ class Database(pymongo.database.Database):
         :type define_as_raw: :class:`bool`
         :param retrieve_history_record: a boolean control whether we would like to load processing history
         :type retrieve_history_record: :class:`bool`
-        :param fill_value: Fill value for gaps. Defaults to None. Traces will be converted to NumPy masked arrays if no value is given and gaps are present.
+        :param method: Methodology to handle overlaps/gaps of traces. Defaults to 0.
+            See `__add__ <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.__add__.html#obspy.core.trace.Trace.__add__>` for details on methods 0 and 1,
+            see `_cleanup <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream._cleanup.html#obspy.core.stream.Stream._cleanup>` for details on method -1.
+            Any merge operation performs a cleanup merge as a first step (method -1).
+        :type method: :class:`int`
+        :param fill_value: Fill value for gaps. Defaults to None.
         :type fill_value: :class:`int`, :class:`float` or None
+        :param interpolation_samples: Used only for method=1. It specifies the number of samples
+            which are used to interpolate between overlapping traces. Default to 0.
+            If set to -1 all overlapping samples are interpolated.
+        :type interpolation_samples: :class:`int`
         :return: either :class:`mspasspy.ccore.seismic.TimeSeries`
           or :class:`mspasspy.ccore.seismic.Seismogram`
         """
@@ -448,7 +459,9 @@ class Database(pymongo.database.Database):
                         object_doc["foff"],
                         nbytes=object_doc["nbytes"],
                         format=object_doc["format"],
+                        method=method,
                         fill_value=fill_value,
+                        interpolation_samples=interpolation_samples
                     )
                 else:
                     self._read_data_from_dfile(
@@ -456,7 +469,9 @@ class Database(pymongo.database.Database):
                         object_doc["dir"],
                         object_doc["dfile"],
                         object_doc["foff"],
+                        method=method,
                         fill_value=fill_value,
+                        interpolation_samples=interpolation_samples
                     )
             elif storage_mode == "gridfs":
                 self._read_data_from_gridfs(mspass_object, object_doc['gridfs_id'])
@@ -2843,7 +2858,7 @@ class Database(pymongo.database.Database):
 
     @staticmethod
     def _read_data_from_dfile(
-        mspass_object, dir, dfile, foff, nbytes=0, format=None, fill_value=None
+        mspass_object, dir, dfile, foff, nbytes=0, format=None, method=0, fill_value=None, interpolation_samples=0
     ):
         """
         Read the stored data from a file and loads it into a mspasspy object.
@@ -2894,7 +2909,7 @@ class Database(pymongo.database.Database):
                         mspass_object.elog.log_error('read_data',
                                              'There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps.',
                                              ErrorSeverity.Complaint)
-                    st = st.merge(fill_value=fill_value)
+                    st = st.merge(method=method, fill_value=fill_value, interpolation_samples=interpolation_samples)
                     tr = st[0]
                     # Now we convert this to a TimeSeries and load other Metadata
                     # Note the exclusion copy and the test verifying net,sta,chan,
