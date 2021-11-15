@@ -475,35 +475,35 @@ class Database(pymongo.database.Database):
         or impossible.  Hence, we recommend a data tag always be used for
         most saves.
 
-        The mode parameter needs to be understood by all users of this 
+        The mode parameter needs to be understood by all users of this
         function.  All modes enforce a schema constraint for "readonly"
-        attributes.   An immutable (readonly) attribute by definition 
-        should not be changed during processing.   During a save 
-        all attributes with a key defined as readonly are tested 
-        with a method in the Metadata container that keeps track of 
-        any Metadata changes.  If a readonly attribute is found to 
+        attributes.   An immutable (readonly) attribute by definition
+        should not be changed during processing.   During a save
+        all attributes with a key defined as readonly are tested
+        with a method in the Metadata container that keeps track of
+        any Metadata changes.  If a readonly attribute is found to
         have been changed it will be renamed with the prefix
-        "READONLYERROR_", saved, and an error posted (e.g. if you try 
-        to alter site_lat (a readonly attribute) in a workflow when 
-        you save the waveform you will find an entry with the key 
-        READONERROR_site_lat.)   In the default 'promiscuous' mode 
-        all other attributes are blindly saved to the database as 
-        name value pairs with no safeties.  In 'cautious' mode we 
-        add a type check.  If the actual type of an attribute does not 
-        match what the schema expect, this method will try to fix the 
-        type error before saving the data.  If the conversion is 
-        successful it will be saved with a complaint error posted 
-        to elog.  If it fails, the attribute will not be saved, an 
-        additional error message will be posted, and the save 
-        algorithm continues.  In 'pedantic' mode, in contrast, all 
-        type errors are considered to invalidate the data.  
-        Similar error messages to that in 'cautious' mode are posted 
-        but any type errors will cause the datum passed as arg 0 
-        to be killed. The lesson is saves can leave entries that 
-        may need to be examined in elog and when really bad will 
-        cause the datum to be marked dead after the save.  
+        "READONLYERROR_", saved, and an error posted (e.g. if you try
+        to alter site_lat (a readonly attribute) in a workflow when
+        you save the waveform you will find an entry with the key
+        READONERROR_site_lat.)   In the default 'promiscuous' mode
+        all other attributes are blindly saved to the database as
+        name value pairs with no safeties.  In 'cautious' mode we
+        add a type check.  If the actual type of an attribute does not
+        match what the schema expect, this method will try to fix the
+        type error before saving the data.  If the conversion is
+        successful it will be saved with a complaint error posted
+        to elog.  If it fails, the attribute will not be saved, an
+        additional error message will be posted, and the save
+        algorithm continues.  In 'pedantic' mode, in contrast, all
+        type errors are considered to invalidate the data.
+        Similar error messages to that in 'cautious' mode are posted
+        but any type errors will cause the datum passed as arg 0
+        to be killed. The lesson is saves can leave entries that
+        may need to be examined in elog and when really bad will
+        cause the datum to be marked dead after the save.
 
-        This method can throw an exception but only for errors in 
+        This method can throw an exception but only for errors in
         usage (i.e. arguments defined incorrectly)
 
         :param mspass_object: the object you want to save.
@@ -1788,25 +1788,25 @@ class Database(pymongo.database.Database):
         posted as an update to the parent wf document to the data object.
 
         A feature of the schema that is considered an unbreakable rule is
-        that any attribute marked "readonly" in the schema cannot by 
-        definition be updated with this method.  It utilizes the same 
-        method for handling this as the save_data method.  That is, 
-        for all "mode" parameters if an key is defined in the schema as 
-        readonly and it is listed as having been modified, it will 
-        be save with a new key creating by adding the prefix 
-        "READONLYERROR_" .  e.g. if we had a site_sta read as 
-        'AAK' but we changed it to 'XYZ' in a workflow, when we tried 
-        to save the data you will find an entry in the document 
+        that any attribute marked "readonly" in the schema cannot by
+        definition be updated with this method.  It utilizes the same
+        method for handling this as the save_data method.  That is,
+        for all "mode" parameters if an key is defined in the schema as
+        readonly and it is listed as having been modified, it will
+        be save with a new key creating by adding the prefix
+        "READONLYERROR_" .  e.g. if we had a site_sta read as
+        'AAK' but we changed it to 'XYZ' in a workflow, when we tried
+        to save the data you will find an entry in the document
         of {'READONLYERROR_site_sta' : 'XYZ'}
 
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
         :type exclude_keys: a :class:`list` of :class:`str`
-        :param force_keys: a list of metadata attributes you want to force 
-         to be updated.   Normally this method will only update attributes 
-         that have been marked as changed since creation of the parent data 
-         object.  If data with these keys is found in the mspass_object they 
+        :param force_keys: a list of metadata attributes you want to force
+         to be updated.   Normally this method will only update attributes
+         that have been marked as changed since creation of the parent data
+         object.  If data with these keys is found in the mspass_object they
          will be added to the update record.
         :type force_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
@@ -1826,11 +1826,11 @@ class Database(pymongo.database.Database):
         :type alg_name: :class:`str`
         :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
         :type alg_id: :class:`bson.objectid.ObjectId`
-        :return: mspass_object data.  Normally this is an unaltered copy 
-          of the data passed through mspass_object.  If there are errors, 
-          however, the elog will contain new messages.  Note any such 
-          messages are volatile and will not be saved to the database 
-          until the save_data method is called. 
+        :return: mspass_object data.  Normally this is an unaltered copy
+          of the data passed through mspass_object.  If there are errors,
+          however, the elog will contain new messages.  Note any such
+          messages are volatile and will not be saved to the database
+          until the save_data method is called.
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError(alg_name+":  only TimeSeries and Seismogram are supported\nReceived data of type="+str(type(mspass_object)))
@@ -2004,33 +2004,33 @@ class Database(pymongo.database.Database):
                     exclude_keys=None, force_keys=None,
                     alg_id='0', alg_name='Database.update_data'):
         """
-        Updates both metadata and sample data corresponding to an input data 
-        object.  
+        Updates both metadata and sample data corresponding to an input data
+        object.
 
-        Since storage of data objects in MsPASS is broken into multiple 
-        collections and storage methods, doing a full data update has some 
-        complexity.   This method handles the problem differently for the 
+        Since storage of data objects in MsPASS is broken into multiple
+        collections and storage methods, doing a full data update has some
+        complexity.   This method handles the problem differently for the
         different pieces:
-            1. An update is performed on the parent wf collection document. 
+            1. An update is performed on the parent wf collection document.
                That update makes use of the related Database method
-               called update_metadata. 
-            2. If the error log is not empty it is saved.  
+               called update_metadata.
+            2. If the error log is not empty it is saved.
             3. If the history container has contents it is saved.
             4. The sample data is the thorniest problem. Currently this
-               method will only do sample updates for data stored in 
-               the mongodb gridfs system.   With files containing multiple 
-               waveforms it would be necessary to append to the files and 
-               this could create a blaat problem with large data sets so 
-               we do not currently support that type of update. 
+               method will only do sample updates for data stored in
+               the mongodb gridfs system.   With files containing multiple
+               waveforms it would be necessary to append to the files and
+               this could create a blaat problem with large data sets so
+               we do not currently support that type of update.
 
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
         :type exclude_keys: a :class:`list` of :class:`str`
-        :param force_keys: a list of metadata attributes you want to force 
-         to be updated.   Normally this method will only update attributes 
-         that have been marked as changed since creation of the parent data 
-         object.  If data with these keys is found in the mspass_object they 
+        :param force_keys: a list of metadata attributes you want to force
+         to be updated.   Normally this method will only update attributes
+         that have been marked as changed since creation of the parent data
+         object.  If data with these keys is found in the mspass_object they
          will be added to the update record.
         :type force_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
@@ -2050,10 +2050,10 @@ class Database(pymongo.database.Database):
         :type alg_name: :class:`str`
         :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
         :type alg_id: :class:`bson.objectid.ObjectId`
-        :return: mspass_object data.  Normally this is an unaltered copy 
-          of the data passed through mspass_object.  If there are errors, 
-          however, the elog will contain new messages.  All such messages, 
-          howevever, should be saved in the elog collection because elog 
+        :return: mspass_object data.  Normally this is an unaltered copy
+          of the data passed through mspass_object.  If there are errors,
+          however, the elog will contain new messages.  All such messages,
+          howevever, should be saved in the elog collection because elog
           is the last collection updated.
         """
         schema = self.metadata_schema
@@ -3727,18 +3727,20 @@ class Database(pymongo.database.Database):
         # o['npts'] = index_record.npts
         return o
 
-    def index_mseed_file(self, dfile, dir=None, collection='wf_miniseed'):
+    def index_mseed_file(self, dfile, dir=None, collection='wf_miniseed',
+                segment_time_tears=False, elog_collection='elog',
+                return_ids=False):
         """
         This is the first stage import function for handling the import of
         miniseed data.  This function scans a data file defined by a directory
-        (dir arg) and dfile (file name) argument.  I builds and index it
-        writes to mongodb in the collection defined by the collection
+        (dir arg) and dfile (file name) argument.  I builds an index
+        for the file and writes the index to mongodb
+        in the collection defined by the collection
         argument (wf_miniseed by default).   The index is bare bones
         miniseed tags (net, sta, chan, and loc) with a starttime tag.
         The index is appropriate ONLY if the data on the file are created
         by concatenating data with packets sorted by net, sta, loc, chan, time
-        AND the data are contiguous in time.   The results will be unpredictable
-        if the miniseed packets do not fit that constraint.  The original
+        AND the data are contiguous in time.   The original
         concept for this function came from the need to handle large files
         produced by concanentation of miniseed single-channel files created
         by obpsy's mass_downloader.   i.e. the basic model is the input
@@ -3748,21 +3750,33 @@ class Database(pymongo.database.Database):
         miniseed2days).
 
         We emphasize this function only builds an index - it does not
-        convert any data.   As a result a final warning is that the
-        metadata in the wf_miniseed collection lack some common
-        attributes one might expect. That is, number of samples,
-        sample rate, and endtime.   The number of samples and endtime are
-        not saved because we intentionally do nat fully crack the input
-        file for speed.  miniseed files can (actually usually) contain
-        compressed sample data and the number of samples are not recorded
-        in the packet headers.  Hence, the number of samples in the block
-        and the endtime cannot be computed without decompressing the data.
-        To provide some measurre of the time span of the data we define
-        an attribute "last_packet_time" that contains the unix epoch
-        time of the start of the last packet of the file.   How close that
-        is to endtime depends mainly on the sample interval.  If a range
-        query is needed use last_packet_time where you would otherwise use
-        endtime.
+        convert any data.   It has to scan the entire file deriving the
+        index from data retrieved from miniseed packets with libmseed so
+        for large data sets this can take a long time.
+
+        Actual seismic data stored as miniseed are prone to time tears.
+        That can happen at the instrument level in at least two common
+        ways: (1) dropped packets from telemetry issues, or (2) instrument
+        timing jumps when a clock loses external lock to gps or some
+        other standard and the rock is restored.  The behavior is this
+        function in gap handling is controlled by the input parameter
+        segment_time_tears.  When true a new index entry is created
+        any time the start time of a packet differs from that computed
+        from the endtime of the last packet by more than one sample
+        AND net:sta:chan:loc are constant.  The default for this
+        parameter is false because data with many dropped packets from
+        telemetry are common and can create overwhelming numbers of
+        index entries quickly.  When false the scan only creates a new
+        index record when net, sta, chan, or loc change between successive
+        packets.  Our reader has gap handling functions to handle
+        time tears.  Set segment_time_tears true only when you are
+        confident the data set does not contain a large number of dropped
+        packets.
+
+        Note to parallelize this function put a list of files in a Spark
+        RDD or a Dask bag and parallelize the call the this function.
+        That can work because MongoDB is designed for parallel operations
+        and we use the thread safe version of the libmseed reader.
 
         Finally, note that cross referencing with the channel and/or
         source collections should be a common step after building the
@@ -3770,11 +3784,6 @@ class Database(pymongo.database.Database):
         module will transfer linking ids (i.e. channel_id and/or source_id)
         to TimeSeries objects when it reads the data from the files
         indexed by this function.
-
-        Note to parallelize this function put a list of files in a Spark
-        RDD or a Dask bag and parallelize the call the this function.
-        That can work because MongoDB is designed for parallel operations.
-
 
         :param dfile:  file name of data to be indexed.  Asssumed to be
           the leaf node of the path - i.e. it contains no directory information
@@ -3788,6 +3797,27 @@ class Database(pymongo.database.Database):
         :param collection:  is the mongodb collection name to write the
           index data to.  The default is 'wf_miniseed'.  It should be rare
           to use anything but the default.
+        :param segment_time_tears: boolean controlling handling of data gaps
+          defined by constant net, sta, chan, and loc but a discontinuity
+          in time tags for successive packets.  See above for a more extensive
+          discussion of how to use this parameter.  Default is False.
+        :param elog_collection:  name to write any error logs messages
+          from the miniseed reader.  Default is "elog", which is the
+          same as for TimeSeries and Seismogram data, but the cross reference
+          keys here are keyed by "wf_miniseed_id".
+        :param return_ids:  if set True the function will return a tuple
+          with two id lists.  The 0 entry is an array of ids from the
+          collection (wf_miniseed by default) of index entries saved and
+          the 1 entry will contain the ids in the elog_collection of
+          error log entry insertions.  The 1 entry will be empty if the
+          reader found no errors and the error log was empty (the hopefully
+          normal situation).  When this argument is False (the default) it
+          returns None.  Set true if you need to build some kind of cross
+          reference to read errors to build some custom cleaning method
+          for specialized processing that can be done more efficiently.
+          By default it is fast only to associate an error log entry with
+          a particular waveform index entry. (we store the saved index
+          MongoDB document id with each elog entry)
         :exception: This function can throw a range of error types for
           a long list of possible io issues.   Callers should use a
           generic handler to avoid aborts in a large job.
@@ -3801,11 +3831,38 @@ class Database(pymongo.database.Database):
         else:
             odir = os.path.abspath(dir)
         fname = os.path.join(odir, dfile)
-        ind = _mseed_file_indexer(fname)
+        (ind, elog) = _mseed_file_indexer(fname)
+        ids_affected=[]
         for i in ind:
             doc = self._convert_mseed_index(i)
             doc['storage_mode'] = 'file'
             doc['format'] = 'mseed'
             doc['dir'] = odir
             doc['dfile'] = dfile
-            dbh.insert_one(doc)
+            thisid=dbh.insert_one(doc).inserted_id
+            ids_affected.append(thisid)
+        # log_ids is created here so it is defined but empty in
+        # the tuple returned when return_ids is true
+        log_ids=[]
+        if elog.size() > 0:
+            elog_col = self[elog_collection]
+
+            errs = elog.get_error_log()
+            jobid = elog.get_job_id()
+            logdata = []
+            for x in errs:
+                logdata.append({'job_id': jobid, 'algorithm': x.algorithm, 'badness': str(x.badness),
+                                'error_message': x.message, 'process_id': x.p_id})
+            docentry = {'logdata': logdata}
+            # To mesh with the standard elog collection we add a copy of the
+            # error messages with a tag for each id in the ids_affected list.
+            # That should make elog connection to wf_miniseed records exactly
+            # like wf_TimeSeries records but with a different collection link
+            for wfid in ids_affected:
+                docentry['wf_miniseed_id']=wfid
+                elogid = elog_col.insert_one(docentry).inserted_id
+                log_ids.append(elogid)
+        if return_ids:
+            return [ids_affected,log_ids]
+        else:
+            return None
