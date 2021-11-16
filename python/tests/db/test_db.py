@@ -852,7 +852,7 @@ class TestDatabase():
                                                     'starttime': 0.0, 'starttime_shift': 1.0, 'calib':0.1, 'foff': 0,
                                                     'dir': dir, 'dfile': dfile, 'storage_mode': 'file',
                                                     'format':'mseed', 'nbytes': 26186752}).inserted_id
-        gaps_ts = self.db.read_data(wf_id, collection='wf_TimeSeries', fill_value=-1)
+        gaps_ts = self.db.read_data(wf_id, collection='wf_TimeSeries', merge_fill_value=-1)
         assert gaps_ts.npts == 8640000
         freq = collections.Counter(gaps_ts.data)
         assert freq[-1] == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
