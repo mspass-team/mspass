@@ -540,8 +540,8 @@ class Database(pymongo.database.Database):
             elif storage_mode == "url":
                 self._read_data_from_url(
                     mspass_object, object_doc['url'], format=None if 'format' not in object_doc else object_doc['format'])
-            elif storage_mode == "s3":
-                self._read_data_from_s3(mspass_object, aws_access_key_id, aws_secret_access_key)
+            elif storage_mode == "s3_continuous":
+                self._read_data_from_s3_continuous(mspass_object, aws_access_key_id, aws_secret_access_key)
             elif storage_mode == "fdsn":
                 self._read_data_from_fdsn(mspass_object)
             else:
@@ -3541,7 +3541,7 @@ class Database(pymongo.database.Database):
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
 
-    def _read_data_from_s3(self, mspass_object, aws_access_key_id=None, aws_secret_access_key=None):
+    def _read_data_from_s3_continuous(self, mspass_object, aws_access_key_id=None, aws_secret_access_key=None):
         """
         Read data stored in s3 and load it into a mspasspy object.
 
@@ -3605,6 +3605,67 @@ class Database(pymongo.database.Database):
 
         except Exception as e:
             raise MsPASSError("Error while read data from s3.", "Fatal") from e
+
+    def _read_data_from_s3_event(self, mspass_object, dir, dfile, foff, nbytes=0, format=None, aws_access_key_id=None, aws_secret_access_key=None):
+        """
+        Read the stored data from a file and loads it into a mspasspy object.
+
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param dir: file directory.
+        :type dir: :class:`str`
+        :param dfile: file name.
+        :type dfile: :class:`str`
+        :param foff: offset that marks the starting of the data in the file.
+        :param nbytes: number of bytes to be read from the offset. This is only used when ``format`` is given.
+        :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats>`__ of ObsPy writer. By default (``None``), the format will be the binary waveform.
+        :type format: :class:`str`
+        """
+        if not isinstance(mspass_object, (TimeSeries, Seismogram)):
+            raise TypeError("only TimeSeries and Seismogram are supported")
+        fname = os.path.join(dir, dfile)
+
+        # check if fname exists
+        if not os.path.exists(fname):
+            # fname might now exist, but could download from s3
+            s3_client = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+            BUCKET_NAME = 'scedc-pds'
+            year = mspass_object['year']
+            day_of_year = mspass_object['day_of_year']
+            filename = mspass_object['filename']
+            KEY = 'event_waveforms/' + year + '/' + year + '_' + day_of_year + '/' + filename + '.ms'
+            # try to download the mseed file from s3 and save it locally
+            try:
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
+                mseed_content = obj['Body'].read()
+                # temporarily write data into a file
+                with open(fname, 'wb') as f:
+                    f.write(mseed_content)
+
+            except botocore.exceptions.ClientError as e:
+                if e.response['Error']['Code'] == "404":
+                    # the object does not exist
+                    print('Could not find the object by the KEY: {} from the BUCKET: {} in s3').format(KEY, BUCKET_NAME)
+                else:
+                    raise
+
+            except Exception as e:
+                raise MsPASSError("Error while read data from s3.", "Fatal") from e
+
+        with open(fname, mode='rb') as fh:
+            fh.seek(foff)
+            flh = io.BytesIO(fh.read(nbytes))
+            st = obspy.read(flh, format=format)
+            # there could be more than 1 trace object in the stream, merge the traces
+            st.merge()
+            if isinstance(mspass_object, TimeSeries):
+                tr = st[0]
+                mspass_object.npts = len(tr.data)
+                mspass_object.data = DoubleVector(tr.data)
+            elif isinstance(mspass_object, Seismogram):
+                sm = st.toSeismogram(cardinal=True)
+                mspass_object.npts = sm.data.columns()
+                mspass_object.data = sm.data
     
     def _read_data_from_fdsn(self, mspass_object):
         provider = mspass_object['provider']
@@ -4899,9 +4960,72 @@ class Database(pymongo.database.Database):
             doc['starttime'] = stats['starttime'].timestamp
             if 'npts' in stats and stats['npts']:
                 doc['npts'] = stats['npts']
-            doc['storage_mode'] = 's3'
+            doc['storage_mode'] = 's3_continuous'
             doc['format'] = 'mseed'
             dbh.insert_one(doc)
+
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "404":
+                # the object does not exist
+                print('Could not find the object by the KEY: {} from the BUCKET: {} in s3').format(KEY, BUCKET_NAME)
+            else:
+                print('An ClientError occur when tyring to get the object by the KEY(' + KEY + ')' + ' with error: ', e)
+
+        except Exception as e:
+            raise MsPASSError("Error while index mseed file from s3.", "Fatal") from e
+    
+    def index_mseed_s3_event(self, s3_client, year, day_of_year, filename, dfile, dir=None, collection='wf_miniseed'):
+        """
+        This is the first stage import function for handling the import of
+        miniseed data. However, instead of scanning a data file defined by a directory
+        (dir arg) and dfile (file name) argument, it reads the miniseed content from AWS s3.
+        It builds and index it writes to mongodb in the collection defined by the collection
+        argument (wf_miniseed by default). The index is bare bones
+        miniseed tags (net, sta, chan, and loc) with a starttime tag.
+
+        :param s3_client:  s3 Client object given by user, which contains credentials
+        :param year:  year for the query mseed file(4 digit).
+        :param day_of_year:  day of year for the query of mseed file(3 digit [001-366])
+        :param filename:  SCSN catalog event id for the event
+        :param collection:  is the mongodb collection name to write the
+            index data to.  The default is 'wf_miniseed'.  It should be rare
+            to use anything but the default.
+        :exception: This function will do nothing if the obejct does not exist. For other
+            exceptions, it would raise a MsPASSError.
+        """
+        
+        dbh = self[collection]
+        BUCKET_NAME = 'scedc-pds'
+        year = str(year)
+        day_of_year = str(day_of_year)
+        if len(day_of_year) < 3:
+            day_of_year = '0' * (3 - len(day_of_year)) + day_of_year
+        KEY = 'event_waveforms/' + year + '/' + year + '_' + day_of_year + '/' + filename + '.ms'
+
+        try:
+            obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
+            mseed_content = obj['Body'].read()
+            # specify the file path
+            if dir == None:
+                odir = os.getcwd()
+            else:
+                odir = os.path.abspath(dir)
+            fname = os.path.join(odir, dfile)
+            # temporarily write data into a file
+            with open(fname, 'wb') as f:
+                f.write(mseed_content)
+            # immediately read data from the file
+            ind = _mseed_file_indexer(fname)
+            for i in ind:
+                doc = self._convert_mseed_index(i)
+                doc['storage_mode'] = 's3_event'
+                doc['format'] = 'mseed'
+                doc['dir'] = odir
+                doc['dfile'] = dfile
+                doc['year'] = year
+                doc['day_of_year'] = day_of_year
+                doc['filename'] = filename
+                dbh.insert_one(doc)
 
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == "404":
