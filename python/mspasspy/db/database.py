@@ -4998,6 +4998,7 @@ class Database(pymongo.database.Database):
         BUCKET_NAME = 'scedc-pds'
         year = str(year)
         day_of_year = str(day_of_year)
+        filename = str(filename)
         if len(day_of_year) < 3:
             day_of_year = '0' * (3 - len(day_of_year)) + day_of_year
         KEY = 'event_waveforms/' + year + '/' + year + '_' + day_of_year + '/' + filename + '.ms'
