@@ -8,10 +8,24 @@ import obspy
 import pytest
 import sys
 import re
+import collections
 
-from  mspasspy.util.converter import TimeSeries2Trace
-from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
-from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata, MsPASSError, ProcessingHistory, AtomicType
+from mspasspy.util.converter import TimeSeries2Trace
+from mspasspy.ccore.seismic import (
+    Seismogram,
+    TimeSeries,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+    DoubleVector,
+)
+from mspasspy.ccore.utility import (
+    dmatrix,
+    ErrorSeverity,
+    Metadata,
+    MsPASSError,
+    ProcessingHistory,
+    AtomicType,
+)
 
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util import logging_helper
@@ -830,6 +844,20 @@ class TestDatabase():
         assert all(a.any() == b.any() for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data))
         with pytest.raises(MsPASSError, match='is not defined'):
             self.db2.read_data(promiscuous_seis['_id'], mode='cautious', normalize=['site', 'source'], collection='wf_test2')
+        
+        # test read mseed file that contains more than one Trace object, which results in gaps
+        dir = 'python/tests/data/'
+        dfile = 'gaps.mseed'
+        wf_id = self.db['wf_TimeSeries'].insert_one({'npts': 1, 'delta': 0.1, 'sampling_rate': 100.0,
+                                                    'starttime': 0.0, 'starttime_shift': 1.0, 'calib':0.1, 'foff': 0,
+                                                    'dir': dir, 'dfile': dfile, 'storage_mode': 'file',
+                                                    'format':'mseed', 'nbytes': 26186752}).inserted_id
+        gaps_ts = self.db.read_data(wf_id, collection='wf_TimeSeries', merge_fill_value=-1)
+        assert gaps_ts.npts == 8640000
+        freq = collections.Counter(gaps_ts.data)
+        assert freq[-1] == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
+        assert len(gaps_ts.elog.get_error_log()) == 1
+        assert gaps_ts.elog.get_error_log()[0].message == 'There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps.'
 
         # test read_data with missing attributes in the normalized records
         # 1. test missing normal attribute
