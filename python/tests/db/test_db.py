@@ -859,6 +859,36 @@ class TestDatabase():
         assert len(gaps_ts.elog.get_error_log()) == 1
         assert gaps_ts.elog.get_error_log()[0].message == 'There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps.'
 
+        # test read_data with missing attributes in the normalized records
+        # 1. test missing normal attribute
+        missing_net_site_id = ObjectId()
+        self.db['site'].insert_one({'_id': missing_net_site_id, 'sta': 'sta1', 'loc': 'loc', 'lat': 1.0, 'lon': 1.0,
+                                    'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
+                                    'endtime': datetime.utcnow().timestamp()})
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, '1', 'deepcopy')
+        ts['site_id'] = missing_net_site_id
+        self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs')
+        self.db.database_schema.set_default('wf_TimeSeries', 'wf')
+        missing_normal_ts = self.db.read_data(ts['_id'], normalize=['site'])
+        assert missing_normal_ts.live
+        assert 'net' not in missing_normal_ts
+        assert len(missing_normal_ts.elog.get_error_log()) == 0
+        # 2. test missing required attribute
+        missing_lat_site_id = ObjectId()
+        self.db['site'].insert_one({'_id': missing_lat_site_id, 'net': 'net1', 'sta': 'sta1', 'loc': 'loc', 'lon': 1.0,
+                                    'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
+                                    'endtime': datetime.utcnow().timestamp()})
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, '1', 'deepcopy')
+        ts['site_id'] = missing_lat_site_id
+        self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs')
+        missing_required_ts = self.db.read_data(ts['_id'], normalize=['site'])
+        assert missing_required_ts.live
+        assert 'site_lat' not in missing_required_ts
+        assert len(missing_required_ts.elog.get_error_log()) == 1
+        assert missing_required_ts.elog.get_error_log()[0].message == 'Attribute lat is required in collection site, but is missing in the document with id={}.'.format(str(missing_lat_site_id))
+
     def test_index_mseed_file(self):
         dir = 'python/tests/data/'
         dfile = '3channels.mseed'
@@ -1517,6 +1547,7 @@ class TestDatabase():
         ts_ensemble.member.append(ts1)
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
+        ts_ensemble.set_live()
         dfile_list = ['test_db_output', 'test_db_output']
         dir_list = ['python/tests/data/', 'python/tests/data/']
         self.db.save_ensemble_data(ts_ensemble, mode="promiscuous", storage_mode='file', dfile_list=dfile_list, dir_list=dir_list, exclude_objects=[1])
@@ -1548,6 +1579,7 @@ class TestDatabase():
         seis_ensemble.member.append(seis1)
         seis_ensemble.member.append(seis2)
         seis_ensemble.member.append(seis3)
+        seis_ensemble.set_live()
         self.db.save_ensemble_data(seis_ensemble, mode="promiscuous", storage_mode='file', dfile_list=dfile_list, dir_list=dir_list, exclude_objects=[1])
         self.db.database_schema.set_default('wf_Seismogram', 'wf')
         res = self.db.read_data(seis_ensemble.member[0]['_id'], mode='promiscuous', normalize=['site', 'source'])
@@ -1580,6 +1612,7 @@ class TestDatabase():
         ts_ensemble.member.append(ts1)
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
+        ts_ensemble.set_live()
         self.db.database_schema.set_default('wf_TimeSeries', 'wf')
         self.db.save_ensemble_data(ts_ensemble, mode="promiscuous", storage_mode='gridfs')
         # test with python list
@@ -1618,6 +1651,7 @@ class TestDatabase():
         seis_ensemble.member.append(seis1)
         seis_ensemble.member.append(seis2)
         seis_ensemble.member.append(seis3)
+        seis_ensemble.set_live()
         self.db.database_schema.set_default('wf_Seismogram', 'wf')
         self.db.save_ensemble_data(seis_ensemble, mode="promiscuous", storage_mode='gridfs')
         res = self.db.read_ensemble_data([seis_ensemble.member[0]['_id'], seis_ensemble.member[1]['_id'],

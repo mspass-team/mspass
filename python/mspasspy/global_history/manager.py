@@ -4,17 +4,29 @@ import pymongo
 import pyspark
 import collections
 import dask.bag as daskbag
+import json
 
 from bson.objectid import ObjectId
-from mspasspy.ccore.utility import MsPASSError
+from mspasspy.ccore.utility import MsPASSError, AntelopePf
+from mspasspy.util.converter import AntelopePf2dict
 from datetime import datetime
 from dill.source import getsource
 
 import mspasspy.algorithms.signals as signals
+from mspasspy.global_history.ParameterGTree import ParameterGTree, parameter_to_GTree
 
 
-def mspass_spark_map(self, func, *args, global_history=None, object_history=False, alg_id=None,
-                     alg_name=None, parameters=None, **kwargs):
+def mspass_spark_map(
+    self,
+    func,
+    *args,
+    global_history=None,
+    object_history=False,
+    alg_id=None,
+    alg_name=None,
+    parameters=None,
+    **kwargs
+):
     """
      This decorator method add more functionaliy on the standard spark map method and be a part of member functions
      in the spark RDD library. Instead of performing the normal map function, if user provides global history manager,
@@ -34,68 +46,89 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     :type parameters: :class:`str`
     :return: a spark `RDD` format of objects.
     """
-    if not parameters:
-        # extract list parameters
-        args_str = ",".join(f"{value}" for value in args)
-
-        # extract dict parameters
-        parameters_dict = collections.OrderedDict()
-        for key, value in kwargs.items():
-            parameters_dict[key] = value
-        parameters_dict['object_history'] = object_history
+    if parameters:
+        parameterGTree = parameter_to_GTree(parameters_str=parameters)
+    else:
+        new_kwargs = kwargs.copy()
+        new_kwargs["object_history"] = object_history
         if alg_name:
-            parameters_dict['alg_name'] = alg_name
+            new_kwargs["alg_name"] = alg_name
         if alg_id:
-            parameters_dict['alg_id'] = alg_id
-        kwargs_str = ",".join(f"{key}={value}" for key,
-                              value in parameters_dict.items())
+            new_kwargs["alg_id"] = alg_id
+        parameterGTree = parameter_to_GTree(*args, **new_kwargs)
 
-        if args_str:
-            parameters = args_str + "," + kwargs_str
-        else:
-            parameters = kwargs_str
+    parameters_json = json.dumps(parameterGTree.asdict())
 
     if not alg_name:
-        # if not exists, use the name of the func
         alg_name = func.__name__
 
     # get the alg_id if exists, else create a new one
     if not alg_id:
         # get the alg_id if exists
-        if global_history:
-            alg_id = global_history.get_alg_id(alg_name, parameters)
+        alg_id = global_history.get_alg_id(alg_name, parameters_json)
         # else create a new one
         if not alg_id:
             alg_id = ObjectId()
 
     # save the global history
     if global_history:
-        global_history.logging(alg_id, alg_name, parameters)
+        global_history.logging(alg_id, alg_name, parameters_json)
 
     # read_data method
-    if alg_name.rfind('read_data') != -1 and alg_name.rfind('read_data') + 9 == len(alg_name):
+    if alg_name.rfind("read_data") != -1 and alg_name.rfind("read_data") + 9 == len(
+        alg_name
+    ):
         if global_history:
-            return self.map(lambda wf: func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
+            return self.map(
+                lambda wf: func(
+                    wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs
+                )
+            )
         else:
             return self.map(lambda wf: func(wf, *args, **kwargs))
 
     # save_data method
-    if alg_name.rfind('save_data') != -1 and alg_name.rfind('save_data') + 9 == len(alg_name):
+    if alg_name.rfind("save_data") != -1 and alg_name.rfind("save_data") + 9 == len(
+        alg_name
+    ):
         # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
         if global_history:
-            return self.map(lambda wf: (func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs), wf))
+            return self.map(
+                lambda wf: (
+                    func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs),
+                    wf,
+                )
+            )
         else:
             return self.map(lambda wf: (func(wf, *args, **kwargs), wf))
 
     # save the object history
     if object_history:
-        return self.map(lambda wf: func(wf, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
+        return self.map(
+            lambda wf: func(
+                wf,
+                *args,
+                object_history=object_history,
+                alg_name=alg_name,
+                alg_id=str(alg_id),
+                **kwargs
+            )
+        )
 
     return self.map(lambda wf: func(wf, *args, object_history=object_history, **kwargs))
 
 
-def mspass_dask_map(self, func, *args, global_history=None, object_history=False, alg_id=None,
-                    alg_name=None, parameters=None, **kwargs):
+def mspass_dask_map(
+    self,
+    func,
+    *args,
+    global_history=None,
+    object_history=False,
+    alg_id=None,
+    alg_name=None,
+    parameters=None,
+    **kwargs
+):
     """
      This decorator method add more functionaliy on the standard dask map method and be a part of member functions
      in the dask bag library. Instead of performing the normal map function, if user provides global history manager,
@@ -115,26 +148,19 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
     :type parameters: :class:`str`
     :return: a dask `bag` format of objects.
     """
-    if not parameters:
-        # extract list parameters
-        args_str = ",".join(f"{value}" for value in args)
 
-        # extract dict parameters
-        parameters_dict = collections.OrderedDict()
-        for key, value in kwargs.items():
-            parameters_dict[key] = value
-        parameters_dict['object_history'] = object_history
+    if parameters:
+        parameterGTree = parameter_to_GTree(parameters_str=parameters)
+    else:
+        new_kwargs = kwargs.copy()
+        new_kwargs["object_history"] = object_history
         if alg_name:
-            parameters_dict['alg_name'] = alg_name
+            new_kwargs["alg_name"] = alg_name
         if alg_id:
-            parameters_dict['alg_id'] = alg_id
-        kwargs_str = ",".join(f"{key}={value}" for key,
-                              value in parameters_dict.items())
+            new_kwargs["alg_id"] = alg_id
+        parameterGTree = parameter_to_GTree(*args, **new_kwargs)
 
-        if args_str:
-            parameters = args_str + "," + kwargs_str
-        else:
-            parameters = kwargs_str
+    parameters_json = json.dumps(parameterGTree.asdict())
 
     if not alg_name:
         alg_name = func.__name__
@@ -142,39 +168,68 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
     # get the alg_id if exists, else create a new one
     if not alg_id:
         # get the alg_id if exists
-        alg_id = global_history.get_alg_id(alg_name, parameters)
+        alg_id = global_history.get_alg_id(alg_name, parameters_json)
         # else create a new one
         if not alg_id:
             alg_id = ObjectId()
 
     # save the global history
     if global_history:
-        global_history.logging(alg_id, alg_name, parameters)
+        global_history.logging(alg_id, alg_name, parameters_json)
 
     # read_data method
-    if alg_name.rfind('read_data') != -1 and alg_name.rfind('read_data') + 9 == len(alg_name):
+    if alg_name.rfind("read_data") != -1 and alg_name.rfind("read_data") + 9 == len(
+        alg_name
+    ):
         if global_history:
-            return self.map(lambda wf: func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
+            return self.map(
+                lambda wf: func(
+                    wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs
+                )
+            )
         else:
             return self.map(lambda wf: func(wf, *args, **kwargs))
 
     # save_data method
-    if alg_name.rfind('save_data') != -1 and alg_name.rfind('save_data') + 9 == len(alg_name):
+    if alg_name.rfind("save_data") != -1 and alg_name.rfind("save_data") + 9 == len(
+        alg_name
+    ):
         # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
         if global_history:
-            return self.map(lambda wf: (func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs), wf))
+            return self.map(
+                lambda wf: (
+                    func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs),
+                    wf,
+                )
+            )
         else:
             return self.map(lambda wf: (func(wf, *args, **kwargs), wf))
 
     # save the object history
     if object_history:
-        return self.map(func, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs)
+        return self.map(
+            func,
+            *args,
+            object_history=object_history,
+            alg_name=alg_name,
+            alg_id=str(alg_id),
+            **kwargs
+        )
 
     return self.map(func, *args, object_history=object_history, **kwargs)
 
 
-def mspass_spark_reduce(self, func, *args, global_history=None, object_history=False, alg_id=None,
-                        alg_name=None, parameters=None, **kwargs):
+def mspass_spark_reduce(
+    self,
+    func,
+    *args,
+    global_history=None,
+    object_history=False,
+    alg_id=None,
+    alg_name=None,
+    parameters=None,
+    **kwargs
+):
     """
      This decorator method add more functionaliy on the standard spark reduce method and be a part of member functions
      in the spark RDD library. Instead of performing the normal reduce function, if user provides global history manager,
@@ -194,52 +249,64 @@ def mspass_spark_reduce(self, func, *args, global_history=None, object_history=F
     :type parameters: :class:`str`
     :return: a spark `RDD` format of objects.
     """
-    if not parameters:
-        # extract list parameters
-        args_str = ",".join(f"{value}" for value in args)
-
-        # extract dict parameters
-        parameters_dict = collections.OrderedDict()
-        for key, value in kwargs.items():
-            parameters_dict[key] = value
-        parameters_dict['object_history'] = object_history
+    if parameters:
+        parameterGTree = parameter_to_GTree(parameters_str=parameters)
+    else:
+        new_kwargs = kwargs.copy()
+        new_kwargs["object_history"] = object_history
         if alg_name:
-            parameters_dict['alg_name'] = alg_name
+            new_kwargs["alg_name"] = alg_name
         if alg_id:
-            parameters_dict['alg_id'] = alg_id
-        kwargs_str = ",".join(f"{key}={value}" for key,
-                              value in parameters_dict.items())
+            new_kwargs["alg_id"] = alg_id
+        parameterGTree = parameter_to_GTree(*args, **new_kwargs)
 
-        if args_str:
-            parameters = args_str + "," + kwargs_str
-        else:
-            parameters = kwargs_str
+    parameters_json = json.dumps(parameterGTree.asdict())
 
     if not alg_name:
-        # if not exists, use the name of the func
         alg_name = func.__name__
 
     # get the alg_id if exists, else create a new one
     if not alg_id:
         # get the alg_id if exists
-        alg_id = global_history.get_alg_id(alg_name, parameters)
+        alg_id = global_history.get_alg_id(alg_name, parameters_json)
         # else create a new one
         if not alg_id:
             alg_id = ObjectId()
 
     # save the global history
     if global_history:
-        global_history.logging(alg_id, alg_name, parameters)
+        global_history.logging(alg_id, alg_name, parameters_json)
 
     # save the object history
     if object_history:
-        return self.reduce(lambda a, b: func(a, b, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
+        return self.reduce(
+            lambda a, b: func(
+                a,
+                b,
+                *args,
+                object_history=object_history,
+                alg_name=alg_name,
+                alg_id=str(alg_id),
+                **kwargs
+            )
+        )
 
-    return self.reduce(lambda a, b: func(a, b, *args, object_history=object_history, **kwargs))
+    return self.reduce(
+        lambda a, b: func(a, b, *args, object_history=object_history, **kwargs)
+    )
 
 
-def mspass_dask_fold(self, func, *args, global_history=None, object_history=False, alg_id=None,
-                     alg_name=None, parameters=None, **kwargs):
+def mspass_dask_fold(
+    self,
+    func,
+    *args,
+    global_history=None,
+    object_history=False,
+    alg_id=None,
+    alg_name=None,
+    parameters=None,
+    **kwargs
+):
     """
      This decorator method add more functionaliy on the standard dask fold method and be a part of member functions
      in the dask bag library. Instead of performing the normal fold function, if user provides global history manager,
@@ -259,48 +326,51 @@ def mspass_dask_fold(self, func, *args, global_history=None, object_history=Fals
     :type parameters: :class:`str`
     :return: a dask `bag` format of objects.
     """
-    if not parameters:
-        # extract list parameters
-        args_str = ",".join(f"{value}" for value in args)
-
-        # extract dict parameters
-        parameters_dict = collections.OrderedDict()
-        for key, value in kwargs.items():
-            parameters_dict[key] = value
-        parameters_dict['object_history'] = object_history
+    if parameters:
+        parameterGTree = parameter_to_GTree(parameters_str=parameters)
+    else:
+        new_kwargs = kwargs.copy()
+        new_kwargs["object_history"] = object_history
         if alg_name:
-            parameters_dict['alg_name'] = alg_name
+            new_kwargs["alg_name"] = alg_name
         if alg_id:
-            parameters_dict['alg_id'] = alg_id
-        kwargs_str = ",".join(f"{key}={value}" for key,
-                              value in parameters_dict.items())
+            new_kwargs["alg_id"] = alg_id
+        parameterGTree = parameter_to_GTree(*args, **new_kwargs)
 
-        if args_str:
-            parameters = args_str + "," + kwargs_str
-        else:
-            parameters = kwargs_str
+    parameters_json = json.dumps(parameterGTree.asdict())
 
     if not alg_name:
-        # if not exists, use the name of the func
         alg_name = func.__name__
 
     # get the alg_id if exists, else create a new one
     if not alg_id:
         # get the alg_id if exists
-        alg_id = global_history.get_alg_id(alg_name, parameters)
+        alg_id = global_history.get_alg_id(alg_name, parameters_json)
         # else create a new one
         if not alg_id:
             alg_id = ObjectId()
 
     # save the global history
     if global_history:
-        global_history.logging(alg_id, alg_name, parameters)
+        global_history.logging(alg_id, alg_name, parameters_json)
 
     # save the object history
     if object_history:
-        return self.fold(lambda a, b: func(a, b, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
+        return self.fold(
+            lambda a, b: func(
+                a,
+                b,
+                *args,
+                object_history=object_history,
+                alg_name=alg_name,
+                alg_id=str(alg_id),
+                **kwargs
+            )
+        )
 
-    return self.fold(lambda a, b: func(a, b, *args, object_history=object_history, **kwargs))
+    return self.fold(
+        lambda a, b: func(a, b, *args, object_history=object_history, **kwargs)
+    )
 
 
 class GlobalHistoryManager:
@@ -322,7 +392,9 @@ class GlobalHistoryManager:
         self.collection = collection
         if not self.collection:
             # use the `history` collection defined in database schema
-            self.collection = self.history_db.database_schema.default_name('history_global')
+            self.collection = self.history_db.database_schema.default_name(
+                "history_global"
+            )
 
         # create unique index -> (alg_name, parameters)
         self.history_db[self.collection].create_index(
@@ -351,14 +423,16 @@ class GlobalHistoryManager:
         # current timestamp when logging into database
         timestamp = datetime.utcnow().timestamp()
 
-        self.history_db[self.collection].insert_one({
-            'time': timestamp,
-            'job_id': self.job_id,
-            'job_name': self.job_name,
-            'alg_name': alg_name,
-            'alg_id': alg_id,
-            'parameters': parameters
-        })
+        self.history_db[self.collection].insert_one(
+            {
+                "time": timestamp,
+                "job_id": self.job_id,
+                "job_name": self.job_name,
+                "alg_name": alg_name,
+                "alg_id": alg_id,
+                "parameters": parameters,
+            }
+        )
 
     def get_alg_id(self, alg_name, parameters):
         """
@@ -372,12 +446,15 @@ class GlobalHistoryManager:
         :type parameters: :class:`str`
         """
         # no alg_name and parameters combination in the database
-        if not self.history_db[self.collection].count_documents({'alg_name': alg_name, 'parameters': parameters}):
+        if not self.history_db[self.collection].count_documents(
+            {"alg_name": alg_name, "parameters": parameters}
+        ):
             return None
 
         doc = self.history_db[self.collection].find_one(
-            {'alg_name': alg_name, 'parameters': parameters})
-        return doc['alg_id']
+            {"alg_name": alg_name, "parameters": parameters}
+        )
+        return doc["alg_id"]
 
     def get_alg_list(self, job_name, job_id=None):
         """
@@ -388,9 +465,9 @@ class GlobalHistoryManager:
         :param job_id: the UUID of the job
         :type job_id: :class:`bson.objectid.ObjectId`
         """
-        query = {'job_name': job_name}
+        query = {"job_name": job_name}
         if job_id:
-            query['job_id'] = job_id
+            query["job_id"] = job_id
         alg_list = []
         docs = self.history_db[self.collection].find(query)
         for doc in docs:
@@ -408,13 +485,13 @@ class GlobalHistoryManager:
         :param parameters: the parameters of the algorithm user would like to set
         :type parameters: :class:`str`
         """
-        doc = self.history_db[self.collection].find_one({'alg_id': alg_id})
+        doc = self.history_db[self.collection].find_one({"alg_id": alg_id})
         if not doc:
-            raise MsPASSError(
-                'No such history record with alg_id = ' + alg_id, 'Fatal')
+            raise MsPASSError("No such history record with alg_id = " + alg_id, "Fatal")
 
         update_dict = {}
-        update_dict['alg_name'] = alg_name
-        update_dict['parameters'] = parameters
+        update_dict["alg_name"] = alg_name
+        update_dict["parameters"] = parameters
         self.history_db[self.collection].update_many(
-            {'alg_id': alg_id}, {'$set': update_dict})
+            {"alg_id": alg_id}, {"$set": update_dict}
+        )
