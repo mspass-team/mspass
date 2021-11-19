@@ -300,23 +300,21 @@ def test_Textfile2Dataframe():
         df = Textfile2Dataframe(textfile, attribute_names=names, parallel=p)
         assert df.shape[0] == 652
         assert df.shape[1] == 12
-        assert df.iloc[1]['pwfid'] == 3103
+        assert df.iloc[1]["pwfid"] == 3103
         assert np.isclose(df.iloc[1]["starttime"], 1577912954.62975)
         assert np.isclose(df.iloc[1]["endtime"], 1577913089.7297499)
         assert df.iloc[1]["time_standard"] == "a"
 
         #   Test setting null values
-        df = Textfile2Dataframe(
-            textfile, attribute_names=names, parallel=p
-        )
+        df = Textfile2Dataframe(textfile, attribute_names=names, parallel=p)
         assert df.shape[0] == 652
         assert df.shape[1] == 12
-        assert df.iloc[0]['pwfid'] == 3102
+        assert df.iloc[0]["pwfid"] == 3102
         assert np.isclose(df.iloc[0]["starttime"], 1577912967.53105)
         assert np.isclose(df.iloc[0]["endtime"], 1577913102.63105)
         assert df.iloc[0]["time_standard"] == "a"
         assert df.iloc[0]["foff"] == 0
-        
+
         #   Test turning off one_to_one
         df = Textfile2Dataframe(
             textfile, attribute_names=names, one_to_one=False, parallel=p

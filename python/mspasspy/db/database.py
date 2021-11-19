@@ -243,7 +243,7 @@ class Database(pymongo.database.Database):
         retrieve_history_record=False,
         merge_method=0,
         merge_fill_value=None,
-        merge_interpolation_samples=0
+        merge_interpolation_samples=0,
     ):
         """
         This is the core MsPASS reader for constructing Seismogram or TimeSeries
@@ -428,7 +428,7 @@ class Database(pymongo.database.Database):
             ):
                 # try to find the corresponding record in the normalized collection from the database
                 if col not in col_dict:
-                    col_dict[col] = self[col].find_one({'_id': object_doc[col + '_id']})
+                    col_dict[col] = self[col].find_one({"_id": object_doc[col + "_id"]})
                 # might unable to find the normalized document by the normalized_id in the object_doc
                 # we skip reading this attribute
                 if not col_dict[col]:
@@ -533,7 +533,7 @@ class Database(pymongo.database.Database):
                         format=object_doc["format"],
                         merge_method=merge_method,
                         merge_fill_value=merge_fill_value,
-                        merge_interpolation_samples=merge_interpolation_samples
+                        merge_interpolation_samples=merge_interpolation_samples,
                     )
                 else:
                     self._read_data_from_dfile(
@@ -543,10 +543,10 @@ class Database(pymongo.database.Database):
                         object_doc["foff"],
                         merge_method=merge_method,
                         merge_fill_value=merge_fill_value,
-                        merge_interpolation_samples=merge_interpolation_samples
+                        merge_interpolation_samples=merge_interpolation_samples,
                     )
             elif storage_mode == "gridfs":
-                self._read_data_from_gridfs(mspass_object, object_doc['gridfs_id'])
+                self._read_data_from_gridfs(mspass_object, object_doc["gridfs_id"])
             elif storage_mode == "url":
                 self._read_data_from_url(
                     mspass_object,
@@ -576,7 +576,7 @@ class Database(pymongo.database.Database):
 
             # 4.post complaint elog entries if any
             for msg in log_error_msg:
-                mspass_object.elog.log_error('read_data', msg, ErrorSeverity.Complaint)
+                mspass_object.elog.log_error("read_data", msg, ErrorSeverity.Complaint)
 
         return mspass_object
 
@@ -2699,7 +2699,7 @@ class Database(pymongo.database.Database):
             if data:
                 ensemble.member.append(data)
 
-        # explicitly mark empty ensembles dead.  Otherwise assume if 
+        # explicitly mark empty ensembles dead.  Otherwise assume if
         # we got this far we can mark it live
         if len(ensemble.member) > 0:
             ensemble.set_live()
@@ -2743,7 +2743,7 @@ class Database(pymongo.database.Database):
         indexing scheme.
 
         A final feature of note is that an ensemble can be marked dead.
-        If the entire ensemble is set dead this function returns 
+        If the entire ensemble is set dead this function returns
         immediately and does nothing.
 
 
@@ -3375,7 +3375,15 @@ class Database(pymongo.database.Database):
 
     @staticmethod
     def _read_data_from_dfile(
-        mspass_object, dir, dfile, foff, nbytes=0, format=None, merge_method=0, merge_fill_value=None, merge_interpolation_samples=0
+        mspass_object,
+        dir,
+        dfile,
+        foff,
+        nbytes=0,
+        format=None,
+        merge_method=0,
+        merge_fill_value=None,
+        merge_interpolation_samples=0,
     ):
         """
         Read the stored data from a file and loads it into a mspasspy object.
@@ -3408,8 +3416,8 @@ class Database(pymongo.database.Database):
                 elif isinstance(mspass_object, Seismogram):
                     if not mspass_object.is_defined("npts"):
                         raise KeyError("npts is not defined")
-                    float_array.frombytes(fh.read(mspass_object.get('npts') * 8 * 3))
-                    mspass_object.data = dmatrix(3, mspass_object.get('npts'))
+                    float_array.frombytes(fh.read(mspass_object.get("npts") * 8 * 3))
+                    mspass_object.data = dmatrix(3, mspass_object.get("npts"))
                     for i in range(3):
                         for j in range(mspass_object.get("npts")):
                             mspass_object.data[i, j] = float_array[
@@ -3423,10 +3431,16 @@ class Database(pymongo.database.Database):
                     # but here we want only one TimeSeries, we merge these Trace objects and fill values for gaps
                     # we post a complaint elog entry to the mspass_object if there are gaps in the stream
                     if len(st) > 1:
-                        mspass_object.elog.log_error('read_data',
-                                             'There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps.',
-                                             ErrorSeverity.Complaint)
-                    st = st.merge(method=merge_method, fill_value=merge_fill_value, interpolation_samples=merge_interpolation_samples)
+                        mspass_object.elog.log_error(
+                            "read_data",
+                            "There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps.",
+                            ErrorSeverity.Complaint,
+                        )
+                    st = st.merge(
+                        method=merge_method,
+                        fill_value=merge_fill_value,
+                        interpolation_samples=merge_interpolation_samples,
+                    )
                     tr = st[0]
                     # Now we convert this to a TimeSeries and load other Metadata
                     # Note the exclusion copy and the test verifying net,sta,chan,
@@ -4497,7 +4511,9 @@ class Database(pymongo.database.Database):
             doc["dfile"] = dfile
             dbh.insert_one(doc)
 
-    def save_dataframe(self, df, collection, null_values=None, one_to_one=True, parallel=False):
+    def save_dataframe(
+        self, df, collection, null_values=None, one_to_one=True, parallel=False
+    ):
         """
         Tansfer a dataframe into a set of documents, and store them
         in a specified collection. In one_to_one mode every row in the
@@ -4526,7 +4542,7 @@ class Database(pymongo.database.Database):
         is important, for example, to filter things like Antelope "site" or
         "sitechan" attributes created by a join to something like wfdisc and
         saved as a text file to be processed by this function.
-        :param parallel:  a boolean that determine if dask api will be used for 
+        :param parallel:  a boolean that determine if dask api will be used for
         operations on the dataframe, default is false.
         :return:  integer count of number of documents added to collection
         """
@@ -4537,7 +4553,7 @@ class Database(pymongo.database.Database):
 
         if not one_to_one:
             df = df.drop_duplicates()
-            
+
         #   For those null values, set them to None
         df = df.astype(object)
         if null_values is not None:
@@ -4547,16 +4563,16 @@ class Database(pymongo.database.Database):
                 else:
                     df[key] = df[key].mask(df[key] == val, None)
 
-        '''
+        """
         if parallel:
             df = daskdf.from_pandas(df, chunksize=1, sort=False)
             df = df.apply(lambda x: x.dropna(), axis=1).compute()
         else:
             df = df.apply(pd.Series.dropna, axis=1)
-        '''
+        """
         if parallel:
             df = df.compute()
-            
+
         df = df.apply(pd.Series.dropna, axis=1)
         doc_list = df.to_dict(orient="records")
         if len(doc_list):
@@ -4591,18 +4607,18 @@ class Database(pymongo.database.Database):
         :param collection:  MongoDB collection name to be used to save the
         (often subsetted) tuples of filename as documents in this collection.
         :param separator: The delimiter used for seperating fields,
-        the default is "\s+", which is the regular expression of "one or more 
+        the default is "\s+", which is the regular expression of "one or more
         spaces".
             For csv file, its value should be set to ','.
-            This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv. 
+            This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
             To learn more details about the usage, check the following links:
             https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
             https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html
         :param type_dict: pairs of each attribute and its type, usedd to validate
         the type of each input item
-        :param header_line: defines the line to be used as the attribute names for 
-        columns, if is < 0, an attribute_names is required. Please note that if an 
-        attribute_names is provided, the attributes defined in header_line will 
+        :param header_line: defines the line to be used as the attribute names for
+        columns, if is < 0, an attribute_names is required. Please note that if an
+        attribute_names is provided, the attributes defined in header_line will
         always be override.
         :param attribute_names: This argument must be either a list of (unique)
         string names to define the attribute name tags for each column of the
@@ -4659,4 +4675,10 @@ class Database(pymongo.database.Database):
             parallel=parallel,
             insert_column=insert_column,
         )
-        return self.save_dataframe(df = df, collection=collection, null_values=null_values, one_to_one=one_to_one, parallel=parallel)
+        return self.save_dataframe(
+            df=df,
+            collection=collection,
+            null_values=null_values,
+            one_to_one=one_to_one,
+            parallel=parallel,
+        )

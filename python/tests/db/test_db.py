@@ -1093,56 +1093,120 @@ class TestDatabase:
         md_schema.Seismogram.swap_collection("wf_Seismogram", "wf_test")
         self.db2.set_database_schema(db_schema)
         self.db2.set_metadata_schema(md_schema)
-        logging_helper.info(promiscuous_seis, '2', 'save_data')
-        self.db2.save_data(promiscuous_seis, mode='promiscuous', storage_mode='gridfs', collection='wf_test')
-        promiscuous_seis2 = self.db2.read_data(promiscuous_seis['_id'], mode='cautious', normalize=['site', 'source'], collection='wf_test')
-        assert all(a.any() == b.any() for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data))
-        with pytest.raises(MsPASSError, match='is not defined'):
-            self.db2.read_data(promiscuous_seis['_id'], mode='cautious', normalize=['site', 'source'], collection='wf_test2')
-        
+        logging_helper.info(promiscuous_seis, "2", "save_data")
+        self.db2.save_data(
+            promiscuous_seis,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            collection="wf_test",
+        )
+        promiscuous_seis2 = self.db2.read_data(
+            promiscuous_seis["_id"],
+            mode="cautious",
+            normalize=["site", "source"],
+            collection="wf_test",
+        )
+        assert all(
+            a.any() == b.any()
+            for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data)
+        )
+        with pytest.raises(MsPASSError, match="is not defined"):
+            self.db2.read_data(
+                promiscuous_seis["_id"],
+                mode="cautious",
+                normalize=["site", "source"],
+                collection="wf_test2",
+            )
+
         # test read mseed file that contains more than one Trace object, which results in gaps
-        dir = 'python/tests/data/'
-        dfile = 'gaps.mseed'
-        wf_id = self.db['wf_TimeSeries'].insert_one({'npts': 1, 'delta': 0.1, 'sampling_rate': 100.0,
-                                                    'starttime': 0.0, 'starttime_shift': 1.0, 'calib':0.1, 'foff': 0,
-                                                    'dir': dir, 'dfile': dfile, 'storage_mode': 'file',
-                                                    'format':'mseed', 'nbytes': 26186752}).inserted_id
-        gaps_ts = self.db.read_data(wf_id, collection='wf_TimeSeries', merge_fill_value=-1)
+        dir = "python/tests/data/"
+        dfile = "gaps.mseed"
+        wf_id = (
+            self.db["wf_TimeSeries"]
+            .insert_one(
+                {
+                    "npts": 1,
+                    "delta": 0.1,
+                    "sampling_rate": 100.0,
+                    "starttime": 0.0,
+                    "starttime_shift": 1.0,
+                    "calib": 0.1,
+                    "foff": 0,
+                    "dir": dir,
+                    "dfile": dfile,
+                    "storage_mode": "file",
+                    "format": "mseed",
+                    "nbytes": 26186752,
+                }
+            )
+            .inserted_id
+        )
+        gaps_ts = self.db.read_data(
+            wf_id, collection="wf_TimeSeries", merge_fill_value=-1
+        )
         assert gaps_ts.npts == 8640000
         freq = collections.Counter(gaps_ts.data)
-        assert freq[-1] == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
+        assert (
+            freq[-1]
+            == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
+        )
         assert len(gaps_ts.elog.get_error_log()) == 1
-        assert gaps_ts.elog.get_error_log()[0].message == 'There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps.'
+        assert (
+            gaps_ts.elog.get_error_log()[0].message
+            == "There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps."
+        )
 
         # test read_data with missing attributes in the normalized records
         # 1. test missing normal attribute
         missing_net_site_id = ObjectId()
-        self.db['site'].insert_one({'_id': missing_net_site_id, 'sta': 'sta1', 'loc': 'loc', 'lat': 1.0, 'lon': 1.0,
-                                    'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
-                                    'endtime': datetime.utcnow().timestamp()})
+        self.db["site"].insert_one(
+            {
+                "_id": missing_net_site_id,
+                "sta": "sta1",
+                "loc": "loc",
+                "lat": 1.0,
+                "lon": 1.0,
+                "elev": 2.0,
+                "starttime": datetime.utcnow().timestamp(),
+                "endtime": datetime.utcnow().timestamp(),
+            }
+        )
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, '1', 'deepcopy')
-        ts['site_id'] = missing_net_site_id
-        self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs')
-        self.db.database_schema.set_default('wf_TimeSeries', 'wf')
-        missing_normal_ts = self.db.read_data(ts['_id'], normalize=['site'])
+        logging_helper.info(ts, "1", "deepcopy")
+        ts["site_id"] = missing_net_site_id
+        self.db.save_data(ts, mode="promiscuous", storage_mode="gridfs")
+        self.db.database_schema.set_default("wf_TimeSeries", "wf")
+        missing_normal_ts = self.db.read_data(ts["_id"], normalize=["site"])
         assert missing_normal_ts.live
-        assert 'net' not in missing_normal_ts
+        assert "net" not in missing_normal_ts
         assert len(missing_normal_ts.elog.get_error_log()) == 0
         # 2. test missing required attribute
         missing_lat_site_id = ObjectId()
-        self.db['site'].insert_one({'_id': missing_lat_site_id, 'net': 'net1', 'sta': 'sta1', 'loc': 'loc', 'lon': 1.0,
-                                    'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
-                                    'endtime': datetime.utcnow().timestamp()})
+        self.db["site"].insert_one(
+            {
+                "_id": missing_lat_site_id,
+                "net": "net1",
+                "sta": "sta1",
+                "loc": "loc",
+                "lon": 1.0,
+                "elev": 2.0,
+                "starttime": datetime.utcnow().timestamp(),
+                "endtime": datetime.utcnow().timestamp(),
+            }
+        )
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, '1', 'deepcopy')
-        ts['site_id'] = missing_lat_site_id
-        self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs')
-        missing_required_ts = self.db.read_data(ts['_id'], normalize=['site'])
+        logging_helper.info(ts, "1", "deepcopy")
+        ts["site_id"] = missing_lat_site_id
+        self.db.save_data(ts, mode="promiscuous", storage_mode="gridfs")
+        missing_required_ts = self.db.read_data(ts["_id"], normalize=["site"])
         assert missing_required_ts.live
-        assert 'site_lat' not in missing_required_ts
+        assert "site_lat" not in missing_required_ts
         assert len(missing_required_ts.elog.get_error_log()) == 1
-        assert missing_required_ts.elog.get_error_log()[0].message == 'Attribute lat is required in collection site, but is missing in the document with id={}.'.format(str(missing_lat_site_id))
+        assert missing_required_ts.elog.get_error_log()[
+            0
+        ].message == "Attribute lat is required in collection site, but is missing in the document with id={}.".format(
+            str(missing_lat_site_id)
+        )
 
     def test_index_mseed_file(self):
         dir = "python/tests/data/"
@@ -2079,11 +2143,22 @@ class TestDatabase:
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
         ts_ensemble.set_live()
-        dfile_list = ['test_db_output', 'test_db_output']
-        dir_list = ['python/tests/data/', 'python/tests/data/']
-        self.db.save_ensemble_data(ts_ensemble, mode="promiscuous", storage_mode='file', dfile_list=dfile_list, dir_list=dir_list, exclude_objects=[1])
-        self.db.database_schema.set_default('wf_TimeSeries', 'wf')
-        res = self.db.read_data(ts_ensemble.member[0]['_id'], mode='promiscuous', normalize=['site', 'source', 'channel'])
+        dfile_list = ["test_db_output", "test_db_output"]
+        dir_list = ["python/tests/data/", "python/tests/data/"]
+        self.db.save_ensemble_data(
+            ts_ensemble,
+            mode="promiscuous",
+            storage_mode="file",
+            dfile_list=dfile_list,
+            dir_list=dir_list,
+            exclude_objects=[1],
+        )
+        self.db.database_schema.set_default("wf_TimeSeries", "wf")
+        res = self.db.read_data(
+            ts_ensemble.member[0]["_id"],
+            mode="promiscuous",
+            normalize=["site", "source", "channel"],
+        )
         assert np.isclose(ts_ensemble.member[0].data, res.data).all()
         res = self.db.read_data(
             ts_ensemble.member[2]["_id"],
@@ -2125,9 +2200,20 @@ class TestDatabase:
         seis_ensemble.member.append(seis2)
         seis_ensemble.member.append(seis3)
         seis_ensemble.set_live()
-        self.db.save_ensemble_data(seis_ensemble, mode="promiscuous", storage_mode='file', dfile_list=dfile_list, dir_list=dir_list, exclude_objects=[1])
-        self.db.database_schema.set_default('wf_Seismogram', 'wf')
-        res = self.db.read_data(seis_ensemble.member[0]['_id'], mode='promiscuous', normalize=['site', 'source'])
+        self.db.save_ensemble_data(
+            seis_ensemble,
+            mode="promiscuous",
+            storage_mode="file",
+            dfile_list=dfile_list,
+            dir_list=dir_list,
+            exclude_objects=[1],
+        )
+        self.db.database_schema.set_default("wf_Seismogram", "wf")
+        res = self.db.read_data(
+            seis_ensemble.member[0]["_id"],
+            mode="promiscuous",
+            normalize=["site", "source"],
+        )
         assert np.isclose(seis_ensemble.member[0].data, res.data).all()
         res = self.db.read_data(
             seis_ensemble.member[2]["_id"],
@@ -2175,8 +2261,10 @@ class TestDatabase:
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
         ts_ensemble.set_live()
-        self.db.database_schema.set_default('wf_TimeSeries', 'wf')
-        self.db.save_ensemble_data(ts_ensemble, mode="promiscuous", storage_mode='gridfs')
+        self.db.database_schema.set_default("wf_TimeSeries", "wf")
+        self.db.save_ensemble_data(
+            ts_ensemble, mode="promiscuous", storage_mode="gridfs"
+        )
         # test with python list
         res = self.db.read_ensemble_data(
             [
@@ -2233,10 +2321,18 @@ class TestDatabase:
         seis_ensemble.member.append(seis2)
         seis_ensemble.member.append(seis3)
         seis_ensemble.set_live()
-        self.db.database_schema.set_default('wf_Seismogram', 'wf')
-        self.db.save_ensemble_data(seis_ensemble, mode="promiscuous", storage_mode='gridfs')
-        res = self.db.read_ensemble_data([seis_ensemble.member[0]['_id'], seis_ensemble.member[1]['_id'],
-                                          seis_ensemble.member[2]['_id']], ensemble_metadata={'key1':'value1', 'key2':'value2'})
+        self.db.database_schema.set_default("wf_Seismogram", "wf")
+        self.db.save_ensemble_data(
+            seis_ensemble, mode="promiscuous", storage_mode="gridfs"
+        )
+        res = self.db.read_ensemble_data(
+            [
+                seis_ensemble.member[0]["_id"],
+                seis_ensemble.member[1]["_id"],
+                seis_ensemble.member[2]["_id"],
+            ],
+            ensemble_metadata={"key1": "value1", "key2": "value2"},
+        )
         assert len(res.member) == 3
         for i in range(3):
             assert np.isclose(res.member[i].data, seis_ensemble.member[i].data).all()
@@ -2363,11 +2459,24 @@ class TestDatabase:
     def test_save_dataframe(self):
         dir = "python/tests/data/"
         pffile = "test_import.pf"
-        textfile = "testdb.wfdisc"  
+        textfile = "testdb.wfdisc"
         #   To test null value and rename feature
 
-        field_list=['sta','chan','starttime','endtime','dir','dfile','foff','datatype','nsamp','samprate','calper','chanid']
-        rename_dict={'datatype' : 'dtype','starttime' : 't0'}
+        field_list = [
+            "sta",
+            "chan",
+            "starttime",
+            "endtime",
+            "dir",
+            "dfile",
+            "foff",
+            "datatype",
+            "nsamp",
+            "samprate",
+            "calper",
+            "chanid",
+        ]
+        rename_dict = {"datatype": "dtype", "starttime": "t0"}
         pf = AntelopePf(os.path.join(dir, pffile))
         attributes = Pf2AttributeNameTbl(pf, tag="wfdisc")
         df = Textfile2Dataframe(
@@ -2378,19 +2487,23 @@ class TestDatabase:
             parallel=True,
             one_to_one=True,
         )
-        
+
         save_num = self.db.save_dataframe(
-            df, "testdataframe", parallel=True,  one_to_one=True, null_values = attributes[2]
+            df,
+            "testdataframe",
+            parallel=True,
+            one_to_one=True,
+            null_values=attributes[2],
         )
         assert save_num == 1953
         assert self.db["testdataframe"].count_documents({}) == 1953
 
-        query={'sta' : '112A'}
+        query = {"sta": "112A"}
         cursor = self.db.testdataframe.find(query)
         assert cursor.count() == 3
         for doc in cursor:
-            assert 'calper' not in doc
-            assert 'chanid' not in doc
+            assert "calper" not in doc
+            assert "chanid" not in doc
 
     def test_save_textfile(self):
         dir = "python/tests/data/"

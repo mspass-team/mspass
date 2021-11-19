@@ -568,18 +568,18 @@ def Textfile2Dataframe(
       table object that is to be processed (internally we use pandas or
       dask dataframes)
     :param separator: The delimiter used for seperating fields,
-      the default is "\s+", which is the regular expression of "one or more 
+      the default is "\s+", which is the regular expression of "one or more
       spaces".
         For csv file, its value should be set to ','.
-        This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv. 
+        This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
         To learn more details about the usage, check the following links:
         https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
         https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html
     :param type_dict: pairs of each attribute and its type, usedd to validate
       the type of each input item
-    :param header_line: defines the line to be used as the attribute names for 
-      columns, if is < 0, an attribute_names is required. Please note that if an 
-      attribute_names is provided, the attributes defined in header_line will 
+    :param header_line: defines the line to be used as the attribute names for
+      columns, if is < 0, an attribute_names is required. Please note that if an
+      attribute_names is provided, the attributes defined in header_line will
       always be override.
     :param attribute_names: This argument must be either a list of (unique)
       string names to define the attribute name tags for each column of the
