@@ -4497,7 +4497,7 @@ class Database(pymongo.database.Database):
             doc["dfile"] = dfile
             dbh.insert_one(doc)
 
-    def save_dataframe(self, collection, df, parallel, null_values=None, one_to_one=True):
+    def save_dataframe(self, df, collection, null_values=None, one_to_one=True, parallel=False):
         """
         Tansfer a dataframe into a set of documents, and store them
         in a specified collection. In one_to_one mode every row in the
@@ -4506,8 +4506,17 @@ class Database(pymongo.database.Database):
         The dataframe will first call dropna to eliminate None values stored
         in it, so that after it is transfered into a document, the memory
         usage will be reduced.
+        :param df: Pandas.Dataframe object, the input to be transfered into mongodb
+        documents
         :param collection:  MongoDB collection name to be used to save the
         (often subsetted) tuples of filename as documents in this collection.
+        :param null_values:  is an optional dict defining null field values.
+        When used an == test is applied to each attribute with a key
+        defined in the null_vlaues python dict.  If == returns True, the
+        value will be set as None in dataframe. If your table has a lot of null
+        fields this option can save space, but readers must not require the null
+        field.  The default is None which it taken to mean there are no null
+        fields defined.
         :param one_to_one: a boolean to control if the set should be filtered by
         rows.  The default is True which means every row in the dataframe will
         create a single MongoDB document. If False the (normally reduced) set
@@ -4517,18 +4526,8 @@ class Database(pymongo.database.Database):
         is important, for example, to filter things like Antelope "site" or
         "sitechan" attributes created by a join to something like wfdisc and
         saved as a text file to be processed by this function.
-        :df: Pandas.Dataframe object, the input to be transfered into mongodb
-        documents
-        :parallel:  a boolean that determine if dask api will be used for operation
-        on the dataframe
-        :param null_values:  is an optional dict defining null field values.
-        When used an == test is applied to each attribute with a key
-        defined in the null_vlaues python dict.  If == returns True, the
-        value will be set as None in dataframe. If your table has a lot of null
-        fields this option can save space, but readers must not require the null
-        field.  The default is None which it taken to mean there are no null
-        fields defined.
-        :param one_to_one: a boolean to control if the duplicate should be deleted
+        :param parallel:  a boolean that determine if dask api will be used for 
+        operations on the dataframe, default is false.
         :return:  integer count of number of documents added to collection
         """
         dbcol = self[collection]
@@ -4568,8 +4567,8 @@ class Database(pymongo.database.Database):
         self,
         filename,
         collection="textfile",
-        type_dict=None,
         separator="\s+",
+        type_dict=None,
         header_line=0,
         attribute_names=None,
         rename_attributes=None,
@@ -4585,7 +4584,68 @@ class Database(pymongo.database.Database):
         1. Textfile2Dataframe: Convert the input textfile into a Pandas dataframe
         2. save_dataframe: Insert the documents in that dataframe into a mongodb
         collection
-        The definition of the arguments can be found in these two functions.
+
+        :param filename:  path to text file that is to be read to create the
+        table object that is to be processed (internally we use pandas or
+        dask dataframes)
+        :param collection:  MongoDB collection name to be used to save the
+        (often subsetted) tuples of filename as documents in this collection.
+        :param separator: The delimiter used for seperating fields,
+        the default is "\s+", which is the regular expression of "one or more 
+        spaces".
+            For csv file, its value should be set to ','.
+            This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv. 
+            To learn more details about the usage, check the following links:
+            https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+            https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html
+        :param type_dict: pairs of each attribute and its type, usedd to validate
+        the type of each input item
+        :param header_line: defines the line to be used as the attribute names for 
+        columns, if is < 0, an attribute_names is required. Please note that if an 
+        attribute_names is provided, the attributes defined in header_line will 
+        always be override.
+        :param attribute_names: This argument must be either a list of (unique)
+        string names to define the attribute name tags for each column of the
+        input table.   The length of the array must match the number of
+        columns in the input table or this function will throw a MsPASSError
+        exception.   This argument is None by default which means the
+        function will assume the line specified by the "header_line" argument as
+        column headers defining the attribute name.  If header_line is less
+        than 0 this argument will be required.  When header_line is >= 0
+        and this argument (attribute_names) is defined all the names in
+        this list will override those stored in the file at the specified
+        line number.
+        :param  rename_attributes:   This is expected to be a python dict
+        keyed by names matching those defined in the file or attribute_names
+        array (i.e. the panda/dataframe column index names) and values defining
+        strings to use to override the original names.   That usage, of course,
+        is most common to override names in a file.  If you want to change all
+        the name use a custom attributes_name array as noted above.  This
+        argument is mostly to rename a small number of anomalous names.
+        :param attributes_to_use:  If used this argument must define a list of
+        attribute names that define the subset of the dataframe dataframe
+        attributes that are to be saved.  For relational db users this is
+        effectively a "select" list of attribute names.  The default is
+        None which is taken to mean no selection is to be done.
+        :param one_to_one: is an important boolean use to control if the
+        output is or is not filtered by rows.  The default is True
+        which means every tuple in the input file will create a single row in
+        dataframe. (Useful, for example, to construct an wf_miniseed
+        collection css3.0 attributes.)  If False the (normally reduced) set
+        of attributes defined by attributes_to_use will be filtered with the
+        panda/dask dataframe drop_duplicates method.  That approach
+        is important, for example, to filter things like Antelope "site" or
+        "sitechan" attributes created by a join to something like wfdisc and
+        saved as a text file to be processed by this function.
+        :param parallel:  When true we use the dask dataframe operation.
+        The default is false meaning the simpler, identical api panda
+        operators are used.
+        :param insert_column: a dictionary of new columns to add, and their value(s).
+        If the content is a single value, it can be passedto define a constant value
+        for the entire column of data. The content can also be a list, in that case,
+        the list should contain values that are to be set, and it must be the same
+        length as the number of tuples in the table.
+        :return:  Integer count of number of documents added to collection
         """
         df = Textfile2Dataframe(
             filename=filename,
@@ -4599,4 +4659,4 @@ class Database(pymongo.database.Database):
             parallel=parallel,
             insert_column=insert_column,
         )
-        return self.save_dataframe(collection, df, parallel, null_values, one_to_one)
+        return self.save_dataframe(df = df, collection=collection, null_values=null_values, one_to_one=one_to_one, parallel=parallel)

@@ -2380,7 +2380,7 @@ class TestDatabase:
         )
         
         save_num = self.db.save_dataframe(
-            "testdataframe", df, parallel=True,  one_to_one=True, null_values = attributes[2]
+            df, "testdataframe", parallel=True,  one_to_one=True, null_values = attributes[2]
         )
         assert save_num == 1953
         assert self.db["testdataframe"].count_documents({}) == 1953
