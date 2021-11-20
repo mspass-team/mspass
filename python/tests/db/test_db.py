@@ -854,12 +854,11 @@ class TestDatabase():
                                                     'format':'mseed', 'nbytes': 26186752}).inserted_id
         gaps_ts = self.db.read_data(wf_id, collection='wf_TimeSeries', merge_fill_value=-1)
         assert gaps_ts.npts == 8640000
-        freq = collections.Counter(gaps_ts.data)
-        print(freq)
-        print('-1: ', freq[-1])
-        print('-1.0: ', freq[-1.0])
-        assert False
-        assert freq[-1.0] == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
+        fill_val_cnt = 0
+        for val in gaps_ts.data:
+            if val == -1.0:
+                fill_val_cnt += 1
+        assert fill_val_cnt == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
         assert len(gaps_ts.elog.get_error_log()) == 1
         assert gaps_ts.elog.get_error_log()[0].message == 'There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps.'
 
