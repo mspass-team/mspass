@@ -20,6 +20,8 @@ from obspy.clients.fdsn import Client
 from obspy import Inventory
 from obspy import UTCDateTime
 import boto3, botocore
+import json
+import base64
 
 from mspasspy.ccore.io import _mseed_file_indexer
 
@@ -4895,6 +4897,74 @@ class Database(pymongo.database.Database):
             one_to_one=one_to_one,
             parallel=parallel,
         )
+    @staticmethod
+    def _download_windowed_mseed_file(lambda_client, year, day_of_year, network='', station='',
+        channel='', location='', duration=-1, t0shift=0):
+        """
+        A helper function to download the miniseed file from AWS s3.
+        A lambda function will be called, and do the timewindowing on cloud. The output file
+        of timewindow will then be downloaded and parsed by obspy.
+        Finally return an obspy stream object.
+
+        :param lambda_client:  Lambda Client object given by user, which contains credentials
+        :param year:  year for the query mseed file(4 digit).
+        :param day_of_year:  day of year for the query of mseed file(3 digit [001-366])
+        :param network:  network code
+        :param station:  station code
+        :param channel:  channel code
+        :param location:  location code
+        :param duration:  window duration, default value is -1, which means no window will be performed
+        :param t0shift: shift the start time, default is 0
+        """
+
+        s3_input_bucket = 'scedc-pds'
+        s3_output_bucket = 'scedcdata'  #   The output file can be saved to this bucket, currently not in use
+        year = str(year)
+        day_of_year = str(day_of_year)
+        if len(day_of_year) < 3:
+            day_of_year = '0' * (3 - len(day_of_year)) + day_of_year
+        source_key = 'continuous_waveforms/' + year + '/' + year + '_' + day_of_year + '/'
+        if len(network) < 2:
+            network += '_' * (2 - len(network))
+        if len(station) < 5:
+            station += '_' * (5 - len(station))
+        if len(channel) < 3:
+            channel += '_' * (3 - len(channel))
+        if len(location) < 2:
+            location += '_' * (2 - len(location))
+        
+        mseed_file = network + station + channel + location + '_' + year + day_of_year + '.ms'
+        source_key += mseed_file
+
+        event = {
+        "s3_input_bucket": s3_input_bucket,
+        "s3_output_bucket": s3_output_bucket,
+        "source_key": source_key,
+        "duration": duration,
+        "t0shift": t0shift,
+        "save_to_s3": False
+        }
+
+        response = lambda_client.invoke(
+                FunctionName='TimeWindowFunction',  #   The name of lambda function on cloud
+                InvocationType='RequestResponse',
+                LogType='Tail',
+                Payload=json.dumps(event))
+
+        response_payload = json.loads(response['Payload'].read())
+        ret_type = response_payload['ret_type']
+
+        if(ret_type == 'key'):  #   The output file is saved to another bucket (s3_output_bucket). We don't support this workflow now.
+            new_key = response_payload['output_key']
+            print("The window given is too large, can't be returned immediately,\nPlease check {}".format(new_key))
+            return None
+
+        filecontent = base64.b64decode(response_payload['output_content'].encode("utf-8"))
+        stringio_obj = io.BytesIO(filecontent)
+        st = obspy.read(stringio_obj)
+        
+        return st
+
     def index_mseed_s3_continuous(self, s3_client, year, day_of_year, network='', station='',
         channel='', location='', collection='wf_miniseed'):
         """
