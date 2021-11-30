@@ -4898,7 +4898,7 @@ class Database(pymongo.database.Database):
             parallel=parallel,
         )
     @staticmethod
-    def _download_windowed_mseed_file(lambda_client, year, day_of_year, network='', station='',
+    def _download_windowed_mseed_file(aws_access_key_id, aws_secret_access_key, year, day_of_year, network='', station='',
         channel='', location='', duration=-1, t0shift=0):
         """
         A helper function to download the miniseed file from AWS s3.
@@ -4906,7 +4906,7 @@ class Database(pymongo.database.Database):
         of timewindow will then be downloaded and parsed by obspy.
         Finally return an obspy stream object.
 
-        :param lambda_client:  Lambda Client object given by user, which contains credentials
+        :param aws_access_key_id & aws_secret_access_key: credential for aws, used to initialize lambda_client
         :param year:  year for the query mseed file(4 digit).
         :param day_of_year:  day of year for the query of mseed file(3 digit [001-366])
         :param network:  network code
@@ -4916,7 +4916,7 @@ class Database(pymongo.database.Database):
         :param duration:  window duration, default value is -1, which means no window will be performed
         :param t0shift: shift the start time, default is 0
         """
-
+        lambda_client = boto3.client(service_name='lambda', region_name='us-west-2', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
         s3_input_bucket = 'scedc-pds'
         s3_output_bucket = 'scedcdata'  #   The output file can be saved to this bucket, currently not in use
         year = str(year)
