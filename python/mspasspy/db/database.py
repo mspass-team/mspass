@@ -544,6 +544,8 @@ class Database(pymongo.database.Database):
                     mspass_object, object_doc['url'], format=None if 'format' not in object_doc else object_doc['format'])
             elif storage_mode == "s3_continuous":
                 self._read_data_from_s3_continuous(mspass_object, aws_access_key_id, aws_secret_access_key)
+            elif storage_mode == "s3_lambda":
+                self._read_data_from_s3_lambda(mspass_object, aws_access_key_id, aws_secret_access_key)
             elif storage_mode == "fdsn":
                 self._read_data_from_fdsn(mspass_object)
             else:
@@ -3608,6 +3610,42 @@ class Database(pymongo.database.Database):
         except Exception as e:
             raise MsPASSError("Error while read data from s3.", "Fatal") from e
 
+    def _read_data_from_s3_lambda(self, mspass_object, aws_access_key_id=None, aws_secret_access_key=None):
+        year = mspass_object['year']
+        day_of_year = mspass_object['day_of_year']
+        network = ''
+        station = ''
+        channel = ''
+        location = ''
+        if 'net' in mspass_object:
+            network = mspass_object['net']
+        if 'sta' in mspass_object:
+            station = mspass_object['sta']
+        if 'chan' in mspass_object:
+            channel = mspass_object['chan']
+        if 'loc' in mspass_object:
+            location = mspass_object['loc']
+        
+        try:
+            st = self._download_windowed_mseed_file(aws_access_key_id, aws_secret_access_key, year, day_of_year, network, station, channel, location, 2)
+            if isinstance(mspass_object, TimeSeries):
+                # st is a "stream" but it only has one member here because we are
+                # reading single net,sta,chan,loc grouping defined by the index
+                # We only want the Trace object not the stream to convert
+                tr = st[0]
+                # Now we convert this to a TimeSeries and load other Metadata
+                # Note the exclusion copy and the test verifying net,sta,chan,
+                # loc, and startime all match
+                mspass_object.npts = len(tr.data)
+                mspass_object.data = DoubleVector(tr.data)
+            elif isinstance(mspass_object, Seismogram):
+                sm = st.toSeismogram(cardinal=True)
+                mspass_object.npts = sm.data.columns()
+                mspass_object.data = sm.data
+
+        except Exception as e:
+            raise MsPASSError("Error while read data from s3_lambda.", "Fatal") from e
+
     def _read_data_from_s3_event(self, mspass_object, dir, dfile, foff, nbytes=0, format=None, aws_access_key_id=None, aws_secret_access_key=None):
         """
         Read the stored data from a file and loads it into a mspasspy object.
@@ -4966,7 +5004,7 @@ class Database(pymongo.database.Database):
         return st
 
     def index_mseed_s3_continuous(self, s3_client, year, day_of_year, network='', station='',
-        channel='', location='', collection='wf_miniseed'):
+        channel='', location='', collection='wf_miniseed', storage_mode='s3_continuous'):
         """
         This is the first stage import function for handling the import of
         miniseed data. However, instead of scanning a data file defined by a directory
@@ -5030,7 +5068,7 @@ class Database(pymongo.database.Database):
             doc['starttime'] = stats['starttime'].timestamp
             if 'npts' in stats and stats['npts']:
                 doc['npts'] = stats['npts']
-            doc['storage_mode'] = 's3_continuous'
+            doc['storage_mode'] = storage_mode
             doc['format'] = 'mseed'
             dbh.insert_one(doc)
 
