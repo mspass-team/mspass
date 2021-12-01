@@ -907,34 +907,34 @@ and then saving windowed data.  Crafting an unambiguous query to
 find only the windowed data in that situation could be challenging
 or impossible.  Hence, we recommend a data tag always be used for
 most saves.</p>
-<p>The mode parameter needs to be understood by all users of this 
+<p>The mode parameter needs to be understood by all users of this
 function.  All modes enforce a schema constraint for “readonly”
-attributes.   An immutable (readonly) attribute by definition 
-should not be changed during processing.   During a save 
-all attributes with a key defined as readonly are tested 
-with a method in the Metadata container that keeps track of 
-any Metadata changes.  If a readonly attribute is found to 
+attributes.   An immutable (readonly) attribute by definition
+should not be changed during processing.   During a save
+all attributes with a key defined as readonly are tested
+with a method in the Metadata container that keeps track of
+any Metadata changes.  If a readonly attribute is found to
 have been changed it will be renamed with the prefix
-“<a href="#id5"><span class="problematic" id="id6">READONLYERROR_</span></a>”, saved, and an error posted (e.g. if you try 
-to alter site_lat (a readonly attribute) in a workflow when 
-you save the waveform you will find an entry with the key 
-READONERROR_site_lat.)   In the default ‘promiscuous’ mode 
-all other attributes are blindly saved to the database as 
-name value pairs with no safeties.  In ‘cautious’ mode we 
-add a type check.  If the actual type of an attribute does not 
-match what the schema expect, this method will try to fix the 
-type error before saving the data.  If the conversion is 
-successful it will be saved with a complaint error posted 
-to elog.  If it fails, the attribute will not be saved, an 
-additional error message will be posted, and the save 
-algorithm continues.  In ‘pedantic’ mode, in contrast, all 
-type errors are considered to invalidate the data.  
-Similar error messages to that in ‘cautious’ mode are posted 
-but any type errors will cause the datum passed as arg 0 
-to be killed. The lesson is saves can leave entries that 
-may need to be examined in elog and when really bad will 
+“<a href="#id5"><span class="problematic" id="id6">READONLYERROR_</span></a>”, saved, and an error posted (e.g. if you try
+to alter site_lat (a readonly attribute) in a workflow when
+you save the waveform you will find an entry with the key
+READONERROR_site_lat.)   In the default ‘promiscuous’ mode
+all other attributes are blindly saved to the database as
+name value pairs with no safeties.  In ‘cautious’ mode we
+add a type check.  If the actual type of an attribute does not
+match what the schema expect, this method will try to fix the
+type error before saving the data.  If the conversion is
+successful it will be saved with a complaint error posted
+to elog.  If it fails, the attribute will not be saved, an
+additional error message will be posted, and the save
+algorithm continues.  In ‘pedantic’ mode, in contrast, all
+type errors are considered to invalidate the data.
+Similar error messages to that in ‘cautious’ mode are posted
+but any type errors will cause the datum passed as arg 0
+to be killed. The lesson is saves can leave entries that
+may need to be examined in elog and when really bad will
 cause the datum to be marked dead after the save.</p>
-<p>This method can throw an exception but only for errors in 
+<p>This method can throw an exception but only for errors in
 usage (i.e. arguments defined incorrectly)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1015,6 +1015,41 @@ User’s manual for guidance on how the use of this option.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="mspasspy.db.database.Database.save_dataframe">
+<code class="sig-name descname">save_dataframe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">collection</span></em>, <em class="sig-param"><span class="n">null_values</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">one_to_one</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">parallel</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_dataframe" title="Permalink to this definition"></a></dt>
+<dd><p>Tansfer a dataframe into a set of documents, and store them
+in a specified collection. In one_to_one mode every row in the
+dataframe will be saved into the mongodb, otherwise duplicates
+would be discarded.
+The dataframe will first call dropna to eliminate None values stored
+in it, so that after it is transfered into a document, the memory
+usage will be reduced.
+:param df: Pandas.Dataframe object, the input to be transfered into mongodb
+documents
+:param collection:  MongoDB collection name to be used to save the
+(often subsetted) tuples of filename as documents in this collection.
+:param null_values:  is an optional dict defining null field values.
+When used an == test is applied to each attribute with a key
+defined in the null_vlaues python dict.  If == returns True, the
+value will be set as None in dataframe. If your table has a lot of null
+fields this option can save space, but readers must not require the null
+field.  The default is None which it taken to mean there are no null
+fields defined.
+:param one_to_one: a boolean to control if the set should be filtered by
+rows.  The default is True which means every row in the dataframe will
+create a single MongoDB document. If False the (normally reduced) set
+of attributes defined by attributes_to_use will be filtered with the
+panda/dask dataframe drop_duplicates method before converting the
+dataframe to documents and saving them to MongoDB.  That approach
+is important, for example, to filter things like Antelope “site” or
+“sitechan” attributes created by a join to something like wfdisc and
+saved as a text file to be processed by this function.
+:param parallel:  a boolean that determine if dask api will be used for
+operations on the dataframe, default is false.
+:return:  integer count of number of documents added to collection</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="mspasspy.db.database.Database.save_ensemble_data">
 <code class="sig-name descname">save_ensemble_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ensemble_object</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'promiscuous'</span></em>, <em class="sig-param"><span class="n">storage_mode</span><span class="o">=</span><span class="default_value">'gridfs'</span></em>, <em class="sig-param"><span class="n">dir_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dfile_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exclude_objects</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data_tag</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'save_ensemble_data'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_ensemble_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_ensemble_data" title="Permalink to this definition"></a></dt>
 <dd><p>Save an Ensemble container of a group of data objecs to MongoDB.</p>
@@ -1035,7 +1070,7 @@ previously defined) the ensemble attributes to each member.  That assure
 atomic saves will not lose their association with a unique ensemble
 indexing scheme.</p>
 <p>A final feature of note is that an ensemble can be marked dead.
-If the entire ensemble is set dead this function returns 
+If the entire ensemble is set dead this function returns
 immediately and does nothing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1136,6 +1171,87 @@ Set to None if if all are to be loaded.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="mspasspy.db.database.Database.save_textfile">
+<code class="sig-name descname">save_textfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'textfile'</span></em>, <em class="sig-param"><span class="n">separator</span><span class="o">=</span><span class="default_value">'\\s+'</span></em>, <em class="sig-param"><span class="n">type_dict</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header_line</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">attribute_names</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rename_attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attributes_to_use</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">null_values</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">one_to_one</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">parallel</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">insert_column</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_textfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_textfile" title="Permalink to this definition"></a></dt>
+<dd><p>Import and parse a textfile into set of documents, and store them
+into a mongodb collection. This function consists of two steps:
+1. Textfile2Dataframe: Convert the input textfile into a Pandas dataframe
+2. save_dataframe: Insert the documents in that dataframe into a mongodb
+collection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> – path to text file that is to be read to create the</p>
+</dd>
+</dl>
+<p>table object that is to be processed (internally we use pandas or
+dask dataframes)
+:param collection:  MongoDB collection name to be used to save the
+(often subsetted) tuples of filename as documents in this collection.
+:param separator: The delimiter used for seperating fields,
+the default is “s+”, which is the regular expression of “one or more
+spaces”.</p>
+<blockquote>
+<div><p>For csv file, its value should be set to ‘,’.
+This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
+To learn more details about the usage, check the following links:
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html">https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html</a>
+<a class="reference external" href="https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html">https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</a></p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>type_dict</strong> – pairs of each attribute and its type, usedd to validate</p>
+</dd>
+</dl>
+<p>the type of each input item
+:param header_line: defines the line to be used as the attribute names for
+columns, if is &lt; 0, an attribute_names is required. Please note that if an
+attribute_names is provided, the attributes defined in header_line will
+always be override.
+:param attribute_names: This argument must be either a list of (unique)
+string names to define the attribute name tags for each column of the
+input table.   The length of the array must match the number of
+columns in the input table or this function will throw a MsPASSError
+exception.   This argument is None by default which means the
+function will assume the line specified by the “header_line” argument as
+column headers defining the attribute name.  If header_line is less
+than 0 this argument will be required.  When header_line is &gt;= 0
+and this argument (attribute_names) is defined all the names in
+this list will override those stored in the file at the specified
+line number.
+:param  rename_attributes:   This is expected to be a python dict
+keyed by names matching those defined in the file or attribute_names
+array (i.e. the panda/dataframe column index names) and values defining
+strings to use to override the original names.   That usage, of course,
+is most common to override names in a file.  If you want to change all
+the name use a custom attributes_name array as noted above.  This
+argument is mostly to rename a small number of anomalous names.
+:param attributes_to_use:  If used this argument must define a list of
+attribute names that define the subset of the dataframe dataframe
+attributes that are to be saved.  For relational db users this is
+effectively a “select” list of attribute names.  The default is
+None which is taken to mean no selection is to be done.
+:param one_to_one: is an important boolean use to control if the
+output is or is not filtered by rows.  The default is True
+which means every tuple in the input file will create a single row in
+dataframe. (Useful, for example, to construct an wf_miniseed
+collection css3.0 attributes.)  If False the (normally reduced) set
+of attributes defined by attributes_to_use will be filtered with the
+panda/dask dataframe drop_duplicates method.  That approach
+is important, for example, to filter things like Antelope “site” or
+“sitechan” attributes created by a join to something like wfdisc and
+saved as a text file to be processed by this function.
+:param parallel:  When true we use the dask dataframe operation.
+The default is false meaning the simpler, identical api panda
+operators are used.
+:param insert_column: a dictionary of new columns to add, and their value(s).
+If the content is a single value, it can be passedto define a constant value
+for the entire column of data. The content can also be a list, in that case,
+the list should contain values that are to be set, and it must be the same
+length as the number of tuples in the table.
+:return:  Integer count of number of documents added to collection</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="mspasspy.db.database.Database.set_database_schema">
 <code class="sig-name descname">set_database_schema</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">schema</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.set_database_schema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.set_database_schema" title="Permalink to this definition"></a></dt>
 <dd><p>Use this method to change the database schema defined for this
@@ -1168,24 +1284,24 @@ WARNING this is not a name - is a MsPASS object consructed from a name.</p>
 <dl class="py method">
 <dt id="mspasspy.db.database.Database.update_data">
 <code class="sig-name descname">update_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mspass_object</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'cautious'</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'Database.update_data'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.update_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.update_data" title="Permalink to this definition"></a></dt>
-<dd><p>Updates both metadata and sample data corresponding to an input data 
+<dd><p>Updates both metadata and sample data corresponding to an input data
 object.</p>
-<p>Since storage of data objects in MsPASS is broken into multiple 
-collections and storage methods, doing a full data update has some 
-complexity.   This method handles the problem differently for the 
+<p>Since storage of data objects in MsPASS is broken into multiple
+collections and storage methods, doing a full data update has some
+complexity.   This method handles the problem differently for the
 different pieces:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li><p>An update is performed on the parent wf collection document. 
+<li><p>An update is performed on the parent wf collection document.
 That update makes use of the related Database method
 called update_metadata.</p></li>
 <li><p>If the error log is not empty it is saved.</p></li>
 <li><p>If the history container has contents it is saved.</p></li>
 <li><p>The sample data is the thorniest problem. Currently this
-method will only do sample updates for data stored in 
-the mongodb gridfs system.   With files containing multiple 
-waveforms it would be necessary to append to the files and 
-this could create a blaat problem with large data sets so 
+method will only do sample updates for data stored in
+the mongodb gridfs system.   With files containing multiple
+waveforms it would be necessary to append to the files and
+this could create a blaat problem with large data sets so
 we do not currently support that type of update.</p></li>
 </ol>
 </div></blockquote>
@@ -1194,10 +1310,10 @@ we do not currently support that type of update.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mspass_object</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>) – the object you want to update.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a list of metadata attributes you want to exclude from being updated.</p></li>
-<li><p><strong>force_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a list of metadata attributes you want to force 
-to be updated.   Normally this method will only update attributes 
-that have been marked as changed since creation of the parent data 
-object.  If data with these keys is found in the mspass_object they 
+<li><p><strong>force_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a list of metadata attributes you want to force
+to be updated.   Normally this method will only update attributes
+that have been marked as changed since creation of the parent data
+object.  If data with these keys is found in the mspass_object they
 will be added to the update record.</p></li>
 <li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the metadata schema.</p></li>
 <li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – This parameter defines how attributes defines how
@@ -1216,10 +1332,10 @@ converted to the type defined in the schema.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>mspass_object data.  Normally this is an unaltered copy 
-of the data passed through mspass_object.  If there are errors, 
-however, the elog will contain new messages.  All such messages, 
-howevever, should be saved in the elog collection because elog 
+<dd class="field-even"><p>mspass_object data.  Normally this is an unaltered copy
+of the data passed through mspass_object.  If there are errors,
+however, the elog will contain new messages.  All such messages,
+howevever, should be saved in the elog collection because elog
 is the last collection updated.</p>
 </dd>
 </dl>
@@ -1279,25 +1395,25 @@ promiscuous mode there are no safeties and the any values
 that are defined in Metadata as having been changed will be
 posted as an update to the parent wf document to the data object.</p>
 <p>A feature of the schema that is considered an unbreakable rule is
-that any attribute marked “readonly” in the schema cannot by 
-definition be updated with this method.  It utilizes the same 
-method for handling this as the save_data method.  That is, 
-for all “mode” parameters if an key is defined in the schema as 
-readonly and it is listed as having been modified, it will 
-be save with a new key creating by adding the prefix 
-“<a href="#id7"><span class="problematic" id="id8">READONLYERROR_</span></a>” .  e.g. if we had a site_sta read as 
-‘AAK’ but we changed it to ‘XYZ’ in a workflow, when we tried 
-to save the data you will find an entry in the document 
+that any attribute marked “readonly” in the schema cannot by
+definition be updated with this method.  It utilizes the same
+method for handling this as the save_data method.  That is,
+for all “mode” parameters if an key is defined in the schema as
+readonly and it is listed as having been modified, it will
+be save with a new key creating by adding the prefix
+“<a href="#id7"><span class="problematic" id="id8">READONLYERROR_</span></a>” .  e.g. if we had a site_sta read as
+‘AAK’ but we changed it to ‘XYZ’ in a workflow, when we tried
+to save the data you will find an entry in the document
 of {‘READONLYERROR_site_sta’ : ‘XYZ’}</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mspass_object</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>) – the object you want to update.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a list of metadata attributes you want to exclude from being updated.</p></li>
-<li><p><strong>force_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a list of metadata attributes you want to force 
-to be updated.   Normally this method will only update attributes 
-that have been marked as changed since creation of the parent data 
-object.  If data with these keys is found in the mspass_object they 
+<li><p><strong>force_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a list of metadata attributes you want to force
+to be updated.   Normally this method will only update attributes
+that have been marked as changed since creation of the parent data
+object.  If data with these keys is found in the mspass_object they
 will be added to the update record.</p></li>
 <li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the metadata schema.</p></li>
 <li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – This parameter defines how attributes defines how
@@ -1315,10 +1431,10 @@ converted to the type defined in the schema.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>mspass_object data.  Normally this is an unaltered copy 
-of the data passed through mspass_object.  If there are errors, 
-however, the elog will contain new messages.  Note any such 
-messages are volatile and will not be saved to the database 
+<dd class="field-even"><p>mspass_object data.  Normally this is an unaltered copy
+of the data passed through mspass_object.  If there are errors,
+however, the elog will contain new messages.  Note any such
+messages are volatile and will not be saved to the database
 until the save_data method is called.</p>
 </dd>
 </dl>

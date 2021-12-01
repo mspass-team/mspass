@@ -175,6 +175,34 @@ is usually not necessay.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="mspasspy.util.converter.Pf2AttributeNameTbl">
+<code class="sig-prename descclassname">mspasspy.util.converter.</code><code class="sig-name descname">Pf2AttributeNameTbl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pf</span></em>, <em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">'attributes'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#Pf2AttributeNameTbl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.converter.Pf2AttributeNameTbl" title="Permalink to this definition"></a></dt>
+<dd><p>This function will parse a pf file to extract a tbl with a specific
+key and return a data structure that defines the names and types of
+each column in the input file.</p>
+<dl class="simple">
+<dt>The structure returned is a tuple with three components:</dt><dd><dl class="simple">
+<dt>1 (index 0) python array of attribute names in the original tbl order</dt><dd><p>This is used to parse the text file so the order matters a lot.</p>
+</dd>
+<dt>2 (index 1) parallel array of type names for each attribute.</dt><dd><p>These are actual python type objects that can be used as the
+second arg of isinstance.</p>
+</dd>
+<dt>3 (index 2) python dictionary keyed by name field that defines</dt><dd><p>what a null value is for this attribute.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pf</strong> – AntelopePf object to be parsed</p></li>
+<li><p><strong>tag</strong> – &amp;Tbl tag for section of pf to be parsed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="mspasspy.util.converter.Seismogram2Stream">
 <code class="sig-prename descclassname">mspasspy.util.converter.</code><code class="sig-name descname">Seismogram2Stream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sg</span></em>, <em class="sig-param"><span class="n">chanmap</span><span class="o">=</span><span class="default_value">['E', 'N', 'Z']</span></em>, <em class="sig-param"><span class="n">hang</span><span class="o">=</span><span class="default_value">[90.0, 0.0, 0.0]</span></em>, <em class="sig-param"><span class="n">vang</span><span class="o">=</span><span class="default_value">[90.0, 90.0, 0.0]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#Seismogram2Stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.converter.Seismogram2Stream" title="Permalink to this definition"></a></dt>
 <dd><p>Convert a mspass::Seismogram object to an obspy::Stream with 3 components split apart.</p>
@@ -285,6 +313,82 @@ calling the what method of RuntimeError).</p>
 <dd><p>Convert a stream to timeseries ensemble.
 :param stream: stream input
 :return: converted timeseries ensemble</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.util.converter.Textfile2Dataframe">
+<code class="sig-prename descclassname">mspasspy.util.converter.</code><code class="sig-name descname">Textfile2Dataframe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">separator</span><span class="o">=</span><span class="default_value">'\\s+'</span></em>, <em class="sig-param"><span class="n">type_dict</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header_line</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">attribute_names</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rename_attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attributes_to_use</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">one_to_one</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">parallel</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">insert_column</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#Textfile2Dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.converter.Textfile2Dataframe" title="Permalink to this definition"></a></dt>
+<dd><p>Import a text file representation of a table and store its
+representation as a pandas dataframe.
+Note that even in the parallel environment, a dask dataframe will be
+transfered back to a pandas dataframe for the consistency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – path to text file that is to be read to create the
+table object that is to be processed (internally we use pandas or
+dask dataframes)</p></li>
+<li><p><strong>separator</strong> – <p>The delimiter used for seperating fields,
+the default is “s+”, which is the regular expression of “one or more
+spaces”.</p>
+<blockquote>
+<div><p>For csv file, its value should be set to ‘,’.
+This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
+To learn more details about the usage, check the following links:
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html">https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html</a>
+<a class="reference external" href="https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html">https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</a></p>
+</div></blockquote>
+</p></li>
+<li><p><strong>type_dict</strong> – pairs of each attribute and its type, usedd to validate
+the type of each input item</p></li>
+<li><p><strong>header_line</strong> – defines the line to be used as the attribute names for
+columns, if is &lt; 0, an attribute_names is required. Please note that if an
+attribute_names is provided, the attributes defined in header_line will
+always be override.</p></li>
+<li><p><strong>attribute_names</strong> – This argument must be either a list of (unique)
+string names to define the attribute name tags for each column of the
+input table.   The length of the array must match the number of
+columns in the input table or this function will throw a MsPASSError
+exception.   This argument is None by default which means the
+function will assume the line specified by the “header_line” argument as
+column headers defining the attribute name.  If header_line is less
+than 0 this argument will be required.  When header_line is &gt;= 0
+and this argument (attribute_names) is defined all the names in
+this list will override those stored in the file at the specified
+line number.</p></li>
+<li><p><strong>rename_attributes</strong> – This is expected to be a python dict
+keyed by names matching those defined in the file or attribute_names
+array (i.e. the panda/dataframe column index names) and values defining
+strings to use to override the original names.   That usage, of course,
+is most common to override names in a file.  If you want to change all
+the name use a custom attributes_name array as noted above.  This
+argument is mostly to rename a small number of anomalous names.</p></li>
+<li><p><strong>attributes_to_use</strong> – If used this argument must define a list of
+attribute names that define the subset of the dataframe dataframe
+attributes that are to be saved.  For relational db users this is
+effectively a “select” list of attribute names.  The default is
+None which is taken to mean no selection is to be done.</p></li>
+<li><p><strong>one_to_one</strong> – is an important boolean use to control if the
+output is or is not filtered by rows.  The default is True
+which means every tuple in the input file will create a single row in
+dataframe. (Useful, for example, to construct an wf_miniseed
+collection css3.0 attributes.)  If False the (normally reduced) set
+of attributes defined by attributes_to_use will be filtered with the
+panda/dask dataframe drop_duplicates method.  That approach
+is important, for example, to filter things like Antelope “site” or
+“sitechan” attributes created by a join to something like wfdisc and
+saved as a text file to be processed by this function.</p></li>
+<li><p><strong>parallel</strong> – When true we use the dask dataframe operation.
+The default is false meaning the simpler, identical api panda
+operators are used.</p></li>
+<li><p><strong>insert_column</strong> – a dictionary of new columns to add, and their value(s).</p></li>
+</ul>
+</dd>
+</dl>
+<p>If the content is a single value, it can be passedto define a constant value
+for the entire column of data. The content can also be a list, in that case,
+the list should contain values that are to be set, and it must be the same
+length as the number of tuples in the table.</p>
 </dd></dl>
 
 <dl class="py function">
