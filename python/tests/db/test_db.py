@@ -1145,11 +1145,8 @@ class TestDatabase:
             wf_id, collection="wf_TimeSeries", merge_fill_value=-1
         )
         assert gaps_ts.npts == 8640000
-        freq = collections.Counter(gaps_ts.data)
-        assert (
-            freq[-1]
-            == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
-        )
+        fill_val_cnt = np.isclose(gaps_ts.data, -1).sum()
+        assert fill_val_cnt == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378 # = 315090
         assert len(gaps_ts.elog.get_error_log()) == 1
         assert (
             gaps_ts.elog.get_error_log()[0].message
