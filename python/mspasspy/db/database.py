@@ -9,8 +9,9 @@ import pickle
 import struct
 import urllib.request
 from array import array
-
+import pandas as pd
 import dask.bag as daskbag
+import dask.dataframe as daskdf
 import gridfs
 import pymongo
 import numpy as np
@@ -20,23 +21,38 @@ from obspy import UTCDateTime
 
 from mspasspy.ccore.io import _mseed_file_indexer
 
-from mspasspy.ccore.seismic import (TimeSeries,
-                                    Seismogram,
-                                    _CoreSeismogram,
-                                    DoubleVector,
-                                    TimeSeriesEnsemble,
-                                    SeismogramEnsemble)
-from mspasspy.ccore.utility import (Metadata,
-                                    MsPASSError,
-                                    AtomicType,
-                                    ErrorSeverity,
-                                    dmatrix,
-                                    ProcessingHistory)
+from mspasspy.ccore.seismic import (
+    TimeSeries,
+    Seismogram,
+    _CoreSeismogram,
+    DoubleVector,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+)
+from mspasspy.ccore.utility import (
+    Metadata,
+    MsPASSError,
+    AtomicType,
+    ErrorSeverity,
+    dmatrix,
+    ProcessingHistory,
+)
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
+from mspasspy.util.converter import Textfile2Dataframe
 
 
-def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None,
-                          format='dask', npartitions=None, spark_context=None, data_tag=None):
+def read_distributed_data(
+    db,
+    cursor,
+    mode="promiscuous",
+    normalize=None,
+    load_history=False,
+    exclude_keys=None,
+    format="dask",
+    npartitions=None,
+    spark_context=None,
+    data_tag=None,
+):
     """
     This function should be used to read an entire dataset that is to be handled
     by subsequent parallel operations.  The function can be thought of as
@@ -104,12 +120,20 @@ def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_h
       is "Spark" and a dask 'bag' if format is "dask"
     """
     collection = cursor.collection.name
-    if format == 'spark':
+    if format == "spark":
         list_ = spark_context.parallelize(cursor, numSlices=npartitions)
-        return list_.map(lambda cur: db.read_data(cur, mode, normalize, load_history, exclude_keys, collection, data_tag))
-    elif format == 'dask':
+        return list_.map(
+            lambda cur: db.read_data(
+                cur, mode, normalize, load_history, exclude_keys, collection, data_tag
+            )
+        )
+    elif format == "dask":
         list_ = daskbag.from_sequence(cursor, npartitions=npartitions)
-        return list_.map(lambda cur: db.read_data(cur, mode, normalize, load_history, exclude_keys, collection, data_tag))
+        return list_.map(
+            lambda cur: db.read_data(
+                cur, mode, normalize, load_history, exclude_keys, collection, data_tag
+            )
+        )
     else:
         raise TypeError("Only spark and dask are supported")
 
@@ -168,7 +192,7 @@ class Database(pymongo.database.Database):
 
     def __getstate__(self):
         ret = self.__dict__.copy()
-        ret['_Database__client'] = self.client.__repr__()
+        ret["_Database__client"] = self.client.__repr__()
         return ret
 
     def __setstate__(self, data):
@@ -176,7 +200,8 @@ class Database(pymongo.database.Database):
         # work without it.  Not sure how the symbol MongoClient is required
         # here but it is - ignore if a lint like ide says MongoClient is not used
         from pymongo import MongoClient
-        data['_Database__client'] = eval(data['_Database__client'])
+
+        data["_Database__client"] = eval(data["_Database__client"])
         self.__dict__.update(data)
 
     def set_metadata_schema(self, schema):
@@ -218,7 +243,7 @@ class Database(pymongo.database.Database):
         retrieve_history_record=False,
         merge_method=0,
         merge_fill_value=None,
-        merge_interpolation_samples=0
+        merge_interpolation_samples=0,
     ):
         """
         This is the core MsPASS reader for constructing Seismogram or TimeSeries
@@ -309,14 +334,27 @@ class Database(pymongo.database.Database):
         try:
             wf_collection = self.database_schema.default_name(collection)
         except MsPASSError as err:
-            raise MsPASSError('collection {} is not defined in database schema'.format(collection), 'Invalid') from err
+            raise MsPASSError(
+                "collection {} is not defined in database schema".format(collection),
+                "Invalid",
+            ) from err
         object_type = self.database_schema[wf_collection].data_type()
 
         if object_type not in [TimeSeries, Seismogram]:
-            raise MsPASSError('only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.'.format(object_type, wf_collection), 'Fatal')
+            raise MsPASSError(
+                "only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.".format(
+                    object_type, wf_collection
+                ),
+                "Fatal",
+            )
 
         if mode not in ["promiscuous", "cautious", "pedantic"]:
-            raise MsPASSError('only promiscuous, cautious and pedantic are supported, but {} is requested.'.format(mode), 'Fatal')
+            raise MsPASSError(
+                "only promiscuous, cautious and pedantic are supported, but {} is requested.".format(
+                    mode
+                ),
+                "Fatal",
+            )
 
         if normalize is None:
             normalize = []
@@ -329,25 +367,26 @@ class Database(pymongo.database.Database):
         # We temporarily swap the main collection defined by the metadata schema by
         # the wf_collection. This ensures the method works consistently for any
         # user-specified collection argument.
-        metadata_schema_collection = read_metadata_schema.collection('_id')
+        metadata_schema_collection = read_metadata_schema.collection("_id")
         if metadata_schema_collection != wf_collection:
             temp_metadata_schema = copy.deepcopy(self.metadata_schema)
             temp_metadata_schema[object_type.__name__].swap_collection(
-                metadata_schema_collection, wf_collection, self.database_schema)
+                metadata_schema_collection, wf_collection, self.database_schema
+            )
             read_metadata_schema = temp_metadata_schema[object_type.__name__]
 
         # find the corresponding document according to object id
         col = self[wf_collection]
         try:
-            oid = object_id['_id']
+            oid = object_id["_id"]
         except:
             oid = object_id
-        object_doc = col.find_one({'_id': oid})
+        object_doc = col.find_one({"_id": oid})
         if not object_doc:
             return None
 
         if data_tag:
-            if 'data_tag' not in object_doc or object_doc['data_tag'] != data_tag:
+            if "data_tag" not in object_doc or object_doc["data_tag"] != data_tag:
                 return None
 
         # 1. build metadata as dict
@@ -362,7 +401,9 @@ class Database(pymongo.database.Database):
                 continue
             # FIXME: note that we do not check whether the attributes' type in the database matches the schema's definition.
             # This may or may not be correct. Should test in practice and get user feedbacks.
-            if read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(k):
+            if read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(
+                k
+            ):
                 md[k] = object_doc[k]
 
         # 1.2 read the attributes in the metadata schema
@@ -387,7 +428,7 @@ class Database(pymongo.database.Database):
             ):
                 # try to find the corresponding record in the normalized collection from the database
                 if col not in col_dict:
-                    col_dict[col] = self[col].find_one({'_id': object_doc[col + '_id']})
+                    col_dict[col] = self[col].find_one({"_id": object_doc[col + "_id"]})
                 # might unable to find the normalized document by the normalized_id in the object_doc
                 # we skip reading this attribute
                 if not col_dict[col]:
@@ -424,7 +465,11 @@ class Database(pymongo.database.Database):
                             if self.database_schema[col].is_required(unique_key):
                                 fatal_keys.append(k)
                                 is_dead = True
-                                log_error_msg.append("cautious mode: Required attribute {} has type {}, forbidden by definition and unable to convert".format(k, type(md[k])))
+                                log_error_msg.append(
+                                    "cautious mode: Required attribute {} has type {}, forbidden by definition and unable to convert".format(
+                                        k, type(md[k])
+                                    )
+                                )
 
         elif mode == "pedantic":
             for k in md:
@@ -432,7 +477,11 @@ class Database(pymongo.database.Database):
                     if not isinstance(md[k], read_metadata_schema.type(k)):
                         fatal_keys.append(k)
                         is_dead = True
-                        log_error_msg.append("pedantic mode: {} has type {}, forbidden by definition".format(k, type(md[k])))
+                        log_error_msg.append(
+                            "pedantic mode: {} has type {}, forbidden by definition".format(
+                                k, type(md[k])
+                            )
+                        )
 
         # 1.4 create a mspass object by passing MetaData
         # if not changing the fatal key values, runtime error in construct a mspass object
@@ -450,17 +499,18 @@ class Database(pymongo.database.Database):
             elif read_metadata_schema.type(k) is list:
                 md[k] = []
             elif read_metadata_schema.type(k) is bytes:
-                md[k] = b'\x00'
+                md[k] = b"\x00"
             else:
                 md[k] = None
         if object_type is TimeSeries:
             # FIXME: This is awkward. Need to revisit when we have proper constructors.
             mspass_object = TimeSeries(
-                {k: md[k] for k in md}, np.ndarray([0], dtype=np.float64))
+                {k: md[k] for k in md}, np.ndarray([0], dtype=np.float64)
+            )
             # FIXME: if npts is in the exclude list or not in the schema, the following won't work.
             # May need to consider adding a "required" key to the metadata schema to avoid invalid combination.
-            if 'npts' in object_doc:
-                mspass_object.npts = object_doc['npts']
+            if "npts" in object_doc:
+                mspass_object.npts = object_doc["npts"]
         else:
             mspass_object = Seismogram(_CoreSeismogram(md, False))
 
@@ -468,11 +518,10 @@ class Database(pymongo.database.Database):
         if is_dead:
             mspass_object.kill()
             for msg in log_error_msg:
-                mspass_object.elog.log_error(
-                    'read_data', msg, ErrorSeverity.Invalid)
+                mspass_object.elog.log_error("read_data", msg, ErrorSeverity.Invalid)
         else:
             # 2.load data from different modes
-            storage_mode = object_doc['storage_mode']
+            storage_mode = object_doc["storage_mode"]
             if storage_mode == "file":
                 if "format" in object_doc:
                     self._read_data_from_dfile(
@@ -484,7 +533,7 @@ class Database(pymongo.database.Database):
                         format=object_doc["format"],
                         merge_method=merge_method,
                         merge_fill_value=merge_fill_value,
-                        merge_interpolation_samples=merge_interpolation_samples
+                        merge_interpolation_samples=merge_interpolation_samples,
                     )
                 else:
                     self._read_data_from_dfile(
@@ -494,36 +543,58 @@ class Database(pymongo.database.Database):
                         object_doc["foff"],
                         merge_method=merge_method,
                         merge_fill_value=merge_fill_value,
-                        merge_interpolation_samples=merge_interpolation_samples
+                        merge_interpolation_samples=merge_interpolation_samples,
                     )
             elif storage_mode == "gridfs":
-                self._read_data_from_gridfs(mspass_object, object_doc['gridfs_id'])
+                self._read_data_from_gridfs(mspass_object, object_doc["gridfs_id"])
             elif storage_mode == "url":
                 self._read_data_from_url(
-                    mspass_object, object_doc['url'], format=None if 'format' not in object_doc else object_doc['format'])
+                    mspass_object,
+                    object_doc["url"],
+                    format=None if "format" not in object_doc else object_doc["format"],
+                )
             else:
                 raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
             # 3.load history
             if load_history:
-                history_obj_id_name = self.database_schema.default_name(
-                    'history_object') + '_id'
+                history_obj_id_name = (
+                    self.database_schema.default_name("history_object") + "_id"
+                )
                 if history_obj_id_name in object_doc:
-                    self._load_history(mspass_object, object_doc[history_obj_id_name], alg_name, alg_id, define_as_raw, retrieve_history_record)
+                    self._load_history(
+                        mspass_object,
+                        object_doc[history_obj_id_name],
+                        alg_name,
+                        alg_id,
+                        define_as_raw,
+                        retrieve_history_record,
+                    )
 
             mspass_object.live = True
             mspass_object.clear_modified()
 
             # 4.post complaint elog entries if any
             for msg in log_error_msg:
-                mspass_object.elog.log_error('read_data', msg, ErrorSeverity.Complaint)
+                mspass_object.elog.log_error("read_data", msg, ErrorSeverity.Complaint)
 
         return mspass_object
 
-    def save_data(self, mspass_object, mode="promiscuous",
-                  storage_mode='gridfs', dir=None, dfile=None, format=None, overwrite=False,
-                  exclude_keys=None, collection=None, data_tag=None,
-                  alg_name='save_data', alg_id='0'):
+    def save_data(
+        self,
+        mspass_object,
+        mode="promiscuous",
+        storage_mode="gridfs",
+        dir=None,
+        dfile=None,
+        format=None,
+        overwrite=False,
+        exclude_keys=None,
+        collection=None,
+        data_tag=None,
+        alg_name="save_data",
+        alg_id="0",
+    ):
         """
         Use this method to save an atomic data object (TimeSeries or Seismogram)
         to be managed with MongoDB.  The Metadata are stored as documents in
@@ -551,35 +622,35 @@ class Database(pymongo.database.Database):
         or impossible.  Hence, we recommend a data tag always be used for
         most saves.
 
-        The mode parameter needs to be understood by all users of this 
+        The mode parameter needs to be understood by all users of this
         function.  All modes enforce a schema constraint for "readonly"
-        attributes.   An immutable (readonly) attribute by definition 
-        should not be changed during processing.   During a save 
-        all attributes with a key defined as readonly are tested 
-        with a method in the Metadata container that keeps track of 
-        any Metadata changes.  If a readonly attribute is found to 
+        attributes.   An immutable (readonly) attribute by definition
+        should not be changed during processing.   During a save
+        all attributes with a key defined as readonly are tested
+        with a method in the Metadata container that keeps track of
+        any Metadata changes.  If a readonly attribute is found to
         have been changed it will be renamed with the prefix
-        "READONLYERROR_", saved, and an error posted (e.g. if you try 
-        to alter site_lat (a readonly attribute) in a workflow when 
-        you save the waveform you will find an entry with the key 
-        READONERROR_site_lat.)   In the default 'promiscuous' mode 
-        all other attributes are blindly saved to the database as 
-        name value pairs with no safeties.  In 'cautious' mode we 
-        add a type check.  If the actual type of an attribute does not 
-        match what the schema expect, this method will try to fix the 
-        type error before saving the data.  If the conversion is 
-        successful it will be saved with a complaint error posted 
-        to elog.  If it fails, the attribute will not be saved, an 
-        additional error message will be posted, and the save 
-        algorithm continues.  In 'pedantic' mode, in contrast, all 
-        type errors are considered to invalidate the data.  
-        Similar error messages to that in 'cautious' mode are posted 
-        but any type errors will cause the datum passed as arg 0 
-        to be killed. The lesson is saves can leave entries that 
-        may need to be examined in elog and when really bad will 
-        cause the datum to be marked dead after the save.  
+        "READONLYERROR_", saved, and an error posted (e.g. if you try
+        to alter site_lat (a readonly attribute) in a workflow when
+        you save the waveform you will find an entry with the key
+        READONERROR_site_lat.)   In the default 'promiscuous' mode
+        all other attributes are blindly saved to the database as
+        name value pairs with no safeties.  In 'cautious' mode we
+        add a type check.  If the actual type of an attribute does not
+        match what the schema expect, this method will try to fix the
+        type error before saving the data.  If the conversion is
+        successful it will be saved with a complaint error posted
+        to elog.  If it fails, the attribute will not be saved, an
+        additional error message will be posted, and the save
+        algorithm continues.  In 'pedantic' mode, in contrast, all
+        type errors are considered to invalidate the data.
+        Similar error messages to that in 'cautious' mode are posted
+        but any type errors will cause the datum passed as arg 0
+        to be killed. The lesson is saves can leave entries that
+        may need to be examined in elog and when really bad will
+        cause the datum to be marked dead after the save.
 
-        This method can throw an exception but only for errors in 
+        This method can throw an exception but only for errors in
         usage (i.e. arguments defined incorrectly)
 
         :param mspass_object: the object you want to save.
@@ -662,35 +733,46 @@ class Database(pymongo.database.Database):
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
-        if storage_mode not in ['file', 'gridfs']:
+        if storage_mode not in ["file", "gridfs"]:
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
-        if mode not in ['promiscuous', 'cautious', 'pedantic']:
-            raise MsPASSError('only promiscuous, cautious and pedantic are supported, but {} is requested.'.format(mode), 'Fatal')
+        if mode not in ["promiscuous", "cautious", "pedantic"]:
+            raise MsPASSError(
+                "only promiscuous, cautious and pedantic are supported, but {} is requested.".format(
+                    mode
+                ),
+                "Fatal",
+            )
         # below we try to capture permission issue before writing anything to the database.
         # However, in the case that a storage is almost full, exceptions can still be
         # thrown, which could mess up the database record.
-        if storage_mode == 'file':
+        if storage_mode == "file":
             if not dfile and not dir:
                 # Note the following uses the dir and dfile defined in the data object.
                 # It will ignore these two keys already in the collection in an update
                 # transaction, and the dir and dfile in the collection will be replaced.
-                if ('dir' not in mspass_object) or ('dfile' not in mspass_object):
-                    raise ValueError('dir or dfile is not specified in data object')
-                dir = os.path.abspath(mspass_object['dir'])
-                dfile = mspass_object['dfile']
+                if ("dir" not in mspass_object) or ("dfile" not in mspass_object):
+                    raise ValueError("dir or dfile is not specified in data object")
+                dir = os.path.abspath(mspass_object["dir"])
+                dfile = mspass_object["dfile"]
             else:
                 dir = os.path.abspath(dir)
             fname = os.path.join(dir, dfile)
             if os.path.exists(fname):
                 if not os.access(fname, os.W_OK):
-                    raise PermissionError('No write permission to the save file: {}'.format(fname))
+                    raise PermissionError(
+                        "No write permission to the save file: {}".format(fname)
+                    )
             else:
                 # the following loop finds the top level of existing parents to fname
                 # and check for write permission to that directory.
                 for path_item in pathlib.PurePath(fname).parents:
                     if os.path.exists(path_item):
                         if not os.access(path_item, os.W_OK | os.X_OK):
-                            raise PermissionError('No write permission to the save directory: {}'.format(dir))
+                            raise PermissionError(
+                                "No write permission to the save directory: {}".format(
+                                    dir
+                                )
+                            )
                         break
 
         schema = self.metadata_schema
@@ -705,7 +787,7 @@ class Database(pymongo.database.Database):
         else:
             # This returns a string that is the collection name for this atomic data type
             # A weird construct
-            wf_collection_name = save_schema.collection('_id')
+            wf_collection_name = save_schema.collection("_id")
         wf_collection = self[wf_collection_name]
 
         if mspass_object.live:
@@ -745,19 +827,23 @@ class Database(pymongo.database.Database):
             # is present in the update record.  We want this method
             # to always save the current copy with a new id and so
             # we make sure we clear it
-            if '_id' in copied_metadata:
-                copied_metadata.erase('_id')
+            if "_id" in copied_metadata:
+                copied_metadata.erase("_id")
             # Now remove any readonly data
             for k in copied_metadata.keys():
                 if save_schema.is_defined(k):
                     if save_schema.readonly(k):
                         if k in changed_key_list:
-                            newkey = 'READONLYERROR_'+k
+                            newkey = "READONLYERROR_" + k
                             copied_metadata.change_key(k, newkey)
-                            mspass_object.elog.log_error('Database.save_data',
-                                                         'readonly attribute with key='+k +
-                                                         ' was improperly modified.  Saved changed value with key='+newkey,
-                                                         ErrorSeverity.Complaint)
+                            mspass_object.elog.log_error(
+                                "Database.save_data",
+                                "readonly attribute with key="
+                                + k
+                                + " was improperly modified.  Saved changed value with key="
+                                + newkey,
+                                ErrorSeverity.Complaint,
+                            )
                         else:
                             copied_metadata.erase(k)
             # Done editing, now we convert copied_metadata to a python dict
@@ -777,29 +863,49 @@ class Database(pymongo.database.Database):
                         if isinstance(copied_metadata[k], save_schema.type(k)):
                             insertion_dict[k] = copied_metadata[k]
                         else:
-                            if mode == 'pedantic':
+                            if mode == "pedantic":
                                 mspass_object.kill()
-                                message = 'pedantic mode error:  key='+k
+                                message = "pedantic mode error:  key=" + k
                                 value = copied_metadata[k]
-                                message += ' type of stored value=' + str(type(value)) + ' does not match schema expectation=' + str(save_schema.type(k))
-                                mspass_object.elog.log_error('Database.save_data',
-                                                             'message', ErrorSeverity.Invalid)
+                                message += (
+                                    " type of stored value="
+                                    + str(type(value))
+                                    + " does not match schema expectation="
+                                    + str(save_schema.type(k))
+                                )
+                                mspass_object.elog.log_error(
+                                    "Database.save_data",
+                                    "message",
+                                    ErrorSeverity.Invalid,
+                                )
                             else:
                                 # Careful if another mode is added here.  else means cautious in this logic
                                 try:
                                     # The following convert the actual value in a dict to a required type.
                                     # This is because the return of type() is the class reference.
-                                    insertion_dict[k] = save_schema.type(k)(copied_metadata[k])
+                                    insertion_dict[k] = save_schema.type(k)(
+                                        copied_metadata[k]
+                                    )
                                 except Exception as err:
                                     #  cannot convert required keys -> kill the object
                                     if save_schema.is_required(k):
                                         mspass_object.kill()
-                                        message = 'cautious mode error:  key=' + k
-                                        message += ' Required key value could not be converted to required type=' + str(save_schema.type(k))+' actual type='+str(type(copied_metadata[k]))
-                                        message += '\nPython error exception message caught:\n'
+                                        message = "cautious mode error:  key=" + k
+                                        message += (
+                                            " Required key value could not be converted to required type="
+                                            + str(save_schema.type(k))
+                                            + " actual type="
+                                            + str(type(copied_metadata[k]))
+                                        )
+                                        message += (
+                                            "\nPython error exception message caught:\n"
+                                        )
                                         message += str(err)
-                                        mspass_object.elog.log_error('Database.save',
-                                                                     message, ErrorSeverity.Invalid)
+                                        mspass_object.elog.log_error(
+                                            "Database.save",
+                                            message,
+                                            ErrorSeverity.Invalid,
+                                        )
                                     # cannot convert normal keys -> erase the key
                                     # TODO should we post a Complaint entry to the elog?
                                     else:
@@ -809,33 +915,36 @@ class Database(pymongo.database.Database):
         # on entry.  Data can, however, be killed in metadata section
         # above so we need repeat the test for live
         if mspass_object.live:
-            insertion_dict['storage_mode'] = storage_mode
+            insertion_dict["storage_mode"] = storage_mode
             gridfs_id = None
 
             if storage_mode == "file":
                 # TODO:  be sure this can't throw an exception
                 foff, nbytes = self._save_data_to_dfile(
-                    mspass_object, dir, dfile, format=format)
-                insertion_dict['dir'] = dir
-                insertion_dict['dfile'] = dfile
-                insertion_dict['foff'] = foff
+                    mspass_object, dir, dfile, format=format
+                )
+                insertion_dict["dir"] = dir
+                insertion_dict["dfile"] = dfile
+                insertion_dict["foff"] = foff
                 if format:
-                    insertion_dict['nbytes'] = nbytes
-                    insertion_dict['format'] = format
+                    insertion_dict["nbytes"] = nbytes
+                    insertion_dict["format"] = format
             elif storage_mode == "gridfs":
-                if overwrite and 'gridfs_id' in insertion_dict:
+                if overwrite and "gridfs_id" in insertion_dict:
                     gridfs_id = self._save_data_to_gridfs(
-                        mspass_object, insertion_dict['gridfs_id'])
+                        mspass_object, insertion_dict["gridfs_id"]
+                    )
                 else:
                     gridfs_id = self._save_data_to_gridfs(mspass_object)
-                insertion_dict['gridfs_id'] = gridfs_id
+                insertion_dict["gridfs_id"] = gridfs_id
                 # TODO will support url mode later
                 # elif storage_mode == "url":
                 #    pass
 
             # save history if not empty
-            history_obj_id_name = self.database_schema.default_name(
-                'history_object') + '_id'
+            history_obj_id_name = (
+                self.database_schema.default_name("history_object") + "_id"
+            )
             history_object_id = None
             if mspass_object.is_empty():
                 # Use this trick in update_metadata too. None is needed to
@@ -844,18 +953,17 @@ class Database(pymongo.database.Database):
                 insertion_dict.pop(history_obj_id_name, None)
             else:
                 # optional history save - only done if history container is not empty
-                history_object_id = self._save_history(
-                    mspass_object, alg_name, alg_id)
+                history_object_id = self._save_history(mspass_object, alg_name, alg_id)
                 insertion_dict[history_obj_id_name] = history_object_id
 
             # add tag
             if data_tag:
-                insertion_dict['data_tag'] = data_tag
+                insertion_dict["data_tag"] = data_tag
             else:
                 # We need to clear data tag if was previously defined in
                 # this case or a the old tag will be saved with this datum
-                if 'data_tag' in insertion_dict:
-                    insertion_dict.erase('data_tag')
+                if "data_tag" in insertion_dict:
+                    insertion_dict.erase("data_tag")
             # We don't want an elog_id in the insertion at this point.
             # A option to consider is if we need an update after _save_elog
             # section below to post elog_id back.
@@ -867,8 +975,7 @@ class Database(pymongo.database.Database):
             # save elogs if the size of elog is greater than 0
             elog_id = None
             if mspass_object.elog.size() > 0:
-                elog_id_name = self.database_schema.default_name(
-                    'elog') + '_id'
+                elog_id_name = self.database_schema.default_name("elog") + "_id"
                 # elog ids will be updated in the wf col when saving metadata
                 elog_id = self._save_elog(mspass_object, elog_id=None)
                 insertion_dict[elog_id_name] = elog_id
@@ -878,11 +985,11 @@ class Database(pymongo.database.Database):
             wfid = wf_collection.insert_one(insertion_dict).inserted_id
             # Put wfid into the object's meta as the new definition of
             # the parent of this waveform
-            mspass_object['_id'] = wfid
+            mspass_object["_id"] = wfid
 
             # we may probably set the gridfs_id field in the mspass_object
             if gridfs_id:
-                mspass_object['gridfs_id'] = gridfs_id
+                mspass_object["gridfs_id"] = gridfs_id
             # we may probably set the history_object_id field in the mspass_object
             if history_object_id:
                 mspass_object[history_obj_id_name] = history_object_id
@@ -903,25 +1010,29 @@ class Database(pymongo.database.Database):
                 # elog_id = self._save_elog(mspass_object, elog_id=None)
 
                 # cross reference for elog entry, assoicate the wfid to the elog entry
-                elog_col = self[self.database_schema.default_name('elog')]
-                wf_id_name = wf_collection_name + '_id'
-                filter_ = {'_id': insertion_dict[elog_id_name]}
-                elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
+                elog_col = self[self.database_schema.default_name("elog")]
+                wf_id_name = wf_collection_name + "_id"
+                filter_ = {"_id": insertion_dict[elog_id_name]}
+                elog_col.update_one(
+                    filter_, {"$set": {wf_id_name: mspass_object["_id"]}}
+                )
             # When history is enable we need to do an update to put the
             # wf collection id as a cross-reference.    Any value stored
             # above with saave_history may be incorrect.  We use a
             # stock test with the is_empty method for know if history data is present
             if not mspass_object.is_empty():
-                history_object_col = self[self.database_schema.default_name('history_object')]
-                wf_id_name = wf_collection_name + '_id'
-                filter_ = {'_id': history_object_id}
+                history_object_col = self[
+                    self.database_schema.default_name("history_object")
+                ]
+                wf_id_name = wf_collection_name + "_id"
+                filter_ = {"_id": history_object_id}
                 update_dict = {wf_id_name: wfid}
-                history_object_col.update_one(filter_, {'$set': update_dict})
+                history_object_col.update_one(filter_, {"$set": update_dict})
 
         else:
             # We land here when the input is dead or was killed during a
             # cautious or pedantic mode edit of the metadata.
-            elog_id_name = self.database_schema.default_name('elog') + '_id'
+            elog_id_name = self.database_schema.default_name("elog") + "_id"
             if elog_id_name in mspass_object:
                 old_elog_id = mspass_object[elog_id_name]
             else:
@@ -932,10 +1043,18 @@ class Database(pymongo.database.Database):
 
     # clean the collection fixing any type errors and removing any aliases using the schema currently defined for self
 
-    def clean_collection(self, collection='wf', query=None,
-                         rename_undefined=None, delete_undefined=False, required_xref_list=None,
-                         delete_missing_xref=False, delete_missing_required=False,
-                         verbose=False, verbose_keys=None):
+    def clean_collection(
+        self,
+        collection="wf",
+        query=None,
+        rename_undefined=None,
+        delete_undefined=False,
+        required_xref_list=None,
+        delete_missing_xref=False,
+        delete_missing_required=False,
+        verbose=False,
+        verbose_keys=None,
+    ):
         """
         This method can be used to fix a subset of common database problems
         created during processing that can cause problems if the user tries to
@@ -1002,14 +1121,23 @@ class Database(pymongo.database.Database):
         col = self[self.database_schema.default_name(collection)]
         matchsize = col.count_documents(query)
         # no match documents return
-        if (matchsize == 0):
+        if matchsize == 0:
             return fixed_cnt
         else:
             docs = col.find(query)
             for doc in docs:
-                if '_id' in doc:
+                if "_id" in doc:
                     fixed_attr_cnt = self.clean(
-                        doc['_id'], collection, rename_undefined, delete_undefined, required_xref_list, delete_missing_xref, delete_missing_required, verbose, verbose_keys)
+                        doc["_id"],
+                        collection,
+                        rename_undefined,
+                        delete_undefined,
+                        required_xref_list,
+                        delete_missing_xref,
+                        delete_missing_required,
+                        verbose,
+                        verbose_keys,
+                    )
                     for k, v in fixed_attr_cnt.items():
                         if k not in fixed_cnt:
                             fixed_cnt[k] = 1
@@ -1019,7 +1147,18 @@ class Database(pymongo.database.Database):
         return fixed_cnt
 
     # clean a single document in the given collection atomically
-    def clean(self, document_id, collection='wf', rename_undefined=None, delete_undefined=False, required_xref_list=None, delete_missing_xref=False, delete_missing_required=False, verbose=False, verbose_keys=None):
+    def clean(
+        self,
+        document_id,
+        collection="wf",
+        rename_undefined=None,
+        delete_undefined=False,
+        required_xref_list=None,
+        delete_missing_xref=False,
+        delete_missing_required=False,
+        verbose=False,
+        verbose_keys=None,
+    ):
         """
         This is the atomic level operation for cleaning a single database
         document with one or more common fixes.  The clean_collection method
@@ -1055,14 +1194,26 @@ class Database(pymongo.database.Database):
 
         # validate parameters
         if type(verbose_keys) is not list:
-            raise MsPASSError('verbose_keys should be a list , but {} is requested.'.format(
-                str(type(verbose_keys))), 'Fatal')
+            raise MsPASSError(
+                "verbose_keys should be a list , but {} is requested.".format(
+                    str(type(verbose_keys))
+                ),
+                "Fatal",
+            )
         if type(rename_undefined) is not dict:
-            raise MsPASSError('rename_undefined should be a dict , but {} is requested.'.format(
-                str(type(rename_undefined))), 'Fatal')
+            raise MsPASSError(
+                "rename_undefined should be a dict , but {} is requested.".format(
+                    str(type(rename_undefined))
+                ),
+                "Fatal",
+            )
         if type(required_xref_list) is not list:
-            raise MsPASSError('required_xref_list should be a list , but {} is requested.'.format(
-                str(type(required_xref_list))), 'Fatal')
+            raise MsPASSError(
+                "required_xref_list should be a list , but {} is requested.".format(
+                    str(type(required_xref_list))
+                ),
+                "Fatal",
+            )
 
         print_messages = []
         fixed_cnt = {}
@@ -1071,11 +1222,14 @@ class Database(pymongo.database.Database):
         collection = self.database_schema.default_name(collection)
         object_type = self.database_schema[collection].data_type()
         col = self[collection]
-        doc = col.find_one({'_id': document_id})
+        doc = col.find_one({"_id": document_id})
         if not doc:
             if verbose:
-                print("collection {} document _id: {}, is not found".format(
-                    collection, document_id))
+                print(
+                    "collection {} document _id: {}, is not found".format(
+                        collection, document_id
+                    )
+                )
             return fixed_cnt
 
         # access each key
@@ -1084,8 +1238,7 @@ class Database(pymongo.database.Database):
         for k in doc:
             if k in verbose_keys:
                 log_id_dict[k] = doc[k]
-        log_helper = "collection {} document _id: {}, ".format(
-            collection, doc['_id'])
+        log_helper = "collection {} document _id: {}, ".format(collection, doc["_id"])
         for k, v in log_id_dict.items():
             log_helper += "{}: {}, ".format(k, v)
 
@@ -1113,7 +1266,7 @@ class Database(pymongo.database.Database):
 
             # delete this document
             if delete_missing_required:
-                self.delete_data(doc['_id'], object_type.__name__, True, True, True)
+                self.delete_data(doc["_id"], object_type.__name__, True, True, True)
                 if verbose:
                     print("{}{} the document is deleted.".format(log_helper, error_msg))
                 return fixed_cnt
@@ -1131,7 +1284,9 @@ class Database(pymongo.database.Database):
                     keys_for_checking = []
                     if self.database_schema[collection].has_alias(unique_xref_k):
                         # get the aliases list of the key
-                        keys_for_checking = self.database_schema[collection].aliases(unique_xref_k)
+                        keys_for_checking = self.database_schema[collection].aliases(
+                            unique_xref_k
+                        )
                     keys_for_checking.append(unique_xref_k)
                     # check if any key appear in the doc
                     key_in_doc = False
@@ -1149,8 +1304,7 @@ class Database(pymongo.database.Database):
 
             # delete this document
             if delete_missing_xref:
-                self.delete_data(
-                    doc['_id'], object_type.__name__, True, True, True)
+                self.delete_data(doc["_id"], object_type.__name__, True, True, True)
                 if verbose:
                     print("{}{} the document is deleted.".format(log_helper, error_msg))
                 return fixed_cnt
@@ -1160,7 +1314,7 @@ class Database(pymongo.database.Database):
         # 3. try to fix the mismtach errors in the doc
         update_dict = {}
         for k in doc:
-            if k == '_id':
+            if k == "_id":
                 continue
             # if not the schema keys, ignore schema type check enforcement
             if not self.database_schema[collection].is_defined(k):
@@ -1176,22 +1330,36 @@ class Database(pymongo.database.Database):
             unique_k = self.database_schema[collection].unique_name(k)
             if not isinstance(doc[k], self.database_schema[collection].type(unique_k)):
                 try:
-                    update_dict[unique_k] = self.database_schema[collection].type(unique_k)(doc[k])
-                    print_messages.append("{}attribute {} conversion from {} to {} is done.".format(
-                        log_helper, unique_k, doc[k], self.database_schema[collection].type(unique_k)))
+                    update_dict[unique_k] = self.database_schema[collection].type(
+                        unique_k
+                    )(doc[k])
+                    print_messages.append(
+                        "{}attribute {} conversion from {} to {} is done.".format(
+                            log_helper,
+                            unique_k,
+                            doc[k],
+                            self.database_schema[collection].type(unique_k),
+                        )
+                    )
                     if k in fixed_cnt:
                         fixed_cnt[k] += 1
                     else:
                         fixed_cnt[k] = 1
                 except:
-                    print_messages.append("{}attribute {} conversion from {} to {} cannot be done.".format(
-                        log_helper, unique_k, doc[k], self.database_schema[collection].type(unique_k)))
+                    print_messages.append(
+                        "{}attribute {} conversion from {} to {} cannot be done.".format(
+                            log_helper,
+                            unique_k,
+                            doc[k],
+                            self.database_schema[collection].type(unique_k),
+                        )
+                    )
             else:
                 # attribute values remain the same
                 update_dict[unique_k] = doc[k]
 
         # 4. update the fixed attributes in the document in the collection
-        filter_ = {'_id': doc['_id']}
+        filter_ = {"_id": doc["_id"]}
         # use replace_one here because there may be some aliases in the document
         col.replace_one(filter_, update_dict)
 
@@ -1201,7 +1369,7 @@ class Database(pymongo.database.Database):
 
         return fixed_cnt
 
-    def verify(self, document_id, collection='wf', tests=['xref', 'type', 'undefined']):
+    def verify(self, document_id, collection="wf", tests=["xref", "type", "undefined"]):
         """
         This is an atomic-level operation to search for known issues in
         Metadata stored in a database and needed to construct a valid
@@ -1233,8 +1401,13 @@ class Database(pymongo.database.Database):
         """
         # check tests
         for test in tests:
-            if test not in ['xref', 'type', 'undefined']:
-                raise MsPASSError('only xref, type and undefined are supported, but {} is requested.'.format(test), 'Fatal')
+            if test not in ["xref", "type", "undefined"]:
+                raise MsPASSError(
+                    "only xref, type and undefined are supported, but {} is requested.".format(
+                        test
+                    ),
+                    "Fatal",
+                )
         # remove redundant if happens
         tests = list(set(tests))
 
@@ -1242,30 +1415,38 @@ class Database(pymongo.database.Database):
 
         collection = self.database_schema.default_name(collection)
         col = self[collection]
-        doc = col.find_one({'_id': document_id})
+        doc = col.find_one({"_id": document_id})
 
         if not doc:
-            raise MsPASSError("Database.verify:  objectid=" + str(document_id) + " has no matching document in " + collection, "Fatal")
+            raise MsPASSError(
+                "Database.verify:  objectid="
+                + str(document_id)
+                + " has no matching document in "
+                + collection,
+                "Fatal",
+            )
 
         # run the tests
         for test in tests:
-            if test == 'xref':
+            if test == "xref":
                 # test every possible xref keys in the doc
                 for key in doc:
-                    is_bad_xref_key, is_bad_wf = self._check_xref_key(doc, collection, key)
+                    is_bad_xref_key, is_bad_wf = self._check_xref_key(
+                        doc, collection, key
+                    )
                     if is_bad_xref_key:
                         if key not in problematic_keys:
                             problematic_keys[key] = []
                         problematic_keys[key].append(test)
 
-            elif test == 'undefined':
+            elif test == "undefined":
                 undefined_keys = self._check_undefined_keys(doc, collection)
                 for key in undefined_keys:
                     if key not in problematic_keys:
                         problematic_keys[key] = []
                     problematic_keys[key].append(test)
 
-            elif test == 'type':
+            elif test == "type":
                 # check if there are type mismatch between keys in doc and keys in schema
                 for key in doc:
                     if self._check_mismatch_key(doc, collection, key):
@@ -1310,12 +1491,14 @@ class Database(pymongo.database.Database):
             xref_key_val = doc[unique_xref_key]
 
         # if we can't find document in the normalized collection/invalid xref_key naming -> bad_xref_key
-        if '_id' in unique_xref_key and unique_xref_key.rsplit('_', 1)[1] == 'id':
-            normalized_collection_name = unique_xref_key.rsplit('_', 1)[0]
-            normalized_collection_name = self.database_schema.default_name(normalized_collection_name)
+        if "_id" in unique_xref_key and unique_xref_key.rsplit("_", 1)[1] == "id":
+            normalized_collection_name = unique_xref_key.rsplit("_", 1)[0]
+            normalized_collection_name = self.database_schema.default_name(
+                normalized_collection_name
+            )
             normalized_col = self[normalized_collection_name]
             # try to find the referenced docuement
-            normalized_doc = normalized_col.find_one({'_id': xref_key_val})
+            normalized_doc = normalized_col.find_one({"_id": xref_key_val})
             if not normalized_doc:
                 is_bad_xref_key = True
             # invalid xref_key name
@@ -1341,7 +1524,9 @@ class Database(pymongo.database.Database):
         # change possible aliases to unique keys
         for key in doc:
             if self.database_schema[collection].is_defined(key):
-                unique_doc_keys.append(self.database_schema[collection].unique_name(key))
+                unique_doc_keys.append(
+                    self.database_schema[collection].unique_name(key)
+                )
             else:
                 unique_doc_keys.append(key)
             # check every required keys in the collection schema
@@ -1401,7 +1586,7 @@ class Database(pymongo.database.Database):
         for k in keylist:
             counts[k] = 0
         for doc in cursor:
-            id = doc.pop('_id')
+            id = doc.pop("_id")
             n = 0
             todel = dict()
             for k in keylist:
@@ -1409,11 +1594,13 @@ class Database(pymongo.database.Database):
                     todel[k] = doc[k]
                     val = doc.pop(k)
                     if verbose:
-                        print('Deleted ', val, ' with key=', k, ' from doc with id=', id)
+                        print(
+                            "Deleted ", val, " with key=", k, " from doc with id=", id
+                        )
                     counts[k] += 1
                     n += 1
             if n > 0:
-                dbcol.update_one({'_id': id}, {'$unset': todel})
+                dbcol.update_one({"_id": id}, {"$unset": todel})
         return counts
 
     def _rename_attributes(self, collection, rename_map, query=None, verbose=False):
@@ -1448,7 +1635,7 @@ class Database(pymongo.database.Database):
         for k in rename_map:
             counts[k] = 0
         for doc in cursor:
-            id = doc.pop('_id')
+            id = doc.pop("_id")
             n = 0
             for k in rename_map:
                 n = 0
@@ -1456,14 +1643,18 @@ class Database(pymongo.database.Database):
                     val = doc.pop(k)
                     newkey = rename_map[k]
                     if verbose:
-                        print('Document id=', id)
-                        print('Changed attribute with key=',
-                              k, ' to have new key=', newkey)
-                        print('Attribute value=', val)
+                        print("Document id=", id)
+                        print(
+                            "Changed attribute with key=",
+                            k,
+                            " to have new key=",
+                            newkey,
+                        )
+                        print("Attribute value=", val)
                     doc[newkey] = val
                     counts[k] += 1
                     n += 1
-            dbcol.replace_one({'_id': id}, doc)
+            dbcol.replace_one({"_id": id}, doc)
         return counts
 
     def _fix_attribute_types(self, collection, query=None, verbose=False):
@@ -1500,43 +1691,68 @@ class Database(pymongo.database.Database):
         cursor = dbcol.find(query)
         for doc in cursor:
             n = 0
-            id = doc.pop('_id')
+            id = doc.pop("_id")
             if verbose:
-                print("////////Document id=", id, '/////////')
+                print("////////Document id=", id, "/////////")
             up_d = dict()
             for k in doc:
                 val = doc[k]
                 if not col_schema.is_defined(k):
                     if verbose:
-                        print('Warning:  in doc with id=', id, 'found key=', k, ' that is not defined in the schema')
-                        print('Value of key-value pair=', val)
-                        print('Cannot check type for an unknown attribute name')
+                        print(
+                            "Warning:  in doc with id=",
+                            id,
+                            "found key=",
+                            k,
+                            " that is not defined in the schema",
+                        )
+                        print("Value of key-value pair=", val)
+                        print("Cannot check type for an unknown attribute name")
                     continue
                 if not isinstance(val, col_schema.type(k)):
                     try:
                         newval = col_schema.type(k)(val)
                         up_d[k] = newval
                         if verbose:
-                            print('Changed data for key=', k, ' from ', val, ' to ', newval)
+                            print(
+                                "Changed data for key=",
+                                k,
+                                " from ",
+                                val,
+                                " to ",
+                                newval,
+                            )
                         if k in counts:
                             counts[k] += 1
                         else:
                             counts[k] = 1
                         n += 1
                     except Exception as err:
-                        print("////////Document id=", id, '/////////')
-                        print('WARNING:  could not convert attribute with key=',
-                              k, ' and value=', val, ' to required type=',
-                              col_schema.type(k))
-                        print('This error was thrown and handled:  ')
+                        print("////////Document id=", id, "/////////")
+                        print(
+                            "WARNING:  could not convert attribute with key=",
+                            k,
+                            " and value=",
+                            val,
+                            " to required type=",
+                            col_schema.type(k),
+                        )
+                        print("This error was thrown and handled:  ")
                         print(err)
 
             if n > 0:
-                dbcol.update_one({'_id': id}, {'$set': up_d})
+                dbcol.update_one({"_id": id}, {"$set": up_d})
 
         return counts
 
-    def _check_links(self, xref_key=None, collection="wf", wfquery=None, verbose=False, error_limit=1000):
+    def _check_links(
+        self,
+        xref_key=None,
+        collection="wf",
+        wfquery=None,
+        verbose=False,
+        error_limit=1000,
+    ):
         """
         This function checks for missing cross-referencing ids in a
         specified wf collection (i.e. wf_TimeSeries or wf_Seismogram)
@@ -1584,7 +1800,12 @@ class Database(pymongo.database.Database):
         try:
             wf_collection = self.database_schema.default_name(collection)
         except MsPASSError as err:
-            raise MsPASSError('check_links:  collection {} is not defined in database schema'.format(collection), 'Invalid') from err
+            raise MsPASSError(
+                "check_links:  collection {} is not defined in database schema".format(
+                    collection
+                ),
+                "Invalid",
+            ) from err
 
         if wfquery is None:
             wfquery = {}
@@ -1605,62 +1826,84 @@ class Database(pymongo.database.Database):
 
         # check every key in the xref_key list if it is legal
         for xref_key in xref_keys:
-            unique_xref_key = self.database_schema[wf_collection].unique_name(
-                xref_key)
+            unique_xref_key = self.database_schema[wf_collection].unique_name(xref_key)
             if unique_xref_key not in xref_keys_list:
-                raise MsPASSError('check_links:  illegal value for normalize arg=' + xref_key, 'Fatal')
+                raise MsPASSError(
+                    "check_links:  illegal value for normalize arg=" + xref_key, "Fatal"
+                )
 
         # We accumulate bad ids in this list that is returned
         bad_id_list = list()
         missing_id_list = list()
         # check for each xref_key in xref_keys
         for xref_key in xref_keys:
-            if '_id' in xref_key and xref_key.rsplit('_', 1)[1] == 'id':
-                normalize = xref_key.rsplit('_', 1)[0]
+            if "_id" in xref_key and xref_key.rsplit("_", 1)[1] == "id":
+                normalize = xref_key.rsplit("_", 1)[0]
                 normalize = self.database_schema.default_name(normalize)
             else:
-                raise MsPASSError('check_links:  illegal value for normalize arg=' +
-                                  xref_key + ' should be in the form of xxx_id', 'Fatal')
+                raise MsPASSError(
+                    "check_links:  illegal value for normalize arg="
+                    + xref_key
+                    + " should be in the form of xxx_id",
+                    "Fatal",
+                )
 
             dbwf = self[wf_collection]
             n = dbwf.count_documents(wfquery)
             if n == 0:
-                raise MsPASSError('checklinks:  '+wf_collection
-                                  + ' collection has no data matching query=' +
-                                  str(wfquery),
-                                  'Fatal')
+                raise MsPASSError(
+                    "checklinks:  "
+                    + wf_collection
+                    + " collection has no data matching query="
+                    + str(wfquery),
+                    "Fatal",
+                )
             if verbose:
-                print('Starting cross reference link check for ', wf_collection,
-                      ' collection using id=', xref_key)
-                print('This should resolve links to ',
-                      normalize, ' collection')
+                print(
+                    "Starting cross reference link check for ",
+                    wf_collection,
+                    " collection using id=",
+                    xref_key,
+                )
+                print("This should resolve links to ", normalize, " collection")
 
             cursor = dbwf.find(wfquery)
             for doc in cursor:
-                wfid = doc['_id']
+                wfid = doc["_id"]
                 is_bad_xref_key, is_bad_wf = self._check_xref_key(
-                    doc, wf_collection, xref_key)
+                    doc, wf_collection, xref_key
+                )
                 if is_bad_xref_key:
                     if wfid not in bad_id_list:
                         bad_id_list.append(wfid)
                     if verbose:
-                        print(str(wfid), ' link with ',
-                              str(xref_key), ' failed')
+                        print(str(wfid), " link with ", str(xref_key), " failed")
                     if len(bad_id_list) > error_limit:
-                        raise MsPASSError('checklinks:  number of bad id errors exceeds internal limit', 'Fatal')
+                        raise MsPASSError(
+                            "checklinks:  number of bad id errors exceeds internal limit",
+                            "Fatal",
+                        )
                 if is_bad_wf:
                     if wfid not in missing_id_list:
                         missing_id_list.append(wfid)
                     if verbose:
-                        print(str(wfid), ' is missing required key=', xref_key)
+                        print(str(wfid), " is missing required key=", xref_key)
                     if len(missing_id_list) > error_limit:
-                        raise MsPASSError('checklinks:  number of missing id errors exceeds internal limit', 'Fatal')
-                if len(bad_id_list) >= error_limit or len(missing_id_list) >= error_limit:
+                        raise MsPASSError(
+                            "checklinks:  number of missing id errors exceeds internal limit",
+                            "Fatal",
+                        )
+                if (
+                    len(bad_id_list) >= error_limit
+                    or len(missing_id_list) >= error_limit
+                ):
                     break
 
         return tuple([bad_id_list, missing_id_list])
 
-    def _check_attribute_types(self, collection, query=None, verbose=False, error_limit=1000):
+    def _check_attribute_types(
+        self, collection, query=None, verbose=False, error_limit=1000
+    ):
         """
         This function checks the integrity of all attributes
         found in a specfied collection.  It is designed to detect two
@@ -1715,41 +1958,63 @@ class Database(pymongo.database.Database):
         dbcol = self[collection]
         n = dbcol.count_documents(query)
         if n == 0:
-            raise MsPASSError('check_attribute_types:  query='
-                              + str(query)+' yields zero matching documents',
-                              'Fatal')
+            raise MsPASSError(
+                "check_attribute_types:  query="
+                + str(query)
+                + " yields zero matching documents",
+                "Fatal",
+            )
         cursor = dbcol.find(query)
         bad_type_docs = dict()
         undefined_key_docs = dict()
         for doc in cursor:
             bad_types = dict()
             undefined_keys = dict()
-            id = doc['_id']
+            id = doc["_id"]
             for k in doc:
                 if col_schema.is_defined(k):
                     val = doc[k]
                     if type(val) != col_schema.type(k):
                         bad_types[k] = doc[k]
-                        if(verbose):
-                            print('doc with id=', id,
-                                  ' type mismatch for key=', k)
-                            print('value=', doc[k], ' does not match expected type=',
-                                  col_schema.type(k))
+                        if verbose:
+                            print("doc with id=", id, " type mismatch for key=", k)
+                            print(
+                                "value=",
+                                doc[k],
+                                " does not match expected type=",
+                                col_schema.type(k),
+                            )
                 else:
                     undefined_keys[k] = doc[k]
-                    if(verbose):
-                        print('doc with id=', id, ' has undefined key=', k,
-                              ' with value=', doc[k])
+                    if verbose:
+                        print(
+                            "doc with id=",
+                            id,
+                            " has undefined key=",
+                            k,
+                            " with value=",
+                            doc[k],
+                        )
             if len(bad_types) > 0:
                 bad_type_docs[id] = bad_types
             if len(undefined_keys) > 0:
                 undefined_key_docs[id] = undefined_keys
-            if len(undefined_key_docs) >= error_limit or len(bad_type_docs) >= error_limit:
+            if (
+                len(undefined_key_docs) >= error_limit
+                or len(bad_type_docs) >= error_limit
+            ):
                 break
 
         return tuple([bad_type_docs, undefined_key_docs])
 
-    def _check_required(self, collection='site', keys=['lat', 'lon', 'elev', 'starttime', 'endtime'], query=None, verbose=False, error_limit=100):
+    def _check_required(
+        self,
+        collection="site",
+        keys=["lat", "lon", "elev", "starttime", "endtime"],
+        query=None,
+        verbose=False,
+        error_limit=100,
+    ):
         """
         This function applies a test to assure a list of attributes
         are defined and of the right type.   This function is needed
@@ -1796,8 +2061,11 @@ class Database(pymongo.database.Database):
         no assigned value but were defined as required.
         """
         if len(keys) == 0:
-            raise MsPASSError('check_required:  list of required keys is empty '
-                              + '- nothing to test', 'Fatal')
+            raise MsPASSError(
+                "check_required:  list of required keys is empty "
+                + "- nothing to test",
+                "Fatal",
+            )
         if query is None:
             query = {}
         # The following two can throw MsPASS errors but we let them
@@ -1811,19 +2079,23 @@ class Database(pymongo.database.Database):
         # invalid key for the required list
         for k in keys:
             if not col_schema.is_defined(k):
-                raise MsPASSError('check_required:  schema has no definition for key='
-                                  + k, 'Fatal')
+                raise MsPASSError(
+                    "check_required:  schema has no definition for key=" + k, "Fatal"
+                )
 
         n = dbcol.count_documents(query)
         if n == 0:
-            raise MsPASSError('check_required:  query='
-                              + str(query)+' yields zero matching documents',
-                              'Fatal')
+            raise MsPASSError(
+                "check_required:  query="
+                + str(query)
+                + " yields zero matching documents",
+                "Fatal",
+            )
         undef = dict()
         wrong_types = dict()
         cursor = dbcol.find(query)
         for doc in cursor:
-            id = doc['_id']
+            id = doc["_id"]
             undef_this = list()
             wrong_this = dict()
             for k in keys:
@@ -1841,8 +2113,15 @@ class Database(pymongo.database.Database):
                 break
         return tuple([wrong_types, undef])
 
-    def update_metadata(self, mspass_object, collection=None, mode='cautious',
-                        exclude_keys=None, force_keys=None, alg_name='Database.update_metadata'):
+    def update_metadata(
+        self,
+        mspass_object,
+        collection=None,
+        mode="cautious",
+        exclude_keys=None,
+        force_keys=None,
+        alg_name="Database.update_metadata",
+    ):
         """
         Use this method if you want to save the output of a processing algorithm
         whose output is only posted to metadata.   That can be something as
@@ -1864,25 +2143,25 @@ class Database(pymongo.database.Database):
         posted as an update to the parent wf document to the data object.
 
         A feature of the schema that is considered an unbreakable rule is
-        that any attribute marked "readonly" in the schema cannot by 
-        definition be updated with this method.  It utilizes the same 
-        method for handling this as the save_data method.  That is, 
-        for all "mode" parameters if an key is defined in the schema as 
-        readonly and it is listed as having been modified, it will 
-        be save with a new key creating by adding the prefix 
-        "READONLYERROR_" .  e.g. if we had a site_sta read as 
-        'AAK' but we changed it to 'XYZ' in a workflow, when we tried 
-        to save the data you will find an entry in the document 
+        that any attribute marked "readonly" in the schema cannot by
+        definition be updated with this method.  It utilizes the same
+        method for handling this as the save_data method.  That is,
+        for all "mode" parameters if an key is defined in the schema as
+        readonly and it is listed as having been modified, it will
+        be save with a new key creating by adding the prefix
+        "READONLYERROR_" .  e.g. if we had a site_sta read as
+        'AAK' but we changed it to 'XYZ' in a workflow, when we tried
+        to save the data you will find an entry in the document
         of {'READONLYERROR_site_sta' : 'XYZ'}
 
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
         :type exclude_keys: a :class:`list` of :class:`str`
-        :param force_keys: a list of metadata attributes you want to force 
-         to be updated.   Normally this method will only update attributes 
-         that have been marked as changed since creation of the parent data 
-         object.  If data with these keys is found in the mspass_object they 
+        :param force_keys: a list of metadata attributes you want to force
+         to be updated.   Normally this method will only update attributes
+         that have been marked as changed since creation of the parent data
+         object.  If data with these keys is found in the mspass_object they
          will be added to the update record.
         :type force_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
@@ -1902,45 +2181,59 @@ class Database(pymongo.database.Database):
         :type alg_name: :class:`str`
         :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
         :type alg_id: :class:`bson.objectid.ObjectId`
-        :return: mspass_object data.  Normally this is an unaltered copy 
-          of the data passed through mspass_object.  If there are errors, 
-          however, the elog will contain new messages.  Note any such 
-          messages are volatile and will not be saved to the database 
-          until the save_data method is called. 
+        :return: mspass_object data.  Normally this is an unaltered copy
+          of the data passed through mspass_object.  If there are errors,
+          however, the elog will contain new messages.  Note any such
+          messages are volatile and will not be saved to the database
+          until the save_data method is called.
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
-            raise TypeError(alg_name+":  only TimeSeries and Seismogram are supported\nReceived data of type="+str(type(mspass_object)))
+            raise TypeError(
+                alg_name
+                + ":  only TimeSeries and Seismogram are supported\nReceived data of type="
+                + str(type(mspass_object))
+            )
         # Return a None immediately if the data is marked dead - signal it did nothing
         if mspass_object.dead():
             return None
         if exclude_keys is None:
             exclude_keys = []
-        if mode not in ['promiscuous', 'cautious', 'pedantic']:
+        if mode not in ["promiscuous", "cautious", "pedantic"]:
             raise MsPASSError(
-                alg_name+': only promiscuous, cautious and pedantic are supported, but {} was requested.'.format(mode), 'Fatal')
+                alg_name
+                + ": only promiscuous, cautious and pedantic are supported, but {} was requested.".format(
+                    mode
+                ),
+                "Fatal",
+            )
         if isinstance(mspass_object, TimeSeries):
             save_schema = self.metadata_schema.TimeSeries
         else:
             save_schema = self.metadata_schema.Seismogram
-        if '_id' in mspass_object:
-            wfid = mspass_object['_id']
+        if "_id" in mspass_object:
+            wfid = mspass_object["_id"]
         else:
             raise MsPASSError(
-                alg_name + ': input data object is missing required waveform object id value (_id) - update is not possible without it', 'Fatal')
+                alg_name
+                + ": input data object is missing required waveform object id value (_id) - update is not possible without it",
+                "Fatal",
+            )
         if collection:
             wf_collection_name = collection
         else:
             # This returns a string that is the collection name for this atomic data type
             # A weird construct
-            wf_collection_name = save_schema.collection('_id')
+            wf_collection_name = save_schema.collection("_id")
         wf_collection = self[wf_collection_name]
         # One last check.  Make sure a document with the _id in mspass_object
         # exists.  If it doesn't exist, post an elog about this
-        test_doc = wf_collection.find_one({'_id': wfid})
-        if not test_doc:    # find_one returns None if find fails
-            mspass_object.elog.log_error('Database.update_metadata',
-                                         'Cannot find the document in the wf collection by the _id field in the object',
-                                         ErrorSeverity.Complaint)
+        test_doc = wf_collection.find_one({"_id": wfid})
+        if not test_doc:  # find_one returns None if find fails
+            mspass_object.elog.log_error(
+                "Database.update_metadata",
+                "Cannot find the document in the wf collection by the _id field in the object",
+                ErrorSeverity.Complaint,
+            )
         # FIXME starttime will be automatically created in this function
         self._sync_metadata_before_update(mspass_object)
 
@@ -1970,17 +2263,21 @@ class Database(pymongo.database.Database):
                 copied_metadata.erase(k)
         # Now remove any readonly data
         for k in copied_metadata.keys():
-            if k == '_id':
+            if k == "_id":
                 continue
             if save_schema.is_defined(k):
                 if save_schema.readonly(k):
                     if k in changed_key_list:
-                        newkey = 'READONLYERROR_'+k
+                        newkey = "READONLYERROR_" + k
                         copied_metadata.change_key(k, newkey)
-                        mspass_object.elog.log_error('Database.update_metadata',
-                                                     'readonly attribute with key='+k +
-                                                     ' was improperly modified.  Saved changed value with key='+newkey,
-                                                     ErrorSeverity.Complaint)
+                        mspass_object.elog.log_error(
+                            "Database.update_metadata",
+                            "readonly attribute with key="
+                            + k
+                            + " was improperly modified.  Saved changed value with key="
+                            + newkey,
+                            ErrorSeverity.Complaint,
+                        )
                     else:
                         copied_metadata.erase(k)
         # Done editing, now we convert copied_metadata to a python dict
@@ -2005,67 +2302,102 @@ class Database(pymongo.database.Database):
                         if isinstance(copied_metadata[k], save_schema.type(k)):
                             insertion_dict[k] = copied_metadata[k]
                         else:
-                            if mode == 'pedantic':
-                                message = 'pedantic mode error:  key='+k
+                            if mode == "pedantic":
+                                message = "pedantic mode error:  key=" + k
                                 value = copied_metadata[k]
-                                message += ' type of stored value='+str(type(value))+' does not match schema expectation=' + str(
-                                    save_schema.type(k)) + '\nAttempting to correct type mismatch'
-                                mspass_object.elog.log_error(alg_name,
-                                                             message, ErrorSeverity.Complaint)
+                                message += (
+                                    " type of stored value="
+                                    + str(type(value))
+                                    + " does not match schema expectation="
+                                    + str(save_schema.type(k))
+                                    + "\nAttempting to correct type mismatch"
+                                )
+                                mspass_object.elog.log_error(
+                                    alg_name, message, ErrorSeverity.Complaint
+                                )
                             # Note we land here for both pedantic and cautious but not promiscuous
                             try:
                                 # The following convert the actual value in a dict to a required type.
                                 # This is because the return of type() is the class reference.
                                 old_value = copied_metadata[k]
-                                insertion_dict[k] = save_schema.type(
-                                    k)(copied_metadata[k])
+                                insertion_dict[k] = save_schema.type(k)(
+                                    copied_metadata[k]
+                                )
                                 new_value = insertion_dict[k]
-                                message = 'Had to convert type of data with key='+k + \
-                                    ' from '+str(type(old_value)) + \
-                                    ' to '+str(type(new_value))
+                                message = (
+                                    "Had to convert type of data with key="
+                                    + k
+                                    + " from "
+                                    + str(type(old_value))
+                                    + " to "
+                                    + str(type(new_value))
+                                )
                                 mspass_object.elog.log_error(
-                                    alg_name, message, ErrorSeverity.Complaint)
+                                    alg_name, message, ErrorSeverity.Complaint
+                                )
                             except Exception as err:
-                                message = 'Cannot update data with key=' + k + '\n'
-                                if mode == 'pedantic':
+                                message = "Cannot update data with key=" + k + "\n"
+                                if mode == "pedantic":
                                     # pedantic mode
                                     mspass_object.kill()
-                                    message += 'pedantic mode error: key value could not be converted to required type=' + \
-                                        str(save_schema.type(
-                                            k))+' actual type='+str(type(copied_metadata[k])) + ', the object is killed'
+                                    message += (
+                                        "pedantic mode error: key value could not be converted to required type="
+                                        + str(save_schema.type(k))
+                                        + " actual type="
+                                        + str(type(copied_metadata[k]))
+                                        + ", the object is killed"
+                                    )
                                 else:
                                     # cautious mode
                                     if save_schema.is_required(k):
                                         mspass_object.kill()
-                                        message += ' Required key value could not be converted to required type=' + \
-                                            str(save_schema.type(
-                                                k))+' actual type='+str(type(copied_metadata[k])) + ', the object is killed'
+                                        message += (
+                                            " Required key value could not be converted to required type="
+                                            + str(save_schema.type(k))
+                                            + " actual type="
+                                            + str(type(copied_metadata[k]))
+                                            + ", the object is killed"
+                                        )
                                     else:
-                                        message += ' Value stored has type=' + \
-                                            str(type(copied_metadata[k])) + ' which cannot be converted to type=' + str(
-                                                save_schema.type(k)) + '\n'
-                                message += 'Data for this key will not be changed or set in the database'
-                                message += '\nPython error exception message caught:\n'
+                                        message += (
+                                            " Value stored has type="
+                                            + str(type(copied_metadata[k]))
+                                            + " which cannot be converted to type="
+                                            + str(save_schema.type(k))
+                                            + "\n"
+                                        )
+                                message += "Data for this key will not be changed or set in the database"
+                                message += "\nPython error exception message caught:\n"
                                 message += str(err)
                                 # post elog entry into the mspass_object
-                                if mode == 'pedantic' or save_schema.is_required(k):
+                                if mode == "pedantic" or save_schema.is_required(k):
                                     mspass_object.elog.log_error(
-                                        alg_name, message, ErrorSeverity.Invalid)
+                                        alg_name, message, ErrorSeverity.Invalid
+                                    )
                                 else:
                                     mspass_object.elog.log_error(
-                                        alg_name, message, ErrorSeverity.Complaint)
+                                        alg_name, message, ErrorSeverity.Complaint
+                                    )
                                 # The None arg2 cause pop to not throw
                                 # an exception if k isn't defined - a bit ambigous in the try block
                                 insertion_dict.pop(k, None)
                     else:
-                        if mode == 'pedantic':
-                            mspass_object.elog.log_error(alg_name,
-                                                         'cannot update data with key='+k+' because it is not defined in the schema',
-                                                         ErrorSeverity.Complaint)
+                        if mode == "pedantic":
+                            mspass_object.elog.log_error(
+                                alg_name,
+                                "cannot update data with key="
+                                + k
+                                + " because it is not defined in the schema",
+                                ErrorSeverity.Complaint,
+                            )
                         else:
-                            mspass_object.elog.log_error(alg_name,
-                                                         'key='+k+' is not defined in the schema.  Updating record, but this may cause downstream problems',
-                                                         ErrorSeverity.Complaint)
+                            mspass_object.elog.log_error(
+                                alg_name,
+                                "key="
+                                + k
+                                + " is not defined in the schema.  Updating record, but this may cause downstream problems",
+                                ErrorSeverity.Complaint,
+                            )
                             insertion_dict[k] = copied_metadata[k]
 
         # ugly python indentation with this logic.  We always land here in
@@ -2073,40 +2405,48 @@ class Database(pymongo.database.Database):
         # if it is dead, it's considered something really bad happens, we should not update the object
         if mspass_object.live:
             wf_collection.update_one(
-                {'_id': wfid}, {'$set': insertion_dict}, upsert=True)
+                {"_id": wfid}, {"$set": insertion_dict}, upsert=True
+            )
         return mspass_object
 
-    def update_data(self, mspass_object, collection=None, mode='cautious',
-                    exclude_keys=None, force_keys=None,
-                    alg_id='0', alg_name='Database.update_data'):
+    def update_data(
+        self,
+        mspass_object,
+        collection=None,
+        mode="cautious",
+        exclude_keys=None,
+        force_keys=None,
+        alg_id="0",
+        alg_name="Database.update_data",
+    ):
         """
-        Updates both metadata and sample data corresponding to an input data 
-        object.  
+        Updates both metadata and sample data corresponding to an input data
+        object.
 
-        Since storage of data objects in MsPASS is broken into multiple 
-        collections and storage methods, doing a full data update has some 
-        complexity.   This method handles the problem differently for the 
+        Since storage of data objects in MsPASS is broken into multiple
+        collections and storage methods, doing a full data update has some
+        complexity.   This method handles the problem differently for the
         different pieces:
-            1. An update is performed on the parent wf collection document. 
+            1. An update is performed on the parent wf collection document.
                That update makes use of the related Database method
-               called update_metadata. 
-            2. If the error log is not empty it is saved.  
+               called update_metadata.
+            2. If the error log is not empty it is saved.
             3. If the history container has contents it is saved.
             4. The sample data is the thorniest problem. Currently this
-               method will only do sample updates for data stored in 
-               the mongodb gridfs system.   With files containing multiple 
-               waveforms it would be necessary to append to the files and 
-               this could create a blaat problem with large data sets so 
-               we do not currently support that type of update. 
+               method will only do sample updates for data stored in
+               the mongodb gridfs system.   With files containing multiple
+               waveforms it would be necessary to append to the files and
+               this could create a blaat problem with large data sets so
+               we do not currently support that type of update.
 
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
         :type exclude_keys: a :class:`list` of :class:`str`
-        :param force_keys: a list of metadata attributes you want to force 
-         to be updated.   Normally this method will only update attributes 
-         that have been marked as changed since creation of the parent data 
-         object.  If data with these keys is found in the mspass_object they 
+        :param force_keys: a list of metadata attributes you want to force
+         to be updated.   Normally this method will only update attributes
+         that have been marked as changed since creation of the parent data
+         object.  If data with these keys is found in the mspass_object they
          will be added to the update record.
         :type force_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
@@ -2126,10 +2466,10 @@ class Database(pymongo.database.Database):
         :type alg_name: :class:`str`
         :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
         :type alg_id: :class:`bson.objectid.ObjectId`
-        :return: mspass_object data.  Normally this is an unaltered copy 
-          of the data passed through mspass_object.  If there are errors, 
-          however, the elog will contain new messages.  All such messages, 
-          howevever, should be saved in the elog collection because elog 
+        :return: mspass_object data.  Normally this is an unaltered copy
+          of the data passed through mspass_object.  If there are errors,
+          however, the elog will contain new messages.  All such messages,
+          howevever, should be saved in the elog collection because elog
           is the last collection updated.
         """
         schema = self.metadata_schema
@@ -2142,9 +2482,14 @@ class Database(pymongo.database.Database):
         # are other warning messages and add a summary if there were any
         logsize0 = mspass_object.elog.size()
         try:
-            self.update_metadata(mspass_object, collection=collection,
-                                 mode=mode, exclude_keys=exclude_keys, force_keys=force_keys,
-                                 alg_name=alg_name)
+            self.update_metadata(
+                mspass_object,
+                collection=collection,
+                mode=mode,
+                exclude_keys=exclude_keys,
+                force_keys=force_keys,
+                alg_name=alg_name,
+            )
         except:
             raise
         logsize = mspass_object.elog.size()
@@ -2152,69 +2497,77 @@ class Database(pymongo.database.Database):
         # problem originated from update_data - probably not really needed
         # but better to be though I think
         if logsize > logsize0:
-            mspass_object.elog.log_error(alg_name,
-                                         'update_metadata posted {nerr} messages during update'.format(
-                                             nerr=(logsize-logsize0)),
-                                         ErrorSeverity.Complaint)
+            mspass_object.elog.log_error(
+                alg_name,
+                "update_metadata posted {nerr} messages during update".format(
+                    nerr=(logsize - logsize0)
+                ),
+                ErrorSeverity.Complaint,
+            )
 
         # optional handle history - we need to update the wf record later with this value
         # if it is set
         update_record = dict()
-        history_obj_id_name = self.database_schema.default_name(
-            'history_object') + '_id'
+        history_obj_id_name = (
+            self.database_schema.default_name("history_object") + "_id"
+        )
         history_object_id = None
         if not mspass_object.is_empty():
-            history_object_id = self._save_history(
-                mspass_object, alg_name, alg_id)
+            history_object_id = self._save_history(mspass_object, alg_name, alg_id)
             update_record[history_obj_id_name] = history_object_id
 
         # Now handle update of sample data.  The gridfs method used here
         # handles that correctly based on the gridfs id.
         if mspass_object.live:
-            if 'storage_mode' in mspass_object:
-                storage_mode = mspass_object['storage_mode']
-                if not storage_mode == 'gridfs':
-                    mspass_object.elog.log_error(alg_name,
-                                                 'found storage_mode='+storage_mode +
-                                                 '  Only support update to gridfs.  Changing to gridfs storage for sample data update',
-                                                 ErrorSeverity.Complaint)
-                    mspass_object['storage_mode'] = 'gridfs'
+            if "storage_mode" in mspass_object:
+                storage_mode = mspass_object["storage_mode"]
+                if not storage_mode == "gridfs":
+                    mspass_object.elog.log_error(
+                        alg_name,
+                        "found storage_mode="
+                        + storage_mode
+                        + "  Only support update to gridfs.  Changing to gridfs storage for sample data update",
+                        ErrorSeverity.Complaint,
+                    )
+                    mspass_object["storage_mode"] = "gridfs"
             else:
-                mspass_object.elog.log_error(alg_name,
-                                             'storage_mode attribute was not set in Metadata of this object - setting as gridfs for update',
-                                             ErrorSeverity.Complaint)
-                mspass_object['storage_mode'] = 'gridfs'
-                update_record['storage_mode'] = 'gridfs'
+                mspass_object.elog.log_error(
+                    alg_name,
+                    "storage_mode attribute was not set in Metadata of this object - setting as gridfs for update",
+                    ErrorSeverity.Complaint,
+                )
+                mspass_object["storage_mode"] = "gridfs"
+                update_record["storage_mode"] = "gridfs"
             # This logic depends upon a feature of _save_data_to_gridfs.
             # if the gridfs_id parameter is defined it does an update
             # when it is not defined it creates a new gridfs "file". In both
             # cases the id needed to get the right datum is returned
-            if 'gridfs_id' in mspass_object:
+            if "gridfs_id" in mspass_object:
                 gridfs_id = self._save_data_to_gridfs(
-                    mspass_object, mspass_object['gridfs_id'])
+                    mspass_object, mspass_object["gridfs_id"]
+                )
             else:
                 gridfs_id = self._save_data_to_gridfs(mspass_object)
-            mspass_object['gridfs_id'] = gridfs_id
+            mspass_object["gridfs_id"] = gridfs_id
             # There is a possible efficiency gain right here.  Not sure if
             # gridfs_id is altered when the sample data are updated in place.
             # if we can be sure the returned gridfs_id is the same as the
             # input in that case, we would omit gridfs_id from the update
             # record and most data would not require the final update
             # transaction below
-            update_record['gridfs_id'] = gridfs_id
+            update_record["gridfs_id"] = gridfs_id
             # should define wf_collection here because if the mspass_object is dead
             if collection:
                 wf_collection_name = collection
             else:
                 # This returns a string that is the collection name for this atomic data type
                 # A weird construct
-                wf_collection_name = save_schema.collection('_id')
+                wf_collection_name = save_schema.collection("_id")
             wf_collection = self[wf_collection_name]
 
             elog_id = None
             if mspass_object.elog.size() > 0:
-                elog_id_name = self.database_schema.default_name(
-                    'elog') + '_id'
+                elog_id_name = self.database_schema.default_name("elog") + "_id"
                 # FIXME I think here we should check if elog_id field exists in the mspass_object
                 # and we should update the elog entry if mspass_object already had one
                 if elog_id_name in mspass_object:
@@ -2227,16 +2580,17 @@ class Database(pymongo.database.Database):
 
                 # update elog collection
                 # we have to do the xref to wf collection like this too
-                elog_col = self[self.database_schema.default_name('elog')]
-                wf_id_name = wf_collection_name + '_id'
-                filter_ = {'_id': elog_id}
+                elog_col = self[self.database_schema.default_name("elog")]
+                wf_id_name = wf_collection_name + "_id"
+                filter_ = {"_id": elog_id}
                 elog_col.update_one(
-                    filter_, {'$set': {wf_id_name: mspass_object['_id']}})
+                    filter_, {"$set": {wf_id_name: mspass_object["_id"]}}
+                )
             # finally we need to update the wf document if we set anything
             # in update_record
             if len(update_record):
-                filter_ = {'_id': mspass_object['_id']}
-                wf_collection.update_one(filter_, {'$set': update_record})
+                filter_ = {"_id": mspass_object["_id"]}
+                wf_collection.update_one(filter_, {"$set": update_record})
                 # we may probably set the elog_id field in the mspass_object
                 if elog_id:
                     mspass_object[elog_id_name] = elog_id
@@ -2245,7 +2599,7 @@ class Database(pymongo.database.Database):
                     mspass_object[history_obj_id_name] = history_object_id
         else:
             # Dead data land here
-            elog_id_name = self.database_schema.default_name('elog') + '_id'
+            elog_id_name = self.database_schema.default_name("elog") + "_id"
             if elog_id_name in mspass_object:
                 old_elog_id = mspass_object[elog_id_name]
             else:
@@ -2254,9 +2608,19 @@ class Database(pymongo.database.Database):
 
         return mspass_object
 
-    def read_ensemble_data(self, objectid_list, ensemble_metadata={},
-                           mode='promiscuous', normalize=None, load_history=False,
-                           exclude_keys=None, collection='wf', data_tag=None, alg_name='read_ensemble_data', alg_id='0'):
+    def read_ensemble_data(
+        self,
+        objectid_list,
+        ensemble_metadata={},
+        mode="promiscuous",
+        normalize=None,
+        load_history=False,
+        exclude_keys=None,
+        collection="wf",
+        data_tag=None,
+        alg_name="read_ensemble_data",
+        alg_id="0",
+    ):
         """
         Reads an subset of a dataset with some logical grouping into an Ensemble container.
 
@@ -2301,8 +2665,12 @@ class Database(pymongo.database.Database):
         object_type = self.database_schema[wf_collection].data_type()
 
         if object_type not in [TimeSeries, Seismogram]:
-            raise MsPASSError('only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.'.format(
-                object_type, wf_collection), 'Fatal')
+            raise MsPASSError(
+                "only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.".format(
+                    object_type, wf_collection
+                ),
+                "Fatal",
+            )
 
         # if objectid_list is a cursor, convert the cursor to a list
         if isinstance(objectid_list, pymongo.cursor.Cursor):
@@ -2317,12 +2685,21 @@ class Database(pymongo.database.Database):
             ensemble[k] = ensemble_metadata[k]
 
         for i in objectid_list:
-            data = self.read_data(i, mode=mode, normalize=normalize, load_history=load_history, exclude_keys=exclude_keys, collection=wf_collection,
-                                  data_tag=data_tag, alg_name=alg_name, alg_id=alg_id)
+            data = self.read_data(
+                i,
+                mode=mode,
+                normalize=normalize,
+                load_history=load_history,
+                exclude_keys=exclude_keys,
+                collection=wf_collection,
+                data_tag=data_tag,
+                alg_name=alg_name,
+                alg_id=alg_id,
+            )
             if data:
                 ensemble.member.append(data)
 
-        # explicitly mark empty ensembles dead.  Otherwise assume if 
+        # explicitly mark empty ensembles dead.  Otherwise assume if
         # we got this far we can mark it live
         if len(ensemble.member) > 0:
             ensemble.set_live()
@@ -2330,8 +2707,20 @@ class Database(pymongo.database.Database):
             ensemble.kill()
         return ensemble
 
-    def save_ensemble_data(self, ensemble_object, mode="promiscuous", storage_mode='gridfs', dir_list=None, dfile_list=None,
-                           exclude_keys=None, exclude_objects=None, collection=None, data_tag=None, alg_name='save_ensemble_data', alg_id='0'):
+    def save_ensemble_data(
+        self,
+        ensemble_object,
+        mode="promiscuous",
+        storage_mode="gridfs",
+        dir_list=None,
+        dfile_list=None,
+        exclude_keys=None,
+        exclude_objects=None,
+        collection=None,
+        data_tag=None,
+        alg_name="save_ensemble_data",
+        alg_id="0",
+    ):
         """
         Save an Ensemble container of a group of data objecs to MongoDB.
 
@@ -2354,7 +2743,7 @@ class Database(pymongo.database.Database):
         indexing scheme.
 
         A final feature of note is that an ensemble can be marked dead.
-        If the entire ensemble is set dead this function returns 
+        If the entire ensemble is set dead this function returns
         immediately and does nothing.
 
 
@@ -2387,20 +2776,38 @@ class Database(pymongo.database.Database):
         # sync_metadata is a ccore method of the Ensemble  template
         ensemble_object.sync_metadata()
 
-        if storage_mode in ['file', 'gridfs']:
+        if storage_mode in ["file", "gridfs"]:
             j = 0
             for i in range(len(ensemble_object.member)):
                 if i not in exclude_objects:
-                    self.save_data(ensemble_object.member[i], mode=mode, storage_mode=storage_mode, dir=dir_list[j],
-                                   dfile=dfile_list[j], exclude_keys=exclude_keys, collection=collection, data_tag=data_tag, alg_name=alg_name, alg_id=alg_id)
+                    self.save_data(
+                        ensemble_object.member[i],
+                        mode=mode,
+                        storage_mode=storage_mode,
+                        dir=dir_list[j],
+                        dfile=dfile_list[j],
+                        exclude_keys=exclude_keys,
+                        collection=collection,
+                        data_tag=data_tag,
+                        alg_name=alg_name,
+                        alg_id=alg_id,
+                    )
                     j += 1
         elif storage_mode == "url":
             pass
         else:
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
-    def update_ensemble_metadata(self, ensemble_object, mode='promiscuous', exclude_keys=None, exclude_objects=None,
-                                 collection=None, alg_name='update_ensemble_metadata', alg_id='0'):
+    def update_ensemble_metadata(
+        self,
+        ensemble_object,
+        mode="promiscuous",
+        exclude_keys=None,
+        exclude_objects=None,
+        collection=None,
+        alg_name="update_ensemble_metadata",
+        alg_id="0",
+    ):
         """
         Updates (or save if it's new) the mspasspy ensemble object, including saving the processing history, elogs
         and metadata attributes.
@@ -2436,11 +2843,22 @@ class Database(pymongo.database.Database):
         for i in range(len(ensemble_object.member)):
             # Skip data listed for exclusion and those that are marked dead
             if i not in exclude_objects and ensemble_object.member[i].live:
-                self.update_metadata(ensemble_object.member[i], mode=mode, exclude_keys=exclude_keys, collection=collection,
-                                     alg_name=alg_name)
+                self.update_metadata(
+                    ensemble_object.member[i],
+                    mode=mode,
+                    exclude_keys=exclude_keys,
+                    collection=collection,
+                    alg_name=alg_name,
+                )
 
-    def delete_data(self, object_id, object_type, remove_unreferenced_files=False,
-                    clear_history=True, clear_elog=True):
+    def delete_data(
+        self,
+        object_id,
+        object_type,
+        remove_unreferenced_files=False,
+        clear_history=True,
+        clear_elog=True,
+    ):
         """
         Delete method for handling mspass data objects (TimeSeries and Seismograms).
 
@@ -2473,40 +2891,43 @@ class Database(pymongo.database.Database):
 
         # get the wf collection name in the schema
         schema = self.metadata_schema
-        if object_type == 'TimeSeries':
+        if object_type == "TimeSeries":
             detele_schema = schema.TimeSeries
         else:
             detele_schema = schema.Seismogram
-        wf_collection_name = detele_schema.collection('_id')
+        wf_collection_name = detele_schema.collection("_id")
 
         # user might pass a mspass object by mistake
         try:
-            oid = object_id['_id']
+            oid = object_id["_id"]
         except:
             oid = object_id
 
         # fetch the document by the given object id
-        object_doc = self[wf_collection_name].find_one({'_id': oid})
+        object_doc = self[wf_collection_name].find_one({"_id": oid})
         if not object_doc:
             raise MsPASSError(
-                'Could not find document in wf collection by _id: {}.'.format(oid), 'Invalid')
+                "Could not find document in wf collection by _id: {}.".format(oid),
+                "Invalid",
+            )
 
         # delete the document just retrieved from the database
-        self[wf_collection_name].delete_one({'_id': oid})
+        self[wf_collection_name].delete_one({"_id": oid})
 
         # delete gridfs/file depends on storage mode, and unreferenced files
-        storage_mode = object_doc['storage_mode']
+        storage_mode = object_doc["storage_mode"]
         if storage_mode == "gridfs":
             gfsh = gridfs.GridFS(self)
-            if gfsh.exists(object_doc['gridfs_id']):
-                gfsh.delete(object_doc['gridfs_id'])
+            if gfsh.exists(object_doc["gridfs_id"]):
+                gfsh.delete(object_doc["gridfs_id"])
 
-        elif storage_mode in ['file'] and remove_unreferenced_files:
-            dir_name = object_doc['dir']
-            dfile_name = object_doc['dfile']
+        elif storage_mode in ["file"] and remove_unreferenced_files:
+            dir_name = object_doc["dir"]
+            dfile_name = object_doc["dfile"]
             # find if there are any remaining matching documents with dir and dfile
             match_doc_cnt = self[wf_collection_name].count_documents(
-                {'dir': dir_name, 'dfile': dfile_name})
+                {"dir": dir_name, "dfile": dfile_name}
+            )
             # delete this file
             if match_doc_cnt == 0:
                 fname = os.path.join(dir_name, dfile_name)
@@ -2514,26 +2935,27 @@ class Database(pymongo.database.Database):
 
         # clear history
         if clear_history:
-            history_collection = self.database_schema.default_name(
-                'history_object')
-            history_obj_id_name = history_collection + '_id'
+            history_collection = self.database_schema.default_name("history_object")
+            history_obj_id_name = history_collection + "_id"
             if history_obj_id_name in object_doc:
                 self[history_collection].delete_one(
-                    {'_id': object_doc[history_obj_id_name]})
+                    {"_id": object_doc[history_obj_id_name]}
+                )
 
         # clear elog
         if clear_elog:
-            wf_id_name = wf_collection_name + '_id'
-            elog_collection = self.database_schema.default_name('elog')
-            elog_id_name = elog_collection + '_id'
+            wf_id_name = wf_collection_name + "_id"
+            elog_collection = self.database_schema.default_name("elog")
+            elog_id_name = elog_collection + "_id"
             # delete the one by elog_id in mspass object
             if elog_id_name in object_doc:
-                self[elog_collection].delete_one(
-                    {'_id': object_doc[elog_id_name]})
+                self[elog_collection].delete_one({"_id": object_doc[elog_id_name]})
             # delete the documents with the wf_id equals to obejct['_id']
             self[elog_collection].delete_many({wf_id_name: oid})
 
-    def _load_collection_metadata(self, mspass_object, exclude_keys, include_undefined=False, collection=None):
+    def _load_collection_metadata(
+        self, mspass_object, exclude_keys, include_undefined=False, collection=None
+    ):
         """
         Master Private Method
 
@@ -2555,15 +2977,20 @@ class Database(pymongo.database.Database):
         """
         if not mspass_object.live:
             raise MsPASSError(
-                "only live mspass object can load metadata", ErrorSeverity.Invalid)
+                "only live mspass object can load metadata", ErrorSeverity.Invalid
+            )
 
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise MsPASSError(
-                "only TimeSeries and Seismogram are supported", ErrorSeverity.Invalid)
+                "only TimeSeries and Seismogram are supported", ErrorSeverity.Invalid
+            )
 
-        if collection == 'channel' and isinstance(mspass_object, (Seismogram, SeismogramEnsemble)):
+        if collection == "channel" and isinstance(
+            mspass_object, (Seismogram, SeismogramEnsemble)
+        ):
             raise MsPASSError(
-                "channel data can not be loaded into Seismogram", ErrorSeverity.Invalid)
+                "channel data can not be loaded into Seismogram", ErrorSeverity.Invalid
+            )
 
         # 1. get the metadata schema based on the mspass object type
         if isinstance(mspass_object, TimeSeries):
@@ -2571,25 +2998,35 @@ class Database(pymongo.database.Database):
         else:
             metadata_def = self.metadata_schema.Seismogram
 
-        wf_collection = metadata_def.collection('_id')
+        wf_collection = metadata_def.collection("_id")
         object_type = self.database_schema[wf_collection].data_type()
         if object_type not in [TimeSeries, Seismogram]:
-            raise MsPASSError('only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.'.format(
-                object_type, wf_collection), 'Fatal')
+            raise MsPASSError(
+                "only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.".format(
+                    object_type, wf_collection
+                ),
+                "Fatal",
+            )
         wf_collection_metadata_schema = self.metadata_schema[object_type.__name__]
 
-        collection_id = collection + '_id'
+        collection_id = collection + "_id"
         # 2. get the collection_id from the current mspass_object
         if not mspass_object.is_defined(collection_id):
-            raise MsPASSError("no {} in the mspass object".format(
-                collection_id), ErrorSeverity.Invalid)
+            raise MsPASSError(
+                "no {} in the mspass object".format(collection_id),
+                ErrorSeverity.Invalid,
+            )
         object_doc_id = mspass_object[collection_id]
 
         # 3. find the unique document associated with this source id in the source collection
-        object_doc = self[collection].find_one({'_id': object_doc_id})
+        object_doc = self[collection].find_one({"_id": object_doc_id})
         if object_doc == None:
-            raise MsPASSError("no match found in {} collection for source_id = {}".format(
-                collection, object_doc_id), ErrorSeverity.Invalid)
+            raise MsPASSError(
+                "no match found in {} collection for source_id = {}".format(
+                    collection, object_doc_id
+                ),
+                ErrorSeverity.Invalid,
+            )
 
         # 4. use this document to update the mspass object
         key_dict = set()
@@ -2599,7 +3036,8 @@ class Database(pymongo.database.Database):
                 if k not in exclude_keys and not include_undefined:
                     key_dict.add(self.database_schema[col].unique_name(k))
                     mspass_object.put(
-                        k, object_doc[self.database_schema[col].unique_name(k)])
+                        k, object_doc[self.database_schema[col].unique_name(k)]
+                    )
 
         # 5. add extra keys if include_undefined is true
         if include_undefined:
@@ -2607,7 +3045,12 @@ class Database(pymongo.database.Database):
                 if k not in key_dict:
                     mspass_object.put(k, object_doc[k])
 
-    def load_source_metadata(self, mspass_object, exclude_keys=['serialized_event', 'magnitude_type'], include_undefined=False):
+    def load_source_metadata(
+        self,
+        mspass_object,
+        exclude_keys=["serialized_event", "magnitude_type"],
+        include_undefined=False,
+    ):
         """
         Reads metadata from the source collection and loads standard attributes in source collection to the data passed as mspass_object.
         The method will only work if mspass_object has the source_id attribute set to link it to a unique document in source.
@@ -2631,13 +3074,17 @@ class Database(pymongo.database.Database):
         """
         if isinstance(mspass_object, (TimeSeries, Seismogram)):
             self._load_collection_metadata(
-                mspass_object, exclude_keys, include_undefined, 'source')
+                mspass_object, exclude_keys, include_undefined, "source"
+            )
         if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
             for member_object in mspass_object.member:
                 self._load_collection_metadata(
-                    member_object, exclude_keys, include_undefined, 'source')
+                    member_object, exclude_keys, include_undefined, "source"
+                )
 
-    def load_site_metadata(self, mspass_object, exclude_keys=None, include_undefined=False):
+    def load_site_metadata(
+        self, mspass_object, exclude_keys=None, include_undefined=False
+    ):
         """
         Reads metadata from the site collection and loads standard attributes in site collection to the data passed as mspass_object.
         The method will only work if mspass_object has the site_id attribute set to link it to a unique document in source.
@@ -2663,13 +3110,20 @@ class Database(pymongo.database.Database):
             exclude_keys = []
         if isinstance(mspass_object, (TimeSeries, Seismogram)):
             self._load_collection_metadata(
-                mspass_object, exclude_keys, include_undefined, 'site')
+                mspass_object, exclude_keys, include_undefined, "site"
+            )
         if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
             for member_object in mspass_object.member:
                 self._load_collection_metadata(
-                    member_object, exclude_keys, include_undefined, 'site')
+                    member_object, exclude_keys, include_undefined, "site"
+                )
 
-    def load_channel_metadata(self, mspass_object, exclude_keys=['serialized_channel_data'], include_undefined=False):
+    def load_channel_metadata(
+        self,
+        mspass_object,
+        exclude_keys=["serialized_channel_data"],
+        include_undefined=False,
+    ):
         """
         Reads metadata from the channel collection and loads standard attributes in channel collection to the data passed as mspass_object.
         The method will only work if mspass_object has the site_id attribute set to link it to a unique document in source.
@@ -2692,11 +3146,13 @@ class Database(pymongo.database.Database):
         """
         if isinstance(mspass_object, (TimeSeries, Seismogram)):
             self._load_collection_metadata(
-                mspass_object, exclude_keys, include_undefined, 'channel')
+                mspass_object, exclude_keys, include_undefined, "channel"
+            )
         if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
             for member_object in mspass_object.member:
                 self._load_collection_metadata(
-                    member_object, exclude_keys, include_undefined, 'channel')
+                    member_object, exclude_keys, include_undefined, "channel"
+                )
 
     @staticmethod
     def _sync_metadata_before_update(mspass_object):
@@ -2717,21 +3173,21 @@ class Database(pymongo.database.Database):
         # This will need to be modified if we ever expand time types beyond two
         if mspass_object.time_is_relative():
             if mspass_object.shifted():
-                mspass_object['startime_shift'] = mspass_object.time_reference()
-                mspass_object['utc_convertible'] = True
+                mspass_object["startime_shift"] = mspass_object.time_reference()
+                mspass_object["utc_convertible"] = True
             else:
-                mspass_object['utc_convertible'] = False
-            mspass_object['time_standard'] = 'Relative'
+                mspass_object["utc_convertible"] = False
+            mspass_object["time_standard"] = "Relative"
         else:
-            mspass_object['utc_convertible'] = True
-            mspass_object['time_standard'] = 'UTC'
+            mspass_object["utc_convertible"] = True
+            mspass_object["time_standard"] = "UTC"
         # If it is a seismogram, we need to update the tmatrix in the metadata to be consistent with the internal tmatrix
         if isinstance(mspass_object, Seismogram):
             t_matrix = mspass_object.tmatrix
             mspass_object.tmatrix = t_matrix
             # also update the cardinal and orthogonal attributes
-            mspass_object['cardinal'] = mspass_object.cardinal()
-            mspass_object['orthogonal'] = mspass_object.orthogonal()
+            mspass_object["cardinal"] = mspass_object.cardinal()
+            mspass_object["orthogonal"] = mspass_object.orthogonal()
 
     def _save_history(self, mspass_object, alg_name=None, alg_id=None, collection=None):
         """
@@ -2754,15 +3210,15 @@ class Database(pymongo.database.Database):
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
         # get the wf id name in the schema
-        wf_id_name = update_metadata_def.collection('_id') + '_id'
+        wf_id_name = update_metadata_def.collection("_id") + "_id"
 
         # get the wf id in the mspass object
         oid = None
-        if '_id' in mspass_object:
-            oid = mspass_object['_id']
+        if "_id" in mspass_object:
+            oid = mspass_object["_id"]
 
         if not collection:
-            collection = self.database_schema.default_name('history_object')
+            collection = self.database_schema.default_name("history_object")
         history_col = self[collection]
 
         proc_history = ProcessingHistory(mspass_object)
@@ -2778,27 +3234,38 @@ class Database(pymongo.database.Database):
         # todo save jobname jobid when global history module is done
         try:
             # construct the insert dict for saving into database
-            insert_dict = {'_id': current_uuid,
-                           'processing_history': history_binary,
-                           'alg_id': alg_id,
-                           'alg_name': alg_name}
+            insert_dict = {
+                "_id": current_uuid,
+                "processing_history": history_binary,
+                "alg_id": alg_id,
+                "alg_name": alg_name,
+            }
             if oid:
                 insert_dict[wf_id_name] = oid
             # insert new one
             history_col.insert_one(insert_dict)
         except pymongo.errors.DuplicateKeyError as e:
             raise MsPASSError(
-                "The history object to be saved has a duplicate uuid", "Fatal") from e
+                "The history object to be saved has a duplicate uuid", "Fatal"
+            ) from e
 
         # clear the history chain of the mspass object
         mspass_object.clear_history()
         # set_as_origin with uuid set to the newly generated id
-        mspass_object.set_as_origin(
-            alg_name, alg_id, current_uuid, atomic_type)
+        mspass_object.set_as_origin(alg_name, alg_id, current_uuid, atomic_type)
 
         return current_uuid
 
-    def _load_history(self, mspass_object, history_object_id, alg_name=None, alg_id=None, define_as_raw=False, collection=None, retrieve_history_record=False):
+    def _load_history(
+        self,
+        mspass_object,
+        history_object_id,
+        alg_name=None,
+        alg_id=None,
+        define_as_raw=False,
+        collection=None,
+        retrieve_history_record=False,
+    ):
         """
         Load (in place) the processing history into a mspasspy object.
 
@@ -2814,20 +3281,21 @@ class Database(pymongo.database.Database):
         else:
             atomic_type = AtomicType.SEISMOGRAM
         if not collection:
-            collection = self.database_schema.default_name('history_object')
+            collection = self.database_schema.default_name("history_object")
         # load history if set True
-        res = self[collection].find_one({'_id': history_object_id})
+        res = self[collection].find_one({"_id": history_object_id})
         # retrieve_history_record
         if retrieve_history_record:
-            mspass_object.load_history(pickle.loads(res['processing_history']))
+            mspass_object.load_history(pickle.loads(res["processing_history"]))
         else:
             # set the associated history_object_id as the uuid of the origin
             if not alg_name:
-                alg_name = '0'
+                alg_name = "0"
             if not alg_id:
-                alg_id = '0'
+                alg_id = "0"
             mspass_object.set_as_origin(
-                alg_name, alg_id, history_object_id, atomic_type, define_as_raw)
+                alg_name, alg_id, history_object_id, atomic_type, define_as_raw
+            )
 
     def _save_elog(self, mspass_object, elog_id=None, collection=None):
         """
@@ -2848,45 +3316,55 @@ class Database(pymongo.database.Database):
             update_metadata_def = self.metadata_schema.Seismogram
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
-        wf_id_name = update_metadata_def.collection('_id') + '_id'
+        wf_id_name = update_metadata_def.collection("_id") + "_id"
 
         if not collection:
-            collection = self.database_schema.default_name('elog')
+            collection = self.database_schema.default_name("elog")
 
         # TODO: Need to discuss whether the _id should be linked in a dead elog entry. It
         # might be confusing to link the dead elog to an alive wf record.
         oid = None
-        if '_id' in mspass_object:
-            oid = mspass_object['_id']
+        if "_id" in mspass_object:
+            oid = mspass_object["_id"]
 
         elog = mspass_object.elog
         n = elog.size()
         if n != 0:
             logdata = []
-            docentry = {'logdata': logdata}
+            docentry = {"logdata": logdata}
             errs = elog.get_error_log()
             jobid = elog.get_job_id()
             for x in errs:
-                logdata.append({'job_id': jobid, 'algorithm': x.algorithm, 'badness': str(x.badness),
-                                'error_message': x.message, 'process_id': x.p_id})
+                logdata.append(
+                    {
+                        "job_id": jobid,
+                        "algorithm": x.algorithm,
+                        "badness": str(x.badness),
+                        "error_message": x.message,
+                        "process_id": x.p_id,
+                    }
+                )
             if oid:
                 docentry[wf_id_name] = oid
 
             if not mspass_object.live:
-                docentry['tombstone'] = dict(mspass_object)
+                docentry["tombstone"] = dict(mspass_object)
 
             if elog_id:
                 # append elog
-                elog_doc = self[collection].find_one({'_id': elog_id})
+                elog_doc = self[collection].find_one({"_id": elog_id})
                 # only append when previous elog exists
                 if elog_doc:
                     # if the same object was updated twice, the elog entry will be duplicated
                     # the following list comprehension line removes the duplicates and preserves
                     # the order. May need some practice to see if such a behavior makes sense.
-                    [elog_doc['logdata'].append(
-                        x) for x in logdata if x not in elog_doc['logdata']]
-                    docentry['logdata'] = elog_doc['logdata']
-                    self[collection].delete_one({'_id': elog_id})
+                    [
+                        elog_doc["logdata"].append(x)
+                        for x in logdata
+                        if x not in elog_doc["logdata"]
+                    ]
+                    docentry["logdata"] = elog_doc["logdata"]
+                    self[collection].delete_one({"_id": elog_id})
                 # note that is should be impossible for the old elog to have tombstone entry
                 # so we ignore the handling of that attribute here.
                 ret_elog_id = self[collection].insert_one(docentry).inserted_id
@@ -2897,7 +3375,15 @@ class Database(pymongo.database.Database):
 
     @staticmethod
     def _read_data_from_dfile(
-        mspass_object, dir, dfile, foff, nbytes=0, format=None, merge_method=0, merge_fill_value=None, merge_interpolation_samples=0
+        mspass_object,
+        dir,
+        dfile,
+        foff,
+        nbytes=0,
+        format=None,
+        merge_method=0,
+        merge_fill_value=None,
+        merge_interpolation_samples=0,
     ):
         """
         Read the stored data from a file and loads it into a mspasspy object.
@@ -2918,25 +3404,25 @@ class Database(pymongo.database.Database):
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
         fname = os.path.join(dir, dfile)
-        with open(fname, mode='rb') as fh:
+        with open(fname, mode="rb") as fh:
             fh.seek(foff)
             if not format:
-                float_array = array('d')
+                float_array = array("d")
                 if isinstance(mspass_object, TimeSeries):
-                    if not mspass_object.is_defined('npts'):
+                    if not mspass_object.is_defined("npts"):
                         raise KeyError("npts is not defined")
-                    float_array.frombytes(
-                        fh.read(mspass_object.get('npts') * 8))
+                    float_array.frombytes(fh.read(mspass_object.get("npts") * 8))
                     mspass_object.data = DoubleVector(float_array)
                 elif isinstance(mspass_object, Seismogram):
-                    if not mspass_object.is_defined('npts'):
+                    if not mspass_object.is_defined("npts"):
                         raise KeyError("npts is not defined")
-                    float_array.frombytes(fh.read(mspass_object.get('npts') * 8 * 3))
-                    mspass_object.data = dmatrix(3, mspass_object.get('npts'))
+                    float_array.frombytes(fh.read(mspass_object.get("npts") * 8 * 3))
+                    mspass_object.data = dmatrix(3, mspass_object.get("npts"))
                     for i in range(3):
-                        for j in range(mspass_object.get('npts')):
-                            mspass_object.data[i, j] = float_array[i *
-                                                                   mspass_object.get('npts') + j]
+                        for j in range(mspass_object.get("npts")):
+                            mspass_object.data[i, j] = float_array[
+                                i * mspass_object.get("npts") + j
+                            ]
             else:
                 flh = io.BytesIO(fh.read(nbytes))
                 st = obspy.read(flh, format=format)
@@ -2945,10 +3431,16 @@ class Database(pymongo.database.Database):
                     # but here we want only one TimeSeries, we merge these Trace objects and fill values for gaps
                     # we post a complaint elog entry to the mspass_object if there are gaps in the stream
                     if len(st) > 1:
-                        mspass_object.elog.log_error('read_data',
-                                             'There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps.',
-                                             ErrorSeverity.Complaint)
-                    st = st.merge(method=merge_method, fill_value=merge_fill_value, interpolation_samples=merge_interpolation_samples)
+                        mspass_object.elog.log_error(
+                            "read_data",
+                            "There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps.",
+                            ErrorSeverity.Complaint,
+                        )
+                    st = st.merge(
+                        method=merge_method,
+                        fill_value=merge_fill_value,
+                        interpolation_samples=merge_interpolation_samples,
+                    )
                     tr = st[0]
                     # Now we convert this to a TimeSeries and load other Metadata
                     # Note the exclusion copy and the test verifying net,sta,chan,
@@ -2986,7 +3478,7 @@ class Database(pymongo.database.Database):
             raise TypeError("only TimeSeries and Seismogram are supported")
         fname = os.path.join(dir, dfile)
         os.makedirs(os.path.dirname(fname), exist_ok=True)
-        with open(fname, mode='a+b') as fh:
+        with open(fname, mode="a+b") as fh:
             foff = fh.seek(0, 2)
             if not format:
                 if isinstance(mspass_object, TimeSeries):
@@ -3043,16 +3535,18 @@ class Database(pymongo.database.Database):
         if isinstance(mspass_object, TimeSeries):
             mspass_object.data = DoubleVector(x)
         elif isinstance(mspass_object, Seismogram):
-            if not mspass_object.is_defined('npts'):
+            if not mspass_object.is_defined("npts"):
                 raise KeyError("npts is not defined")
-            if len(x) != (3 * mspass_object['npts']):
-                emess = "Size mismatch in sample data. Number of points in gridfs file = %d but expected %d" \
-                        % (len(x), (3 * mspass_object['npts']))
+            if len(x) != (3 * mspass_object["npts"]):
+                emess = (
+                    "Size mismatch in sample data. Number of points in gridfs file = %d but expected %d"
+                    % (len(x), (3 * mspass_object["npts"]))
+                )
                 raise ValueError(emess)
-            mspass_object.data = dmatrix(3, mspass_object['npts'])
+            mspass_object.data = dmatrix(3, mspass_object["npts"])
             for i in range(3):
-                for j in range(mspass_object['npts']):
-                    mspass_object.data[i, j] = x[i * mspass_object['npts'] + j]
+                for j in range(mspass_object["npts"]):
+                    mspass_object.data[i, j] = x[i * mspass_object["npts"] + j]
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
 
@@ -3073,8 +3567,7 @@ class Database(pymongo.database.Database):
             flh = io.BytesIO(response.read())
         # Catch HTTP errors.
         except Exception as e:
-            raise MsPASSError("Error while downloading: %s" %
-                              url, "Fatal") from e
+            raise MsPASSError("Error while downloading: %s" % url, "Fatal") from e
 
         st = obspy.read(flh, format=format)
         if isinstance(mspass_object, TimeSeries):
@@ -3115,7 +3608,8 @@ class Database(pymongo.database.Database):
                 chan.latitude,
                 chan.longitude,
                 chan.elevation,
-                chan.depth]
+                chan.depth,
+            ]
         return alllocs
 
     def _site_is_not_in_db(self, record_to_test):
@@ -3138,29 +3632,29 @@ class Database(pymongo.database.Database):
         """
         dbsite = self.site
         queryrecord = {}
-        queryrecord['net'] = record_to_test['net']
-        queryrecord['sta'] = record_to_test['sta']
-        queryrecord['loc'] = record_to_test['loc']
+        queryrecord["net"] = record_to_test["net"]
+        queryrecord["sta"] = record_to_test["sta"]
+        queryrecord["loc"] = record_to_test["loc"]
         matches = dbsite.find(queryrecord)
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
         nrec = matches.count()
-        if (nrec <= 0):
+        if nrec <= 0:
             return True
         else:
             # Now do the linear search on time for a match
-            st0 = record_to_test['starttime']
-            et0 = record_to_test['endtime']
+            st0 = record_to_test["starttime"]
+            et0 = record_to_test["endtime"]
             time_fudge_factor = 10.0
             stp = st0 + time_fudge_factor
             stm = st0 - time_fudge_factor
             etp = et0 + time_fudge_factor
             etm = et0 - time_fudge_factor
             for x in matches:
-                sttest = x['starttime']
-                ettest = x['endtime']
-                if (sttest > stm and sttest < stp and ettest > etm and ettest < etp):
+                sttest = x["starttime"]
+                ettest = x["endtime"]
+                if sttest > stm and sttest < stp and ettest > etm and ettest < etp:
                     return False
             return True
 
@@ -3177,30 +3671,30 @@ class Database(pymongo.database.Database):
         """
         dbchannel = self.channel
         queryrecord = {}
-        queryrecord['net'] = record_to_test['net']
-        queryrecord['sta'] = record_to_test['sta']
-        queryrecord['loc'] = record_to_test['loc']
-        queryrecord['chan'] = record_to_test['chan']
+        queryrecord["net"] = record_to_test["net"]
+        queryrecord["sta"] = record_to_test["sta"]
+        queryrecord["loc"] = record_to_test["loc"]
+        queryrecord["chan"] = record_to_test["chan"]
         matches = dbchannel.find(queryrecord)
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
         nrec = matches.count()
-        if (nrec <= 0):
+        if nrec <= 0:
             return True
         else:
             # Now do the linear search on time for a match
-            st0 = record_to_test['starttime']
-            et0 = record_to_test['endtime']
+            st0 = record_to_test["starttime"]
+            et0 = record_to_test["endtime"]
             time_fudge_factor = 10.0
             stp = st0 + time_fudge_factor
             stm = st0 - time_fudge_factor
             etp = et0 + time_fudge_factor
             etm = et0 - time_fudge_factor
             for x in matches:
-                sttest = x['starttime']
-                ettest = x['endtime']
-                if (sttest > stm and sttest < stp and ettest > etm and ettest < etp):
+                sttest = x["starttime"]
+                ettest = x["endtime"]
+                if sttest > stm and sttest < stp and ettest > etm and ettest < etp:
                     return False
             return True
 
@@ -3219,9 +3713,7 @@ class Database(pymongo.database.Database):
         else:
             return t
 
-    def save_inventory(self, inv,
-                       networks_to_exclude=['SY'],
-                       verbose=False):
+    def save_inventory(self, inv, networks_to_exclude=["SY"], verbose=False):
         """
         Saves contents of all components of an obspy inventory
         object to documents in the site and channel collections.
@@ -3331,7 +3823,7 @@ class Database(pymongo.database.Database):
                 # Assume loc code of 0 is same as rest
                 # loc=_extract_loc_code(chanlist[0])
                 # TODO Delete when sure we don't need to keep the full thing
-                #picklestr = pickle.dumps(x)
+                # picklestr = pickle.dumps(x)
                 all_locs = locdata.keys()
                 for loc in all_locs:
                     # If multiple loc codes are present on the second pass
@@ -3339,9 +3831,9 @@ class Database(pymongo.database.Database):
                     # in the previous pass - an obnoxious property of insert_one
                     # This initialization guarantees an empty container
                     rec = dict()
-                    rec['loc'] = loc
-                    rec['net'] = net
-                    rec['sta'] = sta
+                    rec["loc"] = loc
+                    rec["net"] = net
+                    rec["sta"] = sta
                     lkey = loc
                     loc_tuple = locdata[lkey]
                     # We use these attributes linked to loc code rather than
@@ -3357,41 +3849,80 @@ class Database(pymongo.database.Database):
                     loc_stime = self._handle_null_starttime(loc_stime)
                     loc_etime = loc_tuple[1]
                     loc_etime = self._handle_null_endtime(loc_etime)
-                    rec['lat'] = loc_lat
-                    rec['lon'] = loc_lon
+                    rec["lat"] = loc_lat
+                    rec["lon"] = loc_lon
                     # This is MongoDBs way to set a geographic
                     # point - allows spatial queries.  Note longitude
                     # must be first of the pair
-                    rec['coords'] = [loc_lat, loc_lon]
-                    rec['elev'] = loc_elev
-                    rec['edepth'] = loc_edepth
-                    rec['starttime'] = starttime.timestamp
-                    rec['endtime'] = endtime.timestamp
-                    if latitude != loc_lat or longitude != loc_lon or elevation != loc_elev:
-                        print(net, ":", sta, ":", loc,
-                              " (Warning):  station section position is not consistent with loc code position")
+                    rec["coords"] = [loc_lat, loc_lon]
+                    rec["elev"] = loc_elev
+                    rec["edepth"] = loc_edepth
+                    rec["starttime"] = starttime.timestamp
+                    rec["endtime"] = endtime.timestamp
+                    if (
+                        latitude != loc_lat
+                        or longitude != loc_lon
+                        or elevation != loc_elev
+                    ):
+                        print(
+                            net,
+                            ":",
+                            sta,
+                            ":",
+                            loc,
+                            " (Warning):  station section position is not consistent with loc code position",
+                        )
                         print("Data in loc code section overrides station section")
-                        print("Station section coordinates:  ",
-                              latitude, longitude, elevation)
-                        print("loc code section coordinates:  ",
-                              loc_lat, loc_lon, loc_elev)
+                        print(
+                            "Station section coordinates:  ",
+                            latitude,
+                            longitude,
+                            elevation,
+                        )
+                        print(
+                            "loc code section coordinates:  ",
+                            loc_lat,
+                            loc_lon,
+                            loc_elev,
+                        )
                     if self._site_is_not_in_db(rec):
                         result = dbcol.insert_one(rec)
                         # Note this sets site_id to an ObjectID for the insertion
                         # We use that to define a duplicate we tag as site_id
                         site_id = result.inserted_id
-                        self.site.update_one({'_id': site_id}, {
-                                             '$set': {'site_id': site_id}})
+                        self.site.update_one(
+                            {"_id": site_id}, {"$set": {"site_id": site_id}}
+                        )
                         n_site_saved += 1
                         if verbose:
-                            print("net:sta:loc=", net, ":", sta, ":", loc,
-                                  "for time span ", starttime, " to ", endtime,
-                                  " added to site collection")
+                            print(
+                                "net:sta:loc=",
+                                net,
+                                ":",
+                                sta,
+                                ":",
+                                loc,
+                                "for time span ",
+                                starttime,
+                                " to ",
+                                endtime,
+                                " added to site collection",
+                            )
                     else:
                         if verbose:
-                            print("net:sta:loc=", net, ":", sta, ":", loc,
-                                  "for time span ", starttime, " to ", endtime,
-                                  " is already in site collection - ignored")
+                            print(
+                                "net:sta:loc=",
+                                net,
+                                ":",
+                                sta,
+                                ":",
+                                loc,
+                                "for time span ",
+                                starttime,
+                                " to ",
+                                endtime,
+                                " is already in site collection - ignored",
+                            )
                     n_site_processed += 1
                     # done with site now handle channel
                     # Because many features are shared we can copy rec
@@ -3401,26 +3932,26 @@ class Database(pymongo.database.Database):
                     # keep them only in the site collection
                     # del chanrec['serialized_inventory']
                     for chan in chans:
-                        chanrec['chan'] = chan.code
+                        chanrec["chan"] = chan.code
                         # the Dip attribute in a stationxml file
                         # is like strike-dip and relative to horizontal
                         # line with positive down.  vang is the
                         # css30 attribute that is spherical coordinate
                         # theta angle
-                        chanrec['vang'] = chan.dip + 90.0
-                        chanrec['hang'] = chan.azimuth
-                        chanrec['edepth'] = chan.depth
+                        chanrec["vang"] = chan.dip + 90.0
+                        chanrec["hang"] = chan.azimuth
+                        chanrec["edepth"] = chan.depth
                         st = chan.start_date
                         et = chan.end_date
                         # as above be careful of null values for either end of the time range
                         st = self._handle_null_starttime(st)
                         et = self._handle_null_endtime(et)
-                        chanrec['starttime'] = st.timestamp
-                        chanrec['endtime'] = et.timestamp
+                        chanrec["starttime"] = st.timestamp
+                        chanrec["endtime"] = et.timestamp
                         n_chan_processed += 1
-                        if (self._channel_is_not_in_db(chanrec)):
+                        if self._channel_is_not_in_db(chanrec):
                             picklestr = pickle.dumps(chan)
-                            chanrec['serialized_channel_data'] = picklestr
+                            chanrec["serialized_channel_data"] = picklestr
                             result = dbchannel.insert_one(chanrec)
                             # insert_one has an obnoxious behavior in that it
                             # inserts the ObjectId in chanrec.  In this loop
@@ -3431,21 +3962,44 @@ class Database(pymongo.database.Database):
                             # we actually use the return instead of pulling from
                             # chanrec
                             idobj = result.inserted_id
-                            dbchannel.update_one({'_id': idobj},
-                                                 {'$set': {'chan_id': idobj}})
-                            del chanrec['_id']
+                            dbchannel.update_one(
+                                {"_id": idobj}, {"$set": {"chan_id": idobj}}
+                            )
+                            del chanrec["_id"]
                             n_chan_saved += 1
                             if verbose:
-                                print("net:sta:loc:chan=",
-                                      net, ":", sta, ":", loc, ":", chan.code,
-                                      "for time span ", st, " to ", et,
-                                      " added to channel collection")
+                                print(
+                                    "net:sta:loc:chan=",
+                                    net,
+                                    ":",
+                                    sta,
+                                    ":",
+                                    loc,
+                                    ":",
+                                    chan.code,
+                                    "for time span ",
+                                    st,
+                                    " to ",
+                                    et,
+                                    " added to channel collection",
+                                )
                         else:
                             if verbose:
-                                print('net:sta:loc:chan=',
-                                      net, ":", sta, ":", loc, ":", chan.code,
-                                      "for time span ", st, " to ", et,
-                                      " already in channel collection - ignored")
+                                print(
+                                    "net:sta:loc:chan=",
+                                    net,
+                                    ":",
+                                    sta,
+                                    ":",
+                                    loc,
+                                    ":",
+                                    chan.code,
+                                    "for time span ",
+                                    st,
+                                    " to ",
+                                    et,
+                                    " already in channel collection - ignored",
+                                )
 
         # Tried this to create a geospatial index.   Failing
         # in later debugging for unknown reason.   Decided it
@@ -3489,23 +4043,23 @@ class Database(pymongo.database.Database):
         """
         dbsite = self.site
         query = {}
-        if (net != None):
-            query['net'] = net
-        if (sta != None):
-            query['sta'] = sta
-        if (loc != None):
-            query['loc'] = loc
-        if (time != None):
-            query['starttime'] = {"$lt": time}
-            query['endtime'] = {"$gt": time}
+        if net != None:
+            query["net"] = net
+        if sta != None:
+            query["sta"] = sta
+        if loc != None:
+            query["loc"] = loc
+        if time != None:
+            query["starttime"] = {"$lt": time}
+            query["endtime"] = {"$gt": time}
         matchsize = dbsite.count_documents(query)
         result = Inventory()
-        if (matchsize == 0):
+        if matchsize == 0:
             return None
         else:
             stations = dbsite.find(query)
             for s in stations:
-                serialized = s['serialized_inventory']
+                serialized = s["serialized_inventory"]
                 netw = pickle.loads(serialized)
                 # It might be more efficient to build a list of
                 # Network objects but here we add them one
@@ -3514,7 +4068,7 @@ class Database(pymongo.database.Database):
                 result.extend([netw])
         return result
 
-    def get_seed_site(self, net, sta, loc='NONE', time=-1.0):
+    def get_seed_site(self, net, sta, loc="NONE", time=-1.0):
         """
         The site collection is assumed to have a one to one
         mapping of net:sta:loc:starttime - endtime.
@@ -3540,21 +4094,20 @@ class Database(pymongo.database.Database):
         """
         dbsite = self.site
         query = {}
-        query['net'] = net
-        query['sta'] = sta
-        if (loc != 'NONE'):
-            query['loc'] = loc
-        if (time > 0.0):
-            query['starttime'] = {"$lt": time}
-            query['endtime'] = {"$gt": time}
+        query["net"] = net
+        query["sta"] = sta
+        if loc != "NONE":
+            query["loc"] = loc
+        if time > 0.0:
+            query["starttime"] = {"$lt": time}
+            query["endtime"] = {"$gt": time}
         matchsize = dbsite.count_documents(query)
-        if (matchsize == 0):
+        if matchsize == 0:
             return None
         else:
-            if (matchsize > 1):
+            if matchsize > 1:
                 print("get_seed_site (WARNING):  query=", query)
-                print("Returned ", matchsize,
-                      " documents - should be exactly one")
+                print("Returned ", matchsize, " documents - should be exactly one")
                 print("Returning first entry found")
             stadoc = dbsite.find_one(query)
             return stadoc
@@ -3601,17 +4154,17 @@ class Database(pymongo.database.Database):
         """
         dbchannel = self.channel
         query = {}
-        query['net'] = net
-        query['sta'] = sta
-        query['chan'] = chan
+        query["net"] = net
+        query["sta"] = sta
+        query["chan"] = chan
         if loc != None:
-            query['loc'] = loc
+            query["loc"] = loc
 
-        if (time > 0.0):
-            query['starttime'] = {"$lt": time}
-            query['endtime'] = {"$gt": time}
+        if time > 0.0:
+            query["starttime"] = {"$lt": time}
+            query["endtime"] = {"$gt": time}
         matchsize = dbchannel.count_documents(query)
-        if (matchsize == 0):
+        if matchsize == 0:
             return None
         if matchsize == 1:
             return dbchannel.find_one(query)
@@ -3625,43 +4178,72 @@ class Database(pymongo.database.Database):
                 # time was not specified but needed.
                 # The complexity below tries to unravel all those possibities
                 testquery = query
-                testquery['loc'] = None
+                testquery["loc"] = None
                 matchsize = dbchannel.count_documents(testquery)
                 if matchsize == 1:
                     return dbchannel.find_one(testquery)
                 elif matchsize > 1:
                     if time > 0.0:
-                        print("get_seed_channel:  multiple matches found for net=",
-                              net, " sta=", sta, " and channel=", chan, " with null loc code\n"
-                              "Assuming database problem with duplicate documents in channel collection\n",
-                              "Returning first one found")
+                        print(
+                            "get_seed_channel:  multiple matches found for net=",
+                            net,
+                            " sta=",
+                            sta,
+                            " and channel=",
+                            chan,
+                            " with null loc code\n"
+                            "Assuming database problem with duplicate documents in channel collection\n",
+                            "Returning first one found",
+                        )
                         return dbchannel.find_one(testquery)
                     else:
-                        raise MsPASSError("get_seed_channel:  "
-                                          + "query with "+net+":"+sta+":"+chan+" and null loc is ambiguous\n"
-                                          + "Specify at least time but a loc code if is not truly null",
-                                          "Fatal")
+                        raise MsPASSError(
+                            "get_seed_channel:  "
+                            + "query with "
+                            + net
+                            + ":"
+                            + sta
+                            + ":"
+                            + chan
+                            + " and null loc is ambiguous\n"
+                            + "Specify at least time but a loc code if is not truly null",
+                            "Fatal",
+                        )
                 else:
                     # we land here if a null match didn't work.
                     # Try one more recovery with setting loc to an emtpy
                     # string
-                    testquery['loc'] = ""
+                    testquery["loc"] = ""
                     matchsize = dbchannel.count_documents(testquery)
                     if matchsize == 1:
                         return dbchannel.find_one(testquery)
                     elif matchsize > 1:
                         if time > 0.0:
-                            print("get_seed_channel:  multiple matches found for net=",
-                                  net, " sta=", sta, " and channel=", chan, " with null loc code tested with empty string\n"
-                                  "Assuming database problem with duplicate documents in channel collection\n",
-                                  "Returning first one found")
+                            print(
+                                "get_seed_channel:  multiple matches found for net=",
+                                net,
+                                " sta=",
+                                sta,
+                                " and channel=",
+                                chan,
+                                " with null loc code tested with empty string\n"
+                                "Assuming database problem with duplicate documents in channel collection\n",
+                                "Returning first one found",
+                            )
                             return dbchannel.find_one(testquery)
                         else:
-                            raise MsPASSError("get_seed_channel:  "
-                                              + "recovery query attempt with "+net+":"+sta+":"+chan +
-                                              " and null loc converted to empty string is ambiguous\n"
-                                              + "Specify at least time but a loc code if is not truly null",
-                                              "Fatal")
+                            raise MsPASSError(
+                                "get_seed_channel:  "
+                                + "recovery query attempt with "
+                                + net
+                                + ":"
+                                + sta
+                                + ":"
+                                + chan
+                                + " and null loc converted to empty string is ambiguous\n"
+                                + "Specify at least time but a loc code if is not truly null",
+                                "Fatal",
+                            )
 
     def get_response(self, net=None, sta=None, chan=None, loc=None, time=None):
         """
@@ -3686,36 +4268,61 @@ class Database(pymongo.database.Database):
           a raw epoch time stored as a python float.
         """
         if sta == None or chan == None or net == None or time == None:
-            raise MsPASSError('get_response:  missing one of required arguments:  '
-                              + 'net, sta, chan, or time', 'Invalid')
+            raise MsPASSError(
+                "get_response:  missing one of required arguments:  "
+                + "net, sta, chan, or time",
+                "Invalid",
+            )
         query = {
-            'net': net,
-            'sta': sta,
-            'chan': chan,
+            "net": net,
+            "sta": sta,
+            "chan": chan,
         }
         if loc != None:
-            query['loc'] = loc
+            query["loc"] = loc
         else:
-            loc = '  '  # set here but not used
+            loc = "  "  # set here but not used
         if isinstance(time, UTCDateTime):
             t0 = time.timestamp
         else:
             t0 = time
-        query['starttime'] = {'$lt': t0}
-        query['endtime'] = {'$gt': t0}
+        query["starttime"] = {"$lt": t0}
+        query["endtime"] = {"$gt": t0}
         n = self.channel.count_documents(query)
         if n == 0:
-            print('No matching documents found in channel for ',
-                  net, ":", sta, ":", "chan", chan, "->", loc, "<-", " at time=",
-                  UTCDateTime(t0))
+            print(
+                "No matching documents found in channel for ",
+                net,
+                ":",
+                sta,
+                ":",
+                "chan",
+                chan,
+                "->",
+                loc,
+                "<-",
+                " at time=",
+                UTCDateTime(t0),
+            )
             return None
         elif n > 1:
-            print(n, ' matching documents found in channel for ',
-                  net, ":", sta, ":", "chan", "->", loc, "<-", " at time=",
-                  UTCDateTime(t0))
-            print('There should be just one - returning the first one found')
+            print(
+                n,
+                " matching documents found in channel for ",
+                net,
+                ":",
+                sta,
+                ":",
+                "chan",
+                "->",
+                loc,
+                "<-",
+                " at time=",
+                UTCDateTime(t0),
+            )
+            print("There should be just one - returning the first one found")
         doc = self.channel.find_one(query)
-        s = doc['serialized_channel_data']
+        s = doc["serialized_channel_data"]
         chan = pickle.loads(s)
         return chan.response
 
@@ -3747,9 +4354,9 @@ class Database(pymongo.database.Database):
             picklestr = pickle.dumps(event)
             rec = {}
             # rec['source_id']=source_id
-            rec['lat'] = o.latitude
-            rec['lon'] = o.longitude
-            rec['coords'] = [o.latitude, o.longitude]
+            rec["lat"] = o.latitude
+            rec["lon"] = o.longitude
+            rec["coords"] = [o.latitude, o.longitude]
             # It appears quakeml puts source depths in meter
             # convert to km
             # also obspy's catalog object seesm to allow depth to be
@@ -3759,21 +4366,20 @@ class Database(pymongo.database.Database):
                 depth = 0.0
             else:
                 depth = o.depth / 1000.0
-            rec['depth'] = depth
+            rec["depth"] = depth
             otime = o.time
             # This attribute of UTCDateTime is the epoch time
             # In mspass we only story time as epoch times
-            rec['time'] = otime.timestamp
-            rec['magnitude'] = m.mag
-            rec['magnitude_type'] = m.magnitude_type
-            rec['serialized_event'] = picklestr
+            rec["time"] = otime.timestamp
+            rec["magnitude"] = m.mag
+            rec["magnitude_type"] = m.magnitude_type
+            rec["serialized_event"] = picklestr
             result = dbcol.insert_one(rec)
             # the return of an insert_one has the object id of the insertion
             # set as inserted_id.  We save taht as source_id as a more
             # intuitive key that _id
             idobj = result.inserted_id
-            dbcol.update_one({'_id': idobj},
-                             {'$set': {'source_id': idobj}})
+            dbcol.update_one({"_id": idobj}, {"$set": {"source_id": idobj}})
             nevents += 1
         return nevents
 
@@ -3789,7 +4395,7 @@ class Database(pymongo.database.Database):
         had a different purpose.
         """
         dbsource = self.source
-        x = dbsource.find_one({'source_id': source_id})
+        x = dbsource.find_one({"source_id": source_id})
         return x
 
     #  Methods for handling miniseed data
@@ -3805,24 +4411,24 @@ class Database(pymongo.database.Database):
 
         """
         o = dict()
-        o['sta'] = index_record.sta
-        o['net'] = index_record.net
-        o['chan'] = index_record.chan
+        o["sta"] = index_record.sta
+        o["net"] = index_record.net
+        o["chan"] = index_record.chan
         if index_record.loc:
-            o['loc'] = index_record.loc
-        o['sampling_rate'] = index_record.samprate
-        o['delta'] = 1.0/(index_record.samprate)
-        o['starttime'] = index_record.starttime
-        o['last_packet_time'] = index_record.last_packet_time
-        o['foff'] = index_record.foff
-        o['nbytes'] = index_record.nbytes
+            o["loc"] = index_record.loc
+        o["sampling_rate"] = index_record.samprate
+        o["delta"] = 1.0 / (index_record.samprate)
+        o["starttime"] = index_record.starttime
+        o["last_packet_time"] = index_record.last_packet_time
+        o["foff"] = index_record.foff
+        o["nbytes"] = index_record.nbytes
         # FIXME: The following are commented out because some simple tests showed that
         #   the numbers are very different from the data being read by ObsPy's reader.
         # o['endtime'] = index_record.endtime
         # o['npts'] = index_record.npts
         return o
 
-    def index_mseed_file(self, dfile, dir=None, collection='wf_miniseed'):
+    def index_mseed_file(self, dfile, dir=None, collection="wf_miniseed"):
         """
         This is the first stage import function for handling the import of
         miniseed data.  This function scans a data file defined by a directory
@@ -3899,8 +4505,180 @@ class Database(pymongo.database.Database):
         ind = _mseed_file_indexer(fname)
         for i in ind:
             doc = self._convert_mseed_index(i)
-            doc['storage_mode'] = 'file'
-            doc['format'] = 'mseed'
-            doc['dir'] = odir
-            doc['dfile'] = dfile
+            doc["storage_mode"] = "file"
+            doc["format"] = "mseed"
+            doc["dir"] = odir
+            doc["dfile"] = dfile
             dbh.insert_one(doc)
+
+    def save_dataframe(
+        self, df, collection, null_values=None, one_to_one=True, parallel=False
+    ):
+        """
+        Tansfer a dataframe into a set of documents, and store them
+        in a specified collection. In one_to_one mode every row in the
+        dataframe will be saved into the mongodb, otherwise duplicates
+        would be discarded.
+        The dataframe will first call dropna to eliminate None values stored
+        in it, so that after it is transfered into a document, the memory
+        usage will be reduced.
+        :param df: Pandas.Dataframe object, the input to be transfered into mongodb
+        documents
+        :param collection:  MongoDB collection name to be used to save the
+        (often subsetted) tuples of filename as documents in this collection.
+        :param null_values:  is an optional dict defining null field values.
+        When used an == test is applied to each attribute with a key
+        defined in the null_vlaues python dict.  If == returns True, the
+        value will be set as None in dataframe. If your table has a lot of null
+        fields this option can save space, but readers must not require the null
+        field.  The default is None which it taken to mean there are no null
+        fields defined.
+        :param one_to_one: a boolean to control if the set should be filtered by
+        rows.  The default is True which means every row in the dataframe will
+        create a single MongoDB document. If False the (normally reduced) set
+        of attributes defined by attributes_to_use will be filtered with the
+        panda/dask dataframe drop_duplicates method before converting the
+        dataframe to documents and saving them to MongoDB.  That approach
+        is important, for example, to filter things like Antelope "site" or
+        "sitechan" attributes created by a join to something like wfdisc and
+        saved as a text file to be processed by this function.
+        :param parallel:  a boolean that determine if dask api will be used for
+        operations on the dataframe, default is false.
+        :return:  integer count of number of documents added to collection
+        """
+        dbcol = self[collection]
+
+        if parallel:
+            df = daskdf.from_pandas(df, chunksize=1, sort=False)
+
+        if not one_to_one:
+            df = df.drop_duplicates()
+
+        #   For those null values, set them to None
+        df = df.astype(object)
+        if null_values is not None:
+            for key, val in null_values.items():
+                if key not in df:
+                    continue
+                else:
+                    df[key] = df[key].mask(df[key] == val, None)
+
+        """
+        if parallel:
+            df = daskdf.from_pandas(df, chunksize=1, sort=False)
+            df = df.apply(lambda x: x.dropna(), axis=1).compute()
+        else:
+            df = df.apply(pd.Series.dropna, axis=1)
+        """
+        if parallel:
+            df = df.compute()
+
+        df = df.apply(pd.Series.dropna, axis=1)
+        doc_list = df.to_dict(orient="records")
+        if len(doc_list):
+            dbcol.insert_many(doc_list)
+        return len(doc_list)
+
+    def save_textfile(
+        self,
+        filename,
+        collection="textfile",
+        separator="\s+",
+        type_dict=None,
+        header_line=0,
+        attribute_names=None,
+        rename_attributes=None,
+        attributes_to_use=None,
+        null_values=None,
+        one_to_one=True,
+        parallel=False,
+        insert_column=None,
+    ):
+        """
+        Import and parse a textfile into set of documents, and store them
+        into a mongodb collection. This function consists of two steps:
+        1. Textfile2Dataframe: Convert the input textfile into a Pandas dataframe
+        2. save_dataframe: Insert the documents in that dataframe into a mongodb
+        collection
+
+        :param filename:  path to text file that is to be read to create the
+        table object that is to be processed (internally we use pandas or
+        dask dataframes)
+        :param collection:  MongoDB collection name to be used to save the
+        (often subsetted) tuples of filename as documents in this collection.
+        :param separator: The delimiter used for seperating fields,
+        the default is "\s+", which is the regular expression of "one or more
+        spaces".
+            For csv file, its value should be set to ','.
+            This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
+            To learn more details about the usage, check the following links:
+            https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+            https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html
+        :param type_dict: pairs of each attribute and its type, usedd to validate
+        the type of each input item
+        :param header_line: defines the line to be used as the attribute names for
+        columns, if is < 0, an attribute_names is required. Please note that if an
+        attribute_names is provided, the attributes defined in header_line will
+        always be override.
+        :param attribute_names: This argument must be either a list of (unique)
+        string names to define the attribute name tags for each column of the
+        input table.   The length of the array must match the number of
+        columns in the input table or this function will throw a MsPASSError
+        exception.   This argument is None by default which means the
+        function will assume the line specified by the "header_line" argument as
+        column headers defining the attribute name.  If header_line is less
+        than 0 this argument will be required.  When header_line is >= 0
+        and this argument (attribute_names) is defined all the names in
+        this list will override those stored in the file at the specified
+        line number.
+        :param  rename_attributes:   This is expected to be a python dict
+        keyed by names matching those defined in the file or attribute_names
+        array (i.e. the panda/dataframe column index names) and values defining
+        strings to use to override the original names.   That usage, of course,
+        is most common to override names in a file.  If you want to change all
+        the name use a custom attributes_name array as noted above.  This
+        argument is mostly to rename a small number of anomalous names.
+        :param attributes_to_use:  If used this argument must define a list of
+        attribute names that define the subset of the dataframe dataframe
+        attributes that are to be saved.  For relational db users this is
+        effectively a "select" list of attribute names.  The default is
+        None which is taken to mean no selection is to be done.
+        :param one_to_one: is an important boolean use to control if the
+        output is or is not filtered by rows.  The default is True
+        which means every tuple in the input file will create a single row in
+        dataframe. (Useful, for example, to construct an wf_miniseed
+        collection css3.0 attributes.)  If False the (normally reduced) set
+        of attributes defined by attributes_to_use will be filtered with the
+        panda/dask dataframe drop_duplicates method.  That approach
+        is important, for example, to filter things like Antelope "site" or
+        "sitechan" attributes created by a join to something like wfdisc and
+        saved as a text file to be processed by this function.
+        :param parallel:  When true we use the dask dataframe operation.
+        The default is false meaning the simpler, identical api panda
+        operators are used.
+        :param insert_column: a dictionary of new columns to add, and their value(s).
+        If the content is a single value, it can be passedto define a constant value
+        for the entire column of data. The content can also be a list, in that case,
+        the list should contain values that are to be set, and it must be the same
+        length as the number of tuples in the table.
+        :return:  Integer count of number of documents added to collection
+        """
+        df = Textfile2Dataframe(
+            filename=filename,
+            separator=separator,
+            type_dict=type_dict,
+            header_line=header_line,
+            attribute_names=attribute_names,
+            rename_attributes=rename_attributes,
+            attributes_to_use=attributes_to_use,
+            one_to_one=one_to_one,
+            parallel=parallel,
+            insert_column=insert_column,
+        )
+        return self.save_dataframe(
+            df=df,
+            collection=collection,
+            null_values=null_values,
+            one_to_one=one_to_one,
+            parallel=parallel,
+        )
