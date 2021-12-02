@@ -13,8 +13,8 @@ double PeakAmplitude(const mspass::seismic::CoreTimeSeries& d);
 double PeakAmplitude(const mspass::seismic::CoreSeismogram& d);
 double RMSAmplitude(const mspass::seismic::CoreTimeSeries& d);
 double RMSAmplitude(const mspass::seismic::CoreSeismogram& d);
-double PerfAmplitude(const mspass::seismic::CoreTimeSeries& d,const double perf);
-double PerfAmplitude(const mspass::seismic::CoreSeismogram& d,const double perf);
+double PercAmplitude(const mspass::seismic::CoreTimeSeries& d,const double perf);
+double PercAmplitude(const mspass::seismic::CoreSeismogram& d,const double perf);
 double MADAmplitude(const mspass::seismic::CoreTimeSeries& d);
 double MADAmplitude(const mspass::seismic::CoreSeismogram& d);
 enum class ScalingMethod
@@ -36,12 +36,12 @@ scale_factor_key appropriately to define conversion back to the original
 units.
 
 \param d is the data to be scale.  Works only if
-  overloaded functions PeakAmplitude, PerfAmplitude, MADAmplitude, and
+  overloaded functions PeakAmplitude, PercAmplitude, MADAmplitude, and
   RMSAmplitude are defined for d.  Currently that means CoreTimeSeries and
   CoreSeismogram.  Note in mspass this assumes history preservation is handled
   in python wrappers.
 \param method sets the scaling metric defined through ScalingMethod eum class.
-\param level has two different contexts.   For PerfAmplitude it must be a
+\param level has two different contexts.   For PercAmplitude it must be a
  a number n with 0<n<=1.0
 \param win defines a time window to use for computing the amplitude.
  It the window exeeds the data range it will be reduced to the range of
@@ -104,7 +104,7 @@ template <typename Tdata> double scale(Tdata& d,const ScalingMethod method,
         newcalib /= dscale;
         break;
       case ScalingMethod::ClipPerc:
-        amplitude=PerfAmplitude(windowed_data,level);
+        amplitude=PercAmplitude(windowed_data,level);
         /* for this scaling we use level as perf and output level is frozen
         to be scaled to order unity*/
         dscale = 1.0/amplitude;
@@ -133,12 +133,12 @@ elsewhere in this file.   It applies a scaling member by member using
 the scale function for each.  The template is for member data type.
 
 \param d is the data to be scale.  Works only if
-  overloaded functions PeakAmplitude, PerfAmplitude, MADAmplitude, and
+  overloaded functions PeakAmplitude, PercAmplitude, MADAmplitude, and
   RMSAmplitude are defined for ensemble members.  Currently that means CoreTimeSeries and
   CoreSeismogram.  Note in mspass this assumes history preservation is handled
   in python wrappers.
 \param method sets the scaling metric defined through ScalingMethod eum class.
-\param level has two different contexts.   For PerfAmplitude it must be a
+\param level has two different contexts.   For PercAmplitude it must be a
  a number n with 0<n<=1.0
 \param win is a TimeWindow range that defines where the metric being used
   to compute the a amplitudes of each member is to be computed.   A fixed
@@ -177,12 +177,12 @@ Use this function to do that for ensembles.  The scale_ensemble_members function
 in contrast, scales each member separately.
 
 \param d is the data to be scale.  Works only if
-  overloaded functions PeakAmplitude, PerfAmplitude, MADAmplitude, and
+  overloaded functions PeakAmplitude, PercAmplitude, MADAmplitude, and
   RMSAmplitude are defined for ensemble members.  Currently that means CoreTimeSeries and
   CoreSeismogram.  Note in mspass this assumes history preservation is handled
   in python wrappers.
 \param method sets the scaling metric defined through ScalingMethod eum class.
-\param level has two different contexts.   For PerfAmplitude it must be a
+\param level has two different contexts.   For PercAmplitude it must be a
  a number n with 0<n<=1.0
 \param use_mean (boolean)  when true use the mean log amplitude to set the
  gain.  Default uses median.
@@ -211,7 +211,7 @@ template <typename Tdata> double scale_ensemble(mspass::seismic::Ensemble<Tdata>
           amplitude=PeakAmplitude(*dptr);
           break;
         case ScalingMethod::ClipPerc:
-          amplitude=PerfAmplitude(*dptr,level);
+          amplitude=PercAmplitude(*dptr,level);
           break;
         case ScalingMethod::MAD:
           amplitude=MADAmplitude(*dptr);

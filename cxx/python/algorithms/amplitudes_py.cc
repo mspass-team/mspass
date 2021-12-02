@@ -41,11 +41,11 @@ PYBIND11_MODULE(amplitudes, m) {
     "Compute amplitude as median of vector amplitudes",
     py::return_value_policy::copy,py::arg("d") )
   ;
-  m.def("PerfAmplitude",py::overload_cast<const CoreTimeSeries&,const double>(&PerfAmplitude),
+  m.def("PercAmplitude",py::overload_cast<const CoreTimeSeries&,const double>(&PercAmplitude),
     "Compute amplitude of signal using clip percentage metric",
     py::return_value_policy::copy,py::arg("d"),py::arg("perf") )
   ;
-  m.def("PerfAmplitude",py::overload_cast<const CoreSeismogram&,const double>(&PerfAmplitude),
+  m.def("PercAmplitude",py::overload_cast<const CoreSeismogram&,const double>(&PercAmplitude),
     "Compute amplitude of signal using clip percentage metric",
     py::return_value_policy::copy,py::arg("d"),py::arg("perf") )
   ;
