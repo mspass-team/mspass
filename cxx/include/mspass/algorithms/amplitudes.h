@@ -5,6 +5,7 @@
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/Ensemble.h"
+#include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/utility/VectorStatistics.h"
 #include "mspass/algorithms/TimeWindow.h"
 #include "mspass/algorithms/algorithms.h"
@@ -260,5 +261,94 @@ template <typename Tdata> double scale_ensemble(mspass::seismic::Ensemble<Tdata>
     return avgamp;
   }catch(...){throw;};
 }
+/*! \brief Holds parameters defining a passband computed from snr.
+
+This deconvolution operator has the option to determine the optimal
+shaping wavelet on the fly based on data bandwidth.  This class is
+a struct in C++ disguise used to hold the encapsulation of the output
+of function(s) used to estimate the data bandwidth.  This class is used
+only internally with CNR3CDecon to hold this information.  It is not
+expected to be visible to python in MsPaSS, for example.
+*/
+class BandwidthData
+{
+public:
+  /*! Low corner frequency for band being defined. */
+  double low_edge_f;
+  /*! Upper corner frequency for band being defined. */
+  double high_edge_f;
+  /*! Signal to noise ratio at lower band edge. */
+  double low_edge_snr;
+  /*! Signal to noise ratio at upper band edge. */
+  double high_edge_snr;
+  /* This is the frequency range of the original data */
+  double f_range;
+  BandwidthData()
+  {
+    low_edge_f=0.0;
+    high_edge_f=0.0;
+    low_edge_snr=0.0;
+    high_edge_snr=0.0;
+    f_range=0.0;
+  };
+  /*! Return a metric of the estimated bandwidth divided by total frequency range*/
+  double bandwidth_fraction() const
+  {
+    if(f_range<=0.0)
+      return 0.0;
+    else
+      return (high_edge_f-low_edge_f)/f_range;
+  };
+  /*! Return bandwidth in dB. */
+  double bandwidth() const
+  {
+    if(f_range<=0.0)
+	return 0.0;
+    else
+    {
+      double ratio=high_edge_f/low_edge_f;
+      return 20.0*log10(ratio);
+    }
+  };
+};
+/*! \brief Estimate signal bandwidth.
+
+Signal bandwidth is a nontrivial thing to estimate as a general problem.
+The algorithm here is known to be fairly functional for most seismic data
+that has a typical modern broaband response.  It makes an implicit assumption
+that the noise floor rises relative to the data at low frequencies making
+the problem of finding the lower band edge one of just simply looking for
+a frequency where the spectrum of the signal is "significantly" larger than
+the noise.  At the high frequency end it depends on a similar assumption that
+comes from a different property of earthquake data.  That is, we know know
+that all seismic signals have some upper frequency limit created by a range of
+physical processes.  That means that at high enough frequency the signal to
+noise ratio will always fall to a small value or hit the high corner of the
+system antialias filter.  The basic algorithm used here then is an
+enhanced search algorithm that hunts for the band edge and a high and low
+frequency end where the snr passes through a specified cutoff threshold.
+The algorithm has some enhancements appropriate only for multitaper spectra.
+The algorithm searches from f*tbw forward to find frequency where snr exceeds
+snr_threshold.   It then does the reverse from 80% of Nyquist (a common
+corner for modern instruments using dsp chips and fir antialias filters).
+To avoid issues with lines in noise spectra snr must exceed the threshold
+by more than 2*tbw frequency bins for an edge to be defined.  The edge back is
+defined as 2*tbw*df from the first point satisfying that constraint.
+
+\param df is the expected signal frequency bin size.   An error will be
+thrown if that does not match the power spectrem s df.
+\param s is a (multitaper) power spectrum of the signal time window
+\param n is the comparable (multitaper) power spectrum of the noise time window.
+\param snr_threshold is the snr threshold used to define the band edges.
+\param tbp is the time-bandwidth product of the multitaper estimator used to
+  estimate s and n (they should be the same or you are asking trouble but that
+  is not checked).  tbp determines the expected smoothness of the spectrum and is
+  used in the band edge estimation as described above.
+
+\return BandwidthData class describing the bandwidth determined by the algorithm.
+*/
+BandwidthData EstimateBandwidth(const double signal_df,
+  const mspass::seismic::PowerSpectrum& s, const mspass::seismic::PowerSpectrum& n,
+    const double snr_threshold, const double tbp);
 } // namespace end
 #endif

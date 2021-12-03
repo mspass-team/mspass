@@ -14,7 +14,7 @@ using mspass::algorithms::TimeWindow;
 
 PYBIND11_MODULE(amplitudes, m) {
   m.attr("__name__") = "mspasspy.ccore.algorithms.amplitudes";
-  m.doc() = "A submodule for amplitudes namespace of ccore.algorithms"; 
+  m.doc() = "A submodule for amplitudes namespace of ccore.algorithms";
 
   /* Amplitude functions - overloads */
   m.def("PeakAmplitude",py::overload_cast<const CoreTimeSeries&>(&PeakAmplitude),
@@ -76,7 +76,7 @@ PYBIND11_MODULE(amplitudes, m) {
     py::arg("d"),py::arg("method"),py::arg("level"),py::arg("window") )
   ;
   m.def("_scale_ensemble_members",py::overload_cast<Ensemble<Seismogram>&,
-          const ScalingMethod&, 
+          const ScalingMethod&,
             const double,
                const TimeWindow>(&scale_ensemble_members<Seismogram>),
     "Scale each member of a SeismogramEnsemble individually by selected metric",
@@ -84,7 +84,7 @@ PYBIND11_MODULE(amplitudes, m) {
     py::arg("d"),py::arg("method"),py::arg("level"),py::arg("window") )
   ;
   m.def("_scale_ensemble_members",py::overload_cast<Ensemble<TimeSeries>&,
-          const ScalingMethod&, 
+          const ScalingMethod&,
             const double,
                const TimeWindow>(&scale_ensemble_members<TimeSeries>),
     "Scale each member of a TimeSeriesEnsemble individually by selected metric",
@@ -103,7 +103,30 @@ PYBIND11_MODULE(amplitudes, m) {
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level"),py::arg("use_mean") )
   ;
-  
+  py::class_<BandwidthData>(m,"BandwidthData","Defines the frequency domain bandwidth of data")
+    .def(py::init<>())
+    .def("bandwidth_fraction",&BandwidthData::bandwidth_fraction,
+       "Return ratio of estimated bandwidth to total bandwidth of original data")
+    .def("bandwidth",&BandwidthData::bandwidth,
+        "Return bandwidth in dB (bandwidth_fraction in dB)")
+    .def_readwrite("low_edge_f",&BandwidthData::low_edge_f,
+         "Low frequency limit of pass band")
+    .def_readwrite("high_edge_f",&BandwidthData::high_edge_f,
+         "High frequency limit of pass band")
+    .def_readwrite("low_edge_snr",&BandwidthData::low_edge_snr,
+        "Signal-to-noise ratio at frequency low_edge_f")
+    .def_readwrite("high_edge_snr",&BandwidthData::high_edge_snr,
+        "Signal-to-noise ratio at frequency high_edge_f")
+  ;
+  m.def("EstimateBandwidth",&EstimateBandwidth,"Estimate signal bandwidth estimate of power spectra of signal and noise",
+    py::return_value_policy::copy,
+    py::arg("signal_df"),
+    py::arg("signal_power_spectrum"),
+    py::arg("noise_power_spectrum"),
+    py::arg("srn_threshold"),
+    py::arg("time_bandwidth_product")
+    )
+  ;
 }
 
 } // namespace mspasspy
