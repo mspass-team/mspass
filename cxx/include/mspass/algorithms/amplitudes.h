@@ -7,6 +7,7 @@
 #include "mspass/seismic/Ensemble.h"
 #include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/utility/VectorStatistics.h"
+#include "mspass/utility/Metadata.h"
 #include "mspass/algorithms/TimeWindow.h"
 #include "mspass/algorithms/algorithms.h"
 namespace mspass::algorithms::amplitudes{
@@ -350,5 +351,36 @@ thrown if that does not match the power spectrem s df.
 BandwidthData EstimateBandwidth(const double signal_df,
   const mspass::seismic::PowerSpectrum& s, const mspass::seismic::PowerSpectrum& n,
     const double snr_threshold, const double tbp);
+/*! \brief Create summary statistics of snr data based on signal and noise spectra.
+
+This function is a close companion to EstimateBandwidth.   EstimateBandwidth
+aims only to find the upper and lower range of a frequency range it judges to
+be signal.  This function takes the output of EstimateBandwidth and uses it
+to compute a vector of snr values across the bandwidth defined by the
+output of EstimateBandwidth.  It returns the results in a Metadata container
+with the following keys and the concepts they defines:
+  "median_snr" - median value of snr in the band
+  "maximum_snr" - largest snr in the band
+  "minimum_snr" - smallest snr in the band
+  "q1_4_snr" - lower quartile (25% point of the distribution) of snr values
+  "q3_4_snr" - upper quartile (75% point of the distribution) of snr values
+  "mean_snr" - arithmetic mean ofsnr values
+
+Note the function does attempt to avoid Inf and NaN values that are possible
+if the noise value at some frequency is zero (negative is treated like 0).
+If the signal amplitude is nonzero and the noise amplitude is 0 snr is
+set to large value (actually 999999.9).  If the signal amplitude is also
+zero the snr value is set to -1.0.  If you find minimum_snr is -1.0 it means
+at least one frequency bin had the equivalent of a NaN condition.
+
+\param s - signal power spectrum (must be the same data used for EstimateBandwith)
+\param n - noise power spectrum (must be the same data used for EstimateBandwidth)
+\param bwd - data returned from s and n in preceding call to EstimateBandiwth.
+
+\return Metadata container with summary statistics keyed as described above
+*/
+mspass::utility::Metadata BandwidthStatistics(const mspass::seismic::PowerSpectrum& s,
+  const mspass::seismic::PowerSpectrum& n,
+      const BandwidthData& bwd);
 } // namespace end
 #endif

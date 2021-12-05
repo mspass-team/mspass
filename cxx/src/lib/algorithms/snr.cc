@@ -1,5 +1,7 @@
 #include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/algorithms/amplitudes.h"
+#include "mspass/utility/VectorStatistics.h"
+#include "mspass/utility/Metadata.h"
 namespace mspass::algorithms::amplitudes{
 using mspass::seismic::PowerSpectrum;
 /* This function once was a part of the CNR3CDecon.cc file, but it was moved
@@ -106,6 +108,45 @@ BandwidthData EstimateBandwidth(const double signal_df,
     }
   }
   result.f_range=result.high_edge_f-result.low_edge_f;
+  return result;
+}
+Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
+                               const BandwidthData& bwd)
+{
+  vector<double> bandsnr;
+  double f;
+  for(f=bwd.low_edge_f;f<bwd.high_edge_f && f<f.Nyquist();f+=s.df)
+  {
+    double signal_amp,noise_amp;
+    signal_amp = s.amplitude(f);
+    noise_amp = n.amplitude(f);
+    if(signal_amp<=0.0)
+    {
+      snr=0.0;
+    }
+    elseif(noise_amp<=0)
+    {
+      /*Set to a large number in this condition because we can't get past
+      the previous if for the (worse) case of 0/0.   We only get here if
+      signal_amp is nonzero but noise is zero.*/
+      snr = 999999.0;
+    }
+    else
+    {
+      snr = signal_amp/noise_amp;
+    }
+    bandsnr.push_back(snr);
+  }
+  VectorStatistics<double> stats(bandsnr);
+  Metadata result;
+  /* stats contains multiple methods that return other metrics but we only
+  return typical box plot values */
+  result.put_double("median_snr",stats.median());
+  result.put_double("maximum_snr",stats.upper_bound());
+  result.put_double("minimum_snr",stats.lower_bound());
+  result.put_double("q1_4_snr",stats.q1_4());
+  result.put_double("q3_4_snr",stats.q3_4());
+  result.put_double("mean_snr",stats.mean());
   return result;
 }
 } // end namespace

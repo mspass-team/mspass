@@ -127,6 +127,14 @@ PYBIND11_MODULE(amplitudes, m) {
     py::arg("time_bandwidth_product")
     )
   ;
+  m.def("BandwidthStatistics",&BandwidthStatistics,
+      "Compute statistical summary of snr in a passband returned by EstimateBandwidth - Returned in Metadata container",
+    py::return_value_policy::copy,
+    py::arg("signal_spectrum"),
+    py::arg("noise_spectrum"),
+    py::arg("bandwidth_data")
+    )
+  ;
 }
 
 } // namespace mspasspy
