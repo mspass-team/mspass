@@ -166,7 +166,7 @@ PYBIND11_MODULE(seismic, m) {
         py::array(a.size(), a.data(), py::none()).attr("__truediv__")(b));
     })
   ;
-  
+
   /* We define the following as global such that it can be used in the algorithms.basic module.
      The usage is documented here:
      https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html#binding-stl-containers
@@ -657,7 +657,7 @@ PYBIND11_MODULE(seismic, m) {
           hold both a copy of the monster list of strings of pickled
           data members and the reconstituted C++ data objects (ensemble
           members).  Need to see if we can find a way to handle that
-          in a more memory efficient way. 
+          in a more memory efficient way.
           wangyinz: The new implementation below should be better. */
           py::list dlist = loads(t[3]);
           LoggingEnsemble<Seismogram> result(md, elog, 0);
@@ -730,7 +730,7 @@ PYBIND11_MODULE(seismic, m) {
           hold both a copy of the monster list of strings of pickled
           data members and the reconstituted C++ data objects (ensemble
           members).  Need to see if we can find a way to handle that
-          in a more memory efficient way. 
+          in a more memory efficient way.
           wangyinz: The new implementation below should be better. */
           py::list dlist = loads(t[3]);
           LoggingEnsemble<TimeSeries> result(md, elog, 0);
@@ -781,9 +781,59 @@ PYBIND11_MODULE(seismic, m) {
       .def_readonly("spectrum",&PowerSpectrum::spectrum,
           "Vector containing estimated power spectrum; equally spaced ordered in increasing frequency")
       .def_readwrite("elog",&PowerSpectrum::elog,"Handle to ErrorLogger")
+      .def(py::pickle(
+        [](const PowerSpectrum& self)
+        {
+          /* PowerSpectrum inherit Metadata so we have to serialize that*/
+          pybind11::object sbuf;
+          sbuf=serialize_metadata_py(self);
+          /* this is the pybind11 way to serialize an std::vector*/
+          py::array_t<double, py::array::f_style> darr(self.spectrum.size(),
+                              &(self.spectrum[0]));
+          /* the ErrorLogger object has boost serialzization used to serialize
+          it here.  */
+          stringstream ss_elog;
+          boost::archive::text_oarchive ar(ss_elog);
+          ar << self.elog;
+          /* We can just add public attributes to the returned tuple without
+          getters.  If the api changes (possible) this will have to change */
+          return py::make_tuple(sbuf,self.df,self.f0,self.spectrum_type,
+              ss_elog.str(),darr);
+        },
+        [](py::tuple t)
+        {
+          /* Deserialize Metadata*/
+          pybind11::object sbuf=t[0];
+          Metadata md=restore_serialized_metadata_py(sbuf);
+          double df=t[1].cast<double>();
+          double f0=t[2].cast<double>();
+          string spectrum_type=t[3].cast<std::string>();
+          stringstream ss_elog(t[4].cast<std::string>());
+          boost::archive::text_iarchive ar(ss_elog);
+          ErrorLogger elog;
+          ar >> elog;
+          py::array_t<double, py::array::f_style> darr;
+          darr=t[5].cast<py::array_t<double, py::array::f_style>>();
+          py::buffer_info info = darr.request();
+          /* there may be a more clever (and faster) way to pass this
+          array of data to the PowerSpectrum constructor than this - making
+          a copy into an std::vector - but this is bombproof*/
+          std::vector<double> d;
+          d.resize(info.shape[0]);
+          memcpy(d.data(), info.ptr, sizeof(double) * d.size());
+          PowerSpectrum restored(md,d,df,spectrum_type);
+          /* the constructor we just was designed for creation of a
+          new power spectrum cloning metadata.  It lacks two public
+          variables we have to set here.  The API probably should be changed
+          to allow creation of this in a single call, but for now we'll
+          just do this hack -glp, 12/5/2021*/
+          restored.f0=f0;
+          restored.elog=elog;
+          return restored;
+        }
+      ))
     ;
 }
-
 
 } // namespace mspasspy
 } // namespace mspass
