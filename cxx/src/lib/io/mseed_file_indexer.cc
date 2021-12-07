@@ -23,11 +23,18 @@ using mspass::utility::ErrorSeverity;
 std::pair constructor with complex objects like this */
 typedef std::pair<std::vector<mseed_index>,mspass::utility::ErrorLogger> MSDINDEX_returntype;
 
+
 MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
   const bool segment_timetears,const bool Verbose)
 {
   const string function_name("mseed_file_indexer");
   MS3Record *msr = 0;
+  /* This thing is used for the thread safe reader.   It uses the common
+  plain C implicit signal to alloc the struct it contains when the
+  pointer is NULL.   Each call then uses the same data in the msfp
+  struct.  The weird cleanup call at the end of the read loop
+  calls the equivalent of a destructor.*/
+  MS3FileParam *msfp = NULL;
   uint32_t flags = MSF_SKIPNOTDATA ;
   // int8_t ppackets = 0;
   int8_t verbose = 0;
@@ -61,8 +68,10 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
   bool found_time_tear(false); //used to simplify logic of handling time tears
   /* It is not clear what verbose means in this function so we currently always
   turn it off.   Note Verbose and verbose are different - a bit dangerous but
-  that is what is for now */
-  while ((retcode = ms3_readmsr (&msr, inputfile.c_str(), &fpos, NULL,
+  that is what is for now.
+  Also changed dec 2021:  changed to thread safe version.  Requires adding
+  msfp struct initialized as NULL.  */
+  while ((retcode = ms3_readmsr_r (&msfp,&msr, inputfile.c_str(), &fpos, NULL,
                                  flags, verbose)) == MS_NOERROR)
   {
     if(count==0)
@@ -217,8 +226,8 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
   }
 
   /* Make sure everything is cleaned up.  Documentation says this is needed
-  for unknown reasons */
-  ms3_readmsr (&msr, NULL, NULL, NULL, 0, 0);
+  to invoke the plain C equivalent of a destructor.*/
+  ms3_readmsr_r (&msfp, &msr, NULL, NULL, NULL, 0, 0);
   return MSDINDEX_returntype(indexdata,elog);
 }
 } // End namespace mspass::io
