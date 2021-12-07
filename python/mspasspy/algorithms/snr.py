@@ -476,7 +476,7 @@ def arrival_srn_QC(data_object,
     This is the highest level function in this module for computing 
     signal-to-noise ratio metrics for processing signals that can be 
     defined by a computable or measurable "phase".  Features this 
-    function adds over lower level functions it uses are:
+    function adds over lower level functions in this module are:
         1.  An option to save computed metrics to a MongoDB collection 
             (defaults as "arrival").  If the update_mode argument is 
             set True (default is False) the function expects the data_object 
@@ -486,7 +486,7 @@ def arrival_srn_QC(data_object,
         2.  Adds an option to use a computed or measured arrival as the 
             time reference for all windowing.   The lower level snr 
             functions in this module require the user do what this 
-            function does externally.  Note one or the other is required 
+            function does prior to calling the function.  Note one or the other is required 
             (i.e. either computed or measured time will be define t0 of the 
              processing)
             
@@ -497,17 +497,19 @@ def arrival_srn_QC(data_object,
     because all the algorithms used are single channel algorithms.  To 
     use this function on all components use a loop over components BUT 
     make sure you use a unique value for the argument "metadata_key" for 
-    each component. 
+    each component.  Note this will also produce multiple documents per 
+    input datum.  
     
     The type of the data_object also has a more subtle implication the 
-    user must be aware of.  That is, in MsPASS schema we store receiver coordinates 
+    user must be aware of.  That is, in the MsPASS schema we store receiver coordinates 
     in one of two different collections:  "channel" for TimeSeries data and 
     "site" for Seismogram data.  When such data are loaded the generic keys 
     like lat are always converted to names like channel_lat or site_lat 
     for TimeSeries and Seismogram data respectively.   This function uses 
     the data type to set that naming.  i.e. if the input is TimeSeries 
     it tries to fetch the latitude data as channel_lat while if it the input 
-    is a Seismogram it tries to fetch site_lat.   
+    is a Seismogram it tries to fetch site_lat.   That is true of all coordinate 
+    data loaded by normalization from a source and receiver collection.
             
     The following args are passed directly to the function arrival_snr:
     noise_window, signal_window, band_cutoff_snr, tbp, ntapers, poles, 
@@ -522,7 +524,11 @@ def arrival_srn_QC(data_object,
     metrics will all be posted to a python dict that can be found under the 
     key defined by the "metadata_key" argument.   When db is defined the 
     contents of that same python dict will save to MongoDB is the 
-    collection defined by the "collection" argument.  
+    collection defined by the "collection" argument.  If db is run as 
+    the default None the user is responsible for saving and managing the 
+    computed snr data.   Be aware a simple later call to db.save_data
+    will not produce the same normalized data with the (default) arrival 
+    collection.  
     
     :param collection:  MongoDB collection name where the results of this 
     function will be saved.  If the "update_mode" argument is also set 
@@ -583,7 +589,7 @@ def arrival_srn_QC(data_object,
     if data_object.dead():
         return data_object
     if isinstance(data_object,TimeSeries):
-        # We need to make a copy of a TimeSeries object assure the only 
+        # We need to make a copy of a TimeSeries object to assure the only 
         # thing we change is the Metadata we add to the return
         data_to_process = TimeSeries(data_object)
         if receiver_collection:
