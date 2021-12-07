@@ -1,3 +1,5 @@
+#ifndef _MSPASS_UTILITY_BASE_H_
+#define _MSPASS_UTILITY_BASE_H_
 /* This header is to contain assorted useful C and C++ procedures 
    appropriate for the tag utility.h.   */
 #include <string>
@@ -36,3 +38,4 @@ This function normalizes the columns of a matrix.
 std::vector<double> normalize_columns(const mspass::utility::dmatrix& d);
 } // end utility namespace
 }
+#endif
