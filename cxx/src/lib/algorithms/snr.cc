@@ -1,9 +1,12 @@
+#include <vector>
 #include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/algorithms/amplitudes.h"
 #include "mspass/utility/VectorStatistics.h"
 #include "mspass/utility/Metadata.h"
 namespace mspass::algorithms::amplitudes{
 using mspass::seismic::PowerSpectrum;
+using mspass::utility::Metadata;
+using mspass::utility::VectorStatistics;
 /* This function once was a part of the CNR3CDecon.cc file, but it was moved
 here as it was found to have a more generic purpose - bandwidth estimation.
 It is used in snr python wrapper functions of mspass and in CNR3cDecon to
@@ -113,18 +116,18 @@ BandwidthData EstimateBandwidth(const double signal_df,
 Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
                                const BandwidthData& bwd)
 {
-  vector<double> bandsnr;
+  std::vector<double> bandsnr;
   double f;
-  for(f=bwd.low_edge_f;f<bwd.high_edge_f && f<f.Nyquist();f+=s.df)
+  for(f=bwd.low_edge_f;f<bwd.high_edge_f && f<s.Nyquist();f+=s.df)
   {
-    double signal_amp,noise_amp;
+    double signal_amp,noise_amp,snr;
     signal_amp = s.amplitude(f);
     noise_amp = n.amplitude(f);
     if(signal_amp<=0.0)
     {
       snr=0.0;
     }
-    elseif(noise_amp<=0)
+    else if(noise_amp<=0)
     {
       /*Set to a large number in this condition because we can't get past
       the previous if for the (worse) case of 0/0.   We only get here if
