@@ -3,7 +3,7 @@ import numpy as np
 
 from mspasspy.ccore.seismic import Seismogram, SlownessVector
 from mspasspy.ccore.utility import SphericalCoordinate
-from mspasspy.algorithms.basic import ator, rtoa, rotate, rotate_to_standard, free_surface_transformation, transform, linear_taper, cosine_taper, vector_taper
+from mspasspy.algorithms.basic import ator, rtoa, rotate, rotate_to_standard, free_surface_transformation, transform
 
 # module to test
 sys.path.append("python/tests")
@@ -109,42 +109,3 @@ def test_transform():
     seis4 = free_surface_transformation(seis2, SlownessVector(1.0, 1.0, 0.0), 5.0, 3.5)
     assert seis4
 
-def test_taper():
-    ts = get_live_timeseries()
-    ts.t0 = 0
-    ts.dt = 1
-    ts.npts = 200
-    ts.data += 1
-
-    ts_l = linear_taper(ts, 4, 14, 170, 180)
-    assert ts_l.data[4] == 0
-    assert ts_l.data[9] == 0.5
-    assert ts_l.data[14] == 1
-    assert ts_l.data[170] == 1
-    assert ts_l.data[175] == 0.5
-    assert ts_l.data[180] == 0
-
-    
-    ts.npts = 200
-    ts.data += 1
-    
-    ts_c = cosine_taper(ts, 4, 14, 170, 180)
-    assert ts_c.data[4] == 0
-    assert ts_c.data[9] == 0.5
-    assert ts_c.data[14] == 1
-    assert ts_c.data[170] == 1
-    assert ts_c.data[175] == 0.5
-    assert ts_c.data[180] == 0
-
-    ts.npts = 200
-    ts.data += 1
-    
-    vtaper = np.zeros(200)
-    vtaper += 0.5
-    ts_v = vector_taper(ts, vtaper)
-    assert ts_v.data[4] == 0.5
-    assert ts_v.data[9] == 0.5
-    assert ts_v.data[14] == 0.5
-    assert ts_v.data[170] == 0.5
-    assert ts_v.data[175] == 0.5
-    assert ts_v.data[180] == 0.5
