@@ -117,6 +117,8 @@ PYBIND11_MODULE(amplitudes, m) {
         "Signal-to-noise ratio at frequency low_edge_f")
     .def_readwrite("high_edge_snr",&BandwidthData::high_edge_snr,
         "Signal-to-noise ratio at frequency high_edge_f")
+    .def_readwrite("f_range",&BandwidthData::f_range,
+         "Total frequency range of signal spectrum used for snr estimate")
   ;
   m.def("EstimateBandwidth",&EstimateBandwidth,"Estimate signal bandwidth estimate of power spectra of signal and noise",
     py::return_value_policy::copy,
