@@ -775,10 +775,11 @@ PYBIND11_MODULE(seismic, m) {
       .def("frequency",&PowerSpectrum::frequency,"Return frequency of sample number of spectrum vector")
       .def("Nyquist",&PowerSpectrum::Nyquist,"Return Nyquist frequency")
       .def("sample_number",&PowerSpectrum::sample_number,"Return sample number of a given frequency")
-      .def_readonly("df",&PowerSpectrum::df,"Frequency bin size")
-      .def_readonly("spectrum_type",&PowerSpectrum::spectrum_type,
+      .def_readwrite("df",&PowerSpectrum::df,"Frequency bin size")
+      .def_readwrite("f0",&PowerSpectrum::f0,"Frequency of sample 0 (This implementation supports only constant frequency bin size)")
+      .def_readwrite("spectrum_type",&PowerSpectrum::spectrum_type,
           "Descriptive name of method used to generate spectrum")
-      .def_readonly("spectrum",&PowerSpectrum::spectrum,
+      .def_readwrite("spectrum",&PowerSpectrum::spectrum,
           "Vector containing estimated power spectrum; equally spaced ordered in increasing frequency")
       .def_readwrite("elog",&PowerSpectrum::elog,"Handle to ErrorLogger")
       .def(py::pickle(

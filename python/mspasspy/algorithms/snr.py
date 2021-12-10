@@ -1,3 +1,4 @@
+import pickle
 import numpy as np
 from scipy.signal import hilbert
 from obspy.geodetics import locations2degrees
@@ -164,7 +165,8 @@ def FD_snr_estimator(data_object,
               optional_metrics=None,
                 return_as_dict=False,
                   store_as_subdocument=False,
-                    subdocument_key='snr_data'):
+                    subdocument_key='snr_data',
+                      save_spectra=False):
         #optional_metrics=['snr_stats','filtered_envelope','filtered_L2','filtered_Linf','filtered_MAD','filtered_perc']):
     """
     Estimates one or more metrics of signal-to-noise from a TimeSeries object.
@@ -294,6 +296,18 @@ def FD_snr_estimator(data_object,
     :param subdocument_key:  key for storing results as a subdocument. 
     This parameter is ignored unless store_as_subdocument is True.  
     Default is "snr_data"
+        
+    :param save_spectra:   If set True (default is False) the function 
+    will pickle the computed noise and signal spectra and save the
+    strings created along with a set of related metadata defining the 
+    time range to the output python dict (these will be saved in MongoDB 
+    when db is defined - see below).   This option should ONLY be used 
+    for spot checking, discovery of why an snr metric has unexpected 
+    results using graphics, or a research topic where the spectra would 
+    be of interest.  It is a very bad idea to turn this option on if 
+    you are processing a large quantity of data and saving the results 
+    to MongoDB as it will bloat the arrival collection.  Consider a 
+    different strategy if that essential for your work.
     
     :return:  python dict with computed metrics associated with keys defined above.
     :rtype: python dict containing measurements with keys noted above.  If there 
@@ -338,6 +352,13 @@ def FD_snr_estimator(data_object,
         snrdata['spectrum_frequency_range'] = bwd.f_range
         snrdata['bandwidth_fraction'] = bwd.bandwidth_fraction()
         snrdata['bandwidth'] = bwd.bandwidth()
+        if save_spectra:
+            snrdata['signal_spectrum'] = pickle.dumps(S)
+            snrdata['noise_spectrum'] = pickle.dumps(N)
+            snrdata['signal_window_start_time'] = signal_window.start
+            snrdata['signal_window_end_time'] = signal_window.end
+            snrdata['noise_window_start_time'] = noise_window.start
+            snrdata['noise_window_end_time'] = noise_window.end
         #For current implementation all the optional metrics require 
         #computed a filtered version of the data.  If a new option is
         #desired that does not require filtering the data the logic 
@@ -418,6 +439,7 @@ def arrival_snr(data_object,
          high_frequency_search_start=5.0,
           poles=3,
             perc=95.0,
+             save_spectra=False,
               phase_name='P',
                 metadata_key='Parrival',
                   optional_metrics=['snr_stats','filtered_envelope','filtered_L2','filtered_Linf','filtered_MAD','filtered_perc']):
@@ -461,9 +483,11 @@ def arrival_snr(data_object,
     snrdata=FD_snr_estimator(data_object,noise_window,noise_spectrum_engine,
             signal_window,signal_spectrum_engine,band_cutoff_snr,tbp,ntapers,
               high_frequency_search_start,poles,perc,optional_metrics,
-                return_as_dict=True,store_as_subdocument=False)
+                return_as_dict=True,store_as_subdocument=False,
+                  save_spectra=save_spectra)
     snrdata['phase'] = phase_name
     data_object[metadata_key] = snrdata
+
     
 def arrival_snr_QC(data_object,
   noise_window=TimeWindow(-130.0,-5.0),noise_spectrum_engine=None,
@@ -477,7 +501,8 @@ def arrival_snr_QC(data_object,
               phase_name='P',
                 metadata_key='Parrival',
                   optional_metrics=['snr_stats','filtered_envelope','filtered_L2','filtered_Linf','filtered_MAD','filtered_perc'],
-                    db=None,
+                   save_spectra=False,
+                     db=None,
                       collection='arrival',
                         use_measured_arrival_time=False,
                           measured_arrival_time_key='Ptime',
@@ -660,8 +685,17 @@ def arrival_snr_QC(data_object,
     snrdata=FD_snr_estimator(data_to_process,noise_window,noise_spectrum_engine,
             signal_window,signal_spectrum_engine,band_cutoff_snr,tbp,ntapers,
               high_frequency_search_start,poles,perc,optional_metrics,
-                return_as_dict=True,store_as_subdocument=False)
-    snrdata['phase'] = phase_name  
+                return_as_dict=True,store_as_subdocument=False,
+                  save_spectra=save_spectra)
+    snrdata['phase'] = phase_name
+    # These cross-referencing keys may not always be defined when a phase
+    # time is based on a pick so we add these cautiously
+    scol_id_key = source_collection + '_id'
+    rcol_id_key = rcol + '_id'
+    if data_object.is_defined(scol_id_key):
+        snrdata[scol_id_key] = data_object[scol_id_key]
+    if data_object.is_defined(rcol_id_key):
+        snrdata[rcol_id_key] = data_object[rcol_id_key]
     # Note we add this result to data_object NOT data_to_process because that 
     # is not always the same thing - for a TimeSeries input it is a copy of 
     # the original but it may have been altered while for a Seismogram it is 
