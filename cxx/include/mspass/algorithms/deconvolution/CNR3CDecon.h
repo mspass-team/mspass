@@ -6,62 +6,14 @@
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
 #include "mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h"
+#include "mspass/algorithms/amplitudes.h"
 #include "mspass/algorithms/Taper.h"
 #include "mspass/algorithms/TimeWindow.h"
 #include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 namespace mspass::algorithms::deconvolution{
-/*! \brief Holds parameters defining a passband computed from snr.
 
-This deconvolution operator has the option to determine the optimal
-shaping wavelet on the fly based on data bandwidth.  This class is
-a struct in C++ disguise used to hold the encapsulation of the output
-of function(s) used to estimate the data bandwidth.  This class is used
-only internally with CNR3CDecon to hold this information.  It is not
-expected to be visible to python in MsPaSS, for example.
-*/
-class BandwidthData
-{
-public:
-  /*! Low corner frequency for band being defined. */
-  double low_edge_f;
-  /*! Upper corner frequency for band being defined. */
-  double high_edge_f;
-  /*! Signal to noise ratio at lower band edge. */
-  double low_edge_snr;
-  /*! Signal to noise ratio at upper band edge. */
-  double high_edge_snr;
-  /* This is the frequency range of the original data */
-  double f_range;
-  BandwidthData()
-  {
-    low_edge_f=0.0;
-    high_edge_f=0.0;
-    low_edge_snr=0.0;
-    high_edge_snr=0.0;
-    f_range=0.0;
-  };
-  /*! Return a metric of the estimated bandwidth divided by total frequency range*/
-  double bandwidth_fraction() const
-  {
-    if(f_range<=0.0)
-      return 0.0;
-    else
-      return (high_edge_f-low_edge_f)/f_range;
-  };
-  /*! Return bandwidth in dB. */
-  double bandwidth() const
-  {
-    if(f_range<=0.0)
-	return 0.0;
-    else
-    {
-      double ratio=high_edge_f/low_edge_f;
-      return 20.0*log10(ratio);
-    }
-  };
-};
 /*! \brief Absract base class for algorithms handling full 3C data.
 */
 class Base3CDecon
@@ -347,6 +299,9 @@ private:
   (computed from processing_window and operator dt)*/
   int winlength;
   double decon_bandwidth_cutoff;
+  /* Added Dec 2021 - this defines the upper starting frequency used for
+  the EstimateBandwith function.   */
+  double fhs;
   /* Defines relative time time window - ignored if length of input is
   consistent with number of samples expected in this window */
   mspass::algorithms::TimeWindow processing_window;
@@ -399,8 +354,8 @@ private:
   //ComplexArray winv;
   /* winv is in FFTDeconOperator*/
   ComplexArray ao_fft;
-  BandwidthData wavelet_bwd;
-  BandwidthData signal_bwd;
+  mspass::algorithms::amplitudes::BandwidthData wavelet_bwd;
+  mspass::algorithms::amplitudes::BandwidthData signal_bwd;
   /* We cache wavelet snr time series as it is more efficiently computed during
      the process routine and then used in (optional) qc methods */
   std::vector<double> wavelet_snr;
@@ -415,7 +370,7 @@ private:
   void compute_gwl_inverse();
   void compute_gdamp_inverse();
   mspass::seismic::PowerSpectrum ThreeCPower(const mspass::seismic::Seismogram& d);
-  void update_shaping_wavelet(const BandwidthData& bwd);
+  void update_shaping_wavelet(const mspass::algorithms::amplitudes::BandwidthData& bwd);
 };
 }  // End namespace
 

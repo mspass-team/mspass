@@ -330,8 +330,7 @@ enhanced search algorithm that hunts for the band edge and a high and low
 frequency end where the snr passes through a specified cutoff threshold.
 The algorithm has some enhancements appropriate only for multitaper spectra.
 The algorithm searches from f*tbw forward to find frequency where snr exceeds
-snr_threshold.   It then does the reverse from 80% of Nyquist (a common
-corner for modern instruments using dsp chips and fir antialias filters).
+snr_threshold.   It then does the reverse from a user specified upper frequency.
 To avoid issues with lines in noise spectra snr must exceed the threshold
 by more than 2*tbw frequency bins for an edge to be defined.  The edge back is
 defined as 2*tbw*df from the first point satisfying that constraint.
@@ -345,12 +344,23 @@ thrown if that does not match the power spectrem s df.
   estimate s and n (they should be the same or you are asking trouble but that
   is not checked).  tbp determines the expected smoothness of the spectrum and is
   used in the band edge estimation as described above.
+\param fhs is an abbreviation for "frequence high start".   Use this argument
+  to set frequency where backward (working downward in f that is) search for
+  the upper band edge should start.   This parameter is highly recommended for
+  teleseismic body wave data phases where the high frequencies just don't exist.
+  P phases, for example, should set this parameter somewhere between 2 and 5 Hz.
+  direct S phases should be more like 1 Hz, but that depends up on the data.
+  The reason this is necessary is sometimes data have high frequency lines in
+  the spectrum that can fool this simple algorithm.   In a C++ program there is
+  a default for this parameter of -1.0.  When this argument is negative OR
+  if the frequency is over the Nyquist of the data it will be silently set to
+  80% of the nyquist of s.
 
 \return BandwidthData class describing the bandwidth determined by the algorithm.
 */
 BandwidthData EstimateBandwidth(const double signal_df,
   const mspass::seismic::PowerSpectrum& s, const mspass::seismic::PowerSpectrum& n,
-    const double snr_threshold, const double tbp);
+    const double snr_threshold, const double tbp,const double fhs=-1.0);
 /*! \brief Create summary statistics of snr data based on signal and noise spectra.
 
 This function is a close companion to EstimateBandwidth.   EstimateBandwidth

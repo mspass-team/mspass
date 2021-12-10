@@ -87,6 +87,8 @@ double PercAmplitude(const CoreSeismogram& d,const double perc)
 	size_t n=amps.size();
 	/* n-1 because C arrays start at 0 */
 	size_t iperc=static_cast<size_t>(perc*static_cast<double>(n));
+	/* Silently return 100% if iperc exceeds the range of amps*/
+	if(iperc>=amps.size()) iperc = amps.size() - 1;
 	return amps[iperc];
 }
 /* This pair could be made a template, but they are so simple

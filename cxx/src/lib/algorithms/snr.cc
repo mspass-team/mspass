@@ -13,13 +13,20 @@ It is used in snr python wrapper functions of mspass and in CNR3cDecon to
 estimate bandwidth from power spectrum estimates.   */
 BandwidthData EstimateBandwidth(const double signal_df,
   const PowerSpectrum& s, const PowerSpectrum& n,
-    const double snr_threshold, const double tbp)
+    const double snr_threshold, const double tbp,const double fhs)
 {
   /* Set the starting search points at low (based on noise tbp) and high (80% fny)
   sides */
   double flow_start, fhigh_start;
   flow_start=(n.df)*tbp;
-  fhigh_start=s.Nyquist()*0.8;
+  /* Silently set to 80% of Nyquist if the passed value is negative or
+  above nyquist - illegal values.  Assume python wrappers can post warning
+  if deemeed essential.   This is a very harmless error so being silent is
+  probably normally ok */
+  if( (fhs<=0.0) || (fhs>s.Nyquist()) )
+    fhigh_start=s.Nyquist()*0.8;
+  else
+    fhigh_start = fhs;
   double df_test_range=2.0*tbp*(n.df);
   int s_range=s.nf();
   BandwidthData result;
@@ -110,7 +117,7 @@ BandwidthData EstimateBandwidth(const double signal_df,
       }
     }
   }
-  result.f_range=result.high_edge_f-result.low_edge_f;
+  result.f_range = s.Nyquist() - s.f0;
   return result;
 }
 Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,

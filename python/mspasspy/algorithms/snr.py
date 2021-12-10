@@ -3,17 +3,19 @@ from scipy.signal import hilbert
 from obspy.geodetics import locations2degrees
 from mspasspy.ccore.utility import (MsPASSError,
                                     ErrorSeverity)
-from mspasspy.ccore.algorithms.deconvolution import (MTPowerSpectrumEngine,
-                                                     RMSAmplitude,
+from mspasspy.ccore.seismic import TimeSeries,Seismogram
+from mspasspy.ccore.algorithms.deconvolution import MTPowerSpectrumEngine
+from mspasspy.ccore.algorithms.amplitudes import (RMSAmplitude,
                                                      PercAmplitude,
                                                      MADAmplitude,
-                                                     PeakAmplitude)
-from mspasspy.ccore.algorithms.basic import TimeWindow,Butterworth
-from mspasspy.ccore.seismic import PowerSpectrum,TimeSeries,Seismogram
-from mspasspy.algorithms.basic import ExtractComponent
+                                                     PeakAmplitude,
+                                                     EstimateBandwidth,
+                                                     BandwidthStatistics)
+from mspasspy.ccore.algorithms.basic import (TimeWindow,
+                                             Butterworth,
+                                             ExtractComponent)
 from mspasspy.algorithms.window import WindowData
-from mspasspy.algorithms.amplitudes import (EstimateBandwidth,
-                                            BandwidthStatistics)
+
 def _window_invalid(d,win):
     """
     Small helper used internally in this module.  Tests if TimeWidow defined
@@ -156,6 +158,7 @@ def FD_snr_estimator(data_object,
       band_cutoff_snr=2.0,
       # check these are reasonable - don't remember the formula when writing this
         tbp=5.0,ntapers=10,
+         high_frequency_search_start=5.0,
           poles=3,
             perc=95.0,
               optional_metrics=None,
@@ -237,6 +240,7 @@ def FD_snr_estimator(data_object,
     :param signal_spectrum_engine:  is the comparable MTPowerSpectralEngine
     to use to compute the signal power spectrum.   Default is None with the
     same caveat as above for the noise_spectrum_engine.
+    
     :param tbp:  time-bandwidth product to use for computing the set of
     Slepian functions used for the multitaper estimator.  This parameter is
     used only if the noise_spectrum_engine or signal_spectrum_engine
@@ -247,6 +251,14 @@ def FD_snr_estimator(data_object,
     noise_spectrum_engine or signal_spectrum_engine are set to None.
     Note the function will throw an exception if the ntaper parameter is
     not consistent with the time-bandwidth product.  (ADD THE FORMULA HERE)
+    
+    :param high_frequency_search_start: Used to specify the upper frequency 
+      used to start the search for the upper end of the bandwidth by 
+      the function EstimateBandwidth.  Default is 4.0 which reasonable for 
+      teleseismic P wave data.  Should be change for usage other than 
+      analysis of teleseimic P phases or you the bandwidth may be 
+      grossly underestimated.
+      
     :param npoles:   defines number of poles to us for the Butterworth
     bandpass applied for the "filtered" metrics (see above).  Default is 3.
     
@@ -315,8 +327,9 @@ def FD_snr_estimator(data_object,
         else:
             sengine = MTPowerSpectrumEngine(n.npts,tbp,ntapers)
         N=nengine.apply(n)
-        S=sengine.appy(s)
-        bwd = EstimateBandwidth(S.df(),S,N,band_cutoff_snr,tbp)
+        S=sengine.apply(s)
+        bwd = EstimateBandwidth(S.df,S,N,
+                band_cutoff_snr,tbp,high_frequency_search_start)
         # These estimates are always computed and posted
         snrdata['low_f_band_edge'] = bwd.low_edge_f
         snrdata['high_f_band_edge'] = bwd.high_edge_f
@@ -371,13 +384,15 @@ def FD_snr_estimator(data_object,
                 snrvalue=_safe_snr_calculation(samp, namp)
                 snrdata['snr_MAD'] = snrvalue
             if 'filtered_Linf' in optional_metrics:
-                namp=PercAmplitude(nfilt,perc)
+                # the C function expects a fraction - for users a percentage
+                # is clearer
+                namp=PercAmplitude(nfilt,perc/100.0)
                 samp=PeakAmplitude(sfilt)
                 snrvalue=_safe_snr_calculation(samp, namp)
                 snrdata['snr_Linf'] = snrvalue
             if 'filtered_perc' in optional_metrics:
                 namp=MADAmplitude(nfilt)
-                samp=PercAmplitude(sfilt,perc)
+                samp=PercAmplitude(sfilt,perc/100.0)
                 snrvalue=_safe_snr_calculation(samp, namp)
                 snrdata['snr_perc'] = snrvalue
 
@@ -400,6 +415,7 @@ def arrival_snr(data_object,
       band_cutoff_snr=2.0,
       # check these are reasonable - don't remember the formula when writing this
         tbp=5.0,ntapers=10,
+         high_frequency_search_start=5.0,
           poles=3,
             perc=95.0,
               phase_name='P',
@@ -444,17 +460,18 @@ def arrival_snr(data_object,
         return data_object
     snrdata=FD_snr_estimator(data_object,noise_window,noise_spectrum_engine,
             signal_window,signal_spectrum_engine,band_cutoff_snr,tbp,ntapers,
-              poles,perc,optional_metrics,
+              high_frequency_search_start,poles,perc,optional_metrics,
                 return_as_dict=True,store_as_subdocument=False)
     snrdata['phase'] = phase_name
     data_object[metadata_key] = snrdata
     
-def arrival_srn_QC(data_object,
+def arrival_snr_QC(data_object,
   noise_window=TimeWindow(-130.0,-5.0),noise_spectrum_engine=None,
     signal_window=TimeWindow(-5.0,120.0), signal_spectrum_engine=None,
       band_cutoff_snr=2.0,
       # check these are reasonable - don't remember the formula when writing this
         tbp=5.0,ntapers=10,
+         high_frequency_search_start=5.0,
           poles=3,
             perc=95.0,
               phase_name='P',
@@ -628,7 +645,7 @@ def arrival_srn_QC(data_object,
         receiver_lon = data_object[rcol + '_lon']
         delta = locations2degrees(source_lat,source_lon,receiver_lat,receiver_lon)
         arrival = taup_model.get_travel_times(source_depth_in_km=source_depth,
-                        distance_in_degrees=delta,phase_list=[phase_name])
+                        distance_in_degree=delta,phase_list=[phase_name])
         arrival_time = source_time + arrival[0].time
         taup_arrival_phase = arrival[0].phase.name
         # not sure if this will happen but worth trapping it as a warning if 
@@ -642,7 +659,7 @@ def arrival_srn_QC(data_object,
         data_to_process.ator(arrival_time)
     snrdata=FD_snr_estimator(data_to_process,noise_window,noise_spectrum_engine,
             signal_window,signal_spectrum_engine,band_cutoff_snr,tbp,ntapers,
-              poles,perc,optional_metrics,
+              high_frequency_search_start,poles,perc,optional_metrics,
                 return_as_dict=True,store_as_subdocument=False)
     snrdata['phase'] = phase_name  
     # Note we add this result to data_object NOT data_to_process because that 

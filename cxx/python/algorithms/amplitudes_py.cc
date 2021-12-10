@@ -126,7 +126,8 @@ PYBIND11_MODULE(amplitudes, m) {
     py::arg("signal_power_spectrum"),
     py::arg("noise_power_spectrum"),
     py::arg("srn_threshold"),
-    py::arg("time_bandwidth_product")
+    py::arg("time_bandwidth_product"),
+    py::arg("high_frequency_search_start")
     )
   ;
   m.def("BandwidthStatistics",&BandwidthStatistics,
