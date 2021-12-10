@@ -20,7 +20,7 @@ from mspasspy.ccore.utility import MsPASSError
 from mspasspy.ccore.algorithms.amplitudes import (MADAmplitude,
                                                   RMSAmplitude,
                                                   PeakAmplitude,
-                                                  PerfAmplitude,
+                                                  PercAmplitude,
                                                   ScalingMethod,
                                                   _scale)
 from mspasspy.ccore.algorithms.basic import TimeWindow
@@ -68,7 +68,7 @@ def test_scale():
     print('RMS amplitude estimate=', amprms)
     assert round(amprms, 2) == 100.46
     amppeak = PeakAmplitude(dts)
-    ampperf80 = PerfAmplitude(dts, 0.8)
+    ampperf80 = PercAmplitude(dts, 0.8)
     print('Peak amplitude=', amppeak)
     print('80% clip level amplitude=', ampperf80)
     assert amppeak == 100.0
@@ -85,7 +85,7 @@ def test_scale():
     amprms = RMSAmplitude(d3c)
     print('RMS amplitude estimate=', amprms)
     amppeak = PeakAmplitude(d3c)
-    ampperf60 = PerfAmplitude(d3c, 0.6)
+    ampperf60 = PercAmplitude(d3c, 0.6)
     print('Peak amplitude=', amppeak)
     print('60% clip level amplitude=', ampperf60)
     assert amppeak == 200.0
