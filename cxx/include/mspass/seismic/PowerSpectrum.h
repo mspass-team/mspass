@@ -78,7 +78,7 @@ template <class T> PowerSpectrum::PowerSpectrum(const mspass::utility::Metadata&
   f0=0.0;
   spectrum_type=nm;
   spectrum.reserve(d.size());
-  for(int k=0;k<d.size();++k)
+  for(size_t k=0;k<d.size();++k)
     spectrum.push_back(static_cast<double>(d[k]));
 };
 }  //end namespace
