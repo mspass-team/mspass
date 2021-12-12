@@ -3426,16 +3426,10 @@ class Database(pymongo.database.Database):
                     # but here we want only one TimeSeries, we merge these Trace objects and fill values for gaps
                     # we post a complaint elog entry to the mspass_object if there are gaps in the stream
                     if len(st) > 1:
-                        mspass_object.elog.log_error(
-                            "read_data",
-                            "There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps.",
-                            ErrorSeverity.Complaint,
-                        )
-                        st = st.merge(
-                            method=merge_method,
-                            fill_value=merge_fill_value,
-                            interpolation_samples=merge_interpolation_samples,
-                        )
+                        mspass_object.elog.log_error('read_data',
+                                             'There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps.',
+                                             ErrorSeverity.Complaint)
+                        st = st.merge(method=merge_method, fill_value=merge_fill_value, interpolation_samples=merge_interpolation_samples)
                     tr = st[0]
                     # Now we convert this to a TimeSeries and load other Metadata
                     # Note the exclusion copy and the test verifying net,sta,chan,
