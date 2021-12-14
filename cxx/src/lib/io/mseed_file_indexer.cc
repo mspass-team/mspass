@@ -22,11 +22,16 @@ using mspass::utility::ErrorSeverity;
 /* Using this file scope typedef to avoid the absurdly complex syntax of an
 std::pair constructor with complex objects like this */
 typedef std::pair<std::vector<mseed_index>,mspass::utility::ErrorLogger> MSDINDEX_returntype;
-
+thread_local std::string buffer;
+void save_error_message(const char *message)
+{
+  buffer += message;
+}
 
 MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
   const bool segment_timetears,const bool Verbose)
 {
+
   const string function_name("mseed_file_indexer");
   MS3Record *msr = 0;
   /* This thing is used for the thread safe reader.   It uses the common
@@ -47,12 +52,16 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
   const double time_tear_tolerance(0.5);
 
   vector<mseed_index> indexdata;
+  /* this might not be necessary but I think this is needed to assure the
+  error message buffer is cleared between calls.   We will clear it on exit
+  also so this may be redundant*/
+  buffer.clear();
 
-  /* Enable accumulation of up to 10 error and warning messages.  This
-  capability is currently not functional.  I (glp) think internal libmseed
-  errors get posted this way but by default go to stderr.  I think we need
-  a mechanism to post them to elog. */
+  /* Enable accumulation of up to 10 error and warning messages. This
+  uses the logging function defined above to post any messages to the
+  file-scope variable buffer,  We retrieve it below it is is empty*/
   ms_rloginit (NULL, NULL, NULL, NULL, 10);
+  ms_rloginit(save_error_message,"libmseed diagnostic:  ",save_error_message,"libmseed error:  ",10);
   mspass::utility::ErrorLogger elog;
 
   /* Loop over the input file record by record */
@@ -224,10 +233,17 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
       indexdata.push_back(ind);
     }
   }
-
+  /* We always dump any errors in buffer.  This might duplicate the errors
+  posted above when the reader returned an error.  Very unclear how this works.
+  */
+  if(buffer.length()>0)
+  {
+    elog.log_error(function_name,buffer,ErrorSeverity::Complaint);
+  }
   /* Make sure everything is cleaned up.  Documentation says this is needed
   to invoke the plain C equivalent of a destructor.*/
   ms3_readmsr_r (&msfp, &msr, NULL, NULL, NULL, 0, 0);
+  buffer.clear();
   return MSDINDEX_returntype(indexdata,elog);
 }
 } // End namespace mspass::io
