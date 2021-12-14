@@ -1,16 +1,22 @@
 """
 Functions for converting to and from MsPASS data types.
 """
+from typing import Collection
 import numpy as np
 import obspy.core
+import collections
+import pandas as pd
+import dask.dataframe as daskdf
 
-from mspasspy.ccore.utility import (Metadata, MsPASSError)
-from mspasspy.ccore.seismic import (_CoreSeismogram,
-                                    Seismogram,
-                                    TimeSeries,
-                                    TimeSeriesEnsemble,
-                                    SeismogramEnsemble,
-                                    Keywords)
+from mspasspy.ccore.utility import Metadata, AntelopePf, MsPASSError
+from mspasspy.ccore.seismic import (
+    _CoreSeismogram,
+    Seismogram,
+    TimeSeries,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+    Keywords,
+)
 from mspasspy.ccore.algorithms.basic import ExtractComponent
 
 
@@ -32,6 +38,7 @@ def dict2Metadata(dic):
 
 # dict.toMetadata = dict2Metadata
 
+
 def Metadata2dict(md):
     """
     Converts a Metadata object to a Python dict.
@@ -49,6 +56,38 @@ def Metadata2dict(md):
 
 
 Metadata.todict = Metadata2dict
+
+
+def AntelopePf2dict(pf):
+    """
+    Converts a AntelopePf object to a Python dict.
+    This converts a AntelopePf object to a Python dict by recursively
+    decoding the tbls.
+    :param pf: AntelopePf object to convert.
+    :type md: :class:`~mspasspy.ccore.AntelopePf`
+    :return: Python dict equivalent to md.
+    :rtype: dict
+    """
+
+    keys = pf.keys()
+    tbl_keys = pf.tbl_keys()
+    arr_keys = pf.arr_keys()
+
+    data = collections.OrderedDict()
+    for key in keys:
+        val = pf.get(key)
+        data[key] = val
+    for key in tbl_keys:
+        val = pf.get_tbl(key)
+        data[key] = val
+    for key in arr_keys:
+        pf_branch = pf.get_branch(key)
+        branch_dict = AntelopePf2dict(pf_branch)
+        data[key] = branch_dict
+    return data
+
+
+AntelopePf.todict = AntelopePf2dict
 
 
 def TimeSeries2Trace(ts):
@@ -84,9 +123,9 @@ def TimeSeries2Trace(ts):
     # We first deal with attributes in BasicTimeSeries that have to
     # be translated into an obspy stats dictionary like object
     dresult.dead_mspass = False
-    dresult.stats['delta'] = ts.dt
-    dresult.stats['npts'] = ts.npts
-    dresult.stats['starttime'] = obspy.core.UTCDateTime(ts.t0)
+    dresult.stats["delta"] = ts.dt
+    dresult.stats["npts"] = ts.npts
+    dresult.stats["starttime"] = obspy.core.UTCDateTime(ts.t0)
     # It appears obspy computes endtime - this throws an AttributeError if
     # included. Ratained for reference to keep someone from putting this back
     # dresult.stats['endtime']=obspy.core.UTCDateTime(ts.endtime())
@@ -95,39 +134,48 @@ def TimeSeries2Trace(ts):
     # to extract them with caution.  Note defaults are identical to
     # Trace constructor
     if ts.is_defined(Keywords.net):
-        dresult.stats['network'] = ts.get_string(Keywords.net)
+        dresult.stats["network"] = ts.get_string(Keywords.net)
     else:
-        dresult.stats['network'] = ''
+        dresult.stats["network"] = ""
     if ts.is_defined(Keywords.sta):
-        dresult.stats['station'] = ts.get_string(Keywords.sta)
+        dresult.stats["station"] = ts.get_string(Keywords.sta)
     else:
-        dresult.stats['station'] = ''
+        dresult.stats["station"] = ""
     if ts.is_defined(Keywords.chan):
-        dresult.stats['channel'] = ts.get_string(Keywords.chan)
+        dresult.stats["channel"] = ts.get_string(Keywords.chan)
     else:
-        dresult.stats['channel'] = ''
+        dresult.stats["channel"] = ""
     if ts.is_defined(Keywords.loc):
-        dresult.stats['location'] = ts.get_string(Keywords.loc)
+        dresult.stats["location"] = ts.get_string(Keywords.loc)
     else:
-        dresult.stats['location'] = ''
-    if ts.is_defined('calib'):
-        dresult.stats['calib'] = ts.get_double('calib')
+        dresult.stats["location"] = ""
+    if ts.is_defined("calib"):
+        dresult.stats["calib"] = ts.get_double("calib")
     else:
-        dresult.stats['calib'] = 1.0
+        dresult.stats["calib"] = 1.0
 
     # We have to copy other metadata to preserve them too.  That is
     # complicated by the fact that some (notably endtime) are read only
     # and will abort the program if we just naively copy them.
     # The list below are the keys to exclude either because they
     # are computed by Trace (i.e. endtime) or are already set above
-    do_not_copy = ["delta", "npts", "starttime", "endtime", "network", "station",
-                   "channel", "location", "calib"]
+    do_not_copy = [
+        "delta",
+        "npts",
+        "starttime",
+        "endtime",
+        "network",
+        "station",
+        "channel",
+        "location",
+        "calib",
+    ]
     for k in ts.keys():
         if not (k in do_not_copy):
             dresult.stats[k] = ts[k]
-    #dresult.data = np.ndarray(ts.npts)
+    # dresult.data = np.ndarray(ts.npts)
     # for i in range(ts.npts):
-        #dresult.data[i] = ts.data[i]
+    # dresult.data[i] = ts.data[i]
     dresult.data = np.array(ts.data)
     return dresult
 
@@ -135,7 +183,9 @@ def TimeSeries2Trace(ts):
 TimeSeries.toTrace = TimeSeries2Trace
 
 
-def Seismogram2Stream(sg, chanmap=['E', 'N', 'Z'], hang=[90.0, 0.0, 0.0], vang=[90.0, 90.0, 0.0]):
+def Seismogram2Stream(
+    sg, chanmap=["E", "N", "Z"], hang=[90.0, 0.0, 0.0], vang=[90.0, 90.0, 0.0]
+):
     # fixme hang and vang parameters
     """
     Convert a mspass::Seismogram object to an obspy::Stream with 3 components split apart.
@@ -244,18 +294,18 @@ def Trace2TimeSeries(trace, history=None):
         # the TimeSeries constructor may abort
         h[Keywords.starttime] = 0.0
     # we don't require endtime in TimeSeries so ignore if it is not set
-    if 'endtime' in trace.stats:
-        t = h['endtime']
-    h['endtime'] = t.timestamp
+    if "endtime" in trace.stats:
+        t = h["endtime"]
+    h["endtime"] = t.timestamp
     #
     # these define a map of aliases to apply when we convert to mspass
     # metadata from trace - we redefined these names but others could
     # surface as obspy evolves independently from mspass
     mspass_aliases = dict()
-    mspass_aliases['station'] = Keywords.sta
-    mspass_aliases['network'] = Keywords.net
-    mspass_aliases['location'] = Keywords.loc
-    mspass_aliases['channel'] = Keywords.chan
+    mspass_aliases["station"] = Keywords.sta
+    mspass_aliases["network"] = Keywords.net
+    mspass_aliases["location"] = Keywords.loc
+    mspass_aliases["channel"] = Keywords.chan
     for k in mspass_aliases:
         if k in h:
             x = h.pop(k)
@@ -278,7 +328,7 @@ def Trace2TimeSeries(trace, history=None):
 obspy.core.Trace.toTimeSeries = Trace2TimeSeries
 
 
-def Stream2Seismogram(st, master=0, cardinal=False, azimuth='azimuth', dip='dip'):
+def Stream2Seismogram(st, master=0, cardinal=False, azimuth="azimuth", dip="dip"):
     """
     Convert obspy Stream to a Seismogram.
 
@@ -342,13 +392,23 @@ def Stream2Seismogram(st, master=0, cardinal=False, azimuth='azimuth', dip='dip'
     # attribute is set. The cardinal part is to override the test if
     # we can assume he components are ENZ
     if not cardinal:
-        if azimuth not in st[0].stats or azimuth not in st[1].stats or azimuth not in st[2].stats:
-            raise RuntimeError("Stream2Seismogram:  Required attribute " +
-                               azimuth + " must be in mdother list")
+        if (
+            azimuth not in st[0].stats
+            or azimuth not in st[1].stats
+            or azimuth not in st[2].stats
+        ):
+            raise RuntimeError(
+                "Stream2Seismogram:  Required attribute "
+                + azimuth
+                + " must be in mdother list"
+            )
     if not cardinal:
         if dip not in st[0].stats or dip not in st[1].stats or dip not in st[2].stats:
-            raise RuntimeError("Stream2Seismogram:  Required attribute " +
-                               dip + " must be in mdother list")
+            raise RuntimeError(
+                "Stream2Seismogram:  Required attribute "
+                + dip
+                + " must be in mdother list"
+            )
     # Outer exception handler to handle range of possible errors in
     # converting each component.  Note we pass an empty list for mdother
     # and aliases except the master
@@ -378,7 +438,7 @@ def Stream2Seismogram(st, master=0, cardinal=False, azimuth='azimuth', dip='dip'
     # All errors returned by this constructor currenlty leave the data INVALID
     # so handler should discard anything with an error
     dout = _CoreSeismogram(bundle, master)
-    res = Seismogram(dout, 'INVALID')
+    res = Seismogram(dout, "INVALID")
     res.live = True
     return res
 
@@ -407,19 +467,207 @@ def TimeSeriesEnsemble2Stream(tse):
     # Having this as const in is a maitenanc issue.  Shouldn't be a problem
     # provided no other file uses this key.  For now it is self contained in
     # this module.
-    tse['CONVERTER_ENSEMBLE_KEYS'] = md.keys()
+    tse["CONVERTER_ENSEMBLE_KEYS"] = md.keys()
     # This pushes all conents of ensemble md to all members. That includes
     # the scratch list we just posted. inverse needs to clear the temp
     tse.sync_metadata()
     # Remover the temporary from the ensemble metadata or the return
     # will be inconsistent with the input
-    tse.erase('CONVERTER_ENSEMBLE_KEYS')
+    tse.erase("CONVERTER_ENSEMBLE_KEYS")
     for ts in tse.member:
         res.append(TimeSeries2Trace(ts))
     return res
 
 
 TimeSeriesEnsemble.toStream = TimeSeriesEnsemble2Stream
+
+
+def Pf2AttributeNameTbl(pf, tag="attributes"):
+    """
+    This function will parse a pf file to extract a tbl with a specific
+    key and return a data structure that defines the names and types of
+    each column in the input file.
+
+    The structure returned is a tuple with three components:
+        1 (index 0) python array of attribute names in the original tbl order
+          This is used to parse the text file so the order matters a lot.
+        2 (index 1) parallel array of type names for each attribute.
+          These are actual python type objects that can be used as the
+          second arg of isinstance.
+        3 (index 2) python dictionary keyed by name field that defines
+          what a null value is for this attribute.
+
+    :param pf:  AntelopePf object to be parsed
+    :param tag:  &Tbl tag for section of pf to be parsed.
+
+    """
+    tbl = pf.get_tbl(tag)
+    names = []
+    dtypes = []
+    nullvalues = []
+
+    i = 0
+    for line in tbl:
+        temp = line.split()
+        names.append(temp[0])
+        typenamein = temp[1].lower()  # allows upper or lower case in names
+        if typenamein == "string" or typenamein == "str":
+            typ = type("foobar")
+            nullval = temp[2]
+        elif typenamein == "integer" or typenamein == "int" or typenamein == "long":
+            typ = type(1)
+            nullval = int(temp[2])
+        elif (
+            typenamein == "float"
+            or typenamein == "double"
+            or typenamein == "real"
+            or typenamein == "epochtime"
+        ):
+            typ = type(1.0)
+            nullval = float(temp[2])
+        elif typenamein == "bool" or typenamein == "boolean":
+            typ = type(True)
+            nullval = bool(temp[2])
+        else:
+            raise MsPASSError(
+                "parse_attribute_name_tbl:  unsupported data type file=" + typenamein,
+                "Fatal",
+            )
+        dtypes.append(typ)
+        nullvalues.append(nullval)
+
+        i += 1
+        nulls = dict()
+        i = 0
+        for k in names:
+            nulls[k] = nullvalues[i]
+            i += 1
+
+    return tuple([names, dtypes, nulls])
+
+
+def Textfile2Dataframe(
+    filename,
+    separator="\s+",
+    type_dict=None,
+    header_line=0,
+    attribute_names=None,
+    rename_attributes=None,
+    attributes_to_use=None,
+    one_to_one=True,
+    parallel=False,
+    insert_column=None,
+):
+    """
+    Import a text file representation of a table and store its
+    representation as a pandas dataframe.
+    Note that even in the parallel environment, a dask dataframe will be
+    transfered back to a pandas dataframe for the consistency.
+
+    :param filename:  path to text file that is to be read to create the
+      table object that is to be processed (internally we use pandas or
+      dask dataframes)
+    :param separator: The delimiter used for seperating fields,
+      the default is "\s+", which is the regular expression of "one or more
+      spaces".
+        For csv file, its value should be set to ','.
+        This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
+        To learn more details about the usage, check the following links:
+        https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+        https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html
+    :param type_dict: pairs of each attribute and its type, usedd to validate
+      the type of each input item
+    :param header_line: defines the line to be used as the attribute names for
+      columns, if is < 0, an attribute_names is required. Please note that if an
+      attribute_names is provided, the attributes defined in header_line will
+      always be override.
+    :param attribute_names: This argument must be either a list of (unique)
+      string names to define the attribute name tags for each column of the
+      input table.   The length of the array must match the number of
+      columns in the input table or this function will throw a MsPASSError
+      exception.   This argument is None by default which means the
+      function will assume the line specified by the "header_line" argument as
+      column headers defining the attribute name.  If header_line is less
+      than 0 this argument will be required.  When header_line is >= 0
+      and this argument (attribute_names) is defined all the names in
+      this list will override those stored in the file at the specified
+      line number.
+    :param  rename_attributes:   This is expected to be a python dict
+      keyed by names matching those defined in the file or attribute_names
+      array (i.e. the panda/dataframe column index names) and values defining
+      strings to use to override the original names.   That usage, of course,
+      is most common to override names in a file.  If you want to change all
+      the name use a custom attributes_name array as noted above.  This
+      argument is mostly to rename a small number of anomalous names.
+    :param attributes_to_use:  If used this argument must define a list of
+      attribute names that define the subset of the dataframe dataframe
+      attributes that are to be saved.  For relational db users this is
+      effectively a "select" list of attribute names.  The default is
+      None which is taken to mean no selection is to be done.
+    :param one_to_one: is an important boolean use to control if the
+      output is or is not filtered by rows.  The default is True
+      which means every tuple in the input file will create a single row in
+      dataframe. (Useful, for example, to construct an wf_miniseed
+      collection css3.0 attributes.)  If False the (normally reduced) set
+      of attributes defined by attributes_to_use will be filtered with the
+      panda/dask dataframe drop_duplicates method.  That approach
+      is important, for example, to filter things like Antelope "site" or
+      "sitechan" attributes created by a join to something like wfdisc and
+      saved as a text file to be processed by this function.
+    :param parallel:  When true we use the dask dataframe operation.
+      The default is false meaning the simpler, identical api panda
+      operators are used.
+    :param insert_column: a dictionary of new columns to add, and their value(s).
+    If the content is a single value, it can be passedto define a constant value
+    for the entire column of data. The content can also be a list, in that case,
+    the list should contain values that are to be set, and it must be the same
+    length as the number of tuples in the table.
+    """
+
+    if (
+        attribute_names is not None and len(attribute_names) > 0
+    ):  #   If given attribute_names, header_line would be overriden
+        header_line = None
+
+    if (
+        header_line is None or header_line < 0
+    ):  #   Header_line not given, using attribute_names
+        if parallel:
+            df = daskdf.read_csv(filename, sep=separator, names=attribute_names)
+        else:
+            df = pd.read_csv(filename, sep=separator, names=attribute_names)
+    else:  #   header_line is given and attribute_names is not given
+        if parallel:
+            df = daskdf.read_csv(filename, sep=separator, header=header_line)
+        else:
+            df = pd.read_csv(filename, sep=separator, header=header_line)
+
+    #   Convert data in each column to the type given in type_dict
+    if type_dict is not None:
+        for field, type in type_dict.items():
+            if field in df:
+                df[field].astype(type)
+
+    if attributes_to_use is not None:
+        df = df[attributes_to_use]
+
+    if not one_to_one:
+        df = df.drop_duplicates()
+
+    #   Intentionally left to last as the above can reduce the size of df
+    if rename_attributes is not None:
+        df = df.rename(columns=rename_attributes)
+
+    #   Add new columns to the dataframe
+    if insert_column is not None:
+        for key, val in insert_column.items():
+            df[key] = val
+
+    #   Transfer dask dataframe back to pandas dataframe to keep the consistency in internal representation
+    if parallel:
+        df = df.compute()
+
+    return df
 
 
 def _converter_get_ensemble_keys(ens):
@@ -432,8 +680,8 @@ def _converter_get_ensemble_keys(ens):
     """
     for d in ens.member:
         if d.live:
-            if d.is_defined('CONVERTER_ENSEMBLE_KEYS'):
-                return d['CONVERTER_ENSEMBLE_KEYS']
+            if d.is_defined("CONVERTER_ENSEMBLE_KEYS"):
+                return d["CONVERTER_ENSEMBLE_KEYS"]
             else:
                 return list()
 
@@ -460,7 +708,7 @@ def Stream2TimeSeriesEnsemble(stream):
         for d in tse.member:
             # Depend on the temp being set in all members - watch out in
             # maintenance if any of the related code changes that may be wrong
-            d.erase('CONVERTER_ENSEMBLE_KEYS')
+            d.erase("CONVERTER_ENSEMBLE_KEYS")
 
     return tse
 
@@ -477,11 +725,11 @@ def SeismogramEnsemble2Stream(sge):
     # This uses the same approach as TimeSeriesEnsemblet2Stream to handle
     # ensemble metadata.  See comments there for potential maintenanc issues
     md = sge._get_ensemble_md()
-    sge['CONVERTER_ENSEMBLE_KEYS'] = md.keys()
+    sge["CONVERTER_ENSEMBLE_KEYS"] = md.keys()
     sge.sync_metadata()
     # as above remove this temporary from sge or it alters the
     # input - python gives us a pointer to this thing so it is mutable
-    sge.erase('CONVERTER_ENSEMBLE_KEYS')
+    sge.erase("CONVERTER_ENSEMBLE_KEYS")
     res = obspy.core.Stream()
     for sg in sge.member:
         res += Seismogram2Stream(sg)
@@ -500,8 +748,7 @@ def Stream2SeismogramEnsemble(stream):
     size = len(stream)
     res = SeismogramEnsemble()
     for i in range(int(size / 3)):
-        res.member.append(Stream2Seismogram(
-            stream[i * 3:i * 3 + 3], cardinal=True))
+        res.member.append(Stream2Seismogram(stream[i * 3 : i * 3 + 3], cardinal=True))
         # fixme cardinal
     # Handle the ensemble metadata.   The little helper we call here
     # get the list set with CONVERTER_ENSEMBLE_KEYS.  The
@@ -516,7 +763,7 @@ def Stream2SeismogramEnsemble(stream):
         for d in res.member:
             # Depend on the temp being set in all members - watch out in
             # maintenance if any of the related code changes that may be wrong
-            d.erase('CONVERTER_ENSEMBLE_KEYS')
+            d.erase("CONVERTER_ENSEMBLE_KEYS")
     return res
 
 
@@ -555,7 +802,8 @@ def _all_members_match(ens, key):
         return True
     else:
         raise MsPASSError(
-            "_all_members_match:  input is not a mspass ensemble object", "Invalid")
+            "_all_members_match:  input is not a mspass ensemble object", "Invalid"
+        )
 
 
 def post_ensemble_metadata(ens, keys=[], check_all_members=False, clean_members=False):
@@ -609,7 +857,7 @@ def post_ensemble_metadata(ens, keys=[], check_all_members=False, clean_members=
       if check_all_members is set True.  It will be silently ignored if
       check_all_members is False.
     """
-    alg = 'post_ensemble_metadata'
+    alg = "post_ensemble_metadata"
 
     if isinstance(ens, TimeSeriesEnsemble) or isinstance(ens, SeismogramEnsemble):
         md = Metadata()
@@ -617,18 +865,25 @@ def post_ensemble_metadata(ens, keys=[], check_all_members=False, clean_members=
             if d.live:
                 for k in keys:
                     if not k in d:
-                        raise MsPASSError(alg
-                                          + ':  no data matching requested key='+k
-                                          + ' Cannot post to ensemble', 'Invalid')
+                        raise MsPASSError(
+                            alg
+                            + ":  no data matching requested key="
+                            + k
+                            + " Cannot post to ensemble",
+                            "Invalid",
+                        )
                     md[k] = d[k]
         if check_all_members:
             for d in ens.member:
                 for k in keys:
                     if not _all_members_match(ens, k):
-                        raise MsPASSError(alg
-                                          + ':  Data mismatch data members with key='
-                                          + k + '\n  In check_all_members mode all values associated with this key must match',
-                                          'Invalid')
+                        raise MsPASSError(
+                            alg
+                            + ":  Data mismatch data members with key="
+                            + k
+                            + "\n  In check_all_members mode all values associated with this key must match",
+                            "Invalid",
+                        )
             if clean_members:
                 for d in ens.member:
                     for k in keys:
@@ -636,6 +891,8 @@ def post_ensemble_metadata(ens, keys=[], check_all_members=False, clean_members=
         ens.update_metadata(md)
 
     else:
-        raise MsPASSError(alg
-                          + ':  Illegal data received.  This function runs only on mspass ensemble objects',
-                          'Invalid')
+        raise MsPASSError(
+            alg
+            + ":  Illegal data received.  This function runs only on mspass ensemble objects",
+            "Invalid",
+        )
