@@ -766,7 +766,7 @@ PYBIND11_MODULE(seismic, m) {
   creates an import error:
     py::class_<PowerSpectrum,Metadata>(m,"PowerSpectrum",
   Here is the one that works but doesn't provide Metadata functionality */
-    py::class_<PowerSpectrum>(m,"PowerSpectrum",
+    py::class_<PowerSpectrum, Metadata>(m,"PowerSpectrum",
                   "Container for power spectrum estimates")
       .def(py::init<>())
       .def(py::init<const Metadata&,const vector<double>&,const double,const string>())
