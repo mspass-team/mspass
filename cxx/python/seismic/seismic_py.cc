@@ -754,19 +754,7 @@ PYBIND11_MODULE(seismic, m) {
     )
   ;
 
-  /* This following would be the normal way to expose this class to python, but it generates and
-  error for reasons described in this issues page of pybind11:
-  https://github.com/pybind/pybind11/issues/633
-  I (glp) could not find and immediate solution but use the bandaid solution here of removing the
-  Metadata bindings to this class.   For the time being that will not present a problem, but it
-  should be fixed long term.   Could, for example, add a "get_metadata" lambda in the pybind11
-  code that would dynamic cast the PowerSpectrum and return the Metadata.  I think that would work, but
-  it would be better to figure out how to allow Metadata to be used.   Might be as easy as
-  putting the PowerSpectrum file in the utility module.  Here is the class binding that
-  creates an import error:
     py::class_<PowerSpectrum,Metadata>(m,"PowerSpectrum",
-  Here is the one that works but doesn't provide Metadata functionality */
-    py::class_<PowerSpectrum>(m,"PowerSpectrum",
                   "Container for power spectrum estimates")
       .def(py::init<>())
       .def(py::init<const Metadata&,const vector<double>&,const double,const string>())
@@ -786,26 +774,31 @@ PYBIND11_MODULE(seismic, m) {
         [](const PowerSpectrum& self)
         {
           /* PowerSpectrum inherit Metadata so we have to serialize that*/
+
           pybind11::object sbuf;
-          sbuf=serialize_metadata_py(self);
-          /* this is the pybind11 way to serialize an std::vector*/
+          sbuf=serialize_metadata_py(dynamic_cast<const Metadata&>(self));
           py::array_t<double, py::array::f_style> darr(self.spectrum.size(),
                               &(self.spectrum[0]));
-          /* the ErrorLogger object has boost serialzization used to serialize
-          it here.  */
           stringstream ss_elog;
           boost::archive::text_oarchive ar(ss_elog);
           ar << self.elog;
-          /* We can just add public attributes to the returned tuple without
-          getters.  If the api changes (possible) this will have to change */
+/*
           return py::make_tuple(sbuf,self.df,self.f0,self.spectrum_type,
               ss_elog.str(),darr);
+              */
+              return py::make_tuple(self.df,self.f0,self.spectrum_type,
+                  ss_elog.str(),darr);
         },
         [](py::tuple t)
         {
           /* Deserialize Metadata*/
+          /*
           pybind11::object sbuf=t[0];
           Metadata md=restore_serialized_metadata_py(sbuf);
+          */
+          // Debug
+          return PowerSpectrum();
+          /*
           double df=t[1].cast<double>();
           double f0=t[2].cast<double>();
           string spectrum_type=t[3].cast<std::string>();
@@ -816,21 +809,15 @@ PYBIND11_MODULE(seismic, m) {
           py::array_t<double, py::array::f_style> darr;
           darr=t[5].cast<py::array_t<double, py::array::f_style>>();
           py::buffer_info info = darr.request();
-          /* there may be a more clever (and faster) way to pass this
-          array of data to the PowerSpectrum constructor than this - making
-          a copy into an std::vector - but this is bombproof*/
           std::vector<double> d;
           d.resize(info.shape[0]);
           memcpy(d.data(), info.ptr, sizeof(double) * d.size());
           PowerSpectrum restored(md,d,df,spectrum_type);
-          /* the constructor we just was designed for creation of a
-          new power spectrum cloning metadata.  It lacks two public
-          variables we have to set here.  The API probably should be changed
-          to allow creation of this in a single call, but for now we'll
-          just do this hack -glp, 12/5/2021*/
+
           restored.f0=f0;
           restored.elog=elog;
           return restored;
+          */
         }
       ))
     ;
