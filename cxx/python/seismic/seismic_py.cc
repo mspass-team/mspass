@@ -782,23 +782,14 @@ PYBIND11_MODULE(seismic, m) {
           stringstream ss_elog;
           boost::archive::text_oarchive ar(ss_elog);
           ar << self.elog;
-/*
           return py::make_tuple(sbuf,self.df,self.f0,self.spectrum_type,
               ss_elog.str(),darr);
-              */
-              return py::make_tuple(self.df,self.f0,self.spectrum_type,
-                  ss_elog.str(),darr);
         },
         [](py::tuple t)
         {
           /* Deserialize Metadata*/
-          /*
           pybind11::object sbuf=t[0];
           Metadata md=restore_serialized_metadata_py(sbuf);
-          */
-          // Debug
-          return PowerSpectrum();
-          /*
           double df=t[1].cast<double>();
           double f0=t[2].cast<double>();
           string spectrum_type=t[3].cast<std::string>();
@@ -817,7 +808,6 @@ PYBIND11_MODULE(seismic, m) {
           restored.f0=f0;
           restored.elog=elog;
           return restored;
-          */
         }
       ))
     ;
