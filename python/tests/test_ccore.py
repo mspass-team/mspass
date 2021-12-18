@@ -8,6 +8,7 @@ import pytest
 from mspasspy.ccore.seismic import (
     _CoreSeismogram,
     _CoreTimeSeries,
+    PowerSpectrum,
     Seismogram,
     SeismogramEnsemble,
     SlownessVector,
@@ -29,6 +30,7 @@ from mspasspy.ccore.utility import (
 )
 
 from mspasspy.ccore.algorithms.basic import ExtractComponent
+from mspasspy.ccore.algorithms.deconvolution import MTPowerSpectrumEngine
 
 
 def make_constant_data_ts(d, t0=0.0, dt=0.1, nsamp=5, val=1.0):
@@ -1346,3 +1348,18 @@ def test_MsPASSError():
     except MsPASSError as err:
         assert err.message == "test error4"
         assert err.severity == ErrorSeverity.Fatal
+
+
+def test_PowerSpectrum():
+    ts = TimeSeries(100)
+    ts.data[0] = 1.0    # delta function - spectrum will be flat
+    ts.live = True
+    engine = MTPowerSpectrumEngine(100, 5, 10)
+    spec = engine.apply(ts)
+    assert spec.Nyquist() == spec.f0 + spec.df * spec.nf()
+
+    spec_copy = pickle.loads(pickle.dumps(spec))
+    assert spec.df == spec_copy.df
+    assert spec.f0 == spec_copy.f0
+    assert spec.spectrum_type == spec_copy.spectrum_type
+    assert np.allclose(spec.spectrum, spec_copy.spectrum)
