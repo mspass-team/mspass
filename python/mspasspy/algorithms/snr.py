@@ -3,7 +3,8 @@ import numpy as np
 from scipy.signal import hilbert
 from obspy.geodetics import locations2degrees
 from mspasspy.ccore.utility import (MsPASSError,
-                                    ErrorSeverity)
+                                    ErrorSeverity,
+                                    ErrorLogger)
 from mspasspy.ccore.seismic import TimeSeries,Seismogram
 from mspasspy.ccore.algorithms.deconvolution import MTPowerSpectrumEngine
 from mspasspy.ccore.algorithms.amplitudes import (RMSAmplitude,
@@ -153,20 +154,44 @@ def snr(data_object,noise_window=TimeWindow(-130.0,-5.0),
 
   return _safe_snr_calculation(samp, namp)
 
+def _reformat_mspass_error(mserr, prefix_message, 
+            suffix_message="Some requested metrics may not be computed"):
+    """
+    Helper for below used to reformat a message from ccore functions that 
+    throw a MsPASSError.   Needed to produce rational messages from 
+    different error metric calculations.
+    
+   
+    :param mserr:  MsPASSError object caught with a try: except: block 
+    
+    :param prefix_message:  string that becomes the first part of the revised 
+    message posted.
+    
+    :param suffix_message:  string that becomes a third line of the revised 
+    message posted.  Note this string is always preceded by a newline so do not 
+    put a newline in this arg unless you want a blank line.
+    
+    :return:  expand message string
+    
+    """
+    log_message = "FD_snr_estimator:  error in computing an snr metric"
+    log_message += prefix_message
+    log_message += mserr.message
+    log_message += "\n"
+    log_message += suffix_message
+    return log_message
+
 def FD_snr_estimator(data_object,
   noise_window=TimeWindow(-130.0,-5.0),noise_spectrum_engine=None,
     signal_window=TimeWindow(-5.0,120.0), signal_spectrum_engine=None,
       band_cutoff_snr=2.0,
       # check these are reasonable - don't remember the formula when writing this
-        tbp=5.0,ntapers=10,
+        tbp=2.5,ntapers=4,
          high_frequency_search_start=5.0,
           poles=3,
             perc=95.0,
               optional_metrics=None,
-                return_as_dict=False,
-                  store_as_subdocument=False,
-                    subdocument_key='snr_data',
-                      save_spectra=False):
+                save_spectra=False):
         #optional_metrics=['snr_stats','filtered_envelope','filtered_L2','filtered_Linf','filtered_MAD','filtered_perc']):
     """
     Estimates one or more metrics of signal-to-noise from a TimeSeries object.
@@ -176,7 +201,7 @@ def FD_snr_estimator(data_object,
     This is a python function that can be used to compute one or several
     signal-to-noise ratio estimates based on an estimated bandwidth using
     the C++ function EstimateBandwidth.  The function has a fair number of
-    options, but the core metric computed are the bandwidth estimates
+    options, but the core metrics computed are the bandwidth estimates
     computed by that function.  It uses a fairly simple search algorithm
     that functions well for most earthquake sources.  For the low end the
     algorithm searches from the first frequency indistinguishable from DC to
@@ -223,10 +248,16 @@ def FD_snr_estimator(data_object,
     component (e.g longitudinal or vertical for a P phase)
 
     :param noise_window: defines the time window to use for computing the
-    spectrum considered noise.
-    
+    spectrum considered noise. The time span can be either relative or 
+    UTC (absolute) time but we do not check for consistency.  This low 
+    level function assumes they are consistent.  If not, the calculations
+    are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.
+     
     :param signal_window: defines the time window to use that defines what
-    you consider "the signal".
+    you consider "the signal".  The time span can be either relative or 
+    UTC (absolute) time but we do not check for consistency.  This low 
+    level function assumes they are consistent.  If not, the calculations
+    are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.
     
     :param noise_spectrum_engine: is expected to either by a None type
     or an instance of a ccore object called an MTPowerSpectralEngine.
@@ -246,13 +277,15 @@ def FD_snr_estimator(data_object,
     :param tbp:  time-bandwidth product to use for computing the set of
     Slepian functions used for the multitaper estimator.  This parameter is
     used only if the noise_spectrum_engine or signal_spectrum_engine
-    arguments are set as None.
+    arguments are set as None.  The default is 2.5
     
-    :param ntapers:  is the number of Slepia functions (tapers) to compute
+    :param ntapers:  is the number of Slepian functions (tapers) to compute
     for the multitaper estimators. Like tbp it is referenced only if
     noise_spectrum_engine or signal_spectrum_engine are set to None.
     Note the function will throw an exception if the ntaper parameter is
-    not consistent with the time-bandwidth product.  (ADD THE FORMULA HERE)
+    not consistent with the time-bandwidth product.  That is, the 
+    maximum number of tapers is round(2*tbp-1).   Default is 4 which is 
+    consistent with default tbp=2.5
     
     :param high_frequency_search_start: Used to specify the upper frequency 
       used to start the search for the upper end of the bandwidth by 
@@ -271,18 +304,6 @@ def FD_snr_estimator(data_object,
     
     :param optional_metrics: is an iterable container containing one or more
     of the optional snr metrics discussed above.
-    
-    :param return_as_dict:  All the quantities computed in this function 
-    are best abstacted as Metadata.   For the expected normal use of this 
-    function in a map call of dask os spark it is most appropriate to 
-    post the results to the Metadata container in the input data_object 
-    and return the modified data_object.  When this argument is set False, 
-    which is the default, that is the behavior.  When this argument is 
-    set to True, only the python dict container used internally to store 
-    the (variable) outputs is returned.  The True case is most useful 
-    if this function is being run interactively or in a serial workflow.
-    We also use it in a set of thin wrappers for more specialized 
-    functions elsewhere in this module.
     
     :param store_as_subdocument:  This parameter is included for 
     flexibility but should not normally be changed by the user.  As noted 
@@ -309,20 +330,32 @@ def FD_snr_estimator(data_object,
     to MongoDB as it will bloat the arrival collection.  Consider a 
     different strategy if that essential for your work.
     
-    :return:  python dict with computed metrics associated with keys defined above.
-    :rtype: python dict containing measurements with keys noted above.  If there 
-    are error (e.g. window errors) they will be posted in the data_object elog 
-    and the return will be an empty dict
+    :return:  python tuple with two components.  0 is a python dict with 
+    the computed metrics associated with keys defined above.  1 is a
+    mspass.ccore.ErrorLogger object. Any errors in computng any of the 
+    metrics will be posted to this logger.  Users should then test this 
+    object using it's size() method and if it the log is not empty (size >0)
+    the caller should handle that condition.   For normal use that means 
+    pushing any messages the log contains to the original data object's 
+    error log.   
     """
+    algname="FN_snr_estimator"
+    my_logger = ErrorLogger()
     # For this algorithm we dogmatically demand the input be a TimeSeries
     if not isinstance(data_object,TimeSeries):
         raise MsPASSError("FD_snr_estimator:  Received invalid data object - arg0 data must be a TimeSeries",
             ErrorSeverity.Invalid)
+    # MTPowerSpectrum at the moment has an issue with how it handles 
+    # a user error in specifying time-band product and number of tapers. 
+    # We put in an explicit trap here and abort if the user makes a mistake 
+    # to avoid a huge spray of error message
+    if ntapers > round(2*tbp):
+        message=algname+"(Fatal Error):  ntapers={ntapers} inconsistent with tbp={tbp}\n".format(ntapers=ntapers,tbp=tbp)
+        message += "ntapers must be >= round(2*tbp)"
+        raise MsPASSError(message,ErrorSeverity.Fatal)
     if data_object.dead():
-        if return_as_dict:
-            return dict()
-        else:
-            return data_object
+        my_logger.log_error(algname,"Datum received was set dead - cannot compute anything",ErrorSeverity.Invalid)
+        return [dict(),my_logger]
     # We enclose all the main code here in a try block and cat any MsPASSErrors
     # they will be posted as log message. Others will not be handled 
     # intentionally letting python's error mechanism handle them as 
@@ -359,77 +392,119 @@ def FD_snr_estimator(data_object,
             snrdata['signal_window_end_time'] = signal_window.end
             snrdata['noise_window_start_time'] = noise_window.start
             snrdata['noise_window_end_time'] = noise_window.end
-        #For current implementation all the optional metrics require 
-        #computed a filtered version of the data.  If a new option is
-        #desired that does not require filtering the data the logic 
-        #here will need to be changed to create a more exclusive test
-        if len(optional_metrics) > 0:
-            # use the mspass butterworth filter for speed - obspy 
-            # version requires a conversion to Trace objects
-            BWfilt = Butterworth(False,True,True,
-                                 poles,bwd.low_edge_f,
-                                 poles,bwd.high_edge_f,
-                                 data_object.dt)
-            filtered_data = TimeSeries(data_object)
-            BWfilt.apply(filtered_data)
-            nfilt = WindowData(filtered_data,noise_window.start,noise_window.end)
-            sfilt = WindowData(filtered_data,signal_window.start,signal_window.end)
-            # In this implementation we don't need this any longer so we 
-            # delete it here.  If options are added beware
-            del filtered_data
-            # Some minor efficiency would be possible if we avoided 
-            # duplication of computations when multiple optional metrics 
-            # are requested, but the fragility that adds to maintenance 
-            # is not justified
-            if 'snr_stats' in optional_metrics:
-                stats = BandwidthStatistics(S,N,bwd)
-                # stats is a Metadata container - copy to snrdata
-                for k in stats.keys():
-                    snrdata[k] = stats[k]         
-            if 'filtered_envelope' in optional_metrics:
-                analytic_nfilt=hilbert(nfilt.data)
-                analytic_sfilt=hilbert(sfilt.data)
-                nampvector=np.abs(analytic_nfilt)
-                sampvector=np.abs(analytic_sfilt)
-                namp = np.median(nampvector)
-                samp = np.max(sampvector)
-                snrdata['snr_envelope_Linf_over_L1'] = _safe_snr_calculation(samp,namp)           
-            if 'filtered_L2' in optional_metrics:
-                namp=RMSAmplitude(nfilt)
-                samp=RMSAmplitude(sfilt)
-                snrvalue=_safe_snr_calculation(samp, namp)
-                snrdata['snr_L2'] = snrvalue
-            if 'filtered_MAD' in optional_metrics:
-                namp=MADAmplitude(nfilt)
-                samp=MADAmplitude(sfilt)
-                snrvalue=_safe_snr_calculation(samp, namp)
-                snrdata['snr_MAD'] = snrvalue
-            if 'filtered_Linf' in optional_metrics:
-                # the C function expects a fraction - for users a percentage
-                # is clearer
-                namp=PercAmplitude(nfilt,perc/100.0)
-                samp=PeakAmplitude(sfilt)
-                snrvalue=_safe_snr_calculation(samp, namp)
-                snrdata['snr_Linf'] = snrvalue
-            if 'filtered_perc' in optional_metrics:
-                namp=MADAmplitude(nfilt)
-                samp=PercAmplitude(sfilt,perc/100.0)
-                snrvalue=_safe_snr_calculation(samp, namp)
-                snrdata['snr_perc'] = snrvalue
-
+            
     except MsPASSError as err:
-        data_object.elog.log_error(err)
-    if return_as_dict:
-        return snrdata
-    else:
-        if store_as_subdocument:
-            data_object[subdocument_key] = snrdata
-        else:
-            for k in snrdata:
-                data_object[k] = snrdata[k]
-        return data_object
+        newmessage = _reformat_mspass_error(err,
+                "Spectrum calculation and EstimateBandwidth function section failed with the following message\n",
+                "No SNR metrics can be computed for this datum")
+        my_logger.log_error(algname,newmessage,ErrorSeverity.Invalid)
+        return [snrdata,my_logger]     
+    
+    #For current implementation all the optional metrics require 
+    #computed a filtered version of the data.  If a new option is
+    #desired that does not require filtering the data the logic 
+    #here will need to be changed to create a more exclusive test
+    
+    if len(optional_metrics) > 0:
+        # use the mspass butterworth filter for speed - obspy 
+        # version requires a conversion to Trace objects
+        BWfilt = Butterworth(False,True,True,
+                             poles,bwd.low_edge_f,
+                             poles,bwd.high_edge_f,
+                             data_object.dt)
+        filtered_data = TimeSeries(data_object)
+        BWfilt.apply(filtered_data)
+        nfilt = WindowData(filtered_data,noise_window.start,noise_window.end)
+        sfilt = WindowData(filtered_data,signal_window.start,signal_window.end)
+        # In this implementation we don't need this any longer so we 
+        # delete it here.  If options are added beware
+        del filtered_data
+        # Some minor efficiency would be possible if we avoided 
+        # duplication of computations when multiple optional metrics 
+        # are requested, but the fragility that adds to maintenance 
+        # is not justified
+        for metric in optional_metrics:
+            if metric == 'snr_stats':
+                try:
+                    stats = BandwidthStatistics(S,N,bwd)
+                    # stats is a Metadata container - copy to snrdata
+                    for k in stats.keys():
+                        snrdata[k] = stats[k]
+                except MsPASSError as err:
+                    newmessage = _reformat_mspass_error(err,
+                            "BandwithStatistics throw the following error\n",
+                            "Five snr_stats attributes were not computed")
+                    my_logger.log_error(algname,newmessage,err.severity)
+            if metric == 'filtered_envelope':
+                try:
+                    analytic_nfilt=hilbert(nfilt.data)
+                    analytic_sfilt=hilbert(sfilt.data)
+                    nampvector=np.abs(analytic_nfilt)
+                    sampvector=np.abs(analytic_sfilt)
+                    namp = np.median(nampvector)
+                    samp = np.max(sampvector)
+                    snrdata['snr_envelope_Linf_over_L1'] = _safe_snr_calculation(samp,namp)
+                except:
+                    my_logger.log_erro(algname,
+                        "Error computing filtered_envelope metrics:  snr_envelope_Linf_over_L1 not computed",
+                        ErrorSeverity.Complaint)
+            if metric == 'filtered_L2':
+                try:
+                    namp=RMSAmplitude(nfilt)
+                    samp=RMSAmplitude(sfilt)
+                    snrvalue=_safe_snr_calculation(samp, namp)
+                    snrdata['snr_L2'] = snrvalue
+                except MsPASSError as err:
+                    newmessage = _reformat_mspass_error(err,
+                        "Error computing filtered_L2 metric",
+                        "snr_L2 attribute was not compouted")
+                    my_logger.log_error(algname,newmessage,err.severity)
+            
+            if metric=="filtered_MAD":
+                try:
+                    namp=MADAmplitude(nfilt)
+                    samp=MADAmplitude(sfilt)
+                    snrvalue=_safe_snr_calculation(samp, namp)
+                    snrdata['snr_MAD'] = snrvalue
+                except MsPASSError as err:
+                    newmessage = _reformat_mspass_error(err,
+                            "Error computing filtered_MAD metric",
+                            "snr_MAD attribute was not computed")
+                    my_logger.log_error(algname,newmessage,err.severity)
+                
+            if metric=="filtered_Linf":
+                try:
+                     # the C function expects a fraction - for users a percentage
+                     # is clearer
+                     namp=PercAmplitude(nfilt,perc/100.0)
+                     samp=PeakAmplitude(sfilt)
+                     snrvalue=_safe_snr_calculation(samp, namp)
+                     snrdata['snr_Linf'] = snrvalue
+                     snrdata['snr_perc'] = perc
+                except MsPASSError as err:
+                    newmessage = _reformat_mspass_error(err,
+                            "Error computing filtered_Linf metric",
+                            "snr_Linf attribute was not computed")
+                    my_logger.log_error(algname,newmessage,err.severity)
+                
+            if metric=="filtered_perc":
+                try:
+                    namp=MADAmplitude(nfilt)
+                    samp=PercAmplitude(sfilt,perc/100.0)
+                    snrvalue=_safe_snr_calculation(samp, namp)
+                    snrdata['snr_perc'] = snrvalue
+                    snrdata['snr_perc'] = perc  # redundant if filter_Linf is also run but tiny cost
+                except MsPASSError as err:
+                    newmessage = _reformat_mspass_error(err,
+                            "Error computing filtered_perc metric",
+                            "snr_perf metric was not computed")
+                    my_logger.log_error(algname,newmessage,err.severity)
+            else:
+                message = "Illegal optional_metrics keyword="+metric+"\n"
+                message += "If that is a typo expect some metrics will be missing from output"
+                my_logger.log_error(algname,message,ErrorSeverity.Complaint)
+    return [snrdata, my_logger]
 
- 
 def arrival_snr(data_object,
   noise_window=TimeWindow(-130.0,-5.0),noise_spectrum_engine=None,
     signal_window=TimeWindow(-5.0,120.0), signal_spectrum_engine=None,
@@ -480,13 +555,15 @@ def arrival_snr(data_object,
     """
     if data_object.dead():
         return data_object
-    snrdata=FD_snr_estimator(data_object,noise_window,noise_spectrum_engine,
+    [snrdata,elog] = FD_snr_estimator(data_object,noise_window,noise_spectrum_engine,
             signal_window,signal_spectrum_engine,band_cutoff_snr,tbp,ntapers,
               high_frequency_search_start,poles,perc,optional_metrics,
-                return_as_dict=True,store_as_subdocument=False,
                   save_spectra=save_spectra)
+    if elog.size()>0:
+        data_object.elog += elog
     snrdata['phase'] = phase_name
     data_object[metadata_key] = snrdata
+    return data_object
 
     
 def arrival_snr_QC(data_object,
@@ -642,7 +719,8 @@ def arrival_snr_QC(data_object,
         if component < 0 or component > 2:
             raise MsPASSError("arrival_snr_QC:  usage error.  "
                 + "component parameter passed with illegal value={n}\n".format(n=component)
-                + "Must be 0, 1, or 2")
+                + "Must be 0, 1, or 2",
+                ErrorSeverity.Fatal)
         data_to_process = ExtractComponent(data_object,component)
         if receiver_collection:
             rcol = receiver_collection
@@ -682,12 +760,19 @@ def arrival_snr_QC(data_object,
                 "Complaint")
     if data_to_process.time_is_UTC():
         data_to_process.ator(arrival_time)
-    snrdata=FD_snr_estimator(data_to_process,noise_window,noise_spectrum_engine,
+    [snrdata,elog] = FD_snr_estimator(data_to_process,noise_window,noise_spectrum_engine,
             signal_window,signal_spectrum_engine,band_cutoff_snr,tbp,ntapers,
               high_frequency_search_start,poles,perc,optional_metrics,
-                return_as_dict=True,store_as_subdocument=False,
                   save_spectra=save_spectra)
+    if elog.size()>0:
+        data_object.elog += elog
     snrdata['phase'] = phase_name
+    snrdata['snr_arrival_time'] = arrival_time
+    snrdata['snr_signal_window_start'] = arrival_time+signal_window.start
+    snrdata['snr_signal_window_end'] = arrival_time+signal_window.end
+    snrdata['snr_noise_window_start'] = arrival_time+noise_window.start
+    snrdata['snr_noise_window_end'] = arrival_time+noise_window.end
+    
     # These cross-referencing keys may not always be defined when a phase
     # time is based on a pick so we add these cautiously
     scol_id_key = source_collection + '_id'
