@@ -31,7 +31,7 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize, const double tbp
       << endl
       << "is inconsistent with requested time time bandwidth product ="<<tbp
       << endl
-      << "Rest number tapers to max allowed="<<nseq<<endl;
+      << "Reset number tapers to max allowed="<<nseq<<endl;
     ntapers=nseq;
   }
   int seql(0);
