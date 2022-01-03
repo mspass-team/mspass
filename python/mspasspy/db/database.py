@@ -4068,7 +4068,7 @@ class Database(pymongo.database.Database):
                 result.extend([netw])
         return result
 
-    def get_seed_site(self, net, sta, loc="NONE", time=-1.0):
+    def get_seed_site(self, net, sta, loc="NONE", time=-1.0, verbose=False):
         """
         The site collection is assumed to have a one to one
         mapping of net:sta:loc:starttime - endtime.
@@ -4088,6 +4088,9 @@ class Database(pymongo.database.Database):
         :param loc:   optional loc code to made (empty string ok and common)
         default ignores loc in query.
         :param time: epoch time for requested metadata
+        :param verbose:  when True errors will be printed.  By default
+        the function works silently and you should use the output to
+        interact with any errors returned.
 
         :return: MongoDB doc (dict) matching query
         :rtype:  python dict (document) of result.  None if there is no match.
@@ -4105,14 +4108,14 @@ class Database(pymongo.database.Database):
         if matchsize == 0:
             return None
         else:
-            if matchsize > 1:
+            if (verbose and matchsize > 1):
                 print("get_seed_site (WARNING):  query=", query)
                 print("Returned ", matchsize, " documents - should be exactly one")
                 print("Returning first entry found")
             stadoc = dbsite.find_one(query)
             return stadoc
 
-    def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0):
+    def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0, verbose=False):
         """
         The channel collection is assumed to have a one to one
         mapping of net:sta:loc:chan:starttime - endtime.
@@ -4148,6 +4151,9 @@ class Database(pymongo.database.Database):
         :param loc:   optional loc code to made (empty string ok and common)
         default ignores loc in query.
         :param time: epoch time for requested metadata
+        :param verbose:  when True errors will be printed.  By default
+        the function works silently and you should use the output to
+        interact with any errors returned.
 
         :return: handle to query return
         :rtype:  MondoDB Cursor object of query result.
@@ -4183,7 +4189,7 @@ class Database(pymongo.database.Database):
                 if matchsize == 1:
                     return dbchannel.find_one(testquery)
                 elif matchsize > 1:
-                    if time > 0.0:
+                    if (verbose and time > 0.0):
                         print(
                             "get_seed_channel:  multiple matches found for net=",
                             net,
@@ -4218,7 +4224,7 @@ class Database(pymongo.database.Database):
                     if matchsize == 1:
                         return dbchannel.find_one(testquery)
                     elif matchsize > 1:
-                        if time > 0.0:
+                        if (verbose and time > 0.0):
                             print(
                                 "get_seed_channel:  multiple matches found for net=",
                                 net,
