@@ -291,10 +291,10 @@ def WindowData(d, win_start, win_end, t0shift=None,
     try:
         # This handler duplicates an error test in the WindowData C code but
         # it will be more efficient to handle it here.
-        if win_start < d.t0 or win_end > d.endtime():
+        if tscut.start < d.t0 or twcut.end > d.endtime():
             detailline = 'Window range: {wst},{wet}  Data range:  {dst},{det}'.format(
-                wst=win_start,
-                wet=win_end,
+                wst=tscut.start,
+                wet=tscut.end,
                 dst=d.t0,
                 det=d.endtime()
             )
