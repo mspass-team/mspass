@@ -102,15 +102,16 @@
 <span class="kn">import</span> <span class="nn">obspy.signal.interpolation</span>
 <span class="kn">import</span> <span class="nn">obspy.core.utcdatetime</span>
 
-<span class="kn">from</span> <span class="nn">mspasspy.util.decorators</span> <span class="kn">import</span> <span class="p">(</span><span class="n">mspass_func_wrapper</span><span class="p">,</span>
-                                      <span class="n">mspass_func_wrapper_multi</span><span class="p">,</span>
-                                      <span class="n">timeseries_as_trace</span><span class="p">,</span>
-                                      <span class="n">seismogram_as_stream</span><span class="p">,</span>
-                                      <span class="n">timeseries_ensemble_as_stream</span><span class="p">,</span>
-                                      <span class="n">seismogram_ensemble_as_stream</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mspasspy.util.decorators</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">mspass_func_wrapper</span><span class="p">,</span>
+    <span class="n">mspass_func_wrapper_multi</span><span class="p">,</span>
+    <span class="n">timeseries_as_trace</span><span class="p">,</span>
+    <span class="n">seismogram_as_stream</span><span class="p">,</span>
+    <span class="n">timeseries_ensemble_as_stream</span><span class="p">,</span>
+    <span class="n">seismogram_ensemble_as_stream</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Stream2Seismogram</span><span class="p">,</span>
-                                     <span class="n">Stream2TimeSeriesEnsemble</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="n">Stream2Seismogram</span><span class="p">,</span> <span class="n">Stream2TimeSeriesEnsemble</span>
 
 
 <div class="viewcode-block" id="filter"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.filter">[docs]</a><span class="nd">@mspass_func_wrapper</span>
@@ -118,7 +119,17 @@
 <span class="nd">@seismogram_as_stream</span>
 <span class="nd">@timeseries_ensemble_as_stream</span>
 <span class="nd">@seismogram_ensemble_as_stream</span>
-<span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">filter</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;filter&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">options</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function filters the data of mspasspy objects. Note it is wrapped by mspass_func_wrapper, so the processing</span>
 <span class="sd">    history and error logs can be preserved.</span>
@@ -148,8 +159,17 @@
 <span class="nd">@seismogram_as_stream</span>
 <span class="nd">@timeseries_ensemble_as_stream</span>
 <span class="nd">@seismogram_ensemble_as_stream</span>
-<span class="k">def</span> <span class="nf">detrend</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;dtrend&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">detrend</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;dtrend&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">options</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function removes a trend from the data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,</span>
 <span class="sd">    so the processing history and error logs can be preserved.</span>
@@ -178,8 +198,21 @@
 <span class="nd">@seismogram_as_stream</span>
 <span class="nd">@timeseries_ensemble_as_stream</span>
 <span class="nd">@seismogram_ensemble_as_stream</span>
-<span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;interpolate&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">method</span><span class="o">=</span><span class="s1">&#39;weighted_average_slopes&#39;</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">npts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_shift</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">sampling_rate</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;weighted_average_slopes&quot;</span><span class="p">,</span>
+    <span class="n">starttime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">npts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">time_shift</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function interpolates data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,</span>
 <span class="sd">    so the processing history and error logs can be preserved.</span>
@@ -212,14 +245,25 @@
 <span class="sd">    :param kwargs: extra kv arguments</span>
 <span class="sd">    :return: None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span>
-                     <span class="n">npts</span><span class="p">,</span> <span class="n">time_shift</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="n">data</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
+        <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">time_shift</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="correlate"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate">[docs]</a><span class="nd">@mspass_func_wrapper_multi</span>
 <span class="nd">@timeseries_as_trace</span>
-<span class="k">def</span> <span class="nf">correlate</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;correlate&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-              <span class="n">demean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="s1">&#39;naive&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">correlate</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">,</span>
+    <span class="n">shift</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;correlate&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">demean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">normalize</span><span class="o">=</span><span class="s2">&quot;naive&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cross-correlation of two signals up to a specified maximal shift.</span>
 <span class="sd">    :param a: first signal</span>
@@ -247,63 +291,117 @@
 <span class="sd">    :type method: str</span>
 <span class="sd">    :return: cross-correlation function.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlate</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">demean</span><span class="p">,</span> <span class="n">normalize</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlate</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">demean</span><span class="p">,</span> <span class="n">normalize</span><span class="p">,</span> <span class="n">method</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="correlate_template"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate_template">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="nd">@timeseries_as_trace</span>
-<span class="k">def</span> <span class="nf">correlate_template</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;correlate_template&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                       <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">,</span> <span class="n">demean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlate_template</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">normalize</span><span class="p">,</span> <span class="n">demean</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
+<span class="k">def</span> <span class="nf">correlate_template</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">template</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;correlate_template&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;valid&quot;</span><span class="p">,</span>
+    <span class="n">normalize</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">,</span>
+    <span class="n">demean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlate_template</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">normalize</span><span class="p">,</span> <span class="n">demean</span><span class="p">,</span> <span class="n">method</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="correlate_stream_template"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate_stream_template">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="nd">@timeseries_ensemble_as_stream</span>
 <span class="nd">@seismogram_as_stream</span>
-<span class="k">def</span> <span class="nf">correlate_stream_template</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span>
-                              <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;correlate_stream_template&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                              <span class="n">template_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;seismogram&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">correlate_stream_template</span><span class="p">(</span>
+    <span class="n">stream</span><span class="p">,</span>
+    <span class="n">template</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;correlate_stream_template&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">template_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;seismogram&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlate_stream_template</span><span class="p">(</span>
-        <span class="n">stream</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">template_time</span><span class="p">)</span>
+        <span class="n">stream</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">template_time</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">&quot;seismogram&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">&quot;timeseries_ensemble&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Stream2TimeSeriesEnsemble</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;Only seismogram and timeseries_ensemble types are supported&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only seismogram and timeseries_ensemble types are supported&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="correlation_detector"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlation_detector">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="nd">@timeseries_ensemble_as_stream</span>
 <span class="nd">@seismogram_as_stream</span>
-<span class="k">def</span> <span class="nf">correlation_detector</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">templates</span><span class="p">,</span> <span class="n">heights</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;correlation_detector&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                         <span class="n">template_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template_magnitudes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">similarity_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                         <span class="n">details</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;seismogram&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">correlation_detector</span><span class="p">(</span>
+    <span class="n">stream</span><span class="p">,</span>
+    <span class="n">templates</span><span class="p">,</span>
+    <span class="n">heights</span><span class="p">,</span>
+    <span class="n">distance</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;correlation_detector&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">template_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">template_magnitudes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">template_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">similarity_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">details</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;seismogram&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
     <span class="n">tem_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">:</span>
         <span class="n">tem_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">toStream</span><span class="p">())</span>
-    <span class="n">detections</span><span class="p">,</span> <span class="n">sims</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlation_detector</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">tem_list</span><span class="p">,</span> <span class="n">heights</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span>
-                                                                           <span class="n">template_times</span><span class="p">,</span> <span class="n">template_magnitudes</span><span class="p">,</span> <span class="n">template_names</span><span class="p">,</span> <span class="n">similarity_func</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">plot</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">detections</span><span class="p">,</span> <span class="n">sims</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlation_detector</span><span class="p">(</span>
+        <span class="n">stream</span><span class="p">,</span>
+        <span class="n">tem_list</span><span class="p">,</span>
+        <span class="n">heights</span><span class="p">,</span>
+        <span class="n">distance</span><span class="p">,</span>
+        <span class="n">template_times</span><span class="p">,</span>
+        <span class="n">template_magnitudes</span><span class="p">,</span>
+        <span class="n">template_names</span><span class="p">,</span>
+        <span class="n">similarity_func</span><span class="p">,</span>
+        <span class="n">details</span><span class="p">,</span>
+        <span class="n">plot</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
     <span class="n">converted_detections</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">detection</span> <span class="ow">in</span> <span class="n">detections</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">&quot;seismogram&quot;</span><span class="p">:</span>
-            <span class="n">converted_detections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">detection</span><span class="p">,</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">converted_detections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">detection</span><span class="p">,</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">&quot;timeseries_ensemble&quot;</span><span class="p">:</span>
             <span class="n">converted_detections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stream2TimeSeriesEnsemble</span><span class="p">(</span><span class="n">detection</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;Only seismogram and timeseries_ensemble types are supported&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;Only seismogram and timeseries_ensemble types are supported&quot;</span>
+            <span class="p">)</span>
     <span class="k">return</span> <span class="n">converted_detections</span><span class="p">,</span> <span class="n">sims</span></div>
 
 
 <div class="viewcode-block" id="templates_max_similarity"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.templates_max_similarity">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="nd">@timeseries_ensemble_as_stream</span>
 <span class="nd">@seismogram_as_stream</span>
-<span class="k">def</span> <span class="nf">templates_max_similarity</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">streams_templates</span><span class="p">,</span>
-                             <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;templates_max_similarity&#39;</span><span class="p">,</span>
-                             <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">templates_max_similarity</span><span class="p">(</span>
+    <span class="n">st</span><span class="p">,</span>
+    <span class="n">time</span><span class="p">,</span>
+    <span class="n">streams_templates</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;templates_max_similarity&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="n">tem_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">streams_templates</span><span class="p">:</span>
         <span class="n">tem_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">toStream</span><span class="p">())</span>
@@ -312,26 +410,70 @@
 
 <div class="viewcode-block" id="xcorr_3c"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.xcorr_3c">[docs]</a><span class="nd">@mspass_func_wrapper_multi</span>
 <span class="nd">@seismogram_as_stream</span>
-<span class="k">def</span> <span class="nf">xcorr_3c</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">shift_len</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;xcor_3c&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-             <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">full_xcorr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">abs_max</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">xcorr_3c</span><span class="p">(</span>
+    <span class="n">st1</span><span class="p">,</span>
+    <span class="n">st2</span><span class="p">,</span>
+    <span class="n">shift_len</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;xcor_3c&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">full_xcorr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">abs_max</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="k">if</span> <span class="n">components</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">xcorr_3c</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">shift_len</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="n">full_xcorr</span><span class="p">,</span> <span class="n">abs_max</span><span class="p">)</span></div>
+        <span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">xcorr_3c</span><span class="p">(</span>
+        <span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">shift_len</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="n">full_xcorr</span><span class="p">,</span> <span class="n">abs_max</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="xcorr_max"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.xcorr_max">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="nd">@timeseries_as_trace</span>
-<span class="k">def</span> <span class="nf">xcorr_max</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;xcor_max&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">abs_max</span><span class="o">=</span><span class="kc">True</span><span class="p">,):</span>
+<span class="k">def</span> <span class="nf">xcorr_max</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;xcor_max&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">abs_max</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">xcorr_max</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">abs_max</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="xcorr_pick_correction"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.xcorr_pick_correction">[docs]</a><span class="nd">@mspass_func_wrapper_multi</span>
 <span class="nd">@timeseries_as_trace</span>
-<span class="k">def</span> <span class="nf">xcorr_pick_correction</span><span class="p">(</span><span class="n">trace1</span><span class="p">,</span> <span class="n">trace2</span><span class="p">,</span> <span class="n">pick1</span><span class="p">,</span> <span class="n">pick2</span><span class="p">,</span> <span class="n">t_before</span><span class="p">,</span> <span class="n">t_after</span><span class="p">,</span> <span class="n">cc_maxlag</span><span class="p">,</span>
-                          <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;xcorr_pick_correction&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_options</span><span class="o">=</span><span class="p">{},</span>
-                          <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">xcorr_pick_correction</span><span class="p">(</span><span class="n">pick1</span><span class="p">,</span> <span class="n">trace1</span><span class="p">,</span> <span class="n">pick2</span><span class="p">,</span> <span class="n">trace2</span><span class="p">,</span> <span class="n">t_before</span><span class="p">,</span> <span class="n">t_after</span><span class="p">,</span>
-                                                                <span class="n">cc_maxlag</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="n">filter_options</span><span class="p">,</span> <span class="n">plot</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
+<span class="k">def</span> <span class="nf">xcorr_pick_correction</span><span class="p">(</span>
+    <span class="n">trace1</span><span class="p">,</span>
+    <span class="n">trace2</span><span class="p">,</span>
+    <span class="n">pick1</span><span class="p">,</span>
+    <span class="n">pick2</span><span class="p">,</span>
+    <span class="n">t_before</span><span class="p">,</span>
+    <span class="n">t_after</span><span class="p">,</span>
+    <span class="n">cc_maxlag</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;xcorr_pick_correction&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="nb">filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">filter_options</span><span class="o">=</span><span class="p">{},</span>
+    <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">xcorr_pick_correction</span><span class="p">(</span>
+        <span class="n">pick1</span><span class="p">,</span>
+        <span class="n">trace1</span><span class="p">,</span>
+        <span class="n">pick2</span><span class="p">,</span>
+        <span class="n">trace2</span><span class="p">,</span>
+        <span class="n">t_before</span><span class="p">,</span>
+        <span class="n">t_after</span><span class="p">,</span>
+        <span class="n">cc_maxlag</span><span class="p">,</span>
+        <span class="nb">filter</span><span class="p">,</span>
+        <span class="n">filter_options</span><span class="p">,</span>
+        <span class="n">plot</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">,</span>
+    <span class="p">)</span></div>
 </pre></div>
 
            </div>

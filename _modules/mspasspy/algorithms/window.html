@@ -96,10 +96,30 @@
            <div itemprop="articleBody">
              
   <h1>Source code for mspasspy.algorithms.window</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">AtomicType</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="p">,</span> <span class="n">ProcessingStatus</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">TimeWindow</span><span class="p">,</span> <span class="n">_TopMute</span><span class="p">,</span> <span class="n">_WindowData</span><span class="p">,</span> <span class="n">_WindowData3C</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.amplitudes</span> <span class="kn">import</span> <span class="n">_scale</span><span class="p">,</span> <span class="n">_scale_ensemble</span><span class="p">,</span> <span class="n">_scale_ensemble_members</span><span class="p">,</span> <span class="n">ScalingMethod</span>
+<span></span><span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MsPASSError</span><span class="p">,</span>
+    <span class="n">AtomicType</span><span class="p">,</span>
+    <span class="n">ErrorSeverity</span><span class="p">,</span>
+    <span class="n">ProcessingStatus</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Seismogram</span><span class="p">,</span>
+    <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
+    <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TimeWindow</span><span class="p">,</span>
+    <span class="n">_TopMute</span><span class="p">,</span>
+    <span class="n">_WindowData</span><span class="p">,</span>
+    <span class="n">_WindowData3C</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.amplitudes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_scale</span><span class="p">,</span>
+    <span class="n">_scale_ensemble</span><span class="p">,</span>
+    <span class="n">_scale_ensemble_members</span><span class="p">,</span>
+    <span class="n">ScalingMethod</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mspasspy.util.decorators</span> <span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
 
 
@@ -117,17 +137,18 @@
 <span class="sd">    :param message: is the string posted to all members</span>
 <span class="sd">    :param severity: is the error severity level</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span>
-       <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
         <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
-        <span class="k">if</span><span class="p">(</span><span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
             <span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">message</span><span class="p">),</span> <span class="n">severity</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Coding error - ensemble_error_post was passed an unexpected data type of&#39;</span><span class="p">,</span>
-              <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Not treated as fatal but a bug fix is needed&#39;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Coding error - ensemble_error_post was passed an unexpected data type of&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_post_amplitude</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">amp</span><span class="p">):</span>
@@ -136,24 +157,34 @@
 <span class="sd">    computed amplitudes to metadata with a different key for each method</span>
 <span class="sd">    used to compute amplitude.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;rms&#39;</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;RMS&#39;</span><span class="p">:</span>
-        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;rms_amplitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;perc&#39;</span><span class="p">:</span>
-        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;perc_amplitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;MAD&#39;</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;mad&#39;</span><span class="p">:</span>
-        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;mad_amplitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;rms&quot;</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;RMS&quot;</span><span class="p">:</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;rms_amplitude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;perc&quot;</span><span class="p">:</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;perc_amplitude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;MAD&quot;</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;mad&quot;</span><span class="p">:</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;mad_amplitude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;amplitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;amplitude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp</span>
 
 
 <div class="viewcode-block" id="scale"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.scale">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="c1"># inplace_return was intentionally ommitted from thie arg list here because</span>
 <span class="c1"># False should always be enforced.  If the default changed that would</span>
 <span class="c1"># break this function.</span>
-<span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">compute_from_window</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-          <span class="n">method</span><span class="o">=</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">scale_by_section</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-          <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-          <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">scale</span><span class="p">(</span>
+    <span class="n">d</span><span class="p">,</span>
+    <span class="n">compute_from_window</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;peak&quot;</span><span class="p">,</span>
+    <span class="n">level</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">scale_by_section</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">use_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;scale&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Top level function interface to data scaling methods.</span>
 
@@ -225,34 +256,50 @@
     <span class="c1"># The logic here would be much cleaner if ensembles had an elog attribute</span>
     <span class="c1"># may happen as group discussions have proposed that change.  this should</span>
     <span class="c1"># change to be cleaner of elog is added to ensmeble objects</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;peak&#39;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;RMS&#39;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;rms&#39;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;perc&#39;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;MAD&#39;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;mad&#39;</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;method parameter passed = &quot;</span> <span class="o">+</span> <span class="n">method</span> <span class="o">+</span> \
-            <span class="s2">&quot; is not valid.  Should be peak, rms, perc, or mad</span><span class="se">\n</span><span class="s2">Continuing with no change to data&quot;</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;peak&quot;</span>
+        <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;RMS&quot;</span>
+        <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;rms&quot;</span>
+        <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;perc&quot;</span>
+        <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;MAD&quot;</span>
+        <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;mad&quot;</span>
+    <span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;method parameter passed = &quot;</span>
+            <span class="o">+</span> <span class="n">method</span>
+            <span class="o">+</span> <span class="s2">&quot; is not valid.  Should be peak, rms, perc, or mad</span><span class="se">\n</span><span class="s2">Continuing with no change to data&quot;</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
             <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># This could cause an abort if the input is not one of the four stock data types</span>
             <span class="c1"># but that is ok as that is an obvious usage error and should be a fatal error</span>
-            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="s2">&quot;method parameter passed = &quot;</span> <span class="o">+</span> <span class="n">method</span> <span class="o">+</span> <span class="s2">&quot; is not valid.  &quot;</span>
-                             <span class="o">+</span> <span class="s2">&quot;Should be peak, rms, perc, or mad&quot;</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="n">alg_name</span><span class="p">,</span>
+                <span class="s2">&quot;method parameter passed = &quot;</span>
+                <span class="o">+</span> <span class="n">method</span>
+                <span class="o">+</span> <span class="s2">&quot; is not valid.  &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;Should be peak, rms, perc, or mad&quot;</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">d</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;perc&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;perc&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">level</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">level</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;perc scaling method given illegal value=</span><span class="si">{plevel}</span><span class="se">\n</span><span class="s1">Defaulted to 1.0&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">plevel</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;perc scaling method given illegal value=</span><span class="si">{plevel}</span><span class="se">\n</span><span class="s2">Defaulted to 1.0&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">plevel</span><span class="o">=</span><span class="n">level</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
-                <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span>
-                                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
                 <span class="n">level</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">level</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{meth}</span><span class="s1"> scaling method given illegal value=</span><span class="si">{slevel}</span><span class="se">\n</span><span class="s1">Defaulted to 1.0&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">meth</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">slevel</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{meth}</span><span class="s2"> scaling method given illegal value=</span><span class="si">{slevel}</span><span class="se">\n</span><span class="s2">Defaulted to 1.0&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">meth</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">slevel</span><span class="o">=</span><span class="n">level</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
-                <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span>
-                                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
             <span class="n">level</span> <span class="o">=</span> <span class="mf">1.0</span>
@@ -260,10 +307,9 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">TimeWindow</span><span class="p">):</span>
             <span class="n">ampwin</span> <span class="o">=</span> <span class="n">window</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;optional window parameter set but value is not a TimeWindow object</span><span class="se">\n</span><span class="s1">Reverting to unwindowed estimate&#39;</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;optional window parameter set but value is not a TimeWindow object</span><span class="se">\n</span><span class="s2">Reverting to unwindowed estimate&quot;</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
-                <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span>
-                                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
             <span class="c1"># this is an invalid window because start&gt;end is used as a signal</span>
@@ -277,11 +323,11 @@
     <span class="c1"># obnoxiously ugly syntax. We insulate the user from this oddity</span>
     <span class="c1"># by using a string arg to define this enum passed to _scale</span>
     <span class="n">method_to_use</span> <span class="o">=</span> <span class="n">ScalingMethod</span><span class="o">.</span><span class="n">Peak</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;rms&#39;</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;RMS&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;rms&quot;</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;RMS&quot;</span><span class="p">:</span>
         <span class="n">method_to_use</span> <span class="o">=</span> <span class="n">ScalingMethod</span><span class="o">.</span><span class="n">RMS</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;perc&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;perc&quot;</span><span class="p">:</span>
         <span class="n">method_to_use</span> <span class="o">=</span> <span class="n">ScalingMethod</span><span class="o">.</span><span class="n">perc</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;MAD&#39;</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;mad&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;MAD&quot;</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;mad&quot;</span><span class="p">:</span>
         <span class="n">method_to_use</span> <span class="o">=</span> <span class="n">ScalingMethod</span><span class="o">.</span><span class="n">MAD</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Note this logic depends on an oddity of the C++ api in the</span>
@@ -300,8 +346,7 @@
                 <span class="c1"># We post the amplitude the ensembe&#39;s metadata in this case</span>
                 <span class="n">_post_amplitude</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">method_to_use</span><span class="p">,</span> <span class="n">amp</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">ampvec</span> <span class="o">=</span> <span class="n">_scale_ensemble_members</span><span class="p">(</span>
-                    <span class="n">d</span><span class="p">,</span> <span class="n">method_to_use</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">ampwin</span><span class="p">)</span>
+                <span class="n">ampvec</span> <span class="o">=</span> <span class="n">_scale_ensemble_members</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">method_to_use</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">ampwin</span><span class="p">)</span>
                 <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
@@ -309,7 +354,8 @@
                     <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">&quot;scale: input data is not a supported mspass seismic data type&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;scale: input data is not a supported mspass seismic data type&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">d</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
@@ -336,8 +382,16 @@
 
 
 <div class="viewcode-block" id="WindowData"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">win_start</span><span class="p">,</span> <span class="n">win_end</span><span class="p">,</span> <span class="n">t0shift</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-               <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">WindowData</span><span class="p">(</span>
+    <span class="n">d</span><span class="p">,</span>
+    <span class="n">win_start</span><span class="p">,</span>
+    <span class="n">win_end</span><span class="p">,</span>
+    <span class="n">t0shift</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;scale&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cut data defined by a TimeWindow object.</span>
 
@@ -390,14 +444,14 @@
         <span class="c1"># This handler duplicates an error test in the WindowData C code but</span>
         <span class="c1"># it will be more efficient to handle it here.</span>
         <span class="k">if</span> <span class="n">twcut</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="ow">or</span> <span class="n">twcut</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">():</span>
-            <span class="n">detailline</span> <span class="o">=</span> <span class="s1">&#39;Window range: </span><span class="si">{wst}</span><span class="s1">,</span><span class="si">{wet}</span><span class="s1">  Data range:  </span><span class="si">{dst}</span><span class="s1">,</span><span class="si">{det}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">wst</span><span class="o">=</span><span class="n">twcut</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
-                <span class="n">wet</span><span class="o">=</span><span class="n">twcut</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
-                <span class="n">dst</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span>
-                <span class="n">det</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+            <span class="n">detailline</span> <span class="o">=</span> <span class="s2">&quot;Window range: </span><span class="si">{wst}</span><span class="s2">,</span><span class="si">{wet}</span><span class="s2">  Data range:  </span><span class="si">{dst}</span><span class="s2">,</span><span class="si">{det}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">wst</span><span class="o">=</span><span class="n">twcut</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">wet</span><span class="o">=</span><span class="n">twcut</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">det</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
             <span class="p">)</span>
-            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span> <span class="s2">&quot;Data range is smaller than window range</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">detailline</span><span class="p">,</span>
-                             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Data range is smaller than window range</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">detailline</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
@@ -408,7 +462,8 @@
             <span class="k">return</span> <span class="n">dcut</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;WindowData:  Invalid input data type received=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)))</span>
+                <span class="s2">&quot;WindowData:  Invalid input data type received=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+            <span class="p">)</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="n">d</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
@@ -439,7 +494,7 @@
 <span class="sd">    muted the function call that applies the mute would be ts.apply(d))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;cosine&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;cosine&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a TopMute object for application to MsPASS data objects.</span>
 
@@ -478,32 +533,50 @@
 <span class="sd">          come from the global history manager or be set manually.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;TopMute.apply:  usage error.  Input data must be a TimeSeries or Seismogram object&quot;</span><span class="p">,</span>
-                              <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;TopMute.apply:  usage error.  Input data must be a TimeSeries or Seismogram object&quot;</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0</span><span class="p">:</span>
-            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;TopMute.apply&quot;</span><span class="p">,</span> <span class="s2">&quot;Data start time is later than time of mute zero zone</span><span class="se">\n</span><span class="s2">&quot;</span>
-                             <span class="o">+</span> <span class="s2">&quot;Datum killed as this would produce a null signal&quot;</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="s2">&quot;TopMute.apply&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Data start time is later than time of mute zero zone</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;Datum killed as this would produce a null signal&quot;</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">instance</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="p">(</span><span class="s2">&quot;TopMute.apply&quot;</span><span class="p">,</span>
-                           <span class="s2">&quot;Undefined instance argument - cannot save history data&quot;</span><span class="p">,</span>
-                           <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="p">(</span>
+                        <span class="s2">&quot;TopMute.apply&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Undefined instance argument - cannot save history data&quot;</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+                    <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-                    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="p">(</span><span class="s2">&quot;TopMute.apply&quot;</span><span class="p">,</span>
-                           <span class="s2">&quot;Error log is empty.  Cannot be extended without a top level entry&quot;</span><span class="p">,</span>
-                           <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="p">(</span>
+                        <span class="s2">&quot;TopMute.apply&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Error log is empty.  Cannot be extended without a top level entry&quot;</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
-                        <span class="n">d</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span><span class="s2">&quot;TopMute&quot;</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
-                                  <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">)</span>
+                        <span class="n">d</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span>
+                            <span class="s2">&quot;TopMute&quot;</span><span class="p">,</span>
+                            <span class="n">instance</span><span class="p">,</span>
+                            <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
+                            <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">,</span>
+                        <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">d</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span><span class="s2">&quot;TopMute&quot;</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span><span class="p">,</span>
-                                  <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">)</span></div></div>
+                        <span class="n">d</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span>
+                            <span class="s2">&quot;TopMute&quot;</span><span class="p">,</span>
+                            <span class="n">instance</span><span class="p">,</span>
+                            <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span><span class="p">,</span>
+                            <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">,</span>
+                        <span class="p">)</span></div></div>
 </pre></div>
 
            </div>

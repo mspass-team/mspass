@@ -139,10 +139,10 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for generic, global history/provenance preservation in MsPASS.
 The main concept of this object that a pymongo script to run a processing
-job would create this object or one of it’s children to preserve the 
-global run parameters for the a processing sequence.   We limit that to 
+job would create this object or one of it’s children to preserve the
+global run parameters for the a processing sequence.   We limit that to
 mean a sequence of processing algorithms that have a set of predefined
-parameters that control their behaviour.  The global parameters are 
+parameters that control their behaviour.  The global parameters are
 preserved in a special collection in MongoDB we give the (fixed) name
 of “history”.</p>
 <dl class="py method">
@@ -150,8 +150,8 @@ of “history”.</p>
 <code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alg</span></em>, <em class="sig-param"><span class="n">partype</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#HistoryLogger.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.history.HistoryLogger.register" title="Permalink to this definition"></a></dt>
 <dd><p>Register an algorithm’s signature to preserve processing history.
 Each algorithm in a processing chains should be registered by this
-mechanism before starting a mspass processing chain.  The 
-register method should be called in the order in which the algorithms are 
+mechanism before starting a mspass processing chain.  The
+register method should be called in the order in which the algorithms are
 applied.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -160,14 +160,14 @@ applied.</p>
 a string.</p></li>
 <li><p><strong>partype</strong> – defines the format of the data defining input parameters
 to this algorithm (Must be either ‘dict’ or ‘AntelopePf’)</p></li>
-<li><p><strong>params</strong> – is the actual input data. Actual type of this data 
-this arg references will depend up partype.  partype defines 
+<li><p><strong>params</strong> – is the actual input data. Actual type of this data
+this arg references will depend up partype.  partype defines
 the type of the object expect (dict in this case means a python
 dict object)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raise</dt>
-<dd class="field-even"><p>Throws a RuntimeError with a message if partype is not on the 
+<dd class="field-even"><p>Throws a RuntimeError with a message if partype is not on the
 list of supported parameter types</p>
 </dd>
 </dl>
@@ -177,7 +177,7 @@ list of supported parameter types</p>
 <dt id="mspasspy.history.HistoryLogger.save">
 <code class="sig-name descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#HistoryLogger.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.history.HistoryLogger.save" title="Permalink to this definition"></a></dt>
 <dd><p>Save the contents to the history collection.</p>
-<p>The doc created in a save is more or less an image of the 
+<p>The doc created in a save is more or less an image of the
 structure of this object translated to a python dict</p>
 </dd></dl>
 
@@ -187,15 +187,15 @@ structure of this object translated to a python dict</p>
 <dt id="mspasspy.history.basic_history_data">
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.history.</code><code class="sig-name descname">basic_history_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">job</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#basic_history_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.history.basic_history_data" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This is a pure data object that if it were written in C could be 
-defined as a struct.   It holds the data used to define the 
+<p>This is a pure data object that if it were written in C could be
+defined as a struct.   It holds the data used to define the
 parameters for a given algorithm.</p>
 <dl class="py method">
 <dt id="mspasspy.history.basic_history_data.load_algorithm_args">
 <code class="sig-name descname">load_algorithm_args</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alg</span></em>, <em class="sig-param"><span class="n">argdict</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#basic_history_data.load_algorithm_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.history.basic_history_data.load_algorithm_args" title="Permalink to this definition"></a></dt>
 <dd><p>Loads parameters defined to a set of function arguments.</p>
-<p>Simple algorithms without a lot of parameters often simply need a 
-set of argument values.   Here we require this to be defined by 
+<p>Simple algorithms without a lot of parameters often simply need a
+set of argument values.   Here we require this to be defined by
 a set of key:value pairs that map to dict.  We also consider this
 the lowest common denominator for a parameter definition so make
 it a part of the base class.</p>
@@ -203,10 +203,10 @@ it a part of the base class.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>alg</strong> – This should be a string defining the algorithm being registered.</p></li>
-<li><p><strong>argdict</strong> – This should be a dict of key:value pairs defining input 
+<li><p><strong>argdict</strong> – This should be a dict of key:value pairs defining input
 parameters.  For algorithms defined at the top level by a python
 function this should match the names of parameters in the arg list.
-For C++ functions wrapped with pybind11 it should match the arg 
+For C++ functions wrapped with pybind11 it should match the arg
 keys defined in the wrappers.   The key string will be used for
 key:value pair in BSON written to MongoDB.</p></li>
 </ul>
@@ -220,9 +220,9 @@ key:value pair in BSON written to MongoDB.</p></li>
 <dt id="mspasspy.history.get_jobid">
 <code class="sig-prename descclassname">mspasspy.history.</code><code class="sig-name descname">get_jobid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#get_jobid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.history.get_jobid" title="Permalink to this definition"></a></dt>
 <dd><p>Ask MongoDB for the a valid jobid.</p>
-<p>All processing jobs should have a call to this function at the beginning 
-of the job script.  It simply queries MongoDB for the largest current 
-value of the key “jobid” in the history collection.   If the history 
+<p>All processing jobs should have a call to this function at the beginning
+of the job script.  It simply queries MongoDB for the largest current
+value of the key “jobid” in the history collection.   If the history
 collection is empty it returns 1 under a bias that a jobid of 0 is
 illogical.</p>
 <dl class="field-list simple">
@@ -237,15 +237,15 @@ illogical.</p>
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.history.</code><code class="sig-name descname">pf_history_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">job</span></em>, <em class="sig-param"><span class="n">alg</span></em>, <em class="sig-param"><span class="n">pf</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#pf_history_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.history.pf_history_data" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.history.basic_history_data" title="mspasspy.history.basic_history_data"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.history.basic_history_data</span></code></a></p>
 <p>Loads history data container with data from an AntelopePf object.</p>
-<p>mspasspy.ccore.utility defines the AntelopePf object that is an option for parameter 
+<p>mspasspy.ccore.utility defines the AntelopePf object that is an option for parameter
 inputs.  The file structure is identical to the
-Antelope Pf file syntax.   The API to an AntelopePF is not, however, 
-the same as the python bindings in Antelope as it handles Tbl 
+Antelope Pf file syntax.   The API to an AntelopePF is not, however,
+the same as the python bindings in Antelope as it handles Tbl
 and Arr sections completely differently more in line with alternatives
-like YAML.   This method converts the data in an AntelopePf to a python 
-dict that can be dumped directly to MongoDB with pymongo’s insert 
+like YAML.   This method converts the data in an AntelopePf to a python
+dict that can be dumped directly to MongoDB with pymongo’s insert
 methods. Converting the MongoDB document back to a pf structure requires
-the inverse operator that does not exist, but should eventually be 
+the inverse operator that does not exist, but should eventually be
 created if this approach sees extensive use.</p>
 </dd></dl>
 
@@ -253,21 +253,21 @@ created if this approach sees extensive use.</p>
 <dt id="mspasspy.history.pfbranch_to_dict">
 <code class="sig-prename descclassname">mspasspy.history.</code><code class="sig-name descname">pfbranch_to_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pf</span></em>, <em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#pfbranch_to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.history.pfbranch_to_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Recursive function to convert a single branch in an AntelopePf to a python dict.</p>
-<p>This function utilizes recursion to follow a chain of arbitrary length of 
-branches defined in an AntelopePf object.   Result is a dict with a chain of 
+<p>This function utilizes recursion to follow a chain of arbitrary length of
+branches defined in an AntelopePf object.   Result is a dict with a chain of
 dicts of the same length.  i.e. if AntelopePf has 3 levels of branches
 the dict will have a 3 levels of associative arrays keyed by the same
 branch names as the Arr items in the original Pf file.  Note this should
 be called from the top level one branch at a time.  i.e. for the parent
-AntelopePf this function should be called once for each returned key by 
+AntelopePf this function should be called once for each returned key by
 pf.arr_keys().</p>
-<p>Note that at each level Tbl&amp; sections of the original pf are parsed to 
+<p>Note that at each level Tbl&amp; sections of the original pf are parsed to
 be converted to lists of strings with each line of the Tbl section being
 one string in the list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pf</strong> – is an AntelopePf.  Recursive calls use get_branch outputs 
+<li><p><strong>pf</strong> – is an AntelopePf.  Recursive calls use get_branch outputs
 that return one of these.</p></li>
 <li><p><strong>key</strong> (<em>string</em>) – key used to access the branch requested</p></li>
 </ul>

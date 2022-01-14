@@ -1608,7 +1608,7 @@ Note that the type must be defined.</p></li>
 <dl class="py method">
 <dt id="mspasspy.db.schema.DBSchemaDefinition.data_type">
 <code class="sig-name descname">data_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/schema.html#DBSchemaDefinition.data_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.schema.DBSchemaDefinition.data_type" title="Permalink to this definition"></a></dt>
-<dd><p>Return the data type that the collection is used to reference. 
+<dd><p>Return the data type that the collection is used to reference.
 If not recognized, it returns None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1791,7 +1791,7 @@ Note that the type must be defined.</p></li>
 <dl class="py method">
 <dt id="mspasspy.db.schema.MDSchemaDefinition.set_collection">
 <code class="sig-name descname">set_collection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">collection</span></em>, <em class="sig-param"><span class="n">dbschema</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/schema.html#MDSchemaDefinition.set_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.schema.MDSchemaDefinition.set_collection" title="Permalink to this definition"></a></dt>
-<dd><p>Set the collection name that a key belongs to. It optionally takes 
+<dd><p>Set the collection name that a key belongs to. It optionally takes
 a dbschema argument and will set the attribute of that key with the
 corresponding one defined in the dbschema.</p>
 <dl class="field-list simple">
@@ -1850,8 +1850,8 @@ unintended side effects.</p>
 <dl class="py method">
 <dt id="mspasspy.db.schema.MDSchemaDefinition.swap_collection">
 <code class="sig-name descname">swap_collection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">original_collection</span></em>, <em class="sig-param"><span class="n">new_collection</span></em>, <em class="sig-param"><span class="n">dbschema</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/schema.html#MDSchemaDefinition.swap_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.schema.MDSchemaDefinition.swap_collection" title="Permalink to this definition"></a></dt>
-<dd><p>Swap the collection name of all the keys of a matching colletions. 
-It optionally takes a dbschema argument and will set the attribute 
+<dd><p>Swap the collection name of all the keys of a matching colletions.
+It optionally takes a dbschema argument and will set the attribute
 of that key with the corresponding one defined in the dbschema. It
 will silently do nothing if no matching collection is defined.</p>
 <dl class="field-list simple">
@@ -1958,10 +1958,10 @@ Note that the type must be defined.</p></li>
 <dt id="mspasspy.db.schema.SchemaDefinitionBase.apply_aliases">
 <code class="sig-name descname">apply_aliases</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">md</span></em>, <em class="sig-param"><span class="n">alias</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/schema.html#SchemaDefinitionBase.apply_aliases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.schema.SchemaDefinitionBase.apply_aliases" title="Permalink to this definition"></a></dt>
 <dd><p>Apply a set of aliases to a data object.</p>
-<p>This method will change the unique keys of a data object into aliases. 
-The alias argument can either be a path to a valid yaml file of 
+<p>This method will change the unique keys of a data object into aliases.
+The alias argument can either be a path to a valid yaml file of
 key:alias pairs or a dict. If the “key” is an alias itself, it will
-be converted to its corresponding unique name before being used to 
+be converted to its corresponding unique name before being used to
 change to the alias. It will also add the applied alias to the schema’s
 internal alias container such that the same schema object can be used
 to convert the alias back.</p>

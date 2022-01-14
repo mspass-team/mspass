@@ -4526,9 +4526,15 @@
         <span class="c1"># o[&#39;npts&#39;] = index_record.npts</span>
         <span class="k">return</span> <span class="n">o</span>
 
-<div class="viewcode-block" id="Database.index_mseed_file"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file">[docs]</a>    <span class="k">def</span> <span class="nf">index_mseed_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dfile</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_miniseed&#39;</span><span class="p">,</span>
-                <span class="n">segment_time_tears</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">elog_collection</span><span class="o">=</span><span class="s1">&#39;elog&#39;</span><span class="p">,</span>
-                <span class="n">return_ids</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Database.index_mseed_file"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file">[docs]</a>    <span class="k">def</span> <span class="nf">index_mseed_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dfile</span><span class="p">,</span>
+        <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
+        <span class="n">segment_time_tears</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">elog_collection</span><span class="o">=</span><span class="s2">&quot;elog&quot;</span><span class="p">,</span>
+        <span class="n">return_ids</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the first stage import function for handling the import of</span>
 <span class="sd">        miniseed data.  This function scans a data file defined by a directory</span>
@@ -4631,18 +4637,18 @@
             <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">odir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
         <span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">elog</span><span class="p">)</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-        <span class="n">ids_affected</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">ids_affected</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">:</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_mseed_index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;storage_mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;file&#39;</span>
-            <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;mseed&#39;</span>
-            <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">odir</span>
-            <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;dfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
-            <span class="n">thisid</span><span class="o">=</span><span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;file&quot;</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mseed&quot;</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">odir</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
+            <span class="n">thisid</span> <span class="o">=</span> <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
             <span class="n">ids_affected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thisid</span><span class="p">)</span>
         <span class="c1"># log_ids is created here so it is defined but empty in</span>
         <span class="c1"># the tuple returned when return_ids is true</span>
-        <span class="n">log_ids</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">log_ids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">elog_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">elog_collection</span><span class="p">]</span>
 
@@ -4650,19 +4656,26 @@
             <span class="n">jobid</span> <span class="o">=</span> <span class="n">elog</span><span class="o">.</span><span class="n">get_job_id</span><span class="p">()</span>
             <span class="n">logdata</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">errs</span><span class="p">:</span>
-                <span class="n">logdata</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;job_id&#39;</span><span class="p">:</span> <span class="n">jobid</span><span class="p">,</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="s1">&#39;badness&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">badness</span><span class="p">),</span>
-                                <span class="s1">&#39;error_message&#39;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s1">&#39;process_id&#39;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">p_id</span><span class="p">})</span>
-            <span class="n">docentry</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;logdata&#39;</span><span class="p">:</span> <span class="n">logdata</span><span class="p">}</span>
+                <span class="n">logdata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;job_id&quot;</span><span class="p">:</span> <span class="n">jobid</span><span class="p">,</span>
+                        <span class="s2">&quot;algorithm&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span>
+                        <span class="s2">&quot;badness&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">badness</span><span class="p">),</span>
+                        <span class="s2">&quot;error_message&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+                        <span class="s2">&quot;process_id&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">p_id</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+            <span class="n">docentry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;logdata&quot;</span><span class="p">:</span> <span class="n">logdata</span><span class="p">}</span>
             <span class="c1"># To mesh with the standard elog collection we add a copy of the</span>
             <span class="c1"># error messages with a tag for each id in the ids_affected list.</span>
             <span class="c1"># That should make elog connection to wf_miniseed records exactly</span>
             <span class="c1"># like wf_TimeSeries records but with a different collection link</span>
             <span class="k">for</span> <span class="n">wfid</span> <span class="ow">in</span> <span class="n">ids_affected</span><span class="p">:</span>
-                <span class="n">docentry</span><span class="p">[</span><span class="s1">&#39;wf_miniseed_id&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">wfid</span>
+                <span class="n">docentry</span><span class="p">[</span><span class="s2">&quot;wf_miniseed_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wfid</span>
                 <span class="n">elogid</span> <span class="o">=</span> <span class="n">elog_col</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">docentry</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
                 <span class="n">log_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elogid</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">return_ids</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">ids_affected</span><span class="p">,</span><span class="n">log_ids</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">ids_affected</span><span class="p">,</span> <span class="n">log_ids</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 

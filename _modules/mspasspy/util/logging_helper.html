@@ -97,8 +97,18 @@
              
   <h1>Source code for mspasspy.util.logging_helper</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">AtomicType</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="p">,</span> <span class="n">ProcessingStatus</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MsPASSError</span><span class="p">,</span>
+    <span class="n">AtomicType</span><span class="p">,</span>
+    <span class="n">ErrorSeverity</span><span class="p">,</span>
+    <span class="n">ProcessingStatus</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Seismogram</span><span class="p">,</span>
+    <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
+    <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="info"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.info">[docs]</a><span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -114,52 +124,68 @@
 <span class="sd">     will be logged using the same information.</span>
 <span class="sd">    :return: None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">empty_err_message</span> <span class="o">=</span> <span class="s2">&quot;cannot preserve history because container was empty</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
-                        <span class="s2">&quot;Must at least contain an origin record&quot;</span>
+    <span class="n">empty_err_message</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;cannot preserve history because container was empty</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;Must at least contain an origin record&quot;</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">empty_err_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="n">alg_name</span><span class="p">,</span> <span class="n">empty_err_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span>
-                             <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span> <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
-                             <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span>
+                    <span class="n">alg_name</span><span class="p">,</span>
+                    <span class="n">alg_id</span><span class="p">,</span>
+                    <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
+                    <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">,</span>
+                <span class="p">)</span>
 
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">target</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-                <span class="s2">&quot;logging_helper.info: target index is out of bound&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;logging_helper.info: target index is out of bound&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">))</span> <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="n">target</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>  <span class="c1"># guarantee group member is not dead</span>
                 <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-                    <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">empty_err_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="n">alg_name</span><span class="p">,</span> <span class="n">empty_err_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span>
-                                           <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
-                                           <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">)</span> <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
-                                           <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">)</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span>
+                        <span class="n">alg_name</span><span class="p">,</span>
+                        <span class="n">alg_id</span><span class="p">,</span>
+                        <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
+                        <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">,</span>
+                    <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s1">&#39;Coding error - logging.info was passed an unexpected data type of&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Not treated as fatal but a bug fix is needed&#39;</span><span class="p">)</span></div>
+            <span class="s2">&quot;Coding error - logging.info was passed an unexpected data type of&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ensemble_error"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.ensemble_error">[docs]</a><span class="k">def</span> <span class="nf">ensemble_error</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">err_severity</span><span class="o">=</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is a small helper function useful for error handlers in except </span>
-<span class="sd">    blocks for ensemble objects.  If a function is called on an ensemble </span>
-<span class="sd">    object that throws an exception this function will post the message </span>
-<span class="sd">    posted to all ensemble members.  It silently does nothing if the </span>
-<span class="sd">    ensemble is empty. </span>
+<span class="sd">    This is a small helper function useful for error handlers in except</span>
+<span class="sd">    blocks for ensemble objects.  If a function is called on an ensemble</span>
+<span class="sd">    object that throws an exception this function will post the message</span>
+<span class="sd">    posted to all ensemble members.  It silently does nothing if the</span>
+<span class="sd">    ensemble is empty.</span>
 
 <span class="sd">    :param err_severity: severity of the error, default as ErrorSeverity.Invalid.</span>
 <span class="sd">    :param d: is the ensemble data to be handled. It print and error message</span>
-<span class="sd">      and returns doing nothing if d is not one of the known ensemble </span>
+<span class="sd">      and returns doing nothing if d is not one of the known ensemble</span>
 <span class="sd">      objects.</span>
 <span class="sd">    :param alg: is the algorithm name posted to elog on each member</span>
 <span class="sd">    :param message: is the string posted to all members</span>
-<span class="sd">    (Note due to a current flaw in the api we don&#39;t have access to the </span>
+<span class="sd">    (Note due to a current flaw in the api we don&#39;t have access to the</span>
 <span class="sd">    severity attribute.  For now this always set it Invalid)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
@@ -169,9 +195,11 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
             <span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">message</span><span class="p">),</span> <span class="n">err_severity</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Coding error - ensemble_error was passed an unexpected data type of&#39;</span><span class="p">,</span>
-              <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Not treated as fatal but a bug fix is needed&#39;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Coding error - ensemble_error was passed an unexpected data type of&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="reduce"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.reduce">[docs]</a><span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">):</span>
@@ -189,31 +217,43 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data2</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;logging_helper.reduce: data2 has a different type as data1&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;logging_helper.reduce: data2 has a different type as data1&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">data1</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-            <span class="n">data1</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span>
-                             <span class="n">alg_id</span><span class="p">,</span>
-                             <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span>
-                             <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
-                             <span class="n">data2</span><span class="p">)</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span>
+                <span class="n">alg_name</span><span class="p">,</span>
+                <span class="n">alg_id</span><span class="p">,</span>
+                <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
+                <span class="n">data2</span><span class="p">,</span>
+            <span class="p">)</span>
 
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data2</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;logging_helper.reduce: data2 has a different type as data1&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;logging_helper.reduce: data2 has a different type as data1&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data2</span><span class="o">.</span><span class="n">member</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-                <span class="s2">&quot;logging_helper.reduce: data1 and data2 have different sizes of member&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;logging_helper.reduce: data1 and data2 have different sizes of member&quot;</span>
+            <span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>  <span class="c1"># guarantee group member is not dead</span>
-                <span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span>
-                                           <span class="n">alg_id</span><span class="p">,</span>
-                                           <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">)</span>
-                                           <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
-                                           <span class="n">data2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span>
+                    <span class="n">alg_name</span><span class="p">,</span>
+                    <span class="n">alg_id</span><span class="p">,</span>
+                    <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
+                    <span class="n">data2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Coding error - logging.reduce was passed an unexpected data type of&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">data1</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Not treated as fatal but a bug fix is needed&#39;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Coding error - logging.reduce was passed an unexpected data type of&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">data1</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

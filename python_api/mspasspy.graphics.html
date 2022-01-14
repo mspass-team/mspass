@@ -226,23 +226,23 @@ of the figure.  See matplotlib documentation.</p>
 <dt id="mspasspy.graphics.SeismicPlotter">
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">SeismicPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>SeismicPlotter is used to plot mspass data objects in the 
-seismology convention with time as the x axis.  Use SectionPlotter 
-to plot data in the seismic reflection convention with time on the 
+<p>SeismicPlotter is used to plot mspass data objects in the
+seismology convention with time as the x axis.  Use SectionPlotter
+to plot data in the seismic reflection convention with time on the
 y axis and oriented backward (increasing downward).</p>
-<p>Four times of plots are supported:  wiggle trace, wiggle trace variable 
-area (i.e. filled on positive peaks), image plots, and colored wiggle 
-trace variable area (wtva overlays an image display).  
-Ensembles of Seismogram objects (SeismogramEnsemble object) are plotted in 
-three windows that will appear as Figure 0, Figure 1, and Figure 2.  
-All other object are displayed in a single window.   Default display 
+<p>Four times of plots are supported:  wiggle trace, wiggle trace variable
+area (i.e. filled on positive peaks), image plots, and colored wiggle
+trace variable area (wtva overlays an image display).
+Ensembles of Seismogram objects (SeismogramEnsemble object) are plotted in
+three windows that will appear as Figure 0, Figure 1, and Figure 2.
+All other object are displayed in a single window.   Default display
 order for ensembles is fill in ensemble order from the bottom up.
 Use the topdown() method to switch to reverse order.</p>
-<p>This is a simple plotter that just generates a basic graphic.   
-The design idea is to use this as a base class for more advanced 
-graphics uses like a trace editor or generic picker.  The 
-plot object must be created before any plots can be generated.  
-Any optional changes to the plot behavior, most commonly calls 
+<p>This is a simple plotter that just generates a basic graphic.
+The design idea is to use this as a base class for more advanced
+graphics uses like a trace editor or generic picker.  The
+plot object must be created before any plots can be generated.
+Any optional changes to the plot behavior, most commonly calls
 to the change_style method, should be done before calling plot.</p>
 <dl class="py method">
 <dt id="mspasspy.graphics.SeismicPlotter.bottomup">

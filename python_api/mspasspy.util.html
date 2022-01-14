@@ -799,24 +799,24 @@ the stream objects will be converted back by overriding the data and metadata of
 <dl class="py function">
 <dt id="mspasspy.util.logging_helper.ensemble_error">
 <code class="sig-prename descclassname">mspasspy.util.logging_helper.</code><code class="sig-name descname">ensemble_error</code><span class="sig-paren">(</span><em class="sig-param">d</em>, <em class="sig-param">alg</em>, <em class="sig-param">message</em>, <em class="sig-param">err_severity=&lt;ErrorSeverity.Invalid: 1&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/logging_helper.html#ensemble_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.logging_helper.ensemble_error" title="Permalink to this definition"></a></dt>
-<dd><p>This is a small helper function useful for error handlers in except 
-blocks for ensemble objects.  If a function is called on an ensemble 
-object that throws an exception this function will post the message 
-posted to all ensemble members.  It silently does nothing if the 
+<dd><p>This is a small helper function useful for error handlers in except
+blocks for ensemble objects.  If a function is called on an ensemble
+object that throws an exception this function will post the message
+posted to all ensemble members.  It silently does nothing if the
 ensemble is empty.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>err_severity</strong> – severity of the error, default as ErrorSeverity.Invalid.</p></li>
 <li><p><strong>d</strong> – is the ensemble data to be handled. It print and error message
-and returns doing nothing if d is not one of the known ensemble 
+and returns doing nothing if d is not one of the known ensemble
 objects.</p></li>
 <li><p><strong>alg</strong> – is the algorithm name posted to elog on each member</p></li>
 <li><p><strong>message</strong> – is the string posted to all members</p></li>
 </ul>
 </dd>
 </dl>
-<p>(Note due to a current flaw in the api we don’t have access to the 
+<p>(Note due to a current flaw in the api we don’t have access to the
 severity attribute.  For now this always set it Invalid)</p>
 </dd></dl>
 
@@ -870,16 +870,16 @@ the processing history will still be replicated.</p>
 <dt id="mspasspy.util.seispp.index_data">
 <code class="sig-prename descclassname">mspasspy.util.seispp.</code><code class="sig-name descname">index_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filebase</span></em>, <em class="sig-param"><span class="n">db</span></em>, <em class="sig-param"><span class="n">ext</span><span class="o">=</span><span class="default_value">'d3C'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/seispp.html#index_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.seispp.index_data" title="Permalink to this definition"></a></dt>
 <dd><p>Import function for data from antelope export_to_mspass.</p>
-<p>This function is an import function for Seismogram objects created 
-by the antelope program export_to_mspass.  That program writes 
-header data as a yaml file and the sample data as a raw binary 
-fwrite of the data matrix (stored in fortran order but written 
-as a contiguous block of 3*npts (number of samples) double values. 
+<p>This function is an import function for Seismogram objects created
+by the antelope program export_to_mspass.  That program writes
+header data as a yaml file and the sample data as a raw binary
+fwrite of the data matrix (stored in fortran order but written
+as a contiguous block of 3*npts (number of samples) double values.
 This function parses the yaml file and adds three critical metadata
-entries:  dfile, dir, and foff. To get foff values the function 
-reads the binary data file and gets foff values by calls to tell.  
+entries:  dfile, dir, and foff. To get foff values the function
+reads the binary data file and gets foff values by calls to tell.
 It then writes these entries into MongoDB in the wf collection
-of a database.   Readers that want to read this raw data will 
+of a database.   Readers that want to read this raw data will
 need to use dir, dfile, and foff to find the right file and read point.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
