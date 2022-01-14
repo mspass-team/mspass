@@ -166,7 +166,7 @@ PYBIND11_MODULE(seismic, m) {
         py::array(a.size(), a.data(), py::none()).attr("__truediv__")(b));
     })
   ;
-  
+
   /* We define the following as global such that it can be used in the algorithms.basic module.
      The usage is documented here:
      https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html#binding-stl-containers
@@ -657,7 +657,7 @@ PYBIND11_MODULE(seismic, m) {
           hold both a copy of the monster list of strings of pickled
           data members and the reconstituted C++ data objects (ensemble
           members).  Need to see if we can find a way to handle that
-          in a more memory efficient way. 
+          in a more memory efficient way.
           wangyinz: The new implementation below should be better. */
           py::list dlist = loads(t[3]);
           LoggingEnsemble<Seismogram> result(md, elog, 0);
@@ -730,7 +730,7 @@ PYBIND11_MODULE(seismic, m) {
           hold both a copy of the monster list of strings of pickled
           data members and the reconstituted C++ data objects (ensemble
           members).  Need to see if we can find a way to handle that
-          in a more memory efficient way. 
+          in a more memory efficient way.
           wangyinz: The new implementation below should be better. */
           py::list dlist = loads(t[3]);
           LoggingEnsemble<TimeSeries> result(md, elog, 0);
@@ -754,19 +754,7 @@ PYBIND11_MODULE(seismic, m) {
     )
   ;
 
-  /* This following would be the normal way to expose this class to python, but it generates and
-  error for reasons described in this issues page of pybind11:
-  https://github.com/pybind/pybind11/issues/633
-  I (glp) could not find and immediate solution but use the bandaid solution here of removing the
-  Metadata bindings to this class.   For the time being that will not present a problem, but it
-  should be fixed long term.   Could, for example, add a "get_metadata" lambda in the pybind11
-  code that would dynamic cast the PowerSpectrum and return the Metadata.  I think that would work, but
-  it would be better to figure out how to allow Metadata to be used.   Might be as easy as
-  putting the PowerSpectrum file in the utility module.  Here is the class binding that
-  creates an import error:
     py::class_<PowerSpectrum,Metadata>(m,"PowerSpectrum",
-  Here is the one that works but doesn't provide Metadata functionality */
-    py::class_<PowerSpectrum>(m,"PowerSpectrum",
                   "Container for power spectrum estimates")
       .def(py::init<>())
       .def(py::init<const Metadata&,const vector<double>&,const double,const string>())
@@ -775,15 +763,55 @@ PYBIND11_MODULE(seismic, m) {
       .def("frequency",&PowerSpectrum::frequency,"Return frequency of sample number of spectrum vector")
       .def("Nyquist",&PowerSpectrum::Nyquist,"Return Nyquist frequency")
       .def("sample_number",&PowerSpectrum::sample_number,"Return sample number of a given frequency")
-      .def_readonly("df",&PowerSpectrum::df,"Frequency bin size")
-      .def_readonly("spectrum_type",&PowerSpectrum::spectrum_type,
+      .def_readwrite("df",&PowerSpectrum::df,"Frequency bin size")
+      .def_readwrite("f0",&PowerSpectrum::f0,"Frequency of sample 0 (This implementation supports only constant frequency bin size)")
+      .def_readwrite("spectrum_type",&PowerSpectrum::spectrum_type,
           "Descriptive name of method used to generate spectrum")
-      .def_readonly("spectrum",&PowerSpectrum::spectrum,
+      .def_readwrite("spectrum",&PowerSpectrum::spectrum,
           "Vector containing estimated power spectrum; equally spaced ordered in increasing frequency")
       .def_readwrite("elog",&PowerSpectrum::elog,"Handle to ErrorLogger")
+      .def(py::pickle(
+        [](const PowerSpectrum& self)
+        {
+          /* PowerSpectrum inherit Metadata so we have to serialize that*/
+
+          pybind11::object sbuf;
+          sbuf=serialize_metadata_py(dynamic_cast<const Metadata&>(self));
+          py::array_t<double, py::array::f_style> darr(self.spectrum.size(),
+                              &(self.spectrum[0]));
+          stringstream ss_elog;
+          boost::archive::text_oarchive ar(ss_elog);
+          ar << self.elog;
+          return py::make_tuple(sbuf,self.df,self.f0,self.spectrum_type,
+              ss_elog.str(),darr);
+        },
+        [](py::tuple t)
+        {
+          /* Deserialize Metadata*/
+          pybind11::object sbuf=t[0];
+          Metadata md=restore_serialized_metadata_py(sbuf);
+          double df=t[1].cast<double>();
+          double f0=t[2].cast<double>();
+          string spectrum_type=t[3].cast<std::string>();
+          stringstream ss_elog(t[4].cast<std::string>());
+          boost::archive::text_iarchive ar(ss_elog);
+          ErrorLogger elog;
+          ar >> elog;
+          py::array_t<double, py::array::f_style> darr;
+          darr=t[5].cast<py::array_t<double, py::array::f_style>>();
+          py::buffer_info info = darr.request();
+          std::vector<double> d;
+          d.resize(info.shape[0]);
+          memcpy(d.data(), info.ptr, sizeof(double) * d.size());
+          PowerSpectrum restored(md,d,df,spectrum_type);
+
+          restored.f0=f0;
+          restored.elog=elog;
+          return restored;
+        }
+      ))
     ;
 }
-
 
 } // namespace mspasspy
 } // namespace mspass

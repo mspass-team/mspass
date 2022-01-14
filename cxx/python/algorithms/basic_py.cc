@@ -208,6 +208,16 @@ PYBIND11_MODULE(basic, m) {
     .def("length",&TimeWindow::length,"Return the size of the window in seconds")
     .def_readwrite("start",&TimeWindow::start,"Start time of the window")
     .def_readwrite("end",&TimeWindow::end,"End time of the window")
+    .def(py::pickle(
+        [](const TimeWindow& self)
+        {
+          return py::make_tuple(self.start,self.end);
+        },
+        [](py::tuple t)
+        {
+          return TimeWindow(t[0].cast<double>(),t[1].cast<double>());
+        }
+      ))
   ;
   py::class_<BasicTaper,PyBasicTaper>(m,"BasicTaper",
                     "Base class for family of taper algorithms")

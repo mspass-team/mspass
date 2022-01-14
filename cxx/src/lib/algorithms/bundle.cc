@@ -570,6 +570,10 @@ LoggingEnsemble<Seismogram> bundle_seed_data(LoggingEnsemble<TimeSeries>& d)
         }
       }
     }
+    /* We need to set the ensemble live.   Otherwise it will be treated as
+    empty.  However, if the ensemble is empty we should leave it dead, which
+    is how it is initialized*/
+    if(ens3c.member.size()>0) ens3c.set_live();
     return ens3c;
   }catch(...){throw;};
 }

@@ -67,6 +67,17 @@ ErrorLogger& ErrorLogger::operator=(const ErrorLogger& parent)
   }
   return *this;
 }
+ErrorLogger& ErrorLogger::operator+=(const ErrorLogger& other)
+{
+  if(this!=&other)
+  {
+    for(auto lptr=other.allmessages.begin();lptr!=other.allmessages.end();++lptr)
+    {
+      this->allmessages.push_back(*lptr);
+    }
+  }
+  return *this;
+}
 int ErrorLogger::log_error(const mspass::utility::MsPASSError& merr)
 {
   LogData thislog(this->job_id,string("MsPASSError"),merr);

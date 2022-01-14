@@ -1,3 +1,5 @@
+#ifndef _VECTORSTATISTICS_H_
+#define _VECTORSTATISTICS_H_
 #include <vector>
 #include <algorithm>
 #include "mspass/utility/MsPASSError.h"
@@ -195,3 +197,4 @@ template <class T> T VectorStatistics<T>::quantile(size_t n)
 }
 } // end utility namespace
 } /* End mspass namespace encapsulation */
+#endif

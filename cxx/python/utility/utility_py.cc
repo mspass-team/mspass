@@ -726,6 +726,7 @@ PYBIND11_MODULE(utility, m) {
     .def("log_verbose",&ErrorLogger::log_verbose,"Log an informational message - tagged as log message")
     .def("get_error_log",&ErrorLogger::get_error_log,"Return all posted entries")
     .def("size",&ErrorLogger::size,"Return number of entries in this log")
+    .def(py::self += py::self,"Operator +=")
     .def("__len__",&ErrorLogger::size,"Return number of entries in this log")
     .def("worst_errors",&ErrorLogger::worst_errors,"Return a list of only the worst errors")
     .def("__getitem__", [](ErrorLogger &self, size_t i) {

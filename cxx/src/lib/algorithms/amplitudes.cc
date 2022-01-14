@@ -63,7 +63,7 @@ double RMSAmplitude(const CoreSeismogram& d)
 	for(size_t k=0;k<n;++k,++ptr) sumsq += (*ptr)*(*ptr);
 	return sqrt(sumsq/d.npts());
 }
-double PerfAmplitude(const CoreTimeSeries& d, const double perf)
+double PercAmplitude(const CoreTimeSeries& d, const double perc)
 {
 	vector<double> amps;
 	amps=d.s;
@@ -71,10 +71,10 @@ double PerfAmplitude(const CoreTimeSeries& d, const double perf)
 	for(ptr=amps.begin();ptr!=amps.end();++ptr) *ptr = fabs(*ptr);
 	sort(amps.begin(),amps.end());
 	size_t n=amps.size();
-	size_t iperf=static_cast<size_t>(perf*static_cast<double>(n));
-	return amps[iperf];
+	size_t iperc=static_cast<size_t>(perc*static_cast<double>(n));
+	return amps[iperc];
 }
-double PerfAmplitude(const CoreSeismogram& d,const double perf)
+double PercAmplitude(const CoreSeismogram& d,const double perc)
 {
 	vector<double> amps;
 	amps.reserve(d.npts());
@@ -86,17 +86,19 @@ double PerfAmplitude(const CoreSeismogram& d,const double perf)
 	sort(amps.begin(),amps.end());
 	size_t n=amps.size();
 	/* n-1 because C arrays start at 0 */
-	size_t iperf=static_cast<size_t>(perf*static_cast<double>(n));
-	return amps[iperf];
+	size_t iperc=static_cast<size_t>(perc*static_cast<double>(n));
+	/* Silently return 100% if iperc exceeds the range of amps*/
+	if(iperc>=amps.size()) iperc = amps.size() - 1;
+	return amps[iperc];
 }
 /* This pair could be made a template, but they are so simple
 it is clearer to keep them here with the related functions */
 double MADAmplitude(const CoreTimeSeries& d)
 {
-	return PerfAmplitude(d,0.5);
+	return PercAmplitude(d,0.5);
 }
 double MADAmplitude(const CoreSeismogram& d)
 {
-	return PerfAmplitude(d,0.5);
+	return PercAmplitude(d,0.5);
 }
 } //End mspass namespace encapsulation
