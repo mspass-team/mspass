@@ -1352,7 +1352,7 @@ def test_MsPASSError():
 
 def test_PowerSpectrum():
     ts = TimeSeries(100)
-    ts.data[0] = 1.0    # delta function - spectrum will be flat
+    ts.data[0] = 1.0  # delta function - spectrum will be flat
     ts.live = True
     engine = MTPowerSpectrumEngine(100, 5, 10)
     spec = engine.apply(ts)

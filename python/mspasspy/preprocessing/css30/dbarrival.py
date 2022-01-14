@@ -5,13 +5,33 @@ Created on Sat Oct 24 06:31:28 2020
 
 @author: Gary Pavlis, Dept. of Earth and Atmos Sci, Indiana University
 """
-from mspasspy.ccore.utility import (MsPASSError,
-                                    ErrorSeverity)
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 import pandas as pd
 from obspy import UTCDateTime
 
 
-def load_css30_arrivals(db, filename, attribute_names=['evid', 'source_lat', 'source_lon', 'source_depth', 'source_time', 'mb', 'ms', 'sta', 'phase', 'iphase', 'delta', 'seaz', 'esaz', 'residual', 'time', 'deltim']):
+def load_css30_arrivals(
+    db,
+    filename,
+    attribute_names=[
+        "evid",
+        "source_lat",
+        "source_lon",
+        "source_depth",
+        "source_time",
+        "mb",
+        "ms",
+        "sta",
+        "phase",
+        "iphase",
+        "delta",
+        "seaz",
+        "esaz",
+        "residual",
+        "time",
+        "deltim",
+    ],
+):
     """
     Loads an ascii table of arrival time data extracted from an
     antelope (css3.0) database.   The default format of the table
@@ -49,8 +69,9 @@ def load_css30_arrivals(db, filename, attribute_names=['evid', 'source_lat', 'so
     # reader would be dangerous if using an attribute like a comment attribute
     # that has spaces in the string associated with it's value.  It is always
     # safe here because sta,phase, and iphase never have spaces
-    df = pd.read_table(filename, delim_whitespace=True, header=None,
-                       names=attribute_names)
+    df = pd.read_table(
+        filename, delim_whitespace=True, header=None, names=attribute_names
+    )
     df.reset_index(inplace=True)
     data_dict = df.to_dict("records")
     col = db.arrival
@@ -60,7 +81,12 @@ def load_css30_arrivals(db, filename, attribute_names=['evid', 'source_lat', 'so
     return ret
 
 
-def load_css30_sources(db, srcdict, collection='source', attribute_names=['evid', 'lat', 'lon', 'depth', 'time']):
+def load_css30_sources(
+    db,
+    srcdict,
+    collection="source",
+    attribute_names=["evid", "lat", "lon", "depth", "time"],
+):
     """
     Companion to extract_unique_css30_sources to load output of that
     function into a MongoDB database.   The algorithm is cautious and
@@ -82,15 +108,18 @@ def load_css30_sources(db, srcdict, collection='source', attribute_names=['evid'
     # first scan for matches in any of the evids
     need_to_fix = dict()
     for evid in srcdict:
-        query = {'evid': evid}
+        query = {"evid": evid}
         n = dbh.count_documents(query)
         if n > 0:
             rec = dbh.find_one(query)
             need_to_fix[evid] = rec
-    if(len(need_to_fix) > 0):
-        print('The following records in collection ', collection,
-              ' have matching data for one or more evids')
-        print('You must fix the mismatch problem before you can load these data')
+    if len(need_to_fix) > 0:
+        print(
+            "The following records in collection ",
+            collection,
+            " have matching data for one or more evids",
+        )
+        print("You must fix the mismatch problem before you can load these data")
         for k in need_to_fix:
             print(k, need_to_fix[k])
         return None
@@ -102,16 +131,14 @@ def load_css30_sources(db, srcdict, collection='source', attribute_names=['evid'
         srcoid = dbh.insert_one(rec).inserted_id
         # get object id from retval and update this record to set source_id to
         # the object_id of this record
-        dbh.update_one(
-            {'_id': srcoid},
-            {'$set': {'source_id': str(srcoid)}})
+        dbh.update_one({"_id": srcoid}, {"$set": {"source_id": str(srcoid)}})
         count += 1
     return count
 
 
-def set_source_id_from_evid(db, collection='arrival',
-                            use_immortal_cursor=False,
-                            update_all=False):
+def set_source_id_from_evid(
+    db, collection="arrival", use_immortal_cursor=False, update_all=False
+):
     """
     Sets source_id in arrivals by matching evid attributes in the
     source collection.   The concept here is that source_id is the
@@ -130,11 +157,11 @@ def set_source_id_from_evid(db, collection='arrival',
     :param use_immortal_cursor:  If true the cursor in the update is made
       "immortal" meaning it won't time out.  This may be necessary if the
       arrival collection is large.
-    :param update_all:  if true the function will force cross referencing and 
-      setting every document in arrival.  The default (False) updates only 
-      documents where the source_id is not yet set.  The default behavior, 
-      for example, would be the norm when new arrival data is added to a 
-      database and need that indexing. 
+    :param update_all:  if true the function will force cross referencing and
+      setting every document in arrival.  The default (False) updates only
+      documents where the source_id is not yet set.  The default behavior,
+      for example, would be the norm when new arrival data is added to a
+      database and need that indexing.
     :return: tuple of results with mixed content.  0 and 1 are integers
       defining number of documents processed and the number altered
       respectively.   2 is a dict keyed by evid with a value equal to the
@@ -145,11 +172,11 @@ def set_source_id_from_evid(db, collection='arrival',
 
     """
     dbarr = db[collection]
-    dbsrc = db['source']
+    dbsrc = db["source"]
     if update_all:
         query = {}
     else:
-        query = {'source_id': None}
+        query = {"source_id": None}
     if use_immortal_cursor:
         alldocs = dbarr.find(query, no_cursor_timeout=True)
     else:
@@ -159,9 +186,9 @@ def set_source_id_from_evid(db, collection='arrival',
     evid_set = dict()
     not_set = dict()
     for doc in alldocs:
-        if 'evid' in doc:
-            evid = doc['evid']
-            query = {'evid': evid}
+        if "evid" in doc:
+            evid = doc["evid"]
+            query = {"evid": evid}
             n = dbsrc.count_documents(query)
             if n == 0:
                 if evid in not_set:
@@ -172,12 +199,9 @@ def set_source_id_from_evid(db, collection='arrival',
                     not_set[evid] = 1
             else:
                 srcrec = dbsrc.find_one(query)
-                source_id = srcrec['source_id']
-                arroid = doc['_id']
-                dbarr.update_one(
-                    {'_id': arroid},
-                    {'$set': {'source_id': source_id}}
-                )
+                source_id = srcrec["source_id"]
+                arroid = doc["_id"]
+                dbarr.update_one({"_id": arroid}, {"$set": {"source_id": source_id}})
                 number_set += 1
                 if evid in evid_set:
                     nset = evid_set[evid]
@@ -189,7 +213,27 @@ def set_source_id_from_evid(db, collection='arrival',
     return [number_arrivals, number_set, evid_set, not_set]
 
 
-def extract_unique_css30_sources(filename, attribute_names=['evid', 'source_lat', 'source_lon', 'source_depth', 'source_time', 'mb', 'ms', 'sta', 'phase', 'iphase', 'delta', 'seaz', 'esaz', 'residual', 'time', 'deltim']):
+def extract_unique_css30_sources(
+    filename,
+    attribute_names=[
+        "evid",
+        "source_lat",
+        "source_lon",
+        "source_depth",
+        "source_time",
+        "mb",
+        "ms",
+        "sta",
+        "phase",
+        "iphase",
+        "delta",
+        "seaz",
+        "esaz",
+        "residual",
+        "time",
+        "deltim",
+    ],
+):
     """
     Utility function to scan the same table used by load_css30_arrivals to
     create a dict of unique sources keyed by the parent css30 database
@@ -213,24 +257,27 @@ def extract_unique_css30_sources(filename, attribute_names=['evid', 'source_lat'
       changed too.
     :return:  dict keyed by evid of source coordinate data.
     """
-    df = pd.read_table(filename, delim_whitespace=True, header=None,
-                       names=attribute_names)
+    df = pd.read_table(
+        filename, delim_whitespace=True, header=None, names=attribute_names
+    )
     df.reset_index(inplace=True)
     recs = df.to_dict("records")
     sources = dict()
     for d in recs:
-        evid = d['evid']
-        lat = d['source_lat']
-        lon = d['source_lon']
-        depth = d['source_depth']
-        time = d['source_time']
+        evid = d["evid"]
+        lat = d["source_lat"]
+        lon = d["source_lon"]
+        depth = d["source_depth"]
+        time = d["source_time"]
         # this depends upon container replacing content when keys match
         # inefficient but should work
-        sources[evid] = {'evid': evid,
-                         'lat': lat,
-                         'lon': lon,
-                         'depth': depth,
-                         'time': time}
+        sources[evid] = {
+            "evid": evid,
+            "lat": lat,
+            "lon": lon,
+            "depth": depth,
+            "time": time,
+        }
     return sources
 
 
@@ -243,7 +290,7 @@ def parse_snetsta(fname, verbose=False):
     :param fname: is the snetsta file to be parsed.
     :param verbose: if True the function will print all stations for which fsta does not match sta
     """
-    with open(fname, 'r') as fp:
+    with open(fname, "r") as fp:
         staindex = {}
         for lines in fp.readlines():
             x = lines.split()  # depend that default is whitespace
@@ -252,8 +299,14 @@ def parse_snetsta(fname, verbose=False):
             sta = x[2]
             staindex[sta] = {"fsta": fsta, "net": net}
             if verbose and fsta != sta:
-                print('Warning:  station in net=', net,
-                      ' uses altered sta code=', sta, ' for sta=', fsta)
+                print(
+                    "Warning:  station in net=",
+                    net,
+                    " uses altered sta code=",
+                    sta,
+                    " for sta=",
+                    fsta,
+                )
         return staindex
 
 
@@ -265,18 +318,17 @@ def make_css30_composite_sta(sta, net):
     """
     n = len(sta)
     if n <= 3:
-        s = sta+'_'+net
+        s = sta + "_" + net
     else:
         # Note sta can sometimes be more than 4 characters and the
         # result of this would make an invalid station code for datascope.
         # Since we only preserve this as a separate attribute it it is
         # better to preserve the pieces this way until proven otherwise.
-        s = sta+net
+        s = sta + net
     return s
 
 
-def set_netcode_snetsta(db, staindex, collection='arrival',
-                        use_immortal_cursor=False):
+def set_netcode_snetsta(db, staindex, collection="arrival", use_immortal_cursor=False):
     """
     Takes the dict staindex that defines how snetsta defines seed codes for
     antelope tables and updates a specified collection to add net code and,
@@ -377,39 +429,39 @@ def set_netcode_snetsta(db, staindex, collection='arrival',
     for doc in dbcursor:
         doc_needs_update = True
         nprocessed += 1
-        id = doc['_id']
-        dbsta = doc['sta']
+        id = doc["_id"]
+        dbsta = doc["sta"]
         if dbsta in staindex:
             updaterec.clear()
             xref = staindex[dbsta]
-            net = xref['net']
-            sta = xref['fsta']
-            if 'net' in doc:
-                if 'css30_sta' in doc:
+            net = xref["net"]
+            sta = xref["fsta"]
+            if "net" in doc:
+                if "css30_sta" in doc:
                     # We use this case to detect previously processed data
                     # so we simply skip them
                     doc_needs_update = False
                 else:
                     # Assume if we land here something else set net and
                     # we just need to set css30_sta
-                    sta = doc['sta']
-                    net = doc['net']
+                    sta = doc["sta"]
+                    net = doc["net"]
                     css30sta = make_css30_composite_sta(sta, net)
-                    updaterec['css30_sta'] = css30sta
+                    updaterec["css30_sta"] = css30sta
                     doc_needs_update = True
             else:
-                if(len(dbsta) <= 3):
-                    updaterec['css30_sta'] = dbsta+"_"+net
-                elif(len(dbsta) == 4):
-                    updaterec['css30_sta'] = dbsta+net
+                if len(dbsta) <= 3:
+                    updaterec["css30_sta"] = dbsta + "_" + net
+                elif len(dbsta) == 4:
+                    updaterec["css30_sta"] = dbsta + net
                 else:
                     # We use this name directly in this case.   We don't
                     # force the antelope method to allow flexibility
                     # it is possible a user creates an snetsta entry by hand
                     # and this will handle that correctly.
-                    updaterec['css30_sta'] = dbsta
-                updaterec['net'] = net
-                updaterec['sta'] = sta
+                    updaterec["css30_sta"] = dbsta
+                updaterec["net"] = net
+                updaterec["sta"] = sta
                 doc_needs_update = True
         else:
             sta_not_found.add(dbsta)
@@ -417,16 +469,18 @@ def set_netcode_snetsta(db, staindex, collection='arrival',
         if doc_needs_update:
             # for testing just print these
             # print(updaterec)
-            col.update_one(
-                {'_id': id},
-                {'$set': updaterec}
-            )
+            col.update_one({"_id": id}, {"$set": updaterec})
             nset += 1
     return tuple([nprocessed, nset, sta_not_found])
 
 
-def set_netcode_from_site(db, collection='arrival', time_key=None,
-                          use_immortal_cursor=False, stations_to_ignore=None):
+def set_netcode_from_site(
+    db,
+    collection="arrival",
+    time_key=None,
+    use_immortal_cursor=False,
+    stations_to_ignore=None,
+):
     """
     This function scans a MongoDB collection that is assumed to contain
     a "sta" for station code to be cross referenced with metadata stored in
@@ -481,7 +535,7 @@ def set_netcode_from_site(db, collection='arrival', time_key=None,
     """
 
     dbh = db[collection]
-    dbsite = db['site']
+    dbsite = db["site"]
     ambiguous_sta = set()
     not_found_set = set()
     # This is kind of an ugly way to handle null ignore list but is functional
@@ -497,50 +551,49 @@ def set_netcode_from_site(db, collection='arrival', time_key=None,
         dbcursor = dbh.find({})
     for doc in dbcursor:
         nprocessed += 1
-        id = doc['_id']
-        if not ('sta' in doc):
-            print('set_netcode_from_site (WARNING):  document with id=', id,
-                  ' has no sta attribute -skipped')
+        id = doc["_id"]
+        if not ("sta" in doc):
+            print(
+                "set_netcode_from_site (WARNING):  document with id=",
+                id,
+                " has no sta attribute -skipped",
+            )
             continue
-        sta = doc['sta']
+        sta = doc["sta"]
         if sta in stations_to_ignore:
             continue
-        if 'net' in doc:
+        if "net" in doc:
             # silently skip records for which net is already defined for efficiency
             continue
         query.clear()
-        query['sta'] = {'$eq': sta}
+        query["sta"] = {"$eq": sta}
         if time_key != None:
             if time_key in doc:
                 time = doc[time_key]
-            # site has starttime and endtime defined so no need to test for
-            # their presence.
-                query['starttime'] = {"$lt": time}
-                query['endtime'] = {"$gt": time}
+                # site has starttime and endtime defined so no need to test for
+                # their presence.
+                query["starttime"] = {"$lt": time}
+                query["endtime"] = {"$gt": time}
             else:
                 # for now just log this as an error
-                print("Time key=", time_key,
-                      " not found in document for sta=", sta)
+                print("Time key=", time_key, " not found in document for sta=", sta)
         found = dbsite.find(query)
         nfound = found.count()
         if nfound == 1:
             x = found.next()
             updaterec.clear()
-            net = x['net']
-            updaterec['net'] = net
-            dbh.update_one(
-                {'_id': id},
-                {'$set': updaterec}
-            )
+            net = x["net"]
+            updaterec["net"] = net
+            dbh.update_one({"_id": id}, {"$set": updaterec})
             nupdates += 1
         elif nfound > 1:
             # this dependence on set uniqueness approach may be
             # a bit inefficient for large collections.  Perhaps should
             # test before add
             for x in found:
-                net = x['net']
-                st = x['starttime']
-                et = x['endtime']
+                net = x["net"]
+                st = x["starttime"]
+                et = x["endtime"]
                 val = tuple([net, sta, st, et])
                 ambiguous_sta.add(val)
         else:
@@ -548,9 +601,16 @@ def set_netcode_from_site(db, collection='arrival', time_key=None,
     return [nprocessed, nupdates, ambiguous_sta, not_found_set]
 
 
-def set_netcode_time_interval(db, sta=None, net=None, collection='arrival',
-                              starttime=None, endtime=None,
-                              time_filter_key='time', use_immortal_cursor=False):
+def set_netcode_time_interval(
+    db,
+    sta=None,
+    net=None,
+    collection="arrival",
+    starttime=None,
+    endtime=None,
+    time_filter_key="time",
+    use_immortal_cursor=False,
+):
     """
     Forces setting net code for data with a given station code within a
     specified time interval.
@@ -580,7 +640,7 @@ def set_netcode_time_interval(db, sta=None, net=None, collection='arrival',
     :param endtime:  end of time period for (optional) time selection.
       (default is off) Note a MsPASSError will be thrown if endtime is not
       defined by starttime is or vice versa.  Must be a UTCDateTime object
-    :param time_filter_key:  key used to access document entry to use 
+    :param time_filter_key:  key used to access document entry to use
       for time range test (startime<=time<=endtime).
     :param use_immortal_cursor:  If true the cursor in the update is made
       "immortal" meaning it won't time out.  This may be necessary if the
@@ -589,32 +649,43 @@ def set_netcode_time_interval(db, sta=None, net=None, collection='arrival',
     :return: number of documents updated.
     """
 
-    basemessage = 'set_netcode_time_interval:  '
-    if(sta == None or net == None):
-        print(basemessage + 'you must specify sta and net as required parameters')
+    basemessage = "set_netcode_time_interval:  "
+    if sta == None or net == None:
+        print(basemessage + "you must specify sta and net as required parameters")
     dbarr = db[collection]
-    query = {'sta': sta}
+    query = {"sta": sta}
     if starttime == None or endtime == None:
         if starttime != None:
             raise MsPASSError(
-                basemessage+"usage error - starttime defined but endtime was left null")
+                basemessage
+                + "usage error - starttime defined but endtime was left null"
+            )
         elif endtime != None:
             raise MsPASSError(
-                basemessage+"usage error - endtime defined but starttime was left null")
+                basemessage
+                + "usage error - endtime defined but starttime was left null"
+            )
     else:
         if not isinstance(starttime, UTCDateTime):
             raise MsPASSError(
-                basemessage+'usage error - starttime must be specified as an obspy UTCDateTime object')
+                basemessage
+                + "usage error - starttime must be specified as an obspy UTCDateTime object"
+            )
         if not isinstance(endtime, UTCDateTime):
             raise MsPASSError(
-                basemessage+'usage error - endtime must be specified as an obspy UTCDateTime object')
+                basemessage
+                + "usage error - endtime must be specified as an obspy UTCDateTime object"
+            )
         tse = starttime.timestamp
         tee = endtime.timestamp
         query[time_filter_key] = {"$gte": tse, "$lte": tee}
     n = dbarr.count_documents(query)
     if n == 0:
         print(
-            basemessage+'the following query returned no documents in collection'+collection)
+            basemessage
+            + "the following query returned no documents in collection"
+            + collection
+        )
         print(query)
     else:
         count = 0
@@ -623,21 +694,18 @@ def set_netcode_time_interval(db, sta=None, net=None, collection='arrival',
     else:
         curs = dbarr.find(query)
         for doc in curs:
-            if 'net' in doc:
+            if "net" in doc:
                 print(
-                    basemessage+'WARNING found document with net code set to ', doc['net'])
+                    basemessage + "WARNING found document with net code set to ",
+                    doc["net"],
+                )
                 # this check is required for robustness when time filter is off
                 if time_filter_key in doc:
-                    print('Problem document time=',
-                          UTCDateTime(doc[time_filter_key]))
-                print('Setting net in this document to requested net code=', net)
-            oid = doc['_id']
-            updaterec = {'net': net}
-            dbarr.update_one(
-                {'_id': oid},
-                {'$set': updaterec}
-
-            )
+                    print("Problem document time=", UTCDateTime(doc[time_filter_key]))
+                print("Setting net in this document to requested net code=", net)
+            oid = doc["_id"]
+            updaterec = {"net": net}
+            dbarr.update_one({"_id": oid}, {"$set": updaterec})
             count += 1
     return count
 
@@ -651,13 +719,13 @@ def find_null_net_stations(db, collection="arrival"):
     net_not_defined = set()
     curs = dbcol.find()
     for doc in curs:
-        if not 'net' in doc:
-            sta = doc['sta']
+        if not "net" in doc:
+            sta = doc["sta"]
             net_not_defined.add(sta)
     return net_not_defined
 
 
-def find_duplicate_sta(db, collection='site'):
+def find_duplicate_sta(db, collection="site"):
     """
     Scans collection requested (site is default be can be run on channel)
     for combinations of net:sta where the sta is not unique.   This can
@@ -682,7 +750,7 @@ def find_duplicate_sta(db, collection='site'):
     """
     dbcol = db[collection]
     allsta = {}
-    curs = dbcol.find()   # we do a brute force scan through the collection
+    curs = dbcol.find()  # we do a brute force scan through the collection
     for rec in curs:
         if "net" in rec:
             net = rec["net"]
@@ -699,9 +767,12 @@ def find_duplicate_sta(db, collection='site'):
                 allsta[sta] = stmp
         else:
             sta = rec["sta"]
-            print("find_duplicate_sta (WARNING):  ", collection,
-                  " collection has an undefined net code for station",
-                  sta)
+            print(
+                "find_duplicate_sta (WARNING):  ",
+                collection,
+                " collection has an undefined net code for station",
+                sta,
+            )
             print("This is the full document from this collection")
             print(rec)
     # Now we have allsta with all unique station names.  We just look
@@ -714,7 +785,7 @@ def find_duplicate_sta(db, collection='site'):
     return trouble_sta
 
 
-def find_unique_sta(db, collection='site'):
+def find_unique_sta(db, collection="site"):
     """
     This function is the complement to find_duplicate_sta.  It returns
     a list of stations with one and only one matching net code.
@@ -730,7 +801,7 @@ def find_unique_sta(db, collection='site'):
     """
     dbcol = db[collection]
     allsta = {}
-    curs = dbcol.find()   # we do a brute force scan through the collection
+    curs = dbcol.find()  # we do a brute force scan through the collection
     for rec in curs:
         if "net" in rec:
             net = rec["net"]
@@ -747,9 +818,12 @@ def find_unique_sta(db, collection='site'):
                 allsta[sta] = stmp
         else:
             sta = rec["sta"]
-            print("find_duplicate_sta (WARNING):  ", collection,
-                  " collection has an undefined net code for station",
-                  sta)
+            print(
+                "find_duplicate_sta (WARNING):  ",
+                collection,
+                " collection has an undefined net code for station",
+                sta,
+            )
             print("This is the full document from this collection")
             print(rec)
     # Now we have allsta with all unique station names.  We just look
@@ -766,10 +840,9 @@ def find_unique_sta(db, collection='site'):
     return unique_sta
 
 
-def check_for_ambiguous_sta(db, stalist,
-                            collection='arrival',
-                            verbose=False,
-                            verbose_attributes=None):
+def check_for_ambiguous_sta(
+    db, stalist, collection="arrival", verbose=False, verbose_attributes=None
+):
     """
     Scans db.collection for any station in the list of station codes
     defined by the list container stalist.  By default it reports only
@@ -788,9 +861,11 @@ def check_for_ambiguous_sta(db, stalist,
       assumes every document found will contain these attributes.   It will
       abort if an attribute is not defined.
     """
-    if(verbose and (verbose_attributes == None)):
-        print('check_for_ambiguous_sta:  usage error')
-        print('if verbose mode is turned on you need to supply python list of db attributes to print')
+    if verbose and (verbose_attributes == None):
+        print("check_for_ambiguous_sta:  usage error")
+        print(
+            "if verbose mode is turned on you need to supply python list of db attributes to print"
+        )
         return None
     if verbose:
         to_print = []
@@ -798,13 +873,13 @@ def check_for_ambiguous_sta(db, stalist,
             to_print.append(key)
         print(to_print)
     else:
-        print('station count')
+        print("station count")
     dbhandle = db[collection]
     need_checking = []
     for sta in stalist:
         query = {"sta": sta}
         nsta = dbhandle.count_documents(query)
-        if(verbose and nsta > 0):
+        if verbose and nsta > 0:
             curs = dbhandle.find(query)
             for rec in curs:
                 to_print = []
@@ -813,13 +888,14 @@ def check_for_ambiguous_sta(db, stalist,
                 print(to_print)
         else:
             print(sta, nsta)
-            if(nsta > 0):
+            if nsta > 0:
                 need_checking.append(tuple([sta, nsta]))
     return need_checking
 
 
-def set_arrival_by_time_interval(db, sta=None, allowed_overlap=86401.0,
-                                 use_immortal_cursor=False, verbose=False):
+def set_arrival_by_time_interval(
+    db, sta=None, allowed_overlap=86401.0, use_immortal_cursor=False, verbose=False
+):
     """
     Sets the net code in an arrival collection for occurrences of a specified
     station code using the net code for a given time interval defined in the
@@ -853,53 +929,59 @@ def set_arrival_by_time_interval(db, sta=None, allowed_overlap=86401.0,
     """
     if sta == None:
         raise MsPASSError(
-            'Missing required parameter sta=station code to repair', 'Fatal')
+            "Missing required parameter sta=station code to repair", "Fatal"
+        )
     dbarr = db.arrival
     dbsite = db.site
-    query = {'sta': sta}
+    query = {"sta": sta}
     if use_immortal_cursor:
-        curs = dbsite.find(query, no_cursor_timeout=True).sort('starttime', 1)
+        curs = dbsite.find(query, no_cursor_timeout=True).sort("starttime", 1)
     else:
-        curs = dbsite.find(query).sort('starttime', 1)
+        curs = dbsite.find(query).sort("starttime", 1)
     # First make sure we don't have any overlapping time periods
     n = 0
     for doc in curs:
         if n == 0:
-            lastend = doc['endtime']
-            lastnet = doc['net']
+            lastend = doc["endtime"]
+            lastnet = doc["net"]
         else:
-            stime = doc['starttime']
-            if stime+allowed_overlap < lastend:
-                net = doc['net']
-                message = 'Overlapping time intervals found in site. \n '
-                message += 'Record 1 has net={lnet} and endtime {etime}\n'
-                message += 'Record 2 has net={net} and starttime {stime}'
-                message = message.format(lnet=lastnet, net=net,
-                                         etime=str(UTCDateTime(lastend)),
-                                         stime=str(UTCDateTime(stime)))
-                raise MsPASSError(message, 'Fatal')
-            lastend = doc['endtime']
-            lastnet = doc['net']
+            stime = doc["starttime"]
+            if stime + allowed_overlap < lastend:
+                net = doc["net"]
+                message = "Overlapping time intervals found in site. \n "
+                message += "Record 1 has net={lnet} and endtime {etime}\n"
+                message += "Record 2 has net={net} and starttime {stime}"
+                message = message.format(
+                    lnet=lastnet,
+                    net=net,
+                    etime=str(UTCDateTime(lastend)),
+                    stime=str(UTCDateTime(stime)),
+                )
+                raise MsPASSError(message, "Fatal")
+            lastend = doc["endtime"]
+            lastnet = doc["net"]
         n += 1
     curs.rewind()
     for doc in curs:
-        net = doc['net']
+        net = doc["net"]
         arquerry = dict()
-        arquerry['sta'] = sta
-        arquerry['time'] = {'$gte': doc['starttime'], '$lte': doc['endtime']}
+        arquerry["sta"] = sta
+        arquerry["time"] = {"$gte": doc["starttime"], "$lte": doc["endtime"]}
         if verbose:
-            print('Setting net=', net, ' for time interval=',
-                  UTCDateTime(doc['starttime']), UTCDateTime(doc['endtime']))
+            print(
+                "Setting net=",
+                net,
+                " for time interval=",
+                UTCDateTime(doc["starttime"]),
+                UTCDateTime(doc["endtime"]),
+            )
             nset = dbarr.count_documents(arquerry)
-            print('Setting net code to ', net, ' in ', nset, ' documents')
+            print("Setting net code to ", net, " in ", nset, " documents")
         arcursor = dbarr.find(query)
         for ardoc in arcursor:
             # print(ardoc['sta'],UTCDateTime(ardoc['time']))
-            id = ardoc['_id']
-            dbarr.update_one(
-                {'_id': id},
-                {'$set': {'net': net}}
-            )
+            id = ardoc["_id"]
+            dbarr.update_one({"_id": id}, {"$set": {"net": net}})
 
 
 def force_net(db, sta=None, net=None):
@@ -917,17 +999,15 @@ def force_net(db, sta=None, net=None):
 
     """
     if sta == None or net == None:
-        raise MsPASSError("force_net (usage error):  missing required sta and net argument",
-                          "Fatal")
+        raise MsPASSError(
+            "force_net (usage error):  missing required sta and net argument", "Fatal"
+        )
     dbarr = db.arrival
-    query = {'sta': sta}
+    query = {"sta": sta}
     curs = dbarr.find(query)
     n = 0
     for doc in curs:
-        oid = doc['_id']
-        dbarr.update_one(
-            {'_id': oid},
-            {'$set': {'net': net}}
-        )
+        oid = doc["_id"]
+        dbarr.update_one({"_id": oid}, {"$set": {"net": net}})
         n += 1
     return n

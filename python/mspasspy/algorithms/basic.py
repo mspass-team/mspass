@@ -1,10 +1,20 @@
 from mspasspy.util.decorators import mspass_func_wrapper
 from mspasspy.ccore.algorithms.basic import LinearTaper, CosineTaper, VectorTaper
 
+
 @mspass_func_wrapper
-def ator(data, tshift, *args,
-        object_history=False, alg_name=None, alg_id=None, dryrun=False,
-        inplace_return=True, function_return_key=None, **kwargs):
+def ator(
+    data,
+    tshift,
+    *args,
+    object_history=False,
+    alg_name=None,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=True,
+    function_return_key=None,
+    **kwargs
+):
     """
     Absolute to relative time conversion.
 
@@ -32,17 +42,26 @@ def ator(data, tshift, *args,
     """
     data.ator(tshift)
 
+
 @mspass_func_wrapper
-def rtoa(data, *args,
-        object_history=False, alg_name=None, alg_id=None, dryrun=False,
-        inplace_return=True, function_return_key=None, **kwargs):
+def rtoa(
+    data,
+    *args,
+    object_history=False,
+    alg_name=None,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=True,
+    function_return_key=None,
+    **kwargs
+):
     """
     Relative to absolute time conversion.
 
     Sometimes we want to convert data from relative time to
     to an UTC time standard.  An example would be converting
     segy shot data to something that could be processed like earthquake
-    data in a css3.0 database. This function returns data 
+    data in a css3.0 database. This function returns data
     previously converted to relative back to UTC using the
     internally stored time shift attribute.
 
@@ -62,19 +81,29 @@ def rtoa(data, *args,
     """
     data.rtoa()
 
+
 @mspass_func_wrapper
-def rotate(data, rotate_param, *args,
-        object_history=False, alg_name=None, alg_id=None, dryrun=False,
-        inplace_return=True, function_return_key=None, **kwargs):
+def rotate(
+    data,
+    rotate_param,
+    *args,
+    object_history=False,
+    alg_name=None,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=True,
+    function_return_key=None,
+    **kwargs
+):
     """
     Rotate data using a P wave type coordinate definition.
 
     This function can apply three different types of rotation depending on the type of parameter given.
-    If a :class:`~mspasspy.ccore.utility.SphericalCoordinate` is given, it will rotate the data 
-    into a coordinate system defined by the direction defined by the spherical coordinate.  The data are 
+    If a :class:`~mspasspy.ccore.utility.SphericalCoordinate` is given, it will rotate the data
+    into a coordinate system defined by the direction defined by the spherical coordinate.  The data are
     rotated such that x1 becomes the transverse component, x2 becomes radial, and x3 becomes longitudinal.
 
-    If an unite vector of three components that defines the direction of x3 direction (longitudinal) is give, 
+    If an unite vector of three components that defines the direction of x3 direction (longitudinal) is give,
     it will turn the vector into a :class:`~mspasspy.ccore.utility.SphericalCoordinate` object and calles the
     related rotate with it.
 
@@ -98,10 +127,19 @@ def rotate(data, rotate_param, *args,
     """
     data.rotate(rotate_param)
 
+
 @mspass_func_wrapper
-def rotate_to_standard(data, *args,
-        object_history=False, alg_name=None, alg_id=None, dryrun=False,
-        inplace_return=True, function_return_key=None, **kwargs):
+def rotate_to_standard(
+    data,
+    *args,
+    object_history=False,
+    alg_name=None,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=True,
+    function_return_key=None,
+    **kwargs
+):
     """
     Apply inverse transformation matrix to return data to cardinal direction components.
 
@@ -111,7 +149,7 @@ def rotate_to_standard(data, *args,
     it is set true.  Otherwise, it applies the inverse transformation and then sets this variable true.
     Note even if the current transformation matrix is not orthogonal it will be put back into
     cardinal coordinates.
-    
+
     :param data: data object to be rotated.
     :type data: :class:`~mspasspy.ccore.seismic.Seismogram`
     :param object_history: True to preserve the processing history. For details, refer to
@@ -125,16 +163,28 @@ def rotate_to_standard(data, *args,
     :param function_return_key:  Some functions one might want to wrap with this decorator
      return something that is appropriate to save as Metadata.  If so, use this argument to
      define the key used to set that field in the data that is returned.
-    :exception: :class:`~mspasspy.ccore.utility.MsPASSError` thrown if the an inversion of the 
-        transformation matrix is required and that matrix is singular.  This can happen if the 
+    :exception: :class:`~mspasspy.ccore.utility.MsPASSError` thrown if the an inversion of the
+        transformation matrix is required and that matrix is singular.  This can happen if the
         transformation matrix is incorrectly defined or the actual data are coplanar.
     """
     data.rotate_to_standard()
 
+
 @mspass_func_wrapper
-def free_surface_transformation(data, uvec, vp0, vs0, *args,
-        object_history=False, alg_name=None, alg_id=None, dryrun=False,
-        inplace_return=True, function_return_key=None, **kwargs):
+def free_surface_transformation(
+    data,
+    uvec,
+    vp0,
+    vs0,
+    *args,
+    object_history=False,
+    alg_name=None,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=True,
+    function_return_key=None,
+    **kwargs
+):
     """
     Computes and applies the Kennett [1991] free surface transformation matrix.
 
@@ -142,7 +192,7 @@ def free_surface_transformation(data, uvec, vp0, vs0, *args,
     that reduces to a nonorthogonal transformation matrix when the wavefield is
     not evanescent.  On output x1 will be transverse, x2 will be SV (radial),
     and x3 will be longitudinal.
-    
+
     :param data: data object to be transformed.
     :type data: :class:`~mspasspy.ccore.seismic.Seismogram`
     :param uvec: slowness vector of the incident wavefield
@@ -165,17 +215,27 @@ def free_surface_transformation(data, uvec, vp0, vs0, *args,
     """
     data.free_surface_transformation(uvec, vp0, vs0)
 
+
 @mspass_func_wrapper
-def transform(data, matrix, *args,
-        object_history=False, alg_name=None, alg_id=None, dryrun=False,
-        inplace_return=True, function_return_key=None, **kwargs):
+def transform(
+    data,
+    matrix,
+    *args,
+    object_history=False,
+    alg_name=None,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=True,
+    function_return_key=None,
+    **kwargs
+):
     """
     Applies an arbitrary transformation matrix to the data.
-    
+
     i.e. after calling this function the data will have been multiplied by the matrix
     and the transformation matrix will be updated.  The later allows cascaded
     transformations to data.
-    
+
     :param data: data object to be transformed.
     :type data: :class:`~mspasspy.ccore.seismic.Seismogram`
     :param matrix: a 3x3 matrix that defines the transformation.
@@ -194,10 +254,23 @@ def transform(data, matrix, *args,
     """
     data.transform(matrix)
 
+
 @mspass_func_wrapper
-def linear_taper(data, t0head, t1head, t1tail, t0tail, *args,
-        object_history=False, alg_name=None, alg_id=None, dryrun=False,
-        inplace_return=True, function_return_key=None, **kwargs):
+def linear_taper(
+    data,
+    t0head,
+    t1head,
+    t1tail,
+    t0tail,
+    *args,
+    object_history=False,
+    alg_name=None,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=True,
+    function_return_key=None,
+    **kwargs
+):
     """
     Taper front and/or end of a data object with a linear taper.
 
@@ -231,10 +304,23 @@ def linear_taper(data, t0head, t1head, t1tail, t0tail, *args,
     taper = LinearTaper(t0head, t1head, t1tail, t0tail)
     taper.apply(data)
 
+
 @mspass_func_wrapper
-def cosine_taper(data, t0head, t1head, t1tail, t0tail, *args,
-        object_history=False, alg_name=None, alg_id=None, dryrun=False,
-        inplace_return=True, function_return_key=None, **kwargs):
+def cosine_taper(
+    data,
+    t0head,
+    t1head,
+    t1tail,
+    t0tail,
+    *args,
+    object_history=False,
+    alg_name=None,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=True,
+    function_return_key=None,
+    **kwargs
+):
     """
     Taper front and/or end of a data object with a half cosine function.
 
@@ -269,17 +355,27 @@ def cosine_taper(data, t0head, t1head, t1tail, t0tail, *args,
     """
     taper = CosineTaper(t0head, t1head, t1tail, t0tail)
     taper.apply(data)
-    
+
+
 @mspass_func_wrapper
-def vector_taper(data, taper_array, *args,
-        object_history=False, alg_name=None, alg_id=None, dryrun=False,
-        inplace_return=True, function_return_key=None, **kwargs):
+def vector_taper(
+    data,
+    taper_array,
+    *args,
+    object_history=False,
+    alg_name=None,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=True,
+    function_return_key=None,
+    **kwargs
+):
     """
     Apply a general taper defined by a vector to the data object.
 
     This method provides a simple way to build a taper from a set of uniformly
     spaced points. The apply methods will dogmatically only accept input
-    data of the same length as the taper defined in the operator. 
+    data of the same length as the taper defined in the operator.
 
     :param data: data object to be processed.
     :type data: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`
