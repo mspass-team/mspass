@@ -92,17 +92,20 @@
     <detaileddescription>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="comment">/*<sp/>This<sp/>header<sp/>is<sp/>to<sp/>contain<sp/>assorted<sp/>useful<sp/>C<sp/>and<sp/>C++<sp/>procedures<sp/></highlight></codeline>
-<codeline lineno="2"><highlight class="comment"><sp/><sp/><sp/>appropriate<sp/>for<sp/>the<sp/>tag<sp/>utility.h.<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;mspass/utility/dmatrix.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass{</highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">utility{</highlight></codeline>
-<codeline lineno="18"><highlight class="normal">std::string<sp/>data_directory();</highlight></codeline>
-<codeline lineno="27"><highlight class="normal">std::vector&lt;double&gt;<sp/>normalize_rows(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref>&amp;<sp/>d);</highlight></codeline>
-<codeline lineno="36"><highlight class="normal">std::vector&lt;double&gt;<sp/>normalize_columns(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref>&amp;<sp/>d);</highlight></codeline>
-<codeline lineno="37"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>end<sp/>utility<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="38"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>_MSPASS_UTILITY_BASE_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_MSPASS_UTILITY_BASE_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>header<sp/>is<sp/>to<sp/>contain<sp/>assorted<sp/>useful<sp/>C<sp/>and<sp/>C++<sp/>procedures<sp/></highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/><sp/><sp/>appropriate<sp/>for<sp/>the<sp/>tag<sp/>utility.h.<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;mspass/utility/dmatrix.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass{</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">utility{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal">std::string<sp/>data_directory();</highlight></codeline>
+<codeline lineno="29"><highlight class="normal">std::vector&lt;double&gt;<sp/>normalize_rows(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="38"><highlight class="normal">std::vector&lt;double&gt;<sp/>normalize_columns(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="39"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>end<sp/>utility<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/utility.h"/>
   </compounddef>

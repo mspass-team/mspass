@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['bandwidthdata_343',['BandwidthData',['../classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html',1,'mspass::algorithms::deconvolution']]],
+  ['bandwidthdata_343',['BandwidthData',['../classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html',1,'mspass::algorithms::amplitudes']]],
   ['base3cdecon_344',['Base3CDecon',['../classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.html',1,'mspass::algorithms::deconvolution']]],
   ['basicdeconoperator_345',['BasicDeconOperator',['../classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html',1,'mspass::algorithms::deconvolution']]],
   ['basicmetadata_346',['BasicMetadata',['../classmspass_1_1utility_1_1_basic_metadata.html',1,'mspass::utility']]],

@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['bandwidth_429',['bandwidth',['../classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#a29321bc6ef32e2cf74eaacf583e428d6',1,'mspass::algorithms::deconvolution::BandwidthData']]],
-  ['bandwidth_5ffraction_430',['bandwidth_fraction',['../classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#a17e9e54741f0adb6f9d66f7c427f86b6',1,'mspass::algorithms::deconvolution::BandwidthData']]],
+  ['bandwidth_429',['bandwidth',['../classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a5037fb7d7410bedc194135eae1894f8b',1,'mspass::algorithms::amplitudes::BandwidthData']]],
+  ['bandwidth_5ffraction_430',['bandwidth_fraction',['../classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa23650e78e755f15b0aa8f6e7e398af7',1,'mspass::algorithms::amplitudes::BandwidthData']]],
   ['basictimeseries_431',['BasicTimeSeries',['../classmspass_1_1seismic_1_1_basic_time_series.html#a02072f2001d400e7f7ab5f9463e236c8',1,'mspass::seismic::BasicTimeSeries::BasicTimeSeries()'],['../classmspass_1_1seismic_1_1_basic_time_series.html#a8945a16bf52101d89dbc6f7b907b3fd9',1,'mspass::seismic::BasicTimeSeries::BasicTimeSeries(const BasicTimeSeries &amp;)']]],
   ['baz_432',['baz',['../classmspass_1_1seismic_1_1_slowness_vector.html#aa786c744259c0305097e99ab89505c31',1,'mspass::seismic::SlownessVector']]],
   ['begin_433',['begin',['../classmspass_1_1utility_1_1_metadata.html#af9aea7916d2b11f9f1e94b7d84b8db23',1,'mspass::utility::Metadata']]],

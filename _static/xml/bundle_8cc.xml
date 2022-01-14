@@ -911,18 +911,22 @@
 <codeline lineno="570"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="571"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="572"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="573"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ens3c;</highlight></codeline>
-<codeline lineno="574"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
-<codeline lineno="575"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="576"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>one<sp/>liner<sp/>is<sp/>a<sp/>useful<sp/>as<sp/>a<sp/>processing<sp/>function<sp/>and<sp/>is<sp/>thus</highlight></codeline>
-<codeline lineno="577"><highlight class="comment">exposed<sp/>to<sp/>python.<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="578"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>seed_ensemble_sort(<ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">LoggingEnsemble&lt;TimeSeries&gt;</ref>&amp;<sp/>d)</highlight></codeline>
-<codeline lineno="579"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="580"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="581"><highlight class="normal"><sp/><sp/><sp/><sp/>std::sort(d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.begin(),d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.end(),greater_seedorder());</highlight></codeline>
-<codeline lineno="582"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
-<codeline lineno="583"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="584"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>End<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="573"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>need<sp/>to<sp/>set<sp/>the<sp/>ensemble<sp/>live.<sp/><sp/><sp/>Otherwise<sp/>it<sp/>will<sp/>be<sp/>treated<sp/>as</highlight></codeline>
+<codeline lineno="574"><highlight class="comment"><sp/><sp/><sp/><sp/>empty.<sp/><sp/>However,<sp/>if<sp/>the<sp/>ensemble<sp/>is<sp/>empty<sp/>we<sp/>should<sp/>leave<sp/>it<sp/>dead,<sp/>which</highlight></codeline>
+<codeline lineno="575"><highlight class="comment"><sp/><sp/><sp/><sp/>is<sp/>how<sp/>it<sp/>is<sp/>initialized*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="576"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(ens3c.member.size()&gt;0)<sp/>ens3c.set_live();</highlight></codeline>
+<codeline lineno="577"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ens3c;</highlight></codeline>
+<codeline lineno="578"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
+<codeline lineno="579"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="580"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>one<sp/>liner<sp/>is<sp/>a<sp/>useful<sp/>as<sp/>a<sp/>processing<sp/>function<sp/>and<sp/>is<sp/>thus</highlight></codeline>
+<codeline lineno="581"><highlight class="comment">exposed<sp/>to<sp/>python.<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="582"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>seed_ensemble_sort(<ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">LoggingEnsemble&lt;TimeSeries&gt;</ref>&amp;<sp/>d)</highlight></codeline>
+<codeline lineno="583"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="584"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="585"><highlight class="normal"><sp/><sp/><sp/><sp/>std::sort(d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.begin(),d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.end(),greater_seedorder());</highlight></codeline>
+<codeline lineno="586"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
+<codeline lineno="587"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="588"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>End<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc"/>
   </compounddef>

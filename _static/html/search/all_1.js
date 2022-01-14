@@ -1,9 +1,9 @@
 var searchData=
 [
   ['badness_29',['badness',['../classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51',1,'mspass::utility::MsPASSError']]],
-  ['bandwidth_30',['bandwidth',['../classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#a29321bc6ef32e2cf74eaacf583e428d6',1,'mspass::algorithms::deconvolution::BandwidthData']]],
-  ['bandwidth_5ffraction_31',['bandwidth_fraction',['../classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#a17e9e54741f0adb6f9d66f7c427f86b6',1,'mspass::algorithms::deconvolution::BandwidthData']]],
-  ['bandwidthdata_32',['BandwidthData',['../classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html',1,'mspass::algorithms::deconvolution']]],
+  ['bandwidth_30',['bandwidth',['../classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a5037fb7d7410bedc194135eae1894f8b',1,'mspass::algorithms::amplitudes::BandwidthData']]],
+  ['bandwidth_5ffraction_31',['bandwidth_fraction',['../classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa23650e78e755f15b0aa8f6e7e398af7',1,'mspass::algorithms::amplitudes::BandwidthData']]],
+  ['bandwidthdata_32',['BandwidthData',['../classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html',1,'mspass::algorithms::amplitudes']]],
   ['base3cdecon_33',['Base3CDecon',['../classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.html',1,'mspass::algorithms::deconvolution']]],
   ['basicdeconoperator_34',['BasicDeconOperator',['../classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html',1,'mspass::algorithms::deconvolution']]],
   ['basicmetadata_35',['BasicMetadata',['../classmspass_1_1utility_1_1_basic_metadata.html',1,'mspass::utility']]],

@@ -3,13 +3,13 @@
   <compounddef id="src_2lib_2algorithms_2_c_make_lists_8txt" kind="file" language="C++">
     <compoundname>CMakeLists.txt</compoundname>
       <sectiondef kind="func">
-      <memberdef kind="function" id="src_2lib_2algorithms_2_c_make_lists_8txt_1a41e5c2bed43acfb679d93536a89fe050" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="src_2lib_2algorithms_2_c_make_lists_8txt_1a2673cdb7b080c7d0f14a8174b261dec6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>FILE</definition>
-        <argsstring>(GLOB sources_alg_basics agc.cc bundle.cc seismogram_helpers.cc slice_and_dice.cc sparse_convolve.cc tseries_helpers.cc Butterworth.cc Taper.cc) FILE(GLOB sources_amplitudes amplitudes.cc) include_directories($</argsstring>
+        <argsstring>(GLOB sources_alg_basics agc.cc bundle.cc seismogram_helpers.cc slice_and_dice.cc sparse_convolve.cc snr.cc tseries_helpers.cc Butterworth.cc Taper.cc) FILE(GLOB sources_amplitudes amplitudes.cc) include_directories($</argsstring>
         <name>FILE</name>
         <param>
-          <type>GLOB sources_alg_basics agc.cc bundle.cc seismogram_helpers.cc slice_and_dice.cc sparse_convolve.cc tseries_helpers.cc Butterworth.cc Taper.</type>
+          <type>GLOB sources_alg_basics agc.cc bundle.cc seismogram_helpers.cc slice_and_dice.cc sparse_convolve.cc snr.cc tseries_helpers.cc Butterworth.cc Taper.</type>
           <declname>cc</declname>
         </param>
         <briefdescription>
@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/CMakeLists.txt" line="1" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/CMakeLists.txt" bodystart="1" bodyend="14"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/CMakeLists.txt" line="1" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/CMakeLists.txt" bodystart="1" bodyend="15"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -32,27 +32,28 @@
 <codeline lineno="4"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>seismogram_helpers.cc<sp/></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>slice_and_dice.cc<sp/></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>sparse_convolve.cc<sp/></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tseries_helpers.cc</highlight></codeline>
-<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Butterworth.cc</highlight></codeline>
-<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Taper.cc)</highlight></codeline>
-<codeline lineno="10"><highlight class="normal">FILE(GLOB<sp/>sources_amplitudes<sp/></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>amplitudes.cc)</highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal">include_directories(</highlight></codeline>
-<codeline lineno="14"><highlight class="normal"><sp/><sp/>${Boost_INCLUDE_DIRS}</highlight></codeline>
-<codeline lineno="15"><highlight class="normal"><sp/><sp/>${pybind11_INCLUDE_DIR}</highlight></codeline>
-<codeline lineno="16"><highlight class="normal"><sp/><sp/>${GSL_INCLUDE_DIRS}</highlight></codeline>
-<codeline lineno="17"><highlight class="normal"><sp/><sp/>${PYTHON_INCLUDE_DIRS}</highlight></codeline>
-<codeline lineno="18"><highlight class="normal"><sp/><sp/>${PROJECT_BINARY_DIR}/include</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"><sp/><sp/>${PROJECT_SOURCE_DIR}/include)</highlight></codeline>
-<codeline lineno="20"><highlight class="normal"></highlight></codeline>
-<codeline lineno="21"><highlight class="normal">add_library(alg_basics<sp/>OBJECT<sp/>${sources_alg_basics})</highlight></codeline>
-<codeline lineno="22"><highlight class="normal">add_library(amplitudes<sp/>OBJECT<sp/>${sources_amplitudes})</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight></codeline>
-<codeline lineno="24"><highlight class="normal">add_subdirectory(deconvolution)</highlight></codeline>
-<codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#add_library(algorithms<sp/>OBJECT<sp/>$&lt;TARGET_OBJECTS:alg_basics&gt;<sp/>$&lt;TARGET_OBJECTS:amplitudes&gt;<sp/>$&lt;TARGET_OBJECTS:deconvolution&gt;)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#target_link_libraries(algorithms<sp/>PRIVATE<sp/>seismic<sp/>utility<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES}<sp/>${GSL_LIBRARIES})</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>snr.cc</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tseries_helpers.cc</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Butterworth.cc</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Taper.cc)</highlight></codeline>
+<codeline lineno="11"><highlight class="normal">FILE(GLOB<sp/>sources_amplitudes<sp/></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>amplitudes.cc)</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal">include_directories(</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/>${Boost_INCLUDE_DIRS}</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/>${pybind11_INCLUDE_DIR}</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/>${GSL_INCLUDE_DIRS}</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/>${PYTHON_INCLUDE_DIRS}</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/>${PROJECT_BINARY_DIR}/include</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/>${PROJECT_SOURCE_DIR}/include)</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal">add_library(alg_basics<sp/>OBJECT<sp/>${sources_alg_basics})</highlight></codeline>
+<codeline lineno="23"><highlight class="normal">add_library(amplitudes<sp/>OBJECT<sp/>${sources_amplitudes})</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal">add_subdirectory(deconvolution)</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#add_library(algorithms<sp/>OBJECT<sp/>$&lt;TARGET_OBJECTS:alg_basics&gt;<sp/>$&lt;TARGET_OBJECTS:amplitudes&gt;<sp/>$&lt;TARGET_OBJECTS:deconvolution&gt;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#target_link_libraries(algorithms<sp/>PRIVATE<sp/>seismic<sp/>utility<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES}<sp/>${GSL_LIBRARIES})</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/CMakeLists.txt"/>
   </compounddef>

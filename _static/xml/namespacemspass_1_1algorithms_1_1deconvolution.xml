@@ -2,7 +2,6 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="namespacemspass_1_1algorithms_1_1deconvolution" kind="namespace" language="C++">
     <compoundname>mspass::algorithms::deconvolution</compoundname>
-    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" prot="public">mspass::algorithms::deconvolution::BandwidthData</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" prot="public">mspass::algorithms::deconvolution::Base3CDecon</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator" prot="public">mspass::algorithms::deconvolution::BasicDeconOperator</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" prot="public">mspass::algorithms::deconvolution::CNR3CDecon</innerclass>
@@ -52,7 +51,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="113" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="113" bodyend="117"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="65" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="65" bodyend="69"/>
       </memberdef>
       <memberdef kind="enum" id="_general_iter_decon_8h_1a3b28eff30fc23e0873f859a5145b9309" prot="public" static="no" strong="no">
         <type></type>
@@ -588,50 +587,17 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/circular_shift.cc" line="25" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/circular_shift.cc" bodystart="25" bodyend="60"/>
       </memberdef>
-      <memberdef kind="function" id="_c_n_r3_c_decon_8cc_1ae15ca56752ff5927e3d4912baa2dd8be" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref></type>
-        <definition>BandwidthData mspass::algorithms::deconvolution::EstimateBandwidth</definition>
-        <argsstring>(const double signal_df, const PowerSpectrum &amp;s, const PowerSpectrum &amp;n, const double snr_threshold, const double tbp)</argsstring>
-        <name>EstimateBandwidth</name>
-        <param>
-          <type>const double</type>
-          <declname>signal_df</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> &amp;</type>
-          <declname>s</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> &amp;</type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const double</type>
-          <declname>snr_threshold</declname>
-        </param>
-        <param>
-          <type>const double</type>
-          <declname>tbp</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" line="374" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="374" bodyend="475"/>
-      </memberdef>
       <memberdef kind="function" id="_c_n_r3_c_decon_8cc_1a7c1416ccaf2db86bc6216af2514fe8dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref></type>
+        <type><ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kindref="compound">BandwidthData</ref></type>
         <definition>BandwidthData mspass::algorithms::deconvolution::band_overlap</definition>
         <argsstring>(const BandwidthData &amp;b1, const BandwidthData &amp;b2)</argsstring>
         <name>band_overlap</name>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
           <declname>b1</declname>
         </param>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
           <declname>b2</declname>
         </param>
         <briefdescription>
@@ -640,7 +606,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" line="844" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="844" bodyend="872"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" line="739" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="739" bodyend="767"/>
       </memberdef>
       <memberdef kind="function" id="_c_n_r3_c_decon_8cc_1ad84500ca4a163b99e83f6d0d4ce5e5f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -652,7 +618,7 @@
           <declname>d</declname>
         </param>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
           <declname>bwd</declname>
         </param>
         <briefdescription>
@@ -661,7 +627,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" line="875" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="875" bodyend="882"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" line="770" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="770" bodyend="777"/>
       </memberdef>
       <memberdef kind="function" id="_c_n_r3_c_decon_8cc_1af0b77066e1a96efc7772194f124f7fb5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -669,7 +635,7 @@
         <argsstring>(const BandwidthData &amp;bwd)</argsstring>
         <name>print_bwdata</name>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
           <declname>bwd</declname>
         </param>
         <briefdescription>
@@ -678,7 +644,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" line="884" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="884" bodyend="891"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" line="779" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="779" bodyend="786"/>
       </memberdef>
       <memberdef kind="function" id="_general_iter_decon_8cc_1a4a875ef3f42f3d193ac38a1fcfc5e6cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>IterDeconType</type>

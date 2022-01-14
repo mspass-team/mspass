@@ -1328,7 +1328,7 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt id="mspasspy.ccore.seismic.PowerSpectrum">
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.seismic.</code><code class="sig-name descname">PowerSpectrum</code><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.Metadata</span></code></a></p>
 <p>Container for power spectrum estimates</p>
 <dl class="py method">
 <dt id="mspasspy.ccore.seismic.PowerSpectrum.Nyquist">
@@ -1346,6 +1346,12 @@ is usually not necessay.</p>
 <dt id="mspasspy.ccore.seismic.PowerSpectrum.elog">
 <em class="property">property </em><code class="sig-name descname">elog</code><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum.elog" title="Permalink to this definition"></a></dt>
 <dd><p>Handle to ErrorLogger</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.PowerSpectrum.f0">
+<em class="property">property </em><code class="sig-name descname">f0</code><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum.f0" title="Permalink to this definition"></a></dt>
+<dd><p>Frequency of sample 0 (This implementation supports only constant frequency bin size)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2057,6 +2063,67 @@ those safeties the code would throw an error if net or loc were null.</p>
 <section id="module-mspasspy.ccore.algorithms.amplitudes">
 <span id="amplitudes"></span><h3>amplitudes<a class="headerlink" href="#module-mspasspy.ccore.algorithms.amplitudes" title="Permalink to this headline"></a></h3>
 <p>A submodule for amplitudes namespace of ccore.algorithms</p>
+<dl class="py class">
+<dt id="mspasspy.ccore.algorithms.amplitudes.BandwidthData">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.algorithms.amplitudes.</code><code class="sig-name descname">BandwidthData</code><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>Defines the frequency domain bandwidth of data</p>
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.amplitudes.BandwidthData.bandwidth">
+<code class="sig-name descname">bandwidth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData" title="mspasspy.ccore.algorithms.amplitudes.BandwidthData">mspasspy.ccore.algorithms.amplitudes.BandwidthData</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData.bandwidth" title="Permalink to this definition"></a></dt>
+<dd><p>Return bandwidth in dB (bandwidth_fraction in dB)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.amplitudes.BandwidthData.bandwidth_fraction">
+<code class="sig-name descname">bandwidth_fraction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData" title="mspasspy.ccore.algorithms.amplitudes.BandwidthData">mspasspy.ccore.algorithms.amplitudes.BandwidthData</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData.bandwidth_fraction" title="Permalink to this definition"></a></dt>
+<dd><p>Return ratio of estimated bandwidth to total bandwidth of original data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.amplitudes.BandwidthData.f_range">
+<em class="property">property </em><code class="sig-name descname">f_range</code><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData.f_range" title="Permalink to this definition"></a></dt>
+<dd><p>Total frequency range of signal spectrum used for snr estimate</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.amplitudes.BandwidthData.high_edge_f">
+<em class="property">property </em><code class="sig-name descname">high_edge_f</code><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData.high_edge_f" title="Permalink to this definition"></a></dt>
+<dd><p>High frequency limit of pass band</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.amplitudes.BandwidthData.high_edge_snr">
+<em class="property">property </em><code class="sig-name descname">high_edge_snr</code><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData.high_edge_snr" title="Permalink to this definition"></a></dt>
+<dd><p>Signal-to-noise ratio at frequency high_edge_f</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.amplitudes.BandwidthData.low_edge_f">
+<em class="property">property </em><code class="sig-name descname">low_edge_f</code><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData.low_edge_f" title="Permalink to this definition"></a></dt>
+<dd><p>Low frequency limit of pass band</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.amplitudes.BandwidthData.low_edge_snr">
+<em class="property">property </em><code class="sig-name descname">low_edge_snr</code><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData.low_edge_snr" title="Permalink to this definition"></a></dt>
+<dd><p>Signal-to-noise ratio at frequency low_edge_f</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.ccore.algorithms.amplitudes.BandwidthStatistics">
+<code class="sig-prename descclassname">mspasspy.ccore.algorithms.amplitudes.</code><code class="sig-name descname">BandwidthStatistics</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal_spectrum</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum">mspasspy.ccore.seismic.PowerSpectrum</a></span></em>, <em class="sig-param"><span class="n">noise_spectrum</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum">mspasspy.ccore.seismic.PowerSpectrum</a></span></em>, <em class="sig-param"><span class="n">bandwidth_data</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData" title="mspasspy.ccore.algorithms.amplitudes.BandwidthData">mspasspy.ccore.algorithms.amplitudes.BandwidthData</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata">mspasspy.ccore.utility.Metadata</a><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthStatistics" title="Permalink to this definition"></a></dt>
+<dd><p>Compute statistical summary of snr in a passband returned by EstimateBandwidth - Returned in Metadata container</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.ccore.algorithms.amplitudes.EstimateBandwidth">
+<code class="sig-prename descclassname">mspasspy.ccore.algorithms.amplitudes.</code><code class="sig-name descname">EstimateBandwidth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal_df</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">signal_power_spectrum</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum">mspasspy.ccore.seismic.PowerSpectrum</a></span></em>, <em class="sig-param"><span class="n">noise_power_spectrum</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum">mspasspy.ccore.seismic.PowerSpectrum</a></span></em>, <em class="sig-param"><span class="n">srn_threshold</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">time_bandwidth_product</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">high_frequency_search_start</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData" title="mspasspy.ccore.algorithms.amplitudes.BandwidthData">mspasspy.ccore.algorithms.amplitudes.BandwidthData</a><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.EstimateBandwidth" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate signal bandwidth estimate of power spectra of signal and noise</p>
+</dd></dl>
+
 <dl class="py function">
 <dt id="mspasspy.ccore.algorithms.amplitudes.MADAmplitude">
 <code class="sig-prename descclassname">mspasspy.ccore.algorithms.amplitudes.</code><code class="sig-name descname">MADAmplitude</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.MADAmplitude" title="Permalink to this definition"></a></dt>
@@ -2086,15 +2153,15 @@ those safeties the code would throw an error if net or loc were null.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="mspasspy.ccore.algorithms.amplitudes.PerfAmplitude">
-<code class="sig-prename descclassname">mspasspy.ccore.algorithms.amplitudes.</code><code class="sig-name descname">PerfAmplitude</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.PerfAmplitude" title="Permalink to this definition"></a></dt>
+<dt id="mspasspy.ccore.algorithms.amplitudes.PercAmplitude">
+<code class="sig-prename descclassname">mspasspy.ccore.algorithms.amplitudes.</code><code class="sig-name descname">PercAmplitude</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.PercAmplitude" title="Permalink to this definition"></a></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic simple">
-<li><p>PerfAmplitude(d: mspasspy.ccore.seismic._CoreTimeSeries, perf: float) -&gt; float</p></li>
+<li><p>PercAmplitude(d: mspasspy.ccore.seismic._CoreTimeSeries, perf: float) -&gt; float</p></li>
 </ol>
 <p>Compute amplitude of signal using clip percentage metric</p>
 <ol class="arabic simple" start="2">
-<li><p>PerfAmplitude(d: mspasspy.ccore.seismic._CoreSeismogram, perf: float) -&gt; float</p></li>
+<li><p>PercAmplitude(d: mspasspy.ccore.seismic._CoreSeismogram, perf: float) -&gt; float</p></li>
 </ol>
 <p>Compute amplitude of signal using clip percentage metric</p>
 </dd></dl>

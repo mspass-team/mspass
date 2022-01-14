@@ -84,15 +84,15 @@
     <member refid="classmspass_1_1utility_1_1_attribute_properties_1a2b95f3e68ff097960cbc5b1aa25f275e" kind="function"><name>fully_qualified_name</name></member>
     <member refid="classmspass_1_1utility_1_1_attribute_properties_1a831a46f77fe6c6f7e6d005e730fbfc99" kind="friend"><name>operator&lt;&lt;</name></member>
   </compound>
-  <compound refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kind="class"><name>mspass::algorithms::deconvolution::BandwidthData</name>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data_1aaf8f740f1202728b005fd5d251894b1e" kind="variable"><name>low_edge_f</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data_1ab780d7146b0efac2f47da6af132ebff4" kind="variable"><name>high_edge_f</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data_1a2fc4344272ff062063f41934541caae4" kind="variable"><name>low_edge_snr</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data_1a974889d33c67086d368cbed0fc2d9602" kind="variable"><name>high_edge_snr</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data_1a044890e883320c72fcdb275a0d10f4de" kind="variable"><name>f_range</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data_1a89863e605c222d3fa40ffae2e5d64f4b" kind="function"><name>BandwidthData</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data_1a17e9e54741f0adb6f9d66f7c427f86b6" kind="function"><name>bandwidth_fraction</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data_1a29321bc6ef32e2cf74eaacf583e428d6" kind="function"><name>bandwidth</name></member>
+  <compound refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kind="class"><name>mspass::algorithms::amplitudes::BandwidthData</name>
+    <member refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1a0f125fbec3cba28118e541d4f040501f" kind="variable"><name>low_edge_f</name></member>
+    <member refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1aa5e75df4c544e03a44cb3efc1077bc39" kind="variable"><name>high_edge_f</name></member>
+    <member refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1ae4988fbbeaab0c24bedab696ddf18270" kind="variable"><name>low_edge_snr</name></member>
+    <member refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1afb68f33f07a6d38e7ebd24e0a87b7481" kind="variable"><name>high_edge_snr</name></member>
+    <member refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1aac9737b8821da97155c7b3cbe6b0411e" kind="variable"><name>f_range</name></member>
+    <member refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1a9d68263979255fecee736d396fbe5725" kind="function"><name>BandwidthData</name></member>
+    <member refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1aa23650e78e755f15b0aa8f6e7e398af7" kind="function"><name>bandwidth_fraction</name></member>
+    <member refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1a5037fb7d7410bedc194135eae1894f8b" kind="function"><name>bandwidth</name></member>
   </compound>
   <compound refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" kind="class"><name>mspass::algorithms::deconvolution::Base3CDecon</name>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a07131ead382078d283cc93614ca14a0b" kind="function"><name>~Base3CDecon</name></member>
@@ -230,6 +230,7 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a5c1fc0540ec7218db20d03bd4321ff91" kind="variable"><name>operator_dt</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1abe1ec221487a10dbcecbb5ce883ba1bc" kind="variable"><name>winlength</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1afb62c7e7c10b651ed6608368a5dae0e5" kind="variable"><name>decon_bandwidth_cutoff</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1adfdad9fc52b60ce5fa668f3c303168f5" kind="variable"><name>fhs</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0d4b561d37ecbdcb5ae5217d396ddc68" kind="variable"><name>processing_window</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aef36d000c56c4b4cc0345f22d78b9c36" kind="variable"><name>noise_window</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aba1aada37508ee50775754fef15f4737" kind="variable"><name>signalengine</name></member>
@@ -250,8 +251,8 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a6cbea949df15eb67e585bc1babe98906" kind="variable"><name>snr_regularization_floor</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9ea00469a06eb5fc270b79b064dc38b2" kind="variable"><name>snr_bandwidth</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a8370c1882e72e62392693b54be862b6c" kind="variable"><name>ao_fft</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a66617d53dc53ca9f2da0e1ed5ac90ed7" kind="variable"><name>wavelet_bwd</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a28cc5623235ca7199a2f3729418dfefe" kind="variable"><name>signal_bwd</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a243bca321c1ca5cde1dc472b36e699bc" kind="variable"><name>wavelet_bwd</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1af29ff65461f7567b163a4117a5373194" kind="variable"><name>signal_bwd</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aec94bcb17e43c0a161b7995aa400349e" kind="variable"><name>wavelet_snr</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aa66f512fef9c3ea8c89c4c8cde6396e1" kind="variable"><name>band_snr_floor</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3419442344d96621becf37db933adef3" kind="variable"><name>signal_bandwidth_fraction</name></member>
@@ -284,7 +285,7 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a67a81fca4f10816e57016413911ec9ec" kind="function"><name>compute_gwl_inverse</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a4ec45fef837aa37d34eec8c857acdbf9" kind="function"><name>compute_gdamp_inverse</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9f2214194c6a5b22e91461e6265c1037" kind="function"><name>ThreeCPower</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a1cb0999bee19494c6518ca076dc5c6bf" kind="function"><name>update_shaping_wavelet</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aca5d2a71b22525b3729423695869b4f5" kind="function"><name>update_shaping_wavelet</name></member>
   </compound>
   <compound refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kind="class"><name>mspass::algorithms::deconvolution::ComplexArray</name>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a7815bd317367c76fddb1e6995993446e" kind="variable"><name>data</name></member>
@@ -493,6 +494,7 @@
     <member refid="classmspass_1_1utility_1_1_error_logger_1adef316fcec8af2b6ef30b4d290ac0bfb" kind="function"><name>get_error_log</name></member>
     <member refid="classmspass_1_1utility_1_1_error_logger_1a13450cb0a04da9b190832a73834fb6cf" kind="function"><name>size</name></member>
     <member refid="classmspass_1_1utility_1_1_error_logger_1a1168408b473c80d078bfc2e8bd98bb75" kind="function"><name>operator=</name></member>
+    <member refid="classmspass_1_1utility_1_1_error_logger_1a4c0ac6e0e59fa842e3ce065352edb82e" kind="function"><name>operator+=</name></member>
     <member refid="classmspass_1_1utility_1_1_error_logger_1a78cd3444e267065b7e9858cc27a36103" kind="function"><name>worst_errors</name></member>
     <member refid="classmspass_1_1utility_1_1_error_logger_1a014d32cf9f8f5ae560fe30a6af610420" kind="function"><name>serialize</name></member>
   </compound>
@@ -1185,14 +1187,16 @@
     <member refid="amplitudes_8h_1ab03e48fee66c761ec81d488464a3dad2" kind="function"><name>PeakAmplitude</name></member>
     <member refid="amplitudes_8h_1ab7a8bbe38038b955d8f1353fd9558d33" kind="function"><name>RMSAmplitude</name></member>
     <member refid="amplitudes_8h_1a6e6dd6a5248288bb6aab9e0dc5031d18" kind="function"><name>RMSAmplitude</name></member>
-    <member refid="amplitudes_8h_1a0c93191178dcb1441656480f68b03374" kind="function"><name>PerfAmplitude</name></member>
-    <member refid="amplitudes_8h_1aef7dd38212242e77f54e46146fecbf21" kind="function"><name>PerfAmplitude</name></member>
+    <member refid="amplitudes_8h_1a11d3d88f92bd7e57de326d0c7f1fe58b" kind="function"><name>PercAmplitude</name></member>
+    <member refid="amplitudes_8h_1aa8feb82c559be9d6fc99625ff609781a" kind="function"><name>PercAmplitude</name></member>
     <member refid="amplitudes_8h_1a4f79946a40fdc2e1df68592b26317420" kind="function"><name>MADAmplitude</name></member>
     <member refid="amplitudes_8h_1a6b94e081655549c532607655f467e003" kind="function"><name>MADAmplitude</name></member>
     <member refid="amplitudes_8h_1ab09ae85e7dbc65c63a62b9d463fa203b" kind="function"><name>scale_factor_key</name></member>
     <member refid="amplitudes_8h_1ad898ff4f13494b028854087dc1b3c2c4" kind="function"><name>scale</name></member>
     <member refid="amplitudes_8h_1af359d10e197f1452338b75886caf22ca" kind="function"><name>scale_ensemble_members</name></member>
     <member refid="amplitudes_8h_1ae189abc306db43f917c0c805fd62dce5" kind="function"><name>scale_ensemble</name></member>
+    <member refid="amplitudes_8h_1a5e9e42b3798fe8039fe9cdf9b941e267" kind="function"><name>EstimateBandwidth</name></member>
+    <member refid="amplitudes_8h_1aea8b84ecc03027a4080df59548bf0dc7" kind="function"><name>BandwidthStatistics</name></member>
   </compound>
   <compound refid="namespacemspass_1_1algorithms_1_1deconvolution" kind="namespace"><name>mspass::algorithms::deconvolution</name>
     <member refid="_c_n_r3_c_decon_8h_1a0c5efa34ab2fcb868cbb312725e34569" kind="enum"><name>CNR3C_algorithms</name></member>
@@ -1223,7 +1227,6 @@
     <member refid="wavelet_8h_1a6658f5b5ecca7774294e55bda8153e7e" kind="function"><name>gaussian</name></member>
     <member refid="wavelet_8h_1a3fa0683aa5d8908943b20e4c724f46e5" kind="function"><name>slepian0</name></member>
     <member refid="circular__shift_8cc_1ad9ee8ce4badd5a9ee1480377e52acadf" kind="function"><name>circular_shift</name></member>
-    <member refid="_c_n_r3_c_decon_8cc_1ae15ca56752ff5927e3d4912baa2dd8be" kind="function"><name>EstimateBandwidth</name></member>
     <member refid="_c_n_r3_c_decon_8cc_1a7c1416ccaf2db86bc6216af2514fe8dd" kind="function"><name>band_overlap</name></member>
     <member refid="_c_n_r3_c_decon_8cc_1ad84500ca4a163b99e83f6d0d4ce5e5f4" kind="function"><name>post_bandwidth_data</name></member>
     <member refid="_c_n_r3_c_decon_8cc_1af0b77066e1a96efc7772194f124f7fb5" kind="function"><name>print_bwdata</name></member>
@@ -1386,7 +1389,7 @@
   <compound refid="src_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
   </compound>
   <compound refid="src_2lib_2algorithms_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
-    <member refid="src_2lib_2algorithms_2_c_make_lists_8txt_1a41e5c2bed43acfb679d93536a89fe050" kind="function"><name>FILE</name></member>
+    <member refid="src_2lib_2algorithms_2_c_make_lists_8txt_1a2673cdb7b080c7d0f14a8174b261dec6" kind="function"><name>FILE</name></member>
   </compound>
   <compound refid="src_2lib_2algorithms_2deconvolution_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
     <member refid="src_2lib_2algorithms_2deconvolution_2_c_make_lists_8txt_1aeed155f496986432c2eee0c9572b25a3" kind="function"><name>include_directories</name></member>
@@ -1563,6 +1566,8 @@
   <compound refid="seismogram__helpers_8cc" kind="file"><name>seismogram_helpers.cc</name>
   </compound>
   <compound refid="slice__and__dice_8cc" kind="file"><name>slice_and_dice.cc</name>
+  </compound>
+  <compound refid="snr_8cc" kind="file"><name>snr.cc</name>
   </compound>
   <compound refid="sparse__convolve_8cc" kind="file"><name>sparse_convolve.cc</name>
   </compound>
