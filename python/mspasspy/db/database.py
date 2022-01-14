@@ -4428,9 +4428,15 @@ class Database(pymongo.database.Database):
         # o['npts'] = index_record.npts
         return o
 
-    def index_mseed_file(self, dfile, dir=None, collection='wf_miniseed',
-                segment_time_tears=False, elog_collection='elog',
-                return_ids=False):
+    def index_mseed_file(
+        self,
+        dfile,
+        dir=None,
+        collection="wf_miniseed",
+        segment_time_tears=False,
+        elog_collection="elog",
+        return_ids=False,
+    ):
         """
         This is the first stage import function for handling the import of
         miniseed data.  This function scans a data file defined by a directory
@@ -4533,18 +4539,18 @@ class Database(pymongo.database.Database):
             odir = os.path.abspath(dir)
         fname = os.path.join(odir, dfile)
         (ind, elog) = _mseed_file_indexer(fname)
-        ids_affected=[]
+        ids_affected = []
         for i in ind:
             doc = self._convert_mseed_index(i)
-            doc['storage_mode'] = 'file'
-            doc['format'] = 'mseed'
-            doc['dir'] = odir
-            doc['dfile'] = dfile
-            thisid=dbh.insert_one(doc).inserted_id
+            doc["storage_mode"] = "file"
+            doc["format"] = "mseed"
+            doc["dir"] = odir
+            doc["dfile"] = dfile
+            thisid = dbh.insert_one(doc).inserted_id
             ids_affected.append(thisid)
         # log_ids is created here so it is defined but empty in
         # the tuple returned when return_ids is true
-        log_ids=[]
+        log_ids = []
         if elog.size() > 0:
             elog_col = self[elog_collection]
 
@@ -4552,19 +4558,26 @@ class Database(pymongo.database.Database):
             jobid = elog.get_job_id()
             logdata = []
             for x in errs:
-                logdata.append({'job_id': jobid, 'algorithm': x.algorithm, 'badness': str(x.badness),
-                                'error_message': x.message, 'process_id': x.p_id})
-            docentry = {'logdata': logdata}
+                logdata.append(
+                    {
+                        "job_id": jobid,
+                        "algorithm": x.algorithm,
+                        "badness": str(x.badness),
+                        "error_message": x.message,
+                        "process_id": x.p_id,
+                    }
+                )
+            docentry = {"logdata": logdata}
             # To mesh with the standard elog collection we add a copy of the
             # error messages with a tag for each id in the ids_affected list.
             # That should make elog connection to wf_miniseed records exactly
             # like wf_TimeSeries records but with a different collection link
             for wfid in ids_affected:
-                docentry['wf_miniseed_id']=wfid
+                docentry["wf_miniseed_id"] = wfid
                 elogid = elog_col.insert_one(docentry).inserted_id
                 log_ids.append(elogid)
         if return_ids:
-            return [ids_affected,log_ids]
+            return [ids_affected, log_ids]
         else:
             return None
 
