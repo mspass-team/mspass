@@ -135,6 +135,7 @@
     <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" kind="variable"><name>head</name></member>
     <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" kind="variable"><name>tail</name></member>
     <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" kind="variable"><name>all</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac98d07dd8f7b70e16ccb9a01abf56b9c" kind="friend"><name>boost::serialization::access</name></member>
     <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4227e073cf362b77e163faea881bb84" kind="function"><name>BasicTaper</name></member>
     <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac68777236f5c051c487a18ff652420ba" kind="function"><name>~BasicTaper</name></member>
     <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ab4399e7277aec39a56b017d156838d8b" kind="function"><name>apply</name></member>
@@ -143,6 +144,11 @@
     <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4cc68faa949932e653804bfc5db42ce" kind="function"><name>disable_head</name></member>
     <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a04b2cdddaa30789f37be9c6346a3689b" kind="function"><name>enable_tail</name></member>
     <member refid="classmspass_1_1algorithms_1_1_basic_taper_1aade23966f66e7d1b741e6e8ee2dbde90" kind="function"><name>disable_tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a16b1f6b4866b298466e1fd388597d507" kind="function"><name>head_is_enabled</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a02092ec778f1e289956bbfde3eff7bcd" kind="function"><name>tail_is_enable</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a55c51763d7c820c6a4595127768e8d5f" kind="function"><name>get_t0head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ade8769ae7f4508ff3eb71afe057035ac" kind="function"><name>get_t1head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a67d3608a5605a00ea94473708b55a8f3" kind="function"><name>serialize</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_basic_time_series" kind="class"><name>mspass::seismic::BasicTimeSeries</name>
     <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a7b2e9b878959d376790f09194edc51d9" kind="variable"><name>mlive</name></member>
@@ -378,10 +384,16 @@
     <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1aca0074d0ca7e43b0621de2d60e591cb2" kind="variable"><name>t1head</name></member>
     <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1ad42d35bb34d70d5da5df28df6f87734d" kind="variable"><name>t1tail</name></member>
     <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1a6ed266a8cb568d5f9e91be367311f336" kind="variable"><name>t0tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1ac98d07dd8f7b70e16ccb9a01abf56b9c" kind="friend"><name>boost::serialization::access</name></member>
     <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1a6a4cd9bdda4106fb6acc4161e905a471" kind="function"><name>CosineTaper</name></member>
     <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1aceee67065300605d8dcd3bb16b4b26a4" kind="function"><name>CosineTaper</name></member>
     <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1ac9c6bbea89be35e99f72d987d52510d4" kind="function"><name>apply</name></member>
     <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1ae1b1e4c7c196878c5e17f04c1a3adddd" kind="function"><name>apply</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1abab71d6fc9bf3e6413c831899f6078ef" kind="function"><name>get_t0head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1af5f878917867d868c49965e92b997664" kind="function"><name>get_t1head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1a594bd7ad57eb9215fbae7a5ce7dbcf66" kind="function"><name>get_t0tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1a3af25f446ce03410487efdf1ca16ecd3" kind="function"><name>get_t1tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1a00dd57ac593ed8b0af27e55e48eaa1cc" kind="function"><name>serialize</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_data_gap" kind="class"><name>mspass::seismic::DataGap</name>
     <member refid="classmspass_1_1seismic_1_1_data_gap_1ab83ccd2842b4d16b437cae78f41a1502" kind="variable"><name>gaps</name></member>
@@ -603,10 +615,16 @@
     <member refid="classmspass_1_1algorithms_1_1_linear_taper_1ad1ddd6999cbdc806f345cc5fbcbfd93b" kind="variable"><name>t1head</name></member>
     <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a465cc7f980ec9fe975f0769009292df2" kind="variable"><name>t1tail</name></member>
     <member refid="classmspass_1_1algorithms_1_1_linear_taper_1aed3f3983763e27179a9a6e223f35cb85" kind="variable"><name>t0tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1ac98d07dd8f7b70e16ccb9a01abf56b9c" kind="friend"><name>boost::serialization::access</name></member>
     <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a44264430db4aa773bc797520063333b9" kind="function"><name>LinearTaper</name></member>
     <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a349267509cb638cabc85a8b3e6608746" kind="function"><name>LinearTaper</name></member>
     <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a1d1f9b13b7b5d052d98771c8ac8cfafb" kind="function"><name>apply</name></member>
     <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a08de73ccb968eee24da501b3df0a8e56" kind="function"><name>apply</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a0b48a3c90385cff894c9c1be8c6f3436" kind="function"><name>get_t0head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a56c92176f8b7c425c58f11227a216e81" kind="function"><name>get_t1head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a499085a4672f02cbe889daab211f4ca4" kind="function"><name>get_t0tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1aed2b9f6a0a29a592b8ab0d191af5a935" kind="function"><name>get_t1tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a439de3a886886dc19e613f659a7114b9" kind="function"><name>serialize</name></member>
   </compound>
   <compound refid="classmspass_1_1utility_1_1_log_data" kind="class"><name>mspass::utility::LogData</name>
     <member refid="classmspass_1_1utility_1_1_log_data_1a51d8dbbff398cccfa3e853fd55690cb0" kind="variable"><name>job_id</name></member>
@@ -1073,6 +1091,9 @@
     <member refid="classmspass_1_1algorithms_1_1_top_mute_1a1e540792dcf890d85dcf762cfde24ee9" kind="function"><name>operator=</name></member>
     <member refid="classmspass_1_1algorithms_1_1_top_mute_1ad573529bb5a0e2eed0a1f8c704b81fd6" kind="function"><name>apply</name></member>
     <member refid="classmspass_1_1algorithms_1_1_top_mute_1aa67fde0a3990c0822f27ab24b8a9ea90" kind="function"><name>apply</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_top_mute_1a14ab2f6a0d8ca0af6744bd40a608ceaa" kind="function"><name>get_t0</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_top_mute_1aba2e555b9a97ff006033d39d7b31267b" kind="function"><name>get_t1</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_top_mute_1a3e947b3a9c6098695c60bdf3b559bd18" kind="function"><name>taper_type</name></member>
   </compound>
   <compound refid="classmspass_1_1utility_1_1_vector_statistics" kind="class"><name>mspass::utility::VectorStatistics</name>
     <member refid="classmspass_1_1utility_1_1_vector_statistics_1ac1859153950bb8de386012c41a090cc6" kind="variable"><name>d</name></member>
@@ -1092,12 +1113,17 @@
   </compound>
   <compound refid="classmspass_1_1algorithms_1_1_vector_taper" kind="class"><name>mspass::algorithms::VectorTaper</name>
     <member refid="classmspass_1_1algorithms_1_1_vector_taper_1ab5697654ab4cf98d3163f857626ed458" kind="variable"><name>taper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_vector_taper_1ac98d07dd8f7b70e16ccb9a01abf56b9c" kind="friend"><name>boost::serialization::access</name></member>
     <member refid="classmspass_1_1algorithms_1_1_vector_taper_1abeddf364803709f1ba8c5ac6df4e3fe0" kind="function"><name>VectorTaper</name></member>
     <member refid="classmspass_1_1algorithms_1_1_vector_taper_1ab1eed64ca482959a7b370bee80edb33b" kind="function"><name>VectorTaper</name></member>
     <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a0513879267986e1c1c52e35b3519687b" kind="function"><name>apply</name></member>
     <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a3f0bc37e59814ec60992825f145c0103" kind="function"><name>apply</name></member>
     <member refid="classmspass_1_1algorithms_1_1_vector_taper_1aee8397b62578221b5165497286941863" kind="function"><name>disable</name></member>
     <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a942c9e116af34bf2e55a69f4fccc3f85" kind="function"><name>enable</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a6ebf93490b6a46a8633c4b9b52201bc8" kind="function"><name>get_taper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_vector_taper_1af4d087c6e3af62c4279e73a843144176" kind="function"><name>get_t0head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a3e34ba1539ae7b1567bbe0bbb7a8ec10" kind="function"><name>get_t1head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_vector_taper_1ae2ae798f319a4f24cc8666d7149c15e1" kind="function"><name>serialize</name></member>
   </compound>
   <compound refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon" kind="class"><name>mspass::algorithms::deconvolution::WaterLevelDecon</name>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a98979fbd572f986132b75f7ce66e3780" kind="variable"><name>wlv</name></member>

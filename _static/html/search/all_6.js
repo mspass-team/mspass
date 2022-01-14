@@ -11,7 +11,9 @@ var searchData=
   ['get_5flong_108',['get_long',['../classmspass_1_1utility_1_1_metadata.html#a7ace0c05ebb00b3c383cb8cccd225504',1,'mspass::utility::Metadata']]],
   ['get_5fnodes_109',['get_nodes',['../classmspass_1_1utility_1_1_processing_history.html#a52b0394b444f6db307945284ac6e5f8a',1,'mspass::utility::ProcessingHistory']]],
   ['get_5fstring_110',['get_string',['../classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a',1,'mspass::utility::Metadata']]],
-  ['get_5ftbl_111',['get_tbl',['../classmspass_1_1utility_1_1_antelope_pf.html#a64065097fb1ebc22192ce455cbeca3fb',1,'mspass::utility::AntelopePf']]],
-  ['get_5ftransformation_5fmatrix_112',['get_transformation_matrix',['../classmspass_1_1seismic_1_1_core_seismogram.html#aae2950b408052bda849ba07c4ea9b018',1,'mspass::seismic::CoreSeismogram']]],
-  ['greater_5fseedorder_113',['greater_seedorder',['../structmspass_1_1algorithms_1_1greater__seedorder.html',1,'mspass::algorithms']]]
+  ['get_5ft0_111',['get_t0',['../classmspass_1_1algorithms_1_1_top_mute.html#a14ab2f6a0d8ca0af6744bd40a608ceaa',1,'mspass::algorithms::TopMute']]],
+  ['get_5ft1_112',['get_t1',['../classmspass_1_1algorithms_1_1_top_mute.html#aba2e555b9a97ff006033d39d7b31267b',1,'mspass::algorithms::TopMute']]],
+  ['get_5ftbl_113',['get_tbl',['../classmspass_1_1utility_1_1_antelope_pf.html#a64065097fb1ebc22192ce455cbeca3fb',1,'mspass::utility::AntelopePf']]],
+  ['get_5ftransformation_5fmatrix_114',['get_transformation_matrix',['../classmspass_1_1seismic_1_1_core_seismogram.html#aae2950b408052bda849ba07c4ea9b018',1,'mspass::seismic::CoreSeismogram']]],
+  ['greater_5fseedorder_115',['greater_seedorder',['../structmspass_1_1algorithms_1_1greater__seedorder.html',1,'mspass::algorithms']]]
 ];

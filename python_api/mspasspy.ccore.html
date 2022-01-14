@@ -1884,6 +1884,30 @@ stored in the ensemble’s metadata.</p>
 <p>Apply taper to a Seismogram (3C) object</p>
 </dd></dl>
 
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.CosineTaper.get_t0head">
+<code class="sig-name descname">get_t0head</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.basic.CosineTaper" title="mspasspy.ccore.algorithms.basic.CosineTaper">mspasspy.ccore.algorithms.basic.CosineTaper</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mspasspy.ccore.algorithms.basic.CosineTaper.get_t0head" title="Permalink to this definition"></a></dt>
+<dd><p>Return time of end of zero zone - taper sets data with time &lt; this value 0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.CosineTaper.get_t0tail">
+<code class="sig-name descname">get_t0tail</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.basic.CosineTaper" title="mspasspy.ccore.algorithms.basic.CosineTaper">mspasspy.ccore.algorithms.basic.CosineTaper</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mspasspy.ccore.algorithms.basic.CosineTaper.get_t0tail" title="Permalink to this definition"></a></dt>
+<dd><p>Return time of taper end - data with t &gt; this value will be zeroed</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.CosineTaper.get_t1head">
+<code class="sig-name descname">get_t1head</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.basic.CosineTaper" title="mspasspy.ccore.algorithms.basic.CosineTaper">mspasspy.ccore.algorithms.basic.CosineTaper</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mspasspy.ccore.algorithms.basic.CosineTaper.get_t1head" title="Permalink to this definition"></a></dt>
+<dd><p>Return time of end front end taper - point after this time are not altered until end taper zone is reached</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.CosineTaper.get_t1tail">
+<code class="sig-name descname">get_t1tail</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.basic.CosineTaper" title="mspasspy.ccore.algorithms.basic.CosineTaper">mspasspy.ccore.algorithms.basic.CosineTaper</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mspasspy.ccore.algorithms.basic.CosineTaper.get_t1tail" title="Permalink to this definition"></a></dt>
+<dd><p>Return start time of end taper</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -1915,6 +1939,30 @@ stored in the ensemble’s metadata.</p>
 <li><p>apply(self: mspasspy.ccore.algorithms.basic.LinearTaper, arg0: mspasspy.ccore.seismic.Seismogram) -&gt; int</p></li>
 </ol>
 <p>Apply taper to a Seismogram (3C) object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.LinearTaper.get_t0head">
+<code class="sig-name descname">get_t0head</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.basic.LinearTaper" title="mspasspy.ccore.algorithms.basic.LinearTaper">mspasspy.ccore.algorithms.basic.LinearTaper</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mspasspy.ccore.algorithms.basic.LinearTaper.get_t0head" title="Permalink to this definition"></a></dt>
+<dd><p>Return time of end of zero zone - taper sets data with time &lt; this value 0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.LinearTaper.get_t0tail">
+<code class="sig-name descname">get_t0tail</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.basic.LinearTaper" title="mspasspy.ccore.algorithms.basic.LinearTaper">mspasspy.ccore.algorithms.basic.LinearTaper</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mspasspy.ccore.algorithms.basic.LinearTaper.get_t0tail" title="Permalink to this definition"></a></dt>
+<dd><p>Return time of taper end - data with t &gt; this value will be zeroed</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.LinearTaper.get_t1head">
+<code class="sig-name descname">get_t1head</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.basic.LinearTaper" title="mspasspy.ccore.algorithms.basic.LinearTaper">mspasspy.ccore.algorithms.basic.LinearTaper</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mspasspy.ccore.algorithms.basic.LinearTaper.get_t1head" title="Permalink to this definition"></a></dt>
+<dd><p>Return time of end front end taper - point after this time are not altered until end taper zone is reached</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.LinearTaper.get_t1tail">
+<code class="sig-name descname">get_t1tail</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.basic.LinearTaper" title="mspasspy.ccore.algorithms.basic.LinearTaper">mspasspy.ccore.algorithms.basic.LinearTaper</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mspasspy.ccore.algorithms.basic.LinearTaper.get_t1tail" title="Permalink to this definition"></a></dt>
+<dd><p>Return start time of end taper</p>
 </dd></dl>
 
 </dd></dl>

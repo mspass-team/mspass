@@ -106,6 +106,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ad573529bb5a0e2eed0a1f8c704b81fd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa67fde0a3990c0822f27ab24b8a9ea90"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_top_mute.html#aa67fde0a3990c0822f27ab24b8a9ea90">apply</a> (<a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a> &amp;d)</td></tr>
 <tr class="separator:aa67fde0a3990c0822f27ab24b8a9ea90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14ab2f6a0d8ca0af6744bd40a608ceaa"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_top_mute.html#a14ab2f6a0d8ca0af6744bd40a608ceaa">get_t0</a> () const</td></tr>
+<tr class="separator:a14ab2f6a0d8ca0af6744bd40a608ceaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba2e555b9a97ff006033d39d7b31267b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_top_mute.html#aba2e555b9a97ff006033d39d7b31267b">get_t1</a> () const</td></tr>
+<tr class="separator:aba2e555b9a97ff006033d39d7b31267b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e947b3a9c6098695c60bdf3b559bd18"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_top_mute.html#a3e947b3a9c6098695c60bdf3b559bd18">taper_type</a> () const</td></tr>
+<tr class="separator:a3e947b3a9c6098695c60bdf3b559bd18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Mute operator for "top" of signals defined first smaple forward. </p>
@@ -204,7 +210,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;    <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;    {</div>
 <div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;      stringstream ss;</div>
-<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;      ss &lt;&lt; base_error&lt;&lt;<span class="stringliteral">&quot;Unrecognized type argume=&quot;</span>&lt;&lt;type&lt;&lt;endl</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;      ss &lt;&lt; base_error&lt;&lt;<span class="stringliteral">&quot;Unrecognized type argument=&quot;</span>&lt;&lt;type&lt;&lt;endl</div>
 <div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;         &lt;&lt; <span class="stringliteral">&quot;Current options are:  linear OR cosine&quot;</span>&lt;&lt;endl;</div>
 <div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;      <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(ss.str(),ErrorSeverity::Invalid);</div>
 <div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;    }</div>
@@ -308,6 +314,60 @@ Public Member Functions</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
+<a id="a14ab2f6a0d8ca0af6744bd40a608ceaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14ab2f6a0d8ca0af6744bd40a608ceaa">&#9670;&nbsp;</a></span>get_t0()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::TopMute::get_t0 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the start of mute taper - points with time &lt; this number are zeroed </p>
+<div class="fragment"><div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  {<span class="keywordflow">return</span> taper-&gt;get_t0head();};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aba2e555b9a97ff006033d39d7b31267b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba2e555b9a97ff006033d39d7b31267b">&#9670;&nbsp;</a></span>get_t1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::TopMute::get_t1 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the end time of the mute taper - points after this point are unaltered by the mute. </p>
+<div class="fragment"><div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  {<span class="keywordflow">return</span> taper-&gt;get_t1head();};</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a1e540792dcf890d85dcf762cfde24ee9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1e540792dcf890d85dcf762cfde24ee9">&#9670;&nbsp;</a></span>operator=()</h2>
 
@@ -331,6 +391,38 @@ Public Member Functions</h2></td></tr>
 <div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;  }</div>
 <div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
 <div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3e947b3a9c6098695c60bdf3b559bd18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e947b3a9c6098695c60bdf3b559bd18">&#9670;&nbsp;</a></span>taper_type()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">string mspass::algorithms::TopMute::taper_type </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Return a string with a name describing the form of the taper - currently returns either linear or cosine </p>
+<div class="fragment"><div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;{</div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;  BasicTaper *rawptr;</div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;  rawptr = this-&gt;taper.get();</div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;  <span class="keywordflow">if</span>(<span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>LinearTaper*<span class="keyword">&gt;</span>(rawptr))</div>
+<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;    <span class="keywordflow">return</span> string(<span class="stringliteral">&quot;linear&quot;</span>);</div>
+<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;  <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>CosineTaper*<span class="keyword">&gt;</span>(rawptr))</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;    <span class="keywordflow">return</span> string(<span class="stringliteral">&quot;cosine&quot;</span>);</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;    <span class="comment">/* note there is a VectorTaper child of BasicTaper but it is not supported</span></div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;<span class="comment">    by TopMute - only allows linear and cosine - so if that happened somehow</span></div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;<span class="comment">    we throw this exception in that case too. */</span></div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;    <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(<span class="stringliteral">&quot;TopMute::taper_type:  Internal taper dynamic cast does not resolve;  this should not happen and is a bug&quot;</span>,</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;      ErrorSeverity::Fatal);</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
