@@ -3,22 +3,59 @@
   <compounddef id="namespacemspass_1_1io" kind="namespace" language="C++">
     <compoundname>mspass::io</compoundname>
     <innerclass refid="classmspass_1_1io_1_1mseed__index" prot="public">mspass::io::mseed_index</innerclass>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="mseed__file__indexer_8cc_1aa275d5cdd02cce12a851eb9db14e0fee" prot="public" static="no">
+        <type>std::pair&lt; std::vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;, <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> &gt;</type>
+        <definition>typedef std::pair&lt;std::vector&lt;mseed_index&gt;,mspass::utility::ErrorLogger&gt; mspass::io::MSDINDEX_returntype</definition>
+        <argsstring></argsstring>
+        <name>MSDINDEX_returntype</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="24" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="mseed__file__indexer_8cc_1aed35095112e114eff1be6922f2f291d1" prot="public" static="no" mutable="no">
+        <type>thread_local std::string</type>
+        <definition>thread_local std::string mspass::io::buffer</definition>
+        <argsstring></argsstring>
+        <name>buffer</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="25" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
       <sectiondef kind="func">
-      <memberdef kind="function" id="mseed__index_8h_1a909ad83e8520c56d12b0ab050c306993" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>std::vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;</type>
-        <definition>std::vector&lt;mseed_index&gt; mspass::io::mseed_file_indexer</definition>
-        <argsstring>(const std::string inputfile)</argsstring>
+      <memberdef kind="function" id="mseed__index_8h_1ae676a44a12bfc4e7a6af21edd7581745" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::pair&lt; std::vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;, <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> &gt;</type>
+        <definition>std::pair&lt;std::vector&lt;mseed_index&gt;,mspass::utility::ErrorLogger&gt; mspass::io::mseed_file_indexer</definition>
+        <argsstring>(const std::string inputfile, const bool segment_timetears, const bool Verbose)</argsstring>
         <name>mseed_file_indexer</name>
         <param>
           <type>const std::string</type>
           <declname>inputfile</declname>
         </param>
+        <param>
+          <type>const bool</type>
+          <declname>segment_timetears</declname>
+        </param>
+        <param>
+          <type>const bool</type>
+          <declname>Verbose</declname>
+        </param>
         <briefdescription>
 <para>Construct an index for a miniseed file. </para>
         </briefdescription>
         <detaileddescription>
-<para>Miniseed is a packetized data format in which time series data are packaged into packets of a fixed size with a minimal header needed to uniquely define the contents. Because of that format it is possible and common practice to concatenate miniseed files with packets arranged in time sequence together. That is particularly essential for large data sets and on HPC file systems that have performance problems with many small files. This function was written to build an index for such files to provide a means for a reader to efficiently find a particular piece of data and decode the miniseed packets into TimeSeries objects. In mspass this function would, to most users, be treated as under the hood and of interest only if something breaks. <linebreak/>
-</para>
+<para>Miniseed is a packetized data format in which time series data are packaged into packets of a fixed size with a minimal header needed to uniquely define the contents. Because of that format it is possible and common practice to concatenate miniseed files with packets arranged in time sequence together. That is particularly essential for large data sets and on HPC file systems that have performance problems with many small files. This function was written to build an index for such files to provide a means for a reader to efficiently find a particular piece of data and decode the miniseed packets into TimeSeries objects. In mspass this function would, to most users, be treated as under the hood and of interest only if something breaks.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>inputfile</parametername>
@@ -29,10 +66,27 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
+<parametername>segment_timetears</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is a boolean that controls the behavior when a time tear is encountered. A time tear is defined as a mismatch in the computed endtime of the last packet read and the current packet starttime differing by more than 1/2 a sample. When false these are ignored assuming the reader will handle the problem by some form of gap processing. When true a new index entry will be created at the time tear. Always use true if there is any possibility of the same channel of data in the file in consecutive packets that aren&apos;t an actual time tear in this sense. e.g. event data concenated so all channels are back to back would require using this parameter true. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Verbose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is a boolean largely controlling how time tears are or are not logged. That is, at present if this parameter is true any time the logic detects a time tear it is logged in the returned error log as an informational log message. If false only reading errors for things like garbled miniseed packets are logged. <linebreak/>
+ </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
 <parametername>return</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a vector of objects called <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> that contain the basic information defining an index for inputfile. See class description for more details. </para>
+<para>is an std::pair. &quot;First&quot; contains a vector of objects called <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> that contain the basic information defining an index for inputfile. See class description of <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> for more details. &quot;second&quot; contains an ErrorLogger objects. Caller should test that the contents are empty and if not save the error log or print it. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -40,16 +94,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="88" column="13" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" declline="88" declcolumn="13"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="107" column="4" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" declline="107" declcolumn="4"/>
       </memberdef>
-      <memberdef kind="function" id="mseed__file__indexer_8cc_1a6c32f54069f6311845c5db8acfc5a62e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;</type>
-        <definition>vector&lt;mseed_index&gt; mspass::io::mseed_file_indexer</definition>
-        <argsstring>(const string inputfile)</argsstring>
-        <name>mseed_file_indexer</name>
+      <memberdef kind="function" id="mseed__file__indexer_8cc_1a7ee6e258cc4a7dd22e0f27463228c44a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::io::save_error_message</definition>
+        <argsstring>(const char *message)</argsstring>
+        <name>save_error_message</name>
         <param>
-          <type>const string</type>
-          <declname>inputfile</declname>
+          <type>const char *</type>
+          <declname>message</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -57,7 +111,32 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="20" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="20" bodyend="128"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="26" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="26" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="mseed__file__indexer_8cc_1afe2800b7fa24249de92f7ff6ec6db65b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>MSDINDEX_returntype</type>
+        <definition>MSDINDEX_returntype mspass::io::mseed_file_indexer</definition>
+        <argsstring>(const string inputfile, const bool segment_timetears, const bool Verbose)</argsstring>
+        <name>mseed_file_indexer</name>
+        <param>
+          <type>const string</type>
+          <declname>inputfile</declname>
+        </param>
+        <param>
+          <type>const bool</type>
+          <declname>segment_timetears</declname>
+        </param>
+        <param>
+          <type>const bool</type>
+          <declname>Verbose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="31" column="23" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="31" bodyend="248"/>
       </memberdef>
       <memberdef kind="function" id="mseed__index_8cc_1a50d9221df57b0d6ea5bad8fc3f5b2b1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::ostringstream &amp;</type>
@@ -85,6 +164,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="6" column="1"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="7" column="1"/>
   </compounddef>
 </doxygen>

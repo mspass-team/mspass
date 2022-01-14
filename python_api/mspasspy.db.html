@@ -535,17 +535,17 @@ as the primary index.</p>
 
 <dl class="py method">
 <dt id="mspasspy.db.database.Database.index_mseed_file">
-<code class="sig-name descname">index_mseed_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dfile</span></em>, <em class="sig-param"><span class="n">dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'wf_miniseed'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_file" title="Permalink to this definition"></a></dt>
+<code class="sig-name descname">index_mseed_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dfile</span></em>, <em class="sig-param"><span class="n">dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'wf_miniseed'</span></em>, <em class="sig-param"><span class="n">segment_time_tears</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">elog_collection</span><span class="o">=</span><span class="default_value">'elog'</span></em>, <em class="sig-param"><span class="n">return_ids</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_file" title="Permalink to this definition"></a></dt>
 <dd><p>This is the first stage import function for handling the import of
 miniseed data.  This function scans a data file defined by a directory
-(dir arg) and dfile (file name) argument.  I builds and index it
-writes to mongodb in the collection defined by the collection
+(dir arg) and dfile (file name) argument.  I builds an index
+for the file and writes the index to mongodb
+in the collection defined by the collection
 argument (wf_miniseed by default).   The index is bare bones
 miniseed tags (net, sta, chan, and loc) with a starttime tag.
 The index is appropriate ONLY if the data on the file are created
 by concatenating data with packets sorted by net, sta, loc, chan, time
-AND the data are contiguous in time.   The results will be unpredictable
-if the miniseed packets do not fit that constraint.  The original
+AND the data are contiguous in time.   The original
 concept for this function came from the need to handle large files
 produced by concanentation of miniseed single-channel files created
 by obpsy’s mass_downloader.   i.e. the basic model is the input
@@ -554,30 +554,37 @@ cat command on a set of single-channel, contingous time sequence files.
 There are other examples that do the same thing (e.g. antelope’s
 miniseed2days).</p>
 <p>We emphasize this function only builds an index - it does not
-convert any data.   As a result a final warning is that the
-metadata in the wf_miniseed collection lack some common
-attributes one might expect. That is, number of samples,
-sample rate, and endtime.   The number of samples and endtime are
-not saved because we intentionally do nat fully crack the input
-file for speed.  miniseed files can (actually usually) contain
-compressed sample data and the number of samples are not recorded
-in the packet headers.  Hence, the number of samples in the block
-and the endtime cannot be computed without decompressing the data.
-To provide some measurre of the time span of the data we define
-an attribute “last_packet_time” that contains the unix epoch
-time of the start of the last packet of the file.   How close that
-is to endtime depends mainly on the sample interval.  If a range
-query is needed use last_packet_time where you would otherwise use
-endtime.</p>
+convert any data.   It has to scan the entire file deriving the
+index from data retrieved from miniseed packets with libmseed so
+for large data sets this can take a long time.</p>
+<p>Actual seismic data stored as miniseed are prone to time tears.
+That can happen at the instrument level in at least two common
+ways: (1) dropped packets from telemetry issues, or (2) instrument
+timing jumps when a clock loses external lock to gps or some
+other standard and the rock is restored.  The behavior is this
+function in gap handling is controlled by the input parameter
+segment_time_tears.  When true a new index entry is created
+any time the start time of a packet differs from that computed
+from the endtime of the last packet by more than one sample
+AND net:sta:chan:loc are constant.  The default for this
+parameter is false because data with many dropped packets from
+telemetry are common and can create overwhelming numbers of
+index entries quickly.  When false the scan only creates a new
+index record when net, sta, chan, or loc change between successive
+packets.  Our reader has gap handling functions to handle
+time tears.  Set segment_time_tears true only when you are
+confident the data set does not contain a large number of dropped
+packets.</p>
+<p>Note to parallelize this function put a list of files in a Spark
+RDD or a Dask bag and parallelize the call the this function.
+That can work because MongoDB is designed for parallel operations
+and we use the thread safe version of the libmseed reader.</p>
 <p>Finally, note that cross referencing with the channel and/or
 source collections should be a common step after building the
 index with this function.  The reader found elsewhere in this
 module will transfer linking ids (i.e. channel_id and/or source_id)
 to TimeSeries objects when it reads the data from the files
 indexed by this function.</p>
-<p>Note to parallelize this function put a list of files in a Spark
-RDD or a Dask bag and parallelize the call the this function.
-That can work because MongoDB is designed for parallel operations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -593,6 +600,27 @@ stored in the database.</p></li>
 <li><p><strong>collection</strong> – is the mongodb collection name to write the
 index data to.  The default is ‘wf_miniseed’.  It should be rare
 to use anything but the default.</p></li>
+<li><p><strong>segment_time_tears</strong> – boolean controlling handling of data gaps
+defined by constant net, sta, chan, and loc but a discontinuity
+in time tags for successive packets.  See above for a more extensive
+discussion of how to use this parameter.  Default is False.</p></li>
+<li><p><strong>elog_collection</strong> – name to write any error logs messages
+from the miniseed reader.  Default is “elog”, which is the
+same as for TimeSeries and Seismogram data, but the cross reference
+keys here are keyed by “wf_miniseed_id”.</p></li>
+<li><p><strong>return_ids</strong> – if set True the function will return a tuple
+with two id lists.  The 0 entry is an array of ids from the
+collection (wf_miniseed by default) of index entries saved and
+the 1 entry will contain the ids in the elog_collection of
+error log entry insertions.  The 1 entry will be empty if the
+reader found no errors and the error log was empty (the hopefully
+normal situation).  When this argument is False (the default) it
+returns None.  Set true if you need to build some kind of cross
+reference to read errors to build some custom cleaning method
+for specialized processing that can be done more efficiently.
+By default it is fast only to associate an error log entry with
+a particular waveform index entry. (we store the saved index
+MongoDB document id with each elog entry)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Exception</dt>

@@ -7,6 +7,7 @@
     <includes local="no">stdlib.h</includes>
     <includes local="no">string.h</includes>
     <includes local="no">time.h</includes>
+    <includes local="no">math.h</includes>
     <includes local="no">vector</includes>
     <includes local="no">iostream</includes>
     <includes local="no">iomanip</includes>
@@ -14,41 +15,95 @@
     <includes local="no">string</includes>
     <includes local="yes">libmseed.h</includes>
     <includes refid="mseed__index_8h" local="yes">mspass/io/mseed_index.h</includes>
+    <includes refid="_error_logger_8h" local="yes">mspass/utility/ErrorLogger.h</includes>
     <incdepgraph>
-      <node id="9">
+      <node id="17">
+        <label>list</label>
+      </node>
+      <node id="10">
         <label>iomanip</label>
+      </node>
+      <node id="19">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="15">
+        <label>mspass/utility/ErrorLogger.h</label>
+        <link refid="_error_logger_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
       </node>
       <node id="4">
         <label>stdlib.h</label>
       </node>
-      <node id="13">
+      <node id="23">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
         <label>mspass/io/mseed_index.h</label>
         <link refid="mseed__index_8h_source"/>
-        <childnode refid="7" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="2">
         <label>errno.h</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>string</label>
+      </node>
+      <node id="24">
+        <label>exception</label>
+      </node>
+      <node id="20">
+        <label>boost/archive/text_oarchive.hpp</label>
       </node>
       <node id="5">
         <label>string.h</label>
       </node>
-      <node id="7">
+      <node id="16">
+        <label>unistd.h</label>
+      </node>
+      <node id="8">
         <label>vector</label>
       </node>
-      <node id="10">
+      <node id="11">
         <label>sstream</label>
       </node>
       <node id="6">
         <label>time.h</label>
       </node>
-      <node id="8">
+      <node id="7">
+        <label>math.h</label>
+      </node>
+      <node id="9">
         <label>iostream</label>
+      </node>
+      <node id="22">
+        <label>boost/serialization/list.hpp</label>
       </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc</label>
@@ -77,11 +132,21 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>boost/serialization/serialization.hpp</label>
       </node>
       <node id="3">
         <label>stdio.h</label>
       </node>
-      <node id="12">
+      <node id="18">
+        <label>boost/archive/basic_archive.hpp</label>
+      </node>
+      <node id="13">
         <label>libmseed.h</label>
       </node>
     </incdepgraph>
@@ -97,130 +162,250 @@
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stdlib.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;time.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;iostream&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;iomanip&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sstream&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;libmseed.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/io/mseed_index.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::io</highlight></codeline>
-<codeline lineno="17"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::io;</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"></highlight></codeline>
-<codeline lineno="20"><highlight class="normal">vector&lt;mseed_index&gt;<sp/>mseed_file_indexer(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>inputfile)</highlight></codeline>
-<codeline lineno="21"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="22"><highlight class="normal"><sp/><sp/>MS3Record<sp/>*msr<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"><sp/><sp/>uint32_t<sp/>flags<sp/>=<sp/>MSF_SKIPNOTDATA<sp/>;</highlight></codeline>
-<codeline lineno="24"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>int8_t<sp/>ppackets<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="25"><highlight class="normal"><sp/><sp/>int8_t<sp/>verbose<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="26"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>retcode;</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>last_sid[128],current_sid[128];</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"></highlight></codeline>
-<codeline lineno="29"><highlight class="normal"><sp/><sp/>vector&lt;mseed_index&gt;<sp/>indexdata;</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;math.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;iostream&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;iomanip&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sstream&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;libmseed.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/io/mseed_index.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/ErrorLogger.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::io</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::io;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>mspass::utility::ErrorSeverity;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Using<sp/>this<sp/>file<sp/>scope<sp/>typedef<sp/>to<sp/>avoid<sp/>the<sp/>absurdly<sp/>complex<sp/>syntax<sp/>of<sp/>an</highlight></codeline>
+<codeline lineno="23"><highlight class="comment">std::pair<sp/>constructor<sp/>with<sp/>complex<sp/>objects<sp/>like<sp/>this<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>std::pair&lt;std::vector&lt;mseed_index&gt;,<ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref>&gt;<sp/>MSDINDEX_returntype;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal">thread_local<sp/>std::string<sp/>buffer;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>save_error_message(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*message)</highlight></codeline>
+<codeline lineno="27"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/>buffer<sp/>+=<sp/>message;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Enable<sp/>accumulation<sp/>of<sp/>up<sp/>to<sp/>10<sp/>error<sp/>and<sp/>warning<sp/>messages<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><sp/><sp/>ms_rloginit<sp/>(NULL,<sp/>NULL,<sp/>NULL,<sp/>NULL,<sp/>10);</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"></highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Loop<sp/>over<sp/>the<sp/>input<sp/>file<sp/>record<sp/>by<sp/>record<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/>int64_t<sp/>fpos=0;</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"><sp/><sp/>uint64_t<sp/>start_foff,nbytes;</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>count=0;</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>net[16],sta[16],loc[16],chan[16];<sp/><sp/></highlight><highlight class="comment">//larger<sp/>than<sp/>needed<sp/>but<sp/><sp/>safe</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref><sp/>ind;</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/><sp/>nstime_t<sp/>stime,lptime;</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><sp/><sp/>int64_t<sp/>npts(0);</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>last_packet_samprate;</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>((retcode<sp/>=<sp/>ms3_readmsr<sp/>(&amp;msr,<sp/>inputfile.c_str(),<sp/>&amp;fpos,<sp/>NULL,</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>flags,<sp/>verbose))<sp/>==<sp/>MS_NOERROR)</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(count==0)</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>have<sp/>to<sp/>treat<sp/>the<sp/>first<sp/>block<sp/>specially<sp/>because<sp/>of<sp/>the<sp/>logic<sp/>of</highlight></codeline>
-<codeline lineno="49"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>how<sp/>this<sp/>loop<sp/>is<sp/>constructed<sp/>and<sp/>the<sp/>way<sp/>the<sp/>ms3<sp/>reader<sp/>works.</highlight></codeline>
-<codeline lineno="50"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>A<sp/>problem,<sp/>however,<sp/>is<sp/>this<sp/>may<sp/>fail<sp/>if<sp/>there<sp/>first<sp/>block<sp/>is<sp/>not<sp/>a</highlight></codeline>
-<codeline lineno="51"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>miniseed<sp/>data<sp/>block.<sp/><sp/><sp/>Probably<sp/>should<sp/>test<sp/>this<sp/>on<sp/>a<sp/>full<sp/>seed<sp/>file<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>start_foff=fpos;</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>stime=msr-&gt;starttime;</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>strcpy(last_sid,msr-&gt;sid);</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>++count;</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>npts=msr-&gt;samplecnt;</highlight></codeline>
-<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>last_packet_samprate=msr-&gt;samprate;</highlight></codeline>
-<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"></highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>strcpy(current_sid,msr-&gt;sid);</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(strcmp(current_sid,last_sid))</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(ms_sid2nslc(last_sid,net,sta,loc,chan))</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>needs<sp/>to<sp/>be<sp/>replaced<sp/>to<sp/>use<sp/>the<sp/>libmseed<sp/>log<sp/>functions<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fprintf(stderr,</highlight><highlight class="stringliteral">&quot;source<sp/>id<sp/>string=%s<sp/>in<sp/>packet<sp/>number<sp/>%d<sp/>could<sp/>not<sp/>be<sp/>decoded<sp/>-<sp/>skipping<sp/>one<sp/>or<sp/>more<sp/>packets\n&quot;</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>last_sid,count);</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>strcpy(last_sid,current_sid);</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>start_foff=fpos;</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nbytes=fpos-start_foff;</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.net=net;</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.sta=sta;</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.loc=loc;</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.chan=chan;</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.foff=start_foff;</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.nbytes=nbytes;</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.starttime=MS_NSTIME2EPOCH(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(stime));</highlight></codeline>
-<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.last_packet_time=MS_NSTIME2EPOCH(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(lptime));</highlight></codeline>
-<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.samprate=last_packet_samprate;</highlight></codeline>
-<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.npts=npts;</highlight></codeline>
-<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.endtime=ind.starttime<sp/>+<sp/>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(npts))/ind.samprate;</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>indexdata.push_back(ind);</highlight></codeline>
-<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>start_foff=fpos;</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>stime=msr-&gt;starttime;</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>npts=msr-&gt;samplecnt;</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/>strcpy(last_sid,current_sid);</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//msr3_print<sp/>(msr,<sp/>ppackets);</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>++count;</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>npts+=msr-&gt;samplecnt;</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/>lptime=msr-&gt;starttime;</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/>last_packet_samprate=msr-&gt;samprate;</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"></highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(retcode<sp/>!=<sp/>MS_ENDOFFILE)</highlight></codeline>
-<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/>ms_rlog_emit<sp/>(NULL,<sp/>0,<sp/>verbose);</highlight></codeline>
-<codeline lineno="100"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>cleanup<sp/>last<sp/>block<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(ms_sid2nslc(last_sid,net,sta,loc,chan))</highlight></codeline>
-<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>fprintf(stderr,</highlight><highlight class="stringliteral">&quot;ms_sid2nslc<sp/>function<sp/>failed<sp/>on<sp/>last<sp/>data<sp/>block<sp/>-<sp/>data<sp/>at<sp/>end<sp/>of<sp/>file<sp/>dropped\n&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nbytes=fpos-start_foff;</highlight></codeline>
-<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.net=net;</highlight></codeline>
-<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.sta=sta;</highlight></codeline>
-<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.loc=loc;</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.chan=chan;</highlight></codeline>
-<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.foff=start_foff;</highlight></codeline>
-<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.nbytes=nbytes;</highlight></codeline>
-<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.starttime=MS_NSTIME2EPOCH(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(stime));</highlight></codeline>
-<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.last_packet_time=MS_NSTIME2EPOCH(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(lptime));</highlight></codeline>
-<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.samprate=last_packet_samprate;</highlight></codeline>
-<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.npts=npts;</highlight></codeline>
-<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.endtime=ind.starttime<sp/>+<sp/>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(npts))/ind.samprate;</highlight></codeline>
-<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>indexdata.push_back(ind);</highlight></codeline>
-<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="123"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"></highlight></codeline>
-<codeline lineno="125"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Make<sp/>sure<sp/>everything<sp/>is<sp/>cleaned<sp/>up<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="126"><highlight class="normal"><sp/><sp/>ms3_readmsr<sp/>(&amp;msr,<sp/>NULL,<sp/>NULL,<sp/>NULL,<sp/>0,<sp/>0);</highlight></codeline>
-<codeline lineno="127"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>indexdata;</highlight></codeline>
-<codeline lineno="128"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="129"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>End<sp/>namespace<sp/>mspass::io</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal">MSDINDEX_returntype<sp/><sp/><sp/>mseed_file_indexer(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>inputfile,</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>segment_timetears,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>Verbose)</highlight></codeline>
+<codeline lineno="33"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>function_name(</highlight><highlight class="stringliteral">&quot;mseed_file_indexer&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/>MS3Record<sp/>*msr<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>thing<sp/>is<sp/>used<sp/>for<sp/>the<sp/>thread<sp/>safe<sp/>reader.<sp/><sp/><sp/>It<sp/>uses<sp/>the<sp/>common</highlight></codeline>
+<codeline lineno="38"><highlight class="comment"><sp/><sp/>plain<sp/>C<sp/>implicit<sp/>signal<sp/>to<sp/>alloc<sp/>the<sp/>struct<sp/>it<sp/>contains<sp/>when<sp/>the</highlight></codeline>
+<codeline lineno="39"><highlight class="comment"><sp/><sp/>pointer<sp/>is<sp/>NULL.<sp/><sp/><sp/>Each<sp/>call<sp/>then<sp/>uses<sp/>the<sp/>same<sp/>data<sp/>in<sp/>the<sp/>msfp</highlight></codeline>
+<codeline lineno="40"><highlight class="comment"><sp/><sp/>struct.<sp/><sp/>The<sp/>weird<sp/>cleanup<sp/>call<sp/>at<sp/>the<sp/>end<sp/>of<sp/>the<sp/>read<sp/>loop</highlight></codeline>
+<codeline lineno="41"><highlight class="comment"><sp/><sp/>calls<sp/>the<sp/>equivalent<sp/>of<sp/>a<sp/>destructor.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>MS3FileParam<sp/>*msfp<sp/>=<sp/>NULL;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/>uint32_t<sp/>flags<sp/>=<sp/>MSF_SKIPNOTDATA<sp/>;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>int8_t<sp/>ppackets<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/>int8_t<sp/>verbose<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>retcode;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>last_sid[128],current_sid[128];</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>used<sp/>to<sp/>define<sp/>a<sp/>time<sp/>tear<sp/>(gap).<sp/><sp/>When<sp/>the<sp/>computed<sp/>endtime<sp/>of</highlight></codeline>
+<codeline lineno="49"><highlight class="comment"><sp/><sp/>the<sp/>previous<sp/>packet<sp/>read<sp/>mismatches<sp/>the<sp/>starttime<sp/>of<sp/>the<sp/>current<sp/>packet<sp/>we</highlight></codeline>
+<codeline lineno="50"><highlight class="comment"><sp/><sp/>create<sp/><sp/>a<sp/>segment<sp/>by<sp/>defining<sp/>a<sp/>new<sp/>index<sp/>entry<sp/>terminated<sp/>at<sp/>the<sp/>time</highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/><sp/>tear<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>time_tear_tolerance(0.5);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>vector&lt;mseed_index&gt;<sp/>indexdata;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>this<sp/>might<sp/>not<sp/>be<sp/>necessary<sp/>but<sp/>I<sp/>think<sp/>this<sp/>is<sp/>needed<sp/>to<sp/>assure<sp/>the</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/><sp/>error<sp/>message<sp/>buffer<sp/>is<sp/>cleared<sp/>between<sp/>calls.<sp/><sp/><sp/>We<sp/>will<sp/>clear<sp/>it<sp/>on<sp/>exit</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/><sp/>also<sp/>so<sp/>this<sp/>may<sp/>be<sp/>redundant*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/>buffer.clear();</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Enable<sp/>accumulation<sp/>of<sp/>up<sp/>to<sp/>10<sp/>error<sp/>and<sp/>warning<sp/>messages.<sp/>This</highlight></codeline>
+<codeline lineno="61"><highlight class="comment"><sp/><sp/>uses<sp/>the<sp/>logging<sp/>function<sp/>defined<sp/>above<sp/>to<sp/>post<sp/>any<sp/>messages<sp/>to<sp/>the</highlight></codeline>
+<codeline lineno="62"><highlight class="comment"><sp/><sp/>file-scope<sp/>variable<sp/>buffer,<sp/><sp/>We<sp/>retrieve<sp/>it<sp/>below<sp/>it<sp/>is<sp/>is<sp/>empty*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/>ms_rloginit<sp/>(NULL,<sp/>NULL,<sp/>NULL,<sp/>NULL,<sp/>10);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/>ms_rloginit(save_error_message,</highlight><highlight class="stringliteral">&quot;libmseed<sp/>diagnostic:<sp/><sp/>&quot;</highlight><highlight class="normal">,save_error_message,</highlight><highlight class="stringliteral">&quot;libmseed<sp/>error:<sp/><sp/>&quot;</highlight><highlight class="normal">,10);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref><sp/>elog;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Loop<sp/>over<sp/>the<sp/>input<sp/>file<sp/>record<sp/>by<sp/>record<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>int64_t<sp/>fpos=0;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/>uint64_t<sp/>start_foff,nbytes;</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>count=0;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>net[16],sta[16],loc[16],chan[16];<sp/><sp/></highlight><highlight class="comment">//larger<sp/>than<sp/>needed<sp/>but<sp/><sp/>safe</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref><sp/>ind;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/>nstime_t<sp/>stime,lptime;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>int64_t<sp/>npts(0);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>last_packet_samprate,last_packet_endtime,expected_starttime,<sp/>last_dt;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>epoch_stime;<sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>mseed<sp/>saves<sp/>times<sp/>in<sp/>some<sp/>mysterious<sp/>format.<sp/><sp/>This<sp/>hold<sp/>epoch<sp/>start<sp/>time</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>found_time_tear(</highlight><highlight class="keyword">false</highlight><highlight class="normal">);<sp/></highlight><highlight class="comment">//used<sp/>to<sp/>simplify<sp/>logic<sp/>of<sp/>handling<sp/>time<sp/>tears</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>It<sp/>is<sp/>not<sp/>clear<sp/>what<sp/>verbose<sp/>means<sp/>in<sp/>this<sp/>function<sp/>so<sp/>we<sp/>currently<sp/>always</highlight></codeline>
+<codeline lineno="79"><highlight class="comment"><sp/><sp/>turn<sp/>it<sp/>off.<sp/><sp/><sp/>Note<sp/>Verbose<sp/>and<sp/>verbose<sp/>are<sp/>different<sp/>-<sp/>a<sp/>bit<sp/>dangerous<sp/>but</highlight></codeline>
+<codeline lineno="80"><highlight class="comment"><sp/><sp/>that<sp/>is<sp/>what<sp/>is<sp/>for<sp/>now.</highlight></codeline>
+<codeline lineno="81"><highlight class="comment"><sp/><sp/>Also<sp/>changed<sp/>dec<sp/>2021:<sp/><sp/>changed<sp/>to<sp/>thread<sp/>safe<sp/>version.<sp/><sp/>Requires<sp/>adding</highlight></codeline>
+<codeline lineno="82"><highlight class="comment"><sp/><sp/>msfp<sp/>struct<sp/>initialized<sp/>as<sp/>NULL.<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>((retcode<sp/>=<sp/>ms3_readmsr_r<sp/>(&amp;msfp,&amp;msr,<sp/>inputfile.c_str(),<sp/>&amp;fpos,<sp/>NULL,</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>flags,<sp/>verbose))<sp/>==<sp/>MS_NOERROR)</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(count==0)</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>have<sp/>to<sp/>treat<sp/>the<sp/>first<sp/>block<sp/>specially<sp/>because<sp/>of<sp/>the<sp/>logic<sp/>of</highlight></codeline>
+<codeline lineno="89"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>how<sp/>this<sp/>loop<sp/>is<sp/>constructed<sp/>and<sp/>the<sp/>way<sp/>the<sp/>ms3<sp/>reader<sp/>works.</highlight></codeline>
+<codeline lineno="90"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>A<sp/>problem,<sp/>however,<sp/>is<sp/>this<sp/>may<sp/>fail<sp/>if<sp/>there<sp/>first<sp/>block<sp/>is<sp/>not<sp/>a</highlight></codeline>
+<codeline lineno="91"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>miniseed<sp/>data<sp/>block.<sp/><sp/><sp/>Probably<sp/>should<sp/>test<sp/>this<sp/>on<sp/>a<sp/>full<sp/>seed<sp/>file<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>start_foff=fpos;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>stime=msr-&gt;starttime;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>epoch_stime<sp/>=<sp/>MS_NSTIME2EPOCH(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(stime));</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>strcpy(last_sid,msr-&gt;sid);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>++count;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>npts=msr-&gt;samplecnt;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>last_packet_samprate=msr-&gt;samprate;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>last_dt<sp/>=<sp/>1.0/last_packet_samprate;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>endtime<sp/>has<sp/>to<sp/>be<sp/>computed<sp/>from<sp/>number<sp/>of<sp/>samples<sp/>and<sp/>starttime.<sp/><sp/>It</highlight></codeline>
+<codeline lineno="101"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>is<sp/>not<sp/>stored<sp/>in<sp/>the<sp/>header.<sp/><sp/>We<sp/>need<sp/>this<sp/>to<sp/>check<sp/>for<sp/>time<sp/>tears.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>last_packet_endtime<sp/>=<sp/>MS_NSTIME2EPOCH(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(stime))</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/>((float)(npts-1)*last_dt);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>The<sp/>cost<sp/>of<sp/>computing<sp/>these<sp/>is<sp/>tiny<sp/>even<sp/>though<sp/>they<sp/>are<sp/>ignored<sp/>when</highlight></codeline>
+<codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/>segment_timetears<sp/>is<sp/>false.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>epoch_stime<sp/>=<sp/>MS_NSTIME2EPOCH(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(msr-&gt;starttime));</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>expected_starttime<sp/>=<sp/>last_packet_endtime<sp/>+<sp/>(last_dt);</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(segment_timetears)</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(fabs(epoch_stime-expected_starttime)&gt;time_tear_tolerance)</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>found_time_tear<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//small<sp/>cost<sp/>to<sp/>force<sp/>this<sp/>every<sp/>packet<sp/>but<sp/>more<sp/>robust<sp/>this<sp/>way</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>found_time_tear<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Easier<sp/>to<sp/>add<sp/>error<sp/>log<sp/>entry<sp/>here<sp/>when<sp/>a<sp/>time<sp/>tear<sp/>is<sp/>detected<sp/>but</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>when<sp/>not<sp/>creating<sp/>additional<sp/>index<sp/>entries.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(Verbose)</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stringstream<sp/>ss;</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;WARNING:<sp/><sp/>Detected<sp/>time<sp/>tear<sp/>at<sp/>packet<sp/>number<sp/>&quot;</highlight><highlight class="normal">&lt;&lt;count&lt;&lt;</highlight><highlight class="stringliteral">&quot;<sp/>in<sp/>file<sp/>&quot;</highlight><highlight class="normal">&lt;&lt;inputfile</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;endl</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;last<sp/>packet<sp/>sid=&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>last_sid<sp/>&lt;&lt;endl</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Current<sp/>packet<sp/>sid=&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>current_sid&lt;&lt;endl</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Time<sp/>difference<sp/>across<sp/>time<sp/>tear<sp/>(current-last)=&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>epoch_stime<sp/>-<sp/>expected_starttime&lt;&lt;endl</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Current<sp/>packet<sp/>epoch<sp/>time=&quot;</highlight><highlight class="normal">&lt;&lt;epoch_stime&lt;&lt;endl</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Function<sp/>was<sp/>run<sp/>without<sp/>segmentation<sp/>option.<sp/><sp/><sp/>Reader<sp/>will<sp/>have<sp/>to<sp/>handle<sp/>this<sp/>problem<sp/>as<sp/>a<sp/>gap&quot;</highlight><highlight class="normal">&lt;&lt;endl;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>elog.<ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">log_error</ref>(function_name,ss.str(),ErrorSeverity::Complaint);</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>strcpy(current_sid,msr-&gt;sid);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(strcmp(current_sid,last_sid)<sp/>||<sp/>found_time_tear)</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(ms_sid2nslc(last_sid,net,sta,loc,chan))</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stringstream<sp/>ss;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;source<sp/>id<sp/>string=&quot;</highlight><highlight class="normal">&lt;&lt;last_sid&lt;&lt;</highlight><highlight class="stringliteral">&quot;<sp/>in<sp/>packet<sp/>number<sp/>&quot;</highlight><highlight class="normal">&lt;&lt;count</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>of<sp/>file<sp/>&quot;</highlight><highlight class="normal">&lt;&lt;<sp/>inputfile<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>could<sp/>not<sp/>be<sp/>decode&quot;</highlight><highlight class="normal">&lt;&lt;endl</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;This<sp/>segment<sp/>will<sp/>be<sp/>dropped.<sp/><sp/>Some<sp/>data<sp/>in<sp/>this<sp/>file<sp/>will<sp/>be<sp/>inaccessible&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>elog.<ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">log_error</ref>(function_name,ss.str(),ErrorSeverity::Complaint);</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>strcpy(last_sid,current_sid);</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>start_foff=fpos;</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(found_time_tear<sp/>&amp;&amp;<sp/>Verbose)</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>In<sp/>this<sp/>logic<sp/>landing<sp/>here<sp/>means<sp/>we<sp/>have<sp/>a<sp/>time<sp/>tear.</highlight></codeline>
+<codeline lineno="158"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Note<sp/>if<sp/>segment_timetears<sp/>is<sp/>false<sp/>we<sp/>won&apos;t<sp/>log<sp/>these<sp/>messages.</highlight></codeline>
+<codeline lineno="159"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Careful<sp/>if<sp/>the<sp/>logic<sp/>changes*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stringstream<sp/>ss;</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Detected<sp/>time<sp/>tear<sp/>a<sp/>packet<sp/>number<sp/>&quot;</highlight><highlight class="normal">&lt;&lt;count&lt;&lt;</highlight><highlight class="stringliteral">&quot;<sp/>in<sp/>file<sp/>&quot;</highlight><highlight class="normal">&lt;&lt;inputfile</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;endl</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;last<sp/>packet<sp/>sid=&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>last_sid<sp/>&lt;&lt;endl</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Current<sp/>packet<sp/>sid=&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>current_sid&lt;&lt;endl</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Time<sp/>difference<sp/>across<sp/>time<sp/>tear<sp/>(current-last)=&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>epoch_stime<sp/>-<sp/>expected_starttime&lt;&lt;endl</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Current<sp/>packet<sp/>epoch<sp/>time=&quot;</highlight><highlight class="normal">&lt;&lt;epoch_stime&lt;&lt;endl</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Creating<sp/>a<sp/>new<sp/>index<sp/>entry<sp/>at<sp/>the<sp/>time<sp/>tear&quot;</highlight><highlight class="normal">&lt;&lt;endl;</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>elog.<ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">log_error</ref>(function_name,ss.str(),ErrorSeverity::Informational);</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nbytes=fpos-start_foff;</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.net=net;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.sta=sta;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.loc=loc;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.chan=chan;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.foff=start_foff;</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.nbytes=nbytes;</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.starttime=MS_NSTIME2EPOCH(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(stime));</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.last_packet_time=MS_NSTIME2EPOCH(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(lptime));</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.samprate=last_packet_samprate;</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.npts=npts;</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.endtime=ind.starttime<sp/>+<sp/>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(npts))/ind.samprate;</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>indexdata.push_back(ind);</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>start_foff=fpos;</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>stime=msr-&gt;starttime;</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>npts=msr-&gt;samplecnt;</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>found_time_tear<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/>strcpy(last_sid,current_sid);</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//msr3_print<sp/>(msr,<sp/>ppackets);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/>++count;</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/>npts+=msr-&gt;samplecnt;</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/>lptime=msr-&gt;starttime;</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/>last_packet_samprate=msr-&gt;samprate;</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/>last_dt<sp/>=<sp/>1.0/last_packet_samprate;</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/>last_packet_endtime<sp/>=<sp/>lptime<sp/>+<sp/>((float)(npts-1)*last_dt);</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(retcode<sp/>!=<sp/>MS_ENDOFFILE)</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>call<sp/>needs<sp/>a<sp/>mechanism<sp/>to<sp/>extract<sp/>any<sp/>library<sp/>error<sp/>messages<sp/>and</highlight></codeline>
+<codeline lineno="202"><highlight class="comment"><sp/><sp/><sp/><sp/>translate<sp/>them<sp/>to<sp/>elog.<sp/><sp/>For<sp/>now<sp/>we<sp/>write<sp/>a<sp/>simpler<sp/>generic<sp/>message.</highlight></codeline>
+<codeline lineno="203"><highlight class="comment"><sp/><sp/><sp/><sp/>Obspy&apos;s<sp/>reader<sp/>is<sp/>known<sp/>to<sp/>fail<sp/>reading<sp/>files<sp/>with<sp/>corrupted<sp/>packets<sp/>so</highlight></codeline>
+<codeline lineno="204"><highlight class="comment"><sp/><sp/><sp/><sp/>this<sp/>error<sp/>needs<sp/>to<sp/>be<sp/>logged<sp/>anyway<sp/>as<sp/>an<sp/>Invalid<sp/>return*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/>ms_rlog_emit<sp/>(NULL,<sp/>0,<sp/>verbose);</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/>elog.<ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">log_error</ref>(function_name,</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;miniseed<sp/>read<sp/>function<sp/>exited<sp/>before<sp/>end<sp/>of<sp/>file<sp/>with<sp/>an<sp/>unrecoverable<sp/>read<sp/>error.\nReader<sp/>may<sp/>fail<sp/>and<sp/>the<sp/>index<sp/>for<sp/>this<sp/>file<sp/>may<sp/>be<sp/>incomplete&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>cleanup<sp/>last<sp/>block<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(ms_sid2nslc(last_sid,net,sta,loc,chan))</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>elog.<ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">log_error</ref>(function_name,</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;ms_sid2nslc<sp/>function<sp/>failed<sp/>on<sp/>last<sp/>data<sp/>block<sp/>-<sp/>data<sp/>at<sp/>end<sp/>of<sp/>file<sp/>dropped\n&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Complaint);</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nbytes=fpos-start_foff;</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.net=net;</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.sta=sta;</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.loc=loc;</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.chan=chan;</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.foff=start_foff;</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.nbytes=nbytes;</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.starttime=MS_NSTIME2EPOCH(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(stime));</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.last_packet_time=MS_NSTIME2EPOCH(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(lptime));</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.samprate=last_packet_samprate;</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.npts=npts;</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ind.endtime=ind.starttime<sp/>+<sp/>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(npts))/ind.samprate;</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>indexdata.push_back(ind);</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>always<sp/>dump<sp/>any<sp/>errors<sp/>in<sp/>buffer.<sp/><sp/>This<sp/>might<sp/>duplicate<sp/>the<sp/>errors</highlight></codeline>
+<codeline lineno="237"><highlight class="comment"><sp/><sp/>posted<sp/>above<sp/>when<sp/>the<sp/>reader<sp/>returned<sp/>an<sp/>error.<sp/><sp/>Very<sp/>unclear<sp/>how<sp/>this<sp/>works.</highlight></codeline>
+<codeline lineno="238"><highlight class="comment"><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(buffer.length()&gt;0)</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/>elog.<ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">log_error</ref>(function_name,buffer,ErrorSeverity::Complaint);</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Make<sp/>sure<sp/>everything<sp/>is<sp/>cleaned<sp/>up.<sp/><sp/>Documentation<sp/>says<sp/>this<sp/>is<sp/>needed</highlight></codeline>
+<codeline lineno="244"><highlight class="comment"><sp/><sp/>to<sp/>invoke<sp/>the<sp/>plain<sp/>C<sp/>equivalent<sp/>of<sp/>a<sp/>destructor.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/>ms3_readmsr_r<sp/>(&amp;msfp,<sp/>&amp;msr,<sp/>NULL,<sp/>NULL,<sp/>NULL,<sp/>0,<sp/>0);</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/>buffer.clear();</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>MSDINDEX_returntype(indexdata,elog);</highlight></codeline>
+<codeline lineno="248"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="249"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>End<sp/>namespace<sp/>mspass::io</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc"/>
   </compounddef>

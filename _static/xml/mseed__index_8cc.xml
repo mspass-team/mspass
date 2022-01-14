@@ -6,8 +6,44 @@
     <includes local="no">sstream</includes>
     <includes refid="mseed__index_8h" local="yes">mspass/io/mseed_index.h</includes>
     <incdepgraph>
+      <node id="9">
+        <label>list</label>
+      </node>
       <node id="2">
         <label>iomanip</label>
+      </node>
+      <node id="11">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="7">
+        <label>mspass/utility/ErrorLogger.h</label>
+        <link refid="_error_logger_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
       </node>
       <node id="4">
         <label>mspass/io/mseed_index.h</label>
@@ -16,9 +52,14 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
       <node id="6">
         <label>string</label>
+      </node>
+      <node id="17">
+        <label>exception</label>
       </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_index.cc</label>
@@ -30,11 +71,29 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
+      <node id="12">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="8">
+        <label>unistd.h</label>
+      </node>
       <node id="5">
         <label>vector</label>
       </node>
       <node id="3">
         <label>sstream</label>
+      </node>
+      <node id="16">
+        <label>iostream</label>
+      </node>
+      <node id="14">
+        <label>boost/serialization/list.hpp</label>
+      </node>
+      <node id="13">
+        <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="10">
+        <label>boost/archive/basic_archive.hpp</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>
