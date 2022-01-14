@@ -177,7 +177,12 @@ PYBIND11_MODULE(seismic, m) {
   py::class_<SlownessVector>(m,"SlownessVector","Encapsulate concept of slowness vector describing wave propagation")
     .def(py::init<>())
     .def(py::init<const SlownessVector&>())
-    .def(py::init<const double, const double, const double>())
+    /* This obscure syntax is used for setting keyword args for a constructor.
+    We want it here because we want to normally default az0.   
+    This obscure trick came from:  https://github.com/pybind/pybind11/issues/579*/
+    .def(py::init<const double, const double, const double>(),
+      py::arg("ux")=0.0,py::arg("uy")=0.0,py::arg("az0")=0.0
+    )
     .def("mag",&SlownessVector::mag,"Return the magnitude of the slowness vector")
     .def("azimuth",&SlownessVector::azimuth,"Return the azimuth of propagation defined by this slowness vector")
     .def("baz",&SlownessVector::baz,"Return the so called back azimuth defined by a slowness vector")

@@ -1,6 +1,9 @@
 #ifndef _SLOWNESS_H_
 #define _SLOWNESS_H_
 #include <string>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+
 namespace mspass::seismic
 {
 /*! \brief Slowness vector object.  
@@ -74,7 +77,14 @@ slowness vector is 0.
 /* \brief Standard subraction  operator. */
         const SlownessVector operator-(const SlownessVector& other) const;
 private:
-	double azimuth0;
+    double azimuth0;
+    template<class Archive>
+       void serialize(Archive& ar,const unsigned int version)
+    {
+      ar & ux;
+      ar & uy;
+      ar & azimuth0;
+    };
 };
 
 } // End mspass::seismic namespace declaration
