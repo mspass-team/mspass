@@ -389,10 +389,10 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># This handler duplicates an error test in the WindowData C code but</span>
         <span class="c1"># it will be more efficient to handle it here.</span>
-        <span class="k">if</span> <span class="n">win_start</span> <span class="o">&lt;</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="ow">or</span> <span class="n">win_end</span> <span class="o">&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">twcut</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="ow">or</span> <span class="n">twcut</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">():</span>
             <span class="n">detailline</span> <span class="o">=</span> <span class="s1">&#39;Window range: </span><span class="si">{wst}</span><span class="s1">,</span><span class="si">{wet}</span><span class="s1">  Data range:  </span><span class="si">{dst}</span><span class="s1">,</span><span class="si">{det}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">wst</span><span class="o">=</span><span class="n">win_start</span><span class="p">,</span>
-                <span class="n">wet</span><span class="o">=</span><span class="n">win_end</span><span class="p">,</span>
+                <span class="n">wst</span><span class="o">=</span><span class="n">twcut</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                <span class="n">wet</span><span class="o">=</span><span class="n">twcut</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
                 <span class="n">dst</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span>
                 <span class="n">det</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
             <span class="p">)</span>
