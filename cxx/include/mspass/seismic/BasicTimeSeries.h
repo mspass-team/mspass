@@ -81,7 +81,7 @@ of this data object.
 **/
 	double endtime()const noexcept
         {
-            return(mt0+mdt*static_cast<double>(nsamp-1));
+          return(mt0 + (static_cast<double>(nsamp) - 1.0)*mdt);
         };
 /*! Return true if a time shift has been applied to the data.
  * Never true if data were never in an absolute time frame (i.e.UTC)*/
