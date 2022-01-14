@@ -4428,18 +4428,20 @@ class Database(pymongo.database.Database):
         # o['npts'] = index_record.npts
         return o
 
-    def index_mseed_file(self, dfile, dir=None, collection="wf_miniseed"):
+    def index_mseed_file(self, dfile, dir=None, collection='wf_miniseed',
+                segment_time_tears=False, elog_collection='elog',
+                return_ids=False):
         """
         This is the first stage import function for handling the import of
         miniseed data.  This function scans a data file defined by a directory
-        (dir arg) and dfile (file name) argument.  I builds and index it
-        writes to mongodb in the collection defined by the collection
+        (dir arg) and dfile (file name) argument.  I builds an index
+        for the file and writes the index to mongodb
+        in the collection defined by the collection
         argument (wf_miniseed by default).   The index is bare bones
         miniseed tags (net, sta, chan, and loc) with a starttime tag.
         The index is appropriate ONLY if the data on the file are created
         by concatenating data with packets sorted by net, sta, loc, chan, time
-        AND the data are contiguous in time.   The results will be unpredictable
-        if the miniseed packets do not fit that constraint.  The original
+        AND the data are contiguous in time.   The original
         concept for this function came from the need to handle large files
         produced by concanentation of miniseed single-channel files created
         by obpsy's mass_downloader.   i.e. the basic model is the input
@@ -4449,21 +4451,33 @@ class Database(pymongo.database.Database):
         miniseed2days).
 
         We emphasize this function only builds an index - it does not
-        convert any data.   As a result a final warning is that the
-        metadata in the wf_miniseed collection lack some common
-        attributes one might expect. That is, number of samples,
-        sample rate, and endtime.   The number of samples and endtime are
-        not saved because we intentionally do nat fully crack the input
-        file for speed.  miniseed files can (actually usually) contain
-        compressed sample data and the number of samples are not recorded
-        in the packet headers.  Hence, the number of samples in the block
-        and the endtime cannot be computed without decompressing the data.
-        To provide some measurre of the time span of the data we define
-        an attribute "last_packet_time" that contains the unix epoch
-        time of the start of the last packet of the file.   How close that
-        is to endtime depends mainly on the sample interval.  If a range
-        query is needed use last_packet_time where you would otherwise use
-        endtime.
+        convert any data.   It has to scan the entire file deriving the
+        index from data retrieved from miniseed packets with libmseed so
+        for large data sets this can take a long time.
+
+        Actual seismic data stored as miniseed are prone to time tears.
+        That can happen at the instrument level in at least two common
+        ways: (1) dropped packets from telemetry issues, or (2) instrument
+        timing jumps when a clock loses external lock to gps or some
+        other standard and the rock is restored.  The behavior is this
+        function in gap handling is controlled by the input parameter
+        segment_time_tears.  When true a new index entry is created
+        any time the start time of a packet differs from that computed
+        from the endtime of the last packet by more than one sample
+        AND net:sta:chan:loc are constant.  The default for this
+        parameter is false because data with many dropped packets from
+        telemetry are common and can create overwhelming numbers of
+        index entries quickly.  When false the scan only creates a new
+        index record when net, sta, chan, or loc change between successive
+        packets.  Our reader has gap handling functions to handle
+        time tears.  Set segment_time_tears true only when you are
+        confident the data set does not contain a large number of dropped
+        packets.
+
+        Note to parallelize this function put a list of files in a Spark
+        RDD or a Dask bag and parallelize the call the this function.
+        That can work because MongoDB is designed for parallel operations
+        and we use the thread safe version of the libmseed reader.
 
         Finally, note that cross referencing with the channel and/or
         source collections should be a common step after building the
@@ -4471,11 +4485,6 @@ class Database(pymongo.database.Database):
         module will transfer linking ids (i.e. channel_id and/or source_id)
         to TimeSeries objects when it reads the data from the files
         indexed by this function.
-
-        Note to parallelize this function put a list of files in a Spark
-        RDD or a Dask bag and parallelize the call the this function.
-        That can work because MongoDB is designed for parallel operations.
-
 
         :param dfile:  file name of data to be indexed.  Asssumed to be
           the leaf node of the path - i.e. it contains no directory information
@@ -4489,6 +4498,27 @@ class Database(pymongo.database.Database):
         :param collection:  is the mongodb collection name to write the
           index data to.  The default is 'wf_miniseed'.  It should be rare
           to use anything but the default.
+        :param segment_time_tears: boolean controlling handling of data gaps
+          defined by constant net, sta, chan, and loc but a discontinuity
+          in time tags for successive packets.  See above for a more extensive
+          discussion of how to use this parameter.  Default is False.
+        :param elog_collection:  name to write any error logs messages
+          from the miniseed reader.  Default is "elog", which is the
+          same as for TimeSeries and Seismogram data, but the cross reference
+          keys here are keyed by "wf_miniseed_id".
+        :param return_ids:  if set True the function will return a tuple
+          with two id lists.  The 0 entry is an array of ids from the
+          collection (wf_miniseed by default) of index entries saved and
+          the 1 entry will contain the ids in the elog_collection of
+          error log entry insertions.  The 1 entry will be empty if the
+          reader found no errors and the error log was empty (the hopefully
+          normal situation).  When this argument is False (the default) it
+          returns None.  Set true if you need to build some kind of cross
+          reference to read errors to build some custom cleaning method
+          for specialized processing that can be done more efficiently.
+          By default it is fast only to associate an error log entry with
+          a particular waveform index entry. (we store the saved index
+          MongoDB document id with each elog entry)
         :exception: This function can throw a range of error types for
           a long list of possible io issues.   Callers should use a
           generic handler to avoid aborts in a large job.
@@ -4502,14 +4532,41 @@ class Database(pymongo.database.Database):
         else:
             odir = os.path.abspath(dir)
         fname = os.path.join(odir, dfile)
-        ind = _mseed_file_indexer(fname)
+        (ind, elog) = _mseed_file_indexer(fname)
+        ids_affected=[]
         for i in ind:
             doc = self._convert_mseed_index(i)
-            doc["storage_mode"] = "file"
-            doc["format"] = "mseed"
-            doc["dir"] = odir
-            doc["dfile"] = dfile
-            dbh.insert_one(doc)
+            doc['storage_mode'] = 'file'
+            doc['format'] = 'mseed'
+            doc['dir'] = odir
+            doc['dfile'] = dfile
+            thisid=dbh.insert_one(doc).inserted_id
+            ids_affected.append(thisid)
+        # log_ids is created here so it is defined but empty in
+        # the tuple returned when return_ids is true
+        log_ids=[]
+        if elog.size() > 0:
+            elog_col = self[elog_collection]
+
+            errs = elog.get_error_log()
+            jobid = elog.get_job_id()
+            logdata = []
+            for x in errs:
+                logdata.append({'job_id': jobid, 'algorithm': x.algorithm, 'badness': str(x.badness),
+                                'error_message': x.message, 'process_id': x.p_id})
+            docentry = {'logdata': logdata}
+            # To mesh with the standard elog collection we add a copy of the
+            # error messages with a tag for each id in the ids_affected list.
+            # That should make elog connection to wf_miniseed records exactly
+            # like wf_TimeSeries records but with a different collection link
+            for wfid in ids_affected:
+                docentry['wf_miniseed_id']=wfid
+                elogid = elog_col.insert_one(docentry).inserted_id
+                log_ids.append(elogid)
+        if return_ids:
+            return [ids_affected,log_ids]
+        else:
+            return None
 
     def save_dataframe(
         self, df, collection, null_values=None, one_to_one=True, parallel=False
