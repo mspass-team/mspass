@@ -355,6 +355,8 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         components_are_orthogonal=true;
     else
         components_are_orthogonal=false;
+    /* Last but not least set the datum live before returning */
+    this->set_live();
 }
 // Note on usage in this group of functions.  The rotation algorithms used here
 // all key on the BLAS for speed.  That is, a transformation matrix could be done
@@ -882,14 +884,12 @@ CoreSeismogram& CoreSeismogram::operator*=(const double scale)
   dscal(3*this->npts(),scale,ptr,1);
   return(*this);
 }
-CoreSeismogram& CoreSeismogram::operator+=(const CoreSeismogram& data)
+CoreSeismogram& CoreSeismogram::operator+=(const CoreSeismogram& d)
 {
     int i,iend,jend;
     size_t j,i0,j0;
-    // Sun's compiler complains about const objects without this.
-    CoreSeismogram& d=const_cast<CoreSeismogram&>(data);
-    // Silently do nothing if d is marked dead
-    if(!d.mlive) return(*this);
+    // Silently do nothing if d or lhs is marked dead
+    if( d.dead() || (this->dead()) ) return(*this);
     // Silently do nothing if d does not overlap with data to contain sum
     if( (d.endtime()<mt0)
             || (d.mt0>(this->endtime())) ) return(*this);
