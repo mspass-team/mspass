@@ -10,17 +10,18 @@ import json
 
 # Settings for aws lambda uploading and calling.
 class AwsLambdaClient:
-    def __init__(self, aws_access_key_id, aws_secret_access_key, lambda_upload_bucket, lambda_iam_role):
+    def __init__(self, aws_access_key_id, aws_secret_access_key, lambda_upload_bucket, lambda_iam_role, region_name):
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key
         self.lambda_upload_bucket = lambda_upload_bucket
         self.lambda_iam_role = lambda_iam_role
+        self.region_name = region_name
 
     def create_aws_client(self, client_type):
         if client_type not in ['lambda', 's3']:
             raise Exception("Undefined client type, please use 'lambda' or 's3'.")
-        aws_session = boto3.Session(aws_access_key_id = self.aws_access_key_id, aws_secret_access_key = self.aws_secret_access_key)
-        client = aws_session.client(client_type)
+        aws_session = boto3.Session(aws_access_key_id = self.aws_access_key_id, aws_secret_access_key = self.aws_secret_access_key, region_name = self.region_name)
+        client = aws_session.client(client_type, self.region_name)
         return client
     
     @staticmethod

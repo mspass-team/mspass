@@ -77,7 +77,7 @@ def call_lambda_function(function_name, request):
 
     if(ret_type == 'key'):  #   The output file is saved to another bucket (s3_output_bucket).
         ret_value = response_payload['ret_value']
-        print("The window given is too large, can't be returned immediately,\nPlease check {}".format(ret_value))
+        print("The size of output is too large, can't be returned immediately,\nPlease check {}".format(ret_value))
     elif(ret_type == 'content'):
         ret_value = base64.b64decode(response_payload['ret_value'].encode("utf-8"))
     else:
