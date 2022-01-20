@@ -804,68 +804,68 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;{</div>
-<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;    <span class="keywordflow">if</span>( (<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">size</a>()[1]&lt;=0) || <a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">return</span>; <span class="comment">// do nothing in these situations</span></div>
-<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;    <span class="keywordtype">double</span> a02,b02,pslow,p2;</div>
-<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;    <span class="keywordtype">double</span> qa,qb,vpz,vpr,vsr,vsz;</div>
-<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;    pslow=uvec.mag();</div>
-<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;    <span class="comment">// silently do nothing if magnitude of the slowness vector is 0</span></div>
-<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;    <span class="comment">// (vertical incidence)</span></div>
-<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;    <span class="keywordflow">if</span>(pslow&lt;DBL_EPSILON) <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;    <span class="comment">// Can&#39;t handle evanescent waves with this operator</span></div>
-<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;    <span class="keywordtype">double</span> vapparent=1.0/pslow;</div>
-<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;    <span class="keywordflow">if</span>(vapparent&lt;a0 || vapparent&lt;b0)</div>
-<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;    {</div>
-<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;        stringstream ss;</div>
-<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;        ss&lt;&lt;<span class="stringliteral">&quot;CoreSeismogram::free_surface_transformation method:  illegal input&quot;</span>&lt;&lt;endl</div>
-<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;Apparent velocity defined by input slowness vector=&quot;</span>&lt;&lt;vapparent&lt;&lt;endl</div>
-<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;Smaller than specified surface P velocity=&quot;</span>&lt;&lt;a0&lt;&lt;<span class="stringliteral">&quot; or S velocity=&quot;</span>&lt;&lt;b0&lt;&lt;endl</div>
-<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;That implies evanescent waves that violate the assumption of this operator&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(ss.str(),ErrorSeverity::Invalid);</div>
-<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;    }</div>
-<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160; </div>
-<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;    <span class="comment">// First the horizonal rotation</span></div>
-<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;    <a class="code" href="structmspass_1_1utility_1_1_spherical_coordinate.html">SphericalCoordinate</a> scor;</div>
-<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;    <span class="comment">//rotation angle is - azimuth to put x2 (north in standard coord)</span></div>
-<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;    <span class="comment">//in radial direction</span></div>
-<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;    scor.<a class="code" href="structmspass_1_1utility_1_1_spherical_coordinate.html#a2c970fd569ae883e5545f81e58458ef9">phi</a>=atan2(uvec.uy,uvec.ux);</div>
-<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;    scor.<a class="code" href="structmspass_1_1utility_1_1_spherical_coordinate.html#ae06e9f7deab80ef715e5a3629fbab2f7">theta</a>=0.0;</div>
-<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;    scor.<a class="code" href="structmspass_1_1utility_1_1_spherical_coordinate.html#a8f9f987e89e175fecb85c9cbe5bdbc13">radius</a>=1.0;</div>
-<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;    <span class="comment">// after this transformation x1=transverse horizontal</span></div>
-<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;    <span class="comment">// x2=radial horizonal, and x3 is still vertical</span></div>
-<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;    this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#ab52a292c7c7bc8fc5fef68db9eb847e0">rotate</a>(scor);</div>
-<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160; </div>
-<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;    a02=a0*a0;</div>
-<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;    b02=b0*b0;</div>
-<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;    p2=pslow*pslow;</div>
-<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;    qa=sqrt((1.0/a02)-p2);</div>
-<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;    qb=sqrt((1.0/b02)-p2);</div>
-<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;    vpz=-(1.0-2.0*b02*p2)/(2.0*a0*qa);</div>
-<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;    vpr=pslow*b02/a0;</div>
-<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;    vsr=(1.0-2.0*b02*p2)/(2.0*b0*qb);</div>
-<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;    vsz=pslow*b0;</div>
-<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;    <span class="comment">/* Now construct the transformation matrix</span></div>
-<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;<span class="comment">     This is different from Bostock&#39;s original code</span></div>
-<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;<span class="comment">     in sign and order.  Also note this transformation</span></div>
-<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;<span class="comment">         is not scaled to have a unit matrix norm so amplitudes</span></div>
-<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;<span class="comment">         after the transformation are distorted.  rotate_to_standard,</span></div>
-<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;<span class="comment">         however, should still restore original data within roundoff</span></div>
-<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;<span class="comment">         error if called on the result. */</span></div>
-<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;    <span class="keywordtype">double</span> fstran[3][3];</div>
-<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;    fstran[0][0]=0.5;</div>
-<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;    fstran[0][1]=0.0;</div>
-<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;    fstran[0][2]=0.0;</div>
-<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;    fstran[1][0]=0.0;</div>
-<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;    fstran[1][1]=vsr;</div>
-<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;    fstran[1][2]=vpr;</div>
-<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;    fstran[2][0]=0.0;</div>
-<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;    fstran[2][1]=-vsz;</div>
-<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;    fstran[2][2]=-vpz;</div>
-<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;    this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae9ea31f9e36577a51660c61e0749d4a6">transform</a>(fstran);</div>
-<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160; </div>
-<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">false</span>;</div>
-<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=<span class="keyword">false</span>;</div>
-<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;{</div>
+<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;    <span class="keywordflow">if</span>( (<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">size</a>()[1]&lt;=0) || <a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">return</span>; <span class="comment">// do nothing in these situations</span></div>
+<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;    <span class="keywordtype">double</span> a02,b02,pslow,p2;</div>
+<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;    <span class="keywordtype">double</span> qa,qb,vpz,vpr,vsr,vsz;</div>
+<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;    pslow=uvec.mag();</div>
+<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;    <span class="comment">// silently do nothing if magnitude of the slowness vector is 0</span></div>
+<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;    <span class="comment">// (vertical incidence)</span></div>
+<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;    <span class="keywordflow">if</span>(pslow&lt;DBL_EPSILON) <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;    <span class="comment">// Can&#39;t handle evanescent waves with this operator</span></div>
+<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;    <span class="keywordtype">double</span> vapparent=1.0/pslow;</div>
+<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;    <span class="keywordflow">if</span>(vapparent&lt;a0 || vapparent&lt;b0)</div>
+<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;    {</div>
+<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;        stringstream ss;</div>
+<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;        ss&lt;&lt;<span class="stringliteral">&quot;CoreSeismogram::free_surface_transformation method:  illegal input&quot;</span>&lt;&lt;endl</div>
+<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;Apparent velocity defined by input slowness vector=&quot;</span>&lt;&lt;vapparent&lt;&lt;endl</div>
+<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;Smaller than specified surface P velocity=&quot;</span>&lt;&lt;a0&lt;&lt;<span class="stringliteral">&quot; or S velocity=&quot;</span>&lt;&lt;b0&lt;&lt;endl</div>
+<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;That implies evanescent waves that violate the assumption of this operator&quot;</span>&lt;&lt;endl;</div>
+<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(ss.str(),ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;    }</div>
+<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160; </div>
+<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;    <span class="comment">// First the horizonal rotation</span></div>
+<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;    <a class="code" href="structmspass_1_1utility_1_1_spherical_coordinate.html">SphericalCoordinate</a> scor;</div>
+<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;    <span class="comment">//rotation angle is - azimuth to put x2 (north in standard coord)</span></div>
+<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;    <span class="comment">//in radial direction</span></div>
+<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;    scor.<a class="code" href="structmspass_1_1utility_1_1_spherical_coordinate.html#a2c970fd569ae883e5545f81e58458ef9">phi</a>=atan2(uvec.uy,uvec.ux);</div>
+<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;    scor.<a class="code" href="structmspass_1_1utility_1_1_spherical_coordinate.html#ae06e9f7deab80ef715e5a3629fbab2f7">theta</a>=0.0;</div>
+<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;    scor.<a class="code" href="structmspass_1_1utility_1_1_spherical_coordinate.html#a8f9f987e89e175fecb85c9cbe5bdbc13">radius</a>=1.0;</div>
+<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;    <span class="comment">// after this transformation x1=transverse horizontal</span></div>
+<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;    <span class="comment">// x2=radial horizonal, and x3 is still vertical</span></div>
+<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;    this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#ab52a292c7c7bc8fc5fef68db9eb847e0">rotate</a>(scor);</div>
+<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160; </div>
+<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;    a02=a0*a0;</div>
+<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;    b02=b0*b0;</div>
+<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;    p2=pslow*pslow;</div>
+<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;    qa=sqrt((1.0/a02)-p2);</div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;    qb=sqrt((1.0/b02)-p2);</div>
+<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;    vpz=-(1.0-2.0*b02*p2)/(2.0*a0*qa);</div>
+<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;    vpr=pslow*b02/a0;</div>
+<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;    vsr=(1.0-2.0*b02*p2)/(2.0*b0*qb);</div>
+<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;    vsz=pslow*b0;</div>
+<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;    <span class="comment">/* Now construct the transformation matrix</span></div>
+<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;<span class="comment">     This is different from Bostock&#39;s original code</span></div>
+<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;<span class="comment">     in sign and order.  Also note this transformation</span></div>
+<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;<span class="comment">         is not scaled to have a unit matrix norm so amplitudes</span></div>
+<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;<span class="comment">         after the transformation are distorted.  rotate_to_standard,</span></div>
+<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;<span class="comment">         however, should still restore original data within roundoff</span></div>
+<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;<span class="comment">         error if called on the result. */</span></div>
+<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;    <span class="keywordtype">double</span> fstran[3][3];</div>
+<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;    fstran[0][0]=0.5;</div>
+<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;    fstran[0][1]=0.0;</div>
+<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;    fstran[0][2]=0.0;</div>
+<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;    fstran[1][0]=0.0;</div>
+<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;    fstran[1][1]=vsr;</div>
+<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;    fstran[1][2]=vpr;</div>
+<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;    fstran[2][0]=0.0;</div>
+<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;    fstran[2][1]=-vsz;</div>
+<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;    fstran[2][2]=-vpz;</div>
+<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;    this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae9ea31f9e36577a51660c61e0749d4a6">transform</a>(fstran);</div>
+<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160; </div>
+<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead()</a>, <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2e1d2b9fb9e0267ffa99ccf3291f5540">mspass::seismic::SlownessVector::mag()</a>, <a class="el" href="structmspass_1_1utility_1_1_spherical_coordinate.html#a2c970fd569ae883e5545f81e58458ef9">mspass::utility::SphericalCoordinate::phi</a>, <a class="el" href="structmspass_1_1utility_1_1_spherical_coordinate.html#a8f9f987e89e175fecb85c9cbe5bdbc13">mspass::utility::SphericalCoordinate::radius</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#ab52a292c7c7bc8fc5fef68db9eb847e0">rotate()</a>, <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">mspass::utility::dmatrix::size()</a>, <a class="el" href="structmspass_1_1utility_1_1_spherical_coordinate.html#ae06e9f7deab80ef715e5a3629fbab2f7">mspass::utility::SphericalCoordinate::theta</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae9ea31f9e36577a51660c61e0749d4a6">transform()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>, <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">mspass::seismic::SlownessVector::ux</a>, and <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">mspass::seismic::SlownessVector::uy</a>.</p>
 
@@ -923,16 +923,16 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
       </table>
 </div><div class="memdoc">
 <p>Multiply data by a scalar. </p>
-<div class="fragment"><div class="line"><a name="l00875"></a><span class="lineno">  875</span>&#160;{</div>
-<div class="line"><a name="l00876"></a><span class="lineno">  876</span>&#160;  <span class="comment">/* do nothing to empty data or data marked dead*/</span></div>
-<div class="line"><a name="l00877"></a><span class="lineno">  877</span>&#160;  <span class="keywordflow">if</span>((this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()==0) || (this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>())) <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
-<div class="line"><a name="l00878"></a><span class="lineno">  878</span>&#160;  <span class="comment">/* We can use this dscal blas function because dmatrix puts all the data</span></div>
-<div class="line"><a name="l00879"></a><span class="lineno">  879</span>&#160;<span class="comment">  in a continguous block. Beware if there is am implementation change for</span></div>
-<div class="line"><a name="l00880"></a><span class="lineno">  880</span>&#160;<span class="comment">  the matrix data*/</span></div>
-<div class="line"><a name="l00881"></a><span class="lineno">  881</span>&#160;  <span class="keywordtype">double</span> *ptr=this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(0,0);</div>
-<div class="line"><a name="l00882"></a><span class="lineno">  882</span>&#160;  dscal(3*this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>(),scale,ptr,1);</div>
-<div class="line"><a name="l00883"></a><span class="lineno">  883</span>&#160;  <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
-<div class="line"><a name="l00884"></a><span class="lineno">  884</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00877"></a><span class="lineno">  877</span>&#160;{</div>
+<div class="line"><a name="l00878"></a><span class="lineno">  878</span>&#160;  <span class="comment">/* do nothing to empty data or data marked dead*/</span></div>
+<div class="line"><a name="l00879"></a><span class="lineno">  879</span>&#160;  <span class="keywordflow">if</span>((this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()==0) || (this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>())) <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00880"></a><span class="lineno">  880</span>&#160;  <span class="comment">/* We can use this dscal blas function because dmatrix puts all the data</span></div>
+<div class="line"><a name="l00881"></a><span class="lineno">  881</span>&#160;<span class="comment">  in a continguous block. Beware if there is am implementation change for</span></div>
+<div class="line"><a name="l00882"></a><span class="lineno">  882</span>&#160;<span class="comment">  the matrix data*/</span></div>
+<div class="line"><a name="l00883"></a><span class="lineno">  883</span>&#160;  <span class="keywordtype">double</span> *ptr=this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(0,0);</div>
+<div class="line"><a name="l00884"></a><span class="lineno">  884</span>&#160;  dscal(3*this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>(),scale,ptr,1);</div>
+<div class="line"><a name="l00885"></a><span class="lineno">  885</span>&#160;  <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00886"></a><span class="lineno">  886</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.</p>
 
@@ -993,16 +993,14 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00886"></a><span class="lineno">  886</span>&#160;{</div>
-<div class="line"><a name="l00887"></a><span class="lineno">  887</span>&#160;    <span class="keywordtype">int</span> i,iend,jend;</div>
-<div class="line"><a name="l00888"></a><span class="lineno">  888</span>&#160;    <span class="keywordtype">size_t</span> j,i0,j0;</div>
-<div class="line"><a name="l00889"></a><span class="lineno">  889</span>&#160;    <span class="comment">// Sun&#39;s compiler complains about const objects without this.</span></div>
-<div class="line"><a name="l00890"></a><span class="lineno">  890</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9be7b3811cfcd0b0396b32214d7eab51">CoreSeismogram</a>&amp; d=<span class="keyword">const_cast&lt;</span><a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9be7b3811cfcd0b0396b32214d7eab51">CoreSeismogram</a>&amp;<span class="keyword">&gt;</span>(data);</div>
-<div class="line"><a name="l00891"></a><span class="lineno">  891</span>&#160;    <span class="comment">// Silently do nothing if d is marked dead</span></div>
-<div class="line"><a name="l00892"></a><span class="lineno">  892</span>&#160;    <span class="keywordflow">if</span>(!d.mlive) <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
+<div class="fragment"><div class="line"><a name="l00888"></a><span class="lineno">  888</span>&#160;{</div>
+<div class="line"><a name="l00889"></a><span class="lineno">  889</span>&#160;    <span class="keywordtype">int</span> i,iend,jend;</div>
+<div class="line"><a name="l00890"></a><span class="lineno">  890</span>&#160;    <span class="keywordtype">size_t</span> j,i0,j0;</div>
+<div class="line"><a name="l00891"></a><span class="lineno">  891</span>&#160;    <span class="comment">// Silently do nothing if d or lhs is marked dead</span></div>
+<div class="line"><a name="l00892"></a><span class="lineno">  892</span>&#160;    <span class="keywordflow">if</span>( d.dead() || (this-&gt;dead()) ) <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
 <div class="line"><a name="l00893"></a><span class="lineno">  893</span>&#160;    <span class="comment">// Silently do nothing if d does not overlap with data to contain sum</span></div>
 <div class="line"><a name="l00894"></a><span class="lineno">  894</span>&#160;    <span class="keywordflow">if</span>( (d.endtime()&lt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>)</div>
-<div class="line"><a name="l00895"></a><span class="lineno">  895</span>&#160;            || (d.mt0&gt;(this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae043fa67b9d889965ae473da583a1eb4">endtime</a>())) ) <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00895"></a><span class="lineno">  895</span>&#160;            || (d.mt0&gt;(this-&gt;endtime())) ) <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
 <div class="line"><a name="l00896"></a><span class="lineno">  896</span>&#160;    <span class="keywordflow">if</span>(d.tref!=(this-&gt;tref))</div>
 <div class="line"><a name="l00897"></a><span class="lineno">  897</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(<span class="stringliteral">&quot;CoreSeismogram += operator cannot handle data with inconsistent time base\n&quot;</span>,</div>
 <div class="line"><a name="l00898"></a><span class="lineno">  898</span>&#160;                          ErrorSeverity::Invalid);</div>
@@ -1037,7 +1035,7 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
 <div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;    <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
 <div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;}</div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae043fa67b9d889965ae473da583a1eb4">endtime()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mspass::seismic::BasicTimeSeries::mlive</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mspass::seismic::BasicTimeSeries::mt0</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">mspass::seismic::BasicTimeSeries::sample_number()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">mspass::seismic::BasicTimeSeries::t0()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">mspass::seismic::BasicTimeSeries::tref</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae043fa67b9d889965ae473da583a1eb4">endtime()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mspass::seismic::BasicTimeSeries::mt0</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">mspass::seismic::BasicTimeSeries::sample_number()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">mspass::seismic::BasicTimeSeries::t0()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">mspass::seismic::BasicTimeSeries::tref</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.</p>
 
 </div>
 </div>
@@ -1160,24 +1158,24 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
-<div class="fragment"><div class="line"><a name="l00856"></a><span class="lineno">  856</span>&#160;{</div>
-<div class="line"><a name="l00857"></a><span class="lineno">  857</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=&amp;seisin)</div>
-<div class="line"><a name="l00858"></a><span class="lineno">  858</span>&#160;    {</div>
-<div class="line"><a name="l00859"></a><span class="lineno">  859</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aaf05bc1fe471e194bec093906c1a607c">BasicTimeSeries::operator=</a>(seisin);</div>
-<div class="line"><a name="l00860"></a><span class="lineno">  860</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">Metadata::operator=</a>(seisin);</div>
-<div class="line"><a name="l00861"></a><span class="lineno">  861</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=seisin.components_are_orthogonal;</div>
-<div class="line"><a name="l00862"></a><span class="lineno">  862</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=seisin.components_are_cardinal;</div>
-<div class="line"><a name="l00863"></a><span class="lineno">  863</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;3; ++i)</div>
-<div class="line"><a name="l00864"></a><span class="lineno">  864</span>&#160;        {</div>
-<div class="line"><a name="l00865"></a><span class="lineno">  865</span>&#160;            <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j=0; j&lt;3; ++j)</div>
-<div class="line"><a name="l00866"></a><span class="lineno">  866</span>&#160;            {</div>
-<div class="line"><a name="l00867"></a><span class="lineno">  867</span>&#160;                <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][j]=seisin.tmatrix[i][j];</div>
-<div class="line"><a name="l00868"></a><span class="lineno">  868</span>&#160;            }</div>
-<div class="line"><a name="l00869"></a><span class="lineno">  869</span>&#160;        }</div>
-<div class="line"><a name="l00870"></a><span class="lineno">  870</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>=seisin.u;</div>
-<div class="line"><a name="l00871"></a><span class="lineno">  871</span>&#160;    }</div>
-<div class="line"><a name="l00872"></a><span class="lineno">  872</span>&#160;    <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
-<div class="line"><a name="l00873"></a><span class="lineno">  873</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00858"></a><span class="lineno">  858</span>&#160;{</div>
+<div class="line"><a name="l00859"></a><span class="lineno">  859</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=&amp;seisin)</div>
+<div class="line"><a name="l00860"></a><span class="lineno">  860</span>&#160;    {</div>
+<div class="line"><a name="l00861"></a><span class="lineno">  861</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aaf05bc1fe471e194bec093906c1a607c">BasicTimeSeries::operator=</a>(seisin);</div>
+<div class="line"><a name="l00862"></a><span class="lineno">  862</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">Metadata::operator=</a>(seisin);</div>
+<div class="line"><a name="l00863"></a><span class="lineno">  863</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=seisin.components_are_orthogonal;</div>
+<div class="line"><a name="l00864"></a><span class="lineno">  864</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=seisin.components_are_cardinal;</div>
+<div class="line"><a name="l00865"></a><span class="lineno">  865</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;3; ++i)</div>
+<div class="line"><a name="l00866"></a><span class="lineno">  866</span>&#160;        {</div>
+<div class="line"><a name="l00867"></a><span class="lineno">  867</span>&#160;            <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j=0; j&lt;3; ++j)</div>
+<div class="line"><a name="l00868"></a><span class="lineno">  868</span>&#160;            {</div>
+<div class="line"><a name="l00869"></a><span class="lineno">  869</span>&#160;                <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][j]=seisin.tmatrix[i][j];</div>
+<div class="line"><a name="l00870"></a><span class="lineno">  870</span>&#160;            }</div>
+<div class="line"><a name="l00871"></a><span class="lineno">  871</span>&#160;        }</div>
+<div class="line"><a name="l00872"></a><span class="lineno">  872</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>=seisin.u;</div>
+<div class="line"><a name="l00873"></a><span class="lineno">  873</span>&#160;    }</div>
+<div class="line"><a name="l00874"></a><span class="lineno">  874</span>&#160;    <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00875"></a><span class="lineno">  875</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aaf05bc1fe471e194bec093906c1a607c">mspass::seismic::BasicTimeSeries::operator=()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.</p>
 
@@ -1332,11 +1330,11 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;{</div>
-<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;    <span class="keywordflow">if</span>( (<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">size</a>()[1]&lt;=0) || this-&gt;dead()) <span class="keywordflow">return</span>; <span class="comment">// do nothing in these situations</span></div>
-<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;    <a class="code" href="structmspass_1_1utility_1_1_spherical_coordinate.html">SphericalCoordinate</a> xsc=UnitVectorToSpherical(nu);</div>
-<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;    this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#ab52a292c7c7bc8fc5fef68db9eb847e0">rotate</a>(xsc);</div>
-<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;{</div>
+<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;    <span class="keywordflow">if</span>( (<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">size</a>()[1]&lt;=0) || this-&gt;dead()) <span class="keywordflow">return</span>; <span class="comment">// do nothing in these situations</span></div>
+<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;    <a class="code" href="structmspass_1_1utility_1_1_spherical_coordinate.html">SphericalCoordinate</a> xsc=UnitVectorToSpherical(nu);</div>
+<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;    this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#ab52a292c7c7bc8fc5fef68db9eb847e0">rotate</a>(xsc);</div>
+<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#ab52a292c7c7bc8fc5fef68db9eb847e0">rotate()</a>, <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">mspass::utility::dmatrix::size()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.</p>
 
@@ -1372,49 +1370,49 @@ rotation in rotational angle grid searches.
 
 \param phi rotation angle around x3 axis in counterclockwise
   direction (in radians).
-</pre> <div class="fragment"><div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;{</div>
-<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;    <span class="keywordflow">if</span>( (<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">size</a>()[1]&lt;=0) || <a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">return</span>; <span class="comment">// do nothing in these situations</span></div>
-<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;    <span class="keywordtype">int</span> i,j,k;</div>
-<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;    <span class="keywordtype">double</span> a,b;</div>
-<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;    a=cos(phi);</div>
-<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;    b=sin(phi);</div>
-<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;    <span class="keywordtype">double</span> tmnew[3][3];</div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;    tmnew[0][0] = a;</div>
-<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;    tmnew[1][0] = b;</div>
-<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;    tmnew[2][0] = 0.0;</div>
-<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;    tmnew[0][1] = -b;</div>
-<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;    tmnew[1][1] = a;</div>
-<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;    tmnew[2][1] = 0.0;</div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;    tmnew[0][2] = 0.0;</div>
-<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;    tmnew[1][2] = 0.0;</div>
-<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;    tmnew[2][2] = 1.0;</div>
-<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160; </div>
-<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;    <span class="comment">/* Now multiply the data by this transformation matrix.</span></div>
-<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;<span class="comment">     Not trick in this i only goes to 2 because 3 component</span></div>
-<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;<span class="comment">     is an identity.*/</span></div>
-<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;    <span class="keywordtype">double</span> *work[2];</div>
-<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;2; ++i)work[i] = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>];</div>
-<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;2; ++i)</div>
-<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;    {</div>
-<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;        dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(0,0),3,work[i],1);</div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;        dscal(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,tmnew[i][0],work[i],1);</div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;        daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,tmnew[i][1],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(1,0),3,work[i],1);</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;    }</div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;2; ++i) dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,work[i],1,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(i,0),3);</div>
-<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;    <span class="keywordtype">double</span> tm_tmp[3][3];</div>
-<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;    <span class="keywordtype">double</span> prod;</div>
-<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
-<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;        <span class="keywordflow">for</span>(j=0; j&lt;3; ++j)</div>
-<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;        {</div>
-<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;            <span class="keywordflow">for</span>(prod=0.0,k=0; k&lt;3; ++k)</div>
-<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;                prod+=tmnew[i][k]*<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[k][j];</div>
-<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;            tm_tmp[i][j]=prod;</div>
-<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;        }</div>
-<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
-<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;        <span class="keywordflow">for</span>(j=0; j&lt;3; ++j)<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][j]=tm_tmp[i][j];</div>
-<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">false</span>;</div>
-<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;2; ++i) <span class="keyword">delete</span> [] work[i];</div>
-<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;}</div>
+</pre> <div class="fragment"><div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;{</div>
+<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;    <span class="keywordflow">if</span>( (<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">size</a>()[1]&lt;=0) || <a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">return</span>; <span class="comment">// do nothing in these situations</span></div>
+<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;    <span class="keywordtype">int</span> i,j,k;</div>
+<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;    <span class="keywordtype">double</span> a,b;</div>
+<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;    a=cos(phi);</div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;    b=sin(phi);</div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;    <span class="keywordtype">double</span> tmnew[3][3];</div>
+<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;    tmnew[0][0] = a;</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;    tmnew[1][0] = b;</div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;    tmnew[2][0] = 0.0;</div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;    tmnew[0][1] = -b;</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;    tmnew[1][1] = a;</div>
+<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;    tmnew[2][1] = 0.0;</div>
+<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;    tmnew[0][2] = 0.0;</div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;    tmnew[1][2] = 0.0;</div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;    tmnew[2][2] = 1.0;</div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160; </div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;    <span class="comment">/* Now multiply the data by this transformation matrix.</span></div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;<span class="comment">     Not trick in this i only goes to 2 because 3 component</span></div>
+<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;<span class="comment">     is an identity.*/</span></div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;    <span class="keywordtype">double</span> *work[2];</div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;2; ++i)work[i] = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>];</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;2; ++i)</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;    {</div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;        dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(0,0),3,work[i],1);</div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;        dscal(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,tmnew[i][0],work[i],1);</div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;        daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,tmnew[i][1],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(1,0),3,work[i],1);</div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;    }</div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;2; ++i) dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,work[i],1,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(i,0),3);</div>
+<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;    <span class="keywordtype">double</span> tm_tmp[3][3];</div>
+<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;    <span class="keywordtype">double</span> prod;</div>
+<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
+<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;        <span class="keywordflow">for</span>(j=0; j&lt;3; ++j)</div>
+<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;        {</div>
+<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;            <span class="keywordflow">for</span>(prod=0.0,k=0; k&lt;3; ++k)</div>
+<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;                prod+=tmnew[i][k]*<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[k][j];</div>
+<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;            tm_tmp[i][j]=prod;</div>
+<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;        }</div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
+<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;        <span class="keywordflow">for</span>(j=0; j&lt;3; ++j)<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][j]=tm_tmp[i][j];</div>
+<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;2; ++i) <span class="keyword">delete</span> [] work[i];</div>
+<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">mspass::seismic::BasicTimeSeries::nsamp</a>, <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">mspass::utility::dmatrix::size()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.</p>
 
@@ -1445,76 +1443,76 @@ rotation in rotational angle grid searches.
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;{</div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;    <span class="keywordflow">if</span>( (<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">size</a>()[1]&lt;=0) || <a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">return</span>; <span class="comment">// do nothing in these situations</span></div>
-<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160; </div>
-<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;    <span class="comment">//Earlier version had a reset of the nsamp variable here - we need to trust</span></div>
-<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;    <span class="comment">//that is correct here for efficiency.  We the new API it would be hard</span></div>
-<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;    <span class="comment">//to have that happen. without a serious blunder</span></div>
-<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;    <span class="keywordtype">int</span> i;</div>
-<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;    <span class="keywordtype">double</span> theta, phi;  <span class="comment">/* corrected angles after dealing with signs */</span></div>
-<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;    <span class="keywordtype">double</span> a,b,c,d;</div>
-<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160; </div>
-<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;    <span class="comment">//</span></div>
-<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;    <span class="comment">//Undo any previous transformations</span></div>
+<div class="fragment"><div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;{</div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;    <span class="keywordflow">if</span>( (<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">size</a>()[1]&lt;=0) || <a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">return</span>; <span class="comment">// do nothing in these situations</span></div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160; </div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;    <span class="comment">//Earlier version had a reset of the nsamp variable here - we need to trust</span></div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;    <span class="comment">//that is correct here for efficiency.  We the new API it would be hard</span></div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;    <span class="comment">//to have that happen. without a serious blunder</span></div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;    <span class="keywordtype">int</span> i;</div>
+<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;    <span class="keywordtype">double</span> theta, phi;  <span class="comment">/* corrected angles after dealing with signs */</span></div>
+<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;    <span class="keywordtype">double</span> a,b,c,d;</div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160; </div>
 <div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;    <span class="comment">//</span></div>
-<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;    this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a756ee542caaa6001f9f40fed3607ff7e">rotate_to_standard</a>();</div>
-<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;    <span class="keywordflow">if</span>(xsc.theta == M_PI)</div>
-<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;    {</div>
-<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;        <span class="comment">//This will be left handed</span></div>
-<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][2] = -1.0;</div>
-<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;        dscal(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,-1.0,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(2,0),3);</div>
-<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;        <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;    }</div>
-<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160; </div>
-<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;    <span class="keywordflow">if</span>(xsc.theta &lt; 0.0)</div>
-<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;    {</div>
-<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;        theta = -(xsc.theta);</div>
-<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;        phi = xsc.phi + M_PI;</div>
-<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;        <span class="keywordflow">if</span>(phi &gt; M_PI) phi -= (2.0*M_PI);</div>
-<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;    }</div>
-<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(xsc.theta &gt; M_PI)</div>
-<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;    {</div>
-<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;        theta = xsc.theta - M_PI;</div>
-<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;        phi = xsc.phi + M_PI;</div>
-<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;        <span class="keywordflow">if</span>(phi &gt; M_PI) phi -= (2.0*M_PI);</div>
-<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;    }</div>
-<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;    {</div>
-<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;        theta = xsc.theta;</div>
-<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;        phi = xsc.phi;</div>
-<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;    }</div>
-<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;    <span class="comment">/* Am using a formula here for azimuth with is pi/2 - phi*/</span></div>
-<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;    <span class="keywordtype">double</span> azimuth=M_PI_2-phi;</div>
-<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;    a = cos(azimuth);</div>
-<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;    b = sin(azimuth);</div>
-<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;    c = cos(theta);</div>
-<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;    d = sin(theta);</div>
-<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160; </div>
-<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][0] = a;</div>
-<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][0] = b*c;</div>
-<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][0] = b*d;</div>
-<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][1] = -b;</div>
-<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][1] = a*c;</div>
-<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][1] = a*d;</div>
-<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][2] = 0.0;</div>
-<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][2] = -d;</div>
-<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][2] = c;</div>
-<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160; </div>
-<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;    <span class="comment">/* Now multiply the data by this transformation matrix.  */</span></div>
-<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;    <span class="keywordtype">double</span> *work[3];</div>
-<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)work[i] = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>];</div>
-<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
-<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;    {</div>
-<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;        dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(0,0),3,work[i],1);</div>
-<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;        dscal(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][0],work[i],1);</div>
-<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;        daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][1],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(1,0),3,work[i],1);</div>
-<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;        daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][2],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(2,0),3,work[i],1);</div>
-<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;    }</div>
-<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,work[i],1,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(i,0),3);</div>
-<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">false</span>;</div>
-<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) <span class="keyword">delete</span> [] work[i];</div>
-<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;}</div>
+<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;    <span class="comment">//Undo any previous transformations</span></div>
+<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;    <span class="comment">//</span></div>
+<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;    this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a756ee542caaa6001f9f40fed3607ff7e">rotate_to_standard</a>();</div>
+<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;    <span class="keywordflow">if</span>(xsc.theta == M_PI)</div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;    {</div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;        <span class="comment">//This will be left handed</span></div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][2] = -1.0;</div>
+<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;        dscal(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,-1.0,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(2,0),3);</div>
+<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;        <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;    }</div>
+<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160; </div>
+<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;    <span class="keywordflow">if</span>(xsc.theta &lt; 0.0)</div>
+<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;    {</div>
+<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;        theta = -(xsc.theta);</div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;        phi = xsc.phi + M_PI;</div>
+<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;        <span class="keywordflow">if</span>(phi &gt; M_PI) phi -= (2.0*M_PI);</div>
+<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;    }</div>
+<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(xsc.theta &gt; M_PI)</div>
+<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;    {</div>
+<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;        theta = xsc.theta - M_PI;</div>
+<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;        phi = xsc.phi + M_PI;</div>
+<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;        <span class="keywordflow">if</span>(phi &gt; M_PI) phi -= (2.0*M_PI);</div>
+<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;    }</div>
+<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;    {</div>
+<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;        theta = xsc.theta;</div>
+<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;        phi = xsc.phi;</div>
+<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;    }</div>
+<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;    <span class="comment">/* Am using a formula here for azimuth with is pi/2 - phi*/</span></div>
+<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;    <span class="keywordtype">double</span> azimuth=M_PI_2-phi;</div>
+<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;    a = cos(azimuth);</div>
+<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;    b = sin(azimuth);</div>
+<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;    c = cos(theta);</div>
+<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;    d = sin(theta);</div>
+<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160; </div>
+<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][0] = a;</div>
+<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][0] = b*c;</div>
+<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][0] = b*d;</div>
+<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][1] = -b;</div>
+<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][1] = a*c;</div>
+<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][1] = a*d;</div>
+<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][2] = 0.0;</div>
+<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][2] = -d;</div>
+<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][2] = c;</div>
+<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160; </div>
+<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;    <span class="comment">/* Now multiply the data by this transformation matrix.  */</span></div>
+<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;    <span class="keywordtype">double</span> *work[3];</div>
+<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)work[i] = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>];</div>
+<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
+<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;    {</div>
+<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;        dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(0,0),3,work[i],1);</div>
+<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;        dscal(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][0],work[i],1);</div>
+<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;        daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][1],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(1,0),3,work[i],1);</div>
+<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;        daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][2],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(2,0),3,work[i],1);</div>
+<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;    }</div>
+<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,work[i],1,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(i,0),3);</div>
+<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) <span class="keyword">delete</span> [] work[i];</div>
+<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">mspass::seismic::BasicTimeSeries::nsamp</a>, <a class="el" href="structmspass_1_1utility_1_1_spherical_coordinate.html#a2c970fd569ae883e5545f81e58458ef9">mspass::utility::SphericalCoordinate::phi</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a756ee542caaa6001f9f40fed3607ff7e">rotate_to_standard()</a>, <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">mspass::utility::dmatrix::size()</a>, <a class="el" href="structmspass_1_1utility_1_1_spherical_coordinate.html#ae06e9f7deab80ef715e5a3629fbab2f7">mspass::utility::SphericalCoordinate::theta</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.</p>
 
@@ -1541,111 +1539,111 @@ rotation in rotational angle grid searches.
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;{</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    <span class="keywordflow">if</span>( (<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">size</a>()[1]&lt;=0) || this-&gt;dead()) <span class="keywordflow">return</span>; <span class="comment">// do nothing in these situations</span></div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;    <span class="keywordtype">double</span> *work[3];</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    <span class="keywordtype">int</span> i,j;</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    <span class="keywordflow">if</span>(<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>) <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    <span class="comment">/* We assume nsamp is the number of samples = number of columns in u - we don&#39;t</span></div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;<span class="comment">    check here for efficiency */</span></div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    <span class="keywordflow">for</span>(j=0; j&lt;3; ++j) work[j]=<span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>];</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    <span class="keywordflow">if</span>(<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>)</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    {</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;        <span class="comment">//</span></div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        <span class="comment">//Use a daxpy algorithm.  tmatrix stores the</span></div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        <span class="comment">//forward transformation used to get current</span></div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        <span class="comment">//Use the transpose to get back</span></div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        <span class="comment">//</span></div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;        {</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;            <span class="comment">// x has a stride of 3 because we store in fortran order in x</span></div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;            dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(0,0),3,work[i],1);</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;            dscal(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][i],work[i],1);</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;            daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][i],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(1,0),3,work[i],1);</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;            daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][i],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(2,0),3,work[i],1);</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;        }</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;        <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,work[i],1,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(i,0),3);</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    }</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;    {</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;        <span class="comment">//</span></div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;        <span class="comment">//Enter here only when the transformation matrix is</span></div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        <span class="comment">//not orthogonal.  We have to construct a fortran</span></div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;        <span class="comment">//order matrix a to use LINPACK routine in sunperf/perf</span></div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;        <span class="comment">//This could be done with the matrix template library</span></div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;        <span class="comment">//but the overhead ain&#39;t worth it</span></div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        <span class="comment">//</span></div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;        <span class="keywordtype">double</span> a[9];</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        <span class="keywordtype">int</span> ipivot[3];</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;        <span class="keywordtype">int</span> info;</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;        a[0] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][0];</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;        a[1] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][0];</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;        a[2] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][0];</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;        a[3] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][1];</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;        a[4] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][1];</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;        a[5] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][1];</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;        a[6] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][2];</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;        a[7] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][2];</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;        a[8] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][2];</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;        <span class="comment">//LAPACK routine with FORTRAN interface using pass by reference and pointers</span></div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;        <span class="keywordtype">int</span> three(3);</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;        dgetrf(three,three,a,three,ipivot,info);</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;        <span class="keywordflow">if</span>(info!=0)</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        {</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;            <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) <span class="keyword">delete</span> [] work[i];</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;            <span class="keywordflow">throw</span>(<a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;                      <span class="keywordtype">string</span>(<span class="stringliteral">&quot;rotate_to_standard:  LU factorization of transformation matrix failed&quot;</span>)),</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;                  ErrorSeverity::Invalid);</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;        }</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;        <span class="comment">// inversion routine after factorization from lapack FORT$RAN interface</span></div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;        <span class="keywordtype">double</span> awork[10];  <span class="comment">//Larger than required but safety value small cost</span></div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;        <span class="keywordtype">int</span> ldwork(10);</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;        dgetri(three,a,three,ipivot,awork,ldwork,info);</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;        <span class="comment">// This is the openblas version</span></div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;        <span class="comment">//info=LAPACKE_dgetri(LAPACK_COL_MAJOR,3,a,3,ipivot);</span></div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;        <span class="keywordflow">if</span>(info!=0)</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;        {</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;            <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) <span class="keyword">delete</span> [] work[i];</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;            <span class="keywordflow">throw</span>(<a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;                      <span class="keywordtype">string</span>(<span class="stringliteral">&quot;rotate_to_standard:  LU factorization inversion of transformation matrix failed&quot;</span>)),</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;                  ErrorSeverity::Invalid);</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;        }</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160; </div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][0] = a[0];</div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][0] = a[1];</div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][0] = a[2];</div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][1] = a[3];</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][1] = a[4];</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][1] = a[5];</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][2] = a[6];</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][2] = a[7];</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][2] = a[8];</div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;        <span class="comment">/* The inverse is now in tmatrix so we reverse the</span></div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;<span class="comment">           rows and columms from above loop */</span></div>
-<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160; </div>
-<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;        <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
-<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;        {</div>
-<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;            dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(0,0),3,work[i],1);</div>
-<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;            dscal(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][0],work[i],1);</div>
-<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;            daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][1],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(1,0),3,work[i],1);</div>
-<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;            daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][2],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(2,0),3,work[i],1);</div>
-<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;        }</div>
-<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;        <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,work[i],1,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(i,0),3);</div>
-<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;    }</div>
-<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;    <span class="comment">//</span></div>
-<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;    <span class="comment">//Have to set the transformation matrix to an identity now</span></div>
+<div class="fragment"><div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;{</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    <span class="keywordflow">if</span>( (<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">size</a>()[1]&lt;=0) || this-&gt;dead()) <span class="keywordflow">return</span>; <span class="comment">// do nothing in these situations</span></div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    <span class="keywordtype">double</span> *work[3];</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    <span class="keywordtype">int</span> i,j;</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    <span class="keywordflow">if</span>(<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    <span class="comment">/* We assume nsamp is the number of samples = number of columns in u - we don&#39;t</span></div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;<span class="comment">    check here for efficiency */</span></div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    <span class="keywordflow">for</span>(j=0; j&lt;3; ++j) work[j]=<span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>];</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    <span class="keywordflow">if</span>(<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>)</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;    {</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        <span class="comment">//</span></div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        <span class="comment">//Use a daxpy algorithm.  tmatrix stores the</span></div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        <span class="comment">//forward transformation used to get current</span></div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        <span class="comment">//Use the transpose to get back</span></div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;        <span class="comment">//</span></div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;        <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;        {</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;            <span class="comment">// x has a stride of 3 because we store in fortran order in x</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;            dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(0,0),3,work[i],1);</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;            dscal(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][i],work[i],1);</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;            daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][i],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(1,0),3,work[i],1);</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;            daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][i],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(2,0),3,work[i],1);</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;        }</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;        <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,work[i],1,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(i,0),3);</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;    }</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;    {</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        <span class="comment">//</span></div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;        <span class="comment">//Enter here only when the transformation matrix is</span></div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;        <span class="comment">//not orthogonal.  We have to construct a fortran</span></div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;        <span class="comment">//order matrix a to use LINPACK routine in sunperf/perf</span></div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        <span class="comment">//This could be done with the matrix template library</span></div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;        <span class="comment">//but the overhead ain&#39;t worth it</span></div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        <span class="comment">//</span></div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;        <span class="keywordtype">double</span> a[9];</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;        <span class="keywordtype">int</span> ipivot[3];</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;        <span class="keywordtype">int</span> info;</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;        a[0] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][0];</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;        a[1] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][0];</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;        a[2] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][0];</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;        a[3] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][1];</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;        a[4] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][1];</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;        a[5] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][1];</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;        a[6] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][2];</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;        a[7] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][2];</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;        a[8] = <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][2];</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;        <span class="comment">//LAPACK routine with FORTRAN interface using pass by reference and pointers</span></div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;        <span class="keywordtype">int</span> three(3);</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        dgetrf(three,three,a,three,ipivot,info);</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;        <span class="keywordflow">if</span>(info!=0)</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;        {</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;            <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) <span class="keyword">delete</span> [] work[i];</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;            <span class="keywordflow">throw</span>(<a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;                      <span class="keywordtype">string</span>(<span class="stringliteral">&quot;rotate_to_standard:  LU factorization of transformation matrix failed&quot;</span>)),</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;                  ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;        }</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;        <span class="comment">// inversion routine after factorization from lapack FORT$RAN interface</span></div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;        <span class="keywordtype">double</span> awork[10];  <span class="comment">//Larger than required but safety value small cost</span></div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;        <span class="keywordtype">int</span> ldwork(10);</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;        dgetri(three,a,three,ipivot,awork,ldwork,info);</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;        <span class="comment">// This is the openblas version</span></div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;        <span class="comment">//info=LAPACKE_dgetri(LAPACK_COL_MAJOR,3,a,3,ipivot);</span></div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;        <span class="keywordflow">if</span>(info!=0)</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;        {</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;            <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) <span class="keyword">delete</span> [] work[i];</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;            <span class="keywordflow">throw</span>(<a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;                      <span class="keywordtype">string</span>(<span class="stringliteral">&quot;rotate_to_standard:  LU factorization inversion of transformation matrix failed&quot;</span>)),</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;                  ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;        }</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160; </div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][0] = a[0];</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][0] = a[1];</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][0] = a[2];</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][1] = a[3];</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][1] = a[4];</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][1] = a[5];</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][2] = a[6];</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[1][2] = a[7];</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[2][2] = a[8];</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;        <span class="comment">/* The inverse is now in tmatrix so we reverse the</span></div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;<span class="comment">           rows and columms from above loop */</span></div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160; </div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;        <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;        {</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;            dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(0,0),3,work[i],1);</div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;            dscal(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][0],work[i],1);</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;            daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][1],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(1,0),3,work[i],1);</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;            daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][2],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(2,0),3,work[i],1);</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;        }</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;        <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,work[i],1,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(i,0),3);</div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;    }</div>
 <div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;    <span class="comment">//</span></div>
-<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;        <span class="keywordflow">for</span>(j=0; j&lt;3; ++j)</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;            <span class="keywordflow">if</span>(i==j)</div>
-<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;                <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][i]=1.0;</div>
-<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;            <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;                <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][j]=0.0;</div>
-<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160; </div>
-<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">true</span>;</div>
-<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) <span class="keyword">delete</span> [] work[i];</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;}</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;    <span class="comment">//Have to set the transformation matrix to an identity now</span></div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;    <span class="comment">//</span></div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;        <span class="keywordflow">for</span>(j=0; j&lt;3; ++j)</div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;            <span class="keywordflow">if</span>(i==j)</div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;                <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][i]=1.0;</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;            <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;                <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][j]=0.0;</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160; </div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">true</span>;</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) <span class="keyword">delete</span> [] work[i];</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">mspass::seismic::BasicTimeSeries::nsamp</a>, <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">mspass::utility::dmatrix::size()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.</p>
 
@@ -1861,28 +1859,28 @@ rotation in rotational angle grid searches.
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;{</div>
-<div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;3;++i)</div>
-<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j=0;j&lt;3;++j) <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][j]=a[i][j];</div>
-<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;    py::list tmatrix_l;</div>
-<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;3;++i)</div>
-<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j=0;j&lt;3;++j) tmatrix_l.append(a[i][j]);</div>
-<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;    this-&gt;put_object(<a class="code" href="namespacemspass_1_1seismic.html#ab9de221412c0076cce8197b4f2e9df7a">SEISMICMD_tmatrix</a>, tmatrix_l);</div>
-<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal</a>;</div>
-<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal</a>=this-&gt;tmatrix_is_cardinal();</div>
-<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;    <span class="keywordflow">if</span>(<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal</a>)</div>
-<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;    {</div>
-<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">true</span>;</div>
-<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=<span class="keyword">true</span>;</div>
-<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;    }</div>
-<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;    {</div>
-<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">false</span>;</div>
-<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;        <span class="comment">/* Not necessarily true, but small overhead cost*/</span></div>
-<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=<span class="keyword">false</span>;</div>
-<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;    }</div>
-<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>;</div>
-<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;{</div>
+<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;3;++i)</div>
+<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j=0;j&lt;3;++j) <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][j]=a[i][j];</div>
+<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;    py::list tmatrix_l;</div>
+<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;3;++i)</div>
+<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j=0;j&lt;3;++j) tmatrix_l.append(a[i][j]);</div>
+<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;    this-&gt;put_object(<a class="code" href="namespacemspass_1_1seismic.html#ab9de221412c0076cce8197b4f2e9df7a">SEISMICMD_tmatrix</a>, tmatrix_l);</div>
+<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal</a>;</div>
+<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal</a>=this-&gt;tmatrix_is_cardinal();</div>
+<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;    <span class="keywordflow">if</span>(<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal</a>)</div>
+<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;    {</div>
+<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">true</span>;</div>
+<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=<span class="keyword">true</span>;</div>
+<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;    }</div>
+<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;    {</div>
+<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;        <span class="comment">/* Not necessarily true, but small overhead cost*/</span></div>
+<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;    }</div>
+<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>;</div>
+<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>, <a class="el" href="namespacemspass_1_1seismic.html#ab9de221412c0076cce8197b4f2e9df7a">mspass::seismic::SEISMICMD_tmatrix()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>.</p>
 
@@ -1919,28 +1917,28 @@ rotation in rotational angle grid searches.
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;{</div>
-<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;3;++i)</div>
-<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j=0;j&lt;3;++j) <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][j]=A(i,j);</div>
-<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;    py::list tmatrix_l;</div>
-<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;3;++i)</div>
-<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j=0;j&lt;3;++j) tmatrix_l.append(A(i, j));</div>
-<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;    this-&gt;put_object(<a class="code" href="namespacemspass_1_1seismic.html#ab9de221412c0076cce8197b4f2e9df7a">SEISMICMD_tmatrix</a>, tmatrix_l);</div>
-<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal</a>;</div>
-<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal</a>=this-&gt;tmatrix_is_cardinal();</div>
-<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;    <span class="keywordflow">if</span>(<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal</a>)</div>
-<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;    {</div>
-<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">true</span>;</div>
-<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=<span class="keyword">true</span>;</div>
-<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    }</div>
-<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;    {</div>
-<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">false</span>;</div>
-<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;        <span class="comment">/* Not necessarily true, but small overhead cost*/</span></div>
-<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=<span class="keyword">false</span>;</div>
-<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;    }</div>
-<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>;</div>
-<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;{</div>
+<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;3;++i)</div>
+<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j=0;j&lt;3;++j) <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][j]=A(i,j);</div>
+<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;    py::list tmatrix_l;</div>
+<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;3;++i)</div>
+<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j=0;j&lt;3;++j) tmatrix_l.append(A(i, j));</div>
+<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;    this-&gt;put_object(<a class="code" href="namespacemspass_1_1seismic.html#ab9de221412c0076cce8197b4f2e9df7a">SEISMICMD_tmatrix</a>, tmatrix_l);</div>
+<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal</a>;</div>
+<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal</a>=this-&gt;tmatrix_is_cardinal();</div>
+<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;    <span class="keywordflow">if</span>(<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal</a>)</div>
+<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;    {</div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">true</span>;</div>
+<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=<span class="keyword">true</span>;</div>
+<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;    }</div>
+<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;    {</div>
+<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;        <span class="comment">/* Not necessarily true, but small overhead cost*/</span></div>
+<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;    }</div>
+<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>;</div>
+<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09">cardinal()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>, <a class="el" href="namespacemspass_1_1seismic.html#ab9de221412c0076cce8197b4f2e9df7a">mspass::seismic::SEISMICMD_tmatrix()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>.</p>
 
@@ -2045,41 +2043,41 @@ rotation in rotational angle grid searches.
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;{</div>
-<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;    <span class="keywordflow">if</span>( (<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">size</a>()[1]&lt;=0) || <a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">return</span>; <span class="comment">// do nothing in these situations</span></div>
-<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;    <span class="comment">/* Older version had this - we need to trust ns is already u.columns().  */</span></div>
-<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;    <span class="comment">//size_t ns = u.size()[1];</span></div>
-<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;    <span class="keywordtype">size_t</span> i,j,k;</div>
-<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;    <span class="keywordtype">double</span> *work[3];</div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) work[i] = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>];</div>
-<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
-<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;    {</div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;        dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(0,0),3,work[i],1);</div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;        dscal(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,a[i][0],work[i],1);</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;        daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,a[i][1],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(1,0),3,work[i],1);</div>
-<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;        daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,a[i][2],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(2,0),3,work[i],1);</div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;    }</div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,work[i],1,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(i,0),3);</div>
-<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) <span class="keyword">delete</span> [] work[i];</div>
-<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;    <span class="comment">/* Hand code this rather than use dmatrix or other library.</span></div>
-<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;<span class="comment">       Probably dumb, but this is just a 3x3 system.  This</span></div>
-<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;<span class="comment">       is simply a multiply of a*tmatrix with result replacing</span></div>
-<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;<span class="comment">       the internal tmatrix */</span></div>
-<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;    <span class="keywordtype">double</span> tmnew[3][3];</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;    <span class="keywordtype">double</span> prod;</div>
-<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
-<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;        <span class="keywordflow">for</span>(j=0; j&lt;3; ++j)</div>
-<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;        {</div>
-<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;            <span class="keywordflow">for</span>(prod=0.0,k=0; k&lt;3; ++k)</div>
-<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;                prod+=a[i][k]*<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[k][j];</div>
-<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;            tmnew[i][j]=prod;</div>
-<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;        }</div>
-<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
-<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;        <span class="keywordflow">for</span>(j=0; j&lt;3; ++j)<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][j]=tmnew[i][j];</div>
-<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a> = this-&gt;tmatrix_is_cardinal();</div>
-<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;    <span class="comment">/* Assume this method does not yield cartesian coordinate directions.*/</span></div>
-<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;    <span class="keywordflow">if</span>(!<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>) <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=<span class="keyword">false</span>;</div>
-<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;{</div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;    <span class="keywordflow">if</span>( (<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">size</a>()[1]&lt;=0) || <a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">return</span>; <span class="comment">// do nothing in these situations</span></div>
+<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;    <span class="comment">/* Older version had this - we need to trust ns is already u.columns().  */</span></div>
+<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;    <span class="comment">//size_t ns = u.size()[1];</span></div>
+<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;    <span class="keywordtype">size_t</span> i,j,k;</div>
+<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;    <span class="keywordtype">double</span> *work[3];</div>
+<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) work[i] = <span class="keyword">new</span> <span class="keywordtype">double</span>[<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>];</div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
+<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;    {</div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;        dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(0,0),3,work[i],1);</div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;        dscal(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,a[i][0],work[i],1);</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;        daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,a[i][1],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(1,0),3,work[i],1);</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;        daxpy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,a[i][2],<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(2,0),3,work[i],1);</div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;    }</div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) dcopy(<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>,work[i],1,<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(i,0),3);</div>
+<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) <span class="keyword">delete</span> [] work[i];</div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;    <span class="comment">/* Hand code this rather than use dmatrix or other library.</span></div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;<span class="comment">       Probably dumb, but this is just a 3x3 system.  This</span></div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;<span class="comment">       is simply a multiply of a*tmatrix with result replacing</span></div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;<span class="comment">       the internal tmatrix */</span></div>
+<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;    <span class="keywordtype">double</span> tmnew[3][3];</div>
+<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;    <span class="keywordtype">double</span> prod;</div>
+<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
+<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;        <span class="keywordflow">for</span>(j=0; j&lt;3; ++j)</div>
+<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;        {</div>
+<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;            <span class="keywordflow">for</span>(prod=0.0,k=0; k&lt;3; ++k)</div>
+<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;                prod+=a[i][k]*<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[k][j];</div>
+<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;            tmnew[i][j]=prod;</div>
+<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;        }</div>
+<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;    <span class="keywordflow">for</span>(i=0; i&lt;3; ++i)</div>
+<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;        <span class="keywordflow">for</span>(j=0; j&lt;3; ++j)<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[i][j]=tmnew[i][j];</div>
+<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a> = this-&gt;tmatrix_is_cardinal();</div>
+<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;    <span class="comment">/* Assume this method does not yield cartesian coordinate directions.*/</span></div>
+<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;    <span class="keywordflow">if</span>(!<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>) <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#af87b223c30872f55e8c5a5246da143ba">components_are_cardinal</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">mspass::seismic::BasicTimeSeries::nsamp</a>, <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#aa78dbbdf719f69c8422734612e9a56af">mspass::utility::dmatrix::size()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.</p>
 
@@ -2198,8 +2196,8 @@ rotation in rotational angle grid searches.
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_aeb40f4223a8ee73e79f9af065372a757"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mspass::seismic::BasicTimeSeries::mt0</a></div><div class="ttdeci">double mt0</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:264</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></div><div class="ttdef"><b>Definition:</b> Metadata.h:75</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_ad69a5786d997104df560775f4f688b02"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">mspass::utility::Metadata::get_double</a></div><div class="ttdeci">double get_double(const std::string key) const override</div><div class="ttdef"><b>Definition:</b> Metadata.h:135</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a756ee542caaa6001f9f40fed3607ff7e"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a756ee542caaa6001f9f40fed3607ff7e">mspass::seismic::CoreSeismogram::rotate_to_standard</a></div><div class="ttdeci">void rotate_to_standard()</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.cc:363</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a94e13495475bfb8c1e62f40006f13bdc"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a94e13495475bfb8c1e62f40006f13bdc">mspass::seismic::CoreSeismogram::set_transformation_matrix</a></div><div class="ttdeci">bool set_transformation_matrix(const mspass::utility::dmatrix &amp;A)</div><div class="ttdoc">Define the transformaton matrix.</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.cc:746</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a756ee542caaa6001f9f40fed3607ff7e"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a756ee542caaa6001f9f40fed3607ff7e">mspass::seismic::CoreSeismogram::rotate_to_standard</a></div><div class="ttdeci">void rotate_to_standard()</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.cc:365</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a94e13495475bfb8c1e62f40006f13bdc"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a94e13495475bfb8c1e62f40006f13bdc">mspass::seismic::CoreSeismogram::set_transformation_matrix</a></div><div class="ttdeci">bool set_transformation_matrix(const mspass::utility::dmatrix &amp;A)</div><div class="ttdoc">Define the transformaton matrix.</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.cc:748</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a991516933477580b6b59dd578819df06"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a991516933477580b6b59dd578819df06">mspass::utility::Metadata::get_any</a></div><div class="ttdeci">boost::any get_any(const std::string key) const</div><div class="ttdef"><b>Definition:</b> Metadata.h:283</div></div>
 <div class="ttc" id="anamespacemspass_1_1seismic_html_ac848a79911ca1930abf265f01a6d635f"><div class="ttname"><a href="namespacemspass_1_1seismic.html#ac848a79911ca1930abf265f01a6d635f">mspass::seismic::SEISMICMD_npts</a></div><div class="ttdeci">const std::string SEISMICMD_npts(&quot;npts&quot;)</div></div>
 <div class="ttc" id="astructmspass_1_1utility_1_1_spherical_coordinate_html_a2c970fd569ae883e5545f81e58458ef9"><div class="ttname"><a href="structmspass_1_1utility_1_1_spherical_coordinate.html#a2c970fd569ae883e5545f81e58458ef9">mspass::utility::SphericalCoordinate::phi</a></div><div class="ttdeci">double phi</div><div class="ttdef"><b>Definition:</b> SphericalCoordinate.h:26</div></div>
@@ -2212,13 +2210,13 @@ rotation in rotational angle grid searches.
 <div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a></div><div class="ttdoc">Base class for error object thrown by MsPASS library routines.</div><div class="ttdef"><b>Definition:</b> MsPASSError.h:39</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_ab9e34acc9b193854c5148e8c3d9650c2"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#ab9e34acc9b193854c5148e8c3d9650c2">mspass::utility::dmatrix::zero</a></div><div class="ttdeci">void zero()</div><div class="ttdef"><b>Definition:</b> dmatrix.cc:215</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_abe29da17a295b2b439951d3ab6378caf"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#abe29da17a295b2b439951d3ab6378caf">mspass::seismic::BasicTimeSeries::set_t0</a></div><div class="ttdeci">virtual void set_t0(const double t0in)</div><div class="ttdoc">Set the data start time.</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:228</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_ae9ea31f9e36577a51660c61e0749d4a6"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#ae9ea31f9e36577a51660c61e0749d4a6">mspass::seismic::CoreSeismogram::transform</a></div><div class="ttdeci">void transform(const double a[3][3])</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.cc:632</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_ae9ea31f9e36577a51660c61e0749d4a6"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#ae9ea31f9e36577a51660c61e0749d4a6">mspass::seismic::CoreSeismogram::transform</a></div><div class="ttdeci">void transform(const double a[3][3])</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.cc:634</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_aa56da98a52f03babd67bf9fb55c40f3a"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">mspass::utility::Metadata::get_string</a></div><div class="ttdeci">std::string get_string(const std::string key) const override</div><div class="ttdef"><b>Definition:</b> Metadata.h:213</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a0cb0afe9272567b8fd3394f79f46628a"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">mspass::seismic::BasicTimeSeries::nsamp</a></div><div class="ttdeci">size_t nsamp</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:268</div></div>
 <div class="ttc" id="anamespacemspass_1_1seismic_html_a17279751e3795fee46d6a3cdfe427c33"><div class="ttname"><a href="namespacemspass_1_1seismic.html#a17279751e3795fee46d6a3cdfe427c33">mspass::seismic::SEISMICMD_foff</a></div><div class="ttdeci">const std::string SEISMICMD_foff(&quot;foff&quot;)</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a4101771f4d687d43f4ae79bfebef3f7c"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a4101771f4d687d43f4ae79bfebef3f7c">mspass::seismic::BasicTimeSeries::set_npts</a></div><div class="ttdeci">virtual void set_npts(const size_t npts)</div><div class="ttdoc">Set the number of samples attribute for data.</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:213</div></div>
 <div class="ttc" id="astructmspass_1_1utility_1_1_spherical_coordinate_html_ae06e9f7deab80ef715e5a3629fbab2f7"><div class="ttname"><a href="structmspass_1_1utility_1_1_spherical_coordinate.html#ae06e9f7deab80ef715e5a3629fbab2f7">mspass::utility::SphericalCoordinate::theta</a></div><div class="ttdeci">double theta</div><div class="ttdef"><b>Definition:</b> SphericalCoordinate.h:22</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_ab52a292c7c7bc8fc5fef68db9eb847e0"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#ab52a292c7c7bc8fc5fef68db9eb847e0">mspass::seismic::CoreSeismogram::rotate</a></div><div class="ttdeci">void rotate(mspass::utility::SphericalCoordinate &amp;sc)</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.cc:507</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_ab52a292c7c7bc8fc5fef68db9eb847e0"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#ab52a292c7c7bc8fc5fef68db9eb847e0">mspass::seismic::CoreSeismogram::rotate</a></div><div class="ttdeci">void rotate(mspass::utility::SphericalCoordinate &amp;sc)</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.cc:509</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html">mspass::utility::dmatrix</a></div><div class="ttdoc">Lightweight, simple matrix object.</div><div class="ttdef"><b>Definition:</b> dmatrix.h:101</div></div>
 <div class="ttc" id="astructmspass_1_1utility_1_1_spherical_coordinate_html"><div class="ttname"><a href="structmspass_1_1utility_1_1_spherical_coordinate.html">mspass::utility::SphericalCoordinate</a></div><div class="ttdoc">Encapsulates spherical coordinates in a data structure.</div><div class="ttdef"><b>Definition:</b> SphericalCoordinate.h:14</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a9ac5c7c060d582b1a399fb066d06779f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a></div><div class="ttdeci">mspass::utility::dmatrix u</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.h:53</div></div>
