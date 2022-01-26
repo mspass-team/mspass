@@ -5,6 +5,8 @@ from mspasspy.ccore.seismic import (TimeSeries,
                                     SeismogramEnsemble)
 from mspasspy.ccore.utility import (MsPASSError,
                                     ErrorSeverity)
+from mspasspy.util.decorators import mspass_method_wrapper 
+
 # Use of abstract base class based on:
 # https://python-course.eu/oop/the-abc-of-abstract-base-classes.php
 class Executioner(ABC):
@@ -98,6 +100,8 @@ class MetadataGT(Executioner):
         self.key = key
         self.value = value
         self.verbose = verbose
+        
+    @mspass_method_wrapper
     def kill_if_true(self,d):
         """
         Implementation of this abstract method for this tester.  
@@ -150,6 +154,8 @@ class MetadataGE(Executioner):
         self.key = key
         self.value = value
         self.verbose = verbose
+        
+    @mspass_method_wrapper
     def kill_if_true(self,d):
         """
         Implementation of this abstract method for this tester.  
@@ -202,6 +208,8 @@ class MetadataLT(Executioner):
         self.key = key
         self.value = value
         self.verbose = verbose
+        
+    @mspass_method_wrapper
     def kill_if_true(self,d):
         """
         Implementation of this abstract method for this tester.  
@@ -254,6 +262,7 @@ class MetadataLE(Executioner):
         self.key = key
         self.value = value
         self.verbose = verbose
+    @mspass_method_wrapper
     def kill_if_true(self,d):
         """
         Implementation of this abstract method for this tester.  
@@ -310,6 +319,8 @@ class MetadataEQ(Executioner):
         self.key = key
         self.value = value
         self.verbose = verbose
+        
+    @mspass_method_wrapper
     def kill_if_true(self,d):
         """
         Implementation of this abstract method for this tester.  
@@ -364,6 +375,8 @@ class MetadataNE(Executioner):
         self.key = key
         self.value = value
         self.verbose = verbose
+        
+    @mspass_method_wrapper
     def kill_if_true(self,d):
         """
         Implementation of this abstract method for this tester.  
@@ -408,6 +421,8 @@ class MetadataDefined(Executioner):
         """
         self.key = key
         self.verbose = verbose
+        
+    @mspass_method_wrapper
     def kill_if_true(self,d):
         """
         Implementation of this abstract method for this tester.  
@@ -453,6 +468,8 @@ class MetadataUndefined(Executioner):
         """
         self.key = key
         self.verbose = verbose
+        
+    @mspass_method_wrapper
     def kill_if_true(self,d):
         """
         Implementation of this abstract method for this tester.  
@@ -527,6 +544,8 @@ class MetadataInterval(Executioner):
         self.use_upper_edge = use_upper_edge
         self.kill_if_outside = kill_if_outside
         self.verbose = verbose
+        
+    @mspass_method_wrapper
     def kill_if_true(self,d):
         """
         Implementation of this abstract method for this tester.  
@@ -622,6 +641,7 @@ class FiringSquad(Executioner):
         for ex in executioner_list:
             self.executioners.append(ex)
 
+    @mspass_method_wrapper
     def kill_if_true(self,d):
         """
         Implementation of base class method.  In this case failure is 
