@@ -234,6 +234,15 @@ def test_ErrorLogger():
     assert errlog[0].badness == ErrorSeverity.Complaint
     assert errlog[0].job_id == errlog.get_job_id()
 
+    err = MsPASSError("foo", ErrorSeverity.Fatal)
+    errlog.log_error(err)
+    assert errlog[1].algorithm == "MsPASSError"
+    assert errlog[1].message == "foo"
+    assert errlog[1].badness == ErrorSeverity.Fatal
+    assert errlog[1].job_id == errlog.get_job_id()
+    with pytest.raises(TypeError, match="'int' is given"):
+        errlog.log_error(123)
+
 
 def test_LogData():
     ld = LogData(
@@ -251,6 +260,15 @@ def test_LogData():
     assert ld.message == "msg"
     assert ld.badness == ErrorSeverity.Suspect
     assert str(ld) == str(LogData(eval(str(ld))))
+
+    err = MsPASSError("foo", ErrorSeverity.Fatal)
+    ld = LogData(0, "alg", err)
+    assert ld.job_id == 0
+    assert ld.algorithm == "alg"
+    assert ld.message == "foo"
+    assert ld.badness == ErrorSeverity.Fatal
+    with pytest.raises(TypeError, match="'int' is given"):
+        ld = LogData(0, "alg", 123)
 
 
 def test_Metadata():
