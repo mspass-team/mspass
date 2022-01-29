@@ -45,6 +45,7 @@ package.
    user_manual/HeaderMath
    user_manual/graphics
    user_manual/processing_history_concepts
+   user_manual/parallel_processing
    user_manual/adapting_algorithms
 
 
