@@ -1986,8 +1986,92 @@ class Mod2(MetadataOperator):
             return False
         else:
             return True
+# Note this class was patterned closely after FiringSquad - the approach 
+# is identical.  I did little more than edit a copy of FiringSquad to produce
+# this class
+class MetadataOperatorChain(MetadataOperator):
+    """
+    Used to apply multiple a chain of arithmetic operators to derive 
+    computed metadata attributes.  Very elaborate calculations can be 
+    done through this class by chaining appropriate atomic operators 
+    defined elsewhere in the module (i.e. Add, Subtract, etc.).  
+    The operation chain is defined by a python list of the atomic operators.
+    When the apply method of this class is called the list of operators 
+    are applied sequentially in list order.   
 
+    Note the class has a += operator to allow appending additional 
+    operators to the chain.
+    """
 
+    def __init__(self, operator_list):
+        """
+        One and only constructor.  operator_list does not literally 
+        have to be a list container.  It can be any container that is iterable so
+        a list, tuple, or array can be used.   Internally the contents 
+        are copied to a python list container so this the contents of 
+        operator_list sent to the constructor are treated not unintentionally
+        modified.
+
+        The constructor will throw a MsPASSError exception if any of the 
+        contents of operator_list is not a child of the 
+        MetadataOperator base class. 
+        """
+        for ex in operator_list:
+            if not isinstance(ex, MetadataOperator):
+                raise MsPASSError(
+                    "MetadataOperatorChain constructor:  invalid input.  Expected iterable container of MetadataOperator objects", ErrorSeverity.Fatal)
+
+        # to allow flexibility of the structure used for input we should
+        # copy the operator_list.  Further, this assure the
+        # result will iterate correctly and allow for append
+        self.oplist = list()
+        for ex in operator_list:
+            self.oplist.append(ex)
+
+    @mspass_method_wrapper
+    def apply(self, d, apply_to_members=False):
+        """
+        Implementation of base class method.  In this case failure is 
+        defined as not passing one of the set of tests loaded  when 
+        the object was created.  As noted earlier the tests are performed 
+        in the same order they were passed to the constructor of added on 
+        with the += operator.
+        :param d: is a mspass data object to be checked 
+        """
+        if _input_is_valid(d):
+            if d.dead():
+                return d
+            if _is_ensemble(d) and apply_to_members:
+                self.edit_ensemble_members(d)
+            else:
+                for op in self.oplist:
+                    op.apply(d,apply_to_members=apply_to_members)
+                    if d.dead():
+                        break
+            return d
+        else:
+            raise MsPASSError(
+                "MetadataOperatorChain received invalid input data", ErrorSeverity.Fatal)
+    # These two virtual methods have to be defined but they do nothing in
+    # this context.  We depend on the atomic operators to implement these 
+    # checks
+    def check_keys(self,d):
+        pass
+    def check_operation(self,d):
+        pass
+
+    def __iadd__(self, other):
+        """
+        Defines the += operator for the class. In that case it means a new 
+        operator is appended.   Raises a MsPASSError set Fatal other is not a 
+        subclass of MetadataOperator.
+        """
+        if isinstance(other, MetadataOperator):
+            self.oplist.append(other)
+        else:
+            raise MsPASSError("MetadataOperatorChain:   operator +=  rhs is not a child of MetadataOperator",
+                              ErrorSeverity.Fatal)
+        return self
 
 # other editors to implement that do not match the abstract base class model
 

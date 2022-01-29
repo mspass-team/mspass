@@ -24,6 +24,7 @@ from mspasspy.algorithms.edit import (SetValue,
                   Divide2,
                   IntegerDivide2,
                   Mod2,
+                  MetadataOperatorChain,
                   erase_metadata)
 
 
@@ -446,3 +447,33 @@ enscpy =op.apply(enscpy,apply_to_members=True)
 for d in enscpy.member:
     assert np.isclose(d['opout'],4.0%2.0)
     
+
+# Test operator chain
+d2 = TimeSeries(d)
+enscpy = TimeSeriesEnsemble(ens)
+
+
+# atomic operators to use in the chain
+op1 = Add2("lhs","test_float","test_int")
+op2 = Multiply("lhs",4.0)
+op3 = Divide2("lhs","lhs","test_int")
+oplist = [op1, op2, op3]
+opchain = MetadataOperatorChain(oplist)
+d2 = opchain.apply(d2)
+assert np.isclose(d2['lhs'],12.0)
+
+enscpy = opchain.apply(enscpy,apply_to_members=True)
+for d in enscpy.member:
+    assert np.isclose(d['lhs'],12.0)
+
+# Test to change the chain a bit for the ensemble metadata - a detail 
+# of how this implemented makes the result more robust 
+enscpy['enstest'] = 5
+enscpy['enstest_float'] = 2.5
+op1 = Add2("lhs","enstest","enstest_float")
+op3 = Divide("lhs",3)
+oplist = [op1, op2, op3]
+opchain = MetadataOperatorChain(oplist)
+enscpy = opchain.apply(enscpy)
+assert np.isclose(enscpy['lhs'],(4*7.5)/3)
+
