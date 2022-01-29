@@ -10,7 +10,7 @@ from mspasspy.algorithms.edit import (MetadataGT,
             MetadataUndefined,
             MetadataInterval,
             FiringSquad)
-from edit import (SetValue,
+from mspasspy.algorithms.edit import (SetValue,
                   ChangeKey,
                   Add,
                   Subtract,
