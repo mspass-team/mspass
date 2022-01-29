@@ -11,7 +11,7 @@ of "good" or "bad" is not grey but a black and white (boolean) decision.
 We implement this concept in MsPASS through a boolean `live` attribute
 that is a component of all MsPASS data objects (i.e. both atomic data
 TimeSeries and Seismogram as well as ensembles of same).   Any MsPASS
-data object can be "killed" by callig it's `kill` method.   Algorithms
+data object can be "killed" by calling it's `kill` method.   Algorithms
 can and always should test the attribute `live` to verify the data object
 has data that can be viewed as valid.  No algorithm should ever assume
 data marked dead (live set False) can be used for any further processing.
