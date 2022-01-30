@@ -238,6 +238,27 @@ PYBIND11_MODULE(deconvolution, m) {
       "Return the number of tapers this operator uses for power spectrum estimates")
     .def("set_df",&MTPowerSpectrumEngine::set_df,
       "Change the assumed frequency bin sample interval")
+    /* We do pickle for this object in a different way than I've ever done this
+    before.  This object can be define by only 3 numbers that are expanded in
+    the constructor what can be very large arrays.  An untested hypothesis that
+    this approach builds on is that it is cheaper to recompute the tapers when
+    this object gets serialized than it is to serialize, move, and deserialize
+    the large arrays.   It definitely simplifies this binding code.  If the
+    result proves ponderously slow that hypothesis should be tested.
+    */
+    .def(py::pickle(
+      [](const MTPowerSpectrumEngine& self)
+      {
+        return py::make_tuple(self.taper_length(),self.time_bandwidth_product(),self.number_tapers());
+      },
+      [](py::tuple t)
+      {
+        int taperlen=t[0].cast<int>();
+        double tbp=t[1].cast<double>();
+        int ntapers=t[2].cast<int>();
+        return MTPowerSpectrumEngine(taperlen,tbp,ntapers);
+      }
+    ))
   ;
   m.def("circular_shift",&circular_shift,"Time-domain circular shift operator",
       py::return_value_policy::copy,

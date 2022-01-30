@@ -1146,7 +1146,10 @@ class TestDatabase:
         )
         assert gaps_ts.npts == 8640000
         fill_val_cnt = np.isclose(gaps_ts.data, -1).sum()
-        assert fill_val_cnt == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378 # = 315090
+        assert (
+            fill_val_cnt
+            == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
+        )  # = 315090
         assert len(gaps_ts.elog.get_error_log()) == 1
         assert (
             gaps_ts.elog.get_error_log()[0].message

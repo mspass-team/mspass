@@ -25,6 +25,7 @@ using namespace std;
 using namespace mspass::seismic;
 using namespace mspass::utility;
 using namespace mspass::algorithms;
+using namespace mspass::algorithms::amplitudes;
 
 CNR3CDecon::CNR3CDecon() : FFTDeconOperator(),
   signalengine(),waveletengine(),dnoise_engine(),wnoise_engine(),
@@ -39,6 +40,7 @@ CNR3CDecon::CNR3CDecon() : FFTDeconOperator(),
   noise_floor=0.0001;
   snr_regularization_floor=1.5;
   taper_data=false;
+  fhs=2.0;   // appropriate for teleseismic P wave data
   for(int k=0;k<3;++k)
   {
     signal_bandwidth_fraction[k]=0.0;
@@ -87,6 +89,7 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
     this->snr_regularization_floor=pf.get_double("snr_regularization_floor");
     this->snr_bandwidth=pf.get_double("snr_for_bandwidth_estimator");
     this->operator_dt=pf.get_double("target_sample_interval");
+    this->fhs = pf.get_double("high_frequency_search_start");
     double ts,te;
     ts=pf.get_double("deconvolution_data_window_start");
     te=pf.get_double("deconvolution_data_window_end");
@@ -247,6 +250,7 @@ CNR3CDecon::CNR3CDecon(const CNR3CDecon& parent) :
   band_snr_floor=parent.band_snr_floor;
   regularization_bandwidth_fraction=parent.regularization_bandwidth_fraction;
   decon_bandwidth_cutoff=parent.decon_bandwidth_cutoff;
+  fhs=parent.fhs;
   for(int k=0;k<3;++k)
   {
     signal_bandwidth_fraction[k]=parent.signal_bandwidth_fraction[k];
@@ -283,6 +287,7 @@ CNR3CDecon& CNR3CDecon::operator=(const CNR3CDecon& parent)
     band_snr_floor=parent.band_snr_floor;
     regularization_bandwidth_fraction=parent.regularization_bandwidth_fraction;
     decon_bandwidth_cutoff=parent.decon_bandwidth_cutoff;
+    fhs=parent.fhs;
     wavelet_bwd=parent.wavelet_bwd;
     signal_bwd=parent.signal_bwd;
     for(int k=0;k<3;++k)
@@ -363,116 +368,6 @@ int CNR3CDecon::TestSeismogramInput(Seismogram& d,const int wcomp,const bool loa
   return error_count;
 }
 
-/* Helper function estimates signal bandwidth scanning a signal spectrum
-defined as complex array and noise spectrum defined by a power spectrum.
-Algorithm searches from f*tbw forward to find frequency where snr exceeds
-snr_threshold.   It then does the reverse from 80% of Nyquist (a common
-corner for modern instruments using dsp chips and fir antialias filters).
-To avoid issues with lines in noise spectra snr must exceed the threshold
-by more than 2*tbw frequency bins for an edge to be defined.  The edge back is
-defined as 2*tbw*df from the first point satisfying that constraint.  */
-BandwidthData EstimateBandwidth(const double signal_df,
-  const PowerSpectrum& s, const PowerSpectrum& n,
-    const double snr_threshold, const double tbp)
-{
-  /* Set the starting search points at low (based on noise tbp) and high (80% fny)
-  sides */
-  double flow_start, fhigh_start;
-  flow_start=(n.df)*tbp;
-  fhigh_start=s.Nyquist()*0.8;
-  double df_test_range=2.0*tbp*(n.df);
-  int s_range=s.nf();
-  BandwidthData result;
-  /* First search from flow_start in increments of signal_df to find low
-  edge.*/
-  double f, sigamp, namp, snrnow;
-  double f_mark;
-  int istart=s.sample_number(flow_start);
-  bool searching(false);
-  int i;
-  for(i=istart;i<s_range;++i)
-  {
-    f=s.frequency(i);
-    /* We use amplitude snr not power snr*/
-    sigamp=sqrt(s.spectrum[i]);
-    namp=n.amplitude(f);
-    snrnow=sigamp/namp;
-    if(snrnow>snr_threshold)
-    {
-      if(searching)
-      {
-        if((f-f_mark)>=df_test_range)
-        {
-          result.low_edge_f=f_mark;
-          break;
-        }
-      }
-      else
-      {
-        f_mark=f;
-        result.low_edge_snr=snrnow;
-        searching=true;
-      }
-    }
-    else
-    {
-      if(searching)
-      {
-        searching=false;
-        f_mark=f;
-      }
-    }
-  }
-  /* Return the zeroed result object if no data exceeded the snr threshold.*/
-  if(i>=(s_range-1))
-  {
-    result.low_edge_f=0.0;
-    result.high_edge_f=0.0;
-    result.low_edge_snr=0.0;
-    result.high_edge_snr=0.0;
-    /* This is the most important one to set 0.0*/
-    result.f_range=0.0;
-    return result;
-  } 
-  /* Now search from the high end to find upper band edge - same algorithm
-  reversed direction. */
-  searching=false;
-  istart=s.sample_number(fhigh_start);
-  for(i=istart;i>=0;--i)
-  {
-    f=s.frequency(i);
-    sigamp=sqrt(s.spectrum[i]);
-    namp=n.amplitude(f);
-    snrnow=sigamp/namp;
-    if(snrnow>snr_threshold)
-    {
-      if(searching)
-      {
-        if((f_mark-f)>=df_test_range)
-        {
-          result.high_edge_f=f_mark;
-          break;
-        }
-      }
-      else
-      {
-        f_mark=f;
-        result.high_edge_snr=snrnow;
-        searching=true;
-      }
-    }
-    else
-    {
-      if(searching)
-      {
-        searching=false;
-        f_mark=f;
-      }
-    }
-  }
-  result.f_range=result.high_edge_f-result.low_edge_f;
-  return result;
-}
 /* this method is really just a wrapper for the Seismogram, boolean
 overloaded function.   It is appropriate only for conventional rf estimates
 where the vertical/longitudinal defines the wavelet.  */
@@ -567,7 +462,7 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
     }
     signal_bwd=EstimateBandwidth(FFTDeconOperator::df(this->operator_dt),
         pssignal,psnoise_data,snr_bandwidth,
-          signalengine.time_bandwidth_product());
+          signalengine.time_bandwidth_product(),this->fhs);
   }catch(...){throw;};
 }
 /* Note we intentionally do not trap nfft size mismatch in this function because
@@ -593,7 +488,7 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
     /* for now use the same snr floor as regularization - may need to be an
     independent parameter */
     this->wavelet_bwd=EstimateBandwidth(FFTDeconOperator::df(this->operator_dt),pswavelet,
-      psnoise,snr_bandwidth,waveletengine.time_bandwidth_product());
+      psnoise,snr_bandwidth,waveletengine.time_bandwidth_product(),this->fhs);
     /* Now load the wavelet into the fft buffer area - there are some tricky
     things to do here to align the data correctly using the relative time
     reference t0 stored with the TimeSeries data */

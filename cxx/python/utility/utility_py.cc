@@ -679,7 +679,14 @@ PYBIND11_MODULE(utility, m) {
   /* These are needed for mspass extensions of Core data objects */
   py::class_<LogData>(m,"LogData","Many mspass create error and log messages with this structure")
     .def(py::init<>())
-    .def(py::init<int,std::string,MsPASSError&>())
+    .def(py::init([](int jid, std::string alg, py::object err) {
+        if(!py::isinstance(err, py::handle(PyMsPASSError)))
+          throw py::type_error("log_error(): incompatible function arguments.\n    arg2 should be 'mspasspy.ccore.utility.MsPASSError' but " + std::string("'") +
+            err.attr("__class__").attr("__name__").cast<std::string>() +
+            "' is given");
+        return new LogData(jid, alg, std::string(py::str(err.attr("message"))), err.attr("severity").cast<ErrorSeverity>());
+    }))
+
     .def(py::init<int,std::string,std::string,ErrorSeverity>())
     .def(py::init([](py::dict d) {
       auto ld = new LogData();
@@ -721,11 +728,20 @@ PYBIND11_MODULE(utility, m) {
     .def(py::init<int>())
     .def("set_job_id",&ErrorLogger::set_job_id)
     .def("get_job_id",&ErrorLogger::get_job_id)
-    .def("log_error",py::overload_cast<const MsPASSError&>(&ErrorLogger::log_error),"log error thrown as MsPASSError")
+    .def("log_error",[](ErrorLogger &self, py::object err) {
+        if(!py::isinstance(err, py::handle(PyMsPASSError)))
+          throw py::type_error("log_error(): incompatible function arguments.\n    arg0 should be 'mspasspy.ccore.utility.MsPASSError' but " + std::string("'") +
+            err.attr("__class__").attr("__name__").cast<std::string>() +
+            "' is given");
+        self.log_error(string("MsPASSError"), std::string(py::str(err.attr("message"))), err.attr("severity").cast<ErrorSeverity>());
+      },
+      "log error thrown as MsPASSError"
+    )
     .def("log_error",py::overload_cast<const std::string,const std::string,const ErrorSeverity>(&ErrorLogger::log_error),"log a message at a specified severity level")
     .def("log_verbose",&ErrorLogger::log_verbose,"Log an informational message - tagged as log message")
     .def("get_error_log",&ErrorLogger::get_error_log,"Return all posted entries")
     .def("size",&ErrorLogger::size,"Return number of entries in this log")
+    .def(py::self += py::self,"Operator +=")
     .def("__len__",&ErrorLogger::size,"Return number of entries in this log")
     .def("worst_errors",&ErrorLogger::worst_errors,"Return a list of only the worst errors")
     .def("__getitem__", [](ErrorLogger &self, size_t i) {

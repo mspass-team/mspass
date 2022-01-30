@@ -413,6 +413,9 @@ Database:
       wf_TimeSeries_id:
         reference: wf_TimeSeries
         constraint: xref_key
+      wf_miniseed_id:
+        reference: wf_miniseed
+        constraint: xref_key
       tombstone:
         type: dict
         concept: a copy of the Metadata of a dead object.

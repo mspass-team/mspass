@@ -2,11 +2,11 @@ import pytest
 
 from mspasspy.history import HistoryLogger
 
-# TODO: Need to finish up the test after rearrange the history module. 
+# TODO: Need to finish up the test after rearrange the history module.
 # The naming of classes should follow the same scheme.
 
-class TestHistoryLogger():
 
+class TestHistoryLogger:
     def test_init(self):
         pass
 

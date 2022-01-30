@@ -446,7 +446,7 @@ TopMute::TopMute(const double t0, const double t1, const std::string type)
     else
     {
       stringstream ss;
-      ss << base_error<<"Unrecognized type argume="<<type<<endl
+      ss << base_error<<"Unrecognized type argument="<<type<<endl
          << "Current options are:  linear OR cosine"<<endl;
       throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
     }
@@ -479,5 +479,25 @@ int TopMute::apply(mspass::seismic::Seismogram& d)
     return iret;
   }catch(...){throw;};
 }
-
+/* Some sources say the approach used in the algorithm is evil, but
+I don't see a better solution.  We use the property of dynamic_cast
+of a pointer returning NULL if the cast fails because the type is wrong.
+We then just walk through the possibilities and throw an exception if none
+of them work.
+*/
+string TopMute::taper_type() const
+{
+  BasicTaper *rawptr;
+  rawptr = this->taper.get();
+  if(dynamic_cast<const LinearTaper*>(rawptr))
+    return string("linear");
+  else if(dynamic_cast<const CosineTaper*>(rawptr))
+    return string("cosine");
+  else
+    /* note there is a VectorTaper child of BasicTaper but it is not supported
+    by TopMute - only allows linear and cosine - so if that happened somehow
+    we throw this exception in that case too. */
+    throw MsPASSError("TopMute::taper_type:  Internal taper dynamic cast does not resolve;  this should not happen and is a bug",
+      ErrorSeverity::Fatal);
+}
 }  // End namespace

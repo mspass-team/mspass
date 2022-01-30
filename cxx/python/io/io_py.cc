@@ -42,11 +42,14 @@ PYBIND11_MODULE(io,m){
       "Time estimated for end of block computed from npts and samprate")
     .def_readwrite("last_packet_time",&mseed_index::last_packet_time,
       "Time tag of last packe of data in this block - less than endtime")
-    ;  
+    ;
   m.def("_mseed_file_indexer",&mseed_file_indexer,
-    "Builds an index for a miniseed file",
+    "Builds an index for a miniseed file returning std::pair with index and ErrorLogger object",
     py::return_value_policy::copy,
-    py::arg("file") )
+    py::arg("file"),
+    py::arg("segment") = false,
+    py::arg("verbose") = false
+    )
   ;
 }
 }   // namespace mspasspy

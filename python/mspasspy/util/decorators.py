@@ -222,6 +222,7 @@ def mspass_func_wrapper_multi(
             data2.elog.log_error(alg_name, ex.message, ex.severity)
         else:
             logging_helper.ensemble_error(data2, alg_name, ex.message, ex.severity)
+<<<<<<< HEAD
 
 @decorator
 def mspass_method_wrapper(
@@ -347,6 +348,8 @@ def mspass_method_wrapper(
         if inplace_return:
             return data
 
+=======
+>>>>>>> master
 
 
 def is_input_dead(*args, **kwargs):
