@@ -5045,6 +5045,7 @@ class Database(pymongo.database.Database):
         A lambda function will be called, and do the timewindowing on cloud. The output file
         of timewindow will then be downloaded and parsed by obspy.
         Finally return an obspy stream object.
+        An example of using lambda is in /scripts/aws_lambda_examples.
 
         :param aws_access_key_id & aws_secret_access_key: credential for aws, used to initialize lambda_client
         :param year:  year for the query mseed file(4 digit).
@@ -5063,7 +5064,7 @@ class Database(pymongo.database.Database):
             aws_secret_access_key=aws_secret_access_key,
         )
         s3_input_bucket = "scedc-pds"
-        s3_output_bucket = "scedcdata"  #   The output file can be saved to this bucket, currently not in use
+        s3_output_bucket = "scedcdata"  #   The output file can be saved to this bucket, user might want to change it into their own bucket
         year = str(year)
         day_of_year = str(day_of_year)
         if len(day_of_year) < 3:
@@ -5086,12 +5087,13 @@ class Database(pymongo.database.Database):
         source_key += mseed_file
 
         event = {
-            "s3_input_bucket": s3_input_bucket,
-            "s3_output_bucket": s3_output_bucket,
-            "source_key": source_key,
+            'src_bucket' : s3_input_bucket,
+            'dst_bucket' : s3_output_bucket,
+            'src_key' : source_key,
+            'dst_key' : source_key,
+            'save_to_s3' : False,
             "duration": duration,
-            "t0shift": t0shift,
-            "save_to_s3": False,
+            "t0shift": t0shift
         }
 
         response = lambda_client.invoke(
@@ -5106,17 +5108,37 @@ class Database(pymongo.database.Database):
 
         if (
             ret_type == "key"
-        ):  #   The output file is saved to another bucket (s3_output_bucket). We don't support this workflow now.
-            new_key = response_payload["output_key"]
-            print(
-                "The window given is too large, can't be returned immediately,\nPlease check {}".format(
-                    new_key
+        ):  # If the ret_type is "key", the output file is stored in another s3 bucket,
+            # we have to fetch it again.
+            try:
+                ret_bucket = response_payload["ret_value"].split("::")[0]
+                ret_key = response_payload["ret_value"].split("::")[1]
+                s3_client = boto3.client(
+                    "s3",
+                    aws_access_key_id=aws_access_key_id,
+                    aws_secret_access_key=aws_secret_access_key,
                 )
-            )
-            return None
+                obj = s3_client.get_object(Bucket=ret_bucket, Key=ret_key)
+                st = obspy.read(
+                    io.BytesIO(obj["Body"].read())
+                )
+                return st
+
+            except botocore.exceptions.ClientError as e:
+                if e.response["Error"]["Code"] == "404":
+                    # the object does not exist
+                    print(
+                        "Could not find the object by the KEY: {} from the BUCKET: {} in s3"
+                    ).format(ret_key, ret_bucket)
+                else:
+                    raise
+
+            except Exception as e:
+                raise MsPASSError("Error while downloading the output object.", "Fatal") from e
+
 
         filecontent = base64.b64decode(
-            response_payload["output_content"].encode("utf-8")
+            response_payload["ret_value"].encode("utf-8")
         )
         stringio_obj = io.BytesIO(filecontent)
         st = obspy.read(stringio_obj)
@@ -5322,7 +5344,7 @@ class Database(pymongo.database.Database):
         station,
         location,
         channel,
-        collection="wf_miniseed_fdsn",
+        collection="wf_miniseed",
     ):
         dbh = self[collection]
 
