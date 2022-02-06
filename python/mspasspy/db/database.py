@@ -5087,13 +5087,13 @@ class Database(pymongo.database.Database):
         source_key += mseed_file
 
         event = {
-            'src_bucket' : s3_input_bucket,
-            'dst_bucket' : s3_output_bucket,
-            'src_key' : source_key,
-            'dst_key' : source_key,
-            'save_to_s3' : False,
+            "src_bucket": s3_input_bucket,
+            "dst_bucket": s3_output_bucket,
+            "src_key": source_key,
+            "dst_key": source_key,
+            "save_to_s3": False,
             "duration": duration,
-            "t0shift": t0shift
+            "t0shift": t0shift,
         }
 
         response = lambda_client.invoke(
@@ -5119,9 +5119,7 @@ class Database(pymongo.database.Database):
                     aws_secret_access_key=aws_secret_access_key,
                 )
                 obj = s3_client.get_object(Bucket=ret_bucket, Key=ret_key)
-                st = obspy.read(
-                    io.BytesIO(obj["Body"].read())
-                )
+                st = obspy.read(io.BytesIO(obj["Body"].read()))
                 return st
 
             except botocore.exceptions.ClientError as e:
@@ -5134,12 +5132,11 @@ class Database(pymongo.database.Database):
                     raise
 
             except Exception as e:
-                raise MsPASSError("Error while downloading the output object.", "Fatal") from e
+                raise MsPASSError(
+                    "Error while downloading the output object.", "Fatal"
+                ) from e
 
-
-        filecontent = base64.b64decode(
-            response_payload["ret_value"].encode("utf-8")
-        )
+        filecontent = base64.b64decode(response_payload["ret_value"].encode("utf-8"))
         stringio_obj = io.BytesIO(filecontent)
         st = obspy.read(stringio_obj)
 
