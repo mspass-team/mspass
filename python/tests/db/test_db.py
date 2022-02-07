@@ -20,7 +20,7 @@ from mspasspy.ccore.seismic import (
     TimeSeries,
     TimeSeriesEnsemble,
     SeismogramEnsemble,
-    DoubleVector
+    DoubleVector,
 )
 from mspasspy.ccore.utility import (
     dmatrix,
@@ -49,7 +49,14 @@ from helper import (
 )
 
 import boto3
-from moto import mock_s3, mock_lambda
+from moto import mock_s3
+import botocore.session
+from botocore.stub import Stubber
+from unittest.mock import patch
+import json
+import base64
+import io
+
 
 class TestDatabase:
     def setup_class(self):
@@ -2461,10 +2468,10 @@ class TestDatabase:
 
     def _setup_aws_mock(self):
         mock_inst_s3 = mock_s3()
-        #mock_inst_lambda = mock_lambda()
+        # mock_inst_lambda = mock_lambda()
 
     @mock_s3
-    def test_save_s3(self):
+    def test_save_and_read_s3(self):
         #   Test _read_data_from_s3_continuous
         #   First upload a miniseed object to the mock server.
         s3_client = boto3.client(
@@ -2474,10 +2481,7 @@ class TestDatabase:
             aws_secret_access_key="fake_secret_key",
         )
         src_bucket = "scedc-pds"
-        s3 = boto3.resource(
-            "s3",
-            region_name="us-east-1",
-            )
+        s3 = boto3.resource("s3", region_name="us-east-1")
 
         s3_client.create_bucket(Bucket=src_bucket)
         mseed_path = "python/tests/data/CICAC__HNZ___2017005.ms"
@@ -2486,8 +2490,8 @@ class TestDatabase:
         mseed_st.merge()
         stats = mseed_st[0].stats
         src_mseed_doc = dict()
-        src_mseed_doc["year"] = '2017'
-        src_mseed_doc["day_of_year"] = '005'
+        src_mseed_doc["year"] = "2017"
+        src_mseed_doc["day_of_year"] = "005"
         src_mseed_doc["sta"] = stats["station"]
         src_mseed_doc["net"] = stats["network"]
         src_mseed_doc["chan"] = stats["channel"]
@@ -2498,26 +2502,106 @@ class TestDatabase:
         src_mseed_doc["starttime"] = stats["starttime"].timestamp
         if "npts" in stats and stats["npts"]:
             src_mseed_doc["npts"] = stats["npts"]
-        src_mseed_doc["storage_mode"] = 's3_continuous'
+        src_mseed_doc["storage_mode"] = "s3_continuous"
         src_mseed_doc["format"] = "mseed"
 
-        mseed_upload_key= "continuous_waveforms/2017/2017_005/CICAC__HNZ___2017005.ms"
-        s3_client.upload_file(Filename=mseed_path, Bucket=src_bucket, Key=mseed_upload_key)
-        self.db.index_mseed_s3_continuous(s3_client, 2017, 5, network="CI", station="CAC", channel="HNZ", collection="test_s3_db")
+        mseed_upload_key = "continuous_waveforms/2017/2017_005/CICAC__HNZ___2017005.ms"
+        s3_client.upload_file(
+            Filename=mseed_path, Bucket=src_bucket, Key=mseed_upload_key
+        )
+        self.db.index_mseed_s3_continuous(
+            s3_client,
+            2017,
+            5,
+            network="CI",
+            station="CAC",
+            channel="HNZ",
+            collection="test_s3_db",
+        )
         assert self.db["test_s3_db"].count_documents({}) == 1
         ms_doc = self.db.test_s3_db.find_one()
-        shared_items = {k: ms_doc[k] for k in src_mseed_doc if k in ms_doc and src_mseed_doc[k] == ms_doc[k]}
+        shared_items = {
+            k: ms_doc[k]
+            for k in src_mseed_doc
+            if k in ms_doc and src_mseed_doc[k] == ms_doc[k]
+        }
         assert len(shared_items) == 11
 
-        del ms_doc['_id']
+        del ms_doc["_id"]
         ts = TimeSeries(ms_doc, np.ndarray([0], dtype=np.float64))
-        ts.npts = ms_doc['npts']
-        self.db._read_data_from_s3_continuous(mspass_object=ts, aws_access_key_id="fake_access_key",
-            aws_secret_access_key="fake_secret_key")
+        ts.npts = ms_doc["npts"]
+        self.db._read_data_from_s3_continuous(
+            mspass_object=ts,
+            aws_access_key_id="fake_access_key",
+            aws_secret_access_key="fake_secret_key",
+        )
         assert ts.data is not None
         assert ts.data == DoubleVector(mseed_st[0].data)
-        
 
+    def test_save_and_read_lambda(self):
+        mseed_path = "python/tests/data/CICAC__HNZ___2017005.ms"
+        mseed_name = "CICAC__HNZ___2017005.ms"
+
+        #   Mock the lambda invoking process
+        #   There is no proper tools to do it, so here we implement it in an awkward way
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == "Invoke":
+                # mseed_st = obspy.read(mseed_path)
+                mseed_rawbytes = open(mseed_path, "rb").read()
+                mseed_strbytes = base64.b64encode(mseed_rawbytes).decode("utf-8")
+                payload = json.dumps(
+                    {"ret_type": "content", "ret_value": mseed_strbytes}
+                )
+                mock_response = {
+                    "Code": "200",
+                    "Payload": (io.StringIO)(payload),
+                }  # for convenience, here we don't window the data.
+                return mock_response
+            return botocore.client.BaseClient._make_api_call(
+                self, operation_name, kwarg
+            )
+
+        with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):
+            ts = self.db._download_windowed_mseed_file(
+                "fake_access_key",
+                "fake_secret_key",
+                2017,
+                5,
+                network="CI",
+                station="CAC",
+                channel="HNZ",
+            )
+            assert ts == obspy.read(mseed_path)
+
+        mseed_st = obspy.read(mseed_path)
+        mseed_st.merge()
+        stats = mseed_st[0].stats
+        src_mseed_doc = dict()
+        src_mseed_doc["year"] = "2017"
+        src_mseed_doc["day_of_year"] = "005"
+        src_mseed_doc["sta"] = stats["station"]
+        src_mseed_doc["net"] = stats["network"]
+        src_mseed_doc["chan"] = stats["channel"]
+        if "location" in stats and stats["location"]:
+            src_mseed_doc["loc"] = stats["location"]
+        src_mseed_doc["sampling_rate"] = stats["sampling_rate"]
+        src_mseed_doc["delta"] = 1.0 / stats["sampling_rate"]
+        src_mseed_doc["starttime"] = stats["starttime"].timestamp
+        if "npts" in stats and stats["npts"]:
+            src_mseed_doc["npts"] = stats["npts"]
+        src_mseed_doc["storage_mode"] = "s3_continuous"
+        src_mseed_doc["format"] = "mseed"
+
+        ts = TimeSeries(src_mseed_doc, np.ndarray([0], dtype=np.float64))
+        ts.npts = src_mseed_doc["npts"]
+        with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):
+            self.db._read_data_from_s3_lambda(
+                mspass_object=ts,
+                aws_access_key_id="fake_access_key",
+                aws_secret_access_key="fake_secret_key",
+            )
+        assert ts.data is not None
+        assert ts.data == DoubleVector(mseed_st[0].data)
 
     def test_save_dataframe(self):
         dir = "python/tests/data/"
@@ -2563,7 +2647,7 @@ class TestDatabase:
 
         query = {"sta": "112A"}
         cursor = self.db.testdataframe.find(query)
-        assert cursor.count() == 3
+        assert self.db.testdataframe.count_documents(query) == 3
         for doc in cursor:
             assert "calper" not in doc
             assert "chanid" not in doc
@@ -2587,12 +2671,10 @@ class TestDatabase:
         assert self.db["testtextfile"].count_documents({}) == 651
 
         query = {"pwfid": 3102}
-        cursor = self.db.testtextfile.find(query)
-        assert cursor.count() == 1
+        assert 1 == self.db.testtextfile.count_documents(query)
 
         query = {"pwfid": 3752}
-        cursor = self.db.testtextfile.find(query)
-        assert cursor.count() == 1
+        assert 1 == self.db.testtextfile.count_documents(query)
 
 
 def test_read_distributed_data(spark_context):

@@ -3913,7 +3913,7 @@ class Database(pymongo.database.Database):
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
-        nrec = matches.count()
+        nrec = dbsite.count_documents(queryrecord)
         if nrec <= 0:
             return True
         else:
@@ -3953,7 +3953,7 @@ class Database(pymongo.database.Database):
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
-        nrec = matches.count()
+        nrec = dbchannel.count_documents(queryrecord)
         if nrec <= 0:
             return True
         else:
@@ -4547,11 +4547,7 @@ class Database(pymongo.database.Database):
                 + "net, sta, chan, or time",
                 "Invalid",
             )
-        query = {
-            "net": net,
-            "sta": sta,
-            "chan": chan,
-        }
+        query = {"net": net, "sta": sta, "chan": chan}
         if loc != None:
             query["loc"] = loc
         else:
@@ -4927,7 +4923,7 @@ class Database(pymongo.database.Database):
         self,
         filename,
         collection="textfile",
-        separator="\s+",
+        separator="\\s+",
         type_dict=None,
         header_line=0,
         attribute_names=None,
@@ -5064,7 +5060,9 @@ class Database(pymongo.database.Database):
             aws_secret_access_key=aws_secret_access_key,
         )
         s3_input_bucket = "scedc-pds"
-        s3_output_bucket = "scedcdata"  #   The output file can be saved to this bucket, user might want to change it into their own bucket
+        s3_output_bucket = (
+            "scedcdata"
+        )  #   The output file can be saved to this bucket, user might want to change it into their own bucket
         year = str(year)
         day_of_year = str(day_of_year)
         if len(day_of_year) < 3:
