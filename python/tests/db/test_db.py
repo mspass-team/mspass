@@ -20,6 +20,7 @@ from mspasspy.ccore.seismic import (
     TimeSeries,
     TimeSeriesEnsemble,
     SeismogramEnsemble,
+    DoubleVector
 )
 from mspasspy.ccore.utility import (
     dmatrix,
@@ -47,6 +48,8 @@ from helper import (
     get_live_seismogram_ensemble,
 )
 
+import boto3
+from moto import mock_s3, mock_lambda
 
 class TestDatabase:
     def setup_class(self):
@@ -2455,6 +2458,66 @@ class TestDatabase:
         assert "channel_edepth" not in ts
         assert ts["channel_starttime"] == 1.0
         assert ts["channel_endtime"] == 1.0
+
+    def _setup_aws_mock(self):
+        mock_inst_s3 = mock_s3()
+        #mock_inst_lambda = mock_lambda()
+
+    @mock_s3
+    def test_save_s3(self):
+        #   Test _read_data_from_s3_continuous
+        #   First upload a miniseed object to the mock server.
+        s3_client = boto3.client(
+            "s3",
+            region_name="us-east-1",
+            aws_access_key_id="fake_access_key",
+            aws_secret_access_key="fake_secret_key",
+        )
+        src_bucket = "scedc-pds"
+        s3 = boto3.resource(
+            "s3",
+            region_name="us-east-1",
+            )
+
+        s3_client.create_bucket(Bucket=src_bucket)
+        mseed_path = "python/tests/data/CICAC__HNZ___2017005.ms"
+        mseed_name = "CICAC__HNZ___2017005.ms"
+        mseed_st = obspy.read(mseed_path)
+        mseed_st.merge()
+        stats = mseed_st[0].stats
+        src_mseed_doc = dict()
+        src_mseed_doc["year"] = '2017'
+        src_mseed_doc["day_of_year"] = '005'
+        src_mseed_doc["sta"] = stats["station"]
+        src_mseed_doc["net"] = stats["network"]
+        src_mseed_doc["chan"] = stats["channel"]
+        if "location" in stats and stats["location"]:
+            src_mseed_doc["loc"] = stats["location"]
+        src_mseed_doc["sampling_rate"] = stats["sampling_rate"]
+        src_mseed_doc["delta"] = 1.0 / stats["sampling_rate"]
+        src_mseed_doc["starttime"] = stats["starttime"].timestamp
+        if "npts" in stats and stats["npts"]:
+            src_mseed_doc["npts"] = stats["npts"]
+        src_mseed_doc["storage_mode"] = 's3_continuous'
+        src_mseed_doc["format"] = "mseed"
+
+        mseed_upload_key= "continuous_waveforms/2017/2017_005/CICAC__HNZ___2017005.ms"
+        s3_client.upload_file(Filename=mseed_path, Bucket=src_bucket, Key=mseed_upload_key)
+        self.db.index_mseed_s3_continuous(s3_client, 2017, 5, network="CI", station="CAC", channel="HNZ", collection="test_s3_db")
+        assert self.db["test_s3_db"].count_documents({}) == 1
+        ms_doc = self.db.test_s3_db.find_one()
+        shared_items = {k: ms_doc[k] for k in src_mseed_doc if k in ms_doc and src_mseed_doc[k] == ms_doc[k]}
+        assert len(shared_items) == 11
+
+        del ms_doc['_id']
+        ts = TimeSeries(ms_doc, np.ndarray([0], dtype=np.float64))
+        ts.npts = ms_doc['npts']
+        self.db._read_data_from_s3_continuous(mspass_object=ts, aws_access_key_id="fake_access_key",
+            aws_secret_access_key="fake_secret_key")
+        assert ts.data is not None
+        assert ts.data == DoubleVector(mseed_st[0].data)
+        
+
 
     def test_save_dataframe(self):
         dir = "python/tests/data/"
