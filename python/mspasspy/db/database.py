@@ -5300,7 +5300,7 @@ class Database(pymongo.database.Database):
             with open(fname, "wb") as f:
                 f.write(mseed_content)
             # immediately read data from the file
-            ind = _mseed_file_indexer(fname)
+            (ind, elog) = _mseed_file_indexer(fname)
             for i in ind:
                 doc = self._convert_mseed_index(i)
                 doc["storage_mode"] = "s3_event"

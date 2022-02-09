@@ -2471,7 +2471,7 @@ class TestDatabase:
         # mock_inst_lambda = mock_lambda()
 
     @mock_s3
-    def test_save_and_read_s3(self):
+    def test_index_and_read_s3_continuous(self):
         #   Test _read_data_from_s3_continuous
         #   First upload a miniseed object to the mock server.
         s3_client = boto3.client(
@@ -2532,6 +2532,63 @@ class TestDatabase:
         ts.npts = ms_doc["npts"]
         self.db._read_data_from_s3_continuous(
             mspass_object=ts,
+            aws_access_key_id="fake_access_key",
+            aws_secret_access_key="fake_secret_key",
+        )
+        assert ts.data is not None
+        assert ts.data == DoubleVector(mseed_st[0].data)
+
+    @mock_s3
+    def test_index_and_read_s3_event(self):
+        #   First upload a miniseed object to the mock server.
+        s3_client = boto3.client(
+            "s3",
+            region_name="us-east-1",
+            aws_access_key_id="fake_access_key",
+            aws_secret_access_key="fake_secret_key",
+        )
+        src_bucket = "scedc-pds"
+        s3 = boto3.resource("s3", region_name="us-east-1")
+
+        #   Index the miniseed file
+        s3_client.create_bucket(Bucket=src_bucket)
+        mseed_path = "python/tests/data/37780584.ms"
+        mseed_name = "37780584.ms"
+        mseed_st = obspy.read(mseed_path)
+        mseed_st.merge()
+        stats = mseed_st[0].stats
+        src_mseed_doc = dict()
+        src_mseed_doc["year"] = "2017"
+        src_mseed_doc["day_of_year"] = "005"
+        src_mseed_doc["storage_mode"] = "s3_event"
+        src_mseed_doc["format"] = "mseed"
+
+        #   Read the data
+        mseed_upload_key = "event_waveforms/2017/2017_005/37780584.ms"
+        s3_client.upload_file(
+            Filename=mseed_path, Bucket=src_bucket, Key=mseed_upload_key
+        )
+        self.db.index_mseed_s3_event(
+            s3_client,
+            2017,
+            5,
+            37780584,
+            "37780584.ms",
+            dir=None,
+            collection="test_s3_db",
+        )
+        query = {"dfile": "37780584.ms"}
+        assert self.db["test_s3_db"].count_documents(query) == 344
+        ms_doc = self.db.test_s3_db.find_one(query)
+
+        ts = TimeSeries(ms_doc, np.ndarray([0], dtype=np.float64))
+        self.db._read_data_from_s3_event(
+            mspass_object=ts,
+            dir=ms_doc["dir"],
+            dfile=ms_doc["dfile"],
+            foff=ms_doc["foff"],
+            nbytes=ms_doc["nbytes"],
+            format="mseed",
             aws_access_key_id="fake_access_key",
             aws_secret_access_key="fake_secret_key",
         )
@@ -2602,6 +2659,23 @@ class TestDatabase:
             )
         assert ts.data is not None
         assert ts.data == DoubleVector(mseed_st[0].data)
+
+    def test_index_and_read_fdsn(self):
+        self.db.index_mseed_FDSN(
+            "SCEDC", 2017, 5, "CI", "CAC", "", "HNZ", collection="test_s3_fdsn"
+        )
+        assert self.db["test_s3_fdsn"].count_documents({}) == 1
+        fdsn_doc = self.db.test_s3_fdsn.find_one()
+        assert fdsn_doc["provider"] == "SCEDC"
+        assert fdsn_doc["year"] == "2017"
+        assert fdsn_doc["day_of_year"] == "005"
+
+        del fdsn_doc["_id"]
+        tmp_ts = TimeSeries(fdsn_doc, np.ndarray([0], dtype=np.float64))
+        self.db._read_data_from_fdsn(tmp_ts)
+        tmp_ts_2 = TimeSeries(fdsn_doc, np.ndarray([0], dtype=np.float64))
+        self.db._read_data_from_fdsn(tmp_ts_2)
+        assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
 
     def test_save_dataframe(self):
         dir = "python/tests/data/"
