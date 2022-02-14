@@ -107,6 +107,21 @@ def test_edit():
     x = eqtest.kill_if_true(d)
     assert x.live
 
+    # non equality tester
+    d.set_live()
+    eqtest = MetadataNE("test_int", 9, verbose=True)
+    x = eqtest.kill_if_true(d)
+    assert x.dead()
+    enscpy = TimeSeriesEnsemble(ens)
+    enscpy = eqtest.kill_if_true(enscpy, apply_to_members=True)
+    for i in range(len(enscpy.member)):
+        assert enscpy.member[i].dead()
+
+    d.set_live()
+    eqtest = MetadataNE("test_int", 2, verbose=True)
+    x = eqtest.kill_if_true(d)
+    assert x.live
+
     # LT versions
     d.set_live()
     lttest = MetadataLT("test_int", 3, verbose=True)

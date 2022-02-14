@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
-from mspasspy.ccore.seismic import (TimeSeries,
-                                    Seismogram,
-                                    TimeSeriesEnsemble,
-                                    SeismogramEnsemble)
-from mspasspy.ccore.utility import (MsPASSError,
-                                    ErrorSeverity)
+from mspasspy.ccore.seismic import (
+    TimeSeries,
+    Seismogram,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+)
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.util.decorators import mspass_method_wrapper
 
 # These internals are used throughout this module to reduce redundnacy
@@ -23,10 +24,9 @@ def _input_is_valid(d):
     object known to mspass.  Returns false it not.  Caller must decide
     what to do if the function returns false.
     """
-    if isinstance(d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)):
-        return True
-    else:
-        return False
+    return isinstance(
+        d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)
+    )
 
 
 def _is_ensemble(d):
@@ -39,10 +39,8 @@ def _is_ensemble(d):
     should be to precede a call to this function with a call to _input_is_valid
     and trap data that is not a MsPASS data object.
     """
-    if isinstance(d, (TimeSeriesEnsemble, SeismogramEnsemble)):
-        return True
-    else:
-        return False
+    return isinstance(d, (TimeSeriesEnsemble, SeismogramEnsemble))
+
 
 # Use of abstract base class based on:
 # https://python-course.eu/oop/the-abc-of-abstract-base-classes.php
@@ -57,6 +55,18 @@ class Executioner(ABC):
     add additional methods.   This class should be used only as base 
     class as it has no functionality by itself.
     """
+
+    def __call__(self, d):
+        """
+        This method can make the object callable and easier to use.
+        After an instance is iniated, instead of explicitly calling
+        kill_if_true, one can just call this object. 
+        For example, instead of:
+        int_tester.kill_if_true(enscpy, apply_to_members=True)
+        We can just call this:
+        int_tester(enscpy, apply_to_members=True)
+        """
+        self.kill_if_true(d)
 
     @abstractmethod
     def kill_if_true(self, d):
@@ -108,8 +118,10 @@ class Executioner(ABC):
             kill_message += message
             d.elog.log_error(testname, kill_message, severity)
         else:
-            raise MsPASSError("Execution.log_kill method received invalid data;  must be a MsPASS data object",
-                              ErrorSeverity.Fatal)
+            raise MsPASSError(
+                "Execution.log_kill method received invalid data;  must be a MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
 
 
 class MetadataGT(Executioner):
@@ -165,11 +177,13 @@ class MetadataGT(Executioner):
                     d.kill()
                     if self.verbose:
                         message = "Value associated with key={key} of {dval} is greater than test value={value}".format(
-                            key=self.key, dval=d[self.key], value=self.value)
+                            key=self.key, dval=d[self.key], value=self.value
+                        )
                         self.log_kill(d, "MetadataGT", message)
         else:
             raise MsPASSError(
-                "MetadataGT received invalid input data", ErrorSeverity.Fatal)
+                "MetadataGT received invalid input data", ErrorSeverity.Fatal
+            )
         return d
 
 
@@ -224,11 +238,13 @@ class MetadataGE(Executioner):
                     d.kill()
                     if self.verbose:
                         message = "Value associated with key={key} of {dval} is >= test value={value}".format(
-                            key=self.key, dval=d[self.key], value=self.value)
+                            key=self.key, dval=d[self.key], value=self.value
+                        )
                         self.log_kill(d, "MetadataGE", message)
         else:
             raise MsPASSError(
-                "MetadataGE received invalid input data", ErrorSeverity.Fatal)
+                "MetadataGE received invalid input data", ErrorSeverity.Fatal
+            )
         return d
 
 
@@ -283,11 +299,13 @@ class MetadataLT(Executioner):
                     d.kill()
                     if self.verbose:
                         message = "Value associated with key={key} of {dval} is < than test value={value}".format(
-                            key=self.key, dval=d[self.key], value=self.value)
+                            key=self.key, dval=d[self.key], value=self.value
+                        )
                         self.log_kill(d, "MetadataLT", message)
         else:
             raise MsPASSError(
-                "MetadataLT received invalid input data", ErrorSeverity.Fatal)
+                "MetadataLT received invalid input data", ErrorSeverity.Fatal
+            )
         return d
 
 
@@ -342,11 +360,13 @@ class MetadataLE(Executioner):
                     d.kill()
                     if self.verbose:
                         message = "Value associated with key={key} of {dval} is <= to test value={value}".format(
-                            key=self.key, dval=d[self.key], value=self.value)
+                            key=self.key, dval=d[self.key], value=self.value
+                        )
                         self.log_kill(d, "MetadataLT", message)
         else:
             raise MsPASSError(
-                "MetadataLE received invalid input data", ErrorSeverity.Fatal)
+                "MetadataLE received invalid input data", ErrorSeverity.Fatal
+            )
         return d
 
 
@@ -403,11 +423,13 @@ class MetadataEQ(Executioner):
                     d.kill()
                     if self.verbose:
                         message = "Value associated with key={key} of {dval} is equal to test value={value}".format(
-                            key=self.key, dval=d[self.key], value=self.value)
+                            key=self.key, dval=d[self.key], value=self.value
+                        )
                         self.log_kill(d, "MetadataEQ", message)
         else:
             raise MsPASSError(
-                "MetadataEQ received invalid input data", ErrorSeverity.Fatal)
+                "MetadataEQ received invalid input data", ErrorSeverity.Fatal
+            )
         return d
 
 
@@ -460,15 +482,17 @@ class MetadataNE(Executioner):
                 self.edit_ensemble_members(d)
             elif self.key in d:
                 testval = d[self.key]
-                if testval == self.value:
+                if testval != self.value:
                     d.kill()
                     if self.verbose:
                         message = "Value associated with key={key} of {dval} is != to test value={value}".format(
-                            key=self.key, dval=d[self.key], value=self.value)
+                            key=self.key, dval=d[self.key], value=self.value
+                        )
                         self.log_kill(d, "MetadataNE", message)
         else:
             raise MsPASSError(
-                "MetadataNE received invalid input data", ErrorSeverity.Fatal)
+                "MetadataNE received invalid input data", ErrorSeverity.Fatal
+            )
         return d
 
 
@@ -512,12 +536,12 @@ class MetadataDefined(Executioner):
             elif d.is_defined(self.key):
                 d.kill()
                 if self.verbose:
-                    message = "Metadata key={key} is defined".format(
-                        key=self.key)
+                    message = "Metadata key={key} is defined".format(key=self.key)
                     self.log_kill(d, "MetadataDefined", message)
         else:
             raise MsPASSError(
-                "MetadataDefined received invalid input data", ErrorSeverity.Fatal)
+                "MetadataDefined received invalid input data", ErrorSeverity.Fatal
+            )
         return d
 
 
@@ -565,12 +589,12 @@ class MetadataUndefined(Executioner):
             elif not d.is_defined(self.key):
                 d.kill()
                 if self.verbose:
-                    message = "Metadata key={key} is not defined".format(
-                        key=self.key)
+                    message = "Metadata key={key} is not defined".format(key=self.key)
                     self.log_kill(d, "MetadataUndefined", message)
         else:
             raise MsPASSError(
-                "MetadataUndefined received invalid input data", ErrorSeverity.Fatal)
+                "MetadataUndefined received invalid input data", ErrorSeverity.Fatal
+            )
         return d
 
 
@@ -596,9 +620,16 @@ class MetadataInterval(Executioner):
     adventure land if you try.  
     """
 
-    def __init__(self, key, lower_endpoint, upper_endpoint,
-                 use_lower_edge=True, use_upper_edge=True,
-                 kill_if_outside=True, verbose=False):
+    def __init__(
+        self,
+        key,
+        lower_endpoint,
+        upper_endpoint,
+        use_lower_edge=True,
+        use_upper_edge=True,
+        kill_if_outside=True,
+        verbose=False,
+    ):
         """
         One and only constructor.  Sets the parameters that define this 
         tester.
@@ -683,16 +714,23 @@ class MetadataInterval(Executioner):
                     d.kill()
                     if self.verbose:
                         message1 = "Value associated with key={key} of {dval} failed range test\n".format(
-                            key=self.key, dval=testval)
+                            key=self.key, dval=testval
+                        )
                         message2 = "Interval range is {lower} to {upper}.  ".format(
-                            lower=self.lower_endpoint, upper=self.upper_endpoint)
-                        message3 = "Test booleans:  lowerEQ={lower}, upperEQ={upper}, kill_inside={inside}".format(lower=self.use_lower_edge,
-                                                                                                                   upper=self.use_upper_edge, inside=self.kill_if_outside)
-                        self.log_kill(d, "MetadataInterval",
-                                      message1+message2+message3)
+                            lower=self.lower_endpoint, upper=self.upper_endpoint
+                        )
+                        message3 = "Test booleans:  lowerEQ={lower}, upperEQ={upper}, kill_inside={inside}".format(
+                            lower=self.use_lower_edge,
+                            upper=self.use_upper_edge,
+                            inside=self.kill_if_outside,
+                        )
+                        self.log_kill(
+                            d, "MetadataInterval", message1 + message2 + message3
+                        )
         else:
             raise MsPASSError(
-                "MetadataInterval received invalid input data", ErrorSeverity.Fatal)
+                "MetadataInterval received invalid input data", ErrorSeverity.Fatal
+            )
         return d
 
 
@@ -726,7 +764,9 @@ class FiringSquad(Executioner):
         for ex in executioner_list:
             if not isinstance(ex, Executioner):
                 raise MsPASSError(
-                    "FiringSquad constructor:  invalid input.  Expected array of Executioners", ErrorSeverity.Fatal)
+                    "FiringSquad constructor:  invalid input.  Expected array of Executioners",
+                    ErrorSeverity.Fatal,
+                )
 
         # to allow flexibility of the structure used for input we should
         # copy the executioner_list.  Further, this assure the
@@ -752,13 +792,14 @@ class FiringSquad(Executioner):
                 self.edit_ensemble_members(d)
             else:
                 for killer in self.executioners:
-                    killer.kill_if_true(d,apply_to_members=apply_to_members)
+                    killer.kill_if_true(d, apply_to_members=apply_to_members)
                     if d.dead():
                         break
             return d
         else:
             raise MsPASSError(
-                "FiringSquad received invalid input data", ErrorSeverity.Fatal)
+                "FiringSquad received invalid input data", ErrorSeverity.Fatal
+            )
 
     def __iadd__(self, other):
         """
@@ -769,9 +810,12 @@ class FiringSquad(Executioner):
         if isinstance(other, Executioner):
             self.executioners.append(other)
         else:
-            raise MsPASSError("FiringSquare operator +=  rhs is not an Executioner",
-                              ErrorSeverity.Fatal)
+            raise MsPASSError(
+                "FiringSquare operator +=  rhs is not an Executioner",
+                ErrorSeverity.Fatal,
+            )
         return self
+
 
 # Start base class and subclasses for header math operators
 
@@ -787,6 +831,7 @@ class MetadataOperator(ABC):
     class defines the API for a suite of tools for editing metadata 
     on the fly. 
     """
+
     @abstractmethod
     def apply(self, d, apply_to_members=False, fast_mode=False):
         """
@@ -850,7 +895,7 @@ class MetadataOperator(ABC):
         be implemented even if they do nothing.
         """
         pass
-    
+
     def edit_ensemble_members(self, ensemble):
         """
         Subclasses should call this method if the input data are an 
@@ -891,8 +936,10 @@ class MetadataOperator(ABC):
             edit_message += message
             d.elog.log_error(testname, edit_message, severity)
         else:
-            raise MsPASSError("MetadataOperator.apply method received invalid data;  must be a MsPASS data object",
-                              ErrorSeverity.Fatal)
+            raise MsPASSError(
+                "MetadataOperator.apply method received invalid data;  must be a MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
 
 
 class ChangeKey(MetadataOperator):
@@ -904,8 +951,10 @@ class ChangeKey(MetadataOperator):
             self.newkey = newkey
             self.erase_old = erase_old
         else:
-            message = "ChangeKey constructor usage error.  ChangeKey(oldkey,newkey)\n" + \
-                "oldkey and newkey must be strings defining metadata keys - check types"
+            message = (
+                "ChangeKey constructor usage error.  ChangeKey(oldkey,newkey)\n"
+                + "oldkey and newkey must be strings defining metadata keys - check types"
+            )
             raise MsPASSError(message, ErrorSeverity.Fatal)
 
     @mspass_method_wrapper
@@ -918,9 +967,10 @@ class ChangeKey(MetadataOperator):
                     keysok = self.check_keys(d, apply_to_members)
                     if not keysok:
                         if verbose:
-                            message = "key="+self.oldkey+" is not defined"
-                            self.log_edit(d, "ChangeKey", message,
-                                          ErrorSeverity.Invalid)
+                            message = "key=" + self.oldkey + " is not defined"
+                            self.log_edit(
+                                d, "ChangeKey", message, ErrorSeverity.Invalid
+                            )
                         return d
             # from here on we can assume operation is ok
             if _is_ensemble(d) and apply_to_members:
@@ -942,8 +992,10 @@ class ChangeKey(MetadataOperator):
                     d.erase(self.oldkey)
             return d
         else:
-            raise MsPASSError("ChangeKey.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
+            raise MsPASSError(
+                "ChangeKey.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
 
     def check_keys(self, d, apply_to_members):
         if _is_ensemble(d) and apply_to_members:
@@ -967,6 +1019,7 @@ class ChangeKey(MetadataOperator):
         """
         pass
 
+
 class SetValue(MetadataOperator):
     """
     Used to set a specified metadata key to a constant value.  Note any 
@@ -978,6 +1031,7 @@ class SetValue(MetadataOperator):
       op = SetValue('a',2.0)
       d = op.apply(d)
     """
+
     def __init__(self, key, constant_value=0):
         """
         Constructor for this operator.
@@ -990,9 +1044,9 @@ class SetValue(MetadataOperator):
         """
         self.key = key
         self.value = constant_value
-    
+
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
+    def apply(self, d, apply_to_members=False):
         """
         Used to apply this operator to Metadata of a MsPASS data object.
         Use of decorator adds common MsPASS arguments as call options. 
@@ -1017,28 +1071,31 @@ class SetValue(MetadataOperator):
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     d[self.key] = self.value
                 return d
         else:
-            raise MsPASSError("SetValue.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-    def check_keys(self,d):
+            raise MsPASSError(
+                "SetValue.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         Useless implementation of required abstract base method.  In this 
         case all it does is test if the stored value of key is a string.
         Returns true if the key is a string and false otherwise.
 
         """
-        if isinstance(self.key,str):
+        if isinstance(self.key, str):
             return True
         else:
             return False
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         pass
-                
-        
+
 
 # all arithmetic operators need an output key to place result that can be the same as one of the inputs
 # These are unary - operate using a constant value set on constructoin
@@ -1050,27 +1107,32 @@ class Add(MetadataOperator):
       op = Add('icdp',2)
       d = op.apply(d)
     """
+
     def __init__(self, key, value_to_add=1):
         self.key = key
         self.value = value_to_add
-    
+
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
-        elognametag='Metadata Add Operator'
+    def apply(self, d, apply_to_members=False):
+        elognametag = "Metadata Add Operator"
         if _input_is_valid(d):
             if d.dead():
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     if not self.check_keys(d):
                         message = "Required key=" + self.key + " not defined"
-                        self.log_edit(d,elognametag,message,ErrorSeverity.Invalid)
+                        self.log_edit(d, elognametag, message, ErrorSeverity.Invalid)
                         d.kill()
                         return d
                     elif not self.check_operation(d):
-                        message = "The += operator fails on Metadata with key=" + self.key + "\nAn incompatible type likely is stored with that key"
+                        message = (
+                            "The += operator fails on Metadata with key="
+                            + self.key
+                            + "\nAn incompatible type likely is stored with that key"
+                        )
                         d.kill()
                         return d
 
@@ -1079,9 +1141,12 @@ class Add(MetadataOperator):
                     d[self.key] = val
             return d
         else:
-            raise MsPASSError("Add.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-    def check_keys(self,d):
+            raise MsPASSError(
+                "Add.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         checks that the key defined for the operator is defined for d.  
         Returns true if is defined and false if not.  the method assumes
@@ -1093,7 +1158,8 @@ class Add(MetadataOperator):
             return True
         else:
             return False
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         """
         This method checks to make sure the value works with the operation
         required.  It provides a (required by the base class) standardization
@@ -1102,15 +1168,13 @@ class Add(MetadataOperator):
         # we catch any exception - think we could be explicity with a TypeError
         # but this is more robust
         try:
-            testval=d[self.key]
+            testval = d[self.key]
             testval += self.value
         except:
             return False
         else:
             return True
 
-        
-             
 
 class Multiply(MetadataOperator):
     """
@@ -1121,27 +1185,32 @@ class Multiply(MetadataOperator):
       op = Multiply('Pamp',2.5)
       d = op.apply(d)
     """
+
     def __init__(self, key, value_to_multiply=1):
         self.key = key
         self.value = value_to_multiply
-    
+
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
-        elognametag='Metadata Multiply Operator'
+    def apply(self, d, apply_to_members=False):
+        elognametag = "Metadata Multiply Operator"
         if _input_is_valid(d):
             if d.dead():
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     if not self.check_keys(d):
                         message = "Required key=" + self.key + " not defined"
-                        self.log_edit(d,elognametag,message,ErrorSeverity.Invalid)
+                        self.log_edit(d, elognametag, message, ErrorSeverity.Invalid)
                         d.kill()
                         return d
                     elif not self.check_operation(d):
-                        message = "The *= operator fails on Metadata with key=" + self.key + "\nAn incompatible type likely is stored with that key"
+                        message = (
+                            "The *= operator fails on Metadata with key="
+                            + self.key
+                            + "\nAn incompatible type likely is stored with that key"
+                        )
                         d.kill()
                         return d
 
@@ -1150,11 +1219,12 @@ class Multiply(MetadataOperator):
                     d[self.key] = val
             return d
         else:
-            raise MsPASSError("Multiply.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-            
-    
-    def check_keys(self,d):
+            raise MsPASSError(
+                "Multiply.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         checks that the key defined for the operator is defined for d.  
         Returns true if is defined and false if not.  the method assumes
@@ -1166,7 +1236,8 @@ class Multiply(MetadataOperator):
             return True
         else:
             return False
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         """
         This method checks to make sure the value works with the operation
         required.  It provides a (required by the base class) standardization
@@ -1175,15 +1246,13 @@ class Multiply(MetadataOperator):
         # we catch any exception - think we could be explicity with a TypeError
         # but this is more robust
         try:
-            testval=d[self.key]
+            testval = d[self.key]
             testval *= self.value
         except:
             return False
         else:
             return True
 
-        
-             
 
 class Subtract(MetadataOperator):
     """
@@ -1193,27 +1262,32 @@ class Subtract(MetadataOperator):
       op = Subtract('icdp',2)
       d = op.apply(d)
     """
+
     def __init__(self, key, value_to_subtract):
         self.key = key
         self.value = value_to_subtract
-    
+
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
-        elognametag='Metadata Subtract Operator'
+    def apply(self, d, apply_to_members=False):
+        elognametag = "Metadata Subtract Operator"
         if _input_is_valid(d):
             if d.dead():
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     if not self.check_keys(d):
                         message = "Required key=" + self.key + " not defined"
-                        self.log_edit(d,elognametag,message,ErrorSeverity.Invalid)
+                        self.log_edit(d, elognametag, message, ErrorSeverity.Invalid)
                         d.kill()
                         return d
                     elif not self.check_operation(d):
-                        message = "The -= operator fails on Metadata with key=" + self.key + "\nAn incompatible type likely is stored with that key"
+                        message = (
+                            "The -= operator fails on Metadata with key="
+                            + self.key
+                            + "\nAn incompatible type likely is stored with that key"
+                        )
                         d.kill()
                         return d
 
@@ -1222,10 +1296,12 @@ class Subtract(MetadataOperator):
                     d[self.key] = val
             return d
         else:
-            raise MsPASSError("Subtract.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-    
-    def check_keys(self,d):
+            raise MsPASSError(
+                "Subtract.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         checks that the key defined for the operator is defined for d.  
         Returns true if is defined and false if not.  the method assumes
@@ -1237,7 +1313,8 @@ class Subtract(MetadataOperator):
             return True
         else:
             return False
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         """
         This method checks to make sure the value works with the operation
         required.  It provides a (required by the base class) standardization
@@ -1246,15 +1323,14 @@ class Subtract(MetadataOperator):
         # we catch any exception - think we could be explicity with a TypeError
         # but this is more robust
         try:
-            testval=d[self.key]
+            testval = d[self.key]
             testval -= self.value
         except:
             return False
         else:
             return True
 
-        
-             
+
 class Divide(MetadataOperator):
     """
     Used to implement /= operator on a specified Metadata key.
@@ -1264,28 +1340,32 @@ class Divide(MetadataOperator):
       op = Divide('Pamp',2.-)
       d = op.apply(d)
     """
+
     def __init__(self, key, value_to_divide=1):
         self.key = key
         self.value = value_to_divide
 
-            
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
-        elognametag='Metadata Divide Operator'
+    def apply(self, d, apply_to_members=False):
+        elognametag = "Metadata Divide Operator"
         if _input_is_valid(d):
             if d.dead():
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     if not self.check_keys(d):
                         message = "Required key=" + self.key + " not defined"
-                        self.log_edit(d,elognametag,message,ErrorSeverity.Invalid)
+                        self.log_edit(d, elognametag, message, ErrorSeverity.Invalid)
                         d.kill()
                         return d
                     elif not self.check_operation(d):
-                        message = "The /= operator fails on Metadata with key=" + self.key + "\nAn incompatible type likely is stored with that key"
+                        message = (
+                            "The /= operator fails on Metadata with key="
+                            + self.key
+                            + "\nAn incompatible type likely is stored with that key"
+                        )
                         d.kill()
                         return d
 
@@ -1294,10 +1374,12 @@ class Divide(MetadataOperator):
                     d[self.key] = val
             return d
         else:
-            raise MsPASSError("Divide.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-            
-    def check_keys(self,d):
+            raise MsPASSError(
+                "Divide.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         checks that the key defined for the operator is defined for d.  
         Returns true if is defined and false if not.  the method assumes
@@ -1309,7 +1391,8 @@ class Divide(MetadataOperator):
             return True
         else:
             return False
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         """
         This method checks to make sure the value works with the operation
         required.  It provides a (required by the base class) standardization
@@ -1318,12 +1401,13 @@ class Divide(MetadataOperator):
         # we catch any exception - think we could be explicity with a TypeError
         # but this is more robust
         try:
-            testval=d[self.key]
+            testval = d[self.key]
             testval /= self.value
         except:
             return False
         else:
             return True
+
 
 class IntegerDivide(MetadataOperator):
     """
@@ -1341,27 +1425,32 @@ class IntegerDivide(MetadataOperator):
       op = IntegerDivide('icdp',5)
       d = op.apply(d)
     """
+
     def __init__(self, key, value=1):
         self.key = key
         self.value = value
-            
+
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
-        elognametag='Metadata IntegerDivide Operator'
+    def apply(self, d, apply_to_members=False):
+        elognametag = "Metadata IntegerDivide Operator"
         if _input_is_valid(d):
             if d.dead():
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     if not self.check_keys(d):
                         message = "Required key=" + self.key + " not defined"
-                        self.log_edit(d,elognametag,message,ErrorSeverity.Invalid)
+                        self.log_edit(d, elognametag, message, ErrorSeverity.Invalid)
                         d.kill()
                         return d
                     elif not self.check_operation(d):
-                        message = "The // operator fails on Metadata with key=" + self.key + "\nAn incompatible type likely is stored with that key"
+                        message = (
+                            "The // operator fails on Metadata with key="
+                            + self.key
+                            + "\nAn incompatible type likely is stored with that key"
+                        )
                         d.kill()
                         return d
 
@@ -1371,10 +1460,12 @@ class IntegerDivide(MetadataOperator):
                     d[self.key] = val
             return d
         else:
-            raise MsPASSError("IntegerDivide.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-            
-    def check_keys(self,d):
+            raise MsPASSError(
+                "IntegerDivide.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         checks that the key defined for the operator is defined for d.  
         Returns true if is defined and false if not.  the method assumes
@@ -1386,7 +1477,8 @@ class IntegerDivide(MetadataOperator):
             return True
         else:
             return False
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         """
         This method checks to make sure the value works with the operation
         required.  It provides a (required by the base class) standardization
@@ -1395,12 +1487,13 @@ class IntegerDivide(MetadataOperator):
         # we catch any exception - think we could be explicity with a TypeError
         # but this is more robust
         try:
-            testval=d[self.key]
+            testval = d[self.key]
             testval = testval // self.value
         except:
             return False
         else:
             return True
+
 
 class Mod(MetadataOperator):
     """
@@ -1420,28 +1513,33 @@ class Mod(MetadataOperator):
       op = Mod('ix',24)
       d = op.apply(d)
     """
+
     # note default would zero everything if used
     def __init__(self, key, value=1):
         self.key = key
         self.value = value
-            
+
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
-        elognametag='Metadata Mod Operator'
+    def apply(self, d, apply_to_members=False):
+        elognametag = "Metadata Mod Operator"
         if _input_is_valid(d):
             if d.dead():
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     if not self.check_keys(d):
                         message = "Required key=" + self.key + " not defined"
-                        self.log_edit(d,elognametag,message,ErrorSeverity.Invalid)
+                        self.log_edit(d, elognametag, message, ErrorSeverity.Invalid)
                         d.kill()
                         return d
                     elif not self.check_operation(d):
-                        message = "The % operator fails on Metadata with key=" + self.key + "\nAn incompatible type likely is stored with that key"
+                        message = (
+                            "The % operator fails on Metadata with key="
+                            + self.key
+                            + "\nAn incompatible type likely is stored with that key"
+                        )
                         d.kill()
                         return d
 
@@ -1451,11 +1549,12 @@ class Mod(MetadataOperator):
                     d[self.key] = val
             return d
         else:
-            raise MsPASSError("Mod.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-            
-            
-    def check_keys(self,d):
+            raise MsPASSError(
+                "Mod.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         checks that the key defined for the operator is defined for d.  
         Returns true if is defined and false if not.  the method assumes
@@ -1467,7 +1566,8 @@ class Mod(MetadataOperator):
             return True
         else:
             return False
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         """
         This method checks to make sure the value works with the operation
         required.  It provides a (required by the base class) standardization
@@ -1476,12 +1576,14 @@ class Mod(MetadataOperator):
         # we catch any exception - think we could be explicity with a TypeError
         # but this is more robust
         try:
-            testval=d[self.key]
+            testval = d[self.key]
             testval = testval % self.value
         except:
             return False
         else:
             return True
+
+
 # These are binary operators using two keys set in constructor
 class Add2(MetadataOperator):
     """
@@ -1504,28 +1606,41 @@ class Add2(MetadataOperator):
       op = Add2('ix1','sx','chan')
       d = op.apply(d)
     """
-    def __init__(self, key0,key1,key2):
+
+    def __init__(self, key0, key1, key2):
         self.key0 = key0
         self.key1 = key1
         self.key2 = key2
-    
+
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
-        elognametag='Metadata Add2 Operator'
+    def apply(self, d, apply_to_members=False):
+        elognametag = "Metadata Add2 Operator"
         if _input_is_valid(d):
             if d.dead():
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     if not self.check_keys(d):
-                        message = "Required keys key1=" + self.key1 + " and/or key2="+self.key2 + " not defined"
-                        self.log_edit(d,elognametag,message,ErrorSeverity.Invalid)
+                        message = (
+                            "Required keys key1="
+                            + self.key1
+                            + " and/or key2="
+                            + self.key2
+                            + " not defined"
+                        )
+                        self.log_edit(d, elognametag, message, ErrorSeverity.Invalid)
                         d.kill()
                         return d
                     elif not self.check_operation(d):
-                        message = "The + operator failed with Metadata fetched with keys="+self.key1+" and "+self.key2 + "\nAn incompatible type likely is stored with that key"
+                        message = (
+                            "The + operator failed with Metadata fetched with keys="
+                            + self.key1
+                            + " and "
+                            + self.key2
+                            + "\nAn incompatible type likely is stored with that key"
+                        )
                         d.kill()
                         return d
                     val1 = d[self.key1]
@@ -1533,9 +1648,12 @@ class Add2(MetadataOperator):
                     d[self.key0] = val1 + val2
                 return d
         else:
-            raise MsPASSError("Add2.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-    def check_keys(self,d):
+            raise MsPASSError(
+                "Add2.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         checks that the keys required for the operator are defined for d. 
         If either required key are missing from d return False.  Return 
@@ -1548,8 +1666,8 @@ class Add2(MetadataOperator):
             return True
         else:
             return False
-        
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         """
         This method checks to make sure the value works with the operation
         required.  It provides a (required by the base class) standardization
@@ -1588,28 +1706,41 @@ class Multiply2(MetadataOperator):
       op = Multiply2('ix1','sx','chan')
       d = op.apply(d)
     """
-    def __init__(self, key0,key1,key2):
+
+    def __init__(self, key0, key1, key2):
         self.key0 = key0
         self.key1 = key1
         self.key2 = key2
-    
+
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
-        elognametag='Metadata Multiply2 Operator'
+    def apply(self, d, apply_to_members=False):
+        elognametag = "Metadata Multiply2 Operator"
         if _input_is_valid(d):
             if d.dead():
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     if not self.check_keys(d):
-                        message = "Required keys key1=" + self.key1 + " and/or key2="+self.key2 + " not defined"
-                        self.log_edit(d,elognametag,message,ErrorSeverity.Invalid)
+                        message = (
+                            "Required keys key1="
+                            + self.key1
+                            + " and/or key2="
+                            + self.key2
+                            + " not defined"
+                        )
+                        self.log_edit(d, elognametag, message, ErrorSeverity.Invalid)
                         d.kill()
                         return d
                     elif not self.check_operation(d):
-                        message = "The * operator failed with Metadata fetched with keys="+self.key1+" and "+self.key2 + "\nAn incompatible type likely is stored with that key"
+                        message = (
+                            "The * operator failed with Metadata fetched with keys="
+                            + self.key1
+                            + " and "
+                            + self.key2
+                            + "\nAn incompatible type likely is stored with that key"
+                        )
                         d.kill()
                         return d
                     val1 = d[self.key1]
@@ -1617,9 +1748,12 @@ class Multiply2(MetadataOperator):
                     d[self.key0] = val1 * val2
                 return d
         else:
-            raise MsPASSError("Multiply2.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-    def check_keys(self,d):
+            raise MsPASSError(
+                "Multiply2.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         checks that the keys required for the operator are defined for d. 
         If either required key are missing from d return False.  Return 
@@ -1632,8 +1766,8 @@ class Multiply2(MetadataOperator):
             return True
         else:
             return False
-        
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         """
         This method checks to make sure the value works with the operation
         required.  It provides a (required by the base class) standardization
@@ -1672,28 +1806,41 @@ class Subtract2(MetadataOperator):
       op = Subtract2('ix1','sx','chan')
       d = op.apply(d)
     """
-    def __init__(self, key0,key1,key2):
+
+    def __init__(self, key0, key1, key2):
         self.key0 = key0
         self.key1 = key1
         self.key2 = key2
-    
+
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
-        elognametag='Metadata Subtract2 Operator'
+    def apply(self, d, apply_to_members=False):
+        elognametag = "Metadata Subtract2 Operator"
         if _input_is_valid(d):
             if d.dead():
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     if not self.check_keys(d):
-                        message = "Required keys key1=" + self.key1 + " and/or key2="+self.key2 + " not defined"
-                        self.log_edit(d,elognametag,message,ErrorSeverity.Invalid)
+                        message = (
+                            "Required keys key1="
+                            + self.key1
+                            + " and/or key2="
+                            + self.key2
+                            + " not defined"
+                        )
+                        self.log_edit(d, elognametag, message, ErrorSeverity.Invalid)
                         d.kill()
                         return d
                     elif not self.check_operation(d):
-                        message = "The - operator failed with Metadata fetched with keys="+self.key1+" and "+self.key2 + "\nAn incompatible type likely is stored with that key"
+                        message = (
+                            "The - operator failed with Metadata fetched with keys="
+                            + self.key1
+                            + " and "
+                            + self.key2
+                            + "\nAn incompatible type likely is stored with that key"
+                        )
                         d.kill()
                         return d
                     val1 = d[self.key1]
@@ -1701,9 +1848,12 @@ class Subtract2(MetadataOperator):
                     d[self.key0] = val1 - val2
                 return d
         else:
-            raise MsPASSError("Subtract2.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-    def check_keys(self,d):
+            raise MsPASSError(
+                "Subtract2.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         checks that the keys required for the operator are defined for d. 
         If either required key are missing from d return False.  Return 
@@ -1716,8 +1866,8 @@ class Subtract2(MetadataOperator):
             return True
         else:
             return False
-        
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         """
         This method checks to make sure the value works with the operation
         required.  It provides a (required by the base class) standardization
@@ -1733,7 +1883,6 @@ class Subtract2(MetadataOperator):
             return False
         else:
             return True
-
 
 
 class Divide2(MetadataOperator):
@@ -1757,28 +1906,41 @@ class Divide2(MetadataOperator):
       op = Divide2('ix1','sx','chan')
       d = op.apply(d)
     """
-    def __init__(self, key0,key1,key2):
+
+    def __init__(self, key0, key1, key2):
         self.key0 = key0
         self.key1 = key1
         self.key2 = key2
-    
+
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
-        elognametag='Metadata Divide2 Operator'
+    def apply(self, d, apply_to_members=False):
+        elognametag = "Metadata Divide2 Operator"
         if _input_is_valid(d):
             if d.dead():
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     if not self.check_keys(d):
-                        message = "Required keys key1=" + self.key1 + " and/or key2="+self.key2 + " not defined"
-                        self.log_edit(d,elognametag,message,ErrorSeverity.Invalid)
+                        message = (
+                            "Required keys key1="
+                            + self.key1
+                            + " and/or key2="
+                            + self.key2
+                            + " not defined"
+                        )
+                        self.log_edit(d, elognametag, message, ErrorSeverity.Invalid)
                         d.kill()
                         return d
                     elif not self.check_operation(d):
-                        message = "The / operator failed with Metadata fetched with keys="+self.key1+" and "+self.key2 + "\nAn incompatible type likely is stored with that key"
+                        message = (
+                            "The / operator failed with Metadata fetched with keys="
+                            + self.key1
+                            + " and "
+                            + self.key2
+                            + "\nAn incompatible type likely is stored with that key"
+                        )
                         d.kill()
                         return d
                     val1 = d[self.key1]
@@ -1786,9 +1948,12 @@ class Divide2(MetadataOperator):
                     d[self.key0] = val1 / val2
                 return d
         else:
-            raise MsPASSError("Divide2.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-    def check_keys(self,d):
+            raise MsPASSError(
+                "Divide2.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         checks that the keys required for the operator are defined for d. 
         If either required key are missing from d return False.  Return 
@@ -1801,8 +1966,8 @@ class Divide2(MetadataOperator):
             return True
         else:
             return False
-        
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         """
         This method checks to make sure the value works with the operation
         required.  It provides a (required by the base class) standardization
@@ -1841,28 +2006,41 @@ class IntegerDivide2(MetadataOperator):
       op = IntegerDivide2('ix1','sx','chan')
       d = op.apply(d)
     """
-    def __init__(self, key0,key1,key2):
+
+    def __init__(self, key0, key1, key2):
         self.key0 = key0
         self.key1 = key1
         self.key2 = key2
-    
+
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
-        elognametag='Metadata IntegerDivide2 Operator'
+    def apply(self, d, apply_to_members=False):
+        elognametag = "Metadata IntegerDivide2 Operator"
         if _input_is_valid(d):
             if d.dead():
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     if not self.check_keys(d):
-                        message = "Required keys key1=" + self.key1 + " and/or key2="+self.key2 + " not defined"
-                        self.log_edit(d,elognametag,message,ErrorSeverity.Invalid)
+                        message = (
+                            "Required keys key1="
+                            + self.key1
+                            + " and/or key2="
+                            + self.key2
+                            + " not defined"
+                        )
+                        self.log_edit(d, elognametag, message, ErrorSeverity.Invalid)
                         d.kill()
                         return d
                     elif not self.check_operation(d):
-                        message = "The // operator failed with Metadata fetched with keys="+self.key1+" and "+self.key2 + "\nAn incompatible type likely is stored with that key"
+                        message = (
+                            "The // operator failed with Metadata fetched with keys="
+                            + self.key1
+                            + " and "
+                            + self.key2
+                            + "\nAn incompatible type likely is stored with that key"
+                        )
                         d.kill()
                         return d
                     val1 = d[self.key1]
@@ -1870,9 +2048,12 @@ class IntegerDivide2(MetadataOperator):
                     d[self.key0] = val1 // val2
                 return d
         else:
-            raise MsPASSError("IntegerDivide2.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-    def check_keys(self,d):
+            raise MsPASSError(
+                "IntegerDivide2.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         checks that the keys required for the operator are defined for d. 
         If either required key are missing from d return False.  Return 
@@ -1885,8 +2066,8 @@ class IntegerDivide2(MetadataOperator):
             return True
         else:
             return False
-        
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         """
         This method checks to make sure the value works with the operation
         required.  It provides a (required by the base class) standardization
@@ -1925,28 +2106,41 @@ class Mod2(MetadataOperator):
       op = Mod2('ix1','sx','chan')
       d = op.apply(d)
     """
-    def __init__(self, key0,key1,key2):
+
+    def __init__(self, key0, key1, key2):
         self.key0 = key0
         self.key1 = key1
         self.key2 = key2
-    
+
     @mspass_method_wrapper
-    def apply(self,d,apply_to_members=False):
-        elognametag='Metadata Mod2 Operator'
+    def apply(self, d, apply_to_members=False):
+        elognametag = "Metadata Mod2 Operator"
         if _input_is_valid(d):
             if d.dead():
                 return d
             else:
                 if _is_ensemble(d) and apply_to_members:
-                    d=self.edit_ensemble_members(d)
+                    d = self.edit_ensemble_members(d)
                 else:
                     if not self.check_keys(d):
-                        message = "Required keys key1=" + self.key1 + " and/or key2="+self.key2 + " not defined"
-                        self.log_edit(d,elognametag,message,ErrorSeverity.Invalid)
+                        message = (
+                            "Required keys key1="
+                            + self.key1
+                            + " and/or key2="
+                            + self.key2
+                            + " not defined"
+                        )
+                        self.log_edit(d, elognametag, message, ErrorSeverity.Invalid)
                         d.kill()
                         return d
                     elif not self.check_operation(d):
-                        message = "The % operator failed with Metadata fetched with keys="+self.key1+" and "+self.key2 + "\nAn incompatible type likely is stored with that key"
+                        message = (
+                            "The % operator failed with Metadata fetched with keys="
+                            + self.key1
+                            + " and "
+                            + self.key2
+                            + "\nAn incompatible type likely is stored with that key"
+                        )
                         d.kill()
                         return d
                     val1 = d[self.key1]
@@ -1954,9 +2148,12 @@ class Mod2(MetadataOperator):
                     d[self.key0] = val1 % val2
                 return d
         else:
-            raise MsPASSError("Mod2.apply:   input is not a valid MsPASS data object",
-                              ErrorSeverity.Fatal)
-    def check_keys(self,d):
+            raise MsPASSError(
+                "Mod2.apply:   input is not a valid MsPASS data object",
+                ErrorSeverity.Fatal,
+            )
+
+    def check_keys(self, d):
         """
         checks that the keys required for the operator are defined for d. 
         If either required key are missing from d return False.  Return 
@@ -1969,8 +2166,8 @@ class Mod2(MetadataOperator):
             return True
         else:
             return False
-        
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         """
         This method checks to make sure the value works with the operation
         required.  It provides a (required by the base class) standardization
@@ -1986,7 +2183,9 @@ class Mod2(MetadataOperator):
             return False
         else:
             return True
-# Note this class was patterned closely after FiringSquad - the approach 
+
+
+# Note this class was patterned closely after FiringSquad - the approach
 # is identical.  I did little more than edit a copy of FiringSquad to produce
 # this class
 class MetadataOperatorChain(MetadataOperator):
@@ -2019,7 +2218,9 @@ class MetadataOperatorChain(MetadataOperator):
         for ex in operator_list:
             if not isinstance(ex, MetadataOperator):
                 raise MsPASSError(
-                    "MetadataOperatorChain constructor:  invalid input.  Expected iterable container of MetadataOperator objects", ErrorSeverity.Fatal)
+                    "MetadataOperatorChain constructor:  invalid input.  Expected iterable container of MetadataOperator objects",
+                    ErrorSeverity.Fatal,
+                )
 
         # to allow flexibility of the structure used for input we should
         # copy the operator_list.  Further, this assure the
@@ -2045,19 +2246,22 @@ class MetadataOperatorChain(MetadataOperator):
                 self.edit_ensemble_members(d)
             else:
                 for op in self.oplist:
-                    op.apply(d,apply_to_members=apply_to_members)
+                    op.apply(d, apply_to_members=apply_to_members)
                     if d.dead():
                         break
             return d
         else:
             raise MsPASSError(
-                "MetadataOperatorChain received invalid input data", ErrorSeverity.Fatal)
+                "MetadataOperatorChain received invalid input data", ErrorSeverity.Fatal
+            )
+
     # These two virtual methods have to be defined but they do nothing in
-    # this context.  We depend on the atomic operators to implement these 
+    # this context.  We depend on the atomic operators to implement these
     # checks
-    def check_keys(self,d):
+    def check_keys(self, d):
         pass
-    def check_operation(self,d):
+
+    def check_operation(self, d):
         pass
 
     def __iadd__(self, other):
@@ -2069,9 +2273,12 @@ class MetadataOperatorChain(MetadataOperator):
         if isinstance(other, MetadataOperator):
             self.oplist.append(other)
         else:
-            raise MsPASSError("MetadataOperatorChain:   operator +=  rhs is not a child of MetadataOperator",
-                              ErrorSeverity.Fatal)
+            raise MsPASSError(
+                "MetadataOperatorChain:   operator +=  rhs is not a child of MetadataOperator",
+                ErrorSeverity.Fatal,
+            )
         return self
+
 
 # other editors to implement that do not match the abstract base class model
 
@@ -2111,5 +2318,7 @@ def erase_metadata(d, keylist, apply_to_members=False):
                 d.erase(k)
         return d
     else:
-        raise MsPASSError("erase_metadata:  input is not a valid MsPASS data object",
-                          ErrorSeverity.Fatal)
+        raise MsPASSError(
+            "erase_metadata:  input is not a valid MsPASS data object",
+            ErrorSeverity.Fatal,
+        )
