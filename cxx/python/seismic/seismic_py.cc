@@ -148,7 +148,8 @@ PYBIND11_MODULE(seismic, m) {
     )", scope);
 
   /* We need one of these for each std::vector container to make them function correctly*/
-  py::bind_vector<std::vector<double>> (m, "DoubleVector")
+  py::bind_vector<std::vector<double>> (m, "DoubleVector", py::buffer_protocol())
+    .def(py::init<>())
     .def("__add__", [](const std::vector<double> &a, py::object b) {
       return py::module_::import("mspasspy.ccore.seismic").attr("DoubleVector")(
         py::array(a.size(), a.data(), py::none()).attr("__add__")(b));

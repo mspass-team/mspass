@@ -3441,8 +3441,8 @@ class Database(pymongo.database.Database):
         with open(fname, mode="rb") as fh:
             fh.seek(foff)
             if not format:
-                float_array = array("d")
                 if isinstance(mspass_object, TimeSeries):
+                    float_array = array("d")
                     if not mspass_object.is_defined("npts"):
                         raise KeyError("npts is not defined")
                     float_array.frombytes(fh.read(mspass_object.get("npts") * 8))
@@ -3450,13 +3450,9 @@ class Database(pymongo.database.Database):
                 elif isinstance(mspass_object, Seismogram):
                     if not mspass_object.is_defined("npts"):
                         raise KeyError("npts is not defined")
-                    float_array.frombytes(fh.read(mspass_object.get("npts") * 8 * 3))
-                    mspass_object.data = dmatrix(3, mspass_object.get("npts"))
-                    for i in range(3):
-                        for j in range(mspass_object.get("npts")):
-                            mspass_object.data[i, j] = float_array[
-                                i * mspass_object.get("npts") + j
-                            ]
+                    np_arr = np.frombuffer(fh.read(mspass_object.get("npts") * 8 * 3))
+                    np_arr = np_arr.reshape(3, 255).transpose()
+                    mspass_object.data = dmatrix(np_arr)
             else:
                 flh = io.BytesIO(fh.read(nbytes))
                 st = obspy.read(flh, format=format)
@@ -3517,9 +3513,12 @@ class Database(pymongo.database.Database):
             if not format:
                 if isinstance(mspass_object, TimeSeries):
                     # fixme DoubleVector
-                    ub = bytes(np.array(mspass_object.data))
+                    ub = bytes(mspass.data)
                 elif isinstance(mspass_object, Seismogram):
-                    ub = bytes(mspass_object.data)
+                    # The transpose call seems a little awkward, but it will make the following
+                    # conversion to bytes much faster
+                    np_arr = (np.array(mspass_object.data)).transpose()
+                    ub = bytes(np_arr.data)
             else:
                 f_byte = io.BytesIO()
                 if isinstance(mspass_object, TimeSeries):
@@ -5061,7 +5060,7 @@ class Database(pymongo.database.Database):
         )
         s3_input_bucket = "scedc-pds"
         s3_output_bucket = (
-            "scedcdata"
+            "mspass-scedcdata"
         )  #   The output file can be saved to this bucket, user might want to change it into their own bucket
         year = str(year)
         day_of_year = str(day_of_year)
