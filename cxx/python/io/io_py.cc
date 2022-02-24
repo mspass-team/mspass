@@ -6,6 +6,21 @@
 #include <pybind11/embed.h>
 
 #include "mspass/io/mseed_index.h"
+#include "mspass/io/fileio.h"
+#include "mspass/seismic/TimeSeries.h"
+#include "mspass/seismic/Seismogram.h"
+/*  these are supposed to be included from fileio.h - temporary for testing only*/
+namespace mspass::io {
+
+long int fwrite_to_file(mspass::seismic::TimeSeries& d,
+  const std::string dir,const std::string dfile);
+long int fwrite_to_file(mspass::seismic::Seismogram& d,
+    const std::string dir,const std::string dfile);
+size_t fread_from_file(mspass::seismic::Seismogram& d,const std::string dir, const std::string dfile,
+    const long int foff);
+size_t fread_from_file(mspass::seismic::TimeSeries& d,const std::string dir, const std::string dfile,
+    const long int foff);
+}
 
 PYBIND11_MAKE_OPAQUE(std::vector<mspass::io::mseed_index>);
 namespace mspass {
@@ -51,6 +66,40 @@ PYBIND11_MODULE(io,m){
     py::arg("verbose") = false
     )
   ;
+ m.def("_fwrite_to_file",py::overload_cast<mspass::seismic::Seismogram&,
+    const std::string,const std::string>(&fwrite_to_file),
+    "Open and read sample data for native format std::vector<double> container",
+    py::return_value_policy::copy,
+    py::arg("d"),
+    py::arg("dir"),
+    py::arg("dfile")
+  );
+  m.def("_fwrite_to_file",py::overload_cast<mspass::seismic::TimeSeries&,
+     const std::string,const std::string>(&fwrite_to_file),
+     "Open and read sample data for native format dmatrix container",
+     py::return_value_policy::copy,
+     py::arg("d"),
+     py::arg("dir"),
+     py::arg("dfile")
+   );
+   m.def("_fread_from_file",
+      py::overload_cast<mspass::seismic::TimeSeries&,
+         const std::string,const std::string,const long int>(&fread_from_file),
+      "Read the sample data for a TimeSeries object from a file as native doubles",
+     py::arg("d"),
+     py::arg("dir"),
+     py::arg("dfile"),
+     py::arg("foff")
+   );
+   m.def("_fread_from_file",
+      py::overload_cast<mspass::seismic::Seismogram&,
+         const std::string,const std::string,const long int>(&fread_from_file),
+      "Read the sample data for a Seismogram object from a file as native doubles",
+     py::arg("d"),
+     py::arg("dir"),
+     py::arg("dfile"),
+     py::arg("foff")
+   );
 }
 }   // namespace mspasspy
 }  // namespace mspas
