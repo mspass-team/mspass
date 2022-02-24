@@ -1,5 +1,6 @@
 #ifndef _KEYWORDS_H_
 #define _KEYWORDS_H_
+#include <string>
 /*! \brief Define metadata keys.
 
 This include file defines a set ofconst std::string values that serve as
@@ -78,5 +79,11 @@ const std::string SEISMICMD_sta("sta");
 const std::string SEISMICMD_chan("chan");
 /*! location code assigned to an instrument (loc component of SEED net:sta:chan)*/
 const std::string SEISMICMD_loc("loc");
+/*! Define time reference (normally UTC or Relative)*/
+const std::string SEISMICMD_time_standard("time_standard");
+/*! Define the t0_shift attribute of BasicTimeSeries. */
+const std::string SEISMICMD_t0_shift("starttime_shift");
+/*! Defines boolean used in BasicTimeSeries for properly handling Relative/UTC time standards*/
+const std::string SEISMICMD_utc_convertible("utc_convertible");
 }
 #endif

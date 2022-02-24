@@ -128,6 +128,45 @@ with serialization.
     const std::string jobid=std::string("UNDEFINED"),
       const std::string readername=std::string("load3C"),
         const std::string algid=std::string("0"));
+
+/*! \brief Construct from Metadata definition that includes data path.
+ *
+ A Metadata object is sufficiently general that it can contain enough
+ information to contruct an object from attributes contained in it.
+ This constuctor uses that approach, with the actual loading of data
+ being an option (on by default).   In mspass this is constructor is
+ used to load data with Metadata constructed from MongoDB and then
+ using the path created from two parameters (dir and dfile used as
+ in css3.0 wfdisc) to read data.   The API is general but the
+ implementation in mspass is very rigid.   It blindly assumes the
+ data being read are binary doubles in the right byte order and
+ ordered in the native order for dmatrix (Fortran order).  i.e.
+ the constuctor does a raw fread of ns*3 doubles into the internal
+ array used in the dmatrix implementation.
+
+ A second element of the Metadata that is special for MsPASS is the
+ handling of the transformation matrix by this constructor.   In MsPASS
+ the transformation matrix is stored as a python object in MongoDB.
+ This constructor aims to fetch that entity with the key 'tmatrix'.
+ To be more robust and simpler to use with data not loaded from mongodb
+ we default tmatrix to assume the data are in standard coordinates.  That is,
+ if the key tmatrix is not defined in Metadata passed as arg0, the
+ constructor assumes it should set the transformation matrix to an identity.
+ Use set_transformation_matrix if that assumption is wrong for your data.
+
+ \param md is the Metadata used for the construction.
+
+ \param load_data if true (default) a file name is constructed from
+ dir+"/"+dfile, the file is openned, fseek is called to foff,
+ data are read with fread, and the file is closed.  If false a dmatrix
+ for u is still created of size 3xns, but the matrix is only initialized
+ to all zeros.
+
+ \exception  Will throw a MsPASSError if required metadata are missing.
+ */
+   Seismogram(const Metadata& md, bool load_data)
+     : mspass::seismic::CoreSeismogram(md,load_data), mspass::utility::ProcessingHistory()
+   {};
   /*! Standard copy constructor. */
   Seismogram(const Seismogram& parent)
     : mspass::seismic::CoreSeismogram(parent), mspass::utility::ProcessingHistory(parent)
