@@ -115,8 +115,33 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
         this->mdt = this->get_double(SEISMICMD_dt);
         this->mt0 = this->get_double(SEISMICMD_t0);
         this->nsamp = this->get_long(SEISMICMD_npts);
-        /* Assume the data t0 is UTC. */
-        this->set_tref(TimeReferenceType::UTC);
+        if(this->is_defined(SEISMICMD_time_standard))
+        {
+          if(this->get_string(SEISMICMD_time_standard) == "UTC")
+            this->set_tref(TimeReferenceType::UTC);
+          else
+          {
+            this->set_tref(TimeReferenceType::Relative);
+            /* For now we can't post an error because this is CoreSeismogram
+            so elog is not defined.   For now let this error be silent as it
+            is harmless */
+            /*
+            this->elog.log_error("CoreSeismogram Metadata constructor",
+              SEISMICMD_time_standard+" attribute is not defined - set to Relative",
+              ErrorSeverity::Complaint);
+              */
+          }
+        }
+        if(this->time_is_relative())
+        {
+          /* It is not an error if a t0 shift is not defined and we are
+          in relative time. That is the norm for active source data. */
+          if(this->is_defined(SEISMICMD_t0_shift))
+          {
+            double t0shift=this->get_double(SEISMICMD_t0_shift);
+            this->force_t0_shift(t0shift);
+          }
+        }
         /* This section is done specially to handle interaction with MongoDB.
         We store tmatrix there as a python object so we use a get_any to fetch
         it.   Oct 22, 2021 added a bug fix to handle tmatrix not defined.

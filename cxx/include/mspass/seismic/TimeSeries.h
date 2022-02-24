@@ -54,6 +54,29 @@ public:
       : mspass::seismic::CoreTimeSeries(bts,md),
          mspass::utility::ProcessingHistory()
   {};
+  /*! Partially construct from Metadata alone.
+
+  This constructor is useful for interaction with MongoDB where the
+  Metadata container is constructed directly from MongoDB documents the
+  database uses for storage.  A key restrition of this constructor is that
+  BasicTimeSeries attributes and the size of the internal array buffer, which
+  is set by npts, are extracted from Metadata with keys fixed in the C++ code.
+  The following keys are required or this contructor will throw a MwPASSWrror:
+
+    dt - sample sample_interval
+    t0 - data startttime
+    npts - number of samples (s array will be initialized to this many zeros)
+    time_standard - UTC or Relative (anything but UTC is taken as relative)
+
+  It will also handle but not require the two attributes used in the mspass
+  schema to handle shifting from absolute to relative time.  These keys
+  are
+    t0_shift - sets amount t0 has been shiftee when originally utc but set
+      to relative with the shift method.  Ignored if time is UTC or it is
+      not defined.  
+
+  */
+  TimeSeries(const Metadata& md);
 
   /*!  \brief Construct from lower level CoreTimeSeries.
 
