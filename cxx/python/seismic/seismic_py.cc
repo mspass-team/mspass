@@ -179,7 +179,7 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<>())
     .def(py::init<const SlownessVector&>())
     /* This obscure syntax is used for setting keyword args for a constructor.
-    We want it here because we want to normally default az0.   
+    We want it here because we want to normally default az0.
     This obscure trick came from:  https://github.com/pybind/pybind11/issues/579*/
     .def(py::init<const double, const double, const double>(),
       py::arg("ux")=0.0,py::arg("uy")=0.0,py::arg("az0")=0.0
@@ -349,6 +349,7 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const CoreSeismogram&>())
     .def(py::init<const size_t>())
     .def(py::init<const BasicTimeSeries&,const Metadata&>())
+    .def(py::init<const Metadata&,bool>())
     .def(py::init<const CoreSeismogram&,const std::string>())
     /* Don't think we really want to expose this to python if we don't need to
     .def(py::init<const BasicTimeSeries&,const Metadata&, const CoreSeismogram,
@@ -430,6 +431,7 @@ PYBIND11_MODULE(seismic, m) {
       .def(py::init<const size_t>())
       .def(py::init<const CoreTimeSeries&>())
       .def(py::init<const BasicTimeSeries&,const Metadata&>())
+      .def(py::init<const Metadata&>())
       .def(py::init<const CoreTimeSeries&,const std::string>())
       /* Not certain we should have this in the python api.  It is used in pickle interface but doesn't seem
 	helpful for python.  Uncomment if this proves false.
