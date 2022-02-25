@@ -57,7 +57,17 @@ TimeSeries::TimeSeries(const Metadata& md) : Metadata(md),ProcessingHistory()
             this->force_t0_shift(t0shift);
           }
         }
+        /* Maintenance issue:   The first version of this code had this
+        construct to set npts:
         long ns = this->get_long(SEISMICMD_npts);
+        For reasons I (glp) could not figure out ns was always returned as 0
+        when extracted from this.   The Metadata(md) call in the first line of
+        this constructor should have set npts but it did not do so for some
+        reason.  The following is a workaround that is totally equivalent but
+        why it is necessary is not at all clear.  I am putting this here as this
+        could come back to bite us.
+        */
+        long int ns = md.get_long(SEISMICMD_npts);
         /* this CoreTimeSeries method sets the npts attribute and
         initializes the s buffer to all zeros */
         this->set_npts(ns);
