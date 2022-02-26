@@ -372,6 +372,64 @@ def WindowData(
         return d
 
 
+@mspass_func_wrapper
+def WindowData_with_duration(
+    d,
+    duration,
+    t0shift=None,
+    object_history=False,
+    alg_name="scale",
+    alg_id=None,
+    dryrun=False,
+):
+    if duration < 0:
+        detailline = "Window duration: {dur}  Data range:  {dst},{det}".format(
+            dur=duration, dst=d.t0, det=d.endtime()
+        )
+        d.elog.log_error(
+            "WindowData",
+            "Duration is a negative number.\n" + detailline,
+            ErrorSeverity.Invalid,
+        )
+        d.kill()
+        return d
+    win_start = d.t0 + 1
+    win_end = win_start + duration
+    if d.dead():
+        return d
+    twcut = TimeWindow(win_start, win_end)
+    if t0shift:
+        twcut.shift(t0shift)
+    try:
+        # This handler duplicates an error test in the WindowData C code but
+        # it will be more efficient to handle it here.
+        if win_start < d.t0 or win_end > d.endtime():
+            detailline = "Window range: {wst},{wet}  Data range:  {dst},{det}".format(
+                wst=win_start, wet=win_end, dst=d.t0, det=d.endtime()
+            )
+            d.elog.log_error(
+                "WindowData",
+                "Data range is smaller than window range\n" + detailline,
+                ErrorSeverity.Invalid,
+            )
+            d.kill()
+            return d
+        if isinstance(d, TimeSeries):
+            dcut = _WindowData(d, twcut)
+            return dcut
+        elif isinstance(d, Seismogram):
+            dcut = _WindowData3C(d, twcut)
+            return dcut
+        else:
+            raise RuntimeError(
+                "WindowData:  Invalid input data type received=" + str(type(d))
+            )
+    except MsPASSError as err:
+        d.log_error("WindowData", str(err), ErrorSeverity.Invalid)
+        d.kill()
+        return d
+
+
 class TopMute:
     """
     A top mute is a form of taper applied to the "front" of a signal.

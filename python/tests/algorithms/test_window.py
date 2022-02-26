@@ -29,7 +29,7 @@ from mspasspy.ccore.algorithms.amplitudes import (
 )
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.algorithms.window import scale
-from mspasspy.algorithms.window import WindowData, TopMute
+from mspasspy.algorithms.window import WindowData, WindowData_with_duration, TopMute
 
 
 # Build a simple _CoreTimeSeries and _CoreSeismogram with
@@ -234,6 +234,47 @@ def test_windowdata():
     # old test:  d=WindowData(ts,win,object_history=True)
     # larger than data range will generate an exception
     d = WindowData(ts, -999.0, 1000.0)
+    print("Error message posted")
+    print(d.elog.get_error_log())
+    assert d.elog.size() == 1
+
+
+def test_WindowData_with_duration():
+    npts = 1000
+    ts = TimeSeries()
+    setbasics(ts, npts)
+    for i in range(npts):
+        ts.data[i] = float(i)
+    t3c = Seismogram()
+    setbasics(t3c, npts)
+    for k in range(3):
+        for i in range(npts):
+            t3c.data[k, i] = 100 * (k + 1) + float(i)
+
+    d = WindowData_with_duration(ts, 1)
+    print("t y")
+    for j in range(d.npts):
+        print(d.time(j), d.data[j])
+    assert len(d.data) == 101
+    assert d.t0 == 1.0
+    assert d.endtime() == 2.0
+
+    d = WindowData_with_duration(t3c, 2)
+    print("t x0 x1 x2")
+    for j in range(d.npts):
+        print(d.time(j), d.data[0, j], d.data[1, j], d.data[2, j])
+    assert d.data.columns() == 201
+    assert d.t0 == 1.0
+    assert d.endtime() == 3.0
+
+    print("testing error handling")
+    t3c.kill()
+    d = WindowData_with_duration(t3c, 1)
+    assert d.npts == 1000 and (not d.live)
+
+    # old test:  d=WindowData(ts,win,object_history=True)
+    # larger than data range will generate an exception
+    d = WindowData_with_duration(ts, -999.0)
     print("Error message posted")
     print(d.elog.get_error_log())
     assert d.elog.size() == 1
