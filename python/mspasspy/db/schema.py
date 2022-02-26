@@ -18,11 +18,11 @@ class SchemaBase:
             if "MSPASS_HOME" in os.environ:
                 schema_file = (
                     os.path.abspath(os.environ["MSPASS_HOME"])
-                    + "/data/yaml/mspass.yaml"
+                    + "/data/yaml/mspass_s3.yaml"
                 )
             else:
                 schema_file = os.path.abspath(
-                    os.path.dirname(__file__) + "/../data/yaml/mspass.yaml"
+                    os.path.dirname(__file__) + "/../data/yaml/mspass_s3.yaml"
                 )
         elif not os.path.isfile(schema_file):
             if "MSPASS_HOME" in os.environ:
