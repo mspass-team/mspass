@@ -470,6 +470,64 @@
         <span class="k">return</span> <span class="n">d</span></div>
 
 
+<div class="viewcode-block" id="WindowData_with_duration"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData_with_duration">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">WindowData_with_duration</span><span class="p">(</span>
+    <span class="n">d</span><span class="p">,</span>
+    <span class="n">duration</span><span class="p">,</span>
+    <span class="n">t0shift</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;scale&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">duration</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">detailline</span> <span class="o">=</span> <span class="s2">&quot;Window duration: </span><span class="si">{dur}</span><span class="s2">  Data range:  </span><span class="si">{dst}</span><span class="s2">,</span><span class="si">{det}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">dur</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">det</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+            <span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Duration is a negative number.</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">detailline</span><span class="p">,</span>
+            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">d</span>
+    <span class="n">win_start</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">win_end</span> <span class="o">=</span> <span class="n">win_start</span> <span class="o">+</span> <span class="n">duration</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">d</span>
+    <span class="n">twcut</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">win_start</span><span class="p">,</span> <span class="n">win_end</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">t0shift</span><span class="p">:</span>
+        <span class="n">twcut</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">t0shift</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># This handler duplicates an error test in the WindowData C code but</span>
+        <span class="c1"># it will be more efficient to handle it here.</span>
+        <span class="k">if</span> <span class="n">win_start</span> <span class="o">&lt;</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="ow">or</span> <span class="n">win_end</span> <span class="o">&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">():</span>
+            <span class="n">detailline</span> <span class="o">=</span> <span class="s2">&quot;Window range: </span><span class="si">{wst}</span><span class="s2">,</span><span class="si">{wet}</span><span class="s2">  Data range:  </span><span class="si">{dst}</span><span class="s2">,</span><span class="si">{det}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">wst</span><span class="o">=</span><span class="n">win_start</span><span class="p">,</span> <span class="n">wet</span><span class="o">=</span><span class="n">win_end</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">det</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Data range is smaller than window range</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">detailline</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">d</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+            <span class="n">dcut</span> <span class="o">=</span> <span class="n">_WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">twcut</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dcut</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+            <span class="n">dcut</span> <span class="o">=</span> <span class="n">_WindowData3C</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">twcut</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dcut</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;WindowData:  Invalid input data type received=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+            <span class="p">)</span>
+    <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+
 <div class="viewcode-block" id="TopMute"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.TopMute">[docs]</a><span class="k">class</span> <span class="nc">TopMute</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A top mute is a form of taper applied to the &quot;front&quot; of a signal.</span>

@@ -421,8 +421,8 @@ template&lt;typename <code class="sig-name descname">T</code>&gt;<br /><span cla
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
 <dl class="cpp function">
-<dt>
-<span class="target" id="classmspass_1_1utility_1_1_metadata_1a492ba774f3adb7d1f45bdf41eaa4639b"></span><code class="sig-name descname">friend friend pybind11::object serialize_metadata_py (const Metadata &amp;md)</code></dt>
+<dt id="_CPPv4N6mspass7utility8Metadata21serialize_metadata_pyERK8Metadata">
+<span class="target" id="classmspass_1_1utility_1_1_metadata_1a492ba774f3adb7d1f45bdf41eaa4639b"></span><em class="property">friend</em> pybind11::object <code class="sig-name descname">serialize_metadata_py</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata">Metadata</a> &amp;<em>md</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata21serialize_metadata_pyERK8Metadata" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Serialize <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> to a python bytes object. This function is needed to support pickle in the python interface. It cast the C++ object to a Python dict and calls pickle against that dict directly to generate a Python bytes object. This may not be the most elegant approach, but it should be bombproof. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -435,8 +435,8 @@ template&lt;typename <code class="sig-name descname">T</code>&gt;<br /><span cla
 </dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="classmspass_1_1utility_1_1_metadata_1a542596be1a0a6bae256936fc0828eeec"></span><code class="sig-name descname">friend friend Metadata restore_serialized_metadata_py (const pybind11::object &amp;sd)</code></dt>
+<dt id="_CPPv4N6mspass7utility8Metadata30restore_serialized_metadata_pyERKN8pybind116objectE">
+<span class="target" id="classmspass_1_1utility_1_1_metadata_1a542596be1a0a6bae256936fc0828eeec"></span><em class="property">friend</em> <a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata">Metadata</a> <code class="sig-name descname">restore_serialized_metadata_py</code><span class="sig-paren">(</span><em class="property">const</em> pybind11::object &amp;<em>sd</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata30restore_serialized_metadata_pyERKN8pybind116objectE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Unpack serialized <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a>.</p>
 <p>This function is the inverse of the serialize function. It recreates a <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> object serialized previously with the serialize function. </p>
 <dl class="field-list simple">
@@ -450,8 +450,8 @@ template&lt;typename <code class="sig-name descname">T</code>&gt;<br /><span cla
 </dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="classmspass_1_1utility_1_1_metadata_1a9aefda8821c48b62ef52d8e9f90ef7a1"></span><code class="sig-name descname">friend friend std::ostringstream &amp; operator&lt;&lt; (std::ostringstream &amp;, const mspass::utility::Metadata &amp;)</code></dt>
+<dt id="_CPPv4N6mspass7utility8MetadatalsERNSt13ostringstreamERKN6mspass7utility8MetadataE">
+<span class="target" id="classmspass_1_1utility_1_1_metadata_1a9aefda8821c48b62ef52d8e9f90ef7a1"></span><em class="property">friend</em> std::ostringstream &amp;<code class="sig-name descname">operator&lt;&lt;</code><span class="sig-paren">(</span>std::ostringstream&amp;, <em class="property">const</em> mspass::utility::<a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata">Metadata</a>&amp;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8MetadatalsERNSt13ostringstreamERKN6mspass7utility8MetadataE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Standard operator for overloading output to a stringstream </p>
 </dd></dl>
 

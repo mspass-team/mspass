@@ -534,6 +534,11 @@ as the primary index.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="mspasspy.db.database.Database.index_mseed_FDSN">
+<code class="sig-name descname">index_mseed_FDSN</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">provider</span></em>, <em class="sig-param"><span class="n">year</span></em>, <em class="sig-param"><span class="n">day_of_year</span></em>, <em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">station</span></em>, <em class="sig-param"><span class="n">location</span></em>, <em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'wf_miniseed'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_FDSN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_FDSN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="mspasspy.db.database.Database.index_mseed_file">
 <code class="sig-name descname">index_mseed_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dfile</span></em>, <em class="sig-param"><span class="n">dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'wf_miniseed'</span></em>, <em class="sig-param"><span class="n">segment_time_tears</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">elog_collection</span><span class="o">=</span><span class="default_value">'elog'</span></em>, <em class="sig-param"><span class="n">return_ids</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_file" title="Permalink to this definition"></a></dt>
 <dd><p>This is the first stage import function for handling the import of
@@ -627,6 +632,65 @@ MongoDB document id with each elog entry)</p></li>
 <dd class="field-even"><p>This function can throw a range of error types for
 a long list of possible io issues.   Callers should use a
 generic handler to avoid aborts in a large job.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.db.database.Database.index_mseed_s3_continuous">
+<code class="sig-name descname">index_mseed_s3_continuous</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s3_client</span></em>, <em class="sig-param"><span class="n">year</span></em>, <em class="sig-param"><span class="n">day_of_year</span></em>, <em class="sig-param"><span class="n">network</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">station</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">channel</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'wf_miniseed'</span></em>, <em class="sig-param"><span class="n">storage_mode</span><span class="o">=</span><span class="default_value">'s3_continuous'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_s3_continuous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_s3_continuous" title="Permalink to this definition"></a></dt>
+<dd><p>This is the first stage import function for handling the import of
+miniseed data. However, instead of scanning a data file defined by a directory
+(dir arg) and dfile (file name) argument, it reads the miniseed content from AWS s3.
+It builds and index it writes to mongodb in the collection defined by the collection
+argument (wf_miniseed by default). The index is bare bones
+miniseed tags (net, sta, chan, and loc) with a starttime tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s3_client</strong> – s3 Client object given by user, which contains credentials</p></li>
+<li><p><strong>year</strong> – year for the query mseed file(4 digit).</p></li>
+<li><p><strong>day_of_year</strong> – day of year for the query of mseed file(3 digit [001-366])</p></li>
+<li><p><strong>network</strong> – network code</p></li>
+<li><p><strong>station</strong> – station code</p></li>
+<li><p><strong>channel</strong> – channel code</p></li>
+<li><p><strong>location</strong> – location code</p></li>
+<li><p><strong>collection</strong> – is the mongodb collection name to write the
+index data to.  The default is ‘wf_miniseed’.  It should be rare
+to use anything but the default.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Exception</dt>
+<dd class="field-even"><p>This function will do nothing if the obejct does not exist. For other
+exceptions, it would raise a MsPASSError.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.db.database.Database.index_mseed_s3_event">
+<code class="sig-name descname">index_mseed_s3_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s3_client</span></em>, <em class="sig-param"><span class="n">year</span></em>, <em class="sig-param"><span class="n">day_of_year</span></em>, <em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">dfile</span></em>, <em class="sig-param"><span class="n">dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'wf_miniseed'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_s3_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_s3_event" title="Permalink to this definition"></a></dt>
+<dd><p>This is the first stage import function for handling the import of
+miniseed data. However, instead of scanning a data file defined by a directory
+(dir arg) and dfile (file name) argument, it reads the miniseed content from AWS s3.
+It builds and index it writes to mongodb in the collection defined by the collection
+argument (wf_miniseed by default). The index is bare bones
+miniseed tags (net, sta, chan, and loc) with a starttime tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s3_client</strong> – s3 Client object given by user, which contains credentials</p></li>
+<li><p><strong>year</strong> – year for the query mseed file(4 digit).</p></li>
+<li><p><strong>day_of_year</strong> – day of year for the query of mseed file(3 digit [001-366])</p></li>
+<li><p><strong>filename</strong> – SCSN catalog event id for the event</p></li>
+<li><p><strong>collection</strong> – is the mongodb collection name to write the
+index data to.  The default is ‘wf_miniseed’.  It should be rare
+to use anything but the default.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Exception</dt>
+<dd class="field-even"><p>This function will do nothing if the obejct does not exist. For other
+exceptions, it would raise a MsPASSError.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -726,7 +790,7 @@ Default are attributes not normally need that are loaded from QuakeML.  Ignored 
 
 <dl class="py method">
 <dt id="mspasspy.db.database.Database.read_data">
-<code class="sig-name descname">read_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">object_id</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'promiscuous'</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'wf'</span></em>, <em class="sig-param"><span class="n">data_tag</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'read_data'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">define_as_raw</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">retrieve_history_record</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">merge_method</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">merge_fill_value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">merge_interpolation_samples</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_data" title="Permalink to this definition"></a></dt>
+<code class="sig-name descname">read_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">object_id</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'promiscuous'</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'wf'</span></em>, <em class="sig-param"><span class="n">data_tag</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'read_data'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">define_as_raw</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">retrieve_history_record</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">merge_method</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">merge_fill_value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">merge_interpolation_samples</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">aws_access_key_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aws_secret_access_key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_data" title="Permalink to this definition"></a></dt>
 <dd><p>This is the core MsPASS reader for constructing Seismogram or TimeSeries
 objects from data managed with MondoDB through MsPASS.   It is the
 core reader for serial processing where a typical algorithm would be:</p>
@@ -1512,7 +1576,7 @@ ids found after query and the ids should then always be valid.</p>
 
 <dl class="py function">
 <dt id="mspasspy.db.database.read_distributed_data">
-<code class="sig-prename descclassname">mspasspy.db.database.</code><code class="sig-name descname">read_distributed_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db</span></em>, <em class="sig-param"><span class="n">cursor</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'promiscuous'</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">'dask'</span></em>, <em class="sig-param"><span class="n">npartitions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spark_context</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data_tag</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#read_distributed_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.read_distributed_data" title="Permalink to this definition"></a></dt>
+<code class="sig-prename descclassname">mspasspy.db.database.</code><code class="sig-name descname">read_distributed_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db</span></em>, <em class="sig-param"><span class="n">cursor</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'promiscuous'</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">'dask'</span></em>, <em class="sig-param"><span class="n">npartitions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spark_context</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data_tag</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aws_access_key_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aws_secret_access_key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#read_distributed_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.read_distributed_data" title="Permalink to this definition"></a></dt>
 <dd><p>This function should be used to read an entire dataset that is to be handled
 by subsequent parallel operations.  The function can be thought of as
 loading the entire data set into a parallel container (rdd for spark

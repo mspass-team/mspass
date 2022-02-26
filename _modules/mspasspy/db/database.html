@@ -114,8 +114,12 @@
 <span class="kn">import</span> <span class="nn">pymongo</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">obspy</span>
+<span class="kn">from</span> <span class="nn">obspy.clients.fdsn</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">Inventory</span>
 <span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">UTCDateTime</span>
+<span class="kn">import</span> <span class="nn">boto3</span><span class="o">,</span> <span class="nn">botocore</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">base64</span>
 
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.io</span> <span class="kn">import</span> <span class="n">_mseed_file_indexer</span>
 
@@ -150,6 +154,8 @@
     <span class="n">npartitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">spark_context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function should be used to read an entire dataset that is to be handled</span>
@@ -222,14 +228,30 @@
         <span class="n">list_</span> <span class="o">=</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">numSlices</span><span class="o">=</span><span class="n">npartitions</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">list_</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
             <span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span>
-                <span class="n">cur</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">normalize</span><span class="p">,</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">data_tag</span>
+                <span class="n">cur</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
+                <span class="n">load_history</span><span class="o">=</span><span class="n">load_history</span><span class="p">,</span>
+                <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span>
+                <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
+                <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">,</span>
+                <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+                <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;dask&quot;</span><span class="p">:</span>
         <span class="n">list_</span> <span class="o">=</span> <span class="n">daskbag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">list_</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
             <span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span>
-                <span class="n">cur</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">normalize</span><span class="p">,</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">data_tag</span>
+                <span class="n">cur</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
+                <span class="n">load_history</span><span class="o">=</span><span class="n">load_history</span><span class="p">,</span>
+                <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span>
+                <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
+                <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">,</span>
+                <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+                <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -342,6 +364,8 @@
         <span class="n">merge_method</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">merge_fill_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">merge_interpolation_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the core MsPASS reader for constructing Seismogram or TimeSeries</span>
@@ -651,6 +675,16 @@
                     <span class="n">object_doc</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">],</span>
                     <span class="nb">format</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="s2">&quot;format&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">object_doc</span> <span class="k">else</span> <span class="n">object_doc</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">],</span>
                 <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">&quot;s3_continuous&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_read_data_from_s3_continuous</span><span class="p">(</span>
+                    <span class="n">mspass_object</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="p">,</span> <span class="n">aws_secret_access_key</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">&quot;s3_lambda&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_read_data_from_s3_lambda</span><span class="p">(</span>
+                    <span class="n">mspass_object</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="p">,</span> <span class="n">aws_secret_access_key</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">&quot;fdsn&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_read_data_from_fdsn</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unknown storage mode: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">storage_mode</span><span class="p">))</span>
 
@@ -3648,6 +3682,246 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_read_data_from_s3_continuous</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read data stored in s3 and load it into a mspasspy object.</span>
+
+<span class="sd">        :param mspass_object: the target object.</span>
+<span class="sd">        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s3_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+            <span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+            <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+            <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">BUCKET_NAME</span> <span class="o">=</span> <span class="s2">&quot;scedc-pds&quot;</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span>
+        <span class="n">day_of_year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;day_of_year&quot;</span><span class="p">]</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">station</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;net&quot;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;sta&quot;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+            <span class="n">station</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;chan&quot;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;loc&quot;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+            <span class="n">location</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
+        <span class="n">KEY</span> <span class="o">=</span> <span class="s2">&quot;continuous_waveforms/&quot;</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">day_of_year</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">network</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">station</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">station</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">5</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">station</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">channel</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">location</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">location</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">location</span><span class="p">))</span>
+
+        <span class="n">mseed_file</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">network</span> <span class="o">+</span> <span class="n">station</span> <span class="o">+</span> <span class="n">channel</span> <span class="o">+</span> <span class="n">location</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="n">day_of_year</span> <span class="o">+</span> <span class="s2">&quot;.ms&quot;</span>
+        <span class="p">)</span>
+        <span class="n">KEY</span> <span class="o">+=</span> <span class="n">mseed_file</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">BUCKET_NAME</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">KEY</span><span class="p">)</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()),</span> <span class="nb">format</span><span class="o">=</span><span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+                <span class="c1"># st is a &quot;stream&quot; but it only has one member here because we are</span>
+                <span class="c1"># reading single net,sta,chan,loc grouping defined by the index</span>
+                <span class="c1"># We only want the Trace object not the stream to convert</span>
+                <span class="n">tr</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c1"># Now we convert this to a TimeSeries and load other Metadata</span>
+                <span class="c1"># Note the exclusion copy and the test verifying net,sta,chan,</span>
+                <span class="c1"># loc, and startime all match</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+                <span class="n">sm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">toSeismogram</span><span class="p">(</span><span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">()</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="k">except</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">][</span><span class="s2">&quot;Code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;404&quot;</span><span class="p">:</span>
+                <span class="c1"># the object does not exist</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;Could not find the object by the KEY: </span><span class="si">{}</span><span class="s2"> from the BUCKET: </span><span class="si">{}</span><span class="s2"> in s3&quot;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">BUCKET_NAME</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;Error while read data from s3.&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+    <span class="k">def</span> <span class="nf">_read_data_from_s3_lambda</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span>
+        <span class="n">day_of_year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;day_of_year&quot;</span><span class="p">]</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">station</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;net&quot;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;sta&quot;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+            <span class="n">station</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;chan&quot;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;loc&quot;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+            <span class="n">location</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_windowed_mseed_file</span><span class="p">(</span>
+                <span class="n">aws_access_key_id</span><span class="p">,</span>
+                <span class="n">aws_secret_access_key</span><span class="p">,</span>
+                <span class="n">year</span><span class="p">,</span>
+                <span class="n">day_of_year</span><span class="p">,</span>
+                <span class="n">network</span><span class="p">,</span>
+                <span class="n">station</span><span class="p">,</span>
+                <span class="n">channel</span><span class="p">,</span>
+                <span class="n">location</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+                <span class="c1"># st is a &quot;stream&quot; but it only has one member here because we are</span>
+                <span class="c1"># reading single net,sta,chan,loc grouping defined by the index</span>
+                <span class="c1"># We only want the Trace object not the stream to convert</span>
+                <span class="n">tr</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c1"># Now we convert this to a TimeSeries and load other Metadata</span>
+                <span class="c1"># Note the exclusion copy and the test verifying net,sta,chan,</span>
+                <span class="c1"># loc, and startime all match</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+                <span class="n">sm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">toSeismogram</span><span class="p">(</span><span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">()</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;Error while read data from s3_lambda.&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+    <span class="k">def</span> <span class="nf">_read_data_from_s3_event</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mspass_object</span><span class="p">,</span>
+        <span class="nb">dir</span><span class="p">,</span>
+        <span class="n">dfile</span><span class="p">,</span>
+        <span class="n">foff</span><span class="p">,</span>
+        <span class="n">nbytes</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the stored data from a file and loads it into a mspasspy object.</span>
+
+<span class="sd">        :param mspass_object: the target object.</span>
+<span class="sd">        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">        :param dir: file directory.</span>
+<span class="sd">        :type dir: :class:`str`</span>
+<span class="sd">        :param dfile: file name.</span>
+<span class="sd">        :type dfile: :class:`str`</span>
+<span class="sd">        :param foff: offset that marks the starting of the data in the file.</span>
+<span class="sd">        :param nbytes: number of bytes to be read from the offset. This is only used when ``format`` is given.</span>
+<span class="sd">        :param format: the format of the file. This can be one of the `supported formats &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats&gt;`__ of ObsPy writer. By default (``None``), the format will be the binary waveform.</span>
+<span class="sd">        :type format: :class:`str`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
+
+        <span class="c1"># check if fname exists</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+            <span class="c1"># fname might now exist, but could download from s3</span>
+            <span class="n">s3_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+                <span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+                <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+                <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">BUCKET_NAME</span> <span class="o">=</span> <span class="s2">&quot;scedc-pds&quot;</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span>
+            <span class="n">day_of_year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;day_of_year&quot;</span><span class="p">]</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
+            <span class="n">KEY</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;event_waveforms/&quot;</span>
+                <span class="o">+</span> <span class="n">year</span>
+                <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+                <span class="o">+</span> <span class="n">year</span>
+                <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                <span class="o">+</span> <span class="n">day_of_year</span>
+                <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+                <span class="o">+</span> <span class="n">filename</span>
+                <span class="o">+</span> <span class="s2">&quot;.ms&quot;</span>
+            <span class="p">)</span>
+            <span class="c1"># try to download the mseed file from s3 and save it locally</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">BUCKET_NAME</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">KEY</span><span class="p">)</span>
+                <span class="n">mseed_content</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="c1"># temporarily write data into a file</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mseed_content</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">][</span><span class="s2">&quot;Code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;404&quot;</span><span class="p">:</span>
+                    <span class="c1"># the object does not exist</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;Could not find the object by the KEY: </span><span class="si">{}</span><span class="s2"> from the BUCKET: </span><span class="si">{}</span><span class="s2"> in s3&quot;</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">BUCKET_NAME</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;Error while read data from s3.&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="n">fh</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">foff</span><span class="p">)</span>
+            <span class="n">flh</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">nbytes</span><span class="p">))</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">flh</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
+            <span class="c1"># there could be more than 1 trace object in the stream, merge the traces</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+                <span class="n">tr</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+                <span class="n">sm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">toSeismogram</span><span class="p">(</span><span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">()</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">_read_data_from_fdsn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
+        <span class="n">provider</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;provider&quot;</span><span class="p">]</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span>
+        <span class="n">day_of_year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;day_of_year&quot;</span><span class="p">]</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
+        <span class="n">station</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;loc&quot;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+            <span class="n">location</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
+
+        <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">year</span> <span class="o">+</span> <span class="n">day_of_year</span><span class="p">,</span> <span class="n">iso8601</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_waveforms</span><span class="p">(</span>
+            <span class="n">network</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span>
+        <span class="p">)</span>
+        <span class="c1"># there could be more than 1 trace object in the stream, merge the traces</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+            <span class="n">tr</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+            <span class="n">sm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">toSeismogram</span><span class="p">(</span><span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">()</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span>
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_read_data_from_url</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -3737,7 +4011,7 @@
         <span class="c1"># this returns a warning that count is depricated but</span>
         <span class="c1"># I&#39;m getting confusing results from google search on the</span>
         <span class="c1"># topic so will use this for now</span>
-        <span class="n">nrec</span> <span class="o">=</span> <span class="n">matches</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">nrec</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">queryrecord</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">nrec</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
@@ -3777,7 +4051,7 @@
         <span class="c1"># this returns a warning that count is depricated but</span>
         <span class="c1"># I&#39;m getting confusing results from google search on the</span>
         <span class="c1"># topic so will use this for now</span>
-        <span class="n">nrec</span> <span class="o">=</span> <span class="n">matches</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">nrec</span> <span class="o">=</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">queryrecord</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">nrec</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
@@ -4371,11 +4645,7 @@
                 <span class="o">+</span> <span class="s2">&quot;net, sta, chan, or time&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;Invalid&quot;</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="n">net</span><span class="p">,</span>
-            <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="n">sta</span><span class="p">,</span>
-            <span class="s2">&quot;chan&quot;</span><span class="p">:</span> <span class="n">chan</span><span class="p">,</span>
-        <span class="p">}</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="n">net</span><span class="p">,</span> <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">&quot;chan&quot;</span><span class="p">:</span> <span class="n">chan</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">loc</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">query</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>
         <span class="k">else</span><span class="p">:</span>
@@ -4751,7 +5021,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;textfile&quot;</span><span class="p">,</span>
-        <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span>
+        <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">s+&quot;</span><span class="p">,</span>
         <span class="n">type_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">header_line</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">attribute_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -4849,7 +5119,358 @@
             <span class="n">null_values</span><span class="o">=</span><span class="n">null_values</span><span class="p">,</span>
             <span class="n">one_to_one</span><span class="o">=</span><span class="n">one_to_one</span><span class="p">,</span>
             <span class="n">parallel</span><span class="o">=</span><span class="n">parallel</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_download_windowed_mseed_file</span><span class="p">(</span>
+        <span class="n">aws_access_key_id</span><span class="p">,</span>
+        <span class="n">aws_secret_access_key</span><span class="p">,</span>
+        <span class="n">year</span><span class="p">,</span>
+        <span class="n">day_of_year</span><span class="p">,</span>
+        <span class="n">network</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">station</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">location</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">t0shift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A helper function to download the miniseed file from AWS s3.</span>
+<span class="sd">        A lambda function will be called, and do the timewindowing on cloud. The output file</span>
+<span class="sd">        of timewindow will then be downloaded and parsed by obspy.</span>
+<span class="sd">        Finally return an obspy stream object.</span>
+<span class="sd">        An example of using lambda is in /scripts/aws_lambda_examples.</span>
+
+<span class="sd">        :param aws_access_key_id &amp; aws_secret_access_key: credential for aws, used to initialize lambda_client</span>
+<span class="sd">        :param year:  year for the query mseed file(4 digit).</span>
+<span class="sd">        :param day_of_year:  day of year for the query of mseed file(3 digit [001-366])</span>
+<span class="sd">        :param network:  network code</span>
+<span class="sd">        :param station:  station code</span>
+<span class="sd">        :param channel:  channel code</span>
+<span class="sd">        :param location:  location code</span>
+<span class="sd">        :param duration:  window duration, default value is -1, which means no window will be performed</span>
+<span class="sd">        :param t0shift: shift the start time, default is 0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lambda_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+            <span class="n">service_name</span><span class="o">=</span><span class="s2">&quot;lambda&quot;</span><span class="p">,</span>
+            <span class="n">region_name</span><span class="o">=</span><span class="s2">&quot;us-west-2&quot;</span><span class="p">,</span>
+            <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+            <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">s3_input_bucket</span> <span class="o">=</span> <span class="s2">&quot;scedc-pds&quot;</span>
+        <span class="n">s3_output_bucket</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;scedcdata&quot;</span>
+        <span class="p">)</span>  <span class="c1">#   The output file can be saved to this bucket, user might want to change it into their own bucket</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="n">day_of_year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">day_of_year</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">))</span> <span class="o">+</span> <span class="n">day_of_year</span>
+        <span class="n">source_key</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;continuous_waveforms/&quot;</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">day_of_year</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">network</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">station</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">station</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">5</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">station</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">channel</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">location</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">location</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">location</span><span class="p">))</span>
+
+        <span class="n">mseed_file</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">network</span> <span class="o">+</span> <span class="n">station</span> <span class="o">+</span> <span class="n">channel</span> <span class="o">+</span> <span class="n">location</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="n">day_of_year</span> <span class="o">+</span> <span class="s2">&quot;.ms&quot;</span>
+        <span class="p">)</span>
+        <span class="n">source_key</span> <span class="o">+=</span> <span class="n">mseed_file</span>
+
+        <span class="n">event</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;src_bucket&quot;</span><span class="p">:</span> <span class="n">s3_input_bucket</span><span class="p">,</span>
+            <span class="s2">&quot;dst_bucket&quot;</span><span class="p">:</span> <span class="n">s3_output_bucket</span><span class="p">,</span>
+            <span class="s2">&quot;src_key&quot;</span><span class="p">:</span> <span class="n">source_key</span><span class="p">,</span>
+            <span class="s2">&quot;dst_key&quot;</span><span class="p">:</span> <span class="n">source_key</span><span class="p">,</span>
+            <span class="s2">&quot;save_to_s3&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span>
+            <span class="s2">&quot;t0shift&quot;</span><span class="p">:</span> <span class="n">t0shift</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">lambda_client</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span>
+            <span class="n">FunctionName</span><span class="o">=</span><span class="s2">&quot;TimeWindowFunction&quot;</span><span class="p">,</span>  <span class="c1">#   The name of lambda function on cloud</span>
+            <span class="n">InvocationType</span><span class="o">=</span><span class="s2">&quot;RequestResponse&quot;</span><span class="p">,</span>
+            <span class="n">LogType</span><span class="o">=</span><span class="s2">&quot;Tail&quot;</span><span class="p">,</span>
+            <span class="n">Payload</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">event</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">response_payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;Payload&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="n">ret_type</span> <span class="o">=</span> <span class="n">response_payload</span><span class="p">[</span><span class="s2">&quot;ret_type&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">ret_type</span> <span class="o">==</span> <span class="s2">&quot;key&quot;</span>
+        <span class="p">):</span>  <span class="c1"># If the ret_type is &quot;key&quot;, the output file is stored in another s3 bucket,</span>
+            <span class="c1"># we have to fetch it again.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ret_bucket</span> <span class="o">=</span> <span class="n">response_payload</span><span class="p">[</span><span class="s2">&quot;ret_value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;::&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">ret_key</span> <span class="o">=</span> <span class="n">response_payload</span><span class="p">[</span><span class="s2">&quot;ret_value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;::&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">s3_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+                    <span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+                    <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+                    <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">ret_bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">ret_key</span><span class="p">)</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
+                <span class="k">return</span> <span class="n">st</span>
+
+            <span class="k">except</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">][</span><span class="s2">&quot;Code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;404&quot;</span><span class="p">:</span>
+                    <span class="c1"># the object does not exist</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;Could not find the object by the KEY: </span><span class="si">{}</span><span class="s2"> from the BUCKET: </span><span class="si">{}</span><span class="s2"> in s3&quot;</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ret_key</span><span class="p">,</span> <span class="n">ret_bucket</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">&quot;Error while downloading the output object.&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="n">filecontent</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">response_payload</span><span class="p">[</span><span class="s2">&quot;ret_value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="n">stringio_obj</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">filecontent</span><span class="p">)</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">stringio_obj</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">st</span>
+
+<div class="viewcode-block" id="Database.index_mseed_s3_continuous"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_s3_continuous">[docs]</a>    <span class="k">def</span> <span class="nf">index_mseed_s3_continuous</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">s3_client</span><span class="p">,</span>
+        <span class="n">year</span><span class="p">,</span>
+        <span class="n">day_of_year</span><span class="p">,</span>
+        <span class="n">network</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">station</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">location</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
+        <span class="n">storage_mode</span><span class="o">=</span><span class="s2">&quot;s3_continuous&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is the first stage import function for handling the import of</span>
+<span class="sd">        miniseed data. However, instead of scanning a data file defined by a directory</span>
+<span class="sd">        (dir arg) and dfile (file name) argument, it reads the miniseed content from AWS s3.</span>
+<span class="sd">        It builds and index it writes to mongodb in the collection defined by the collection</span>
+<span class="sd">        argument (wf_miniseed by default). The index is bare bones</span>
+<span class="sd">        miniseed tags (net, sta, chan, and loc) with a starttime tag.</span>
+
+<span class="sd">        :param s3_client:  s3 Client object given by user, which contains credentials</span>
+<span class="sd">        :param year:  year for the query mseed file(4 digit).</span>
+<span class="sd">        :param day_of_year:  day of year for the query of mseed file(3 digit [001-366])</span>
+<span class="sd">        :param network:  network code</span>
+<span class="sd">        :param station:  station code</span>
+<span class="sd">        :param channel:  channel code</span>
+<span class="sd">        :param location:  location code</span>
+<span class="sd">        :param collection:  is the mongodb collection name to write the</span>
+<span class="sd">            index data to.  The default is &#39;wf_miniseed&#39;.  It should be rare</span>
+<span class="sd">            to use anything but the default.</span>
+<span class="sd">        :exception: This function will do nothing if the obejct does not exist. For other</span>
+<span class="sd">            exceptions, it would raise a MsPASSError.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">dbh</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
+        <span class="n">BUCKET_NAME</span> <span class="o">=</span> <span class="s2">&quot;scedc-pds&quot;</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="n">day_of_year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">day_of_year</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">))</span> <span class="o">+</span> <span class="n">day_of_year</span>
+        <span class="n">KEY</span> <span class="o">=</span> <span class="s2">&quot;continuous_waveforms/&quot;</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">day_of_year</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">network</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">station</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">station</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">5</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">station</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">channel</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">location</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">location</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">location</span><span class="p">))</span>
+
+        <span class="n">mseed_file</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">network</span> <span class="o">+</span> <span class="n">station</span> <span class="o">+</span> <span class="n">channel</span> <span class="o">+</span> <span class="n">location</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="n">day_of_year</span> <span class="o">+</span> <span class="s2">&quot;.ms&quot;</span>
+        <span class="p">)</span>
+        <span class="n">KEY</span> <span class="o">+=</span> <span class="n">mseed_file</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">BUCKET_NAME</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">KEY</span><span class="p">)</span>
+            <span class="n">mseed_content</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">stringio_obj</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">mseed_content</span><span class="p">)</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">stringio_obj</span><span class="p">)</span>
+            <span class="c1"># there could be more than 1 trace object in the stream, merge the traces</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span>
+
+            <span class="n">stats</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">year</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;day_of_year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">day_of_year</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;station&quot;</span><span class="p">]</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;network&quot;</span><span class="p">]</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;location&quot;</span> <span class="ow">in</span> <span class="n">stats</span> <span class="ow">and</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]:</span>
+                <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span>
+            <span class="k">if</span> <span class="s2">&quot;npts&quot;</span> <span class="ow">in</span> <span class="n">stats</span> <span class="ow">and</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]:</span>
+                <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">storage_mode</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mseed&quot;</span>
+            <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">][</span><span class="s2">&quot;Code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;404&quot;</span><span class="p">:</span>
+                <span class="c1"># the object does not exist</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;Could not find the object by the KEY: </span><span class="si">{}</span><span class="s2"> from the BUCKET: </span><span class="si">{}</span><span class="s2"> in s3&quot;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">BUCKET_NAME</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;An ClientError occur when tyring to get the object by the KEY(&quot;</span>
+                    <span class="o">+</span> <span class="n">KEY</span>
+                    <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot; with error: &quot;</span><span class="p">,</span>
+                    <span class="n">e</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;Error while index mseed file from s3.&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span></div>
+
+<div class="viewcode-block" id="Database.index_mseed_s3_event"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_s3_event">[docs]</a>    <span class="k">def</span> <span class="nf">index_mseed_s3_event</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">s3_client</span><span class="p">,</span>
+        <span class="n">year</span><span class="p">,</span>
+        <span class="n">day_of_year</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">,</span>
+        <span class="n">dfile</span><span class="p">,</span>
+        <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is the first stage import function for handling the import of</span>
+<span class="sd">        miniseed data. However, instead of scanning a data file defined by a directory</span>
+<span class="sd">        (dir arg) and dfile (file name) argument, it reads the miniseed content from AWS s3.</span>
+<span class="sd">        It builds and index it writes to mongodb in the collection defined by the collection</span>
+<span class="sd">        argument (wf_miniseed by default). The index is bare bones</span>
+<span class="sd">        miniseed tags (net, sta, chan, and loc) with a starttime tag.</span>
+
+<span class="sd">        :param s3_client:  s3 Client object given by user, which contains credentials</span>
+<span class="sd">        :param year:  year for the query mseed file(4 digit).</span>
+<span class="sd">        :param day_of_year:  day of year for the query of mseed file(3 digit [001-366])</span>
+<span class="sd">        :param filename:  SCSN catalog event id for the event</span>
+<span class="sd">        :param collection:  is the mongodb collection name to write the</span>
+<span class="sd">            index data to.  The default is &#39;wf_miniseed&#39;.  It should be rare</span>
+<span class="sd">            to use anything but the default.</span>
+<span class="sd">        :exception: This function will do nothing if the obejct does not exist. For other</span>
+<span class="sd">            exceptions, it would raise a MsPASSError.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">dbh</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
+        <span class="n">BUCKET_NAME</span> <span class="o">=</span> <span class="s2">&quot;scedc-pds&quot;</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="n">day_of_year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">day_of_year</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">))</span> <span class="o">+</span> <span class="n">day_of_year</span>
+        <span class="n">KEY</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;event_waveforms/&quot;</span>
+            <span class="o">+</span> <span class="n">year</span>
+            <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+            <span class="o">+</span> <span class="n">year</span>
+            <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+            <span class="o">+</span> <span class="n">day_of_year</span>
+            <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+            <span class="o">+</span> <span class="n">filename</span>
+            <span class="o">+</span> <span class="s2">&quot;.ms&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">BUCKET_NAME</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">KEY</span><span class="p">)</span>
+            <span class="n">mseed_content</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="c1"># specify the file path</span>
+            <span class="k">if</span> <span class="nb">dir</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">odir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
+            <span class="c1"># temporarily write data into a file</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mseed_content</span><span class="p">)</span>
+            <span class="c1"># immediately read data from the file</span>
+            <span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">elog</span><span class="p">)</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">:</span>
+                <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_mseed_index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;s3_event&quot;</span>
+                <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mseed&quot;</span>
+                <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">odir</span>
+                <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
+                <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">year</span>
+                <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;day_of_year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">day_of_year</span>
+                <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename</span>
+                <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">][</span><span class="s2">&quot;Code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;404&quot;</span><span class="p">:</span>
+                <span class="c1"># the object does not exist</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;Could not find the object by the KEY: </span><span class="si">{}</span><span class="s2"> from the BUCKET: </span><span class="si">{}</span><span class="s2"> in s3&quot;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">BUCKET_NAME</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;An ClientError occur when tyring to get the object by the KEY(&quot;</span>
+                    <span class="o">+</span> <span class="n">KEY</span>
+                    <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot; with error: &quot;</span><span class="p">,</span>
+                    <span class="n">e</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;Error while index mseed file from s3.&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span></div>
+
+<div class="viewcode-block" id="Database.index_mseed_FDSN"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_FDSN">[docs]</a>    <span class="k">def</span> <span class="nf">index_mseed_FDSN</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">provider</span><span class="p">,</span>
+        <span class="n">year</span><span class="p">,</span>
+        <span class="n">day_of_year</span><span class="p">,</span>
+        <span class="n">network</span><span class="p">,</span>
+        <span class="n">station</span><span class="p">,</span>
+        <span class="n">location</span><span class="p">,</span>
+        <span class="n">channel</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">dbh</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
+
+        <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="n">day_of_year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">day_of_year</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">))</span> <span class="o">+</span> <span class="n">day_of_year</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">year</span> <span class="o">+</span> <span class="n">day_of_year</span><span class="p">,</span> <span class="n">iso8601</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">st</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_waveforms</span><span class="p">(</span>
+            <span class="n">network</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span>
+        <span class="p">)</span>
+        <span class="c1"># there could be more than 1 trace object in the stream, merge the traces</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span>
+
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;provider&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">provider</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">year</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;day_of_year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">day_of_year</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span>
+        <span class="k">if</span> <span class="s2">&quot;npts&quot;</span> <span class="ow">in</span> <span class="n">stats</span> <span class="ow">and</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]:</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fdsn&quot;</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mseed&quot;</span>
+        <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>
