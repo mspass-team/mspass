@@ -3475,7 +3475,9 @@ class Database(pymongo.database.Database):
                     # Now we convert this to a TimeSeries and load other Metadata
                     # Note the exclusion copy and the test verifying net,sta,chan,
                     # loc, and startime all match
-                    tr_data= tr.data.astype('float64')   #   Convert the nparray type to double, to match the DoubleVector
+                    tr_data = tr.data.astype(
+                        "float64"
+                    )  #   Convert the nparray type to double, to match the DoubleVector
                     mspass_object.npts = len(tr_data)
                     mspass_object.data = DoubleVector(tr_data)
                 elif isinstance(mspass_object, Seismogram):
@@ -3642,7 +3644,9 @@ class Database(pymongo.database.Database):
                 # Now we convert this to a TimeSeries and load other Metadata
                 # Note the exclusion copy and the test verifying net,sta,chan,
                 # loc, and startime all match
-                tr_data= tr.data.astype('float64')   #   Convert the nparray type to double, to match the DoubleVector
+                tr_data = tr.data.astype(
+                    "float64"
+                )  #   Convert the nparray type to double, to match the DoubleVector
                 mspass_object.npts = len(tr_data)
                 mspass_object.data = DoubleVector(tr_data)
             elif isinstance(mspass_object, Seismogram):
@@ -3700,7 +3704,9 @@ class Database(pymongo.database.Database):
                 # Now we convert this to a TimeSeries and load other Metadata
                 # Note the exclusion copy and the test verifying net,sta,chan,
                 # loc, and startime all match
-                tr_data= tr.data.astype('float64')   #   Convert the nparray type to double, to match the DoubleVector
+                tr_data = tr.data.astype(
+                    "float64"
+                )  #   Convert the nparray type to double, to match the DoubleVector
                 mspass_object.npts = len(tr_data)
                 mspass_object.data = DoubleVector(tr_data)
             elif isinstance(mspass_object, Seismogram):
@@ -3791,7 +3797,9 @@ class Database(pymongo.database.Database):
             st.merge()
             if isinstance(mspass_object, TimeSeries):
                 tr = st[0]
-                tr_data= tr.data.astype('float64')   #   Convert the nparray type to double, to match the DoubleVector
+                tr_data = tr.data.astype(
+                    "float64"
+                )  #   Convert the nparray type to double, to match the DoubleVector
                 mspass_object.npts = len(tr_data)
                 mspass_object.data = DoubleVector(tr_data)
             elif isinstance(mspass_object, Seismogram):
@@ -3820,7 +3828,9 @@ class Database(pymongo.database.Database):
 
         if isinstance(mspass_object, TimeSeries):
             tr = st[0]
-            tr_data= tr.data.astype('float64')   #   Convert the nparray type to double, to match the DoubleVector  
+            tr_data = tr.data.astype(
+                "float64"
+            )  #   Convert the nparray type to double, to match the DoubleVector
             mspass_object.npts = len(tr_data)
             mspass_object.data = DoubleVector(tr_data)
         elif isinstance(mspass_object, Seismogram):
@@ -3856,7 +3866,9 @@ class Database(pymongo.database.Database):
             # Now we convert this to a TimeSeries and load other Metadata
             # Note the exclusion copy and the test verifying net,sta,chan,
             # loc, and startime all match
-            tr_data= tr.data.astype('float64')   #   Convert the nparray type to double, to match the DoubleVector  
+            tr_data = tr.data.astype(
+                "float64"
+            )  #   Convert the nparray type to double, to match the DoubleVector
             mspass_object.npts = len(tr_data)
             mspass_object.data = DoubleVector(tr_data)
         elif isinstance(mspass_object, Seismogram):
