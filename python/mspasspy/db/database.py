@@ -3466,6 +3466,8 @@ class Database(pymongo.database.Database):
                             interpolation_samples=merge_interpolation_samples,
                         )
                     tr = st[0]
+                    mspass_object.npts = len(tr.data)
+                    mspass_object.data = DoubleVector(tr.data)
                     mspass_object = Trace2TimeSeries(tr)
                 elif isinstance(mspass_object, Seismogram):
                     # This was previous form.   The toSeismogram run as a 
