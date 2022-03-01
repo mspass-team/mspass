@@ -3472,10 +3472,10 @@ class Database(pymongo.database.Database):
                     # method is an unnecessary confusion and I don't think 
                     # settign npts or data are necessary given the code of 
                     # Stream2Seismogram - st.toSeismogram is an alias for that
-                    #sm = st.toSeismogram(cardinal=True)
-                    #mspass_object.npts = sm.data.columns()
-                    #mspass_object.data = sm.data
-                    mspass_object = Stream2Seismogram(st,cardinal=True)
+                    sm = st.toSeismogram(cardinal=True)
+                    mspass_object.npts = sm.data.columns()
+                    mspass_object.data = sm.data
+                    #mspass_object = Stream2Seismogram(st,cardinal=True)
 
     @staticmethod
     def _save_data_to_dfile(mspass_object, dir, dfile, format=None,kill_on_failure=False):
