@@ -3466,6 +3466,8 @@ class Database(pymongo.database.Database):
                             interpolation_samples=merge_interpolation_samples,
                         )
                     tr = st[0]
+                    # These two lines are needed to properly initialize 
+                    # the DoubleVector before calling Trace2TimeSeries
                     mspass_object.npts = len(tr.data)
                     mspass_object.data = DoubleVector(tr.data)
                     mspass_object = Trace2TimeSeries(tr)
@@ -3474,10 +3476,13 @@ class Database(pymongo.database.Database):
                     # method is an unnecessary confusion and I don't think 
                     # settign npts or data are necessary given the code of 
                     # Stream2Seismogram - st.toSeismogram is an alias for that
+                    # This is almost but not quite equivalent to this:
+                    # mspass_object = Stream2Seismogram(st,cardinal=True)
+                    # Seems Stream2Seismogram does not properly handle 
+                    # the data pointer
                     sm = st.toSeismogram(cardinal=True)
                     mspass_object.npts = sm.data.columns()
                     mspass_object.data = sm.data
-                    #mspass_object = Stream2Seismogram(st,cardinal=True)
 
     @staticmethod
     def _save_data_to_dfile(mspass_object, dir, dfile, format=None,kill_on_failure=False):
