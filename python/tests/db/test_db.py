@@ -2198,7 +2198,7 @@ class TestDatabase:
         )
         assert np.isclose(ts_ensemble.member[2].data, res.data).all()
 
-        # using seismogram
+        # using seismogram  TODO: Here is a bug!
         seis1 = copy.deepcopy(self.test_seis)
         seis2 = copy.deepcopy(self.test_seis)
         seis3 = copy.deepcopy(self.test_seis)
@@ -2232,7 +2232,6 @@ class TestDatabase:
         )
         assert np.isclose(seis_ensemble.member[2].data, res.data).all()
         assert "_id" not in seis_ensemble.member[1]
-
         logging_helper.info(seis_ensemble.member[0], "2", "save_data")
         logging_helper.info(seis_ensemble.member[1], "2", "save_data")
         logging_helper.info(seis_ensemble.member[2], "2", "save_data")
@@ -2536,7 +2535,7 @@ class TestDatabase:
             aws_secret_access_key="fake_secret_key",
         )
         assert ts.data is not None
-        assert ts.data == DoubleVector(mseed_st[0].data)
+        assert ts.data == DoubleVector(mseed_st[0].data.astype("float64"))
 
     @mock_s3
     def test_index_and_read_s3_event(self):
@@ -2593,7 +2592,7 @@ class TestDatabase:
             aws_secret_access_key="fake_secret_key",
         )
         assert ts.data is not None
-        assert ts.data == DoubleVector(mseed_st[0].data)
+        assert ts.data == DoubleVector(mseed_st[0].data.astype("float64"))
 
     def test_save_and_read_lambda(self):
         mseed_path = "python/tests/data/CICAC__HNZ___2017005.ms"
@@ -2658,7 +2657,7 @@ class TestDatabase:
                 aws_secret_access_key="fake_secret_key",
             )
         assert ts.data is not None
-        assert ts.data == DoubleVector(mseed_st[0].data)
+        assert ts.data == DoubleVector(mseed_st[0].data.astype("float64"))
 
     def test_index_and_read_fdsn(self):
         self.db.index_mseed_FDSN(
