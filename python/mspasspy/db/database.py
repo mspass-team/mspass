@@ -3450,8 +3450,9 @@ class Database(pymongo.database.Database):
                 elif isinstance(mspass_object, Seismogram):
                     if not mspass_object.is_defined("npts"):
                         raise KeyError("npts is not defined")
-                    np_arr = np.frombuffer(fh.read(mspass_object.get("npts") * 8 * 3))
-                    np_arr = np_arr.reshape(3, 255).transpose()
+                    npts = mspass_object.get("npts")
+                    np_arr = np.frombuffer(fh.read(npts * 8 * 3))
+                    np_arr = np_arr.reshape(npts, 3).transpose()
                     mspass_object.data = dmatrix(np_arr)
             else:
                 flh = io.BytesIO(fh.read(nbytes))
@@ -3515,8 +3516,7 @@ class Database(pymongo.database.Database):
             foff = fh.seek(0, 2)
             if not format:
                 if isinstance(mspass_object, TimeSeries):
-                    # fixme DoubleVector
-                    ub = bytes(mspass.data)
+                    ub = bytes(mspass_object.data)
                 elif isinstance(mspass_object, Seismogram):
                     # The transpose call seems a little awkward, but it will make the following
                     # conversion to bytes much faster
