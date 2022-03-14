@@ -3551,8 +3551,8 @@ class Database(pymongo.database.Database):
         if isinstance(mspass_object, Seismogram):
             ub = bytes(mspass_object.data)
         else:
-            ub = bytes(np.array(mspass_object.data))
-        return gfsh.put(pickle.dumps(ub))
+            ub = bytes(np.array(mspass_object.data).transpose())
+        return gfsh.put(ub)
 
     def _read_data_from_gridfs(self, mspass_object, gridfs_id):
         """
@@ -3565,24 +3565,29 @@ class Database(pymongo.database.Database):
         """
         gfsh = gridfs.GridFS(self)
         fh = gfsh.get(file_id=gridfs_id)
-        ub = pickle.load(fh)
-        fmt = "@%dd" % int(len(ub) / 8)
-        x = struct.unpack(fmt, ub)
         if isinstance(mspass_object, TimeSeries):
-            mspass_object.data = DoubleVector(x)
+            # fh.seek(16)
+            float_array = array("d")
+            if not mspass_object.is_defined("npts"):
+                raise KeyError("npts is not defined")
+            float_array.frombytes(fh.read(mspass_object.get("npts") * 8))
+            mspass_object.data = DoubleVector(float_array)
         elif isinstance(mspass_object, Seismogram):
             if not mspass_object.is_defined("npts"):
                 raise KeyError("npts is not defined")
-            if len(x) != (3 * mspass_object["npts"]):
+            npts = mspass_object["npts"]
+            np_arr = np.frombuffer(fh.read(npts * 8 * 3))
+            file_size = fh.tell()
+            if file_size != npts * 8 * 3:
+                # Note we can only detect the cases where given npts is larger than
+                # the number of points in the file
                 emess = (
                     "Size mismatch in sample data. Number of points in gridfs file = %d but expected %d"
-                    % (len(x), (3 * mspass_object["npts"]))
+                    % (file_size / 8, (3 * mspass_object["npts"]))
                 )
                 raise ValueError(emess)
-            mspass_object.data = dmatrix(3, mspass_object["npts"])
-            for i in range(3):
-                for j in range(mspass_object["npts"]):
-                    mspass_object.data[i, j] = x[i * mspass_object["npts"] + j]
+            np_arr = np_arr.reshape(3, npts)
+            mspass_object.data = dmatrix(np_arr)
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
 

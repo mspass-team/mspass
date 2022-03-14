@@ -241,11 +241,11 @@ class TestDatabase:
             self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
 
         with pytest.raises(ValueError) as err:
-            tmp_seis_2.npts = 254
+            tmp_seis_2.npts = 256
             self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
             assert (
                 str(err.value) == "ValueError: Size mismatch in sample data. "
-                "Number of points in gridfs file = 765 but expected 762"
+                "Number of points in gridfs file = 765 but expected 768"
             )
 
         tmp_ts = get_live_timeseries()
@@ -253,7 +253,7 @@ class TestDatabase:
         tmp_ts_2 = TimeSeries()
         tmp_ts_2.npts = 255
         self.db._read_data_from_gridfs(tmp_ts_2, gridfs_id)
-        assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
+        assert np.isclose(tmp_ts.data, tmp_ts_2.data).all()
 
         gfsh = gridfs.GridFS(self.db)
         assert gfsh.exists(gridfs_id)
