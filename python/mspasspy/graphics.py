@@ -211,11 +211,7 @@ def seis2nparray(d):
     dt = d.dt
     m = d.npts
     n = 3
-    work = numpy.zeros(shape=[m, n])
-    # this is a very slow way to do a matrix transpose of u dmatrix
-    for k in range(n):
-        for j in range(m):
-            work[j, k] = d.data[k, j]
+    work = numpy.array(d.data)
     return [tmin, dt, work]
 
 
@@ -223,11 +219,7 @@ def ts2nparray(d):
     tmin = d.t0
     dt = d.dt
     m = d.npts
-    # There is likely a faster way to do this, but for now we want to
-    # be sure this looks like a 2d array as input to the plot function
-    work = numpy.zeros(shape=[m, 1])
-    for j in range(m):
-        work[j, 0] = d.data[j]
+    work = numpy.array(d.data)
     return [tmin, dt, work]
 
 
