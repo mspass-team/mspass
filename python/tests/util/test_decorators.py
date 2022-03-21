@@ -29,6 +29,7 @@ from decorators import (
     mspass_reduce_func_wrapper,
     seismogram_copy_helper,
     timeseries_copy_helper,
+    mspass_method_wrapper,
 )
 import logging_helper
 from helper import (
@@ -265,6 +266,101 @@ def test_seismogram_ensemble_as_stream():
     assert all(
         np.isclose(a, b).all() for a, b in zip(cp.member[1].data, seis_e.member[1].data)
     )
+
+
+class dummy_class_method_wrapper:
+    def __init__(self):
+        pass
+
+    @mspass_method_wrapper
+    def dummy_func_method_wrapper(
+        self,
+        data,
+        *args,
+        object_history=False,
+        alg_id=None,
+        alg_name=None,
+        dryrun=False,
+        inplace_return=False,
+        function_return_key=None,
+        **kwargs
+    ):
+        return "Finish"
+
+
+def test_mspass_method_wrapper():
+    dummy_instance = dummy_class_method_wrapper()
+    with pytest.raises(TypeError) as err:
+        dummy_instance.dummy_func_method_wrapper(1)
+    assert (
+        str(err.value) == "mspass_func_wrapper only accepts mspass object as data input"
+    )
+
+    with pytest.raises(ValueError) as err:
+        seis = get_live_seismogram()
+        dummy_instance.dummy_func_method_wrapper(seis, object_history=True)
+    assert (
+        str(err.value)
+        == "<class 'test_decorators.dummy_class_method_wrapper'>: object_history was true but alg_id not defined"
+    )
+
+    with pytest.raises(ValueError) as err:
+        seis = get_live_seismogram()
+        dummy_instance.dummy_func_method_wrapper(seis, object_history=True)
+    assert (
+        str(err.value)
+        == "<class 'test_decorators.dummy_class_method_wrapper'>: object_history was true but alg_id not defined"
+    )
+
+    # Default behavior
+    assert "Finish" == dummy_instance.dummy_func_method_wrapper(seis)
+    assert seis.number_of_stages() == 0
+
+    # object_history is true
+    dummy_instance.dummy_func_method_wrapper(seis, object_history=True, alg_id="0")
+    assert seis.number_of_stages() == 1
+    assert len(seis.get_nodes()) == 1
+    assert (
+        seis.current_nodedata().algorithm
+        == "<class 'test_decorators.dummy_class_method_wrapper'>"
+    )
+    assert seis.current_nodedata().algid == "0"
+
+    # inplace return
+    data = dummy_instance.dummy_func_method_wrapper(seis, inplace_return=True)
+    assert isinstance(data, Seismogram)
+
+    # valid function_return_key
+    data = dummy_instance.dummy_func_method_wrapper(
+        seis, inplace_return=True, function_return_key="test_key"
+    )
+    assert isinstance(data, Seismogram)
+    assert "test_key" in data and data["test_key"] == "Finish"
+
+    # invalid function_return_key and not inplace_return
+    data = dummy_instance.dummy_func_method_wrapper(
+        seis, inplace_return=False, function_return_key=dict()
+    )
+    assert isinstance(data, Seismogram)
+    errs = seis.elog.get_error_log()
+    assert len(errs) == 2
+    assert errs[-1].algorithm == "<class 'test_decorators.dummy_class_method_wrapper'>"
+    assert (
+        errs[-1].message
+        == "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct"
+    )
+    assert errs[-2].algorithm == "<class 'test_decorators.dummy_class_method_wrapper'>"
+    assert (
+        errs[-2].message
+        == "Illegal type received for function_return_key argument=<class 'dict'>\nReturn value not saved in Metadata"
+    )
+
+    # Test immediate return
+    seis.kill()
+    data = dummy_instance.dummy_func_method_wrapper(seis)
+    assert not data.live
+
+    assert "OK" == dummy_instance.dummy_func_method_wrapper(seis, dryrun=True)
 
 
 @mspass_func_wrapper
