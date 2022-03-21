@@ -223,6 +223,7 @@ def mspass_func_wrapper_multi(
         else:
             logging_helper.ensemble_error(data2, alg_name, ex.message, ex.severity)
 
+
 @decorator
 def mspass_method_wrapper(
     func,
@@ -241,11 +242,11 @@ def mspass_method_wrapper(
     Decorator wrapper to adapt a class method function to the mspass parallel processing framework.
 
     This function serves as a decorator wrapper, which is widely used in the mspasspy library.
-    It is used to wrap class methods which implement a method that does something 
-    to a mspass data object that is assumed to be passed as arg0 of the method.  
-    This decorator executes the target method on the input data.  It is used 
-    mainly to reduce duplicate code to perserve history and error logs 
-    with mspass object. 
+    It is used to wrap class methods which implement a method that does something
+    to a mspass data object that is assumed to be passed as arg0 of the method.
+    This decorator executes the target method on the input data.  It is used
+    mainly to reduce duplicate code to perserve history and error logs
+    with mspass object.
 
     :param func: target function
     :param selfarg:  the self pointer for the class with which this method is associated
@@ -288,9 +289,9 @@ def mspass_method_wrapper(
 
     # if not defined
     if not alg_name:
-        # This obscure construct sets arg_name to the class name. 
-        # str is needed as type alone returns a type class.  str makes it a name 
-        # although the name is a bit ugly. 
+        # This obscure construct sets arg_name to the class name.
+        # str is needed as type alone returns a type class.  str makes it a name
+        # although the name is a bit ugly.
         alg_name = str(type(selfarg))
 
     if object_history and alg_id is None:
@@ -303,7 +304,7 @@ def mspass_method_wrapper(
         return data
 
     try:
-        res = func(selfarg,data, *args, **kwargs)
+        res = func(selfarg, data, *args, **kwargs)
         if object_history:
             logging_helper.info(data, alg_id, alg_name)
         if function_return_key is not None:
@@ -346,7 +347,6 @@ def mspass_method_wrapper(
         # some unexpected error happen, if inplace_return is true, we may want to return the original data
         if inplace_return:
             return data
-
 
 
 def is_input_dead(*args, **kwargs):
