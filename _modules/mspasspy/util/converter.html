@@ -3,17 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mspasspy.util.converter &mdash; MsPASS 0.0.1 documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <title>mspasspy.util.converter &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/clipboard.min.js"></script>
         <script src="../../../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -44,12 +45,12 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
 </ul>
-<p><span class="caption-text">User Manual</span></p>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
@@ -58,11 +59,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/DataEditing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/HeaderMath.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p><span class="caption-text">Reference Manual</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../python_api/index.html">Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a></li>
@@ -118,7 +122,7 @@
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">ExtractComponent</span>
 
 
-<div class="viewcode-block" id="dict2Metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.dict2Metadata">[docs]</a><span class="k">def</span> <span class="nf">dict2Metadata</span><span class="p">(</span><span class="n">dic</span><span class="p">):</span>
+<div class="viewcode-block" id="dict2Metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.dict2Metadata">[docs]</a><span class="k">def</span> <span class="nf">dict2Metadata</span><span class="p">(</span><span class="n">dic</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to convert Python dict data to Metadata.</span>
 
@@ -137,7 +141,7 @@
 <span class="c1"># dict.toMetadata = dict2Metadata</span>
 
 
-<div class="viewcode-block" id="Metadata2dict"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.Metadata2dict">[docs]</a><span class="k">def</span> <span class="nf">Metadata2dict</span><span class="p">(</span><span class="n">md</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata2dict"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Metadata2dict">[docs]</a><span class="k">def</span> <span class="nf">Metadata2dict</span><span class="p">(</span><span class="n">md</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a Metadata object to a Python dict.</span>
 
@@ -156,7 +160,7 @@
 <span class="n">Metadata</span><span class="o">.</span><span class="n">todict</span> <span class="o">=</span> <span class="n">Metadata2dict</span>
 
 
-<div class="viewcode-block" id="AntelopePf2dict"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.AntelopePf2dict">[docs]</a><span class="k">def</span> <span class="nf">AntelopePf2dict</span><span class="p">(</span><span class="n">pf</span><span class="p">):</span>
+<div class="viewcode-block" id="AntelopePf2dict"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.AntelopePf2dict">[docs]</a><span class="k">def</span> <span class="nf">AntelopePf2dict</span><span class="p">(</span><span class="n">pf</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a AntelopePf object to a Python dict.</span>
 <span class="sd">    This converts a AntelopePf object to a Python dict by recursively</span>
@@ -188,7 +192,7 @@
 <span class="n">AntelopePf</span><span class="o">.</span><span class="n">todict</span> <span class="o">=</span> <span class="n">AntelopePf2dict</span>
 
 
-<div class="viewcode-block" id="TimeSeries2Trace"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.TimeSeries2Trace">[docs]</a><span class="k">def</span> <span class="nf">TimeSeries2Trace</span><span class="p">(</span><span class="n">ts</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeSeries2Trace"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.TimeSeries2Trace">[docs]</a><span class="k">def</span> <span class="nf">TimeSeries2Trace</span><span class="p">(</span><span class="n">ts</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a TimeSeries object to an obspy Trace object.</span>
 
@@ -281,7 +285,7 @@
 <span class="n">TimeSeries</span><span class="o">.</span><span class="n">toTrace</span> <span class="o">=</span> <span class="n">TimeSeries2Trace</span>
 
 
-<div class="viewcode-block" id="Seismogram2Stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.Seismogram2Stream">[docs]</a><span class="k">def</span> <span class="nf">Seismogram2Stream</span><span class="p">(</span>
+<div class="viewcode-block" id="Seismogram2Stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Seismogram2Stream">[docs]</a><span class="k">def</span> <span class="nf">Seismogram2Stream</span><span class="p">(</span>
     <span class="n">sg</span><span class="p">,</span> <span class="n">chanmap</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">],</span> <span class="n">hang</span><span class="o">=</span><span class="p">[</span><span class="mf">90.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">vang</span><span class="o">=</span><span class="p">[</span><span class="mf">90.0</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
 <span class="p">):</span>
     <span class="c1"># fixme hang and vang parameters</span>
@@ -348,7 +352,7 @@
 <span class="n">Seismogram</span><span class="o">.</span><span class="n">toStream</span> <span class="o">=</span> <span class="n">Seismogram2Stream</span>
 
 
-<div class="viewcode-block" id="Trace2TimeSeries"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.Trace2TimeSeries">[docs]</a><span class="k">def</span> <span class="nf">Trace2TimeSeries</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">history</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Trace2TimeSeries"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Trace2TimeSeries">[docs]</a><span class="k">def</span> <span class="nf">Trace2TimeSeries</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">history</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert an obspy Trace object to a TimeSeries object.</span>
 
@@ -426,7 +430,7 @@
 <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Trace</span><span class="o">.</span><span class="n">toTimeSeries</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span>
 
 
-<div class="viewcode-block" id="Stream2Seismogram"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.Stream2Seismogram">[docs]</a><span class="k">def</span> <span class="nf">Stream2Seismogram</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">master</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">azimuth</span><span class="o">=</span><span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="n">dip</span><span class="o">=</span><span class="s2">&quot;dip&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="Stream2Seismogram"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Stream2Seismogram">[docs]</a><span class="k">def</span> <span class="nf">Stream2Seismogram</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">master</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">azimuth</span><span class="o">=</span><span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="n">dip</span><span class="o">=</span><span class="s2">&quot;dip&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert obspy Stream to a Seismogram.</span>
 
@@ -544,7 +548,7 @@
 <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Stream</span><span class="o">.</span><span class="n">toSeismogram</span> <span class="o">=</span> <span class="n">Stream2Seismogram</span>
 
 
-<div class="viewcode-block" id="TimeSeriesEnsemble2Stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.TimeSeriesEnsemble2Stream">[docs]</a><span class="k">def</span> <span class="nf">TimeSeriesEnsemble2Stream</span><span class="p">(</span><span class="n">tse</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeSeriesEnsemble2Stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.TimeSeriesEnsemble2Stream">[docs]</a><span class="k">def</span> <span class="nf">TimeSeriesEnsemble2Stream</span><span class="p">(</span><span class="n">tse</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a timeseries ensemble to stream.  Always copies</span>
 <span class="sd">    all ensemble Metadata to tse members before conversion.   That is</span>
@@ -580,7 +584,7 @@
 <span class="n">TimeSeriesEnsemble</span><span class="o">.</span><span class="n">toStream</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble2Stream</span>
 
 
-<div class="viewcode-block" id="Pf2AttributeNameTbl"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.Pf2AttributeNameTbl">[docs]</a><span class="k">def</span> <span class="nf">Pf2AttributeNameTbl</span><span class="p">(</span><span class="n">pf</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;attributes&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="Pf2AttributeNameTbl"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Pf2AttributeNameTbl">[docs]</a><span class="k">def</span> <span class="nf">Pf2AttributeNameTbl</span><span class="p">(</span><span class="n">pf</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;attributes&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function will parse a pf file to extract a tbl with a specific</span>
 <span class="sd">    key and return a data structure that defines the names and types of</span>
@@ -644,7 +648,7 @@
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">names</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">,</span> <span class="n">nulls</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="Textfile2Dataframe"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.Textfile2Dataframe">[docs]</a><span class="k">def</span> <span class="nf">Textfile2Dataframe</span><span class="p">(</span>
+<div class="viewcode-block" id="Textfile2Dataframe"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Textfile2Dataframe">[docs]</a><span class="k">def</span> <span class="nf">Textfile2Dataframe</span><span class="p">(</span>
     <span class="n">filename</span><span class="p">,</span>
     <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span>
     <span class="n">type_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -784,7 +788,7 @@
                 <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="Stream2TimeSeriesEnsemble"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.Stream2TimeSeriesEnsemble">[docs]</a><span class="k">def</span> <span class="nf">Stream2TimeSeriesEnsemble</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
+<div class="viewcode-block" id="Stream2TimeSeriesEnsemble"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Stream2TimeSeriesEnsemble">[docs]</a><span class="k">def</span> <span class="nf">Stream2TimeSeriesEnsemble</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a stream to timeseries ensemble.</span>
 <span class="sd">    :param stream: stream input</span>
@@ -814,7 +818,7 @@
 <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Stream</span><span class="o">.</span><span class="n">toTimeSeriesEnsemble</span> <span class="o">=</span> <span class="n">Stream2TimeSeriesEnsemble</span>
 
 
-<div class="viewcode-block" id="SeismogramEnsemble2Stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.SeismogramEnsemble2Stream">[docs]</a><span class="k">def</span> <span class="nf">SeismogramEnsemble2Stream</span><span class="p">(</span><span class="n">sge</span><span class="p">):</span>
+<div class="viewcode-block" id="SeismogramEnsemble2Stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.SeismogramEnsemble2Stream">[docs]</a><span class="k">def</span> <span class="nf">SeismogramEnsemble2Stream</span><span class="p">(</span><span class="n">sge</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a seismogram ensemble to stream</span>
 <span class="sd">    :param sge: seismogram ensemble input</span>
@@ -837,7 +841,7 @@
 <span class="n">SeismogramEnsemble</span><span class="o">.</span><span class="n">toStream</span> <span class="o">=</span> <span class="n">SeismogramEnsemble2Stream</span>
 
 
-<div class="viewcode-block" id="Stream2SeismogramEnsemble"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.Stream2SeismogramEnsemble">[docs]</a><span class="k">def</span> <span class="nf">Stream2SeismogramEnsemble</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
+<div class="viewcode-block" id="Stream2SeismogramEnsemble"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Stream2SeismogramEnsemble">[docs]</a><span class="k">def</span> <span class="nf">Stream2SeismogramEnsemble</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a stream to seismogram ensemble.</span>
 <span class="sd">    :param stream: stream input</span>
@@ -904,7 +908,7 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="post_ensemble_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.post_ensemble_metadata">[docs]</a><span class="k">def</span> <span class="nf">post_ensemble_metadata</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">check_all_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">clean_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="post_ensemble_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.post_ensemble_metadata">[docs]</a><span class="k">def</span> <span class="nf">post_ensemble_metadata</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">check_all_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">clean_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    It may be necessary to call this function after conversion from</span>
 <span class="sd">    an obspy Stream to one of the mspass Ensemble classes.  This function</span>

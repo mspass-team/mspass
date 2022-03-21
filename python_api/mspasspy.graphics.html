@@ -4,17 +4,18 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mspasspy.graphics &mdash; MsPASS 0.0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <title>mspasspy.graphics &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -47,12 +48,12 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
 </ul>
-<p><span class="caption-text">User Manual</span></p>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
@@ -61,11 +62,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/DataEditing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/HeaderMath.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p><span class="caption-text">Reference Manual</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -134,8 +138,8 @@
 <section id="module-mspasspy.graphics">
 <span id="mspasspy-graphics"></span><h1>mspasspy.graphics<a class="headerlink" href="#module-mspasspy.graphics" title="Permalink to this headline"></a></h1>
 <dl class="py class">
-<dt id="mspasspy.graphics.SectionPlotter">
-<em class="property">class </em><code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">SectionPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.SectionPlotter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">SectionPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class was designed to plot data in a seismic reflection style
 display.  That means time is the y axis but runs in a reverse direction
@@ -161,8 +165,8 @@ respectively.</p>
 The concept is that fancier tools for gui interaction like a trace
 editor be created as children of this base class.</p>
 <dl class="py method">
-<dt id="mspasspy.graphics.SectionPlotter.change_style">
-<code class="sig-name descname">change_style</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newstyle</span></em>, <em class="sig-param"><span class="n">fill_color</span><span class="o">=</span><span class="default_value">'k'</span></em>, <em class="sig-param"><span class="n">color_map</span><span class="o">=</span><span class="default_value">'seismic'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter.change_style"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter.change_style" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.SectionPlotter.change_style">
+<span class="sig-name descname"><span class="pre">change_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newstyle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seismic'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter.change_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter.change_style" title="Permalink to this definition"></a></dt>
 <dd><p>Use this method to change the plot style.   Options are described
 below.   Some parameter combinations are illegal and will result in
 a RuntimeError if used.  The illegal combos are listed below for
@@ -198,8 +202,8 @@ occur when the method is called with this value of newstyle.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mspasspy.graphics.SectionPlotter.plot">
-<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter.plot" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.SectionPlotter.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter.plot" title="Permalink to this definition"></a></dt>
 <dd><p>Call this method to plot any data using the current style setup and any
 details defined by public attributes.</p>
 <dl class="field-list simple">
@@ -223,8 +227,8 @@ of the figure.  See matplotlib documentation.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="mspasspy.graphics.SeismicPlotter">
-<em class="property">class </em><code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">SeismicPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.SeismicPlotter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">SeismicPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>SeismicPlotter is used to plot mspass data objects in the
 seismology convention with time as the x axis.  Use SectionPlotter
@@ -245,14 +249,14 @@ plot object must be created before any plots can be generated.
 Any optional changes to the plot behavior, most commonly calls
 to the change_style method, should be done before calling plot.</p>
 <dl class="py method">
-<dt id="mspasspy.graphics.SeismicPlotter.bottomup">
-<code class="sig-name descname">bottomup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.bottomup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.bottomup" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.SeismicPlotter.bottomup">
+<span class="sig-name descname"><span class="pre">bottomup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.bottomup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.bottomup" title="Permalink to this definition"></a></dt>
 <dd><p>Restore (or force) default ensemble plot order of bottup upward.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mspasspy.graphics.SeismicPlotter.change_style">
-<code class="sig-name descname">change_style</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newstyle</span></em>, <em class="sig-param"><span class="n">fill_color</span><span class="o">=</span><span class="default_value">'k'</span></em>, <em class="sig-param"><span class="n">color_map</span><span class="o">=</span><span class="default_value">'seismic'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.change_style"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.change_style" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.SeismicPlotter.change_style">
+<span class="sig-name descname"><span class="pre">change_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newstyle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seismic'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.change_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.change_style" title="Permalink to this definition"></a></dt>
 <dd><p>Use this method to change the plot style.   Options are described
 below.   Some parameter combinations are illegal and will result in
 a RuntimeError if used.  The illegal combos are listed below for
@@ -288,13 +292,13 @@ occur when the method is called with this value of newstyle.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mspasspy.graphics.SeismicPlotter.plot">
-<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.plot" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.SeismicPlotter.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.plot" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="mspasspy.graphics.SeismicPlotter.set_topdown">
-<code class="sig-name descname">set_topdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.set_topdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.set_topdown" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.SeismicPlotter.set_topdown">
+<span class="sig-name descname"><span class="pre">set_topdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.set_topdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.set_topdown" title="Permalink to this definition"></a></dt>
 <dd><p>Call this method to have datat plotted from top down.  Default plots
 ensemble member 0 at the bottom of the plot with successive members
 plotted in units of 1.0 above the last.  When this is called the
@@ -302,8 +306,8 @@ order is reversed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mspasspy.graphics.SeismicPlotter.topdown">
-<code class="sig-name descname">topdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.topdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.topdown" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.SeismicPlotter.topdown">
+<span class="sig-name descname"><span class="pre">topdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.topdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.topdown" title="Permalink to this definition"></a></dt>
 <dd><p>Switch to mode of plotting ensembles from the top downward
 from default of bottum upward.</p>
 </dd></dl>
@@ -311,8 +315,8 @@ from default of bottum upward.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="mspasspy.graphics.image_raw">
-<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">image_raw</code><span class="sig-paren">(</span><em class="sig-param">section</em>, <em class="sig-param">t0</em>, <em class="sig-param">dt</em>, <em class="sig-param">ranges=None</em>, <em class="sig-param">cmap=&lt;matplotlib.colors.LinearSegmentedColormap object&gt;</em>, <em class="sig-param">aspect=None</em>, <em class="sig-param">vmin=None</em>, <em class="sig-param">vmax=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#image_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.image_raw" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.image_raw">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">image_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ranges=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap=&lt;matplotlib.colors.LinearSegmentedColormap</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#image_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.image_raw" title="Permalink to this definition"></a></dt>
 <dd><p>Plot a numpy 2D array (matrix) in an image format.  This type of
 plot has two uses: (1) large numbers of spatially coherent signals
 (as in a conventional seismic reflection) are more clearly displayed
@@ -373,29 +377,29 @@ the name better reflects the functions use.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="mspasspy.graphics.imageplot">
-<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">imageplot</code><span class="sig-paren">(</span><em class="sig-param">d</em>, <em class="sig-param">ranges=None</em>, <em class="sig-param">cmap=&lt;matplotlib.colors.LinearSegmentedColormap object&gt;</em>, <em class="sig-param">aspect=None</em>, <em class="sig-param">vmin=None</em>, <em class="sig-param">vmax=None</em>, <em class="sig-param">title=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#imageplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.imageplot" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.imageplot">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">imageplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ranges=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap=&lt;matplotlib.colors.LinearSegmentedColormap</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#imageplot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.imageplot" title="Permalink to this definition"></a></dt>
 <dd><p>Image plotter for mspass ensemble objects.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="mspasspy.graphics.seis2nparray">
-<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">seis2nparray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#seis2nparray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.seis2nparray" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.seis2nparray">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">seis2nparray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#seis2nparray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.seis2nparray" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="mspasspy.graphics.ts2nparray">
-<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">ts2nparray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#ts2nparray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.ts2nparray" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.ts2nparray">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">ts2nparray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#ts2nparray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.ts2nparray" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="mspasspy.graphics.tse2nparray">
-<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">tse2nparray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ens</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#tse2nparray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.tse2nparray" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.tse2nparray">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">tse2nparray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#tse2nparray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.tse2nparray" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="mspasspy.graphics.wtva_raw">
-<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">wtva_raw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">section</span></em>, <em class="sig-param"><span class="n">t0</span></em>, <em class="sig-param"><span class="n">dt</span></em>, <em class="sig-param"><span class="n">ranges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">'k'</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#wtva_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.wtva_raw" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.wtva_raw">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">wtva_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ranges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#wtva_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.wtva_raw" title="Permalink to this definition"></a></dt>
 <dd><p>Plot a numpy 2D array (matrix) in a wiggle trace, variable area
 format as used in paper seismic section displays.   This is the low
 level function that displays a ensemble of scalar data cast into
@@ -465,8 +469,8 @@ data or use <code class="docutils literal notranslate"><span class="pre">image_r
 </dd></dl>
 
 <dl class="py function">
-<dt id="mspasspy.graphics.wtvaplot">
-<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">wtvaplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">ranges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">fill_color</span><span class="o">=</span><span class="default_value">'k'</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#wtvaplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.wtvaplot" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mspasspy.graphics.wtvaplot">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">wtvaplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ranges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#wtvaplot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.wtvaplot" title="Permalink to this definition"></a></dt>
 <dd><p>Wiggle trace variable area plotter for mspass ensemble objects.</p>
 </dd></dl>
 
