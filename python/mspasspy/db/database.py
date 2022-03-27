@@ -3549,9 +3549,9 @@ class Database(pymongo.database.Database):
         if gridfs_id and gfsh.exists(gridfs_id):
             gfsh.delete(gridfs_id)
         if isinstance(mspass_object, Seismogram):
-            ub = bytes(mspass_object.data)
-        else:
             ub = bytes(np.array(mspass_object.data).transpose())
+        else:
+            ub = bytes(mspass_object.data)
         return gfsh.put(ub)
 
     def _read_data_from_gridfs(self, mspass_object, gridfs_id):
@@ -3586,7 +3586,7 @@ class Database(pymongo.database.Database):
                     % (file_size / 8, (3 * mspass_object["npts"]))
                 )
                 raise ValueError(emess)
-            np_arr = np_arr.reshape(3, npts)
+            np_arr = np_arr.reshape(npts, 3).transpose()
             mspass_object.data = dmatrix(np_arr)
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
