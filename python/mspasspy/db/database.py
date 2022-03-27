@@ -4342,16 +4342,21 @@ class Database(pymongo.database.Database):
                 result.extend([netw])
         return result
 
-    def get_seed_site(self, net, sta, loc="NONE", time=-1.0):
+    def get_seed_site(self, net, sta, loc="NONE", time=-1.0,verbose=True):
         """
         The site collection is assumed to have a one to one
         mapping of net:sta:loc:starttime - endtime.
         This method uses a restricted query to match the
-        keys given and returns a dict of coordinate data;
-        lat, lon, elev, edepth.
+        keys given and returns the MongoDB document matching the keys.
         The (optional) time arg is used for a range match to find
         period between the site startime and endtime.
         Returns None if there is no match.
+        
+        An all to common metadata problem is to have duplicate entries in 
+        site for the same data.   The default behavior of this method is 
+        to print a warning whenever a match is ambiguous 
+        (i.e. more than on document matches the keys).  Set verbose false to 
+        silence such warnings if you know they are harmless.
 
         The seed modifier in the name is to emphasize this method is
         for data originating as the SEED format that use net:sta:loc:chan
@@ -4361,9 +4366,18 @@ class Database(pymongo.database.Database):
         :param sta:  station name to match
         :param loc:   optional loc code to made (empty string ok and common)
         default ignores loc in query.
-        :param time: epoch time for requested metadata
+        :param time: epoch time for requested metadata.  Default undefined 
+          and will cause the function to simply return the first document 
+          matching the name keys only.   (This is rarely what you want, but
+          there is no standard default for this argument.)
+        :param verbose:  When True (the default) this method will issue a 
+          print warning message when the match is ambiguous - multiple 
+          docs match the specified keys.   When set False such warnings 
+          will be suppressed.  Use false only if you know the duplicates 
+          are harmless and you are running on a large data set and 
+          you want to reduce the log size. 
 
-        :return: MongoDB doc (dict) matching query
+        :return: MongoDB doc matching query
         :rtype:  python dict (document) of result.  None if there is no match.
         """
         dbsite = self.site
@@ -4379,21 +4393,19 @@ class Database(pymongo.database.Database):
         if matchsize == 0:
             return None
         else:
-            if matchsize > 1:
+            if matchsize > 1 and verbose:
                 print("get_seed_site (WARNING):  query=", query)
                 print("Returned ", matchsize, " documents - should be exactly one")
                 print("Returning first entry found")
             stadoc = dbsite.find_one(query)
             return stadoc
 
-    def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0):
+    def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0,verbose=True):
         """
         The channel collection is assumed to have a one to one
         mapping of net:sta:loc:chan:starttime - endtime.
         This method uses a restricted query to match the
-        keys given and returns a dict of the document contents
-        associated with that key.  Note net, sta, and chan are required
-        but loc is optional.
+        keys given and returns the document matching the specified keys.
 
         The optional loc code is handled specially.  The reason is
         that it is common to have the loc code empty.  In seed data that
@@ -4422,6 +4434,12 @@ class Database(pymongo.database.Database):
         :param loc:   optional loc code to made (empty string ok and common)
         default ignores loc in query.
         :param time: epoch time for requested metadata
+        :param verbose:  When True (the default) this method will issue a 
+          print warning message when the match is ambiguous - multiple 
+          docs match the specified keys.   When set False such warnings 
+          will be suppressed.  Use false only if you know the duplicates 
+          are harmless and you are running on a large data set and 
+          you want to reduce the log size. 
 
         :return: handle to query return
         :rtype:  MondoDB Cursor object of query result.
@@ -4458,17 +4476,18 @@ class Database(pymongo.database.Database):
                     return dbchannel.find_one(testquery)
                 elif matchsize > 1:
                     if time > 0.0:
-                        print(
-                            "get_seed_channel:  multiple matches found for net=",
-                            net,
-                            " sta=",
-                            sta,
-                            " and channel=",
-                            chan,
-                            " with null loc code\n"
-                            "Assuming database problem with duplicate documents in channel collection\n",
-                            "Returning first one found",
-                        )
+                        if verbose:
+                            print(
+                              "get_seed_channel:  multiple matches found for net=",
+                              net,
+                              " sta=",
+                              sta,
+                              " and channel=",
+                              chan,
+                              " with null loc code\n"
+                              "Assuming database problem with duplicate documents in channel collection\n",
+                              "Returning first one found",
+                          )
                         return dbchannel.find_one(testquery)
                     else:
                         raise MsPASSError(
@@ -4482,7 +4501,7 @@ class Database(pymongo.database.Database):
                             + " and null loc is ambiguous\n"
                             + "Specify at least time but a loc code if is not truly null",
                             "Fatal",
-                        )
+                          )
                 else:
                     # we land here if a null match didn't work.
                     # Try one more recovery with setting loc to an emtpy
@@ -4493,17 +4512,18 @@ class Database(pymongo.database.Database):
                         return dbchannel.find_one(testquery)
                     elif matchsize > 1:
                         if time > 0.0:
-                            print(
-                                "get_seed_channel:  multiple matches found for net=",
-                                net,
-                                " sta=",
-                                sta,
-                                " and channel=",
-                                chan,
-                                " with null loc code tested with empty string\n"
-                                "Assuming database problem with duplicate documents in channel collection\n",
-                                "Returning first one found",
-                            )
+                            if verbose:
+                                print(
+                                  "get_seed_channel:  multiple matches found for net=",
+                                  net,
+                                  " sta=",
+                                  sta,
+                                  " and channel=",
+                                  chan,
+                                  " with null loc code tested with empty string\n"
+                                  "Assuming database problem with duplicate documents in channel collection\n",
+                                  "Returning first one found",
+                                )
                             return dbchannel.find_one(testquery)
                         else:
                             raise MsPASSError(
