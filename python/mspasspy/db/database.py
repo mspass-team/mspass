@@ -4830,6 +4830,8 @@ class Database(pymongo.database.Database):
         segment_time_tears=False,
         elog_collection="elog",
         return_ids=False,
+        normalize_channel=False,
+        verbose=False
     ):
         """
         This is the first stage import function for handling the import of
@@ -4919,6 +4921,23 @@ class Database(pymongo.database.Database):
           By default it is fast only to associate an error log entry with
           a particular waveform index entry. (we store the saved index
           MongoDB document id with each elog entry)
+        :param normalize_channel:  boolean controlling normalization with 
+          the channel collection.   When set True (default is false) the 
+          method will call the Database.get_seed_channel method, extract 
+          the id from the result, and set the result as "channel_id" before
+          writing the wf_miniseed document.  Set this argument true if 
+          you have a relatively complete channel collection assembled 
+          before running a workflow to index a set of miniseed files 
+          (a common raw data starting point).  
+        :param verbose:  boolean passed to get_seed_channel.  This 
+          argument has no effect unless normalize_channel is set True. 
+          It is necessary because the get_seed_channel function has no 
+          way to log errors except calling print.  A very common metadata 
+          error is duplicate and/or time overlaps in channel metadata.  
+          Those are usually harmless so the default for this parameter is 
+          False.  Set this True if you are using inline normalization 
+          (normalize_channel set True) and you aren't certain your 
+          channel collection has no serious inconsistencies.
         :exception: This function can throw a range of error types for
           a long list of possible io issues.   Callers should use a
           generic handler to avoid aborts in a large job.
@@ -4944,6 +4963,21 @@ class Database(pymongo.database.Database):
             doc["dfile"] = dfile
             thisid = dbh.insert_one(doc).inserted_id
             ids_affected.append(thisid)
+        if normalize_channel:
+            # these quantities are always defined unless there was a read error
+            # and I don't think we can get here if we had a read error.
+            net = doc["net"]
+            sta = doc["sta"]
+            chan = doc["chan"]
+            stime = doc["starttime"]
+            if "loc" in doc:
+                loc = doc["loc"]
+                chandoc = self.get_seed_channel(net,sta,chan,loc,time=stime,verbose=False)
+            else:
+                chandoc = self.get_seed_channel(net,sta,chan,time=stime,verbose=False)
+            if chandoc != None:
+                doc["channel_id"] = chandoc["_id"]
+             
         # log_ids is created here so it is defined but empty in
         # the tuple returned when return_ids is true
         log_ids = []
