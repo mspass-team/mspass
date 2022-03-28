@@ -1054,6 +1054,29 @@ class TestDatabase:
             for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data)
         )
 
+        # file_mseed with no dfile name
+        logging_helper.info(promiscuous_seis, "2", "save_data")
+        self.db.save_data(
+            promiscuous_seis,
+            mode="promiscuous",
+            storage_mode="file",
+            dir="./python/tests/data/",
+            format="mseed",
+            exclude_keys=["extra2"],
+        )
+        self.db.database_schema.set_default("wf_Seismogram", "wf")
+        promiscuous_seis2 = self.db.read_data(
+            promiscuous_seis["_id"], mode="cautious", normalize=["site", "source"]
+        )
+
+        res = self.db["wf_Seismogram"].find_one({"_id": promiscuous_seis["_id"]})
+        assert res["storage_mode"] == "file"
+        assert res["format"] == "mseed"
+        assert all(
+            a.any() == b.any()
+            for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data)
+        )
+
         with pytest.raises(
             ValueError, match="dir or dfile is not specified in data object"
         ):
