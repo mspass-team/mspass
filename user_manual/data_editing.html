@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Editing &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Header (Metadata) Math" href="header_math.html" />
+    <link rel="prev" title="Handling Errors" href="handling_errors.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data Editing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#concepts">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mspass-trace-editing-algorithms">MsPASS Trace Editing Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#binary-comparison-operators-example-for-starters">Binary Comparison operators - example for starters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#all-binary-comparisons">All Binary Comparisons</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#existence-tests">Existence Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interval-comparison">Interval Comparison</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#defining-multiple-editors">Defining Multiple Editors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-implement-an-extension">How to Implement an Extension</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Data Editing</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/data_editing.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="data-editing">
+<span id="id1"></span><h1>Data Editing<a class="headerlink" href="#data-editing" title="Permalink to this headline"></a></h1>
+<section id="concepts">
+<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline"></a></h2>
+<p>MsPASS uses an idea that has been a part of seismic reflection from the
+earliest days of digital processing of seismic signals commonly called
+trace editing.   Trace editing means removing “bad” data from subsequent
+processing where the meaning of “bad” is based on some computed metric or
+human editing using a graphical user interface.   In all cases, the decision
+of “good” or “bad” is not grey but a black and white (boolean) decision.
+We implement this concept in MsPASS through a boolean <cite>live</cite> attribute
+that is a component of all MsPASS data objects (i.e. both atomic data
+TimeSeries and Seismogram as well as ensembles of same).   Any MsPASS
+data object can be “killed” by calling it’s <cite>kill</cite> method.   Algorithms
+can and always should test the attribute <cite>live</cite> to verify the data object
+has data that can be viewed as valid.  No algorithm should ever assume
+data marked dead (live set False) can be used for any further processing.</p>
+<p>In MsPASS we abstract the process of defining “trace editing” through
+a standardized API.  In this section of the manual we describe how to
+use the generic metrics that are part of MsPASS.   We also show how
+users can add custom metrics by either computing custom Metadata or
+running an inline computation on the sample data.</p>
+</section>
+<section id="mspass-trace-editing-algorithms">
+<h2>MsPASS Trace Editing Algorithms<a class="headerlink" href="#mspass-trace-editing-algorithms" title="Permalink to this headline"></a></h2>
+<section id="binary-comparison-operators-example-for-starters">
+<h3>Binary Comparison operators - example for starters<a class="headerlink" href="#binary-comparison-operators-example-for-starters" title="Permalink to this headline"></a></h3>
+<p>All the algorithms currently implemented in MsPASS use another model
+borrowed from seismic reflection processing.  That is, the editing is
+driven by tests of the values of one or more “header” (As noted
+elsewhere MsPASS data defined a generalized “header” we call Metadata)
+attributes.   That means all standard numeric comparison operators
+(in python the <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">==</span></code>, and <code class="docutils literal notranslate"><span class="pre">!=</span></code> operators).</p>
+<p>Before defining the abstraction and the common API it is, perhaps, more
+instructive to give an example.   Suppose we wanted to exclude
+all data from processing that have an estimated bandwidth less than 12 dB
+(2 octaves).   This is an example serial job looping over an entire
+dataset defined by Seismogram objects:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ... Preceding code: import commands and creating database handle db ...</span>
+
+<span class="n">editor</span> <span class="o">=</span> <span class="n">MetadataLT</span><span class="p">(</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">,</span><span class="mf">12.0</span><span class="p">)</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># Change to a MongoDB query to process data subset</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">arrival_snr_QC</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">editor</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We made this example as simple as possible by using all defaults for the
+function <code class="docutils literal notranslate"><span class="pre">arrival_snr_QC</span></code>.   That function has many options and depends upon
+a detail that the example assumes was prevous computed;  the Metadata attribute
+“Parrival” is assumed to have been set to a time within the time interval
+spanned by each datum.  A key step is the creation of the python class
+<code class="docutils literal notranslate"><span class="pre">MetadataLT</span></code> in the first line.  The name is mean to be mnemonic for
+using a Metadata test with the “Less Than (LT or python &lt;)” operation
+using the value stored in Metadata with the key “bandwidth”.
+We directly call the <code class="docutils literal notranslate"><span class="pre">MetadataLT</span></code> object, which is equivalent to calling the``kill_if_true`` method, to implement the test.
+That method will return a version of <code class="docutils literal notranslate"><span class="pre">d</span></code> marked dead if the value of “bandwidth” is less than 12.0.</p>
+<p>For completeness here is a parallel version of
+that same script using dask:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">editor</span> <span class="o">=</span> <span class="n">MetadataLT</span><span class="p">(</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">)</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">seisbag</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+<span class="n">seisbag</span> <span class="o">=</span> <span class="n">seisbag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">arrival_snr_QC</span><span class="p">)</span>
+<span class="n">seisbag</span> <span class="o">=</span> <span class="n">seisbag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">editor</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where we also removed the comments and omit the (required to do anything)
+call to <code class="docutils literal notranslate"><span class="pre">seisbag.compute()</span></code> because this example would always be
+most appropriate as a section inside a workflow.   A call to compute at the
+end of that segment would likely produce a memory fault for anything but a
+small data set.  For more on that issue, see sections in <a class="reference internal" href="parallel_processing.html#parallel-processesing"><span class="std std-ref">parallel processing</span></a>.</p>
+</section>
+<section id="all-binary-comparisons">
+<h3>All Binary Comparisons<a class="headerlink" href="#all-binary-comparisons" title="Permalink to this headline"></a></h3>
+<p>All the binary comparison operators using tests against a Metadata attribute
+Have the same, common API with the following elements:</p>
+<ol class="arabic simple">
+<li><p>All are implemented as a subclass of an (abstract) base class called
+Executioner.</p></li>
+<li><p>All have and one and only one constructor.</p></li>
+<li><p>All the constructors have have two required, positional argument.  The
+first is the Metadata key whose value is to compared to the value set
+as arg1 (pyhon numbering starting at 0).  In the example above the key
+is “bandwidth” and the test value is 12.0.</p></li>
+<li><p>All have an optional <code class="docutils literal notranslate"><span class="pre">verbose</span></code> boolean argument.  When set True all kills
+will generate an informational error log entry with a detailed message
+on why the datum was killed.   The default, in all cases, is False because
+trace editing of data of large data sets can produce bloated error logs
+when done in verbose mode.</p></li>
+<li><p>All have names of the form <code class="docutils literal notranslate"><span class="pre">MetadataXX</span></code> with <code class="docutils literal notranslate"><span class="pre">Metadata</span></code> a fixed string and
+XX the Fortranish name for the corresponding binary comparison.  For
+instance, in the example above we used <code class="docutils literal notranslate"><span class="pre">MetadataLT</span></code> which means the
+comparison used is the python <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> operator.</p></li>
+<li><p>All implement the (required) method <code class="docutils literal notranslate"><span class="pre">kill_if_true</span></code>.   As the name implies
+that method kills the datum if the conditional defined in construction of
+the object resolves true.   For our example above that means if <code class="docutils literal notranslate"><span class="pre">x</span></code> is the value
+extracted from Metadata and <code class="docutils literal notranslate"><span class="pre">a</span></code> is the bound set as arg1 in the constructor,
+the datum is killed if <code class="docutils literal notranslate"><span class="pre">x&lt;a</span></code>.  This method always returns a copy of the
+data passed to it marked dead or alive depending on the outcome of the
+test.  That is essential for use of the function in a map operator like
+our parallel example above. All will throw a MsPASSError exception
+if the data received is not one of the data objects known to MsPASS.
+All implementations also silently do nothing if the input is already marked
+dead.</p></li>
+</ol>
+<p>The following is a table of the names of all the binary comparison functions
+showing the common API.   In each cell <code class="docutils literal notranslate"><span class="pre">x</span></code> is the value extracted from
+Metadata and <code class="docutils literal notranslate"><span class="pre">a</span></code> is the bound for the binary test.  Both the key and <code class="docutils literal notranslate"><span class="pre">a</span></code>
+are defined on construction of the class.  The <code class="docutils literal notranslate"><span class="pre">kill_if_true</span></code> method
+kills the datum if the test shown resolves as True.</p>
+<table class="colwidths-given docutils align-default" id="id2">
+<caption><span class="caption-number">Table 1 </span><span class="caption-text">Binary Metadata-based Edit Classes</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class name</p></th>
+<th class="head"><p>Kill Test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>MetadataGT</p></td>
+<td><p>x &gt;  a</p></td>
+</tr>
+<tr class="row-odd"><td><p>MetadataGE</p></td>
+<td><p>x &gt;= a</p></td>
+</tr>
+<tr class="row-even"><td><p>MetadataEQ</p></td>
+<td><p>x == a</p></td>
+</tr>
+<tr class="row-odd"><td><p>MetadataNE</p></td>
+<td><p>x != a</p></td>
+</tr>
+<tr class="row-even"><td><p>MetadataLT</p></td>
+<td><p>x &lt; a</p></td>
+</tr>
+<tr class="row-odd"><td><p>MetadataLE</p></td>
+<td><p>x &lt;= a</p></td>
+</tr>
+</tbody>
+</table>
+<p>The constructors for all binary comparison testers have this the following,
+common signature:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">key</span></code> is the Metadata key used to fetch the data for <code class="docutils literal notranslate"><span class="pre">x</span></code> in the
+table above and <cite>value</cite> is the value assigned to <code class="docutils literal notranslate"><span class="pre">a</span></code>.</p>
+<p>The verbose flag is a common argument for all the MsPASS metadata-based
+testers.   Normally (default <code class="docutils literal notranslate"><span class="pre">verbose=False</span></code>) kills are done silently.
+When set true all kills will generate an <code class="docutils literal notranslate"><span class="pre">Informational</span></code> elog entry with
+a detailed message giving the details of why the datum was killed.  In
+all cases verbose defaults false because often editors can kill a significant
+fraction of raw data and generate bloated elog collections when result of
+the workflow is saved.</p>
+</section>
+<section id="existence-tests">
+<h3>Existence Tests<a class="headerlink" href="#existence-tests" title="Permalink to this headline"></a></h3>
+<p>Unlike classical header implementations that have fixed slots that
+always have data in them, Metadata is open-ended and data for a particular
+key may or may not exist.   We thus supply two existence classes.
+The class names are <code class="docutils literal notranslate"><span class="pre">MetadataDefined</span></code> and <code class="docutils literal notranslate"><span class="pre">MetadataUndefined</span></code>.   The
+<code class="docutils literal notranslate"><span class="pre">kill_if_true</span></code> methods for these each kill a datum if a key loaded in
+on construction exists or does not exist respectively.   Both
+have constructors with this signature:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">key</span></code> is the Metadata key that is to be tested by the kill_if_true
+method.  verbose is as noted above for the binary comparison testers.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MetadataUndefined</span></code> is a particularly important editor to prefilter data
+prior to running one or more processing functions.   If a function requires
+one or more metadata attributes <code class="docutils literal notranslate"><span class="pre">MetadataUndefined</span></code> can be used to
+filter out all data that would cause that algorithm to fail anyway.</p>
+</section>
+<section id="interval-comparison">
+<h3>Interval Comparison<a class="headerlink" href="#interval-comparison" title="Permalink to this headline"></a></h3>
+<p>Another common test for editing data is filtering data defined by
+a range of values.   A type example is P wave receiver functions that
+commonly only use data with epicentral distances between about 30 and 100 degrees.
+Another would be the size of some amplitude metric defined by a range of postive values.
+A way to accomplish that within a workflow is to apply an interval filter that
+kills data outside the specified range.</p>
+<p>There are two complications in defining a range test.  First, there are two
+mirror-image tests:   is the value to be tested inside an interval or
+outside the interval (like the receiver function distance example above).
+The second is should the test be inclusive of the edges?  i.e. should the
+tests be <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code> or just <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> (similarly <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code> or <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>)?   That could have been done with
+nine different classes for all the possible combinations of the three boolean
+variables it takes to define all the possibilities.  Instead we implemented
+a single class called <cite>MetadataInterval</cite> with three boolean values defined
+in the constructor.  The constructor has this signature:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">lower_endpoint</span><span class="p">,</span> <span class="n">upper_endpoint</span><span class="p">,</span>
+  <span class="n">use_lower_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_upper_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kill_if_outside</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>The three booleans (<code class="docutils literal notranslate"><span class="pre">use_upper_edge</span></code>, <code class="docutils literal notranslate"><span class="pre">use_lower_edge</span></code>, and <code class="docutils literal notranslate"><span class="pre">kill_if_outside</span></code>)
+determine how equality with the edges is handled and if the test is “inside” or
+“outside” the specified range.  These are defined in the table below noting
+that in the table <code class="docutils literal notranslate"><span class="pre">a=lower_endpoint</span></code> and <code class="docutils literal notranslate"><span class="pre">b=upper_endpoint</span></code>.  In all cases
+True means if the test is true the datum will be marked dead.</p>
+<table class="colwidths-given docutils align-default" id="id3">
+<caption><span class="caption-number">Table 2 </span><span class="caption-text">MetadataInterval operators</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>use_lower_edge</p></th>
+<th class="head"><p>use_upper_edge</p></th>
+<th class="head"><p>inside_test</p></th>
+<th class="head"><p>Kill test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>a &lt;= x &lt;= b</p></td>
+</tr>
+<tr class="row-odd"><td><p>False</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>a &lt; x &lt;= b</p></td>
+</tr>
+<tr class="row-even"><td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>True</p></td>
+<td><p>a &lt;= x &lt; b</p></td>
+</tr>
+<tr class="row-odd"><td><p>False</p></td>
+<td><p>False</p></td>
+<td><p>True</p></td>
+<td><p>a &lt; x &lt; b</p></td>
+</tr>
+<tr class="row-even"><td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>x &lt;= a and x &gt;= b</p></td>
+</tr>
+<tr class="row-odd"><td><p>False</p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>x &lt; a and x &gt;= b</p></td>
+</tr>
+<tr class="row-even"><td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+<td><p>x &lt;= a and x &gt; b</p></td>
+</tr>
+<tr class="row-odd"><td><p>False</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+<td><p>x &lt; a and x &gt; b</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="defining-multiple-editors">
+<h3>Defining Multiple Editors<a class="headerlink" href="#defining-multiple-editors" title="Permalink to this headline"></a></h3>
+<p>The final Metadata-based editor in MsPASS was given the name <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code>.
+Although the name is admittedly a bit tongue-in-cheek, the imagery the name
+provokes describes the function well:  a datum facing a firing squad
+is facing multiple executioner who may or may not kill you.   This class
+has a signature similar to the other Metadata-based editors:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FiringSquad</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>Meaning it inherits the base class <cite>Executioner</cite> and requires a custom
+implementation of the <cite>kill_if_true</cite> method. It can be used alone in
+a workflow exactly like the single test functions described above.
+A <cite>FiringSquad</cite> is simply a way to apply multiple Metadata tests
+in a single function call to the <cite>kill_if_true</cite> method.</p>
+<p>As with MetadataInterval
+the constructor is different and has this signature:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">executioner_list</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">executioner_list</span></code> is expected to be any iterable container made up
+only of python classes that are subclasses of Executioner. (All the classes
+covered in this document are subclasses of Executioner.)  Verbose has the
+same meaning as described above with an important exception.  It is no
+global but refers only to errors internal to <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code>.  Any testers
+having a verbose option will have have an independent verbose flag applied.</p>
+<p>When the <code class="docutils literal notranslate"><span class="pre">kill_if_true</span></code> method is called for this class the list of
+executioners are called in order defined by the list.  The victim cannot
+be hit by more than one bullet.  Once a datum is killed the <code class="docutils literal notranslate"><span class="pre">kill_if_true</span></code>
+method returns the body and drops further tests.</p>
+<p>A feature of a <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code> not enabled in any of the other classes described
+in this document is it implements operator <code class="docutils literal notranslate"><span class="pre">+=</span></code>.  Its use is to append an
+additional test to an existing <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code>.   e.g. suppose we had a workflow
+that creates a <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code> associated with the symbol <code class="docutils literal notranslate"><span class="pre">squad</span></code>.  The
+example below creates a <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code> test against the Metadata key “mad_snr” and
+adds it to the list of test in <code class="docutils literal notranslate"><span class="pre">squad</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">maddog</span> <span class="o">=</span> <span class="n">MetadataLE</span><span class="p">(</span><span class="s2">&quot;mad_snr&quot;</span><span class="p">,</span><span class="mf">4.0</span><span class="p">)</span>
+<span class="n">squad</span> <span class="o">+=</span> <span class="n">maddog</span>
+</pre></div>
+</div>
+<p>Finally, note it is possible to have recursive <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code> tests.  That is, a
+<code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code> can itself contain another <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code> as one of the
+tests set in the <code class="docutils literal notranslate"><span class="pre">executioner_list</span></code> passed on construction.</p>
+</section>
+</section>
+<section id="how-to-implement-an-extension">
+<h2>How to Implement an Extension<a class="headerlink" href="#how-to-implement-an-extension" title="Permalink to this headline"></a></h2>
+<p>Before considering developing an extension editor consider seriously if
+what you need can be accomplished with one of two alternatives:</p>
+<ol class="arabic simple">
+<li><p>Can the test be cast into a composite <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code> with the right components.</p></li>
+<li><p>If you need to compute some nonstandard quantity from the sample data ask
+yourself if the result can be reduced to a small set of numbers that can
+be saved as Metadata?   If so, you can focus on the unique calculations and
+have the code post the results to Metadata.
+There is a high probability you can then
+use one or more of the classes described above to apply the needed
+test.</p></li>
+</ol>
+<p>Anyone familiar with a basic understanding of
+inheritance in an object-oriented language in general and python in particular
+will recognize our implementation of all the classes described above as
+textbook applications of inheritance.  A custom extension that can plug into
+this same class structure must do two things:</p>
+<ol class="arabic simple">
+<li><p>The class declaration must declare it to be a subclass of <code class="docutils literal notranslate"><span class="pre">Executioner</span></code>.</p></li>
+<li><p>The class MUST implement a custom <code class="docutils literal notranslate"><span class="pre">kill_if_true</span></code> method.</p></li>
+</ol>
+<p>In addition, almost any implementation will require a base constructor
+(i.e. the line <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">__init__(self,...args..):</span></code>)
+defining internal parameters that define the boundaries of the kill test.
+The <code class="docutils literal notranslate"><span class="pre">kill_if_true</span></code> method would normally use “self” parameters set by the
+constructor.</p>
+<p>Some key points about extensions:</p>
+<ul class="simple">
+<li><p>Our examples all use attributes fetched from Metadata.  That is NOT a
+requirement.  Many algorithms are possible that would compute a test
+directly from sample data.  Be warned, however, that different MsPASS data objects all have
+fundamentally different sample data organizations.  Hence, a class that
+handles sample data would require a test for the unique data to which
+it could be applied.</p></li>
+<li><p>Our examples are dogmatic in requiring the data be MsPASS data objects.
+That is required because the implementation uses the kill method that
+the caller can be assured is part of the data object received.  Extensions
+that can plug in cleanly (e.g. as a member of a <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code>) should do
+the same test for MsPASS data objects.  That test is standardized in the
+base class method <code class="docutils literal notranslate"><span class="pre">input_is_valid</span></code>.   Use of that method in
+extensions is strongly advised to avoid unexpected aborts.</p></li>
+<li><p>Consider implementing the verbose option as described here for consistency.</p></li>
+<li><p>As with many things like this the best way to see how to build is an
+extension is to use the class implementations described above as examples.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="handling_errors.html" class="btn btn-neutral float-left" title="Handling Errors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="header_math.html" class="btn btn-neutral float-right" title="Header (Metadata) Math" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

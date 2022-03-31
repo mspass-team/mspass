@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Header (Metadata) Math &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Graphics in MsPASS" href="graphics.html" />
+    <link rel="prev" title="Data Editing" href="data_editing.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Header (Metadata) Math</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#concepts">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unary-operators">Unary Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#binary-operators">Binary Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#non-arithmetic-operators">Non-arithmetic Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#combining-operators">Combining operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-properties">Common Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#best-practices">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Header (Metadata) Math</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/header_math.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="header-metadata-math">
+<span id="header-math"></span><h1>Header (Metadata) Math<a class="headerlink" href="#header-metadata-math" title="Permalink to this headline"></a></h1>
+<section id="concepts">
+<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline"></a></h2>
+<p>Anyone familiar with seismic reflection data processing has seen the
+common need for what is sometimes called “header math”.   That term in the
+seismic reflection world is inherited from the days of tape-based processing
+where the processing workflow was driven by “header” attributes that were
+originally data stored in specific (binary) slots defined in tape formats like
+SEGY.   The attributes were “header” values because the slots holding these
+attributes always preceded the sample data.   The MsPASS framework
+uses a more general container that we call “Metadata” to hold attributes
+that might have been stored as “header data” in older frameworks.
+A useful conceptual model to remember in MsPASS is that the Metadata
+container is a generalized header.</p>
+<p>With that review, any reader who has used a seismic reflection processing
+system knows exactly why “header math” is a frequent requirement in
+a workflow.   The general problem is that it is often necessary to
+compute other attributes using the contents of one or more other
+(Metadata) attributes.   A common example in reflection processing
+of simple surveys is geometry formulas that
+can be used to compute line geometry attributes from other attributes
+like survey flag numbers.  Another from passive array processing is
+a need to compute some combined score of signal-to-noise ratio based on
+a linear combination of single metrics.</p>
+<p>The collection of edit operators covered in this section were implemented
+to cover the main arithmetic operations to do “header math”.  They have the
+advantage of being expressed through a standardized API that allows a chain
+of operation to be computed that can implement fairly elaborate
+calculations.  The user should recognize that the main advantage of using
+these operators over a custom-code python function
+(see the <em>Alternative</em> subsection at the end of this document) is robustness
+and integration of the steps into the history and error logging
+concepts of MsPASS.</p>
+</section>
+<section id="unary-operators">
+<h2>Unary Operators<a class="headerlink" href="#unary-operators" title="Permalink to this headline"></a></h2>
+<p>The first set of operations are “unary” because they implement
+all the standard unary arithmetic operations in python.
+By that we me operations like <cite>a+=b</cite> which adds the value of b to a.
+The distinction is that the operators automatically (and robustly) fetch and update the
+Metadata attribute on the left hand side of that operation.</p>
+<p>It is likely clearest to show an example of how this is used.
+Suppose we wanted found the <cite>calib</cite> attribute in our entire data set
+was now off by a factor or 2 because some custom algorithm did that and
+made all the amplitudes wrong by a factor of 2.  We could define an
+operator to do that with this construct</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mspasspy.algorithms.edit</span> <span class="k">as</span> <span class="nn">mde</span>
+<span class="n">myop</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Multiply</span><span class="p">(</span><span class="s2">&quot;calib&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+<span class="c1"># parallel example with dask - assumes data are in dask bag mydata</span>
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">mydata</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">myop</span><span class="o">.</span><span class="n">apply</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The call to <code class="docutils literal notranslate"><span class="pre">mde.Multiply</span></code> is a call to the constructor for the python
+class with the name <code class="docutils literal notranslate"><span class="pre">Multiply</span></code>.  The constructor for Multiply and all
+the other unary operators have two required arguments.  arg0 is the Metadata key
+to which the operator is to be applied (in this case “calib”) and arg1
+is the constant value that is to be applied.  The class name defines the
+operation that is to be performed.  In the example that means
+<code class="docutils literal notranslate"><span class="pre">calib</span> <span class="pre">*=</span> <span class="pre">2.0</span></code>.</p>
+<p>All the unary operators use exactly the same API and can be used the
+same way but for different arithmetic operations with a constant.
+The following table summarizes the available operators:</p>
+<table class="colwidths-given docutils align-default" id="id3">
+<caption><span class="caption-number">Table 3 </span><span class="caption-text">Unary Metadata Operators</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Python op</p></th>
+<th class="head"><p>Constructor</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Add</p></td>
+<td><p>+=</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Add(key,</span> <span class="pre">const)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Subtract</p></td>
+<td><p>-=</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Subtact(key,</span> <span class="pre">const)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Multiply</p></td>
+<td><p><a href="#id1"><span class="problematic" id="id2">*</span></a>=</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Multiply(key,</span> <span class="pre">const)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Divide</p></td>
+<td><p>/=</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Divide(key,</span> <span class="pre">const)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>IntegerDivide</p></td>
+<td><p>//=</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IntegerDivide(key,</span> <span class="pre">const)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Mod</p></td>
+<td><p>%=</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Mod(key,</span> <span class="pre">const)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>As can be seen the class name is a word describing the arithmetic
+operator.  If you are not familiar with the python operator symbols
+meaning, see any book or online source on python fundamentals.</p>
+</section>
+<section id="binary-operators">
+<h2>Binary Operators<a class="headerlink" href="#binary-operators" title="Permalink to this headline"></a></h2>
+<p>The binary operators are like the unary operators but they define all
+operations that are python binary operators.  By that we mean any
+operation that can be case as:  <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">a</span> <span class="pre">op</span> <span class="pre">b</span></code> where <code class="docutils literal notranslate"><span class="pre">op</span></code> is one of the
+standard arithmetic operator symbols:  <code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code>, <code class="docutils literal notranslate"><span class="pre">//</span></code>, and <code class="docutils literal notranslate"><span class="pre">%</span></code>.
+The distinction from normal usage is that the operator has to first cautiously
+fetch <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> from Metadata, apply <code class="docutils literal notranslate"><span class="pre">op</span></code>, and then set the value <code class="docutils literal notranslate"><span class="pre">c</span></code> to
+a value associated with a Metadata key associated with the left hand side
+for the operator.  Like the unary operators the binary operators share
+a common constructor signature:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span><span class="p">(</span><span class="n">keyc</span><span class="p">,</span><span class="n">keya</span><span class="p">,</span><span class="n">keyb</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">op</span></code> is the name for the operation (see table below), keyc is the
+key to set for the output of the operator, while keya and keyb are the keys used
+to fetch a and b in the formula <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">a</span> <span class="pre">op</span> <span class="pre">b</span></code>.  keyc can be the same as either
+keya or keyb but be aware if it is that the contents of that key will be
+overwritten.</p>
+<p>The names for the <code class="docutils literal notranslate"><span class="pre">op</span></code> variable above are illustrated in the table below.
+They are essentially the same as the unary operators with a “2” added to the
+name.</p>
+<table class="colwidths-given docutils align-default" id="id4">
+<caption><span class="caption-number">Table 4 </span><span class="caption-text">Binary Metadata Operators</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Python op</p></th>
+<th class="head"><p>Constructor</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Add2</p></td>
+<td><p>+</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Add(keyc,</span> <span class="pre">keya,</span> <span class="pre">keyb)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Subtract2</p></td>
+<td><p>-</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Subtact(keyc,</span> <span class="pre">keya,</span> <span class="pre">keyb)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Multiply2</p></td>
+<td><p>*</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Multiply(keyc,</span> <span class="pre">keya,</span> <span class="pre">keyb)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Divide2</p></td>
+<td><p>/</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Divide2(keyc,</span> <span class="pre">keya,</span> <span class="pre">keyb)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>IntegerDivide</p></td>
+<td><p>//</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IntegerDivide(keyc,</span> <span class="pre">keya,</span> <span class="pre">keyb)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Mod2</p></td>
+<td><p>%</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Mod(keyc,</span> <span class="pre">keya,</span> <span class="pre">keyb)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="non-arithmetic-operators">
+<h2>Non-arithmetic Operators<a class="headerlink" href="#non-arithmetic-operators" title="Permalink to this headline"></a></h2>
+<p>There are currently two additional operators in the same family as the
+arithmetic operators discussed above.</p>
+<p>First, there is an operator to change the key assigned to a Metadata attribute.
+The constructor has this usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">ChangeKey</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">erase_old</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>The apply method of this class will check for the existence of data with the key
+<code class="docutils literal notranslate"><span class="pre">old</span></code> and redefine the key to the valued defined by the <cite>old</cite> (positional) argument
+passed to the constructor.   The <code class="docutils literal notranslate"><span class="pre">erase_old</span></code> argument defaults to True.  If set
+False <code class="docutils literal notranslate"><span class="pre">old</span></code> will be set with a copy and <code class="docutils literal notranslate"><span class="pre">new</span></code> will be retained.</p>
+<p>The second is an operator to set a Metadata attribute to a constant value
+saved in the operator class.  The value can be any valid python type so
+this operation may or may not be an “arithmetic” operation.</p>
+<p>The constructor for this class has this usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">SetValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">const</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>The apply method of this operator will set a Metadata attribute with the
+name defined by <code class="docutils literal notranslate"><span class="pre">key</span></code> to the constant value set with <code class="docutils literal notranslate"><span class="pre">const</span></code>.</p>
+</section>
+<section id="combining-operators">
+<h2>Combining operators<a class="headerlink" href="#combining-operators" title="Permalink to this headline"></a></h2>
+<p>We define a final operator class with the name <code class="docutils literal notranslate"><span class="pre">MetadataOperatorChain</span></code>.
+As the name suggests it provides a mechanism to implement a (potentially complicated)
+formula from the lower level operators.  The class constructor has
+this usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">opchain</span> <span class="o">=</span> <span class="n">MetadataOperatorChain</span><span class="p">(</span><span class="n">oplist</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">oplist</span></code> is a python list of 2 or more of the lower level operators
+described above.</p>
+<p>For example, here is a code fragment to produce a calculator that will
+compute the midpoint coordinates from Metadata attributes rx,ry,sx, and sy
+and set them as cmpx, cmpy for x and y coordinates respectively:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mspasspy.algorithms.edit</span> <span class="k">as</span> <span class="nn">mde</span>
+<span class="n">xop1</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Add2</span><span class="p">(</span><span class="s2">&quot;cmpx&quot;</span><span class="p">,</span> <span class="s2">&quot;rx&quot;</span><span class="p">,</span> <span class="s2">&quot;sx&quot;</span><span class="p">)</span>
+<span class="n">xop2</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Divide</span><span class="p">(</span><span class="s2">&quot;cmpx&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+<span class="n">yop1</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Add2</span><span class="p">(</span><span class="s2">&quot;cmpy&quot;</span><span class="p">,</span> <span class="s2">&quot;ry&quot;</span><span class="p">,</span> <span class="s2">&quot;sy&quot;</span><span class="p">)</span>
+<span class="n">yop2</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Divide</span><span class="p">(</span><span class="s2">&quot;cmpy&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+<span class="n">opchain</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">MetadataOperatorChain</span><span class="p">([</span><span class="n">xop1</span><span class="p">,</span><span class="n">xop2</span><span class="p">,</span><span class="n">yop1</span><span class="p">,</span><span class="n">yop2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The opchain contents can then be passed to a parallel map operator as in
+the simpler example above.   This operator computes and sets the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cmpx</span> <span class="o">=</span> <span class="p">(</span><span class="n">rx</span> <span class="o">+</span> <span class="n">sx</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+<span class="n">cmpy</span> <span class="o">=</span> <span class="p">(</span><span class="n">ry</span> <span class="o">+</span> <span class="n">sy</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+</pre></div>
+</div>
+</section>
+<section id="common-properties">
+<h2>Common Properties<a class="headerlink" href="#common-properties" title="Permalink to this headline"></a></h2>
+<p>All of the operations defined in this set of operator classes could be
+hand coded as needed.  The main thing they give you over a “roll you own”
+implementation is automatic handling of the following standard features of
+the MsPASS framework:</p>
+<ul class="simple">
+<li><p>All handle error consistently using the ErrorLogging mechanism of MsPASS
+data objects.</p></li>
+<li><p>All behave identically on some standard error situations.  There are three
+users need to be aware of.  (1) If a key-value that the operator needs to fetch from
+Metadata is not defined the operator will kill the datum missing and
+log a standard message.  (2) if
+the value extracted fails on the arithmetic operation the datum will again
+be killed with a standard message posted to the elog attribute of the
+data object. (3) If the operator receives a datum that is not a MsPASS
+data object the operator will throw a MsPASSError object marked Fatal.</p></li>
+<li><p>All operators handle Ensembles in a consistent manner.   Editing Metadata
+for an Ensemble object has an ambiguity because Ensemble objects often
+have attributes independent of the members (e.g. a common source gather
+may only have the source coordinates in the ensemble container.)  To
+handle this all the apply methods have a common, optional argument
+<cite>apply_to_members</cite>.   When set True the operator will automatically
+apply the operation to each member of the ensemble in a simple, serial loop.
+When false the operation is applied to the ensemble metadata container.</p></li>
+<li><p>All the operators have wrappers to optionally enable the object-level
+history mechanism for each datum processed.</p></li>
+</ul>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this headline"></a></h2>
+<ol class="arabic simple">
+<li><p>It is important to be aware of the consistency of the Metadata attributes
+for a data set before running these operators.  They will dogmatically kill
+data when required attributes are missing.   If your data set has a lot of
+missing metadata you need to do the calculations these operators will
+kill every datum that is lacking.</p></li>
+<li><p>It is far to easy to kill every datum in your data set if you read
+data by ensembles and fail to use the <cite>apply_to_members</cite> switch correctly.
+With the default value of False if you mix up the names for fields you
+set in the ensemble container and which you load with each atomic data
+object you can easily kill every ensemble in the data set.  As always it
+is prudent to run tests with a restricted portion of the data to verify
+the operation does what you think it will before releasing a workflow
+on a huge data set.</p></li>
+<li><p>When you are aware that some data have deficient metadata attributes
+that are required for a calculation, it is prudent to first pass the
+workflow through one related Executioner classes to “kill” data that
+lack the required attributes.</p></li>
+<li><p>We have found that a chain of <code class="docutils literal notranslate"><span class="pre">ChangeKey</span></code> operator is almost always a
+far faster way to repair database name errors than to run
+one-at-a-time transactions with MongoDB.   Millions of update transactions
+with MongoDB can (literally) take days to complete but the same operation
+done inline with a string of <code class="docutils literal notranslate"><span class="pre">ChangeKey</span></code> operations produces near zero
+overhead on any reasonable processing job.  The same is true if the
+goal were to compute new attributes from all documents defining a
+large data set.  It can be very slow to compute such attributes from
+a serial read-compute-update pure database compared to using the
+operators described in this section as a part of the workflow.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="data_editing.html" class="btn btn-neutral float-left" title="Data Editing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="graphics.html" class="btn btn-neutral float-right" title="Graphics in MsPASS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
