@@ -241,7 +241,7 @@ void CoreTimeSeries::set_npts(const size_t npts)
   /* this method has the further complication that npts sets the size of the
   data buffer.  We clear it an initialize it to 0 to be consistent with
   how constructors handle this. */
-  this->s.clear();
+  std::vector<double>().swap(this->s);  //  Clear the memory allocation of s
   this->s.reserve(npts);
   for(size_t i=0;i<npts;++i)this->s.push_back(0.0);
 }
