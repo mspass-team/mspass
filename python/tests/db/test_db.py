@@ -2221,7 +2221,7 @@ class TestDatabase:
         )
         assert np.isclose(ts_ensemble.member[2].data, res.data).all()
 
-        # using seismogram  TODO: Here is a bug!
+        # using seismogram
         seis1 = copy.deepcopy(self.test_seis)
         seis2 = copy.deepcopy(self.test_seis)
         seis3 = copy.deepcopy(self.test_seis)
