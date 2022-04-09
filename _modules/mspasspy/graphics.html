@@ -313,11 +313,7 @@
     <span class="n">dt</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">npts</span>
     <span class="n">n</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">work</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">])</span>
-    <span class="c1"># this is a very slow way to do a matrix transpose of u dmatrix</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
-            <span class="n">work</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+    <span class="n">work</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">tmin</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">work</span><span class="p">]</span></div>
 
 
@@ -325,11 +321,7 @@
     <span class="n">tmin</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">npts</span>
-    <span class="c1"># There is likely a faster way to do this, but for now we want to</span>
-    <span class="c1"># be sure this looks like a 2d array as input to the plot function</span>
-    <span class="n">work</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
-        <span class="n">work</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+    <span class="n">work</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">tmin</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">work</span><span class="p">]</span></div>
 
 

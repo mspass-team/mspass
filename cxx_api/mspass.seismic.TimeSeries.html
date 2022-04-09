@@ -169,6 +169,15 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK8Metadata">
+<span class="target" id="classmspass_1_1seismic_1_1_time_series_1a5c517e614529917e488eb3539da109e2"></span><span class="sig-name descname"><span class="n"><span class="pre">TimeSeries</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Metadata</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">md</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK8Metadata" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Partially construct from Metadata alone.</p>
+<p>This constructor is useful for interaction with MongoDB where the Metadata container is constructed directly from MongoDB documents the database uses for storage. A key restrition of this constructor is that BasicTimeSeries attributes and the size of the internal array buffer, which is set by npts, are extracted from Metadata with keys fixed in the C++ code. The following keys are required or this contructor will throw a MwPASSWrror:</p>
+<p>dt - sample sample_interval t0 - data startttime npts - number of samples (s array will be initialized to this many zeros) time_standard - UTC or Relative (anything but UTC is taken as relative)</p>
+<p>It will also handle but not require the two attributes used in the mspass schema to handle shifting from absolute to relative time. These keys are t0_shift - sets amount t0 has been shiftee when originally utc but set to relative with the shift method. Ignored if time is UTC or it is not defined. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERKN6mspass7seismic14CoreTimeSeriesE">
 <span class="target" id="classmspass_1_1seismic_1_1_time_series_1a08f3ad76e126f1e26fbabeca1d9e7796"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TimeSeries</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">mspass</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">seismic</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CoreTimeSeries</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">d</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERKN6mspass7seismic14CoreTimeSeriesE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Construct from lower level CoreTimeSeries. </p>

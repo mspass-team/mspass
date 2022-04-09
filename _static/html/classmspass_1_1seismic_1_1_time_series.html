@@ -112,6 +112,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a88937f6f1cd72c8f20d8a798cf5b951a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad50dc65d5845189ef178195589665e5e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_time_series.html#ad50dc65d5845189ef178195589665e5e">TimeSeries</a> (const <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html">BasicTimeSeries</a> &amp;bts, const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> &amp;md)</td></tr>
 <tr class="separator:ad50dc65d5845189ef178195589665e5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c517e614529917e488eb3539da109e2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_time_series.html#a5c517e614529917e488eb3539da109e2">TimeSeries</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> &amp;md)</td></tr>
+<tr class="separator:a5c517e614529917e488eb3539da109e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08f3ad76e126f1e26fbabeca1d9e7796"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_time_series.html#a08f3ad76e126f1e26fbabeca1d9e7796">TimeSeries</a> (const <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a> &amp;d)</td></tr>
 <tr class="memdesc:a08f3ad76e126f1e26fbabeca1d9e7796"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from lower level <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html" title="Scalar time series data object.">CoreTimeSeries</a>.  <a href="classmspass_1_1seismic_1_1_time_series.html#a08f3ad76e126f1e26fbabeca1d9e7796">More...</a><br /></td></tr>
 <tr class="separator:a08f3ad76e126f1e26fbabeca1d9e7796"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -479,7 +481,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
  </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a45c61ee8b73600c3576f8f750f926311"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45c61ee8b73600c3576f8f750f926311">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[1/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a45c61ee8b73600c3576f8f750f926311">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[1/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -508,7 +510,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </div>
 </div>
 <a id="a88937f6f1cd72c8f20d8a798cf5b951a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88937f6f1cd72c8f20d8a798cf5b951a">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[2/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a88937f6f1cd72c8f20d8a798cf5b951a">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[2/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -545,7 +547,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </div>
 </div>
 <a id="ad50dc65d5845189ef178195589665e5e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad50dc65d5845189ef178195589665e5e">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[3/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad50dc65d5845189ef178195589665e5e">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[3/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -586,8 +588,72 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </div><!-- fragment -->
 </div>
 </div>
+<a id="a5c517e614529917e488eb3539da109e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c517e614529917e488eb3539da109e2">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[4/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mspass::seismic::TimeSeries::TimeSeries </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> &amp;&#160;</td>
+          <td class="paramname"><em>md</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Partially construct from Metadata alone.</p>
+<p>This constructor is useful for interaction with MongoDB where the Metadata container is constructed directly from MongoDB documents the database uses for storage. A key restrition of this constructor is that <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html" title="Base class for time series objects.">BasicTimeSeries</a> attributes and the size of the internal array buffer, which is set by npts, are extracted from Metadata with keys fixed in the C++ code. The following keys are required or this contructor will throw a MwPASSWrror:</p>
+<p>dt - sample sample_interval t0 - data startttime npts - number of samples (s array will be initialized to this many zeros) time_standard - UTC or Relative (anything but UTC is taken as relative)</p>
+<p>It will also handle but not require the two attributes used in the mspass schema to handle shifting from absolute to relative time. These keys are t0_shift - sets amount t0 has been shiftee when originally utc but set to relative with the shift method. Ignored if time is UTC or it is not defined. <br  />
+ </p>
+<div class="fragment"><div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                                         : <a class="code" href="classmspass_1_1utility_1_1_processing_history.html#a78c4def2e3503ba2fbdadf3c02b733a7">ProcessingHistory</a>()</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;{</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordflow">try</span> {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">Metadata::operator=</a>(md);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="comment">/* Names used are from mspass defintions as of Jan 2020.</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">        We don&#39;t need to call the set methods for these attributes as they</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">        would add the overhead of setting delta, startime, and npts to the</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">        same value passed. */</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a> = this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">get_double</a>(<a class="code" href="namespacemspass_1_1seismic.html#a3f7a9857fd532d0e6800f2a316b50772">SEISMICMD_dt</a>);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> = this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">get_double</a>(<a class="code" href="namespacemspass_1_1seismic.html#a1e5b45ce0ed02e9c1d154ea0434138c0">SEISMICMD_t0</a>);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">is_defined</a>(<a class="code" href="namespacemspass_1_1seismic.html#a88a01d6c4e1838b7bac28931b9cc8c58">SEISMICMD_time_standard</a>))</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;          <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">get_string</a>(<a class="code" href="namespacemspass_1_1seismic.html#a88a01d6c4e1838b7bac28931b9cc8c58">SEISMICMD_time_standard</a>) == <span class="stringliteral">&quot;UTC&quot;</span>)</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">set_tref</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">TimeReferenceType::UTC</a>);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;          <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;          {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">set_tref</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">TimeReferenceType::Relative</a>);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            this-&gt;elog.<a class="code" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;CoreSeismogram Metadata constructor&quot;</span>,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;              <a class="code" href="namespacemspass_1_1seismic.html#a88a01d6c4e1838b7bac28931b9cc8c58">SEISMICMD_time_standard</a>+<span class="stringliteral">&quot; attribute is not defined - set to Relative&quot;</span>,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;              ErrorSeverity::Complaint);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;          }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordflow">if</span>(this-&gt;time_is_relative())</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;          <span class="comment">/* It is not an error if a t0 shift is not defined and we are</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">          in relative time. That is the norm for active source data. */</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;          <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">is_defined</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0951fef82377e868ee7cfcd4841979cf">SEISMICMD_t0_shift</a>))</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;          {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <span class="keywordtype">double</span> t0shift=this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">get_double</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0951fef82377e868ee7cfcd4841979cf">SEISMICMD_t0_shift</a>);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#ab87672dc6adffed90b0dc9c144219d44">force_t0_shift</a>(t0shift);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;          }</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        }</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keywordtype">long</span> <span class="keywordtype">int</span> ns = md.<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a7ace0c05ebb00b3c383cb8cccd225504">get_long</a>(<a class="code" href="namespacemspass_1_1seismic.html#ac848a79911ca1930abf265f01a6d635f">SEISMICMD_npts</a>);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="comment">/* this CoreTimeSeries method sets the npts attribute and</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">        initializes the s buffer to all zeros */</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">set_npts</a>(ns);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    }<span class="keywordflow">catch</span>(...) {<span class="keywordflow">throw</span>;};</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ab87672dc6adffed90b0dc9c144219d44">mspass::seismic::BasicTimeSeries::force_t0_shift()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">mspass::utility::Metadata::get_double()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a7ace0c05ebb00b3c383cb8cccd225504">mspass::utility::Metadata::get_long()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">mspass::utility::Metadata::get_string()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">mspass::utility::Metadata::is_defined()</a>, <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mspass::seismic::BasicTimeSeries::mdt</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mspass::seismic::BasicTimeSeries::mlive</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mspass::seismic::BasicTimeSeries::mt0</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=()</a>, <a class="el" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">mspass::seismic::Relative</a>, <a class="el" href="namespacemspass_1_1seismic.html#a3f7a9857fd532d0e6800f2a316b50772">mspass::seismic::SEISMICMD_dt()</a>, <a class="el" href="namespacemspass_1_1seismic.html#ac848a79911ca1930abf265f01a6d635f">mspass::seismic::SEISMICMD_npts()</a>, <a class="el" href="namespacemspass_1_1seismic.html#a1e5b45ce0ed02e9c1d154ea0434138c0">mspass::seismic::SEISMICMD_t0()</a>, <a class="el" href="namespacemspass_1_1seismic.html#a0951fef82377e868ee7cfcd4841979cf">mspass::seismic::SEISMICMD_t0_shift()</a>, <a class="el" href="namespacemspass_1_1seismic.html#a88a01d6c4e1838b7bac28931b9cc8c58">mspass::seismic::SEISMICMD_time_standard()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries::set_npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">mspass::seismic::BasicTimeSeries::set_tref()</a>, and <a class="el" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::UTC</a>.</p>
+
+</div>
+</div>
 <a id="a08f3ad76e126f1e26fbabeca1d9e7796"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a08f3ad76e126f1e26fbabeca1d9e7796">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[4/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a08f3ad76e126f1e26fbabeca1d9e7796">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[5/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -618,12 +684,12 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    : <a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>(d),<a class="code" href="classmspass_1_1utility_1_1_processing_history.html">mspass::utility::ProcessingHistory</a>(){};</div>
+<div class="fragment"><div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    : <a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>(d),<a class="code" href="classmspass_1_1utility_1_1_processing_history.html">mspass::utility::ProcessingHistory</a>(){};</div>
 </div><!-- fragment -->
 </div>
 </div>
 <a id="a1d23975e71b4fe23b21dd6a7a9f10a46"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d23975e71b4fe23b21dd6a7a9f10a46">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[5/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d23975e71b4fe23b21dd6a7a9f10a46">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[6/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -656,22 +722,22 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    : <a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html#a48794c92ef727de958653b7d395f6b5d">CoreTimeSeries</a>(d),<a class="code" href="classmspass_1_1utility_1_1_processing_history.html#a78c4def2e3503ba2fbdadf3c02b733a7">ProcessingHistory</a>()</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;{</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  <span class="comment">/* Not sure this is a good idea, but will give each instance</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">  created by this constructor a uuid.*/</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keywordtype">string</span> <span class="keywordtype">id</span>=this-&gt;<a class="code" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid</a>();</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  this-&gt;<a class="code" href="classmspass_1_1utility_1_1_processing_history.html#a0621aa8adf8ebaab44a375a299c14fd8">ProcessingHistory::set_as_origin</a>(alg,<span class="keywordtype">id</span>,<span class="keywordtype">id</span>,AtomicType::SEISMOGRAM,<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  this-&gt;ProcessingHistory::set_jobname(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;test&quot;</span>));</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  this-&gt;ProcessingHistory::set_jobid(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;test&quot;</span>));</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    : <a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html#a48794c92ef727de958653b7d395f6b5d">CoreTimeSeries</a>(d),<a class="code" href="classmspass_1_1utility_1_1_processing_history.html#a78c4def2e3503ba2fbdadf3c02b733a7">ProcessingHistory</a>()</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;{</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="comment">/* Not sure this is a good idea, but will give each instance</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">  created by this constructor a uuid.*/</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keywordtype">string</span> <span class="keywordtype">id</span>=this-&gt;<a class="code" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid</a>();</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  this-&gt;<a class="code" href="classmspass_1_1utility_1_1_processing_history.html#a0621aa8adf8ebaab44a375a299c14fd8">ProcessingHistory::set_as_origin</a>(alg,<span class="keywordtype">id</span>,<span class="keywordtype">id</span>,AtomicType::SEISMOGRAM,<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  this-&gt;ProcessingHistory::set_jobname(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;test&quot;</span>));</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  this-&gt;ProcessingHistory::set_jobid(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;test&quot;</span>));</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">mspass::utility::ProcessingHistory::newid()</a>, and <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a0621aa8adf8ebaab44a375a299c14fd8">mspass::utility::ProcessingHistory::set_as_origin()</a>.</p>
 
 </div>
 </div>
 <a id="aa631eb4114fc29b2152e048eba1bc218"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa631eb4114fc29b2152e048eba1bc218">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[6/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aa631eb4114fc29b2152e048eba1bc218">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[7/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -713,7 +779,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </div>
 </div>
 <a id="a518cbd17b96169fe12db31f80c82fc8c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a518cbd17b96169fe12db31f80c82fc8c">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[7/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a518cbd17b96169fe12db31f80c82fc8c">&#9670;&nbsp;</a></span>TimeSeries() <span class="overload">[8/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -736,7 +802,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </table>
 </div><div class="memdoc">
 <p>Standard copy constructor. </p>
-<div class="fragment"><div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    : <a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>(parent), <a class="code" href="classmspass_1_1utility_1_1_processing_history.html">mspass::utility::ProcessingHistory</a>(parent){};</div>
+<div class="fragment"><div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    : <a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>(parent), <a class="code" href="classmspass_1_1utility_1_1_processing_history.html">mspass::utility::ProcessingHistory</a>(parent){};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -757,14 +823,14 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
-<div class="fragment"><div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=(&amp;parent))</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html#a49e0add931b008600450413c4e0cbd40">CoreTimeSeries::operator=</a>(parent);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1utility_1_1_processing_history.html#ab6203063df0564c57f28d76f8d5969ac">ProcessingHistory::operator=</a>(parent);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    }</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;{</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=(&amp;parent))</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html#a49e0add931b008600450413c4e0cbd40">CoreTimeSeries::operator=</a>(parent);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1utility_1_1_processing_history.html#ab6203063df0564c57f28d76f8d5969ac">ProcessingHistory::operator=</a>(parent);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a49e0add931b008600450413c4e0cbd40">mspass::seismic::CoreTimeSeries::operator=()</a>, and <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#ab6203063df0564c57f28d76f8d5969ac">mspass::utility::ProcessingHistory::operator=()</a>.</p>
 
@@ -776,13 +842,32 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </ul>
 </div><!-- contents -->
 <div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a9a8bf8bc3632660c91fd9d82a79f8411"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">mspass::utility::ProcessingHistory::newid</a></div><div class="ttdeci">std::string newid()</div><div class="ttdef"><b>Definition:</b> ProcessingHistory.cc:700</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a7b2e9b878959d376790f09194edc51d9"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mspass::seismic::BasicTimeSeries::mlive</a></div><div class="ttdeci">bool mlive</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:256</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a1e96e8682297fe8b21acf09b4d399cc6"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">mspass::utility::Metadata::is_defined</a></div><div class="ttdeci">bool is_defined(const std::string key) const noexcept</div><div class="ttdef"><b>Definition:</b> Metadata.cc:73</div></div>
+<div class="ttc" id="anamespacemspass_1_1seismic_html_a0951fef82377e868ee7cfcd4841979cf"><div class="ttname"><a href="namespacemspass_1_1seismic.html#a0951fef82377e868ee7cfcd4841979cf">mspass::seismic::SEISMICMD_t0_shift</a></div><div class="ttdeci">const std::string SEISMICMD_t0_shift(&quot;starttime_shift&quot;)</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_ac3f8c8200710fe0d3ef211c7c758e864"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">mspass::seismic::BasicTimeSeries::set_tref</a></div><div class="ttdeci">void set_tref(const TimeReferenceType newtref)</div><div class="ttdoc">Force the time standard.</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:243</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a7ace0c05ebb00b3c383cb8cccd225504"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a7ace0c05ebb00b3c383cb8cccd225504">mspass::utility::Metadata::get_long</a></div><div class="ttdeci">long get_long(const std::string key) const</div><div class="ttdef"><b>Definition:</b> Metadata.h:184</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_aea80df11992ca2c7ff915aab5fcba6f5"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mspass::seismic::BasicTimeSeries::mdt</a></div><div class="ttdeci">double mdt</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:260</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ae538485ac0aed2f8691477dffce6cda8"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries::set_npts</a></div><div class="ttdeci">void set_npts(const size_t npts)</div><div class="ttdoc">Set the number of samples attribute for data.</div><div class="ttdef"><b>Definition:</b> CoreTimeSeries.cc:222</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_a48794c92ef727de958653b7d395f6b5d"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#a48794c92ef727de958653b7d395f6b5d">mspass::seismic::CoreTimeSeries::CoreTimeSeries</a></div><div class="ttdeci">CoreTimeSeries()</div><div class="ttdef"><b>Definition:</b> CoreTimeSeries.cc:15</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_aeb40f4223a8ee73e79f9af065372a757"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mspass::seismic::BasicTimeSeries::mt0</a></div><div class="ttdeci">double mt0</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:264</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_ad69a5786d997104df560775f4f688b02"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">mspass::utility::Metadata::get_double</a></div><div class="ttdeci">double get_double(const std::string key) const override</div><div class="ttdef"><b>Definition:</b> Metadata.h:135</div></div>
+<div class="ttc" id="anamespacemspass_1_1seismic_html_ac848a79911ca1930abf265f01a6d635f"><div class="ttname"><a href="namespacemspass_1_1seismic.html#ac848a79911ca1930abf265f01a6d635f">mspass::seismic::SEISMICMD_npts</a></div><div class="ttdeci">const std::string SEISMICMD_npts(&quot;npts&quot;)</div></div>
+<div class="ttc" id="anamespacemspass_1_1seismic_html_a88a01d6c4e1838b7bac28931b9cc8c58"><div class="ttname"><a href="namespacemspass_1_1seismic.html#a88a01d6c4e1838b7bac28931b9cc8c58">mspass::seismic::SEISMICMD_time_standard</a></div><div class="ttdeci">const std::string SEISMICMD_time_standard(&quot;time_standard&quot;)</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html">mspass::utility::ProcessingHistory</a></div><div class="ttdoc">Lightweight class to preserve procesing chain of atomic objects.</div><div class="ttdef"><b>Definition:</b> ProcessingHistory.h:257</div></div>
+<div class="ttc" id="anamespacemspass_1_1seismic_html_a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0"><div class="ttname"><a href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">mspass::seismic::TimeReferenceType::Relative</a></div><div class="ttdeci">@ Relative</div></div>
+<div class="ttc" id="anamespacemspass_1_1seismic_html_a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961"><div class="ttname"><a href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::TimeReferenceType::UTC</a></div><div class="ttdeci">@ UTC</div></div>
+<div class="ttc" id="anamespacemspass_1_1seismic_html_a3f7a9857fd532d0e6800f2a316b50772"><div class="ttname"><a href="namespacemspass_1_1seismic.html#a3f7a9857fd532d0e6800f2a316b50772">mspass::seismic::SEISMICMD_dt</a></div><div class="ttdeci">const std::string SEISMICMD_dt(&quot;delta&quot;)</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a0621aa8adf8ebaab44a375a299c14fd8"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a0621aa8adf8ebaab44a375a299c14fd8">mspass::utility::ProcessingHistory::set_as_origin</a></div><div class="ttdeci">void set_as_origin(const std::string alg, const std::string algid, const std::string uuid, const AtomicType typ, bool define_as_raw=false)</div><div class="ttdef"><b>Definition:</b> ProcessingHistory.cc:161</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_ab6203063df0564c57f28d76f8d5969ac"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#ab6203063df0564c57f28d76f8d5969ac">mspass::utility::ProcessingHistory::operator=</a></div><div class="ttdeci">ProcessingHistory &amp; operator=(const ProcessingHistory &amp;parent)</div><div class="ttdef"><b>Definition:</b> ProcessingHistory.cc:741</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_aa56da98a52f03babd67bf9fb55c40f3a"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">mspass::utility::Metadata::get_string</a></div><div class="ttdeci">std::string get_string(const std::string key) const override</div><div class="ttdef"><b>Definition:</b> Metadata.h:213</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a78c4def2e3503ba2fbdadf3c02b733a7"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a78c4def2e3503ba2fbdadf3c02b733a7">mspass::utility::ProcessingHistory::ProcessingHistory</a></div><div class="ttdeci">ProcessingHistory()</div><div class="ttdef"><b>Definition:</b> ProcessingHistory.cc:86</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a></div><div class="ttdoc">Scalar time series data object.</div><div class="ttdef"><b>Definition:</b> CoreTimeSeries.h:16</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition:</b> ErrorLogger.cc:81</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_a49e0add931b008600450413c4e0cbd40"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#a49e0add931b008600450413c4e0cbd40">mspass::seismic::CoreTimeSeries::operator=</a></div><div class="ttdeci">CoreTimeSeries &amp; operator=(const CoreTimeSeries &amp;parent)</div><div class="ttdef"><b>Definition:</b> CoreTimeSeries.cc:66</div></div>
+<div class="ttc" id="anamespacemspass_1_1seismic_html_a1e5b45ce0ed02e9c1d154ea0434138c0"><div class="ttname"><a href="namespacemspass_1_1seismic.html#a1e5b45ce0ed02e9c1d154ea0434138c0">mspass::seismic::SEISMICMD_t0</a></div><div class="ttdeci">const std::string SEISMICMD_t0(&quot;starttime&quot;)</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_ab87672dc6adffed90b0dc9c144219d44"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#ab87672dc6adffed90b0dc9c144219d44">mspass::seismic::BasicTimeSeries::force_t0_shift</a></div><div class="ttdeci">void force_t0_shift(const double t)</div><div class="ttdoc">Force a t0 shift value on data.</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:115</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_aadbae283dfdb87a82832519a9955fdfa"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=</a></div><div class="ttdeci">Metadata &amp; operator=(const Metadata &amp;mdold)</div><div class="ttdef"><b>Definition:</b> Metadata.cc:108</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

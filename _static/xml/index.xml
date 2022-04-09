@@ -981,6 +981,7 @@
     <member refid="classmspass_1_1seismic_1_1_seismogram_1ae4126ada587a52ed991ed25308a5c9cb" kind="function"><name>Seismogram</name></member>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1a5705fbcf6d39464827889bc2e96dfb92" kind="function"><name>Seismogram</name></member>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1acbb2f19850e7f5d4e9452ed3728b2b32" kind="function"><name>Seismogram</name></member>
+    <member refid="classmspass_1_1seismic_1_1_seismogram_1afaaac8777afb9a25b91b1b4b09b3652d" kind="function"><name>Seismogram</name></member>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1a275d43464679a4cb963fba217d9383c0" kind="function"><name>Seismogram</name></member>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1a68ddfc28edecdb64a007d5163adb9292" kind="function"><name>operator=</name></member>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1a6a08b90222beaf43809a3691f80b61c6" kind="function"><name>load_history</name></member>
@@ -1048,6 +1049,7 @@
     <member refid="classmspass_1_1seismic_1_1_time_series_1a45c61ee8b73600c3576f8f750f926311" kind="function"><name>TimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_1a88937f6f1cd72c8f20d8a798cf5b951a" kind="function"><name>TimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_1ad50dc65d5845189ef178195589665e5e" kind="function"><name>TimeSeries</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_series_1a5c517e614529917e488eb3539da109e2" kind="function"><name>TimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_1a08f3ad76e126f1e26fbabeca1d9e7796" kind="function"><name>TimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_1a1d23975e71b4fe23b21dd6a7a9f10a46" kind="function"><name>TimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_1aa631eb4114fc29b2152e048eba1bc218" kind="function"><name>TimeSeries</name></member>
@@ -1240,7 +1242,17 @@
   <compound refid="namespacemspass_1_1io" kind="namespace"><name>mspass::io</name>
     <member refid="mseed__file__indexer_8cc_1aa275d5cdd02cce12a851eb9db14e0fee" kind="typedef"><name>MSDINDEX_returntype</name></member>
     <member refid="mseed__file__indexer_8cc_1aed35095112e114eff1be6922f2f291d1" kind="variable"><name>buffer</name></member>
+    <member refid="fileio_8h_1a635804a18597fe158057aec9c9781e0e" kind="function"><name>fwrite_to_file</name></member>
+    <member refid="fileio_8h_1a7e71571f94e79ed5cd7839504341957b" kind="function"><name>fwrite_to_file</name></member>
+    <member refid="fileio_8h_1aa271a69b12e7c945f1779b07c3157eb9" kind="function"><name>fread_from_file</name></member>
+    <member refid="fileio_8h_1acef153567669e5ea4f8d597ddfc1a947" kind="function"><name>fread_from_file</name></member>
     <member refid="mseed__index_8h_1ae676a44a12bfc4e7a6af21edd7581745" kind="function"><name>mseed_file_indexer</name></member>
+    <member refid="fileio_8cc_1a01039e857800708323e459f372d38d19" kind="function"><name>fwrite_sample_data</name></member>
+    <member refid="fileio_8cc_1ae290073e53ca7d094d152e3a3ee65085" kind="function"><name>fwrite_to_file</name></member>
+    <member refid="fileio_8cc_1a5e6fc74e51d5bf9eb393d6abde3518d7" kind="function"><name>fwrite_to_file</name></member>
+    <member refid="fileio_8cc_1aa6a536e819148eb66f735ed6ab002e11" kind="function"><name>fread_sample_data</name></member>
+    <member refid="fileio_8cc_1ae1f3e216145ee0c136324079ebd24b6e" kind="function"><name>fread_from_file</name></member>
+    <member refid="fileio_8cc_1acf03563760e97d0c44fa7f3262264ddf" kind="function"><name>fread_from_file</name></member>
     <member refid="mseed__file__indexer_8cc_1a7ee6e258cc4a7dd22e0f27463228c44a" kind="function"><name>save_error_message</name></member>
     <member refid="mseed__file__indexer_8cc_1afe2800b7fa24249de92f7ff6ec6db65b" kind="function"><name>mseed_file_indexer</name></member>
     <member refid="mseed__index_8cc_1a50d9221df57b0d6ea5bad8fc3f5b2b1e" kind="function"><name>operator&lt;&lt;</name></member>
@@ -1277,6 +1289,9 @@
     <member refid="namespacemspass_1_1seismic_1ab8e65fa46b1de2e84418ed22a20cf522" kind="function"><name>SEISMICMD_sta</name></member>
     <member refid="namespacemspass_1_1seismic_1ae39181fd7e5305ad63c7d50bcb082d47" kind="function"><name>SEISMICMD_chan</name></member>
     <member refid="namespacemspass_1_1seismic_1a9bb3e908c48498c194aad416262578f4" kind="function"><name>SEISMICMD_loc</name></member>
+    <member refid="namespacemspass_1_1seismic_1a88a01d6c4e1838b7bac28931b9cc8c58" kind="function"><name>SEISMICMD_time_standard</name></member>
+    <member refid="namespacemspass_1_1seismic_1a0951fef82377e868ee7cfcd4841979cf" kind="function"><name>SEISMICMD_t0_shift</name></member>
+    <member refid="namespacemspass_1_1seismic_1a6931911b331ba8c70a3bf5365f548074" kind="function"><name>SEISMICMD_utc_convertible</name></member>
   </compound>
   <compound refid="namespacemspass_1_1utility" kind="namespace"><name>mspass::utility</name>
     <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3" kind="enum"><name>MDtype</name></member>
@@ -1398,7 +1413,7 @@
   <compound refid="src_2lib_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
   </compound>
   <compound refid="src_2lib_2io_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
-    <member refid="src_2lib_2io_2_c_make_lists_8txt_1a5d7a83950988c52a38992b5a68dcac63" kind="function"><name>include_directories</name></member>
+    <member refid="src_2lib_2io_2_c_make_lists_8txt_1ae6432ccdbf0f7c8c1ed47b5f3acba30b" kind="function"><name>include_directories</name></member>
   </compound>
   <compound refid="src_2lib_2seismic_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
     <member refid="src_2lib_2seismic_2_c_make_lists_8txt_1ae23dd037353b7ba1172f65b437694d0a" kind="function"><name>include_directories</name></member>
@@ -1461,6 +1476,8 @@
   <compound refid="_taper_8h" kind="file"><name>Taper.h</name>
   </compound>
   <compound refid="_time_window_8h" kind="file"><name>TimeWindow.h</name>
+  </compound>
+  <compound refid="fileio_8h" kind="file"><name>fileio.h</name>
   </compound>
   <compound refid="mseed__index_8h" kind="file"><name>mseed_index.h</name>
   </compound>
@@ -1575,6 +1592,8 @@
   <compound refid="_taper_8cc" kind="file"><name>Taper.cc</name>
   </compound>
   <compound refid="tseries__helpers_8cc" kind="file"><name>tseries_helpers.cc</name>
+  </compound>
+  <compound refid="fileio_8cc" kind="file"><name>fileio.cc</name>
   </compound>
   <compound refid="mseed__file__indexer_8cc" kind="file"><name>mseed_file_indexer.cc</name>
   </compound>

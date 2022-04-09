@@ -34,6 +34,270 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
+      <memberdef kind="function" id="fileio_8h_1a635804a18597fe158057aec9c9781e0e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>long int</type>
+        <definition>long int mspass::io::fwrite_to_file</definition>
+        <argsstring>(mspass::seismic::TimeSeries &amp;d, const std::string dir, const std::string dfile)</argsstring>
+        <name>fwrite_to_file</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>dir</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>dfile</declname>
+        </param>
+        <briefdescription>
+<para>Fast file writer for native TimeSeries save to a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>When saving data to a file system there is no standard way to do so we know of that is faster than the low level C fwrite function. This function uses fwrite to write ONLY the sample data in the input TimeSeries object to a file specified by a directory (dir) and leaf file name (dfile). It can do so because the std::vector container is required by the standard to define a contiguous block of memory. This function is expected to be used in MsPASS only under the hood of the python database writer for native saves.</para>
+<para>The function constructs a unix path file name as dir+&quot;/&quot;+dfile. If that file does not exist it will be created. If it does exist the write will append to the existing file. The attributes dir, dfile, and foff are always saved in the data&apos;s Metadata container so they can be saved to the MonogoDB database in MsPASS AFTER calling this writer. For that reason d is not const because it simply isn&apos;t.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>data to be saved (altered on return as noted above) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>directory name (assumed to not contain a trailing /) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dfile</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>leaf file name for save</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>file position in output file of the first byte written. the same number is saved in the &quot;foff&quot; metadata attribute.</para>
+</simplesect>
+\expection This function will throw a MsPASS error for one of several common io related issues. Caller should always include the call to this function in a try block. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" line="37" column="10" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="37" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="fileio_8h_1a7e71571f94e79ed5cd7839504341957b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>long int</type>
+        <definition>long int mspass::io::fwrite_to_file</definition>
+        <argsstring>(mspass::seismic::Seismogram &amp;d, const std::string dir, const std::string dfile)</argsstring>
+        <name>fwrite_to_file</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>dir</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>dfile</declname>
+        </param>
+        <briefdescription>
+<para>Fast file writer for native Seismogram save to a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>When saving data to a file system there is no standard way to do so we know of that is faster than the low level C fwrite function. This function uses fwrite to write ONLY the sample data in the input Seismogram object to a file specified by a directory (dir) and leaf file name (dfile). It can do so because the std::vector container is required by the standard to define a contiguous block of memory. This function is expected to be used in MsPASS only under the hood of the python database writer for native saves. This function works for Seismogram objects it this form only because the dmatrix container puts all the sample data for the 3xnpts matrix in a contiguous block of memory fetched interally with the get_address method.</para>
+<para>The function constructs a unix path file name as dir+&quot;/&quot;+dfile. If that file does not exist it will be created. If it does exist the write will append to the existing file. The attributes dir, dfile, and foff are always saved in the data&apos;s Metadata container so they can be saved to the MonogoDB database in MsPASS AFTER calling this writer. For that reason d is not const because it simply isn&apos;t.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>data to be saved (altered on return as noted above) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>directory name (assumed to not contain a trailing /) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dfile</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>leaf file name for save</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>file position in output file of the first byte written. the same number is saved in the &quot;foff&quot; metadata attribute.</para>
+</simplesect>
+\expection This function will throw a MsPASS error for one of several common io related issues. Caller should always include the call to this function in a try block. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" line="71" column="10" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="71" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="fileio_8h_1aa271a69b12e7c945f1779b07c3157eb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t mspass::io::fread_from_file</definition>
+        <argsstring>(mspass::seismic::Seismogram &amp;d, const std::string dir, const std::string dfile, const long int foff)</argsstring>
+        <name>fread_from_file</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>dir</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>dfile</declname>
+        </param>
+        <param>
+          <type>const long int</type>
+          <declname>foff</declname>
+        </param>
+        <briefdescription>
+<para>Use C fread to read sample data from a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This low level function is used in the file based reader of mspass to speed up python readers. It is intrinsically dangerous because it assumes the data object has a preconstructed size sufficient to hold the data loaded with the low-level C fread function. That buffer in this function is the the dmatrix container, u, used to hold the sample data of a Seismogram object. The reader assumes the input has been initialized on construction or with set_npts to the size matching the data file contents. If there is a mismatch the results are unpredictable.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>Seismogram</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>object to hold the sample data to be read from the file. Note that this function acts like a subroutine with entire purpose being to fill the data array of this object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the directory name to use for file name (no trailing slash) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dfile</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the leaf file name to be openned. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>foff</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is a the number of bytes to seek for first byte of data.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of samples read. Note caller should test this value as a short read will not cause an error to be thrown. The value return should be 3 * d.npts().</para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>This</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>function may throw a MsPASSError exception if anything goes wrong in the read process (open failure, seek fails, fread fails completely). If that happens the data result should be killed as the sample contents are guaranteed to be invalid. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" line="102" column="8" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="102" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="fileio_8h_1acef153567669e5ea4f8d597ddfc1a947" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t mspass::io::fread_from_file</definition>
+        <argsstring>(mspass::seismic::TimeSeries &amp;d, const std::string dir, const std::string dfile, const long int foff)</argsstring>
+        <name>fread_from_file</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>dir</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>dfile</declname>
+        </param>
+        <param>
+          <type>const long int</type>
+          <declname>foff</declname>
+        </param>
+        <briefdescription>
+<para>Use C fread to read sample data from a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This low level function is used in the file based reader of mspass to speed up python readers. It is intrinsically dangerous because it assumes the data object has a preconstructed size sufficient to hold the data loaded with the low-level C fread function. That buffer in this function is the std::vector container, s, used to hold the sample data of a Seismogram object. The reader assumes the input has been initialized on construction or with set_npts to the size matching the data file contents. If there is a mismatch the results are unpredictable.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>TimeSeries</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>object to hold the sample data to be read from the file Note that this function acts like a subroutine with entire purpose being to fill the data array of this object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the directory name to use for file name (no trailing slash) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dfile</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the leaf file name to be openned. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>foff</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is a the number of bytes to seek for first byte of data.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of samples read. Note caller should test this value as a short read will not cause an error to be thrown. The value return should be d.npts().</para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>This</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>function may throw a MsPASSError exception if anything goes wrong in the read process (open failure, seek fails, fread fails completely). If that happens the data result should be killed as the sample contents are guaranteed to be invalid. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" line="134" column="8" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="134" declcolumn="8"/>
+      </memberdef>
       <memberdef kind="function" id="mseed__index_8h_1ae676a44a12bfc4e7a6af21edd7581745" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::pair&lt; std::vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;, <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> &gt;</type>
         <definition>std::pair&lt;std::vector&lt;mseed_index&gt;,mspass::utility::ErrorLogger&gt; mspass::io::mseed_file_indexer</definition>
@@ -95,6 +359,176 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="107" column="4" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" declline="107" declcolumn="4"/>
+      </memberdef>
+      <memberdef kind="function" id="fileio_8cc_1a01039e857800708323e459f372d38d19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>long int</type>
+        <definition>long int mspass::io::fwrite_sample_data</definition>
+        <argsstring>(const string dir, const string dfile, double *dptr, const size_t nd)</argsstring>
+        <name>fwrite_sample_data</name>
+        <param>
+          <type>const string</type>
+          <declname>dir</declname>
+        </param>
+        <param>
+          <type>const string</type>
+          <declname>dfile</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>dptr</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>nd</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="27" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="27" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="fileio_8cc_1ae290073e53ca7d094d152e3a3ee65085" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>long int</type>
+        <definition>long int mspass::io::fwrite_to_file</definition>
+        <argsstring>(TimeSeries &amp;d, const string dir, const string dfile)</argsstring>
+        <name>fwrite_to_file</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const string</type>
+          <declname>dir</declname>
+        </param>
+        <param>
+          <type>const string</type>
+          <declname>dfile</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="57" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="57" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="fileio_8cc_1a5e6fc74e51d5bf9eb393d6abde3518d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>long int</type>
+        <definition>long int mspass::io::fwrite_to_file</definition>
+        <argsstring>(Seismogram &amp;d, const string dir, const string dfile)</argsstring>
+        <name>fwrite_to_file</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const string</type>
+          <declname>dir</declname>
+        </param>
+        <param>
+          <type>const string</type>
+          <declname>dfile</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="72" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="72" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="fileio_8cc_1aa6a536e819148eb66f735ed6ab002e11" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t mspass::io::fread_sample_data</definition>
+        <argsstring>(double *buffer, const string dir, const string dfile, const long int foff, const int nsamples)</argsstring>
+        <name>fread_sample_data</name>
+        <param>
+          <type>double *</type>
+          <declname>buffer</declname>
+        </param>
+        <param>
+          <type>const string</type>
+          <declname>dir</declname>
+        </param>
+        <param>
+          <type>const string</type>
+          <declname>dfile</declname>
+        </param>
+        <param>
+          <type>const long int</type>
+          <declname>foff</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>nsamples</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="87" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="87" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="fileio_8cc_1ae1f3e216145ee0c136324079ebd24b6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t mspass::io::fread_from_file</definition>
+        <argsstring>(Seismogram &amp;d, const string dir, const string dfile, const long int foff)</argsstring>
+        <name>fread_from_file</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const string</type>
+          <declname>dir</declname>
+        </param>
+        <param>
+          <type>const string</type>
+          <declname>dfile</declname>
+        </param>
+        <param>
+          <type>const long int</type>
+          <declname>foff</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="114" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="114" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="function" id="fileio_8cc_1acf03563760e97d0c44fa7f3262264ddf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t mspass::io::fread_from_file</definition>
+        <argsstring>(TimeSeries &amp;d, const string dir, const string dfile, const long int foff)</argsstring>
+        <name>fread_from_file</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const string</type>
+          <declname>dir</declname>
+        </param>
+        <param>
+          <type>const string</type>
+          <declname>dfile</declname>
+        </param>
+        <param>
+          <type>const long int</type>
+          <declname>foff</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="123" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="123" bodyend="131"/>
       </memberdef>
       <memberdef kind="function" id="mseed__file__indexer_8cc_1a7ee6e258cc4a7dd22e0f27463228c44a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -164,6 +598,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="7" column="1"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" line="7" column="1"/>
   </compounddef>
 </doxygen>

@@ -227,6 +227,25 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7seismic10Seismogram10SeismogramERK8Metadatab">
+<span class="target" id="classmspass_1_1seismic_1_1_seismogram_1afaaac8777afb9a25b91b1b4b09b3652d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Seismogram</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Metadata</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">md</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">load_data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10Seismogram10SeismogramERK8Metadatab" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Construct from Metadata definition that includes data path. </p>
+<p>A Metadata object is sufficiently general that it can contain enough information to contruct an object from attributes contained in it. This constuctor uses that approach, with the actual loading of data being an option (on by default). In mspass this is constructor is used to load data with Metadata constructed from MongoDB and then using the path created from two parameters (dir and dfile used as in css3.0 wfdisc) to read data. The API is general but the implementation in mspass is very rigid. It blindly assumes the data being read are binary doubles in the right byte order and ordered in the native order for dmatrix (Fortran order). i.e. the constuctor does a raw fread of ns*3 doubles into the internal array used in the dmatrix implementation.</p>
+<p>A second element of the Metadata that is special for MsPASS is the handling of the transformation matrix by this constructor. In MsPASS the transformation matrix is stored as a python object in MongoDB. This constructor aims to fetch that entity with the key ‘tmatrix’. To be more robust and simpler to use with data not loaded from mongodb we default tmatrix to assume the data are in standard coordinates. That is, if the key tmatrix is not defined in Metadata passed as arg0, the constructor assumes it should set the transformation matrix to an identity. Use set_transformation_matrix if that assumption is wrong for your data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> – is the Metadata used for the construction.</p></li>
+<li><p><strong>load_data</strong> – if true (default) a file name is constructed from dir+”/”+dfile, the file is openned, fseek is called to foff, data are read with fread, and the file is closed. If false a dmatrix for u is still created of size 3xns, but the matrix is only initialized to all zeros.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws</dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">Will</span></span></span> – throw a MsPASSError if required metadata are missing. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6mspass7seismic10Seismogram10SeismogramERK10Seismogram">
 <span class="target" id="classmspass_1_1seismic_1_1_seismogram_1a275d43464679a4cb963fba217d9383c0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Seismogram</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6mspass7seismic10Seismogram10SeismogramERK10Seismogram" title="mspass::seismic::Seismogram::Seismogram"><span class="n"><span class="pre">Seismogram</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">parent</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10Seismogram10SeismogramERK10Seismogram" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Standard copy constructor. </p>

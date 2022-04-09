@@ -196,6 +196,12 @@ Functions</h2></td></tr>
 <tr class="separator:ae39181fd7e5305ad63c7d50bcb082d47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9bb3e908c48498c194aad416262578f4"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemspass_1_1seismic.html#a9bb3e908c48498c194aad416262578f4">SEISMICMD_loc</a> (&quot;loc&quot;)</td></tr>
 <tr class="separator:a9bb3e908c48498c194aad416262578f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88a01d6c4e1838b7bac28931b9cc8c58"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemspass_1_1seismic.html#a88a01d6c4e1838b7bac28931b9cc8c58">SEISMICMD_time_standard</a> (&quot;time_standard&quot;)</td></tr>
+<tr class="separator:a88a01d6c4e1838b7bac28931b9cc8c58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0951fef82377e868ee7cfcd4841979cf"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemspass_1_1seismic.html#a0951fef82377e868ee7cfcd4841979cf">SEISMICMD_t0_shift</a> (&quot;starttime_shift&quot;)</td></tr>
+<tr class="separator:a0951fef82377e868ee7cfcd4841979cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6931911b331ba8c70a3bf5365f548074"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemspass_1_1seismic.html#a6931911b331ba8c70a3bf5365f548074">SEISMICMD_utc_convertible</a> (&quot;utc_convertible&quot;)</td></tr>
+<tr class="separator:a6931911b331ba8c70a3bf5365f548074"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define metadata keys. </p>
@@ -705,6 +711,44 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a0951fef82377e868ee7cfcd4841979cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0951fef82377e868ee7cfcd4841979cf">&#9670;&nbsp;</a></span>SEISMICMD_t0_shift()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string mspass::seismic::SEISMICMD_t0_shift </td>
+          <td>(</td>
+          <td class="paramtype">&quot;starttime_shift&quot;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Define the t0_shift attribute of <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html" title="Base class for time series objects.">BasicTimeSeries</a>. </p>
+
+</div>
+</div>
+<a id="a88a01d6c4e1838b7bac28931b9cc8c58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88a01d6c4e1838b7bac28931b9cc8c58">&#9670;&nbsp;</a></span>SEISMICMD_time_standard()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string mspass::seismic::SEISMICMD_time_standard </td>
+          <td>(</td>
+          <td class="paramtype">&quot;time_standard&quot;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Define time reference (normally UTC or Relative) </p>
+
+</div>
+</div>
 <a id="ab9de221412c0076cce8197b4f2e9df7a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab9de221412c0076cce8197b4f2e9df7a">&#9670;&nbsp;</a></span>SEISMICMD_tmatrix()</h2>
 
@@ -722,6 +766,25 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Holds transformation matrix in MsPASS use for <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS.">Seismogram</a>. <br  />
  </p>
+
+</div>
+</div>
+<a id="a6931911b331ba8c70a3bf5365f548074"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6931911b331ba8c70a3bf5365f548074">&#9670;&nbsp;</a></span>SEISMICMD_utc_convertible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string mspass::seismic::SEISMICMD_utc_convertible </td>
+          <td>(</td>
+          <td class="paramtype">&quot;utc_convertible&quot;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Defines boolean used in <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html" title="Base class for time series objects.">BasicTimeSeries</a> for properly handling Relative/UTC time standards </p>
 
 </div>
 </div>

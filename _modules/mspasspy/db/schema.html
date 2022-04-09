@@ -1041,12 +1041,8 @@
 <span class="sd">    :rtype: schema.Schema</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">type_key</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">_is_basic_type</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
-    <span class="n">type_required_schema</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">type_key</span><span class="p">,</span>
-    <span class="p">}</span>
-    <span class="n">type_optional_schema</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">):</span> <span class="n">type_key</span><span class="p">,</span>
-    <span class="p">}</span>
+    <span class="n">type_required_schema</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">type_key</span><span class="p">}</span>
+    <span class="n">type_optional_schema</span> <span class="o">=</span> <span class="p">{</span><span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">):</span> <span class="n">type_key</span><span class="p">}</span>
 
     <span class="n">constraint_key</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span>
         <span class="nb">str</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;required&quot;</span><span class="p">,</span> <span class="s2">&quot;xref_key&quot;</span><span class="p">,</span> <span class="s2">&quot;normal&quot;</span><span class="p">,</span> <span class="s2">&quot;optional&quot;</span><span class="p">]</span>

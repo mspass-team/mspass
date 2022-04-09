@@ -124,8 +124,10 @@
 <span class="kn">import</span> <span class="nn">boto3</span><span class="o">,</span> <span class="nn">botocore</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
 
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.io</span> <span class="kn">import</span> <span class="n">_mseed_file_indexer</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.io</span> <span class="kn">import</span> <span class="n">_mseed_file_indexer</span><span class="p">,</span> <span class="n">_fwrite_to_file</span><span class="p">,</span> <span class="n">_fread_from_file</span>
+<span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="n">Trace2TimeSeries</span><span class="p">,</span> <span class="n">Stream2Seismogram</span>
 
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">TimeSeries</span><span class="p">,</span>
@@ -628,17 +630,29 @@
                 <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="n">TimeSeries</span><span class="p">:</span>
-            <span class="c1"># FIXME: This is awkward. Need to revisit when we have proper constructors.</span>
-            <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
-                <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">md</span><span class="p">},</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="c1"># FIXME: if npts is in the exclude list or not in the schema, the following won&#39;t work.</span>
-            <span class="c1"># May need to consider adding a &quot;required&quot; key to the metadata schema to avoid invalid combination.</span>
-            <span class="k">if</span> <span class="s2">&quot;npts&quot;</span> <span class="ow">in</span> <span class="n">object_doc</span><span class="p">:</span>
-                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">object_doc</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="n">_CoreSeismogram</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Note a CRITICAL feature of the Metadata constructors</span>
+            <span class="c1"># for both of these objects is that they allocate the</span>
+            <span class="c1"># buffer for the sample data and initialize it to zero.</span>
+            <span class="c1"># This allows sample data readers to load the buffer without</span>
+            <span class="c1"># having to handle memory management.</span>
+            <span class="k">if</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="n">TimeSeries</span><span class="p">:</span>
+                <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># api mismatch here.  This ccore Seismogram constructor</span>
+                <span class="c1"># had an ancestor that had an option to read data here.</span>
+                <span class="c1"># we never do that here</span>
+                <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">merr</span><span class="p">:</span>
+            <span class="c1"># if the constructor fails mspass_object will be invalid</span>
+            <span class="c1"># To preserve the error we have to create a shell to hold the error</span>
+            <span class="k">if</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="n">TimeSeries</span><span class="p">:</span>
+                <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">()</span>
+            <span class="c1"># Default constructors leaves result marked dead so below should work</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">merr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">mspass_object</span>
 
         <span class="c1"># not continue step 2 &amp; 3 if the mspass object is dead</span>
         <span class="k">if</span> <span class="n">is_dead</span><span class="p">:</span>
@@ -890,8 +904,14 @@
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;dir or dfile is not specified in data object&quot;</span><span class="p">)</span>
                 <span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">])</span>
                 <span class="n">dfile</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dfile_uuid</span><span class="p">(</span>
+                    <span class="nb">format</span>
+                <span class="p">)</span>  <span class="c1">#   If dfile name is not given, or defined in mspass_object, a new uuid will be generated</span>
             <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">):</span>
@@ -3539,27 +3559,44 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-            <span class="n">fh</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">foff</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">format</span><span class="p">:</span>
-                <span class="n">float_array</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;npts&quot;</span><span class="p">):</span>
-                        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;npts is not defined&quot;</span><span class="p">)</span>
-                    <span class="n">float_array</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;npts&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span>
-                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">float_array</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;npts&quot;</span><span class="p">):</span>
-                        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;npts is not defined&quot;</span><span class="p">)</span>
-                    <span class="n">float_array</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;npts&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">3</span><span class="p">))</span>
-                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;npts&quot;</span><span class="p">))</span>
-                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-                        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;npts&quot;</span><span class="p">)):</span>
-                            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">float_array</span><span class="p">[</span>
-                                <span class="n">i</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;npts&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">j</span>
-                            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">format</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">count</span> <span class="o">=</span> <span class="n">_fread_from_file</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">,</span> <span class="n">foff</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">count</span> <span class="o">!=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span><span class="p">:</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;fread count mismatch.  Expected to read </span><span class="si">{npts}</span><span class="s2"> but fread returned a count of </span><span class="si">{count}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">npts</span><span class="o">=</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span>
+                        <span class="p">)</span>
+                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="s2">&quot;_read_data_from_dfile&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
+                        <span class="p">)</span>
+                <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">merr</span><span class="p">:</span>
+                    <span class="c1"># Errors thrown must always cause a kill</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">merr</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># We can only get here if this is a Seismogram</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">nsamples</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span>
+                    <span class="n">count</span> <span class="o">=</span> <span class="n">_fread_from_file</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">,</span> <span class="n">foff</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">count</span> <span class="o">!=</span> <span class="n">nsamples</span><span class="p">:</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;fread count mismatch.  Expected to read </span><span class="si">{nsamples}</span><span class="s2"> doubles but fread returned a count of </span><span class="si">{count}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">nsamples</span><span class="o">=</span><span class="n">nsamples</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span>
+                        <span class="p">)</span>
+                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="s2">&quot;_read_data_from_dfile&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
+                        <span class="p">)</span>
+                <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">merr</span><span class="p">:</span>
+                    <span class="c1"># Errors thrown must always cause a kill</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">merr</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">foff</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">fh</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">foff</span><span class="p">)</span>
                 <span class="n">flh</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">nbytes</span><span class="p">))</span>
                 <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">flh</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
@@ -3578,27 +3615,56 @@
                             <span class="n">interpolation_samples</span><span class="o">=</span><span class="n">merge_interpolation_samples</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="n">tr</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="c1"># Now we convert this to a TimeSeries and load other Metadata</span>
-                    <span class="c1"># Note the exclusion copy and the test verifying net,sta,chan,</span>
-                    <span class="c1"># loc, and startime all match</span>
-                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                    <span class="c1"># These two lines are needed to properly initialize</span>
+                    <span class="c1"># the DoubleVector before calling Trace2TimeSeries</span>
+                    <span class="n">tr_data</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                        <span class="s2">&quot;float64&quot;</span>
+                    <span class="p">)</span>  <span class="c1">#   Convert the nparray type to double, to match the DoubleVector</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
+                    <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+                    <span class="c1"># This was previous form.   The toSeismogram run as a</span>
+                    <span class="c1"># method is an unnecessary confusion and I don&#39;t think</span>
+                    <span class="c1"># settign npts or data are necessary given the code of</span>
+                    <span class="c1"># Stream2Seismogram - st.toSeismogram is an alias for that</span>
+                    <span class="c1"># This is almost but not quite equivalent to this:</span>
+                    <span class="c1"># mspass_object = Stream2Seismogram(st,cardinal=True)</span>
+                    <span class="c1"># Seems Stream2Seismogram does not properly handle</span>
+                    <span class="c1"># the data pointer</span>
                     <span class="n">sm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">toSeismogram</span><span class="p">(</span><span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">()</span>
                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_save_data_to_dfile</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_save_data_to_dfile</span><span class="p">(</span>
+        <span class="n">mspass_object</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Saves sample data as a binary dump of the sample data. Save a mspasspy object as a pure binary dump of</span>
-<span class="sd">        the sample data in native (Fortran) order. Opens the file and ALWAYS appends data to the end of the file.</span>
-
-<span class="sd">        This method is subject to several issues to beware of before using them:</span>
-<span class="sd">        (1) they are subject to damage by other processes/program, (2) updates are nearly impossible without</span>
-<span class="sd">        stranding (potentially large quantities) of data in the middle of files or</span>
-<span class="sd">        corrupting a file with a careless insert, and (3) when the number of files</span>
-<span class="sd">        gets large managing them becomes difficult.</span>
+<span class="sd">        This is a private method used under the hood to save the sample data</span>
+<span class="sd">        of atomic MsPASS data objects.  How the save happens is highly </span>
+<span class="sd">        dependent upon the format argument.  When None, which is the </span>
+<span class="sd">        default, the data are written to the file specified by dir and dfile </span>
+<span class="sd">        using low-level C fwrite calls.  The function used always appends </span>
+<span class="sd">        data to eof if the file already exists to allow accumation of data </span>
+<span class="sd">        in &quot;gather&quot; files to reduce file name overhead in hpc systems. </span>
+<span class="sd">        If format is anything else the function attempts to use one of </span>
+<span class="sd">        the obspy formatted writers.  That means the format string must be </span>
+<span class="sd">        one of the `supported formats &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats&gt;`__ of ObsPy reader.</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">        Writing to a file can fail for any number of reasons.   write errors </span>
+<span class="sd">        are trapped internally in this function any errors posted to elog of</span>
+<span class="sd">        mspass_object.   If the kill_on_failure boolean is set true the </span>
+<span class="sd">        function will call the kill method of the data function and the </span>
+<span class="sd">        that datum will be marked dead.   That is not normally a good idea </span>
+<span class="sd">        if there is any additional work to do on the data so the default</span>
+<span class="sd">        for that parameter is false.  </span>
+<span class="sd">        </span>
+<span class="sd">        Because we use a stream model for file storage be aware </span>
+<span class="sd">        that insertion and deletion in a file are not possible.  If you </span>
+<span class="sd">        need lots of editing functionality with files you should use the </span>
+<span class="sd">        one file to one object model or (better yet) use gridfs storage.</span>
 
 <span class="sd">        :param mspass_object: the target object.</span>
 <span class="sd">        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
@@ -3608,21 +3674,38 @@
 <span class="sd">        :type dfile: :class:`str`</span>
 <span class="sd">        :param format: the format of the file. This can be one of the `supported formats &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats&gt;`__ of ObsPy reader. By default (``None``), the format will be the binary waveform.</span>
 <span class="sd">        :type format: :class:`str`</span>
+<span class="sd">        :param kill_on_failure:  When true if an io error occurs the data object&#39;s </span>
+<span class="sd">          kill method will be invoked.  When false (the default) io errors are </span>
+<span class="sd">          logged and left set live.  (Note data already marked dead are return </span>
+<span class="sd">          are ignored by this function. )</span>
+<span class="sd">        :type kill_on_failure: boolean</span>
 <span class="sd">        :return: Position of first data sample (foff) and the size of the saved chunk.</span>
+<span class="sd">           If the input is flagged as dead return (-1,0)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a+b&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-            <span class="n">foff</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">format</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
-                    <span class="c1"># fixme DoubleVector</span>
-                    <span class="n">ub</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
-                    <span class="n">ub</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">format</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># This function has overloading.  this might not work</span>
+                <span class="n">foff</span> <span class="o">=</span> <span class="n">_fwrite_to_file</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">merr</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">merr</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">kill_on_failure</span><span class="p">:</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="c1"># we can compute the number of bytes written for this case</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+                <span class="n">nbytes_written</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># This can only be a Seismogram currently so this is not elif</span>
+                <span class="n">nbytes_written</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a+b&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+                <span class="n">foff</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
                 <span class="n">f_byte</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">toTrace</span><span class="p">()</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f_byte</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
@@ -3630,8 +3713,9 @@
                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">toStream</span><span class="p">()</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f_byte</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
                 <span class="n">f_byte</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
                 <span class="n">ub</span> <span class="o">=</span> <span class="n">f_byte</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-            <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ub</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">foff</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ub</span><span class="p">)</span>
+                <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ub</span><span class="p">)</span>
+                <span class="n">nbytes_written</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ub</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">foff</span><span class="p">,</span> <span class="n">nbytes_written</span>
 
     <span class="k">def</span> <span class="nf">_save_data_to_gridfs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">gridfs_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -3649,10 +3733,10 @@
         <span class="k">if</span> <span class="n">gridfs_id</span> <span class="ow">and</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">):</span>
             <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
-            <span class="n">ub</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">ub</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">ub</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ub</span><span class="p">))</span>
+            <span class="n">ub</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">ub</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_read_data_from_gridfs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">gridfs_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -3665,24 +3749,29 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">fh</span> <span class="o">=</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file_id</span><span class="o">=</span><span class="n">gridfs_id</span><span class="p">)</span>
-        <span class="n">ub</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
-        <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;@</span><span class="si">%d</span><span class="s2">d&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ub</span><span class="p">)</span> <span class="o">/</span> <span class="mi">8</span><span class="p">)</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">ub</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="c1"># fh.seek(16)</span>
+            <span class="n">float_array</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;npts&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;npts is not defined&quot;</span><span class="p">)</span>
+            <span class="n">float_array</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;npts&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">float_array</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;npts&quot;</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;npts is not defined&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]):</span>
+            <span class="n">npts</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span>
+            <span class="n">np_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">npts</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">3</span><span class="p">))</span>
+            <span class="n">file_size</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">file_size</span> <span class="o">!=</span> <span class="n">npts</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="c1"># Note we can only detect the cases where given npts is larger than</span>
+                <span class="c1"># the number of points in the file</span>
                 <span class="n">emess</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="s2">&quot;Size mismatch in sample data. Number of points in gridfs file = </span><span class="si">%d</span><span class="s2"> but expected </span><span class="si">%d</span><span class="s2">&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]))</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">file_size</span> <span class="o">/</span> <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]))</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">emess</span><span class="p">)</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">])</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]):</span>
-                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">np_arr</span> <span class="o">=</span> <span class="n">np_arr</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">npts</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="n">np_arr</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
 
@@ -3744,8 +3833,11 @@
                 <span class="c1"># Now we convert this to a TimeSeries and load other Metadata</span>
                 <span class="c1"># Note the exclusion copy and the test verifying net,sta,chan,</span>
                 <span class="c1"># loc, and startime all match</span>
-                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-                <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">tr_data</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                    <span class="s2">&quot;float64&quot;</span>
+                <span class="p">)</span>  <span class="c1">#   Convert the nparray type to double, to match the DoubleVector</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
                 <span class="n">sm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">toSeismogram</span><span class="p">(</span><span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">()</span>
@@ -3801,8 +3893,11 @@
                 <span class="c1"># Now we convert this to a TimeSeries and load other Metadata</span>
                 <span class="c1"># Note the exclusion copy and the test verifying net,sta,chan,</span>
                 <span class="c1"># loc, and startime all match</span>
-                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-                <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">tr_data</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                    <span class="s2">&quot;float64&quot;</span>
+                <span class="p">)</span>  <span class="c1">#   Convert the nparray type to double, to match the DoubleVector</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
                 <span class="n">sm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">toSeismogram</span><span class="p">(</span><span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">()</span>
@@ -3891,8 +3986,11 @@
             <span class="n">st</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
                 <span class="n">tr</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-                <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">tr_data</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                    <span class="s2">&quot;float64&quot;</span>
+                <span class="p">)</span>  <span class="c1">#   Convert the nparray type to double, to match the DoubleVector</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
                 <span class="n">sm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">toSeismogram</span><span class="p">(</span><span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">()</span>
@@ -3919,8 +4017,11 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
             <span class="n">tr</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">tr_data</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="s2">&quot;float64&quot;</span>
+            <span class="p">)</span>  <span class="c1">#   Convert the nparray type to double, to match the DoubleVector</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
             <span class="n">sm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">toSeismogram</span><span class="p">(</span><span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">()</span>
@@ -3954,8 +4055,11 @@
             <span class="c1"># Now we convert this to a TimeSeries and load other Metadata</span>
             <span class="c1"># Note the exclusion copy and the test verifying net,sta,chan,</span>
             <span class="c1"># loc, and startime all match</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">tr_data</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="s2">&quot;float64&quot;</span>
+            <span class="p">)</span>  <span class="c1">#   Convert the nparray type to double, to match the DoubleVector</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
             <span class="c1"># Note that the following convertion could be problematic because</span>
             <span class="c1"># it assumes there are three traces in the file, and they are in</span>
@@ -4905,10 +5009,12 @@
         <span class="c1"># If dir is not define assume current directory.  Otherwise</span>
         <span class="c1"># use realpath to make sure the directory is the full path</span>
         <span class="c1"># We store the full path in mongodb</span>
-        <span class="k">if</span> <span class="nb">dir</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dfile_uuid</span><span class="p">(</span><span class="s2">&quot;mseed&quot;</span><span class="p">)</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">odir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
         <span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">elog</span><span class="p">)</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
         <span class="n">ids_affected</span> <span class="o">=</span> <span class="p">[]</span>
@@ -5163,7 +5269,7 @@
         <span class="p">)</span>
         <span class="n">s3_input_bucket</span> <span class="o">=</span> <span class="s2">&quot;scedc-pds&quot;</span>
         <span class="n">s3_output_bucket</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;scedcdata&quot;</span>
+            <span class="s2">&quot;mspass-scedcdata&quot;</span>
         <span class="p">)</span>  <span class="c1">#   The output file can be saved to this bucket, user might want to change it into their own bucket</span>
         <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
         <span class="n">day_of_year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span>
@@ -5393,10 +5499,12 @@
             <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">BUCKET_NAME</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">KEY</span><span class="p">)</span>
             <span class="n">mseed_content</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="c1"># specify the file path</span>
-            <span class="k">if</span> <span class="nb">dir</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dfile_uuid</span><span class="p">(</span><span class="s2">&quot;mseed&quot;</span><span class="p">)</span>
             <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">odir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
             <span class="c1"># temporarily write data into a file</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -5474,7 +5582,23 @@
             <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span>
         <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fdsn&quot;</span>
         <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mseed&quot;</span>
-        <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span></div></div>
+        <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_dfile_uuid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a helper function to generate a uuid for the file name,</span>
+<span class="sd">        when dfile is not given or defined. The format can be &#39;mseed&#39; or</span>
+<span class="sd">        other formats.</span>
+<span class="sd">        The return value is random uuid + &quot;-&quot; + format, example:</span>
+<span class="sd">        &#39;247ce5d7-06bc-4ccc-8084-5b3ff621d2d4-mseed&#39;</span>
+
+<span class="sd">        :param format: format of the file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
+        <span class="n">temp_uuid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="n">dfile</span> <span class="o">=</span> <span class="n">temp_uuid</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">format</span>
+        <span class="k">return</span> <span class="n">dfile</span></div>
 </pre></div>
 
            </div>

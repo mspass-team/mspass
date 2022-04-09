@@ -9,17 +9,17 @@
     <includes refid="_core_time_series_8h" local="yes">mspass/seismic/CoreTimeSeries.h</includes>
     <includes refid="_metadata_8h" local="yes">mspass/utility/Metadata.h</includes>
     <incdepgraph>
-      <node id="18">
+      <node id="19">
         <label>list</label>
       </node>
-      <node id="10">
+      <node id="11">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -28,7 +28,7 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
       <node id="5">
@@ -39,41 +39,41 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="24">
+      <node id="9">
         <label>string</label>
       </node>
-      <node id="9">
+      <node id="10">
         <label>mspass/seismic/CoreTimeSeries.h</label>
         <link refid="_core_time_series_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
-      <node id="16">
+      <node id="17">
         <label>map</label>
       </node>
       <node id="7">
         <label>exception</label>
       </node>
-      <node id="19">
+      <node id="20">
         <label>fstream</label>
       </node>
-      <node id="21">
+      <node id="22">
         <label>boost/any.hpp</label>
       </node>
-      <node id="13">
+      <node id="14">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="23">
+      <node id="24">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="24" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="15">
+      <node id="16">
         <label>typeinfo</label>
       </node>
       <node id="2">
@@ -90,18 +90,18 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="21">
         <label>sstream</label>
       </node>
-      <node id="22">
+      <node id="23">
         <label>pybind11/pybind11.h</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>math.h</label>
       </node>
       <node id="6">
@@ -110,27 +110,27 @@
       <node id="8">
         <label>mspass/seismic/keywords.h</label>
         <link refid="keywords_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
-      <node id="17">
+      <node id="18">
         <label>set</label>
       </node>
       <node id="4">
         <label>FC.h</label>
       </node>
-      <node id="14">
+      <node id="15">
         <label>mspass/utility/Metadata.h</label>
         <link refid="_metadata_8h_source"/>
-        <childnode refid="15" relation="include">
-        </childnode>
         <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
         <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
@@ -138,9 +138,11 @@
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
       </node>
     </incdepgraph>
