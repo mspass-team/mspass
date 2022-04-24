@@ -152,8 +152,9 @@ class NMF(ABC):
 
         Note most subclasses may want to include a verbose option in the constructor
         (or the reciprocal silent) that provide an option of only writing log messages when
-        verbose is set true.  There are possible cases with large data sets where
-        verbose messages can cause bottlenecks and bloated elog collections.
+        verbose is set true. There are possible cases with large data sets where
+        verbose messages can cause bottlenecks and bloated elog collections. If verbose is
+        set true, the datum will still be killed, but the message won't be written.
 
         :param d:  MsPASS data object to which elog message is to be
           written.
@@ -172,7 +173,8 @@ class NMF(ABC):
             if kill:
                 d.kill()
                 fullmessage += "\nDatum was killed"
-            d.elog.log_error(matchername, fullmessage, severity)
+            if not hasattr(self, 'verbose') or self.verbose is True:
+                d.elog.log_error(matchername, fullmessage, severity)
         else:
             raise MsPASSError(
                 "NMF.log_error method received invalid data;  arg 0 must be a MsPASS data object",
@@ -209,6 +211,7 @@ class ID_matcher(NMF):
         kill_on_failure=True,
         cache_normalization_data=True,
         query={},
+        verbose=True,
     ):
         """
         Constructor for this class.
@@ -240,9 +243,11 @@ class ID_matcher(NMF):
           the collection has a time attribute (true of the standard channel,
           site, and source collections) you can reduce the memory footprint
           by using a time range query (python dict) for this argument.
+        :param verbose:  most subclasses will want a verbose option
+          to control what is posted to elog messages or printed
         """
         if isinstance(collection, str):
-            super().__init__(kill_on_failure)
+            super().__init__(kill_on_failure, verbose)
             self.collection = collection
             self.mdkey = collection + "_id"
             self.dbhandle = db[collection]
@@ -323,6 +328,7 @@ class ID_matcher(NMF):
         else:
             query = {"_id": d[testid]}
             doc = self.dbhandle.find_ond(query)
+            # TODO: Do we only need to find one doc here?
             # For consistency we have to copy doc into a Metadata container
             # for this situation - doc is a MongoDB document container and
             # may contain other attributes so we do a selective copy for consistency
