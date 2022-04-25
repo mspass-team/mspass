@@ -76,9 +76,9 @@ def _load_normalization_cache(
                     + " not found",
                     ErrorSeverity.Fatal,
                 )
-            for key in optional_attributes:
-                if key in doc:
-                    mdresult[key] = doc[key]
+        for key in optional_attributes:
+            if key in doc:
+                mdresult[key] = doc[key]
         cache_key = str(doc["_id"])  # always defined for a MongoDB doc
         normcache[cache_key] = mdresult
     return normcache
@@ -416,12 +416,10 @@ class ID_matcher(NMF):
 
             return d
         else:
-            # land here if d was not a valid datum.   No way to log an error then
-            # This should cause a fatal error downstream that is warranted
-            # may need a print statement here to give some hint of the problem?
-            # this condition should be rare and should happen only if
-            # an earlier step did something wrong
-            return None
+            # land here if d was not a valid datum.
+            raise TypeError(
+                "ID_matcher.normalize:  received invalid data type"
+            )
 
 
 def _channel_composite_key(net, sta, chan, loc, separator="_"):
@@ -468,7 +466,7 @@ class mseed_channel_matcher(NMF):
     for typical channel collections assembled from FDSN web services.
     It is recommended unless the memory foot print is excessive.
     That too can usually be avoided by using a query to weed out unnecessary
-    channel documents ore by editing the channel document to reduce the
+    channel documents or by editing the channel document to reduce the
     debris from extraneous data.
     """
 
@@ -634,6 +632,7 @@ class mseed_channel_matcher(NMF):
                     ErrorSeverity.Invalid,
                 )
             return None
+
         if d.is_defined("sta"):
             sta = d["sta"]
         elif d.is_defined(self.readonly_tag + "sta"):
@@ -650,6 +649,7 @@ class mseed_channel_matcher(NMF):
                     ErrorSeverity.Invalid,
                 )
             return None
+            
         if d.is_defined("chan"):
             chan = d["chan"]
         elif d.is_defined(self.readonly_tag + "chan"):
@@ -821,13 +821,21 @@ class mseed_channel_matcher(NMF):
             return None
 
         # default to data start time if time is not explicitly passed
-        if time:
-            querytime = time
+        if time == None:
+            if isinstance(d, (TimeSeries, Seismogram)):
+                querytime = d.t0
+            else:
+                if d.is_defined("starttime"):
+                    querytime = d["starttime"]
+                else:
+                    # Use None for test_time as a signal to ignore time field
+                    querytime = None
         else:
-            querytime = d.t0
+            querytime = time
 
-        query["starttime"] = {"$lt": querytime}
-        query["endtime"] = {"$gt": querytime}
+        if querytime is not None:
+            query["starttime"] = {"$lt": querytime}
+            query["endtime"] = {"$gt": querytime}
 
         matchsize = self.dbhandle.count_documents(query)
         if matchsize == 0:
@@ -892,7 +900,9 @@ class mseed_channel_matcher(NMF):
             # operation
             return d
         else:
-            return None
+            raise TypeError(
+                "mseed_channel_matcher.normalize:  received invalid data type"
+            )
 
 
 # this class is modified form mseed_channel_matcher removing the chan
@@ -1031,6 +1041,7 @@ class mseed_site_matcher(NMF):
                     ErrorSeverity.Invalid,
                 )
             return None
+
         if d.is_defined("sta"):
             sta = d["sta"]
         elif d.is_defined(self.readonly_tag + "sta"):
@@ -1184,13 +1195,21 @@ class mseed_site_matcher(NMF):
             return None
 
         # default to data start time if time is not explicitly passed
-        if time:
-            querytime = time
+        if time == None:
+            if isinstance(d, (TimeSeries, Seismogram)):
+                querytime = d.t0
+            else:
+                if d.is_defined("starttime"):
+                    querytime = d["starttime"]
+                else:
+                    # Use None for test_time as a signal to ignore time field
+                    querytime = None
         else:
-            querytime = d.t0
+            querytime = time
 
-        query["starttime"] = {"$lt": querytime}
-        query["endtime"] = {"$gt": querytime}
+        if querytime is not None:
+            query["starttime"] = {"$lt": querytime}
+            query["endtime"] = {"$gt": querytime}
 
         matchsize = self.dbhandle.count_documents(query)
         if matchsize == 0:
@@ -1250,7 +1269,9 @@ class mseed_site_matcher(NMF):
             # operation
             return d
         else:
-            return None
+            raise TypeError(
+                "mseed_site_matcher.normalize:  received invalid data type"
+            )
 
 
 class origin_time_source_matcher(NMF):
@@ -1271,7 +1292,7 @@ class origin_time_source_matcher(NMF):
         t_origin + t0offset - tolerance <= t0 <= t_origin + t0offset + tolerance
 
     This class uses database queries to find matching source collection
-    documents satisfying the above relation.  I can be slow for
+    documents satisfying the above relation.  It can be slow for
     large source collection, especially if the source collection time
     field is not indexed.  A development agenda for MsPASS in the future
     would be to provide an option to cache the source collection
@@ -1379,8 +1400,6 @@ class origin_time_source_matcher(NMF):
             # operation
             return d
         else:
-            # collaborators: perhaps all the implementations should do this
-            # instead of returning None like the ones above do in this situation
             raise TypeError(
                 "origin_time_source_matcher.normalize:  received invalid data type"
             )
@@ -1464,12 +1483,11 @@ class css30_arrival_interval_matcher(NMF):
             else:
                 dtmin = matchlist[0][0]
                 imin = 0
-                for i in range(len(matchlist) - 1):
-                    ii = i + 1
-                    dt = matchlist[ii][0]
+                for i in range(len(matchlist)):
+                    dt = matchlist[i][0]
                     # not dt values are stored as abs differences
                     if dt < dtmin:
-                        imin = ii
+                        imin = i
                         dtmin = dt
                 return matchlist[imin][1]
 
