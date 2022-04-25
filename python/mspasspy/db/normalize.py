@@ -8,6 +8,8 @@ from mspasspy.ccore.seismic import (
 )
 
 from obspy import UTCDateTime
+from pkg_resources import require
+from pyrsistent import optional
 
 # this is copied from edit.py.  easier to duplicate than load that entire
 # module with this one but collaborators you may want to change that
@@ -32,7 +34,7 @@ def _input_is_atomic(d):
 
 
 def _load_normalization_cache(
-    db, collection, required_attributes=[], optional_attributes=[], query={}
+    db, collection, required_attributes=None, optional_attributes=None, query={}
 ):
     """
     This is a function internal to the matcher module used to standardize
@@ -61,6 +63,10 @@ def _load_normalization_cache(
        running during that time period.
 
     """
+    if required_attributes is None:
+        required_attributes = []
+    if optional_attributes is None:
+        optional_attributes = []
     dbcol = db[collection]
     cursor = dbcol.find(query)
     normcache = dict()
@@ -173,7 +179,7 @@ class NMF(ABC):
             if kill:
                 d.kill()
                 fullmessage += "\nDatum was killed"
-            if not hasattr(self, 'verbose') or self.verbose is True:
+            if not hasattr(self, "verbose") or self.verbose is True:
                 d.elog.log_error(matchername, fullmessage, severity)
         else:
             raise MsPASSError(
@@ -206,8 +212,8 @@ class ID_matcher(NMF):
         self,
         db,
         collection="channel",
-        attributes_to_load=["lat", "lon", "elev", "hang", "vang"],
-        load_if_defined=[],
+        attributes_to_load=None,
+        load_if_defined=None,
         kill_on_failure=True,
         cache_normalization_data=True,
         query={},
@@ -254,6 +260,11 @@ class ID_matcher(NMF):
             # assume type errors will be thrown if attributes_to_load is not array like
             # this is attributes_to_load is initialized to an empty list in
             # super()
+            if attributes_to_load is None:
+                attributes_to_load = ["lat", "lon", "elev", "hang", "vang"]
+            if load_if_defined is None:
+                load_if_defined = []
+
             for x in attributes_to_load:
                 self.attributes_to_load.append(x)
             self.load_if_defined = list()
@@ -417,9 +428,7 @@ class ID_matcher(NMF):
             return d
         else:
             # land here if d was not a valid datum.
-            raise TypeError(
-                "ID_matcher.normalize:  received invalid data type"
-            )
+            raise TypeError("ID_matcher.normalize:  received invalid data type")
 
 
 def _channel_composite_key(net, sta, chan, loc, separator="_"):
@@ -473,20 +482,8 @@ class mseed_channel_matcher(NMF):
     def __init__(
         self,
         db,
-        attributes_to_load=[
-            "_id",
-            "net",
-            "sta",
-            "chan",
-            "lat",
-            "lon",
-            "elev",
-            "hang",
-            "vang",
-            "starttime",
-            "endtime",
-        ],
-        load_if_defined=["loc"],
+        attributes_to_load=None,
+        load_if_defined=None,
         cache_normalization_data=True,
         query={},
         readonly_tag="READONLYERROR_",
@@ -542,6 +539,23 @@ class mseed_channel_matcher(NMF):
         """
         super().__init__(kill_on_failure, verbose)
         self.dbhandle = db["channel"]
+
+        if attributes_to_load is None:
+            attributes_to_load = [
+                "_id",
+                "net",
+                "sta",
+                "chan",
+                "lat",
+                "lon",
+                "elev",
+                "hang",
+                "vang",
+                "starttime",
+                "endtime",
+            ]
+        if load_if_defined is None:
+            load_if_defined = ["loc"]
         # assume type errors will be thrown if attributes_to_load is not array like
         self.attributes_to_load = list()
         for x in attributes_to_load:
@@ -649,7 +663,7 @@ class mseed_channel_matcher(NMF):
                     ErrorSeverity.Invalid,
                 )
             return None
-            
+
         if d.is_defined("chan"):
             chan = d["chan"]
         elif d.is_defined(self.readonly_tag + "chan"):
@@ -931,17 +945,8 @@ class mseed_site_matcher(NMF):
     def __init__(
         self,
         db,
-        attributes_to_load=[
-            "_id",
-            "net",
-            "sta",
-            "lat",
-            "lon",
-            "elev",
-            "starttime",
-            "endtime",
-        ],
-        load_if_defined=["loc"],
+        attributes_to_load=None,
+        load_if_defined=None,
         cache_normalization_data=True,
         query={},
         readonly_tag="READONLYERROR_",
@@ -951,6 +956,20 @@ class mseed_site_matcher(NMF):
     ):
         super().__init__(kill_on_failure, verbose)
         self.dbhandle = db["site"]
+
+        if attributes_to_load is None:
+            attributes_to_load = [
+                "_id",
+                "net",
+                "sta",
+                "lat",
+                "lon",
+                "elev",
+                "starttime",
+                "endtime",
+            ]
+        if load_if_defined is None:
+            load_if_defined = ["loc"]
         # assume type errors will be thrown if attributes_to_load is not array like
         self.attributes_to_load = list()
         for x in attributes_to_load:
@@ -1269,9 +1288,7 @@ class mseed_site_matcher(NMF):
             # operation
             return d
         else:
-            raise TypeError(
-                "mseed_site_matcher.normalize:  received invalid data type"
-            )
+            raise TypeError("mseed_site_matcher.normalize:  received invalid data type")
 
 
 class origin_time_source_matcher(NMF):
@@ -1306,7 +1323,7 @@ class origin_time_source_matcher(NMF):
         collection="source",
         t0offset=0.0,
         tolerance=4.0,
-        attributes_to_load=["lat", "lon", "depth", "time"],
+        attributes_to_load=None,
         kill_on_failure=True,
         prepend_collection_name=True,
         verbose=True,
@@ -1319,6 +1336,8 @@ class origin_time_source_matcher(NMF):
         self.tolerance = tolerance
         self.prepend_collection_name = prepend_collection_name
 
+        if attributes_to_load is None:
+            attributes_to_load = ["lat", "lon", "depth", "time"]
         for x in attributes_to_load:
             self.attributes_to_load.append(x)
 
@@ -1427,8 +1446,8 @@ class css30_arrival_interval_matcher(NMF):
         startime_offset=60.0,
         phasename="P",
         phasename_key="phase",
-        attributes_to_load=["time"],
-        load_if_defined=["evid", "iphase", "seaz", "esaz", "deltim", "timeres"],
+        attributes_to_load=None,
+        load_if_defined=None,
         kill_on_failure=False,
         prepend_collection_name=True,
         verbose=True,
@@ -1438,6 +1457,12 @@ class css30_arrival_interval_matcher(NMF):
         super().__init__(kill_on_failure, verbose)
         self.phasename = phasename
         self.phasename_key = phasename_key
+
+        if attributes_to_load is None:
+            attributes_to_load = ["time"]
+        if load_if_defined is None:
+            load_if_defined = ["evid", "iphase", "seaz", "esaz", "deltim", "timeres"]
+
         for x in attributes_to_load:
             self.attributes_to_load.append(x)
         self.load_if_defined = []
