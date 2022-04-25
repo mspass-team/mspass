@@ -588,8 +588,7 @@ class mseed_channel_matcher(NMF):
         key
         """
         xref = dict()
-        for id in self.cache:
-            md = self.cache[id]
+        for id, md in self.cache.items():
             net = md["net"]
             sta = md["sta"]
             chan = md["chan"]
@@ -724,8 +723,7 @@ class mseed_channel_matcher(NMF):
                     )
                 idkey = doclist[0]
                 return self.cache[idkey]
-            for idkey in doclist:
-                doc = self.cache[idkey]
+            for idkey, doc in doclist.items():
                 stime = doc["starttime"]
                 etime = doc["endtime"]
                 if test_time >= stime and test_time <= etime:
@@ -1002,8 +1000,7 @@ class mseed_site_matcher(NMF):
         key
         """
         xref = dict()
-        for id in self.cache:
-            md = self.cache[id]
+        for id, md in self.cache.items():
             net = md["net"]
             sta = md["sta"]
             chan = ""
@@ -1124,8 +1121,7 @@ class mseed_site_matcher(NMF):
                     )
                 idkey = doclist[0]
                 return self.cache[idkey]
-            for idkey in doclist:
-                doc = self.cache[idkey]
+            for idkey, doc in doclist:
                 stime = doc["starttime"]
                 etime = doc["endtime"]
                 if test_time >= stime and test_time <= etime:
