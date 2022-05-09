@@ -241,11 +241,11 @@ class TestDatabase:
             self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
 
         with pytest.raises(ValueError) as err:
-            tmp_seis_2.npts = 254
+            tmp_seis_2.npts = 256
             self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
             assert (
                 str(err.value) == "ValueError: Size mismatch in sample data. "
-                "Number of points in gridfs file = 765 but expected 762"
+                "Number of points in gridfs file = 765 but expected 768"
             )
 
         tmp_ts = get_live_timeseries()
@@ -253,7 +253,7 @@ class TestDatabase:
         tmp_ts_2 = TimeSeries()
         tmp_ts_2.npts = 255
         self.db._read_data_from_gridfs(tmp_ts_2, gridfs_id)
-        assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
+        assert np.isclose(tmp_ts.data, tmp_ts_2.data).all()
 
         gfsh = gridfs.GridFS(self.db)
         assert gfsh.exists(gridfs_id)
@@ -1038,6 +1038,29 @@ class TestDatabase:
             storage_mode="file",
             dir="./python/tests/data/",
             dfile="test_db_output",
+            format="mseed",
+            exclude_keys=["extra2"],
+        )
+        self.db.database_schema.set_default("wf_Seismogram", "wf")
+        promiscuous_seis2 = self.db.read_data(
+            promiscuous_seis["_id"], mode="cautious", normalize=["site", "source"]
+        )
+
+        res = self.db["wf_Seismogram"].find_one({"_id": promiscuous_seis["_id"]})
+        assert res["storage_mode"] == "file"
+        assert res["format"] == "mseed"
+        assert all(
+            a.any() == b.any()
+            for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data)
+        )
+
+        # file_mseed with no dfile name
+        logging_helper.info(promiscuous_seis, "2", "save_data")
+        self.db.save_data(
+            promiscuous_seis,
+            mode="promiscuous",
+            storage_mode="file",
+            dir="./python/tests/data/",
             format="mseed",
             exclude_keys=["extra2"],
         )
@@ -2232,7 +2255,6 @@ class TestDatabase:
         )
         assert np.isclose(seis_ensemble.member[2].data, res.data).all()
         assert "_id" not in seis_ensemble.member[1]
-
         logging_helper.info(seis_ensemble.member[0], "2", "save_data")
         logging_helper.info(seis_ensemble.member[1], "2", "save_data")
         logging_helper.info(seis_ensemble.member[2], "2", "save_data")
@@ -2536,7 +2558,7 @@ class TestDatabase:
             aws_secret_access_key="fake_secret_key",
         )
         assert ts.data is not None
-        assert ts.data == DoubleVector(mseed_st[0].data)
+        assert ts.data == DoubleVector(mseed_st[0].data.astype("float64"))
 
     @mock_s3
     def test_index_and_read_s3_event(self):
@@ -2593,7 +2615,7 @@ class TestDatabase:
             aws_secret_access_key="fake_secret_key",
         )
         assert ts.data is not None
-        assert ts.data == DoubleVector(mseed_st[0].data)
+        assert ts.data == DoubleVector(mseed_st[0].data.astype("float64"))
 
     def test_save_and_read_lambda(self):
         mseed_path = "python/tests/data/CICAC__HNZ___2017005.ms"
@@ -2658,7 +2680,7 @@ class TestDatabase:
                 aws_secret_access_key="fake_secret_key",
             )
         assert ts.data is not None
-        assert ts.data == DoubleVector(mseed_st[0].data)
+        assert ts.data == DoubleVector(mseed_st[0].data.astype("float64"))
 
     def test_index_and_read_fdsn(self):
         self.db.index_mseed_FDSN(

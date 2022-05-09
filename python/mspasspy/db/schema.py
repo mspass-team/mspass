@@ -939,12 +939,8 @@ def _get_schema_definition_schema(collection_name_list, name, ref):
     :rtype: schema.Schema
     """
     type_key = schema.And(str, lambda s: _is_basic_type(s))
-    type_required_schema = {
-        "type": type_key,
-    }
-    type_optional_schema = {
-        schema.Optional("type"): type_key,
-    }
+    type_required_schema = {"type": type_key}
+    type_optional_schema = {schema.Optional("type"): type_key}
 
     constraint_key = schema.And(
         str, lambda s: s in ["required", "xref_key", "normal", "optional"]

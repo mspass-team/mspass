@@ -22,8 +22,10 @@ from obspy import UTCDateTime
 import boto3, botocore
 import json
 import base64
+import uuid
 
-from mspasspy.ccore.io import _mseed_file_indexer
+from mspasspy.ccore.io import _mseed_file_indexer, _fwrite_to_file, _fread_from_file
+from mspasspy.util.converter import Trace2TimeSeries, Stream2Seismogram
 
 from mspasspy.ccore.seismic import (
     TimeSeries,
@@ -526,17 +528,29 @@ class Database(pymongo.database.Database):
                 md[k] = b"\x00"
             else:
                 md[k] = None
-        if object_type is TimeSeries:
-            # FIXME: This is awkward. Need to revisit when we have proper constructors.
-            mspass_object = TimeSeries(
-                {k: md[k] for k in md}, np.ndarray([0], dtype=np.float64)
-            )
-            # FIXME: if npts is in the exclude list or not in the schema, the following won't work.
-            # May need to consider adding a "required" key to the metadata schema to avoid invalid combination.
-            if "npts" in object_doc:
-                mspass_object.npts = object_doc["npts"]
-        else:
-            mspass_object = Seismogram(_CoreSeismogram(md, False))
+        try:
+            # Note a CRITICAL feature of the Metadata constructors
+            # for both of these objects is that they allocate the
+            # buffer for the sample data and initialize it to zero.
+            # This allows sample data readers to load the buffer without
+            # having to handle memory management.
+            if object_type is TimeSeries:
+                mspass_object = TimeSeries(md)
+            else:
+                # api mismatch here.  This ccore Seismogram constructor
+                # had an ancestor that had an option to read data here.
+                # we never do that here
+                mspass_object = Seismogram(md, False)
+        except MsPASSError as merr:
+            # if the constructor fails mspass_object will be invalid
+            # To preserve the error we have to create a shell to hold the error
+            if object_type is TimeSeries:
+                mspass_object = TimeSeries()
+            else:
+                mspass_object = Seismogram()
+            # Default constructors leaves result marked dead so below should work
+            mspass_object.elog.log_error(merr)
+            return mspass_object
 
         # not continue step 2 & 3 if the mspass object is dead
         if is_dead:
@@ -788,8 +802,14 @@ class Database(pymongo.database.Database):
                     raise ValueError("dir or dfile is not specified in data object")
                 dir = os.path.abspath(mspass_object["dir"])
                 dfile = mspass_object["dfile"]
+            if dir is None:
+                dir = os.getcwd()
             else:
                 dir = os.path.abspath(dir)
+            if dfile is None:
+                dfile = self._get_dfile_uuid(
+                    format
+                )  #   If dfile name is not given, or defined in mspass_object, a new uuid will be generated
             fname = os.path.join(dir, dfile)
             if os.path.exists(fname):
                 if not os.access(fname, os.W_OK):
@@ -3437,27 +3457,44 @@ class Database(pymongo.database.Database):
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
-        fname = os.path.join(dir, dfile)
-        with open(fname, mode="rb") as fh:
-            fh.seek(foff)
-            if not format:
-                float_array = array("d")
-                if isinstance(mspass_object, TimeSeries):
-                    if not mspass_object.is_defined("npts"):
-                        raise KeyError("npts is not defined")
-                    float_array.frombytes(fh.read(mspass_object.get("npts") * 8))
-                    mspass_object.data = DoubleVector(float_array)
-                elif isinstance(mspass_object, Seismogram):
-                    if not mspass_object.is_defined("npts"):
-                        raise KeyError("npts is not defined")
-                    float_array.frombytes(fh.read(mspass_object.get("npts") * 8 * 3))
-                    mspass_object.data = dmatrix(3, mspass_object.get("npts"))
-                    for i in range(3):
-                        for j in range(mspass_object.get("npts")):
-                            mspass_object.data[i, j] = float_array[
-                                i * mspass_object.get("npts") + j
-                            ]
+
+        if not format:
+            if isinstance(mspass_object, TimeSeries):
+                try:
+                    count = _fread_from_file(mspass_object, dir, dfile, foff)
+                    if count != mspass_object.npts:
+                        message = "fread count mismatch.  Expected to read {npts} but fread returned a count of {count}".format(
+                            npts=mspass_object.npts, count=count
+                        )
+                        mspass_object.elog.log_error(
+                            "_read_data_from_dfile", message, ErrorSeverity.Complaint
+                        )
+                except MsPASSError as merr:
+                    # Errors thrown must always cause a kill
+                    mspass_object.kill()
+                    mspass_object.elog.log_error(merr)
             else:
+                # We can only get here if this is a Seismogram
+                try:
+                    nsamples = 3 * mspass_object.npts
+                    count = _fread_from_file(mspass_object, dir, dfile, foff)
+                    if count != nsamples:
+                        message = "fread count mismatch.  Expected to read {nsamples} doubles but fread returned a count of {count}".format(
+                            nsamples=nsamples, count=count
+                        )
+                        mspass_object.elog.log_error(
+                            "_read_data_from_dfile", message, ErrorSeverity.Complaint
+                        )
+                except MsPASSError as merr:
+                    # Errors thrown must always cause a kill
+                    mspass_object.kill()
+                    mspass_object.elog.log_error(merr)
+
+        else:
+            fname = os.path.join(dir, dfile)
+            with open(fname, mode="rb") as fh:
+                if foff > 0:
+                    fh.seek(foff)
                 flh = io.BytesIO(fh.read(nbytes))
                 st = obspy.read(flh, format=format)
                 if isinstance(mspass_object, TimeSeries):
@@ -3476,27 +3513,56 @@ class Database(pymongo.database.Database):
                             interpolation_samples=merge_interpolation_samples,
                         )
                     tr = st[0]
-                    # Now we convert this to a TimeSeries and load other Metadata
-                    # Note the exclusion copy and the test verifying net,sta,chan,
-                    # loc, and startime all match
-                    mspass_object.npts = len(tr.data)
-                    mspass_object.data = DoubleVector(tr.data)
+                    # These two lines are needed to properly initialize
+                    # the DoubleVector before calling Trace2TimeSeries
+                    tr_data = tr.data.astype(
+                        "float64"
+                    )  #   Convert the nparray type to double, to match the DoubleVector
+                    mspass_object.npts = len(tr_data)
+                    mspass_object.data = DoubleVector(tr_data)
+                    mspass_object = Trace2TimeSeries(tr)
                 elif isinstance(mspass_object, Seismogram):
+                    # This was previous form.   The toSeismogram run as a
+                    # method is an unnecessary confusion and I don't think
+                    # settign npts or data are necessary given the code of
+                    # Stream2Seismogram - st.toSeismogram is an alias for that
+                    # This is almost but not quite equivalent to this:
+                    # mspass_object = Stream2Seismogram(st,cardinal=True)
+                    # Seems Stream2Seismogram does not properly handle
+                    # the data pointer
                     sm = st.toSeismogram(cardinal=True)
                     mspass_object.npts = sm.data.columns()
                     mspass_object.data = sm.data
 
     @staticmethod
-    def _save_data_to_dfile(mspass_object, dir, dfile, format=None):
+    def _save_data_to_dfile(
+        mspass_object, dir, dfile, format=None, kill_on_failure=False
+    ):
         """
-        Saves sample data as a binary dump of the sample data. Save a mspasspy object as a pure binary dump of
-        the sample data in native (Fortran) order. Opens the file and ALWAYS appends data to the end of the file.
-
-        This method is subject to several issues to beware of before using them:
-        (1) they are subject to damage by other processes/program, (2) updates are nearly impossible without
-        stranding (potentially large quantities) of data in the middle of files or
-        corrupting a file with a careless insert, and (3) when the number of files
-        gets large managing them becomes difficult.
+        This is a private method used under the hood to save the sample data
+        of atomic MsPASS data objects.  How the save happens is highly 
+        dependent upon the format argument.  When None, which is the 
+        default, the data are written to the file specified by dir and dfile 
+        using low-level C fwrite calls.  The function used always appends 
+        data to eof if the file already exists to allow accumation of data 
+        in "gather" files to reduce file name overhead in hpc systems. 
+        If format is anything else the function attempts to use one of 
+        the obspy formatted writers.  That means the format string must be 
+        one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__ of ObsPy reader.
+        
+        
+        Writing to a file can fail for any number of reasons.   write errors 
+        are trapped internally in this function any errors posted to elog of
+        mspass_object.   If the kill_on_failure boolean is set true the 
+        function will call the kill method of the data function and the 
+        that datum will be marked dead.   That is not normally a good idea 
+        if there is any additional work to do on the data so the default
+        for that parameter is false.  
+        
+        Because we use a stream model for file storage be aware 
+        that insertion and deletion in a file are not possible.  If you 
+        need lots of editing functionality with files you should use the 
+        one file to one object model or (better yet) use gridfs storage.
 
         :param mspass_object: the target object.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -3506,21 +3572,38 @@ class Database(pymongo.database.Database):
         :type dfile: :class:`str`
         :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__ of ObsPy reader. By default (``None``), the format will be the binary waveform.
         :type format: :class:`str`
+        :param kill_on_failure:  When true if an io error occurs the data object's 
+          kill method will be invoked.  When false (the default) io errors are 
+          logged and left set live.  (Note data already marked dead are return 
+          are ignored by this function. )
+        :type kill_on_failure: boolean
         :return: Position of first data sample (foff) and the size of the saved chunk.
+           If the input is flagged as dead return (-1,0)
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
-        fname = os.path.join(dir, dfile)
-        os.makedirs(os.path.dirname(fname), exist_ok=True)
-        with open(fname, mode="a+b") as fh:
-            foff = fh.seek(0, 2)
-            if not format:
-                if isinstance(mspass_object, TimeSeries):
-                    # fixme DoubleVector
-                    ub = bytes(np.array(mspass_object.data))
-                elif isinstance(mspass_object, Seismogram):
-                    ub = bytes(mspass_object.data)
+        if mspass_object.dead():
+            return -1, 0
+
+        if not format:
+            try:
+                # This function has overloading.  this might not work
+                foff = _fwrite_to_file(mspass_object, dir, dfile)
+            except MsPASSError as merr:
+                mspass_object.elog.log_error(merr)
+                if kill_on_failure:
+                    mspass_object.kill()
+            # we can compute the number of bytes written for this case
+            if isinstance(mspass_object, TimeSeries):
+                nbytes_written = 8 * mspass_object.npts
             else:
+                # This can only be a Seismogram currently so this is not elif
+                nbytes_written = 24 * mspass_object.npts
+        else:
+            fname = os.path.join(dir, dfile)
+            os.makedirs(os.path.dirname(fname), exist_ok=True)
+            with open(fname, mode="a+b") as fh:
+                foff = fh.seek(0, 2)
                 f_byte = io.BytesIO()
                 if isinstance(mspass_object, TimeSeries):
                     mspass_object.toTrace().write(f_byte, format=format)
@@ -3528,8 +3611,9 @@ class Database(pymongo.database.Database):
                     mspass_object.toStream().write(f_byte, format=format)
                 f_byte.seek(0)
                 ub = f_byte.read()
-            fh.write(ub)
-        return foff, len(ub)
+                fh.write(ub)
+                nbytes_written = len(ub)
+        return foff, nbytes_written
 
     def _save_data_to_gridfs(self, mspass_object, gridfs_id=None):
         """
@@ -3547,10 +3631,10 @@ class Database(pymongo.database.Database):
         if gridfs_id and gfsh.exists(gridfs_id):
             gfsh.delete(gridfs_id)
         if isinstance(mspass_object, Seismogram):
-            ub = bytes(mspass_object.data)
+            ub = bytes(np.array(mspass_object.data).transpose())
         else:
-            ub = bytes(np.array(mspass_object.data))
-        return gfsh.put(pickle.dumps(ub))
+            ub = bytes(mspass_object.data)
+        return gfsh.put(ub)
 
     def _read_data_from_gridfs(self, mspass_object, gridfs_id):
         """
@@ -3563,24 +3647,29 @@ class Database(pymongo.database.Database):
         """
         gfsh = gridfs.GridFS(self)
         fh = gfsh.get(file_id=gridfs_id)
-        ub = pickle.load(fh)
-        fmt = "@%dd" % int(len(ub) / 8)
-        x = struct.unpack(fmt, ub)
         if isinstance(mspass_object, TimeSeries):
-            mspass_object.data = DoubleVector(x)
+            # fh.seek(16)
+            float_array = array("d")
+            if not mspass_object.is_defined("npts"):
+                raise KeyError("npts is not defined")
+            float_array.frombytes(fh.read(mspass_object.get("npts") * 8))
+            mspass_object.data = DoubleVector(float_array)
         elif isinstance(mspass_object, Seismogram):
             if not mspass_object.is_defined("npts"):
                 raise KeyError("npts is not defined")
-            if len(x) != (3 * mspass_object["npts"]):
+            npts = mspass_object["npts"]
+            np_arr = np.frombuffer(fh.read(npts * 8 * 3))
+            file_size = fh.tell()
+            if file_size != npts * 8 * 3:
+                # Note we can only detect the cases where given npts is larger than
+                # the number of points in the file
                 emess = (
                     "Size mismatch in sample data. Number of points in gridfs file = %d but expected %d"
-                    % (len(x), (3 * mspass_object["npts"]))
+                    % (file_size / 8, (3 * mspass_object["npts"]))
                 )
                 raise ValueError(emess)
-            mspass_object.data = dmatrix(3, mspass_object["npts"])
-            for i in range(3):
-                for j in range(mspass_object["npts"]):
-                    mspass_object.data[i, j] = x[i * mspass_object["npts"] + j]
+            np_arr = np_arr.reshape(npts, 3).transpose()
+            mspass_object.data = dmatrix(np_arr)
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
 
@@ -3642,8 +3731,11 @@ class Database(pymongo.database.Database):
                 # Now we convert this to a TimeSeries and load other Metadata
                 # Note the exclusion copy and the test verifying net,sta,chan,
                 # loc, and startime all match
-                mspass_object.npts = len(tr.data)
-                mspass_object.data = DoubleVector(tr.data)
+                tr_data = tr.data.astype(
+                    "float64"
+                )  #   Convert the nparray type to double, to match the DoubleVector
+                mspass_object.npts = len(tr_data)
+                mspass_object.data = DoubleVector(tr_data)
             elif isinstance(mspass_object, Seismogram):
                 sm = st.toSeismogram(cardinal=True)
                 mspass_object.npts = sm.data.columns()
@@ -3699,8 +3791,11 @@ class Database(pymongo.database.Database):
                 # Now we convert this to a TimeSeries and load other Metadata
                 # Note the exclusion copy and the test verifying net,sta,chan,
                 # loc, and startime all match
-                mspass_object.npts = len(tr.data)
-                mspass_object.data = DoubleVector(tr.data)
+                tr_data = tr.data.astype(
+                    "float64"
+                )  #   Convert the nparray type to double, to match the DoubleVector
+                mspass_object.npts = len(tr_data)
+                mspass_object.data = DoubleVector(tr_data)
             elif isinstance(mspass_object, Seismogram):
                 sm = st.toSeismogram(cardinal=True)
                 mspass_object.npts = sm.data.columns()
@@ -3789,8 +3884,11 @@ class Database(pymongo.database.Database):
             st.merge()
             if isinstance(mspass_object, TimeSeries):
                 tr = st[0]
-                mspass_object.npts = len(tr.data)
-                mspass_object.data = DoubleVector(tr.data)
+                tr_data = tr.data.astype(
+                    "float64"
+                )  #   Convert the nparray type to double, to match the DoubleVector
+                mspass_object.npts = len(tr_data)
+                mspass_object.data = DoubleVector(tr_data)
             elif isinstance(mspass_object, Seismogram):
                 sm = st.toSeismogram(cardinal=True)
                 mspass_object.npts = sm.data.columns()
@@ -3817,8 +3915,11 @@ class Database(pymongo.database.Database):
 
         if isinstance(mspass_object, TimeSeries):
             tr = st[0]
-            mspass_object.npts = len(tr.data)
-            mspass_object.data = DoubleVector(tr.data)
+            tr_data = tr.data.astype(
+                "float64"
+            )  #   Convert the nparray type to double, to match the DoubleVector
+            mspass_object.npts = len(tr_data)
+            mspass_object.data = DoubleVector(tr_data)
         elif isinstance(mspass_object, Seismogram):
             sm = st.toSeismogram(cardinal=True)
             mspass_object.npts = sm.data.columns()
@@ -3852,8 +3953,11 @@ class Database(pymongo.database.Database):
             # Now we convert this to a TimeSeries and load other Metadata
             # Note the exclusion copy and the test verifying net,sta,chan,
             # loc, and startime all match
-            mspass_object.npts = len(tr.data)
-            mspass_object.data = DoubleVector(tr.data)
+            tr_data = tr.data.astype(
+                "float64"
+            )  #   Convert the nparray type to double, to match the DoubleVector
+            mspass_object.npts = len(tr_data)
+            mspass_object.data = DoubleVector(tr_data)
         elif isinstance(mspass_object, Seismogram):
             # Note that the following convertion could be problematic because
             # it assumes there are three traces in the file, and they are in
@@ -4823,10 +4927,12 @@ class Database(pymongo.database.Database):
         # If dir is not define assume current directory.  Otherwise
         # use realpath to make sure the directory is the full path
         # We store the full path in mongodb
-        if dir == None:
+        if dir is None:
             odir = os.getcwd()
         else:
             odir = os.path.abspath(dir)
+        if dfile is None:
+            dfile = self._get_dfile_uuid("mseed")
         fname = os.path.join(odir, dfile)
         (ind, elog) = _mseed_file_indexer(fname)
         ids_affected = []
@@ -5081,7 +5187,7 @@ class Database(pymongo.database.Database):
         )
         s3_input_bucket = "scedc-pds"
         s3_output_bucket = (
-            "scedcdata"
+            "mspass-scedcdata"
         )  #   The output file can be saved to this bucket, user might want to change it into their own bucket
         year = str(year)
         day_of_year = str(day_of_year)
@@ -5311,10 +5417,12 @@ class Database(pymongo.database.Database):
             obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
             mseed_content = obj["Body"].read()
             # specify the file path
-            if dir == None:
+            if dir is None:
                 odir = os.getcwd()
             else:
                 odir = os.path.abspath(dir)
+            if dfile is None:
+                dfile = self._get_dfile_uuid("mseed")
             fname = os.path.join(odir, dfile)
             # temporarily write data into a file
             with open(fname, "wb") as f:
@@ -5393,3 +5501,19 @@ class Database(pymongo.database.Database):
         doc["storage_mode"] = "fdsn"
         doc["format"] = "mseed"
         dbh.insert_one(doc)
+
+    def _get_dfile_uuid(self, format=None):
+        """
+        This is a helper function to generate a uuid for the file name,
+        when dfile is not given or defined. The format can be 'mseed' or
+        other formats.
+        The return value is random uuid + "-" + format, example:
+        '247ce5d7-06bc-4ccc-8084-5b3ff621d2d4-mseed'
+
+        :param format: format of the file
+        """
+        if format is None:
+            format = "unknown"
+        temp_uuid = str(uuid.uuid4())
+        dfile = temp_uuid + "-" + format
+        return dfile

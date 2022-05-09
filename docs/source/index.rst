@@ -41,8 +41,8 @@ package.
    user_manual/database_concepts
    user_manual/CRUD_operations
    user_manual/handling_errors
-   user_manual/DataEditing
-   user_manual/HeaderMath
+   user_manual/data_editing
+   user_manual/header_math
    user_manual/graphics
    user_manual/processing_history_concepts
    user_manual/parallel_processing

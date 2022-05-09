@@ -1,8 +1,10 @@
+#include "mspass/seismic/keywords.h"
 #include "mspass/seismic/TimeSeries.h"
 namespace mspass::seismic
 {
 using namespace std;
 using namespace mspass::utility;
+using namespace mspass::seismic;
 
 TimeSeries::TimeSeries(const CoreTimeSeries& d, const std::string alg)
     : CoreTimeSeries(d),ProcessingHistory()
@@ -22,6 +24,45 @@ TimeSeries::TimeSeries(const BasicTimeSeries& b, const Metadata& m,
     : CoreTimeSeries(b,m),ProcessingHistory(his)
 {
   this->s=d;
+}
+TimeSeries::TimeSeries(const Metadata& md) : ProcessingHistory()
+{
+    mlive=false;
+    try {
+        this->Metadata::operator=(md);
+        /* Names used are from mspass defintions as of Jan 2020.
+        We don't need to call the set methods for these attributes as they
+        would add the overhead of setting delta, startime, and npts to the
+        same value passed. */
+        this->mdt = this->get_double(SEISMICMD_dt);
+        this->mt0 = this->get_double(SEISMICMD_t0);
+        if(this->is_defined(SEISMICMD_time_standard))
+        {
+          if(this->get_string(SEISMICMD_time_standard) == "UTC")
+            this->set_tref(TimeReferenceType::UTC);
+          else
+          {
+            this->set_tref(TimeReferenceType::Relative);
+            this->elog.log_error("CoreSeismogram Metadata constructor",
+              SEISMICMD_time_standard+" attribute is not defined - set to Relative",
+              ErrorSeverity::Complaint);
+          }
+        }
+        if(this->time_is_relative())
+        {
+          /* It is not an error if a t0 shift is not defined and we are
+          in relative time. That is the norm for active source data. */
+          if(this->is_defined(SEISMICMD_t0_shift))
+          {
+            double t0shift=this->get_double(SEISMICMD_t0_shift);
+            this->force_t0_shift(t0shift);
+          }
+        }
+        long int ns = md.get_long(SEISMICMD_npts);
+        /* this CoreTimeSeries method sets the npts attribute and
+        initializes the s buffer to all zeros */
+        this->set_npts(ns);
+    }catch(...) {throw;};
 }
 TimeSeries& TimeSeries::operator=(const TimeSeries& parent)
 {

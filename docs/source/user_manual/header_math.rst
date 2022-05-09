@@ -1,3 +1,5 @@
+.. _header_math:
+
 Header (Metadata) Math
 ==========================
 Concepts
@@ -49,27 +51,28 @@ was now off by a factor or 2 because some custom algorithm did that and
 made all the amplitudes wrong by a factor of 2.  We could define an
 operator to do that with this construct
 
-```
-import mspasspy.algorithms.edit as mde #recommended use like np for numpy
-myop = mde.Multiply("calib",2.0)
-# parallel example with dask - assumes data are in dask bag mydata
-mydata = mydata.map(myop.apply)
-```
+.. code-block:: python
 
-The call to `mde.Multiply` is a call to the constructor for the python
-class with the name `Multiply`.  The constructor for Multiply and all
+  import mspasspy.algorithms.edit as mde 
+  myop = mde.Multiply("calib", 2.0)
+  # parallel example with dask - assumes data are in dask bag mydata
+  mydata = mydata.map(myop.apply)
+
+
+The call to ``mde.Multiply`` is a call to the constructor for the python
+class with the name ``Multiply``.  The constructor for Multiply and all
 the other unary operators have two required arguments.  arg0 is the Metadata key
 to which the operator is to be applied (in this case "calib") and arg1
 is the constant value that is to be applied.  The class name defines the
 operation that is to be performed.  In the example that means
-`calib *= 2.0`.
+``calib *= 2.0``.
 
 All the unary operators use exactly the same API and can be used the
 same way but for different arithmetic operations with a constant.
 The following table summarizes the available operators:
 
 .. list-table:: Unary Metadata Operators
-   :width: 50,50
+   :widths: 50 50 50
    :header-rows: 1
 
    * - Name
@@ -77,22 +80,22 @@ The following table summarizes the available operators:
      - Constructor
    * - Add
      - +=
-     - Add(key,const)
+     - ``Add(key, const)``
    * - Subtract
      - -=
-     - Subtact(key,const)
+     - ``Subtact(key, const)``
    * - Multiply
      - *=
-     - Multiply(key,const)
+     - ``Multiply(key, const)``
    * - Divide
      - /=
-     - Divide(key,const)
+     - ``Divide(key, const)``
    * - IntegerDivide
      - //=
-     - IntegerDivide(key,const)
+     - ``IntegerDivide(key, const)``
    * - Mod
      - %=
-     - Mod(key,const)
+     - ``Mod(key, const)``
 
 As can be seen the class name is a word describing the arithmetic
 operator.  If you are not familiar with the python operator symbols
@@ -102,51 +105,53 @@ Binary Operators
 --------------------------
 The binary operators are like the unary operators but they define all
 operations that are python binary operators.  By that we mean any
-operation that can be case as:  `c = a op b` where `op` is one of the
-standard arithmetic operator symbols:  +, -, *, /, //, and %.
+operation that can be case as:  ``c = a op b`` where ``op`` is one of the
+standard arithmetic operator symbols:  ``+``, ``-``, ``*``, ``/``, ``//``, and ``%``.
 The distinction from normal usage is that the operator has to first cautiously
-fetch a and b from Metadata, apply op, and then set the value c to
+fetch ``a`` and ``b`` from Metadata, apply ``op``, and then set the value ``c`` to
 a value associated with a Metadata key associated with the left hand side
 for the operator.  Like the unary operators the binary operators share
 a common constructor signature:
-```
+
+.. code-block:: python
+
     op(keyc,keya,keyb)
-```
-where `op` is the name for the operation (see table below), keyc is the
+
+where ``op`` is the name for the operation (see table below), keyc is the
 key to set for the output of the operator, while keya and keyb are the keys used
-to fetch a and b in the formula `c = a op b`.  keyc can be the same as either
+to fetch a and b in the formula ``c = a op b``.  keyc can be the same as either
 keya or keyb but be aware if it is that the contents of that key will be
 overwritten.
 
-The names for the `op` variable above are illustrated in the table below.
+The names for the ``op`` variable above are illustrated in the table below.
 They are essentially the same as the unary operators with a "2" added to the
 name.
 
 .. list-table:: Binary Metadata Operators
-   :width: 50,50
+   :widths: 50 50 50
    :header-rows: 1
 
    * - Name
      - Python op
      - Constructor
    * - Add2
-     - +
-     - Add(keyc,keya,keyb)
+     - \+
+     - ``Add(keyc, keya, keyb)``
    * - Subtract2
-     - -
-     - Subtact(keyc,keya,keyb)
+     - \-
+     - ``Subtact(keyc, keya, keyb)``
    * - Multiply2
-     - *
-     - Multiply(keyc,keya,keyb)
+     - \*
+     - ``Multiply(keyc, keya, keyb)``
    * - Divide2
-     - /
-     - Divide2(keyc,keya,keyb)
+     - \/
+     - ``Divide2(keyc, keya, keyb)``
    * - IntegerDivide
      - //
-     - IntegerDivide(keyc,keya,keyb)
+     - ``IntegerDivide(keyc, keya, keyb)``
    * - Mod2
      - %
-     - Mod(keyc,keya,keyb)
+     - ``Mod(keyc, keya, keyb)``
 
 Non-arithmetic Operators
 -------------------------------
@@ -155,13 +160,15 @@ arithmetic operators discussed above.
 
 First, there is an operator to change the key assigned to a Metadata attribute.
 The constructor has this usage:
-```
-    op = ChangeKey(old,new,erase_old=True):
-```
+
+.. code-block:: python
+
+    op = ChangeKey(old, new, erase_old=True):
+
 The apply method of this class will check for the existence of data with the key
-`old` and redefine the key to the valued defined by the `old` (positional) argument
-passed to the constructor.   The `erase_old` argument defaults to True.  If set
-False `old` will be set with a copy and `new` will be retained.
+``old`` and redefine the key to the valued defined by the `old` (positional) argument
+passed to the constructor.   The ``erase_old`` argument defaults to True.  If set
+False ``old`` will be set with a copy and ``new`` will be retained.
 
 The second is an operator to set a Metadata attribute to a constant value
 saved in the operator class.  The value can be any valid python type so
@@ -169,41 +176,48 @@ this operation may or may not be an "arithmetic" operation.
 
 The constructor for this class has this usage:
 
-```
-    op = SetValue(key,const):
-```
+.. code-block:: python
+
+    op = SetValue(key, const):
+
 The apply method of this operator will set a Metadata attribute with the
-name defined by `key` to the constant value set with `const`.
+name defined by ``key`` to the constant value set with ``const``.
 
 Combining operators
 ------------------------
-We define a final operator class with the name `MetadataOperatorChain`.
+We define a final operator class with the name ``MetadataOperatorChain``.
 As the name suggests it provides a mechanism to implement a (potentially complicated)
 formula from the lower level operators.  The class constructor has
 this usage:
-```
+
+.. code-block:: python
+
     opchain = MetadataOperatorChain(oplist)
-```
-where `oplist` is a python list of 2 or more of the lower level operators
+
+where ``oplist`` is a python list of 2 or more of the lower level operators
 described above.
 
 For example, here is a code fragment to produce a calculator that will
 compute the midpoint coordinates from Metadata attributes rx,ry,sx, and sy
 and set them as cmpx, cmpy for x and y coordinates respectively:
-```
-import mspasspy.algorithms.edit as mde
-xop1 = mde.Add2("cmpx","rx","sx")
-xop2 = mde.Divide("cmpx",2.0)
-yop1 = mde.Add2("cmpy","ry","sy")
-yop2 = mde.Divide("cmpy",2.0)
-opchain = mde.MetadataOperatorChain([xop1,xop2,yop1,yop2])
-```
+
+.. code-block:: python
+
+  import mspasspy.algorithms.edit as mde
+  xop1 = mde.Add2("cmpx", "rx", "sx")
+  xop2 = mde.Divide("cmpx", 2.0)
+  yop1 = mde.Add2("cmpy", "ry", "sy")
+  yop2 = mde.Divide("cmpy", 2.0)
+  opchain = mde.MetadataOperatorChain([xop1,xop2,yop1,yop2])
+
 The opchain contents can then be passed to a parallel map operator as in
 the simpler example above.   This operator computes and sets the following:
-```
-cmpx = (rx+sx)/2.0
-cmpy = (ry+sy)/2.0
-```
+
+.. code-block:: python
+
+  cmpx = (rx + sx) / 2.0
+  cmpy = (ry + sy) / 2.0
+
 
 Common Properties
 --------------------
@@ -254,11 +268,11 @@ Best Practices
    that are required for a calculation, it is prudent to first pass the
    workflow through one related Executioner classes to "kill" data that
    lack the required attributes.
-4. We have found that a chain of `ChangeKey` operator is almost always a
+4. We have found that a chain of ``ChangeKey`` operator is almost always a
    far faster way to repair database name errors than to run
    one-at-a-time transactions with MongoDB.   Millions of update transactions
    with MongoDB can (literally) take days to complete but the same operation
-   done inline with a string of `ChangeKey` operations produces near zero
+   done inline with a string of ``ChangeKey`` operations produces near zero
    overhead on any reasonable processing job.  The same is true if the
    goal were to compute new attributes from all documents defining a
    large data set.  It can be very slow to compute such attributes from
