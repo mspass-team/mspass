@@ -3,6 +3,7 @@
 #include "mspass/algorithms/TimeWindow.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
+#include "mspass/seismic/keywords.h"
 namespace mspass::algorithms
 {
 using namespace std;
@@ -172,11 +173,22 @@ Seismogram WindowData(const Seismogram& parent, const TimeWindow& tw)
 			determined from the set_npts result.
 	Less important is we have to add the load_history call here or history
 	would be lost.  Reason is the constructor uses CoreTimeSeries. */
-
 	BasicTimeSeries btstmp(dynamic_cast<const BasicTimeSeries&>(parent));
 	btstmp.set_npts(outns);
 	btstmp.set_t0(tw.start);
-	Seismogram result(btstmp,dynamic_cast<const Metadata&>(parent));
+	/* WARNING MAINTENANCE ISSUE:  this is less than ideal fix for a problem
+	found when debugging the revision of this algorithm to improve its
+	performance May 2022.  the constuctor called here assumes the
+	value of npts stored in Metadata is definitive creating an inconsistency
+	that led to seg faults.   The following is a workaround that negates
+	some of the performance gain.  We copy  Metadata and then alter nsamp
+	in the copy before calling the constructor.   The code that seg faulted
+	just did a dynamic cast to the input, which created the problem.
+	*/
+	Metadata mdtmp(dynamic_cast<const Metadata&>(parent));
+	mdtmp.put_long(SEISMICMD_npts,outns);
+	Seismogram result(btstmp,mdtmp);
+
 	// Perhaps should do this with blas or memcpy for efficiency
   //  but this makes the algorithm much clearer
   int i,ii,k;
@@ -185,8 +197,12 @@ Seismogram WindowData(const Seismogram& parent, const TimeWindow& tw)
       {
           result.u(k,ii)=parent.u(k,i);
       }
+	/* Necessary because the constructor we called will set the Seismogram
+	it creates dead.  After filling in data we can mark it live */
+	result.set_live();
 	/*This dynamic_cast may not be necessary, but makes the api clear */
 	result.load_history(dynamic_cast<const ProcessingHistory&>(parent));
+	return result;
 }
 /*! \brief Extracts a requested time window of data from a parent TimeSeries object.
 
