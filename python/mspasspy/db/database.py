@@ -4446,7 +4446,7 @@ class Database(pymongo.database.Database):
                 result.extend([netw])
         return result
 
-    def get_seed_site(self, net, sta, loc="NONE", time=-1.0,verbose=True):
+    def get_seed_site(self, net, sta, loc="NONE", time=-1.0, verbose=True):
         """
         The site collection is assumed to have a one to one
         mapping of net:sta:loc:starttime - endtime.
@@ -4455,11 +4455,11 @@ class Database(pymongo.database.Database):
         The (optional) time arg is used for a range match to find
         period between the site startime and endtime.
         Returns None if there is no match.
-        
-        An all to common metadata problem is to have duplicate entries in 
-        site for the same data.   The default behavior of this method is 
-        to print a warning whenever a match is ambiguous 
-        (i.e. more than on document matches the keys).  Set verbose false to 
+
+        An all to common metadata problem is to have duplicate entries in
+        site for the same data.   The default behavior of this method is
+        to print a warning whenever a match is ambiguous
+        (i.e. more than on document matches the keys).  Set verbose false to
         silence such warnings if you know they are harmless.
 
         The seed modifier in the name is to emphasize this method is
@@ -4470,16 +4470,16 @@ class Database(pymongo.database.Database):
         :param sta:  station name to match
         :param loc:   optional loc code to made (empty string ok and common)
         default ignores loc in query.
-        :param time: epoch time for requested metadata.  Default undefined 
-          and will cause the function to simply return the first document 
+        :param time: epoch time for requested metadata.  Default undefined
+          and will cause the function to simply return the first document
           matching the name keys only.   (This is rarely what you want, but
           there is no standard default for this argument.)
-        :param verbose:  When True (the default) this method will issue a 
-          print warning message when the match is ambiguous - multiple 
-          docs match the specified keys.   When set False such warnings 
-          will be suppressed.  Use false only if you know the duplicates 
-          are harmless and you are running on a large data set and 
-          you want to reduce the log size. 
+        :param verbose:  When True (the default) this method will issue a
+          print warning message when the match is ambiguous - multiple
+          docs match the specified keys.   When set False such warnings
+          will be suppressed.  Use false only if you know the duplicates
+          are harmless and you are running on a large data set and
+          you want to reduce the log size.
 
         :return: MongoDB doc matching query
         :rtype:  python dict (document) of result.  None if there is no match.
@@ -4504,7 +4504,7 @@ class Database(pymongo.database.Database):
             stadoc = dbsite.find_one(query)
             return stadoc
 
-    def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0,verbose=True):
+    def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0, verbose=True):
         """
         The channel collection is assumed to have a one to one
         mapping of net:sta:loc:chan:starttime - endtime.
@@ -4538,12 +4538,12 @@ class Database(pymongo.database.Database):
         :param loc:   optional loc code to made (empty string ok and common)
         default ignores loc in query.
         :param time: epoch time for requested metadata
-        :param verbose:  When True (the default) this method will issue a 
-          print warning message when the match is ambiguous - multiple 
-          docs match the specified keys.   When set False such warnings 
-          will be suppressed.  Use false only if you know the duplicates 
-          are harmless and you are running on a large data set and 
-          you want to reduce the log size. 
+        :param verbose:  When True (the default) this method will issue a
+          print warning message when the match is ambiguous - multiple
+          docs match the specified keys.   When set False such warnings
+          will be suppressed.  Use false only if you know the duplicates
+          are harmless and you are running on a large data set and
+          you want to reduce the log size.
 
         :return: handle to query return
         :rtype:  MondoDB Cursor object of query result.
@@ -4582,16 +4582,16 @@ class Database(pymongo.database.Database):
                     if time > 0.0:
                         if verbose:
                             print(
-                              "get_seed_channel:  multiple matches found for net=",
-                              net,
-                              " sta=",
-                              sta,
-                              " and channel=",
-                              chan,
-                              " with null loc code\n"
-                              "Assuming database problem with duplicate documents in channel collection\n",
-                              "Returning first one found",
-                          )
+                                "get_seed_channel:  multiple matches found for net=",
+                                net,
+                                " sta=",
+                                sta,
+                                " and channel=",
+                                chan,
+                                " with null loc code\n"
+                                "Assuming database problem with duplicate documents in channel collection\n",
+                                "Returning first one found",
+                            )
                         return dbchannel.find_one(testquery)
                     else:
                         raise MsPASSError(
@@ -4605,7 +4605,7 @@ class Database(pymongo.database.Database):
                             + " and null loc is ambiguous\n"
                             + "Specify at least time but a loc code if is not truly null",
                             "Fatal",
-                          )
+                        )
                 else:
                     # we land here if a null match didn't work.
                     # Try one more recovery with setting loc to an emtpy
@@ -4618,15 +4618,15 @@ class Database(pymongo.database.Database):
                         if time > 0.0:
                             if verbose:
                                 print(
-                                  "get_seed_channel:  multiple matches found for net=",
-                                  net,
-                                  " sta=",
-                                  sta,
-                                  " and channel=",
-                                  chan,
-                                  " with null loc code tested with empty string\n"
-                                  "Assuming database problem with duplicate documents in channel collection\n",
-                                  "Returning first one found",
+                                    "get_seed_channel:  multiple matches found for net=",
+                                    net,
+                                    " sta=",
+                                    sta,
+                                    " and channel=",
+                                    chan,
+                                    " with null loc code tested with empty string\n"
+                                    "Assuming database problem with duplicate documents in channel collection\n",
+                                    "Returning first one found",
                                 )
                             return dbchannel.find_one(testquery)
                         else:
@@ -4831,7 +4831,7 @@ class Database(pymongo.database.Database):
         elog_collection="elog",
         return_ids=False,
         normalize_channel=False,
-        verbose=False
+        verbose=False,
     ):
         """
         This is the first stage import function for handling the import of
@@ -4921,22 +4921,22 @@ class Database(pymongo.database.Database):
           By default it is fast only to associate an error log entry with
           a particular waveform index entry. (we store the saved index
           MongoDB document id with each elog entry)
-        :param normalize_channel:  boolean controlling normalization with 
-          the channel collection.   When set True (default is false) the 
-          method will call the Database.get_seed_channel method, extract 
+        :param normalize_channel:  boolean controlling normalization with
+          the channel collection.   When set True (default is false) the
+          method will call the Database.get_seed_channel method, extract
           the id from the result, and set the result as "channel_id" before
-          writing the wf_miniseed document.  Set this argument true if 
-          you have a relatively complete channel collection assembled 
-          before running a workflow to index a set of miniseed files 
-          (a common raw data starting point).  
-        :param verbose:  boolean passed to get_seed_channel.  This 
-          argument has no effect unless normalize_channel is set True. 
-          It is necessary because the get_seed_channel function has no 
-          way to log errors except calling print.  A very common metadata 
-          error is duplicate and/or time overlaps in channel metadata.  
-          Those are usually harmless so the default for this parameter is 
-          False.  Set this True if you are using inline normalization 
-          (normalize_channel set True) and you aren't certain your 
+          writing the wf_miniseed document.  Set this argument true if
+          you have a relatively complete channel collection assembled
+          before running a workflow to index a set of miniseed files
+          (a common raw data starting point).
+        :param verbose:  boolean passed to get_seed_channel.  This
+          argument has no effect unless normalize_channel is set True.
+          It is necessary because the get_seed_channel function has no
+          way to log errors except calling print.  A very common metadata
+          error is duplicate and/or time overlaps in channel metadata.
+          Those are usually harmless so the default for this parameter is
+          False.  Set this True if you are using inline normalization
+          (normalize_channel set True) and you aren't certain your
           channel collection has no serious inconsistencies.
         :exception: This function can throw a range of error types for
           a long list of possible io issues.   Callers should use a
@@ -4972,12 +4972,16 @@ class Database(pymongo.database.Database):
             stime = doc["starttime"]
             if "loc" in doc:
                 loc = doc["loc"]
-                chandoc = self.get_seed_channel(net,sta,chan,loc,time=stime,verbose=False)
+                chandoc = self.get_seed_channel(
+                    net, sta, chan, loc, time=stime, verbose=False
+                )
             else:
-                chandoc = self.get_seed_channel(net,sta,chan,time=stime,verbose=False)
+                chandoc = self.get_seed_channel(
+                    net, sta, chan, time=stime, verbose=False
+                )
             if chandoc != None:
                 doc["channel_id"] = chandoc["_id"]
-             
+
         # log_ids is created here so it is defined but empty in
         # the tuple returned when return_ids is true
         log_ids = []
