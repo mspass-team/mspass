@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from ast import Str
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, Metadata
 from mspasspy.ccore.seismic import (
     TimeSeries,
@@ -10,6 +11,7 @@ from mspasspy.ccore.seismic import (
 from obspy import UTCDateTime
 from pkg_resources import require
 from pyrsistent import optional
+import pymongo
 
 # this is copied from edit.py.  easier to duplicate than load that entire
 # module with this one but collaborators you may want to change that
@@ -126,7 +128,7 @@ class NMF(ABC):
         self.attributes_to_load = []
         self.verbose = verbose
 
-    def __call__(self, d):
+    def __call__(self, d, *args, **kwargs):
         """
         This convenience method allows a concrete instance to be
         called with the simpler syntax with the (implied) principle
@@ -134,7 +136,7 @@ class NMF(ABC):
         channel collection using id_matcher you can use
         d = id_matcher(d)  instead of d = id_matcher.normalize(d)
         """
-        self.normalize(d)
+        return self.normalize(d, *args, **kwargs)
 
     @abstractmethod
     def get_document(self, d):
@@ -319,7 +321,7 @@ class ID_matcher(NMF):
         """
 
         if d.is_defined(self.mdkey):
-            testid = str(d[self.mdkey])
+            testid = d[self.mdkey]
         else:
             message = (
                 "Normalizing ID with key="
@@ -336,9 +338,9 @@ class ID_matcher(NMF):
             return None
         if self.cache_normalization_data:
             try:
-                result = self.cache[testid]
+                result = self.cache[str(testid)]
             except KeyError:
-                message = "Key [{}] not defined in cache".format(testid)
+                message = "Key [{}] not defined in cache".format(str(testid))
                 self.log_error(
                     d,
                     "ID_matcher.get_document",
@@ -354,6 +356,16 @@ class ID_matcher(NMF):
             # for this situation - doc is a MongoDB document container and
             # may contain other attributes so we do a selective copy for consistency
             result = Metadata()
+            if doc is None:
+                message = "Key [{}] not defined in normalization collection = {}".format(str(testid), self.collection)
+                self.log_error(
+                    d,
+                    "ID_matcher.get_document",
+                    message,
+                    self.kill_on_failure,
+                    ErrorSeverity.Invalid,
+                )
+                return None
             for key in self.attributes_to_load:
                 if key in doc:
                     result[key] = doc[key]
@@ -429,7 +441,6 @@ class ID_matcher(NMF):
                 # Hence we copy all.
                 for key in doc:
                     if prepend_collection_name:
-                        val = doc[key]
                         newkey = self.collection + "_" + key
                         d[newkey] = doc[key]
                     else:
@@ -1692,7 +1703,7 @@ def normalize_mseed(db,
         # this conditional is needed in case neither channel or site have a match
         if len(update_dict) > 0:
             #bulk.find({"_id" : wfid}).update({"$set" : update_dict})
-            bulk.append(UpdateOne({"_id" : wfid},{"$set" : update_dict}))
+            bulk.append(pymongo.UpdateOne({"_id" : wfid},{"$set" : update_dict}))
             counter += 1
         if (counter % blocksize == 0):
             #bulk.execute()
