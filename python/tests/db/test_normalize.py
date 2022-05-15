@@ -75,14 +75,13 @@ class TestNormalize():
         self.db = Database(client, "nmftest",db_schema='mspass.yaml', md_schema='mspass.yaml')
         self.dump_path = "./python/tests/data/db_dump"
         restore_db(self.db, self.dump_path)
-        #normalize_mseed(self.db)
 
     def teardown_class(self):
         client = DBClient("localhost")
         client.drop_database('nmftest')
 
     def setup_method(self):
-        self.doc = self.db.wf_miniseed.find_one()
+        self.doc = self.db.wf_miniseed.find_one({'_id': ObjectId('627fc20559a116ff99f38243')})
         self.ts = self.db.read_data(self.doc, collection='wf_miniseed')
 
     def test_ID_matcher_get_document(self):
@@ -115,7 +114,7 @@ class TestNormalize():
             ts.dead()
         )       
 
-        #       Id can't find
+        #       Id can't be found
         ts = copy.deepcopy(self.ts)
         ts['channel_id'] = 'something_random'
         cached_retdoc = cached_matcher.get_document(ts)
@@ -186,7 +185,7 @@ class TestNormalize():
         assert(Metadata_cmp(cached_retdoc, uncached_retdoc))
 
         #   Test get document with time arguments:
-        #       test with a time, multi doc find
+        #       test with a time, multi doc found
         #       1: 'starttime': 1262908800.0, 'endtime': 1321549500.0
         #       2. 'starttime': 1400000000.0, 'endtime': 1500000000.0
         doc = self.db.wf_miniseed.find_one({'_id': ObjectId('627fc20659a116ff99f38356')})
@@ -196,7 +195,7 @@ class TestNormalize():
         assert(cached_retdoc is not None)
         assert(uncached_retdoc is not None)
 
-        #   test with a time, multi doc can't find
+        #   test with a time, multi doc can't found
         ts_1 = copy.deepcopy(ts)
         ts_2 = copy.deepcopy(ts)
         cached_retdoc = cached_matcher.get_document(ts_1, time=1972908800.0)
@@ -281,7 +280,7 @@ class TestNormalize():
         assert(Metadata_cmp(cached_retdoc, uncached_retdoc))
 
         #   Test get document with time arguments:
-        #       test with a time, multi doc find
+        #       test with a time, multi doc found
         #       1: 'starttime': 1262908800.0, 'endtime': 1321574399.0
         #       2. 'starttime': 1400000000.0, 'endtime': 1500000000.0
         doc = self.db.wf_miniseed.find_one({'_id': ObjectId('627fc20659a116ff99f38356')})
@@ -291,7 +290,7 @@ class TestNormalize():
         assert(cached_retdoc is not None)
         assert(uncached_retdoc is not None)
 
-        #   test with a time, multi doc can't find
+        #   test with a time, multi doc can't found
         ts_1 = copy.deepcopy(ts)
         ts_2 = copy.deepcopy(ts)
         cached_retdoc = cached_matcher.get_document(ts_1, time=1972908800.0)
@@ -397,6 +396,49 @@ class TestNormalize():
         uncached_retdoc = uncached_matcher.get_document(doc)
         assert(cached_retdoc is not None)
         assert(uncached_retdoc is not None)
+
+    def test_origin_time_source_matcher_normalize(self):
+        cached_matcher = origin_time_source_matcher(self.db)
+        uncached_matcher = origin_time_source_matcher(self.db, cache_normalization_data=False)
+
+        orig_doc = self.db.wf_miniseed.find_one({'_id': ObjectId('62812b08178bf05fe5787d82')})
+        orig_ts = self.db.read_data(orig_doc, collection='wf_miniseed')
+        
+        cache_id_undefine_msg = "No match for time between"
+        
+        #   Test normalize
+        ts_1 = copy.deepcopy(orig_ts)
+        ts_2 = copy.deepcopy(orig_ts)
+        cached_retdoc = cached_matcher(ts_1)
+        uncached_retdoc = uncached_matcher(ts_2)
+        assert(Metadata_cmp(cached_retdoc, uncached_retdoc))
+        assert('source_time' in cached_retdoc)
+
+        #       Test prepend_collection_name
+        ts_1 = copy.deepcopy(orig_ts)
+        ts_2 = copy.deepcopy(orig_ts)
+        matcher = origin_time_source_matcher(self.db, prepend_collection_name=False)
+        cached_retdoc = matcher(ts_1)
+        matcher = origin_time_source_matcher(self.db, prepend_collection_name=False, cache_normalization_data=False)
+        uncached_retdoc = matcher(ts_2)
+        assert(Metadata_cmp(cached_retdoc, uncached_retdoc))
+        assert('time' in cached_retdoc and 'source_time' not in cached_retdoc)
+
+        #       Test Kill_on_failure and Verbose
+        cached_matcher = origin_time_source_matcher(self.db, kill_on_failure=False)
+        ts = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher.get_document(ts)
+        assert((cached_retdoc is None) and 
+            (cache_id_undefine_msg in str(ts.elog.get_error_log())) and 
+            not ts.dead()
+        )
+
+        #       Test Normalize dead
+        cached_matcher = mseed_site_matcher(self.db)
+        ts = copy.deepcopy(self.ts)
+        ts.kill()
+        cached_retdoc = cached_matcher(ts)
+        assert(Metadata_cmp(self.ts, cached_retdoc))
 
     def test_css30_arrival_interval_matcher(self):
         pass
