@@ -2,7 +2,7 @@ from functools import cache
 from mspasspy.ccore.utility import MsPASSError,ErrorSeverity
 import pandas as pd
 import time
-from mspasspy.db.normalize import ID_matcher, mseed_channel_matcher, mseed_site_matcher, normalize_mseed
+from mspasspy.db.normalize import ID_matcher, mseed_channel_matcher, mseed_site_matcher, origin_time_source_matcher, normalize_mseed
 
 from mspasspy.db.database import Database, read_distributed_data
 from mspasspy.db.client import DBClient
@@ -359,8 +359,44 @@ class TestNormalize():
         cached_retdoc = cached_matcher(ts)
         assert(Metadata_cmp(self.ts, cached_retdoc))
 
-    def test_origin_time_source_matcher(self):
-        pass
+    def test_origin_time_source_matcher_get_document(self):
+        cached_matcher = origin_time_source_matcher(self.db)
+        uncached_matcher = origin_time_source_matcher(self.db, cache_normalization_data=False)
+        
+        orig_doc = self.db.wf_miniseed.find_one({'_id': ObjectId('62812b08178bf05fe5787d82')})
+        orig_ts = self.db.read_data(orig_doc, collection='wf_miniseed')
+        
+        #   get document for dict
+        doc = copy.deepcopy(orig_doc)
+        cached_retdoc = cached_matcher.get_document(doc)
+        uncached_retdoc = uncached_matcher.get_document(doc)
+        assert(Metadata_cmp(cached_retdoc, uncached_retdoc))
+
+        #   get document for TimeSeries
+        ts = copy.deepcopy(orig_ts)
+        cached_retdoc = cached_matcher.get_document(ts)
+        uncached_retdoc = uncached_matcher.get_document(ts)
+        assert(Metadata_cmp(cached_retdoc, uncached_retdoc))
+
+        #   test with a undefined start time
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher.get_document(ts_1)
+        uncached_retdoc = uncached_matcher.get_document(ts_2)
+        assert(cached_retdoc is None)
+        assert(uncached_retdoc is None)
+        assert(ts_1.dead())
+        assert(ts_2.dead())
+        assert("No match for time between" in str(ts_1.elog.get_error_log()))
+        assert("No match for query = {'time':" in str(ts_2.elog.get_error_log()))
+
+        #   test without a time, or a startime, take first doc, warning
+        cached_matcher = origin_time_source_matcher(self.db, tolerance=1000000000.0)
+        uncached_matcher = origin_time_source_matcher(self.db, tolerance=1000000000.0, cache_normalization_data=False)
+        cached_retdoc = cached_matcher.get_document(doc)
+        uncached_retdoc = uncached_matcher.get_document(doc)
+        assert(cached_retdoc is not None)
+        assert(uncached_retdoc is not None)
 
     def test_css30_arrival_interval_matcher(self):
         pass

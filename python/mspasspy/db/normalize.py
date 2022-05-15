@@ -7,6 +7,7 @@ from mspasspy.ccore.seismic import (
     TimeSeriesEnsemble,
     SeismogramEnsemble,
 )
+from numpy import isin
 
 from obspy import UTCDateTime
 from pkg_resources import require
@@ -272,8 +273,8 @@ class ID_matcher(NMF):
             self.load_if_defined = list()
             for x in load_if_defined:
                 self.load_if_defined.append(x)
-            self.cache_normalization_data = cache_normalization_data
 
+            self.cache_normalization_data = cache_normalization_data
             if self.cache_normalization_data:
                 # We dogmatically require prepend_collection_name=True
                 self.cache = _load_normalization_cache(
@@ -1287,7 +1288,7 @@ class mseed_site_matcher(NMF):
                 )
                 self.log_error(
                     d,
-                    "mseed_channel_matcher._cached_get_document",
+                    "mseed_channel_matcher._db_get_document",
                     message,
                     self.kill_on_failure,
                     ErrorSeverity.Invalid,
@@ -1399,11 +1400,56 @@ class origin_time_source_matcher(NMF):
         t0offset=0.0,
         tolerance=4.0,
         attributes_to_load=None,
+        load_if_defined=None,
+        cache_normalization_data=True,
+        query={},
         kill_on_failure=True,
         prepend_collection_name=True,
         verbose=True,
     ):
-        """ """
+        """ 
+        Constructor for this class. Includes the important boolean
+        that enables or disable caching.
+
+        :param db:  MongoDB Database handle
+        :param collection: the string that represents the name of the source 
+          collection, default value is "source"
+        :param t0offset: the offset between t0 and the test origin time, it
+        will be used in the query (see class description)
+        :param tolerance: the tolerance used in the query to form a time
+        range (see class description)
+        :param attributes_to_load:  list of keys that will always be loaded
+          from each document in the normalization collection satisfying the
+          query.   Note the constructor will abort with a MsPASSError if
+          any documents are missing one of these key-value pairs.
+        :param load_if_defined: is like attributes_to_load (a list of
+          key strings) but the key-value pairs are not required.
+        :param cache_normalization_data:  when True (default) all documents
+          satisfying the query parameter in the channel collection will
+          be loaded into memory in an internal cache.  When False each
+          call to get_document or normalize will invoke a database query
+          (find).  (see class description)
+        :param kill_on_failure:  When True (the default) any data passed
+          processed by the normalize method will be kill if there is no
+          match to the id key requested or if the data lack an id key to
+          do the match.
+        :param query:  (optional) query to pass to find to prefilter the
+          data loaded when cache_normalization_data is True.  This argument
+          is ignore if cache_normalization_data is False.
+        :param prepend_collection_name:   When set True (the default)
+          all data pulled from channel will have the prefix "channel_"
+          added to the key before they are posted to a data object by
+          in the normalize method.  (e.g. "sta" will be posted as "channel_sta").
+          That is the standard convention used in MsPASS to tag datat that
+          come from normalization like this class does.  Set False only for
+          the special case of wanting to load a set of attributes that will
+          be renamed downstream and saved in some other schema.
+        :param verbose:   when set True (default) the normalize method will
+          post informational warnings about duplicate matches. For large
+          data sets with a lot of duplicate channel records (e.g. from
+          loading errors) consider setting this false to reduce bloat in the
+          elog collection.   Normal use should leave it True.
+        """
         super().__init__(kill_on_failure, verbose)
         self.collection = collection
         self.dbhandle = db[collection]
@@ -1413,39 +1459,135 @@ class origin_time_source_matcher(NMF):
 
         if attributes_to_load is None:
             attributes_to_load = ["lat", "lon", "depth", "time"]
+        self.attributes_to_load = list()
         for x in attributes_to_load:
             self.attributes_to_load.append(x)
+        self.load_if_defined = list()
+        if load_if_defined is not None:
+            for x in load_if_defined:
+                self.load_if_defined.append(x)
+
+        self.cache_normalization_data = cache_normalization_data
+        if self.cache_normalization_data:
+            # We dogmatically require prepend_collection_name=True
+            self.cache = _load_normalization_cache(
+                db,
+                self.collection,
+                required_attributes=self.attributes_to_load,
+                optional_attributes=self.load_if_defined,
+                query=query,
+            )
+        else:
+            self.cache = dict()
 
     def get_document(self, d, time=None):
-        """ """
-        if _input_is_valid(d):
-            # this logic allows setting ensemble metadata using a specific
-            # time but if time is not defined we default to using data start time (t0)
-            if time == None:
+        if not isinstance(d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble, Metadata, dict)):
+            raise TypeError(
+                "origin_time_source_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object"
+            )            
+        if isinstance(d, dict):
+            d_to_use = Metadata(d)
+        else:
+            d_to_use = d
+        if self.cache_normalization_data:
+            doc = self._cached_get_document(d_to_use, time)
+        else:
+            doc = self._db_get_document(d_to_use, time)
+        return doc
+
+    def _cached_get_document(self, d, time=None):
+        if time == None:
+            if isinstance(d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)):
                 test_time = d.t0 - self.t0offset
             else:
-                test_time = time - self.t0offset
-            query = {
-                "time": {
-                    "$ge": test_time - self.tolerance,
-                    "$le": test_time + self.tolerance,
-                }
-            }
+                if d.is_defined("starttime"):
+                    test_time = d['starttime'] - self.t0offset
+                else:
+                    #   t0 can't be extracted from the object
+                    return None
+        else:
+            test_time = time - self.t0offset
 
-            matchsize = self.dbhandle.count_documents(query)
-            if matchsize == 0:
-                return None
-            elif matchsize > 1 and self.verbose:
+        for _id, doc in self.cache.items():
+            time = doc['time']
+            if time >= test_time - self.tolerance and time <= test_time + self.tolerance:
+                return doc
+        
+        if isinstance(d, (TimeSeries, Seismogram)):
+            message = "No match for time between {} and {}".format(
+                    str(UTCDateTime(test_time - self.tolerance)),
+                    str(UTCDateTime(test_time + self.tolerance))
+                )
+            self.log_error(
+                d,
+                "origin_time_source_matcher._cached_get_document",
+                message,
+                self.kill_on_failure,
+                ErrorSeverity.Invalid,
+            )
+
+    def _db_get_document(self, d, time=None):
+        # this logic allows setting ensemble metadata using a specific
+        # time but if time is not defined we default to using data start time (t0)
+        if time == None:
+            if isinstance(d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)):
+                test_time = d.t0 - self.t0offset
+            else:
+                if d.is_defined("starttime"):
+                    test_time = d['starttime'] - self.t0offset
+                else:
+                    #   t0 can't be extracted from the object
+                    return None
+        else:
+            test_time = time - self.t0offset
+
+        query = {
+            "time": {
+                "$gte": test_time - self.tolerance,
+                "$lte": test_time + self.tolerance,
+            }
+        }
+
+        matchsize = self.dbhandle.count_documents(query)
+        if matchsize == 0:
+            if isinstance(d, (TimeSeries, Seismogram)):
+                message = (
+                    "No match for query = "
+                    + str(query)
+                )
                 self.log_error(
                     d,
-                    "origin_time_source_matcher",
-                    "multiple source documents match the origin time computed from time received - using first found",
-                    ErrorSeverity.Complaint,
+                    "origin_time_source_matcher._db_get_document",
+                    message,
+                    self.kill_on_failure,
+                    ErrorSeverity.Invalid,
                 )
-            return self.dbhandle.find_one(query)
-
-        else:
             return None
+        elif matchsize > 1 and self.verbose and isinstance(d, (TimeSeries, Seismogram)):
+            self.log_error(
+                d,
+                "origin_time_source_matcher",
+                "multiple source documents match the origin time computed from time received - using first found",
+                ErrorSeverity.Complaint,
+            )
+
+        match_doc = self.dbhandle.find_one(query)
+        ret_doc = {}
+        for key in self.attributes_to_load:
+            if key in match_doc:
+                ret_doc[key] = match_doc[key]
+            else:
+                raise MsPASSError(
+                    "get document:   required attribute with key = "
+                    + key
+                    + " not found",
+                    ErrorSeverity.Fatal,
+                )
+        for key in self.load_if_defined:
+            if key in match_doc:
+                ret_doc[key] = match_doc[key]
+        return ret_doc
+
 
     def normalize(self, d, time=None):
         if d.dead():
