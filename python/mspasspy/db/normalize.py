@@ -358,7 +358,11 @@ class ID_matcher(NMF):
             # may contain other attributes so we do a selective copy for consistency
             result = Metadata()
             if doc is None:
-                message = "Key [{}] not defined in normalization collection = {}".format(str(testid), self.collection)
+                message = (
+                    "Key [{}] not defined in normalization collection = {}".format(
+                        str(testid), self.collection
+                    )
+                )
                 self.log_error(
                     d,
                     "ID_matcher.get_document",
@@ -877,10 +881,7 @@ class mseed_channel_matcher(NMF):
         matchsize = self.dbhandle.count_documents(query)
         if matchsize == 0:
             if error_logging_allowed:
-                message = (
-                    "No match for query = "
-                    + str(query)
-                )
+                message = "No match for query = " + str(query)
                 self.log_error(
                     d,
                     "mseed_channel_matcher._cached_get_document",
@@ -1282,10 +1283,7 @@ class mseed_site_matcher(NMF):
         matchsize = self.dbhandle.count_documents(query)
         if matchsize == 0:
             if error_logging_allowed:
-                message = (
-                    "No match for query = "
-                    + str(query)
-                )
+                message = "No match for query = " + str(query)
                 self.log_error(
                     d,
                     "mseed_channel_matcher._db_get_document",
@@ -1407,12 +1405,12 @@ class origin_time_source_matcher(NMF):
         prepend_collection_name=True,
         verbose=True,
     ):
-        """ 
+        """
         Constructor for this class. Includes the important boolean
         that enables or disable caching.
 
         :param db:  MongoDB Database handle
-        :param collection: the string that represents the name of the source 
+        :param collection: the string that represents the name of the source
           collection, default value is "source"
         :param t0offset: the offset between t0 and the test origin time, it
         will be used in the query (see class description)
@@ -1481,10 +1479,20 @@ class origin_time_source_matcher(NMF):
             self.cache = dict()
 
     def get_document(self, d, time=None):
-        if not isinstance(d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble, Metadata, dict)):
+        if not isinstance(
+            d,
+            (
+                TimeSeries,
+                Seismogram,
+                TimeSeriesEnsemble,
+                SeismogramEnsemble,
+                Metadata,
+                dict,
+            ),
+        ):
             raise TypeError(
                 "origin_time_source_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object"
-            )            
+            )
         if isinstance(d, dict):
             d_to_use = Metadata(d)
         else:
@@ -1497,11 +1505,13 @@ class origin_time_source_matcher(NMF):
 
     def _cached_get_document(self, d, time=None):
         if time == None:
-            if isinstance(d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)):
+            if isinstance(
+                d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)
+            ):
                 test_time = d.t0 - self.t0offset
             else:
                 if d.is_defined("starttime"):
-                    test_time = d['starttime'] - self.t0offset
+                    test_time = d["starttime"] - self.t0offset
                 else:
                     #   t0 can't be extracted from the object
                     return None
@@ -1509,15 +1519,18 @@ class origin_time_source_matcher(NMF):
             test_time = time - self.t0offset
 
         for _id, doc in self.cache.items():
-            time = doc['time']
-            if time >= test_time - self.tolerance and time <= test_time + self.tolerance:
+            time = doc["time"]
+            if (
+                time >= test_time - self.tolerance
+                and time <= test_time + self.tolerance
+            ):
                 return doc
-        
+
         if isinstance(d, (TimeSeries, Seismogram)):
             message = "No match for time between {} and {}".format(
-                    str(UTCDateTime(test_time - self.tolerance)),
-                    str(UTCDateTime(test_time + self.tolerance))
-                )
+                str(UTCDateTime(test_time - self.tolerance)),
+                str(UTCDateTime(test_time + self.tolerance)),
+            )
             self.log_error(
                 d,
                 "origin_time_source_matcher._cached_get_document",
@@ -1530,11 +1543,13 @@ class origin_time_source_matcher(NMF):
         # this logic allows setting ensemble metadata using a specific
         # time but if time is not defined we default to using data start time (t0)
         if time == None:
-            if isinstance(d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)):
+            if isinstance(
+                d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)
+            ):
                 test_time = d.t0 - self.t0offset
             else:
                 if d.is_defined("starttime"):
-                    test_time = d['starttime'] - self.t0offset
+                    test_time = d["starttime"] - self.t0offset
                 else:
                     #   t0 can't be extracted from the object
                     return None
@@ -1551,10 +1566,7 @@ class origin_time_source_matcher(NMF):
         matchsize = self.dbhandle.count_documents(query)
         if matchsize == 0:
             if isinstance(d, (TimeSeries, Seismogram)):
-                message = (
-                    "No match for query = "
-                    + str(query)
-                )
+                message = "No match for query = " + str(query)
                 self.log_error(
                     d,
                     "origin_time_source_matcher._db_get_document",
@@ -1587,7 +1599,6 @@ class origin_time_source_matcher(NMF):
             if key in match_doc:
                 ret_doc[key] = match_doc[key]
         return ret_doc
-
 
     def normalize(self, d, time=None):
         if d.dead():
@@ -1800,96 +1811,107 @@ class css30_arrival_interval_matcher(NMF):
                 "css30_arrival_interval_matcher.normalize:  received invalid data type"
             )
 
-def normalize_mseed(db,
-                    wfquery={},
-                    blocksize=1000,
-                    normalize_channel=True,
-                    normalize_site=False,
-                    verbose=False):
+
+def normalize_mseed(
+    db,
+    wfquery={},
+    blocksize=1000,
+    normalize_channel=True,
+    normalize_site=False,
+    verbose=False,
+):
     """
-    In MsPASS the standard support for station information is stored in 
-    two collections called "channel" and "site".   When normalized 
-    with channel collection data a miniseed record can be associated with 
-    station metadata downloaded by FDSN web services and stored previously 
+    In MsPASS the standard support for station information is stored in
+    two collections called "channel" and "site".   When normalized
+    with channel collection data a miniseed record can be associated with
+    station metadata downloaded by FDSN web services and stored previously
     with MsPASS database methods.   The default behavior tries to associate
-    each wf_miniseed document with an entry in "site".  In MsPASS site is a 
-    smaller collection intended for use only with data already assembled 
-    into three component bundles we call Seismogram objects.  
+    each wf_miniseed document with an entry in "site".  In MsPASS site is a
+    smaller collection intended for use only with data already assembled
+    into three component bundles we call Seismogram objects.
 
 
     For both channel and site the association algorithm used assumes
-    the SEED convention wherein the strings stored with the keys 
-    "net","sta","chan", and (optionally) "loc" define a unique channel 
-    of data registered globally through the FDSN.   The algorithm then 
-    need only query for a match of these keys and a time interval 
-    match with the start time of the waveform defined by each wf_miniseed 
-    document.   The only distinction in the algorithm between site and 
-    channel is that "chan" is not used in site since by definition site 
-    data refer to common attributes of one seismic observatory (commonly 
-    also called a "station").   
-    
-    :param db: should be a MsPASS database handle containing at least 
+    the SEED convention wherein the strings stored with the keys
+    "net","sta","chan", and (optionally) "loc" define a unique channel
+    of data registered globally through the FDSN.   The algorithm then
+    need only query for a match of these keys and a time interval
+    match with the start time of the waveform defined by each wf_miniseed
+    document.   The only distinction in the algorithm between site and
+    channel is that "chan" is not used in site since by definition site
+    data refer to common attributes of one seismic observatory (commonly
+    also called a "station").
+
+    :param db: should be a MsPASS database handle containing at least
     wf_miniseed and the collections defined by the norm_collection list.
-    :param blockssize:   To speed up updates this function uses the 
-    bulk writer/updater methods of MongoDB that can be orders of 
-    magnitude faster than one-at-a-time updates for setting 
-    channel_id and site_id.  A user should not normally need to alter this 
+    :param blockssize:   To speed up updates this function uses the
+    bulk writer/updater methods of MongoDB that can be orders of
+    magnitude faster than one-at-a-time updates for setting
+    channel_id and site_id.  A user should not normally need to alter this
     parameter.
-    :param wfquery: is a query to apply to wf_miniseed.  The output of this 
-    query defines the list of documents that the algorithm will attempt 
-    to normalize as described above.  The default will process the entire 
+    :param wfquery: is a query to apply to wf_miniseed.  The output of this
+    query defines the list of documents that the algorithm will attempt
+    to normalize as described above.  The default will process the entire
     wf_miniseed collection (query set to an emtpy dict).
-    :param normalize_channel:  boolean for handling channel collection. 
+    :param normalize_channel:  boolean for handling channel collection.
     When True (default) matches will be attempted with the channel collection
-    and when matches are found the associated channel document id will be 
+    and when matches are found the associated channel document id will be
     set in the associated wf_miniseed document as channel_id.
-    :param normalize_site:  boolean for handling site collection. 
+    :param normalize_site:  boolean for handling site collection.
     When True (default) matches will be attempted with the site collection
-    and when matches are found the associated site document id will 
-    be set wf_miniseed document as site_id.  
-    :param verbose: When set true the database methods for matching the 
-    net:sta:chan:loc:time keys will be run in verbose mode.  Those database 
-    methods will print a diagnostic for all ambiguous matches.  Because 
-    this function is expected to be run on potentially large raw data sets of 
-    miniseed inputs the default is False to reduce the overhead of potentially 
+    and when matches are found the associated site document id will
+    be set wf_miniseed document as site_id.
+    :param verbose: When set true the database methods for matching the
+    net:sta:chan:loc:time keys will be run in verbose mode.  Those database
+    methods will print a diagnostic for all ambiguous matches.  Because
+    this function is expected to be run on potentially large raw data sets of
+    miniseed inputs the default is False to reduce the overhead of potentially
     large log messages created by the all to common duplicate metadata problem.
-    Users are encouraged to verify the channel and site collections have 
-    no serious problems with ambiguous net:sta:loc(chan) that are truly 
+    Users are encouraged to verify the channel and site collections have
+    no serious problems with ambiguous net:sta:loc(chan) that are truly
     inconsistent (i.e. have different attributes for the same keys)
-    
-    :return: tuple with three integers.  0 is the number of documents processed in 
-    wf_miniseed (output of query), 1 is the number with channel ids set, 
-    and 2 contains the number of site documents set.  1 or 2 should 
+
+    :return: tuple with three integers.  0 is the number of documents processed in
+    wf_miniseed (output of query), 1 is the number with channel ids set,
+    and 2 contains the number of site documents set.  1 or 2 should
     contain 0 if normalization for that collection was set false.
     """
     # this is a prototype - use all defaults for initial test
-    matcher = mseed_channel_matcher(db,attributes_to_load=["_id","net","sta","chan","starttime","endtime"])
+    matcher = mseed_channel_matcher(
+        db, attributes_to_load=["_id", "net", "sta", "chan", "starttime", "endtime"]
+    )
     if normalize_site:
-        sitematcher = mseed_site_matcher(db,attributes_to_load=["_id","net","sta","starttime","endtime"])
+        sitematcher = mseed_site_matcher(
+            db, attributes_to_load=["_id", "net", "sta", "starttime", "endtime"]
+        )
     ndocs = db.wf_miniseed.count_documents(wfquery)
     if ndocs == 0:
         # check me - may be wrong number of args
-        raise MsPASSError("normalize_mseed","query of wf_miniseed yielded 0 documents\nNothing to process",ErrorSeverity.Fatal)
+        raise MsPASSError(
+            "normalize_mseed",
+            "query of wf_miniseed yielded 0 documents\nNothing to process",
+            ErrorSeverity.Fatal,
+        )
     # An immortal cursor should not be necssary for this algorithm
     cursor = db.wf_miniseed.find(wfquery)
     counter = 0
     number_channel_set = 0
     number_site_set = 0
 
-    # this form was used in older versions of MongoDB but has been 
-    # depricated in favor of the simpler bulk_write  
+    # this form was used in older versions of MongoDB but has been
+    # depricated in favor of the simpler bulk_write
     # commented out lines using the symbol bulk are the old form
     # revision sets bulk to a simple list of instructions ent to bulk_write
-    #bulk = db.wf_miniseed.initialize_unordered_bulk_op()
-    #bulk = db.wf_miniseed.initialize_ordered_bulk_op()
+    # bulk = db.wf_miniseed.initialize_unordered_bulk_op()
+    # bulk = db.wf_miniseed.initialize_ordered_bulk_op()
     bulk = []
     for doc in cursor:
         wfid = doc["_id"]
         stime = doc["starttime"]
         if normalize_channel:
-            chandoc = matcher.get_document(doc,time=stime)
+            chandoc = matcher.get_document(doc, time=stime)
         if normalize_site:
-            sitedoc = sitematcher.get_document(doc,time=stime)
+            sitedoc = sitematcher.get_document(doc, time=stime)
         # signal if no match is returning None so don't update in that situation
         update_dict = dict()
         if normalize_channel:
@@ -1902,17 +1924,17 @@ def normalize_mseed(db,
                 number_site_set += 1
         # this conditional is needed in case neither channel or site have a match
         if len(update_dict) > 0:
-            #bulk.find({"_id" : wfid}).update({"$set" : update_dict})
-            bulk.append(pymongo.UpdateOne({"_id" : wfid},{"$set" : update_dict}))
+            # bulk.find({"_id" : wfid}).update({"$set" : update_dict})
+            bulk.append(pymongo.UpdateOne({"_id": wfid}, {"$set": update_dict}))
             counter += 1
-        if (counter % blocksize == 0):
-            #bulk.execute()
-            #bulk = db.wf_miniseed.initialize_unordered_bulk_op()
-            #bulk = db.wf_miniseed.initialize_ordered_bulk_op()
+        if counter % blocksize == 0:
+            # bulk.execute()
+            # bulk = db.wf_miniseed.initialize_unordered_bulk_op()
+            # bulk = db.wf_miniseed.initialize_ordered_bulk_op()
             db.wf_miniseed.bulk_write(bulk)
-            
-    if (counter % blocksize != 0):
-        #bulk.execute()
+
+    if counter % blocksize != 0:
+        # bulk.execute()
         db.wf_miniseed.bulk_write(bulk)
-    
-    return [ndocs,number_channel_set, number_site_set]
+
+    return [ndocs, number_channel_set, number_site_set]

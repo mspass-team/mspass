@@ -3540,28 +3540,28 @@ class Database(pymongo.database.Database):
     ):
         """
         This is a private method used under the hood to save the sample data
-        of atomic MsPASS data objects.  How the save happens is highly 
-        dependent upon the format argument.  When None, which is the 
-        default, the data are written to the file specified by dir and dfile 
-        using low-level C fwrite calls.  The function used always appends 
-        data to eof if the file already exists to allow accumation of data 
-        in "gather" files to reduce file name overhead in hpc systems. 
-        If format is anything else the function attempts to use one of 
-        the obspy formatted writers.  That means the format string must be 
+        of atomic MsPASS data objects.  How the save happens is highly
+        dependent upon the format argument.  When None, which is the
+        default, the data are written to the file specified by dir and dfile
+        using low-level C fwrite calls.  The function used always appends
+        data to eof if the file already exists to allow accumation of data
+        in "gather" files to reduce file name overhead in hpc systems.
+        If format is anything else the function attempts to use one of
+        the obspy formatted writers.  That means the format string must be
         one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__ of ObsPy reader.
-        
-        
-        Writing to a file can fail for any number of reasons.   write errors 
+
+
+        Writing to a file can fail for any number of reasons.   write errors
         are trapped internally in this function any errors posted to elog of
-        mspass_object.   If the kill_on_failure boolean is set true the 
-        function will call the kill method of the data function and the 
-        that datum will be marked dead.   That is not normally a good idea 
+        mspass_object.   If the kill_on_failure boolean is set true the
+        function will call the kill method of the data function and the
+        that datum will be marked dead.   That is not normally a good idea
         if there is any additional work to do on the data so the default
-        for that parameter is false.  
-        
-        Because we use a stream model for file storage be aware 
-        that insertion and deletion in a file are not possible.  If you 
-        need lots of editing functionality with files you should use the 
+        for that parameter is false.
+
+        Because we use a stream model for file storage be aware
+        that insertion and deletion in a file are not possible.  If you
+        need lots of editing functionality with files you should use the
         one file to one object model or (better yet) use gridfs storage.
 
         :param mspass_object: the target object.
@@ -3572,9 +3572,9 @@ class Database(pymongo.database.Database):
         :type dfile: :class:`str`
         :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__ of ObsPy reader. By default (``None``), the format will be the binary waveform.
         :type format: :class:`str`
-        :param kill_on_failure:  When true if an io error occurs the data object's 
-          kill method will be invoked.  When false (the default) io errors are 
-          logged and left set live.  (Note data already marked dead are return 
+        :param kill_on_failure:  When true if an io error occurs the data object's
+          kill method will be invoked.  When false (the default) io errors are
+          logged and left set live.  (Note data already marked dead are return
           are ignored by this function. )
         :type kill_on_failure: boolean
         :return: Position of first data sample (foff) and the size of the saved chunk.
@@ -5224,9 +5224,7 @@ class Database(pymongo.database.Database):
             aws_secret_access_key=aws_secret_access_key,
         )
         s3_input_bucket = "scedc-pds"
-        s3_output_bucket = (
-            "mspass-scedcdata"
-        )  #   The output file can be saved to this bucket, user might want to change it into their own bucket
+        s3_output_bucket = "mspass-scedcdata"  #   The output file can be saved to this bucket, user might want to change it into their own bucket
         year = str(year)
         day_of_year = str(day_of_year)
         if len(day_of_year) < 3:
