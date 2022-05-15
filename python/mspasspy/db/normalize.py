@@ -584,8 +584,8 @@ class mseed_channel_matcher(NMF):
         self.load_if_defined = list()
         for x in load_if_defined:
             self.load_if_defined.append(x)
-        if cache_normalization_data:
-            self.cache_normalization_data = cache_normalization_data
+        self.cache_normalization_data = cache_normalization_data
+        if self.cache_normalization_data:
             # We dogmatically require prepend_collection_name=True
             self.cache = _load_normalization_cache(
                 db,
@@ -733,6 +733,8 @@ class mseed_channel_matcher(NMF):
             # When time is not defined (None) just return first entry
             # but post a warning
             if test_time == None:
+                # We might never enter this branch, since mspass objects always have
+                # a test_time = d.t0
                 if error_logging_allowed:
                     message = "Warning - no time specified for match and data has no starttime field defined.  Using first match found in channel collection"
                     self.log_error(
@@ -744,7 +746,8 @@ class mseed_channel_matcher(NMF):
                     )
                 idkey = doclist[0]
                 return self.cache[idkey]
-            for idkey, doc in doclist.items():
+            for key_doc in doclist:
+                doc = self.cache[key_doc]
                 stime = doc["starttime"]
                 etime = doc["endtime"]
                 if test_time >= stime and test_time <= etime:
@@ -785,7 +788,7 @@ class mseed_channel_matcher(NMF):
         turned off.   This method does one database transaction per call.
         """
         # do this test once to avoid repetitious calls later - minimal cost
-        error_logging_allowed = isinstance(TimeSeries, Seismogram)
+        error_logging_allowed = isinstance(d, (TimeSeries, Seismogram))
         query_is_ok = True
         query = {}
         if d.is_defined("net"):
@@ -872,6 +875,18 @@ class mseed_channel_matcher(NMF):
 
         matchsize = self.dbhandle.count_documents(query)
         if matchsize == 0:
+            if error_logging_allowed:
+                message = (
+                    "No match for query = "
+                    + str(query)
+                )
+                self.log_error(
+                    d,
+                    "mseed_channel_matcher._cached_get_document",
+                    message,
+                    self.kill_on_failure,
+                    ErrorSeverity.Invalid,
+                )
             return None
         if matchsize > 1 and self.verbose and error_logging_allowed:
             self.log_error(
@@ -881,7 +896,22 @@ class mseed_channel_matcher(NMF):
                 False,
                 ErrorSeverity.Complaint,
             )
-        return self.dbhandle.find_one(query)
+        match_doc = self.dbhandle.find_one(query)
+        ret_doc = {}
+        for key in self.attributes_to_load:
+            if key in match_doc:
+                ret_doc[key] = match_doc[key]
+            else:
+                raise MsPASSError(
+                    "get document:   required attribute with key = "
+                    + key
+                    + " not found",
+                    ErrorSeverity.Fatal,
+                )
+        for key in self.load_if_defined:
+            if key in match_doc:
+                ret_doc[key] = match_doc[key]
+        return ret_doc
 
     def normalize(self, d, time=None):
         """
@@ -996,8 +1026,8 @@ class mseed_site_matcher(NMF):
         self.load_if_defined = list()
         for x in load_if_defined:
             self.load_if_defined.append(x)
-        if cache_normalization_data:
-            self.cache_normalization_data = cache_normalization_data
+        self.cache_normalization_data = cache_normalization_data
+        if self.cache_normalization_data:
             # We dogmatically require prepend_collection_name=True
             self.cache = _load_normalization_cache(
                 db,
@@ -1142,7 +1172,8 @@ class mseed_site_matcher(NMF):
                     )
                 idkey = doclist[0]
                 return self.cache[idkey]
-            for idkey, doc in doclist:
+            for key_doc in doclist:
+                doc = self.cache[key_doc]
                 stime = doc["starttime"]
                 etime = doc["endtime"]
                 if test_time >= stime and test_time <= etime:
@@ -1179,7 +1210,7 @@ class mseed_site_matcher(NMF):
 
     def _db_get_document(self, d, time=None):
         # do this test once to avoid repetitious calls later - minimal cost
-        error_logging_allowed = isinstance(TimeSeries, Seismogram)
+        error_logging_allowed = isinstance(d, (TimeSeries, Seismogram))
         query_is_ok = True
         query = {}
         if d.is_defined("net"):
@@ -1249,6 +1280,18 @@ class mseed_site_matcher(NMF):
 
         matchsize = self.dbhandle.count_documents(query)
         if matchsize == 0:
+            if error_logging_allowed:
+                message = (
+                    "No match for query = "
+                    + str(query)
+                )
+                self.log_error(
+                    d,
+                    "mseed_channel_matcher._cached_get_document",
+                    message,
+                    self.kill_on_failure,
+                    ErrorSeverity.Invalid,
+                )
             return None
         if matchsize > 1 and self.verbose and error_logging_allowed:
             self.log_error(
@@ -1258,7 +1301,22 @@ class mseed_site_matcher(NMF):
                 False,
                 ErrorSeverity.Complaint,
             )
-        return self.dbhandle.find_one(query)
+        match_doc = self.dbhandle.find_one(query)
+        ret_doc = {}
+        for key in self.attributes_to_load:
+            if key in match_doc:
+                ret_doc[key] = match_doc[key]
+            else:
+                raise MsPASSError(
+                    "get document:   required attribute with key = "
+                    + key
+                    + " not found",
+                    ErrorSeverity.Fatal,
+                )
+        for key in self.load_if_defined:
+            if key in match_doc:
+                ret_doc[key] = match_doc[key]
+        return ret_doc
 
     def normalize(self, d, time=None):
         if d.dead():
