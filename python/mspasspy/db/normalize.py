@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from ast import Str
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, Metadata
 from mspasspy.ccore.seismic import (
     TimeSeries,
@@ -7,15 +6,11 @@ from mspasspy.ccore.seismic import (
     TimeSeriesEnsemble,
     SeismogramEnsemble,
 )
-from numpy import isin
 
 from obspy import UTCDateTime
-from pkg_resources import require
-from pyrsistent import optional
 import pymongo
 
-# this is copied from edit.py.  easier to duplicate than load that entire
-# module with this one but collaborators you may want to change that
+
 def _input_is_valid(d):
     """
     This internal function standardizes the test to certify the
@@ -221,6 +216,7 @@ class ID_matcher(NMF):
         cache_normalization_data=True,
         query={},
         verbose=True,
+        prepend_collection_name=True,
     ):
         """
         Constructor for this class.
@@ -254,12 +250,21 @@ class ID_matcher(NMF):
           by using a time range query (python dict) for this argument.
         :param verbose:  most subclasses will want a verbose option
           to control what is posted to elog messages or printed
+        :param prepend_collection_name:  boolean controlling a standard
+          renaming option.   When True (default)   all normalizing data
+          keys get a collection name prepended to the key to give it a
+          unique key.  e.g. if loading data from "channel" the "lat"
+          (latitude of the instrument's location) field will be changed on
+           posting to d to "channel_lat".   Setting this false should be
+           a rare or never used option and should be done only if you deeply
+           understand the consequences.
         """
         if isinstance(collection, str):
             super().__init__(kill_on_failure, verbose)
             self.collection = collection
             self.mdkey = collection + "_id"
             self.dbhandle = db[collection]
+            self.prepend_collection_name = prepend_collection_name
             # assume type errors will be thrown if attributes_to_load is not array like
             # this is attributes_to_load is initialized to an empty list in
             # super()
@@ -393,7 +398,7 @@ class ID_matcher(NMF):
                     result[key] = doc[key]
         return result
 
-    def normalize(self, d, prepend_collection_name=True):
+    def normalize(self, d):
         """
         Implementation of the normalize method for this class.  This method
         first tests if the input is a valid MsPASS data object.  It will
@@ -413,14 +418,6 @@ class ID_matcher(NMF):
           This can be used, for example, to normalize a parallel container
           (rdd or bad) of common source gathers more efficiently than
           at the atomic level.
-        :param prepend_collection_name:  boolean controlling a standard
-          renaming option.   When True (default)   all normalizing data
-          keys get a collection name prepended to the key to give it a
-          unique key.  e.g. if loading data from "channel" the "lat"
-          (latitude of the instrument's location) field will be changed on
-           posting to d to "channel_lat".   Setting this false should be
-           a rare or never used option and should be done only if you deeply
-           understand the consequences.
         """
         if _input_is_valid(d):
             if d.dead():
@@ -445,7 +442,7 @@ class ID_matcher(NMF):
                 # to contain only those in the attributes_to_load or load_if_defined lists
                 # Hence we copy all.
                 for key in doc:
-                    if prepend_collection_name:
+                    if self.prepend_collection_name:
                         newkey = self.collection + "_" + key
                         d[newkey] = doc[key]
                     else:
@@ -970,11 +967,6 @@ class mseed_channel_matcher(NMF):
             )
 
 
-# this class is modified form mseed_channel_matcher removing the chan
-# key and replacing channel by site.
-# collaborators:   there may be relic and inconsistencies with the channel
-# version. That needs to be checked.  The docstrings for this class are
-# also not completed - glp 4/12/2022 - remove these comments for release
 class mseed_site_matcher(NMF):
     """
     This class is used to match derived from seed data to the site collection using
@@ -991,6 +983,18 @@ class mseed_site_matcher(NMF):
     the method of this object will normally post an elog message warning of the
     potential issue.  Those warnings can be silenced by setting verbose
     in the constructor to False.
+
+    The class also has a cache option that can dramatically improve
+    performance for large data sets.  When using the database option
+    (caching turned off) the normalize method issues a database query
+    at each call.  If applied to a data set with a large number of
+    waveforms that can add up.  We have found the cache algorithm is
+    an order of magnitude or more faster than the database algorithm
+    for typical channel collections assembled from FDSN web services.
+    It is recommended unless the memory foot print is excessive.
+    That too can usually be avoided by using a query to weed out unnecessary
+    channel documents or by editing the channel document to reduce the
+    debris from extraneous data.
     """
 
     def __init__(
@@ -1812,6 +1816,116 @@ class css30_arrival_interval_matcher(NMF):
             )
 
 
+def bulk_normalize(
+    db, wfquery={}, src_col="wf_miniseed", blocksize=1000, nmf_list=None, verbose=False
+):
+    """
+    This function iterates through the collection specified by db and src_col,
+    and run all the given normalize functions on each doc. It will save the
+    time of multiple db updating operations, by using the bulk methods of MongoDB.
+
+    :param db: should be a MsPASS database handle containing the src_col
+    and the collections defined by the nmf_list list.
+    :param src_col: The collection that need to be normalized, default is
+    wf_miniseed
+    :param blockssize:   To speed up updates this function uses the
+    bulk writer/updater methods of MongoDB that can be orders of
+    magnitude faster than one-at-a-time updates for setting
+    channel_id and site_id.  A user should not normally need to alter this
+    parameter.
+    :param wfquery: is a query to apply to the collection.  The output of this
+    query defines the list of documents that the algorithm will attempt
+    to normalize as described above.  The default will process the entire
+    collection (query set to an emtpy dict).
+    :param nmf_list: a list of NMF instances. These instances should at least
+    contain a get_document function and a dbhandler. The default will be a simple
+    mseed_channel_matcher.
+    :param verbose: When set true the get_document and normalize functions will
+    be run in verbose mode.  Those methods will print a diagnostic for all
+    ambiguous matches.  Because this function is expected to be run on potentially
+    large raw data sets of miniseed inputs the default is False to reduce the
+    overhead of potentially large log messages created by the all to common
+    duplicate metadata problem. Please note that this function will alter the
+    verbose levels of all NMF instances in nmf_list.
+
+    :return: a list with a length of len(nmf_list)+1.  0 is the number of documents
+    processed in the collection (output of query), The rest are the numbers of
+    success normalizations for the corresponding NMF instances, they are mapped
+    one on one (nmf_list[x] -> ret[x+1]).
+    """
+
+    if nmf_list is None:
+        #   The default value for nmf_list is one default
+        channel_matcher = mseed_channel_matcher(
+            db,
+            attributes_to_load=["_id", "net", "sta", "starttime", "endtime"],
+            verbose=verbose,
+        )
+        nmf_list = [channel_matcher]
+
+    for nmf in nmf_list:
+        if not isinstance(nmf, NMF):
+            raise MsPASSError(
+                "bulk_normalize: the function {} is not a NMF function".format(
+                    str(nmf)
+                ),
+                ErrorSeverity.Fatal,
+            )
+        nmf.verbose = verbose
+
+    ndocs = db[src_col].count_documents(wfquery)
+    if ndocs == 0:
+        raise MsPASSError(
+            "bulk_normalize: "
+            + "query of wf_miniseed yielded 0 documents\nNothing to process",
+            ErrorSeverity.Fatal,
+        )
+
+    cnt_list = [0] * len(nmf_list)
+    counter = 0
+
+    cursor = db[src_col].find(wfquery)
+    bulk = []
+    for doc in cursor:
+        src_id = doc["_id"]
+        src_stime = doc["starttime"]
+        need_update = False
+        update_doc = {}
+        for ind, nmf in enumerate(nmf_list):
+            try:
+                norm_doc = nmf.get_document(doc, time=src_stime)
+                if norm_doc is None:
+                    continue
+                for key in nmf.attributes_to_load:
+                    new_key = key
+                    if nmf.prepend_collection_name:
+                        #   We assume that every NMF should contain a dbhandler
+                        new_key = nmf.dbhandle.name + "_" + key
+                    update_doc[new_key] = norm_doc[key]
+            except TypeError:  # Some nmf dervied classes don't accept time argument
+                norm_doc = nmf.get_document(doc)
+                if norm_doc is None:
+                    continue
+                for key in nmf.attributes_to_load:
+                    new_key = key
+                    if nmf.prepend_collection_name:
+                        new_key = nmf.dbhandle.name + "_" + key
+            #   If we reach here, we've got a norm_doc return
+            cnt_list[ind] += 1
+            need_update = True
+
+        if need_update:
+            bulk.append(pymongo.UpdateOne({"_id": src_id}, {"$set": update_doc}))
+            counter += 1
+        if counter % blocksize == 0 and counter != 0:
+            db.wf_miniseed.bulk_write(bulk)
+
+    if counter % blocksize != 0:
+        db[src_col].bulk_write(bulk)
+
+    return [ndocs] + cnt_list
+
+
 def normalize_mseed(
     db,
     wfquery={},
@@ -1871,25 +1985,28 @@ def normalize_mseed(
     no serious problems with ambiguous net:sta:loc(chan) that are truly
     inconsistent (i.e. have different attributes for the same keys)
 
-    :return: tuple with three integers.  0 is the number of documents processed in
+    :return: list with three integers.  0 is the number of documents processed in
     wf_miniseed (output of query), 1 is the number with channel ids set,
     and 2 contains the number of site documents set.  1 or 2 should
     contain 0 if normalization for that collection was set false.
     """
     # this is a prototype - use all defaults for initial test
     matcher = mseed_channel_matcher(
-        db, attributes_to_load=["_id", "net", "sta", "chan", "starttime", "endtime"]
+        db,
+        attributes_to_load=["_id", "net", "sta", "chan", "starttime", "endtime"],
+        verbose=verbose,
     )
     if normalize_site:
         sitematcher = mseed_site_matcher(
-            db, attributes_to_load=["_id", "net", "sta", "starttime", "endtime"]
+            db,
+            attributes_to_load=["_id", "net", "sta", "starttime", "endtime"],
+            verbose=verbose,
         )
     ndocs = db.wf_miniseed.count_documents(wfquery)
     if ndocs == 0:
-        # check me - may be wrong number of args
         raise MsPASSError(
-            "normalize_mseed",
-            "query of wf_miniseed yielded 0 documents\nNothing to process",
+            "normalize_mseed: "
+            + "query of wf_miniseed yielded 0 documents\nNothing to process",
             ErrorSeverity.Fatal,
         )
     # An immortal cursor should not be necssary for this algorithm
@@ -1924,17 +2041,12 @@ def normalize_mseed(
                 number_site_set += 1
         # this conditional is needed in case neither channel or site have a match
         if len(update_dict) > 0:
-            # bulk.find({"_id" : wfid}).update({"$set" : update_dict})
             bulk.append(pymongo.UpdateOne({"_id": wfid}, {"$set": update_dict}))
             counter += 1
-        if counter % blocksize == 0:
-            # bulk.execute()
-            # bulk = db.wf_miniseed.initialize_unordered_bulk_op()
-            # bulk = db.wf_miniseed.initialize_ordered_bulk_op()
+        if counter % blocksize == 0 and counter != 0:
             db.wf_miniseed.bulk_write(bulk)
 
     if counter % blocksize != 0:
-        # bulk.execute()
         db.wf_miniseed.bulk_write(bulk)
 
     return [ndocs, number_channel_set, number_site_set]
