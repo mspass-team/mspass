@@ -4,9 +4,10 @@ from mspasspy.db.normalize import (
     mseed_site_matcher,
     origin_time_source_matcher,
     normalize_mseed,
+    bulk_normalize,
 )
 
-from mspasspy.db.database import Database, read_distributed_data
+from mspasspy.db.database import Database
 from mspasspy.db.client import DBClient
 
 import os
@@ -158,8 +159,12 @@ class TestNormalize:
         #       Test prepend_collection_name
         ts_1 = copy.deepcopy(self.ts)
         ts_2 = copy.deepcopy(self.ts)
-        cached_retdoc = cached_matcher(ts_1, prepend_collection_name=False)
-        uncached_retdoc = uncached_matcher(ts_2, prepend_collection_name=False)
+        matcher = ID_matcher(self.db, prepend_collection_name=False)
+        cached_retdoc = matcher(ts_1)
+        matcher = ID_matcher(
+            self.db, prepend_collection_name=False, cache_normalization_data=False
+        )
+        uncached_retdoc = matcher(ts_2)
         assert Metadata_cmp(cached_retdoc, uncached_retdoc)
         assert "lat" in cached_retdoc
 
@@ -484,5 +489,37 @@ class TestNormalize:
         cached_retdoc = cached_matcher(ts)
         assert Metadata_cmp(self.ts, cached_retdoc)
 
-    def test_css30_arrival_interval_matcher(self):
-        pass
+    def test_normalize_mseed(self):
+        ret = normalize_mseed(self.db, normalize_channel=False, normalize_site=False)
+        assert ret == [3934, 0, 0]
+
+        ret = normalize_mseed(self.db, normalize_channel=True, normalize_site=False)
+        assert ret == [3934, 3934, 0]
+
+        ret = normalize_mseed(self.db, normalize_channel=True, normalize_site=True)
+        assert ret == [3934, 3934, 3934]
+
+    def test_bulk_normalize(self):
+        nmf_function_list = []
+        matcher = mseed_channel_matcher(
+            self.db,
+            attributes_to_load=["_id", "net", "sta", "chan", "starttime", "endtime"],
+            verbose=False,
+        )
+        nmf_function_list.append(matcher)
+
+        sitematcher = mseed_site_matcher(
+            self.db,
+            attributes_to_load=["_id", "net", "sta", "starttime", "endtime"],
+            verbose=False,
+        )
+        nmf_function_list.append(sitematcher)
+
+        ret = bulk_normalize(
+            self.db,
+            wfquery={},
+            src_col="wf_miniseed",
+            nmf_list=nmf_function_list,
+            verbose=False,
+        )
+        assert ret == [3934, 3934, 3934]
