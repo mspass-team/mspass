@@ -9,6 +9,7 @@ from mspasspy.ccore.seismic import (
 
 from obspy import UTCDateTime
 import pymongo
+import inspect
 
 
 def _input_is_valid(d):
@@ -107,22 +108,65 @@ class NMF(ABC):
     key-value pairs to a valid MsPASS data object.
     """
 
-    def __init__(self, kill_on_failure=True, verbose=False):
+    def __init__(self, db, collection, query={}, prepend_collection_name=True, kill_on_failure=True, verbose=False, cache_normalization_data = None):
         """
-        Base class constructor.   The implementation requires two
+        Base class constructor.   The implementation requires 3
         defaulted parameters that most subclasses can find useful.
 
+        :param db:  MongoDB Database handle
+        :param collection:   string defining the collection this object
+          should use for normalization.   If this argument is not a valid
+          string the constructor will abort with a TypeError exception.
+        :param query:  optional query to apply to collection before loading.
+          The default is load all.  If your data set is time limited and
+          the collection has a time attribute (true of the standard channel,
+          site, and source collections) you can reduce the memory footprint
+          by using a time range query (python dict) for this argument.
+        :param prepend_collection_name:  boolean controlling a standard
+          renaming option.   When True (default)   all normalizing data
+          keys get a collection name prepended to the key to give it a
+          unique key.  e.g. if loading data from "channel" the "lat"
+          (latitude of the instrument's location) field will be changed on
+           posting to d to "channel_lat".   Setting this false should be
+           a rare or never used option and should be done only if you deeply
+           understand the consequences.
         :param kill_on_failure:  when set true (Default) match errors
           will cause data passed to the normalize method to be killed.
         :param verbose:  most subclasses will want a verbose option
           to control what is posted to elog messages or printed
           (most useful for serial jobs)
         """
+        if not isinstance(collection, str):
+            raise TypeError(
+                "{} constructor:  arg0 must be a collection name - received invalid type".format(
+                    self.__class__.__name__
+                )
+            )
+        self.collection = collection
+        self.mdkey = collection + "_id" # TODO: we might need a function to create the key
+        self.dbhandle = db[collection]
+
+        self.prepend_collection_name = prepend_collection_name
         self.kill_on_failure = kill_on_failure
-        # this list is always needed for normalize method.  Here we just
-        # initialize it to an empty list to avoid that step in all subclasses
-        self.attributes_to_load = []
         self.verbose = verbose
+
+        # These two lists are always needed for normalize methods.  
+        # Here we just initialize it to None. Subclasses need to
+        # specify the default value in their own init methods.
+        self.attributes_to_load = None
+        self.load_if_defined = None
+        
+        # Derived classes need to specify the cache_normalization_data, some of them
+        # might don't have a caching feature
+        self.cache_normalization_data = cache_normalization_data
+        if self.cache_normalization_data==True:
+            self.cache = _load_normalization_cache(
+                db,
+                collection,
+                required_attributes=self.attributes_to_load,
+                optional_attributes=self.load_if_defined,
+                query=query,
+            )        
 
     def __call__(self, d, *args, **kwargs):
         """
@@ -134,22 +178,86 @@ class NMF(ABC):
         """
         return self.normalize(d, *args, **kwargs)
 
-    @abstractmethod
     def get_document(self, d):
-        pass
+        if self.cache_normalization_data is None or self.cache_normalization_data == False:
+            return self._db_get_document(self, d)
+        else:
+            return self._cached_get_document(self, d)
 
-    @abstractmethod
+    def _cached_get_document(self, d):
+        if d.is_defined(self.mdkey):
+            testid = d[self.mdkey]
+        else:
+            message = "Normalizing ID with key={} is not defined in this object".format(self.mdkey)
+            self.log_error(d, message, ErrorSeverity.Invalid)
+            return None
+        try:
+            result = self.cache[str(testid)]
+            return result
+        except KeyError:
+            message = "Key [{}] not defined in cache".format(str(testid))
+            self.log_error(d, message, ErrorSeverity.Invalid)
+            return None
+
+    def _db_get_document(self, d):
+        if d.is_defined(self.mdkey):
+            testid = d[self.mdkey]
+        else:
+            message = "Normalizing ID with key={} is not defined in this object".format(self.mdkey)
+            self.log_error(d, message, ErrorSeverity.Invalid)
+            return None
+
+        query = {"_id": testid}
+        doc = self.dbhandle.find_one(query)
+        # For consistency we have to copy doc into a Metadata container
+        # for this situation - doc is a MongoDB document container and
+        # may contain other attributes so we do a selective copy for consistency
+        result = Metadata()
+        if doc is None:
+            message = "Key [{}] not defined in normalization collection = {}".format(str(testid), self.collection)
+            self.log_error(d, message, ErrorSeverity.Invalid)
+            return None
+        for key in self.attributes_to_load:
+            if key in doc:
+                result[key] = doc[key]
+            else:
+                message = "Required key={} not found in normalization collection = {}".format(key, self.collection)
+                self.log_error(d, message, ErrorSeverity.Invalid)
+        for key in self.load_if_defined:
+            if key in doc:
+                result[key] = doc[key]
+        return result
+
     def normalize(self, d):
-        pass
+        if _input_is_valid(d):
+            if d.dead():
+                return d
+            doc = self.get_document(d)
+            if doc == None:
+                message = "No matching _id found for {} in collection={}".format(self.mdkey, self.collection)
+                self.log_error(d, message, ErrorSeverity.Invalid)
+            else:
+                # In this implementation the contents of doc have been prefiltered
+                # to contain only those in the attributes_to_load or load_if_defined lists
+                # Hence we copy all.
+                for key in doc:
+                    if self.prepend_collection_name:
+                        newkey = self.collection + "_" + key
+                        d[newkey] = doc[key]
+                    else:
+                        d[key] = doc[key]
+            return d
+        else:
+            # land here if d was not a valid datum.
+            raise TypeError("ID_matcher.normalize:  received invalid data type")
 
     def log_error(
-        self, d, matchername, message, kill=False, severity=ErrorSeverity.Informational
+        self, d, message, severity=ErrorSeverity.Informational, kill=None
     ):
         """
         This base class method is used to standardize the error logging
         functionality of all NMF objects.   It writes a standardized
-        message to simplify writing of subclasses - they need only
-        define the matchername (normally the name of the subclass) and
+        message to simplify writing of subclasses - they only need to
         format a specific message to be posted.  The caller may optionally
         kill the datum and specify an alternative severity level to
         the default warning.
@@ -162,28 +270,35 @@ class NMF(ABC):
 
         :param d:  MsPASS data object to which elog message is to be
           written.
-        :param matchername: is the string assigned to the "algorithm" field
-        of the message posted to d.elog.
         :param message:  specialized message to post - this string is added
         to an internal generic message.
         :param kill:  boolean controlling if the message should cause the
-        datum to be killed.   Default False meaning only the message
+        datum to be killed. Default None meaning the kill_on_failure boolean of 
+        the class will be used. If kill is set, it will be overwritten temporarily.
         is posted.
         :param severity:  ErrorSeverity to assign to elog message
         (See ErrorLogger docstring).  Default is Informational
         """
-        if _input_is_valid(d):
-            fullmessage = message
-            if kill:
-                d.kill()
-                fullmessage += "\nDatum was killed"
-            if not hasattr(self, "verbose") or self.verbose is True:
-                d.elog.log_error(matchername, fullmessage, severity)
-        else:
-            raise MsPASSError(
-                "NMF.log_error method received invalid data;  arg 0 must be a MsPASS data object",
-                ErrorSeverity.Fatal,
-            )
+        if not _input_is_valid(d):
+            #   If we can't log error to the object, simply return
+            return
+
+        if kill is None:
+            kill = self.kill_on_failure
+
+        if kill:
+            d.kill()
+            message += "\nDatum was killed"
+
+        #   Add class name and caller function name for better locating the error
+        class_name = self.__class__.__name__
+        curframe = inspect.currentframe()
+        calframe = inspect.getouterframes(curframe, 2)
+        caller_name = calframe[1][3]
+        matchername = class_name + "." + caller_name
+        
+        if not hasattr(self, "verbose") or self.verbose is True:
+            d.elog.log_error(matchername, message, severity)
 
 
 class ID_matcher(NMF):
