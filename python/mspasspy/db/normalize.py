@@ -195,16 +195,16 @@ class NMF(ABC):
         """
         return self.normalize(d, *args, **kwargs)
 
-    def get_document(self, d):
+    def get_document(self, d, *args, **kwargs):
         if (
             self.cache_normalization_data is None
             or self.cache_normalization_data == False
         ):
-            return self._db_get_document(d)
+            return self._db_get_document(d, *args, **kwargs)
         else:
-            return self._cached_get_document(d)
+            return self._cached_get_document(d, *args, **kwargs)
 
-    def _cached_get_document(self, d):
+    def _cached_get_document(self, d, *args, **kwargs):
         if d.is_defined(self.mdkey):
             testid = d[self.mdkey]
         else:
@@ -221,7 +221,7 @@ class NMF(ABC):
             self.log_error(d, message, ErrorSeverity.Invalid)
             return None
 
-    def _db_get_document(self, d):
+    def _db_get_document(self, d, *args, **kwargs):
         if d.is_defined(self.mdkey):
             testid = d[self.mdkey]
         else:
@@ -258,30 +258,29 @@ class NMF(ABC):
                 result[key] = doc[key]
         return result
 
-    def normalize(self, d):
-        if _input_is_valid(d):
-            if d.dead():
-                return d
-            doc = self.get_document(d)
-            if doc == None:
-                message = "No matching _id found for {} in collection={}".format(
-                    self.mdkey, self.collection
-                )
-                self.log_error(d, message, ErrorSeverity.Invalid)
-            else:
-                # In this implementation the contents of doc have been prefiltered
-                # to contain only those in the attributes_to_load or load_if_defined lists
-                # Hence we copy all.
-                for key in doc:
-                    if self.prepend_collection_name:
-                        newkey = self.collection + "_" + key
-                        d[newkey] = doc[key]
-                    else:
-                        d[key] = doc[key]
-            return d
-        else:
-            # land here if d was not a valid datum.
+    def normalize(self, d, *args, **kwargs):
+        if not _input_is_valid(d):
             raise TypeError("ID_matcher.normalize:  received invalid data type")
+        if d.dead():
+            return d
+            
+        doc = self.get_document(d, *args, **kwargs)
+        if doc == None:
+            message = "No matching _id found for {} in collection={}".format(
+                self.mdkey, self.collection
+            )
+            self.log_error(d, message, ErrorSeverity.Invalid)
+        else:
+            # In this implementation the contents of doc have been prefiltered
+            # to contain only those in the attributes_to_load or load_if_defined lists
+            # Hence we copy all.
+            for key in doc:
+                if self.prepend_collection_name:
+                    newkey = self.collection + "_" + key
+                    d[newkey] = doc[key]
+                else:
+                    d[key] = doc[key]
+        return d
 
     def log_error(self, d, message, severity=ErrorSeverity.Informational, kill=None):
         """
@@ -528,14 +527,16 @@ class mseed_channel_matcher(NMF):
     def __init__(
         self,
         db,
+        collection="channel",
         attributes_to_load=None,
         load_if_defined=None,
-        cache_normalization_data=True,
         query={},
-        readonly_tag="READONLYERROR_",
         prepend_collection_name=True,
         kill_on_failure=True,
         verbose=True,
+        cache_normalization_data=True,
+
+        readonly_tag="READONLYERROR_",
     ):
         """
         Constructor for this class.  Includes the important boolean
@@ -583,8 +584,6 @@ class mseed_channel_matcher(NMF):
           elog collection.   Normal use should leave it True.
 
         """
-        super().__init__(kill_on_failure, verbose)
-        self.dbhandle = db["channel"]
 
         if attributes_to_load is None:
             attributes_to_load = [
@@ -602,30 +601,55 @@ class mseed_channel_matcher(NMF):
             ]
         if load_if_defined is None:
             load_if_defined = ["loc"]
-        # assume type errors will be thrown if attributes_to_load is not array like
-        self.attributes_to_load = list()
-        for x in attributes_to_load:
-            self.attributes_to_load.append(x)
-        self.load_if_defined = list()
-        for x in load_if_defined:
-            self.load_if_defined.append(x)
-        self.cache_normalization_data = cache_normalization_data
-        if self.cache_normalization_data:
-            # We dogmatically require prepend_collection_name=True
-            self.cache = _load_normalization_cache(
-                db,
-                "channel",
-                required_attributes=self.attributes_to_load,
-                optional_attributes=self.load_if_defined,
-                query=query,
-            )
-            self.xref = self._build_xref()
-        else:
-            self.cache = dict()
-            self.xref = dict()
 
+        super().__init__(
+            db,
+            collection,
+            attributes_to_load,
+            load_if_defined,
+            query,
+            prepend_collection_name,
+            kill_on_failure,
+            verbose,
+            cache_normalization_data,
+        )
+        
         self.readonly_tag = readonly_tag
-        self.prepend_collection_name = prepend_collection_name
+        
+        if self.cache_normalization_data:
+            self.xref = self._build_xref()
+
+    def _get_readonly_field(self, d, field, error_logging_enabled=True):
+        """
+        used to get some fields that might have a readonly prefix
+        """
+        error_logging_allowed = isinstance(d, (TimeSeries, Seismogram))
+        if d.is_defined(field):
+            return d[field]
+        elif d.is_defined(self.readonly_tag + field):
+            return d[self.readonly_tag + field]
+        else:
+            if error_logging_allowed and error_logging_enabled:
+                self.log_error(
+                    d,
+                    "Required match key={key} or {tag}{key} are not defined for this datum".format(key=field, tag=self.readonly_tag),
+                    ErrorSeverity.Invalid,
+                )
+            return None
+
+    def _get_test_time(self, d, time):
+        if time == None:
+            if isinstance(d, (TimeSeries, Seismogram)):
+                test_time = d.t0
+            else:
+                if d.is_defined("starttime"):
+                    test_time = d["starttime"]
+                else:
+                    # Use None for test_time as a signal to ignore time field
+                    test_time = None
+        else:
+            test_time = time
+        return test_time
 
     def _build_xref(self):
         """
@@ -675,79 +699,23 @@ class mseed_channel_matcher(NMF):
         # do this test once to avoid repetitious calls later - minimal cost
         error_logging_allowed = isinstance(d, (TimeSeries, Seismogram))
 
-        if d.is_defined("net"):
-            net = d["net"]
-        elif d.is_defined(self.readonly_tag + "net"):
-            net = d[self.readonly_tag + "net"]
-        else:
-            if error_logging_allowed:
-                self.log_error(
-                    d,
-                    "mseed_channel_matcher",
-                    "Required match key=net or "
-                    + self.readonly_tag
-                    + "net are not defined for this datum",
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
+        net = self._get_readonly_field(d, "net")
+        sta = self._get_readonly_field(d, "sta")
+        chan = self._get_readonly_field(d, "chan")
+        if net is None or sta is None or chan is None:
             return None
-
-        if d.is_defined("sta"):
-            sta = d["sta"]
-        elif d.is_defined(self.readonly_tag + "sta"):
-            sta = d[self.readonly_tag + "sta"]
-        else:
-            if error_logging_allowed:
-                self.log_error(
-                    d,
-                    "mseed_channel_matcher",
-                    "Required match key=sta or "
-                    + self.readonly_tag
-                    + "sta are not defined for this datum",
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-            return None
-
-        if d.is_defined("chan"):
-            chan = d["chan"]
-        elif d.is_defined(self.readonly_tag + "chan"):
-            chan = d[self.readonly_tag + "chan"]
-        else:
-            if error_logging_allowed:
-                self.log_error(
-                    d,
-                    "mseed_channel_matcher",
-                    "Required match key=chan or "
-                    + self.readonly_tag
-                    + "chan are not defined for this datum",
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-                return None
 
         # loc has to be handled differently because it is often not defined
         # We just don't add loc to the query if it isn't defined
-        if d.is_defined("loc"):
-            loc = d["loc"]
-        elif d.is_defined(self.readonly_tag + "loc"):
-            loc = d[self.readonly_tag + "loc"]
-        else:
-            loc = ""  # this cas is assumed handled by _channel_composite_key
+        loc = self._get_readonly_field(d, "loc", False)
+        if loc is None: # this case is assumed handled by _channel_composite_key
+            loc = ""
 
         key = _channel_composite_key(net, sta, chan, loc)
+        
         # Try to recover if time is not explicitly passed as an arg
-        if time == None:
-            if isinstance(d, (TimeSeries, Seismogram)):
-                test_time = d.t0
-            else:
-                if d.is_defined("starttime"):
-                    test_time = d["starttime"]
-                else:
-                    # Use None for test_time as a signal to ignore time field
-                    test_time = None
-        else:
-            test_time = time
+        test_time = self._get_test_time(d, time)
+
         if key in self.xref:
             doclist = self.xref[key]
             # avoid a test and assume this is a match if there is only
@@ -786,9 +754,7 @@ class mseed_channel_matcher(NMF):
                 )
                 self.log_error(
                     d,
-                    "mseed_channel_matcher._cached_get_document",
                     message,
-                    self.kill_on_failure,
                     ErrorSeverity.Invalid,
                 )
             return None
@@ -800,9 +766,7 @@ class mseed_channel_matcher(NMF):
                 )
                 self.log_error(
                     d,
-                    "mseed_channel_matcher._cached_get_document",
                     message,
-                    self.kill_on_failure,
                     ErrorSeverity.Invalid,
                 )
             return None
@@ -814,61 +778,16 @@ class mseed_channel_matcher(NMF):
         """
         # do this test once to avoid repetitious calls later - minimal cost
         error_logging_allowed = isinstance(d, (TimeSeries, Seismogram))
-        query_is_ok = True
         query = {}
-        if d.is_defined("net"):
-            query["net"] = d["net"]
-        elif d.is_defined(self.readonly_tag + "net"):
-            query["net"] = d[self.readonly_tag + "net"]
-        else:
-            query_is_ok = False
-            if error_logging_allowed:
-                self.log_error(
-                    d,
-                    "mseed_channel_matcher",
-                    "Required match key=net or "
-                    + self.readonly_tag
-                    + "net are not defined for this datum",
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-        # We repeat the above logic for sta and chan for debugging but it
-        # could cause bloated elog messages if a user makes a dumb error
-        # with a large data set.  that seems preferable to mysterious behavior
-        # could make it a verbose option but for now we will always blunder on
-        if d.is_defined("sta"):
-            query["sta"] = d["sta"]
-        elif d.is_defined(self.readonly_tag + "sta"):
-            query["sta"] = d[self.readonly_tag + "sta"]
-        else:
-            query_is_ok = False
-            if error_logging_allowed:
-                self.log_error(
-                    d,
-                    "mseed_channel_matcher",
-                    "Required match key=sta or "
-                    + self.readonly_tag
-                    + "sta are not defined for this datum",
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
 
-        if d.is_defined("chan"):
-            query["chan"] = d["chan"]
-        elif d.is_defined(self.readonly_tag + "chan"):
-            query["chan"] = d[self.readonly_tag + "chan"]
-        else:
-            query_is_ok = False
-            if error_logging_allowed:
-                self.log_error(
-                    d,
-                    "mseed_channel_matcher",
-                    "Required match key=chan or "
-                    + self.readonly_tag
-                    + "chan are not defined for this datum",
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
+        net = self._get_readonly_field(d, "net")
+        sta = self._get_readonly_field(d, "sta")
+        chan = self._get_readonly_field(d, "chan")
+        if net is None or sta is None or chan is None:
+            return None
+        query["net"] = net
+        query["sta"] = sta
+        query["chan"] = chan
 
         # loc has to be handled differently because it is often not defined
         # We just don't add loc to the query if it isn't defined
@@ -877,22 +796,7 @@ class mseed_channel_matcher(NMF):
         elif d.is_defined(self.readonly_tag + "loc"):
             query["loc"] = d[self.readonly_tag + "loc"]
 
-        # return now if this datum has been marked dead
-        if not query_is_ok:
-            return None
-
-        # default to data start time if time is not explicitly passed
-        if time == None:
-            if isinstance(d, (TimeSeries, Seismogram)):
-                querytime = d.t0
-            else:
-                if d.is_defined("starttime"):
-                    querytime = d["starttime"]
-                else:
-                    # Use None for test_time as a signal to ignore time field
-                    querytime = None
-        else:
-            querytime = time
+        querytime = self._get_test_time(d, time)
 
         if querytime is not None:
             query["starttime"] = {"$lt": querytime}
@@ -904,19 +808,16 @@ class mseed_channel_matcher(NMF):
                 message = "No match for query = " + str(query)
                 self.log_error(
                     d,
-                    "mseed_channel_matcher._cached_get_document",
                     message,
-                    self.kill_on_failure,
                     ErrorSeverity.Invalid,
                 )
             return None
         if matchsize > 1 and self.verbose and error_logging_allowed:
             self.log_error(
                 d,
-                "mseed_channel_matcher",
                 "Multiple channel docs match net:sta:chan:loc:time for this datum - using first one found",
-                False,
                 ErrorSeverity.Complaint,
+                False
             )
         match_doc = self.dbhandle.find_one(query)
         ret_doc = {}
@@ -925,9 +826,7 @@ class mseed_channel_matcher(NMF):
                 ret_doc[key] = match_doc[key]
             else:
                 raise MsPASSError(
-                    "get document:   required attribute with key = "
-                    + key
-                    + " not found",
+                    "get document:   required attribute with key = {} not found".format(key),
                     ErrorSeverity.Fatal,
                 )
         for key in self.load_if_defined:
@@ -943,52 +842,12 @@ class mseed_channel_matcher(NMF):
           or Seismogram object.  If d is anything else the function will
           raise a TypeError.
         """
-        if d.dead():
-            return d
-        if _input_is_atomic(d):
-            doc = self.get_document(d, time)
-            if doc == None:
-                message = "No matching document was found in channel collection for this datum"
-                self.log_error(
-                    d,
-                    "mseed_channel_matcher",
-                    message,
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-            else:
-                for key in self.attributes_to_load:
-                    if key in doc:
-                        if self.prepend_collection_name:
-                            mdkey = "channel_" + key
-                        else:
-                            mdkey = key
-                        d[mdkey] = doc[key]
-                    else:
-                        # We accumulate error messages to aid user debugging
-                        # but it could create bloated elog collections
-                        message = (
-                            "No data for key="
-                            + self.mdkey
-                            + " in document returned from collection="
-                            + self.collection
-                        )
-                        self.log_error(
-                            d,
-                            "mseed_channel_matcher",
-                            message,
-                            self.kill_on_failure,
-                            ErrorSeverity.Invalid,
-                        )
-            # Notice logic that if no match is found we log the error
-            # (and usually kill it) and land here. Allows application in a map
-            # operation
-            return d
-        else:
+        if not _input_is_atomic(d):
             raise TypeError(
                 "mseed_channel_matcher.normalize:  received invalid data type"
             )
 
+        return super().normalize(d, time)
 
 class mseed_site_matcher(NMF):
     """
