@@ -16,13 +16,13 @@ a cooking analogy.  Our framework supports two well developed systems
 for handling such problems called Spark and Dask.
 Dask is the default.
 
-A key perspective on this issue is that classical seismic processing systems
+An important perspective on this issue is that classical seismic processing systems
 concepts are well matched to the DAG Dask and Spark use for scheduling.  Classic
 seismic reflection processing systems runs a data set through a series of
 processing algorithms.  Each processor acts on either a single signal at
 at time (e.g. time-domain filtering) or a group of signals (what we call
 a TimeSeriesEnsmble in MsPASS) to produce an output of one or more modified
-sigals.   e.g. stacking takes an ensemble and produces a single output
+signals.   e.g. stacking takes an ensemble and produces a single output
 while migration takes an input ensemble and produces a (modified) ensemble.
 All these examples can be implemented in MsPASS framework to take advantage
 of the repetitious nature of the processors.  That is, all can be the thought of
@@ -48,8 +48,8 @@ A simple way to view the concept is that we aim to break "our data"
 into a finite set of *N* things (objects) that are each to be handled
 identically.   The raw input to any complete seismic data set fits this
 idea;  the "data set" is a set of *N* raw signals.  A serial version of
-processing that data set could be reduced to a loop over each of the *N*
-objects applying some algorithm to each datum one at a time.   In Spark
+processing a typical data set could be reduced to a loop over each of the *N*
+objects applying one or more algorithms to each datum one at a time.   In Spark
 and Dask the data are treated collectively as a single data set.
 The "data set" is abstracted by a single container that is used
 to symbolically represents the
@@ -63,17 +63,16 @@ either of the atomic types.  An implicit assumption in the current
 implementation is that any processing
 was proceeded by a data assembly and validation phase.
 Procedures for data import and data validation
-are described in this section (NEEDS A LINK - this section does not yet exist).
+are described in this section :ref:`importing_data`.
 A key concept here is that "importing" a data set to MsPASS means the
 entire data set has been assembled and loaded either into the gridfs
 file system internal to MongoDB or an index has been built for all data
-stored in files.   (In the future this may also mean data stored on the
-cloud and accessible via a URL, but that has not yet been implemented at the
-time this manual was last updated.)   The entire data set can, if desired, be a mix of the two
+stored in local or cloud-based files.   The entire data set can, if necessary,
+be a mix of the two
 because the MsPASS readers abstract the entire process of loading data
 for processing.  In addition, any required normalization data (i.e.
-data in the *site*, *channel*, and/or *source* collections) must have
-the normalization id's set on all waveform data that define your data set.
+data in the *site*, *channel*, and/or *source* collections) must be
+loaded and cross-referencing validated as described in :ref:`database_normalization`.
 Once the data set is fully assembled the bag/RDD defining the abstraction of the
 data is easily defined by a variant of the following code section:
 
@@ -141,7 +140,7 @@ as illustrated below:
 We expand on each of these constructs below.
 
 The map operator
-----------------------
+--------------------
 
 A *map* operator takes one input and emits a modified version of
 the input as output.  The inputs and outputs of a map are often the same type (e.g. a time-invariant filter),
@@ -167,6 +166,8 @@ output in the created (new) bag *d_out*.    The last line is way you tell dask t
 The idea and reasons for the concept of of "lazy" or "delayed"
 operation is discussed at length in various sources on dask (and Spark).
 We refer the reader to (LIST OF A FEW KEY URLS) for more on this general topic.
+The final output, which we chose above to give a new symbol name
+of :code:`d_compute`, is bag containing the processed data.
 
 The same construct in Spark, unfortunately, requires a different set of
 constructs for two reasons:  (1) pyspark demands a functional
@@ -185,19 +186,28 @@ example is the translation of the above to Spark:
 
 Notice the call to map in spark needs to be preceded by a call to the *parallelize*
 method of the SparkContext object, which is called inside *read_distributed_data*.
-That operator is more or less a constructor for the container (what Spark calls and RDD) d_out.
+That operator is more or less a constructor for the container that Spark
+calls an RDD that is assigned the symbol d_out in the example above.
 The following line, which from a programming perspective is a call to the map method of the RDD we call
 d_out, uses the functional programming construct of a lambda function.
 This tutorial in `realpython.com  <https://realpython.com/python-lambda/>`_
 and `this one <https://www.w3schools.com/python/python_lambda.asp>`_ by w3schools.com
 are good starting points.
 
+Both scripts create a final processed data set python associates
+with the symbol :code:`d_compute`.   A potentially confusing issue for
+beginners is that the content of :code:`d_compute` are largely opaque.
+The reason is that both a bag and RDD are designed to handle a data set
+that will not fit in memory.  Dask and Spark have different methods
+for disaggregating the container, but most MsPASS workflows would normally
+terminate with a database save operation.
+
 Reduce/fold operators
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 A second parallel construct we use is the the `Reduce` clause of the `MapReduce`
 paradigm that was a core idea in Hadoop
 (see for example the document in `this link <https://www.talend.com/resources/what-is-mapreduce/>`_ )
-that was adopted by both Spark and Dask.
+that was the ancestor of both Spark and Dask.
 
 The generic problem of stacking (averaging) a set of signals
 is an example familiar to all seismologists that can be used to illustrate
@@ -216,12 +226,13 @@ That code is pretty simple because the += operator is defined for the TimeSeries
 class and handles time mismatches.  It is not robust for several reasons and
 could be done other ways, but that is not the key point.  The point is
 that the operation is summing a set of TimeSeries objects to produce the
-single result stored with the symbol `stack`.
+single result stored with the symbol :code:`stack`.
 
 We will get to the rules that constrain `Reduce` operators in a moment, but
 it might be more helpful to you as a user to see how that algorithm
-translates into dask/spark.  MsPASS has a parallel stack algorithm described
-`here<>`_  It is used in a parallel context as follows for dask:
+translates into dask/spark.  MsPASS has a parallel stack algorithm found
+`here<https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`_
+It is used in a parallel context as follows for dask:
 
 .. code-block:: python
 
@@ -233,7 +244,7 @@ For spark the syntax is identical but the name of the method changes to reduce:
 
   res = rdd.reduce(lambda a, b: stack(a, b))
 
-The *stack* symbol refers to a python function that is actually quite simple. You can view
+The :code:`stack` symbol refers to a python function that is actually quite simple. You can view
 the source code `here<https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`_.
 It is simple because most of the complexity is hidden behind the +=
 symbol that invokes that operation in C++ (`TimeSeries::operator+=` for anyone
@@ -242,6 +253,7 @@ the operator.  The python function is also simplified significantly by
 the use of python decorator defined by this line in the stack source code:
 
 .. code-block:: python
+
   @mspass_reduce_func_wrapper
 
 which is a generic wrapper to adapt any suitable reduce function to MsPASS.
@@ -249,15 +261,15 @@ which is a generic wrapper to adapt any suitable reduce function to MsPASS.
 The final issue we need to cover in this section is what exactly is meant
 by the phrase "any suitable reduce function" at the end of the previous paragraph?
 To mesh with the reduce framework used by spark and dask a function has
-to satisfy the following rules (need a source):
+to satisfy `the following rules<https://en.wikipedia.org/wiki/Reduction_operator>`_
 
 1. The first two arguments (a and b symbols in the example above)
-must define two instances of the same type
-that are to be combined in some way.
+   must define two instances of the same type
+   that are to be combined in some way.
 2. The function must return an object of the same type as the inputs.
-3. The combination algorithm must be commutative.
+3. The combination algorithm must be commutative and associative.
 
-The commutative restriction arises because in a parallel setting a type
+The commutative and associative restriction arises because in a parallel setting a type
 reduce operation like a summation is done on multiple processors and
 eventually summed to a single output.  Which processor does what part of the
 sum is completely determined by the scheduler so an order cannot be
@@ -274,7 +286,7 @@ should consider that approach in writing pure python algorithms.
 
 
 Schedulers
-~~~~~~~~~~~~~~~
+---------------
 As noted previously MsPASS currently supports two different schedulers:
 Dask (the default) and Spark.   Both do very similar things but are known
 to perform differently in different cluster environments.  Users needing to
@@ -296,46 +308,199 @@ Spark is Scalar.  PySpark is the python api.)
 and Dask (Python is the native tongue of Dask.) is pickle.   It is important
 to recognize that if you write your own application in this framework the
 data object you pass to map and reduce operators must have a pickle operator
-defined.
+defined.  That function needs to be as fast as possible as it will be
+called a lot in a parallel environment.
 
-Also, another limit on scalability of this framework is before the computations, dask
-would create a task graph for task scheduling. In task scheduling we break our program
-into many medium-sized tasks or units of computation, often a function call on a non-trivial
-amount of data. We represent these tasks as nodes in a graph with edges between nodes
-if one task depends on data produced by another. We call upon a task scheduler to execute
+Another limit on scalability of this framework is that before the computations,
+Dask and Spark need to create a task graph for task scheduling.
+Task scheduling breaks your program
+into many medium-sized tasks or units of computation.
+These tasks are typically a function call which in MsPASS
+usually involves passing a non-trivial amount of data to the task
+(one or more seismic data objects).
+The schedulers represent these tasks as nodes in a graph
+with links between nodes defining how data moves between tasks.
+The task scheduler uses
 this graph in a way that respects these data dependencies and leverages parallelism where
-possible, multiple independent tasks can be run simultaneously. Usually, this scheduling
-overhead is relatively small if your function would execute for a few seconds. However, if
-the task is finished instantly, this overhead would be magnified and may affect your
-performance results.
+possible.  Multiple independent tasks can be run simultaneously that are
+are data driven. Usually this scheduling
+overhead is relatively small unless the execution time for
+processing is trivial.
 
-For more information, you can view the dask documentation
-`here<https://docs.dask.org/en/latest/scheduling.html>`_.
+For more information, the dask documentation found
+`here<https://docs.dask.org/en/latest/scheduling.html>`_ is a good
+starting point.
+
+Examples:
+~~~~~~~~~~~~~
+Atomic Data Example
+-------------------------------
+The simplest workflow is one that works only with atomic
+data (i.e. TimeSeries or Seismogram objects).  The example
+example in the Data Model section above is of this type.
+The following fragment is similar with a few additional processing steps.
+It reads all data indexed in the data base as Seismogram objects,
+runs a demean operator,
+runs a simple bandpass filter, windows the data to a smaller range
+defined by the window_seis function defined at he top, it
+using the data start time, and then saves the results.
+
+.. code-block:: python
+
+  cursor=db.wf_Seismogram.find({})
+  # read -> detrend -> filter -> window
+  # example uses dask scheduler
+  data = read_distributed_data(db, cursor)
+  data = data.map(signals.detrend,'demean')
+  data = data.map(signals.filter,"bandpass",freqmin=0.01,freqmax=2.0)
+  # windowing is relative to start time.  300 s window starting at d.t0+200
+  data = data.map(lambda d : WindowData(d,200.0,500.0,t0shift=d.t0))
+  data_out = data.compute()
+
+Ensemble Example
+----------------------
+This example needs to use function to build a query, put the query
+in a map call, and then run an ensemble process.
+Here is an untested prototype for this manual
+
+.. code:: python
+
+  def read_common_source_gather(db,collection,srcid):
+    dbcol = db[collection]
+    query = {"source_id" : srcid }
+    # note with logic of this use we don't need to test for
+    # no matches because distinct returns only not null source_id values dbcol
+    cursor = dbcol.find(query)
+    ensemble = db.read_ensemble(db,collection=collection)
+    return ensemble
+
+  dbcol = db.wf_Seismogram
+  srcidlist = db.wf_Seismogram.distinct("source_id")
+  data = dask.bag.from_sequence(srcidlist)
+  data = data.map(lambda srcid : read_common_source_gather(db,"wf_Seismogram",srcid))
+  data = data.map(signals.detrend,'demean')
+  data = data.map(signals.filter,"bandpass",freqmin=0.01,freqmax=2.0)
+  # windowing is relative to start time.  300 s window starting at d.t0+200
+  data = data.map(lambda d : WindowData(d,200.0,500.0,t0shift=d.t0))
+  data_out = data.compute()
+
+New Organization for discussion
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cluster fundamentals
+~~~~~~~~~~~~~~~~~~~~~~~
+Overview of what one has to deal with to configure a parallel system
+in a distributed cluster versus a multicore workstation.   Here are things
+I can think of we need to discuss:
+
+- batch Schedulers
+- node-to-node communications
+- containers in a distributed environment
+- to shard or not to shard, that is the question
+- io performance issues and choices (relates to file system related configuration)
 
 Configuration
+~~~~~~~~~~~~~~~
+subsections for each of the above topics centered on example.
+
+I think we should reorganize the script to have related
+setups grouped by the categories we choose for this
+user manual section (as much as possible - there may
+be some order dependence)
+
+Start of old section
+~~~~~~~~~~~~~~~~~~~~~~
+Configuration
 ~~~~~~~~~~~~~~~~~~
-In order to leverage the parallel processing ability in our system, we could take advantage of
-the HPC systems and cluster environment. Since we are using Stamepde2 to test our framework, here
-we would show how to configure MsPASS on Stampede2.
+Overview
+------------
+Some configuration will be needed to run MsPASS in a HPC system or
+a departmental cluster.   The reason is that the
+environment of an HPC cluster has numerous complications not found on a
+desktop system.  The example we give
+here is what we use for testing the system on Stampede2 at TACC.
+This section can be thought of as a lengthy explanation centered on
+the example in our github page for configuring MsPASS in a
+large, distributed memory system like TACC's Stampede2.
+To read this page we recommend you open a second winodw or tab on
+your web browser to the current file in the mspass source code
+directory called :code:`scripts/tacc_examples/distributed_node.sh`.
+The link to the that file you can view on your web browser is
+`here<https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh>`__.
+We note there is an additional example there for running MsPASS
+on a single node at TACC called :code:`scripts/tacc_examples/single_node.sh`
+you can access directly
+`here<https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/single_node.sh>`__,
+The single node setup is useful for testing and may help your understanding
+of what is needed by being much simpler.  We do not discuss that
+example further here, however, because a primary purpose for using
+MsPASS is processing data in a large HPC cluster like TACC.
 
-First of all, we need to specify the sbatch options on Stampede2 to submit a job because we can't
-run things on login nodes. Instead, we should submit a job to the compute nodes and the job script here
-is used to tell the compute nodes that what is needed to be executed.
+nxt para needs to say tis is a shelll script and the section below
+are grouped by functional issues then list them (singularity, mongodb, and ?)
 
-The example sbatch options are as follows and they are self explanatory. For more information, you could
-refer to the Stamepde2 `User Guide<https://portal.tacc.utexas.edu/user-guides/stampede2>`_.
+
+Workload Manager Setup
+-------------------------
+It uses a workload manager software installed there called :code:`Slurm`
+and the associated command keyword :code:`SBATCH`.   If your
+system does not have Slurm there will be something similar
+(notably Moab or Torque) that
+you will need to substitute.   Perhaps obvious but things like
+file system configuration will need changes to match your local environment.
+
+:code:`Slurm` is used as a batch control system to schedule a "batch" job on
+a large cluster like Stampede2.  Batch jobs are submitted to be run on
+compute notes by submitting a file the command line tool called :code:`sbatch`.
+The submitted file is a expected to be a unix shell script that runs
+your "batch job".   To be run under :code:`Slurm` the
+shell script normally defines a set of run configuration parameters
+defined in the first few lines of the script.  Here is a typical examples:
 
 .. code-block:: bash
+
   #!/bin/bash
-  #SBATCH -J mspass          # Job name
-  #SBATCH -o mspass.o%j      # Name of stdout output file
+  #SBATCH -J mspass          # Job name - change as approrpiate
+  #SBATCH -o mspass.o%j      # Name of stdout output file redirection
   #SBATCH -p normal          # Queue (partition) name
-  #SBATCH -N 2               # Total # of nodes (must be 1 for serial)
-  #SBATCH -n 2               # Total # of mpi tasks (should be 1 for serial)
+  #SBATCH -N 2               # Total # of nodes requested (2 for this example)
+  #SBATCH -n 2               # Total # of mpi tasks
   #SBATCH -t 02:00:00        # Run time (hh:mm:ss)
 
-It basically means we request for 2 compute nodes from the normal queue and both two nodes will be alive
-up to 2 hours and the output of the job script would be viewd in the mspass.o(job_id) file.
+This example requests 2 nodes (-N 2) for a run time of 2 hours (-t line) submitted
+to TACC's "normal" queue (-p normal).   Note the :code:`Slurm` configuration parameters
+are preceded by the keyword :code:`#SBATCH`.   The lines begin with the "#"
+symbol which the unix shell will treat as a comment.   That is done for a
+variety of reasons but one important practical one is to test the syntax of a
+script on a head node without having to submit the full job.
+
+MsPASS was designed to be run in a container.   For a workstation environment
+we assume the container system being used is docker.   Running
+MsPASS with docker is described on
+`this wiki page<https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Docker>`__.
+All HPC systems we know have a docker compatible system called
+:code:`singularity`.   Singularity can be thought of as docker for a large
+HPC cluster.   The most important feature of singularity for you as a user
+is that it uses exactly the same container file as docker.  i.e. you "pull" the
+docker container and that is used by singularity in a very similar fashion to
+the way it used by docker as follows:
+
+.. code-block:: bash
+  singularity build mspass.simg docker://wangyinz/mspass
+
+For more about running MsPASS with singularity consult our
+wiki page found
+`here<https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Singularity-(on-HPC)>`__.
+Since our examples here were constructed on TACC' Stampede2 you may also
+find it useful to read their page on using singularity found
+`here<https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html>`__
+
+There is a single node mode you may want to run for testing.
+You can find an example of how to configure Stampede2 to run on a single
+node in the MsPASS scripts/tacc_examples found on github
+`here<https://github.com/mspass-team/mspass/tree/master/scripts/tacc_examples>`__.
+We focus is manual on configuration for a production run using multiple
+nodes, that is a primary purpose of using MsPASS for data processing.
+The example we give here is the
 
 There are two ways we could deploy our system on stampede2, which are single node mode and distributed mode.
 You could refer those two job script in our /scripts/tacc_examples folder in our source code. Here we would
@@ -345,6 +510,7 @@ In both modes, we would specify the working directory and the place we store our
 these two lines are in the job scripts:
 
 .. code-block:: bash
+
   # working directory
   WORK_DIR=$SCRATCH/mspass/single_workdir
   # directory where contains docker image
@@ -360,6 +526,7 @@ here is a good `source<https://containers-at-tacc.readthedocs.io/en/latest/singu
 to get start with.
 
 .. code-block:: bash
+
   # command that start the container
   module load tacc-singularity
   SING_COM="singularity run $MSPASS_CONTAINER"
@@ -372,6 +539,7 @@ access it instead of 8888 which typically is the port we will be using in jupyte
 we reserve the port for transmitting all the data and bits through the reverse tunnel.
 
 .. code-block:: bash
+
   NODE_HOSTNAME=`hostname -s`
   LOGIN_PORT=`echo $NODE_HOSTNAME | perl -ne 'print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;'`
 
@@ -380,6 +548,7 @@ connect to stampede.tacc. The reverse ssh tunnel is a tech trick that could make
 the machines in the private TACC network.
 
 .. code-block:: bash
+
   for i in `seq 4`; do
     ssh -q -f -g -N -R $LOGIN_PORT:$NODE_HOSTNAME:8888 login$i
   done
@@ -388,6 +557,7 @@ For single node mode, the last thing we need to do is to start a container using
 before:
 
 .. code-block:: bash
+
   DB_PATH='scratch'
   SINGULARITYENV_MSPASS_DB_PATH=$DB_PATH \
   SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR $SING_COM
