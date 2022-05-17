@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from attr import attrib
+from matplotlib.ft2font import LOAD_FORCE_AUTOHINT
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, Metadata
 from mspasspy.ccore.seismic import (
     TimeSeries,
@@ -10,6 +12,8 @@ from mspasspy.ccore.seismic import (
 from obspy import UTCDateTime
 import pymongo
 import inspect
+
+from yaml import load
 
 
 def _input_is_valid(d):
@@ -108,7 +112,18 @@ class NMF(ABC):
     key-value pairs to a valid MsPASS data object.
     """
 
-    def __init__(self, db, collection, query={}, prepend_collection_name=True, kill_on_failure=True, verbose=False, cache_normalization_data = None):
+    def __init__(
+        self,
+        db,
+        collection,
+        attributes_to_load=None,
+        load_if_defined=None,
+        query={}, 
+        prepend_collection_name=True,
+        kill_on_failure=True,
+        verbose=False,
+        cache_normalization_data=None,
+    ):
         """
         Base class constructor.   The implementation requires 3
         defaulted parameters that most subclasses can find useful.
@@ -143,30 +158,32 @@ class NMF(ABC):
                 )
             )
         self.collection = collection
-        self.mdkey = collection + "_id" # TODO: we might need a function to create the key
+        self.mdkey = (
+            collection + "_id"
+        )  # TODO: we might need a function to create the key
         self.dbhandle = db[collection]
 
         self.prepend_collection_name = prepend_collection_name
         self.kill_on_failure = kill_on_failure
         self.verbose = verbose
 
-        # These two lists are always needed for normalize methods.  
-        # Here we just initialize it to None. Subclasses need to
-        # specify the default value in their own init methods.
-        self.attributes_to_load = None
-        self.load_if_defined = None
-        
+        # These two lists are always needed for normalize methods.
+        # Subclasses need to specify the default value in their 
+        # own init methods before calling super.init
+        self.attributes_to_load = attributes_to_load
+        self.load_if_defined = load_if_defined
+
         # Derived classes need to specify the cache_normalization_data, some of them
         # might don't have a caching feature
         self.cache_normalization_data = cache_normalization_data
-        if self.cache_normalization_data==True:
+        if self.cache_normalization_data == True:
             self.cache = _load_normalization_cache(
                 db,
                 collection,
                 required_attributes=self.attributes_to_load,
                 optional_attributes=self.load_if_defined,
                 query=query,
-            )        
+            )
 
     def __call__(self, d, *args, **kwargs):
         """
@@ -179,16 +196,21 @@ class NMF(ABC):
         return self.normalize(d, *args, **kwargs)
 
     def get_document(self, d):
-        if self.cache_normalization_data is None or self.cache_normalization_data == False:
-            return self._db_get_document(self, d)
+        if (
+            self.cache_normalization_data is None
+            or self.cache_normalization_data == False
+        ):
+            return self._db_get_document(d)
         else:
-            return self._cached_get_document(self, d)
+            return self._cached_get_document(d)
 
     def _cached_get_document(self, d):
         if d.is_defined(self.mdkey):
             testid = d[self.mdkey]
         else:
-            message = "Normalizing ID with key={} is not defined in this object".format(self.mdkey)
+            message = "Normalizing ID with key={} is not defined in this object".format(
+                self.mdkey
+            )
             self.log_error(d, message, ErrorSeverity.Invalid)
             return None
         try:
@@ -203,7 +225,9 @@ class NMF(ABC):
         if d.is_defined(self.mdkey):
             testid = d[self.mdkey]
         else:
-            message = "Normalizing ID with key={} is not defined in this object".format(self.mdkey)
+            message = "Normalizing ID with key={} is not defined in this object".format(
+                self.mdkey
+            )
             self.log_error(d, message, ErrorSeverity.Invalid)
             return None
 
@@ -214,14 +238,20 @@ class NMF(ABC):
         # may contain other attributes so we do a selective copy for consistency
         result = Metadata()
         if doc is None:
-            message = "Key [{}] not defined in normalization collection = {}".format(str(testid), self.collection)
+            message = "Key [{}] not defined in normalization collection = {}".format(
+                str(testid), self.collection
+            )
             self.log_error(d, message, ErrorSeverity.Invalid)
             return None
         for key in self.attributes_to_load:
             if key in doc:
                 result[key] = doc[key]
             else:
-                message = "Required key={} not found in normalization collection = {}".format(key, self.collection)
+                message = (
+                    "Required key={} not found in normalization collection = {}".format(
+                        key, self.collection
+                    )
+                )
                 self.log_error(d, message, ErrorSeverity.Invalid)
         for key in self.load_if_defined:
             if key in doc:
@@ -234,7 +264,9 @@ class NMF(ABC):
                 return d
             doc = self.get_document(d)
             if doc == None:
-                message = "No matching _id found for {} in collection={}".format(self.mdkey, self.collection)
+                message = "No matching _id found for {} in collection={}".format(
+                    self.mdkey, self.collection
+                )
                 self.log_error(d, message, ErrorSeverity.Invalid)
             else:
                 # In this implementation the contents of doc have been prefiltered
@@ -251,9 +283,7 @@ class NMF(ABC):
             # land here if d was not a valid datum.
             raise TypeError("ID_matcher.normalize:  received invalid data type")
 
-    def log_error(
-        self, d, message, severity=ErrorSeverity.Informational, kill=None
-    ):
+    def log_error(self, d, message, severity=ErrorSeverity.Informational, kill=None):
         """
         This base class method is used to standardize the error logging
         functionality of all NMF objects.   It writes a standardized
@@ -273,7 +303,7 @@ class NMF(ABC):
         :param message:  specialized message to post - this string is added
         to an internal generic message.
         :param kill:  boolean controlling if the message should cause the
-        datum to be killed. Default None meaning the kill_on_failure boolean of 
+        datum to be killed. Default None meaning the kill_on_failure boolean of
         the class will be used. If kill is set, it will be overwritten temporarily.
         is posted.
         :param severity:  ErrorSeverity to assign to elog message
@@ -296,7 +326,7 @@ class NMF(ABC):
         calframe = inspect.getouterframes(curframe, 2)
         caller_name = calframe[1][3]
         matchername = class_name + "." + caller_name
-        
+
         if not hasattr(self, "verbose") or self.verbose is True:
             d.elog.log_error(matchername, message, severity)
 
@@ -327,11 +357,11 @@ class ID_matcher(NMF):
         collection="channel",
         attributes_to_load=None,
         load_if_defined=None,
-        kill_on_failure=True,
-        cache_normalization_data=True,
         query={},
-        verbose=True,
         prepend_collection_name=True,
+        kill_on_failure=True,
+        verbose=True,
+        cache_normalization_data=True,
     ):
         """
         Constructor for this class.
@@ -374,43 +404,23 @@ class ID_matcher(NMF):
            a rare or never used option and should be done only if you deeply
            understand the consequences.
         """
-        if isinstance(collection, str):
-            super().__init__(kill_on_failure, verbose)
-            self.collection = collection
-            self.mdkey = collection + "_id"
-            self.dbhandle = db[collection]
-            self.prepend_collection_name = prepend_collection_name
-            # assume type errors will be thrown if attributes_to_load is not array like
-            # this is attributes_to_load is initialized to an empty list in
-            # super()
-            if attributes_to_load is None:
-                attributes_to_load = ["lat", "lon", "elev", "hang", "vang"]
-            if load_if_defined is None:
-                load_if_defined = []
 
-            for x in attributes_to_load:
-                self.attributes_to_load.append(x)
-            self.load_if_defined = list()
-            for x in load_if_defined:
-                self.load_if_defined.append(x)
+        if attributes_to_load is None:
+            attributes_to_load = ["lat", "lon", "elev", "hang", "vang"]
+        if load_if_defined is None:
+            load_if_defined = []
 
-            self.cache_normalization_data = cache_normalization_data
-            if self.cache_normalization_data:
-                # We dogmatically require prepend_collection_name=True
-                self.cache = _load_normalization_cache(
-                    db,
-                    collection,
-                    required_attributes=self.attributes_to_load,
-                    optional_attributes=self.load_if_defined,
-                    query=query,
-                )
-            else:
-                self.cache = dict()
-
-        else:
-            raise TypeError(
-                "ID_matcher constructor:  arg0 must be a collection name - received invalid type"
-            )
+        super().__init__(
+            db,
+            collection,
+            attributes_to_load,
+            load_if_defined,
+            query,
+            prepend_collection_name,
+            kill_on_failure,
+            verbose,
+            cache_normalization_data,
+        )
 
     def get_document(self, d):
         """
@@ -441,77 +451,7 @@ class ID_matcher(NMF):
         AND posts a message to elog of d.
         """
 
-        if d.is_defined(self.mdkey):
-            testid = d[self.mdkey]
-        else:
-            message = (
-                "Normalizing ID with key="
-                + self.mdkey
-                + " is not defined in this object"
-            )
-            self.log_error(
-                d,
-                "ID_matcher.get_document",
-                message,
-                self.kill_on_failure,
-                ErrorSeverity.Invalid,
-            )
-            return None
-        if self.cache_normalization_data:
-            try:
-                result = self.cache[str(testid)]
-            except KeyError:
-                message = "Key [{}] not defined in cache".format(str(testid))
-                self.log_error(
-                    d,
-                    "ID_matcher.get_document",
-                    message,
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-                return None
-        else:
-            query = {"_id": testid}
-            doc = self.dbhandle.find_one(query)
-            # For consistency we have to copy doc into a Metadata container
-            # for this situation - doc is a MongoDB document container and
-            # may contain other attributes so we do a selective copy for consistency
-            result = Metadata()
-            if doc is None:
-                message = (
-                    "Key [{}] not defined in normalization collection = {}".format(
-                        str(testid), self.collection
-                    )
-                )
-                self.log_error(
-                    d,
-                    "ID_matcher.get_document",
-                    message,
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-                return None
-            for key in self.attributes_to_load:
-                if key in doc:
-                    result[key] = doc[key]
-                else:
-                    message = (
-                        "Required key="
-                        + key
-                        + " not found in normalization collection = "
-                        + self.collection
-                    )
-                    self.log_error(
-                        d,
-                        "ID_matcher.get_document",
-                        message,
-                        self.kill_on_failure,
-                        ErrorSeverity.Invalid,
-                    )
-            for key in self.load_if_defined:
-                if key in doc:
-                    result[key] = doc[key]
-        return result
+        return super().get_document(d)
 
     def normalize(self, d):
         """
@@ -534,40 +474,8 @@ class ID_matcher(NMF):
           (rdd or bad) of common source gathers more efficiently than
           at the atomic level.
         """
-        if _input_is_valid(d):
-            if d.dead():
-                return d
-            doc = self.get_document(d)
-            if doc == None:
-                message = (
-                    "No matching _id found for "
-                    + self.mdkey
-                    + " in collection="
-                    + self.collection
-                )
-                self.log_error(
-                    d,
-                    "ID_matcher",
-                    message,
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-            else:
-                # In this implementation the contents of doc have been prefiltered
-                # to contain only those in the attributes_to_load or load_if_defined lists
-                # Hence we copy all.
-                for key in doc:
-                    if self.prepend_collection_name:
-                        newkey = self.collection + "_" + key
-                        d[newkey] = doc[key]
-                    else:
-                        d[key] = doc[key]
 
-            return d
-        else:
-            # land here if d was not a valid datum.
-            raise TypeError("ID_matcher.normalize:  received invalid data type")
-
+        return super().normalize(d)
 
 def _channel_composite_key(net, sta, chan, loc, separator="_"):
     """
