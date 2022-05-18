@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from attr import attrib
-from matplotlib.ft2font import LOAD_FORCE_AUTOHINT
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, Metadata
 from mspasspy.ccore.seismic import (
     TimeSeries,
@@ -12,8 +11,6 @@ from mspasspy.ccore.seismic import (
 from obspy import UTCDateTime
 import pymongo
 import inspect
-
-from yaml import load
 
 
 def _input_is_valid(d):
@@ -60,7 +57,7 @@ class NMF(ABC):
         collection,
         attributes_to_load=None,
         load_if_defined=None,
-        query={}, 
+        query=None, 
         prepend_collection_name=True,
         kill_on_failure=True,
         verbose=False,
@@ -102,6 +99,8 @@ class NMF(ABC):
         self.collection = collection
         self.dbhandle = db[collection]
 
+        if query is None:
+            query = {}
         self.query = query
 
         self.prepend_collection_name = prepend_collection_name
@@ -281,13 +280,13 @@ class single_key_matcher(NMF):
         mdkey,
         attributes_to_load=None,
         load_if_defined=None,
-        query={}, 
+        query=None, 
         prepend_collection_name=True,
         kill_on_failure=True,
         verbose=False,
         cache_normalization_data=None,
     ):
-        super().__init__(db, collection, attributes_to_load, load_if_defined, query, prepend_collection_name, kill_on_failure, verbose, cache_normalization_data)
+        NMF.__init__(self, db, collection, attributes_to_load, load_if_defined, query, prepend_collection_name, kill_on_failure, verbose, cache_normalization_data)
         self.mdkey = mdkey
 
     def _get_key_id(self, d):
@@ -301,11 +300,10 @@ class single_key_matcher(NMF):
             return None
         return testid
 
-    def _cached_get_document(self, d, *args, **kwargs):
+    def _cached_get_document(self, d):
         testid = self._get_key_id(d)
         if testid is None:
             return None
-
         try:
             result = self.cache[str(testid)]
             return result
@@ -314,14 +312,15 @@ class single_key_matcher(NMF):
             self.log_error(d, message, ErrorSeverity.Invalid)
             return None
 
-    def _db_get_document(self, d, *args, **kwargs):
+    def _db_get_document(self, d):
+        query = self.query
+
         testid = self._get_key_id(d)
         if testid is None:
             return None
+        query["_id"] = testid
 
-        query = {"_id": testid}
         doc = self.dbhandle.find_one(query)
-
         if doc is None:
             message = "Key [{}] not defined in normalization collection = {}".format(
                 str(testid), self.collection
@@ -358,7 +357,7 @@ class ID_matcher(single_key_matcher):
         collection="channel",
         attributes_to_load=None,
         load_if_defined=None,
-        query={},
+        query=None,
         prepend_collection_name=True,
         kill_on_failure=True,
         verbose=True,
@@ -411,7 +410,8 @@ class ID_matcher(single_key_matcher):
         if load_if_defined is None:
             load_if_defined = []
 
-        super().__init__(
+        single_key_matcher.__init__(
+            self,
             db,
             collection,
             collection+"_id",
@@ -441,44 +441,16 @@ def _channel_composite_key(net, sta, chan, loc, separator="_"):
         key = key + separator + loc
     return key
 
-
-class mseed_channel_matcher(NMF):
-    """
-    This class is used to match wf_miniseed to the channel collection using
-    the mseed standard channel string tags net, sta, chan, and (optionally) loc.
-    It can also be used to normalize data saved in wf_TimeSeries where the mseed tags
-    are often altered by MsPASS to change fields like "net" to "READONLYERROR_net".
-    There is an automatic fallback for each of the tags where if the proper
-    name is not found we alway try to use the READONLYERROR_ version before
-    giving up.
-
-    An issue with this matcher is that it is very common to have redundant
-    entries in the channel collection for the same channel of data.  That
-    can happen for a variety of reasons that are harmless.  When that happens
-    the method of this object will normally post an elog message warning of the
-    potential issue.  Those warnings can be silenced by setting verbose
-    in the constructor to False.
-
-    The class also has a cache option that can dramatically improve
-    performance for large data sets.  When using the database option
-    (caching turned off) the normalize method issues a database query
-    at each call.  If applied to a data set with a large number of
-    waveforms that can add up.  We have found the cache algorithm is
-    an order of magnitude or more faster than the database algorithm
-    for typical channel collections assembled from FDSN web services.
-    It is recommended unless the memory foot print is excessive.
-    That too can usually be avoided by using a query to weed out unnecessary
-    channel documents or by editing the channel document to reduce the
-    debris from extraneous data.
-    """
-
+class composite_key_matcher(NMF):
     def __init__(
         self,
         db,
-        collection="channel",
+        collection,
+        keys,
+        optional_keys=None,
         attributes_to_load=None,
         load_if_defined=None,
-        query={},
+        query=None,
         prepend_collection_name=True,
         kill_on_failure=True,
         verbose=True,
@@ -532,24 +504,6 @@ class mseed_channel_matcher(NMF):
           elog collection.   Normal use should leave it True.
 
         """
-
-        if attributes_to_load is None:
-            attributes_to_load = [
-                "_id",
-                "net",
-                "sta",
-                "chan",
-                "lat",
-                "lon",
-                "elev",
-                "hang",
-                "vang",
-                "starttime",
-                "endtime",
-            ]
-        if load_if_defined is None:
-            load_if_defined = ["loc"]
-
         super().__init__(
             db,
             collection,
@@ -562,10 +516,11 @@ class mseed_channel_matcher(NMF):
             cache_normalization_data,
         )
         
+        self.keys = keys
+        self.optional_keys = optional_keys
         self.readonly_tag = readonly_tag
-        
         if self.cache_normalization_data:
-            self.xref = self._build_xref()
+            self._build_xref()
 
     def _get_readonly_field(self, d, field, error_logging_enabled=True):
         """
@@ -599,27 +554,42 @@ class mseed_channel_matcher(NMF):
             test_time = time
         return test_time
 
+    def _create_composite_key(self, d, separator="_"):
+        composite_key = "cmp_id"
+        for key in self.keys:
+            val = self._get_readonly_field(d, key)
+            if val is None or len(val)==0:
+                return None
+            else:
+                composite_key += "{}{}={}".format(separator, key, val)
+        for key in self.optional_keys:
+            val = self._get_readonly_field(d, key, False)
+            if val is None or len(val)==0:
+                continue
+            else:
+                composite_key += "{}{}={}".format(separator, key, val)
+        return composite_key
+
     def _build_xref(self):
         """
+        Update the cache to use the composite key as index
         Used by constructor to build mseed cross reference dict
         with mseed key and list of object_ids matching for each unique
         key
         """
         xref = dict()
         for id, md in self.cache.items():
-            net = md["net"]
-            sta = md["sta"]
-            chan = md["chan"]
-            if md.is_defined("loc"):
-                loc = md["loc"]
+            composite_key = self._create_composite_key(md)
+            if composite_key is None:
+                raise MsPASSError(
+                    "_build_xref: can't create composite key for {} because some keys are missing".format(str(md)),
+                    ErrorSeverity.Fatal,
+                )
+            if composite_key in xref:
+                xref[composite_key].append(md)
             else:
-                loc = ""
-            key = _channel_composite_key(net, sta, chan, loc)
-            if key in xref:
-                xref[key].append(id)
-            else:
-                xref[key] = [id]  # initializes array of id strings
-        return xref
+                xref[composite_key] = [md]  # initializes array of id strings
+        self.cache = xref
 
     def get_document(self, d, time=None):
         if not isinstance(d, (TimeSeries, Seismogram, Metadata, dict)):
@@ -647,58 +617,40 @@ class mseed_channel_matcher(NMF):
         # do this test once to avoid repetitious calls later - minimal cost
         error_logging_allowed = isinstance(d, (TimeSeries, Seismogram))
 
-        net = self._get_readonly_field(d, "net")
-        sta = self._get_readonly_field(d, "sta")
-        chan = self._get_readonly_field(d, "chan")
-        if net is None or sta is None or chan is None:
-            return None
-
-        # loc has to be handled differently because it is often not defined
-        # We just don't add loc to the query if it isn't defined
-        loc = self._get_readonly_field(d, "loc", False)
-        if loc is None: # this case is assumed handled by _channel_composite_key
-            loc = ""
-
-        key = _channel_composite_key(net, sta, chan, loc)
-        
-        # Try to recover if time is not explicitly passed as an arg
+        comp_key = self._create_composite_key(d)
         test_time = self._get_test_time(d, time)
 
-        if key in self.xref:
-            doclist = self.xref[key]
+        if comp_key in self.cache:
+            doclist = self.cache[comp_key]
             # avoid a test and assume this is a match if there is only
             # one entry in the list
             if len(doclist) == 1:
-                idkey = doclist[0]
-                return self.cache[idkey]
+                return doclist[0]
+
             # When time is not defined (None) just return first entry
             # but post a warning
             if test_time == None:
-                # We might never enter this branch, since mspass objects always have
-                # a test_time = d.t0
+                # We might never enter this branch, since mspass objects always have a test_time = d.t0
                 if error_logging_allowed:
                     message = "Warning - no time specified for match and data has no starttime field defined.  Using first match found in channel collection"
                     self.log_error(
                         d,
-                        "mseed_channel_matcher._cached_get_document",
                         message,
-                        False,
                         ErrorSeverity.Suspect,
+                        False
                     )
-                idkey = doclist[0]
-                return self.cache[idkey]
-            for key_doc in doclist:
-                doc = self.cache[key_doc]
+                return doclist[0]
+
+            for doc in doclist:
                 stime = doc["starttime"]
                 etime = doc["endtime"]
                 if test_time >= stime and test_time <= etime:
                     return doc
+            
+            # If there is no qualified doc
             if error_logging_allowed:
                 message = (
-                    "No match for net_sta_chan_loc ="
-                    + key
-                    + " and time="
-                    + str(UTCDateTime(test_time))
+                    "No match for composite key={} and time={}".format(comp_key, str(UTCDateTime(test_time)))
                 )
                 self.log_error(
                     d,
@@ -709,8 +661,7 @@ class mseed_channel_matcher(NMF):
         else:
             if error_logging_allowed:
                 message = (
-                    "No entries are present in channel collection for net_sta_chan_loc = "
-                    + key
+                    "No entries are present in channel collection for net_sta_chan_loc = " + comp_key
                 )
                 self.log_error(
                     d,
@@ -726,26 +677,20 @@ class mseed_channel_matcher(NMF):
         """
         # do this test once to avoid repetitious calls later - minimal cost
         error_logging_allowed = isinstance(d, (TimeSeries, Seismogram))
-        query = {}
-
-        net = self._get_readonly_field(d, "net")
-        sta = self._get_readonly_field(d, "sta")
-        chan = self._get_readonly_field(d, "chan")
-        if net is None or sta is None or chan is None:
-            return None
-        query["net"] = net
-        query["sta"] = sta
-        query["chan"] = chan
-
-        # loc has to be handled differently because it is often not defined
-        # We just don't add loc to the query if it isn't defined
-        if d.is_defined("loc"):
-            query["loc"] = d["loc"]
-        elif d.is_defined(self.readonly_tag + "loc"):
-            query["loc"] = d[self.readonly_tag + "loc"]
+        
+        query = self.query
+        for key in self.keys:
+            val = self._get_readonly_field(d, key)
+            if val is None:
+                return None
+            else:
+                query[key] = val
+        for key in self.keys:
+            val = self._get_readonly_field(d, key, False)
+            if val is not None:
+                query[key] = val
 
         querytime = self._get_test_time(d, time)
-
         if querytime is not None:
             query["starttime"] = {"$lt": querytime}
             query["endtime"] = {"$gt": querytime}
@@ -760,6 +705,7 @@ class mseed_channel_matcher(NMF):
                     ErrorSeverity.Invalid,
                 )
             return None
+
         if matchsize > 1 and self.verbose and error_logging_allowed:
             self.log_error(
                 d,
@@ -767,20 +713,9 @@ class mseed_channel_matcher(NMF):
                 ErrorSeverity.Complaint,
                 False
             )
+
         match_doc = self.dbhandle.find_one(query)
-        ret_doc = {}
-        for key in self.attributes_to_load:
-            if key in match_doc:
-                ret_doc[key] = match_doc[key]
-            else:
-                raise MsPASSError(
-                    "get document:   required attribute with key = {} not found".format(key),
-                    ErrorSeverity.Fatal,
-                )
-        for key in self.load_if_defined:
-            if key in match_doc:
-                ret_doc[key] = match_doc[key]
-        return ret_doc
+        return self._load_doc(match_doc, d)
 
     def normalize(self, d, time=None):
         """
@@ -796,6 +731,57 @@ class mseed_channel_matcher(NMF):
             )
 
         return super().normalize(d, time)
+
+class mseed_channel_matcher(composite_key_matcher):
+    def __init__(
+        self,
+        db,
+        collection="channel",
+        attributes_to_load=None,
+        load_if_defined=None,
+        query=None,
+        prepend_collection_name=True,
+        kill_on_failure=True,
+        verbose=True,
+        cache_normalization_data=True,
+
+        readonly_tag="READONLYERROR_",
+    ):
+        if attributes_to_load is None:
+            attributes_to_load = [
+                "_id",
+                "net",
+                "sta",
+                "chan",
+                "lat",
+                "lon",
+                "elev",
+                "hang",
+                "vang",
+                "starttime",
+                "endtime",
+            ]
+        if load_if_defined is None:
+            load_if_defined = ["loc"]
+
+        keys = ["net", "sta", "chan"]
+        optional_keys = ["loc"]
+
+        composite_key_matcher.__init__(
+            self,
+            db,
+            collection,
+            keys,
+            optional_keys,
+            attributes_to_load,
+            load_if_defined,
+            query,
+            prepend_collection_name,
+            kill_on_failure,
+            verbose,
+            cache_normalization_data,
+            readonly_tag
+        )
 
 class mseed_site_matcher(NMF):
     """
@@ -833,7 +819,7 @@ class mseed_site_matcher(NMF):
         attributes_to_load=None,
         load_if_defined=None,
         cache_normalization_data=True,
-        query={},
+        query=None,
         readonly_tag="READONLYERROR_",
         prepend_collection_name=True,
         kill_on_failure=True,
@@ -1234,7 +1220,7 @@ class origin_time_source_matcher(NMF):
         attributes_to_load=None,
         load_if_defined=None,
         cache_normalization_data=True,
-        query={},
+        query=None,
         kill_on_failure=True,
         prepend_collection_name=True,
         verbose=True,

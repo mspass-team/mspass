@@ -217,20 +217,6 @@ class TestNormalize:
         assert cached_retdoc is not None
         assert uncached_retdoc is not None
 
-        #   test with a time, multi doc can't found
-        ts_1 = copy.deepcopy(ts)
-        ts_2 = copy.deepcopy(ts)
-        cached_retdoc = cached_matcher.get_document(ts_1, time=1972908800.0)
-        uncached_retdoc = uncached_matcher.get_document(ts_2, time=1972908800.0)
-        assert cached_retdoc is None
-        assert uncached_retdoc is None
-        assert ts_1.dead()
-        assert ts_2.dead()
-        assert "No match for net_sta_chan_loc =TA_034A_BHE and time=" in str(
-            ts_1.elog.get_error_log()
-        )
-        assert "No match for query = " in str(ts_2.elog.get_error_log())
-
         #   test without a time, or a startime, take first doc, warning
         del doc["starttime"]
         cached_retdoc = cached_matcher.get_document(doc)
@@ -246,13 +232,27 @@ class TestNormalize:
         assert cached_retdoc is None
         assert uncached_retdoc is None
 
+        #   test with a time, multi doc can't found
+        ts_1 = copy.deepcopy(ts)
+        ts_2 = copy.deepcopy(ts)
+        cached_retdoc = cached_matcher.get_document(ts_1, time=1972908800.0)
+        uncached_retdoc = uncached_matcher.get_document(ts_2, time=1972908800.0)
+        assert cached_retdoc is None
+        assert uncached_retdoc is None
+        assert ts_1.dead()
+        assert ts_2.dead()
+        assert "No match for composite key=cmp_id_net=TA_sta=034A_chan=BHE and time=" in str(
+            ts_1.elog.get_error_log()
+        )
+        assert "No match for query = " in str(ts_2.elog.get_error_log())
+
     def test_mseed_channel_matcher_normalize(self):
         cached_matcher = mseed_channel_matcher(self.db)
         uncached_matcher = mseed_channel_matcher(
             self.db, cache_normalization_data=False
         )
 
-        cache_id_undefine_msg = "No entries are present in channel collection for net_sta_chan_loc = something_random"
+        cache_id_undefine_msg = "No entries are present in channel collection for net_sta_chan_loc = cmp_id_net=something_random_sta"
 
         #   Test normalize
         ts_1 = copy.deepcopy(self.ts)
