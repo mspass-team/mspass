@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from functools import cache
 from attr import attrib
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, Metadata
 from mspasspy.ccore.seismic import (
@@ -11,6 +12,7 @@ from mspasspy.ccore.seismic import (
 from obspy import UTCDateTime
 import pymongo
 import inspect
+import copy
 
 
 def _input_is_valid(d):
@@ -31,6 +33,7 @@ def _input_is_valid(d):
 # We need this for matchers that only work for atomic data (e.g. mseed matching)
 def _input_is_atomic(d):
     return isinstance(d, (TimeSeries, Seismogram))
+
 
 class NMF(ABC):
     """
@@ -57,7 +60,7 @@ class NMF(ABC):
         collection,
         attributes_to_load=None,
         load_if_defined=None,
-        query=None, 
+        query=None,
         prepend_collection_name=True,
         kill_on_failure=True,
         verbose=False,
@@ -108,7 +111,7 @@ class NMF(ABC):
         self.verbose = verbose
 
         # These two lists are always needed for normalize methods.
-        # Subclasses need to specify the default value in their 
+        # Subclasses need to specify the default value in their
         # own init methods before calling super.init
         self.attributes_to_load = attributes_to_load
         self.load_if_defined = load_if_defined
@@ -138,9 +141,11 @@ class NMF(ABC):
         else:
             return self._cached_get_document(d, *args, **kwargs)
 
+    @abstractmethod
     def _cached_get_document(self, d, *args, **kwargs):
         pass
 
+    @abstractmethod
     def _db_get_document(self, d, *args, **kwargs):
         pass
 
@@ -156,16 +161,16 @@ class NMF(ABC):
                         key, self.collection
                     )
                 )
-                if d is None:   #   Don't have an object to save error log
-                    raise MsPASSError(
-                        message, ErrorSeverity.Invalid
-                    )
+                if d is None or not _input_is_valid(
+                    d
+                ):  #   Don't have an object to save error log
+                    raise MsPASSError(message, ErrorSeverity.Invalid)
                 self.log_error(d, message, ErrorSeverity.Invalid)
         for key in self.load_if_defined:
             if key in doc:
                 result[key] = doc[key]
         return result
-        
+
     def _load_normalization_cache(self):
         """
         This is a function internal to the matcher module used to standardize
@@ -202,16 +207,17 @@ class NMF(ABC):
             normcache[cache_key] = mdresult
         return normcache
 
-
     def normalize(self, d, *args, **kwargs):
         if not _input_is_valid(d):
             raise TypeError("ID_matcher.normalize:  received invalid data type")
         if d.dead():
             return d
-            
+
         doc = self.get_document(d, *args, **kwargs)
         if doc == None:
-            message = "No matching _id found for in collection={}".format(self.collection)
+            message = "No matching _id found for in collection={}".format(
+                self.collection
+            )
             self.log_error(d, message, ErrorSeverity.Invalid)
         else:
             # In this implementation the contents of doc have been prefiltered
@@ -272,6 +278,7 @@ class NMF(ABC):
         if not hasattr(self, "verbose") or self.verbose is True:
             d.elog.log_error(matchername, message, severity)
 
+
 class single_key_matcher(NMF):
     def __init__(
         self,
@@ -280,13 +287,24 @@ class single_key_matcher(NMF):
         mdkey,
         attributes_to_load=None,
         load_if_defined=None,
-        query=None, 
+        query=None,
         prepend_collection_name=True,
         kill_on_failure=True,
         verbose=False,
         cache_normalization_data=None,
     ):
-        NMF.__init__(self, db, collection, attributes_to_load, load_if_defined, query, prepend_collection_name, kill_on_failure, verbose, cache_normalization_data)
+        NMF.__init__(
+            self,
+            db,
+            collection,
+            attributes_to_load,
+            load_if_defined,
+            query,
+            prepend_collection_name,
+            kill_on_failure,
+            verbose,
+            cache_normalization_data,
+        )
         self.mdkey = mdkey
 
     def _get_key_id(self, d):
@@ -313,7 +331,7 @@ class single_key_matcher(NMF):
             return None
 
     def _db_get_document(self, d):
-        query = self.query
+        query = copy.deepcopy(self.query)
 
         testid = self._get_key_id(d)
         if testid is None:
@@ -330,6 +348,7 @@ class single_key_matcher(NMF):
 
         result = self._load_doc(doc, d)
         return result
+
 
 class ID_matcher(single_key_matcher):
     """
@@ -414,7 +433,7 @@ class ID_matcher(single_key_matcher):
             self,
             db,
             collection,
-            collection+"_id",
+            collection + "_id",
             attributes_to_load,
             load_if_defined,
             query,
@@ -423,6 +442,7 @@ class ID_matcher(single_key_matcher):
             verbose,
             cache_normalization_data,
         )
+
 
 class composite_key_matcher(NMF):
     def __init__(
@@ -438,7 +458,6 @@ class composite_key_matcher(NMF):
         kill_on_failure=True,
         verbose=True,
         cache_normalization_data=True,
-
         readonly_tag="READONLYERROR_",
     ):
         """
@@ -498,7 +517,7 @@ class composite_key_matcher(NMF):
             verbose,
             cache_normalization_data,
         )
-        
+
         self.keys = keys
         self.optional_keys = optional_keys
         self.readonly_tag = readonly_tag
@@ -518,7 +537,9 @@ class composite_key_matcher(NMF):
             if error_logging_allowed and error_logging_enabled:
                 self.log_error(
                     d,
-                    "Required match key={key} or {tag}{key} are not defined for this datum".format(key=field, tag=self.readonly_tag),
+                    "Required match key={key} or {tag}{key} are not defined for this datum".format(
+                        key=field, tag=self.readonly_tag
+                    ),
                     ErrorSeverity.Invalid,
                 )
             return None
@@ -541,13 +562,13 @@ class composite_key_matcher(NMF):
         composite_key = "cmp_id"
         for key in self.keys:
             val = self._get_readonly_field(d, key)
-            if val is None or len(val)==0:
+            if val is None or len(val) == 0:
                 return None
             else:
                 composite_key += "{}{}={}".format(separator, key, val)
         for key in self.optional_keys:
             val = self._get_readonly_field(d, key, False)
-            if val is None or len(val)==0:
+            if val is None or len(val) == 0:
                 continue
             else:
                 composite_key += "{}{}={}".format(separator, key, val)
@@ -565,7 +586,9 @@ class composite_key_matcher(NMF):
             composite_key = self._create_composite_key(md)
             if composite_key is None:
                 raise MsPASSError(
-                    "_build_xref: can't create composite key for {} because some keys are missing".format(str(md)),
+                    "_build_xref: can't create composite key for {} because some keys are missing".format(
+                        str(md)
+                    ),
                     ErrorSeverity.Fatal,
                 )
             if composite_key in xref:
@@ -616,12 +639,7 @@ class composite_key_matcher(NMF):
                 # We might never enter this branch, since mspass objects always have a test_time = d.t0
                 if error_logging_allowed:
                     message = "Warning - no time specified for match and data has no starttime field defined.  Using first match found in channel collection"
-                    self.log_error(
-                        d,
-                        message,
-                        ErrorSeverity.Suspect,
-                        False
-                    )
+                    self.log_error(d, message, ErrorSeverity.Suspect, False)
                 return doclist[0]
 
             for doc in doclist:
@@ -629,11 +647,11 @@ class composite_key_matcher(NMF):
                 etime = doc["endtime"]
                 if test_time >= stime and test_time <= etime:
                     return doc
-            
+
             # If there is no qualified doc
             if error_logging_allowed:
-                message = (
-                    "No match for composite key={} and time={}".format(comp_key, str(UTCDateTime(test_time)))
+                message = "No match for composite key={} and time={}".format(
+                    comp_key, str(UTCDateTime(test_time))
                 )
                 self.log_error(
                     d,
@@ -644,7 +662,8 @@ class composite_key_matcher(NMF):
         else:
             if error_logging_allowed:
                 message = (
-                    "No entries are present in channel collection for net_sta_chan_loc = " + comp_key
+                    "No entries are present in channel collection for net_sta_chan_loc = "
+                    + comp_key
                 )
                 self.log_error(
                     d,
@@ -660,8 +679,8 @@ class composite_key_matcher(NMF):
         """
         # do this test once to avoid repetitious calls later - minimal cost
         error_logging_allowed = isinstance(d, (TimeSeries, Seismogram))
-        
-        query = self.query
+
+        query = copy.deepcopy(self.query)
         for key in self.keys:
             val = self._get_readonly_field(d, key)
             if val is None:
@@ -694,7 +713,7 @@ class composite_key_matcher(NMF):
                 d,
                 "Multiple channel docs match net:sta:chan:loc:time for this datum - using first one found",
                 ErrorSeverity.Complaint,
-                False
+                False,
             )
 
         match_doc = self.dbhandle.find_one(query)
@@ -715,6 +734,7 @@ class composite_key_matcher(NMF):
 
         return super().normalize(d, time)
 
+
 class mseed_channel_matcher(composite_key_matcher):
     def __init__(
         self,
@@ -727,7 +747,6 @@ class mseed_channel_matcher(composite_key_matcher):
         kill_on_failure=True,
         verbose=True,
         cache_normalization_data=True,
-
         readonly_tag="READONLYERROR_",
     ):
         if attributes_to_load is None:
@@ -763,8 +782,9 @@ class mseed_channel_matcher(composite_key_matcher):
             kill_on_failure,
             verbose,
             cache_normalization_data,
-            readonly_tag
+            readonly_tag,
         )
+
 
 class mseed_site_matcher(composite_key_matcher):
     """
@@ -795,6 +815,7 @@ class mseed_site_matcher(composite_key_matcher):
     channel documents or by editing the channel document to reduce the
     debris from extraneous data.
     """
+
     def __init__(
         self,
         db,
@@ -806,7 +827,6 @@ class mseed_site_matcher(composite_key_matcher):
         kill_on_failure=True,
         verbose=True,
         cache_normalization_data=True,
-
         readonly_tag="READONLYERROR_",
     ):
         if attributes_to_load is None:
@@ -839,8 +859,9 @@ class mseed_site_matcher(composite_key_matcher):
             kill_on_failure,
             verbose,
             cache_normalization_data,
-            readonly_tag
+            readonly_tag,
         )
+
 
 class origin_time_source_matcher(NMF):
     """
@@ -876,11 +897,11 @@ class origin_time_source_matcher(NMF):
         tolerance=4.0,
         attributes_to_load=None,
         load_if_defined=None,
-        cache_normalization_data=True,
         query=None,
-        kill_on_failure=True,
         prepend_collection_name=True,
+        kill_on_failure=True,
         verbose=True,
+        cache_normalization_data=True,
     ):
         """
         Constructor for this class. Includes the important boolean
@@ -925,35 +946,26 @@ class origin_time_source_matcher(NMF):
           loading errors) consider setting this false to reduce bloat in the
           elog collection.   Normal use should leave it True.
         """
-        super().__init__(kill_on_failure, verbose)
-        self.collection = collection
-        self.dbhandle = db[collection]
-        self.t0offset = t0offset
-        self.tolerance = tolerance
-        self.prepend_collection_name = prepend_collection_name
-
         if attributes_to_load is None:
             attributes_to_load = ["lat", "lon", "depth", "time"]
-        self.attributes_to_load = list()
-        for x in attributes_to_load:
-            self.attributes_to_load.append(x)
-        self.load_if_defined = list()
-        if load_if_defined is not None:
-            for x in load_if_defined:
-                self.load_if_defined.append(x)
+        if load_if_defined is None:
+            load_if_defined = list()
 
-        self.cache_normalization_data = cache_normalization_data
-        if self.cache_normalization_data:
-            # We dogmatically require prepend_collection_name=True
-            self.cache = self._load_normalization_cache(
-                db,
-                self.collection,
-                required_attributes=self.attributes_to_load,
-                optional_attributes=self.load_if_defined,
-                query=query,
-            )
-        else:
-            self.cache = dict()
+        NMF.__init__(
+            self,
+            db,
+            collection,
+            attributes_to_load,
+            load_if_defined,
+            query,
+            prepend_collection_name,
+            kill_on_failure,
+            verbose,
+            cache_normalization_data,
+        )
+
+        self.t0offset = t0offset
+        self.tolerance = tolerance
 
     def get_document(self, d, time=None):
         if not isinstance(
@@ -974,13 +986,9 @@ class origin_time_source_matcher(NMF):
             d_to_use = Metadata(d)
         else:
             d_to_use = d
-        if self.cache_normalization_data:
-            doc = self._cached_get_document(d_to_use, time)
-        else:
-            doc = self._db_get_document(d_to_use, time)
-        return doc
+        return NMF.get_document(self, d_to_use, time)
 
-    def _cached_get_document(self, d, time=None):
+    def _get_test_time(self, d, time):
         if time == None:
             if isinstance(
                 d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)
@@ -989,11 +997,16 @@ class origin_time_source_matcher(NMF):
             else:
                 if d.is_defined("starttime"):
                     test_time = d["starttime"] - self.t0offset
-                else:
-                    #   t0 can't be extracted from the object
+                else:  #   t0 can't be extracted from the object
                     return None
         else:
             test_time = time - self.t0offset
+        return test_time
+
+    def _cached_get_document(self, d, time=None):
+        test_time = self._get_test_time(d, time)
+        if test_time is None:
+            return None
 
         for _id, doc in self.cache.items():
             time = doc["time"]
@@ -1010,34 +1023,21 @@ class origin_time_source_matcher(NMF):
             )
             self.log_error(
                 d,
-                "origin_time_source_matcher._cached_get_document",
                 message,
-                self.kill_on_failure,
                 ErrorSeverity.Invalid,
             )
 
     def _db_get_document(self, d, time=None):
         # this logic allows setting ensemble metadata using a specific
         # time but if time is not defined we default to using data start time (t0)
-        if time == None:
-            if isinstance(
-                d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)
-            ):
-                test_time = d.t0 - self.t0offset
-            else:
-                if d.is_defined("starttime"):
-                    test_time = d["starttime"] - self.t0offset
-                else:
-                    #   t0 can't be extracted from the object
-                    return None
-        else:
-            test_time = time - self.t0offset
+        test_time = self._get_test_time(d, time)
+        if test_time is None:
+            return None
 
-        query = {
-            "time": {
-                "$gte": test_time - self.tolerance,
-                "$lte": test_time + self.tolerance,
-            }
+        query = copy.deepcopy(self.query)
+        query["time"] = {
+            "$gte": test_time - self.tolerance,
+            "$lte": test_time + self.tolerance,
         }
 
         matchsize = self.dbhandle.count_documents(query)
@@ -1046,87 +1046,19 @@ class origin_time_source_matcher(NMF):
                 message = "No match for query = " + str(query)
                 self.log_error(
                     d,
-                    "origin_time_source_matcher._db_get_document",
                     message,
-                    self.kill_on_failure,
                     ErrorSeverity.Invalid,
                 )
             return None
         elif matchsize > 1 and self.verbose and isinstance(d, (TimeSeries, Seismogram)):
             self.log_error(
                 d,
-                "origin_time_source_matcher",
                 "multiple source documents match the origin time computed from time received - using first found",
                 ErrorSeverity.Complaint,
             )
 
         match_doc = self.dbhandle.find_one(query)
-        ret_doc = {}
-        for key in self.attributes_to_load:
-            if key in match_doc:
-                ret_doc[key] = match_doc[key]
-            else:
-                raise MsPASSError(
-                    "get document:   required attribute with key = "
-                    + key
-                    + " not found",
-                    ErrorSeverity.Fatal,
-                )
-        for key in self.load_if_defined:
-            if key in match_doc:
-                ret_doc[key] = match_doc[key]
-        return ret_doc
-
-    def normalize(self, d, time=None):
-        if d.dead():
-            return d
-        if _input_is_valid(d):
-            doc = self.get_document(d, time)
-            if doc == None:
-                message = (
-                    "No matching document was found in"
-                    + self.collection
-                    + " collection for this datum"
-                )
-                self.log_error(
-                    d,
-                    "origin_time_source_matcher",
-                    message,
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-            else:
-                for key in self.attributes_to_load:
-                    if key in doc:
-                        if self.prepend_collection_name:
-                            mdkey = self.collection + "_" + key
-                        else:
-                            mdkey = key
-                        d[mdkey] = doc[key]
-                    else:
-                        # We accumulate error messages to aid user debugging
-                        # but it could create bloated elog collections
-                        message = (
-                            "No data for key="
-                            + self.mdkey
-                            + " in document returned from collection="
-                            + self.collection
-                        )
-                        self.log_error(
-                            d,
-                            "origin_time_source_matcher",
-                            message,
-                            self.kill_on_failure,
-                            ErrorSeverity.Invalid,
-                        )
-            # Notice logic that if no match is found we log the error
-            # (and usually kill it) and land here. Allows application in a map
-            # operation
-            return d
-        else:
-            raise TypeError(
-                "origin_time_source_matcher.normalize:  received invalid data type"
-            )
+        return self._load_doc(match_doc, d)
 
 
 class css30_arrival_interval_matcher(NMF):
