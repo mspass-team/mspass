@@ -35,64 +35,6 @@ def _input_is_valid(d):
 def _input_is_atomic(d):
     return isinstance(d, (TimeSeries, Seismogram))
 
-
-def _load_normalization_cache(
-    db, collection, required_attributes=None, optional_attributes=None, query={}
-):
-    """
-    This is a function internal to the matcher module used to standardize
-    the loading of normalization data from MongoDB. It returns a python
-    dict with keys defined by the string representation of each document
-    found in the normalizing collection.   The value associated with each
-    key is a Metadata container of a (usually) reduced set of data that
-    is to be merged with the Metadata of a set of mspass data objects
-    to produce the "normalization".
-
-    :param db: MongoDB database handle
-    :param collection:  database collection to be indexed to define the cache
-    :param required_attributes:  list of key for attributes the function will
-      dogmatically try to extract from each document.   If any of these are
-      missing in any collection the function will abort with a MsPASSError
-      exception
-    :param optional_attributes:  Treated like required_attributes but
-       if these are missing they are silently ignored an not posted to the
-       python dict containers associated with each id string.
-    :param query:  optional query to apply before loading the normalizing
-       collection defined by the collection argument.  By default the
-       entire collection is loaded and returned.   This can be useful with
-       large collection to reduce memory bloat.  e.g. if you have a large
-       collection of channel data but your data set only spans a 1 year
-       period you might set a query to only load data for stations
-       running during that time period.
-
-    """
-    if required_attributes is None:
-        required_attributes = []
-    if optional_attributes is None:
-        optional_attributes = []
-    dbcol = db[collection]
-    cursor = dbcol.find(query)
-    normcache = dict()
-    for doc in cursor:
-        mdresult = Metadata()
-        for key in required_attributes:
-            if key in doc:
-                mdresult[key] = doc[key]
-            else:
-                raise MsPASSError(
-                    "_load_normalization_cache:   required attribute with key = "
-                    + key
-                    + " not found",
-                    ErrorSeverity.Fatal,
-                )
-        for key in optional_attributes:
-            if key in doc:
-                mdresult[key] = doc[key]
-        cache_key = str(doc["_id"])  # always defined for a MongoDB doc
-        normcache[cache_key] = mdresult
-    return normcache
-
-
 class NMF(ABC):
     """
     Abstract base class for a family of Normalization Match Functions (NMF).
@@ -158,10 +100,9 @@ class NMF(ABC):
                 )
             )
         self.collection = collection
-        self.mdkey = (
-            collection + "_id"
-        )  # TODO: we might need a function to create the key
         self.dbhandle = db[collection]
+
+        self.query = query
 
         self.prepend_collection_name = prepend_collection_name
         self.kill_on_failure = kill_on_failure
@@ -177,13 +118,7 @@ class NMF(ABC):
         # might don't have a caching feature
         self.cache_normalization_data = cache_normalization_data
         if self.cache_normalization_data == True:
-            self.cache = _load_normalization_cache(
-                db,
-                collection,
-                required_attributes=self.attributes_to_load,
-                optional_attributes=self.load_if_defined,
-                query=query,
-            )
+            self.cache = self._load_normalization_cache()
 
     def __call__(self, d, *args, **kwargs):
         """
@@ -205,44 +140,14 @@ class NMF(ABC):
             return self._cached_get_document(d, *args, **kwargs)
 
     def _cached_get_document(self, d, *args, **kwargs):
-        if d.is_defined(self.mdkey):
-            testid = d[self.mdkey]
-        else:
-            message = "Normalizing ID with key={} is not defined in this object".format(
-                self.mdkey
-            )
-            self.log_error(d, message, ErrorSeverity.Invalid)
-            return None
-        try:
-            result = self.cache[str(testid)]
-            return result
-        except KeyError:
-            message = "Key [{}] not defined in cache".format(str(testid))
-            self.log_error(d, message, ErrorSeverity.Invalid)
-            return None
+        pass
 
     def _db_get_document(self, d, *args, **kwargs):
-        if d.is_defined(self.mdkey):
-            testid = d[self.mdkey]
-        else:
-            message = "Normalizing ID with key={} is not defined in this object".format(
-                self.mdkey
-            )
-            self.log_error(d, message, ErrorSeverity.Invalid)
-            return None
+        pass
 
-        query = {"_id": testid}
-        doc = self.dbhandle.find_one(query)
-        # For consistency we have to copy doc into a Metadata container
-        # for this situation - doc is a MongoDB document container and
-        # may contain other attributes so we do a selective copy for consistency
+    def _load_doc(self, doc, d=None):
+        #   d is not given when used in caching method
         result = Metadata()
-        if doc is None:
-            message = "Key [{}] not defined in normalization collection = {}".format(
-                str(testid), self.collection
-            )
-            self.log_error(d, message, ErrorSeverity.Invalid)
-            return None
         for key in self.attributes_to_load:
             if key in doc:
                 result[key] = doc[key]
@@ -252,11 +157,52 @@ class NMF(ABC):
                         key, self.collection
                     )
                 )
+                if d is None:   #   Don't have an object to save error log
+                    raise MsPASSError(
+                        message, ErrorSeverity.Invalid
+                    )
                 self.log_error(d, message, ErrorSeverity.Invalid)
         for key in self.load_if_defined:
             if key in doc:
                 result[key] = doc[key]
         return result
+        
+    def _load_normalization_cache(self):
+        """
+        This is a function internal to the matcher module used to standardize
+        the loading of normalization data from MongoDB. It returns a python
+        dict with keys defined by the string representation of each document
+        found in the normalizing collection.   The value associated with each
+        key is a Metadata container of a (usually) reduced set of data that
+        is to be merged with the Metadata of a set of mspass data objects
+        to produce the "normalization".
+
+        :param db: MongoDB database handle
+        :param collection:  database collection to be indexed to define the cache
+        :param required_attributes:  list of key for attributes the function will
+        dogmatically try to extract from each document.   If any of these are
+        missing in any collection the function will abort with a MsPASSError
+        exception
+        :param optional_attributes:  Treated like required_attributes but
+        if these are missing they are silently ignored an not posted to the
+        python dict containers associated with each id string.
+        :param query:  optional query to apply before loading the normalizing
+        collection defined by the collection argument.  By default the
+        entire collection is loaded and returned.   This can be useful with
+        large collection to reduce memory bloat.  e.g. if you have a large
+        collection of channel data but your data set only spans a 1 year
+        period you might set a query to only load data for stations
+        running during that time period.
+
+        """
+        cursor = self.dbhandle.find(self.query)
+        normcache = dict()
+        for doc in cursor:
+            mdresult = self._load_doc(doc)
+            cache_key = str(doc["_id"])  # always defined for a MongoDB doc
+            normcache[cache_key] = mdresult
+        return normcache
+
 
     def normalize(self, d, *args, **kwargs):
         if not _input_is_valid(d):
@@ -266,9 +212,7 @@ class NMF(ABC):
             
         doc = self.get_document(d, *args, **kwargs)
         if doc == None:
-            message = "No matching _id found for {} in collection={}".format(
-                self.mdkey, self.collection
-            )
+            message = "No matching _id found for in collection={}".format(self.collection)
             self.log_error(d, message, ErrorSeverity.Invalid)
         else:
             # In this implementation the contents of doc have been prefiltered
@@ -329,8 +273,66 @@ class NMF(ABC):
         if not hasattr(self, "verbose") or self.verbose is True:
             d.elog.log_error(matchername, message, severity)
 
+class single_key_matcher(NMF):
+    def __init__(
+        self,
+        db,
+        collection,
+        mdkey,
+        attributes_to_load=None,
+        load_if_defined=None,
+        query={}, 
+        prepend_collection_name=True,
+        kill_on_failure=True,
+        verbose=False,
+        cache_normalization_data=None,
+    ):
+        super().__init__(db, collection, attributes_to_load, load_if_defined, query, prepend_collection_name, kill_on_failure, verbose, cache_normalization_data)
+        self.mdkey = mdkey
 
-class ID_matcher(NMF):
+    def _get_key_id(self, d):
+        if d.is_defined(self.mdkey):
+            testid = d[self.mdkey]
+        else:
+            message = "Normalizing ID with key={} is not defined in this object".format(
+                self.mdkey
+            )
+            self.log_error(d, message, ErrorSeverity.Invalid)
+            return None
+        return testid
+
+    def _cached_get_document(self, d, *args, **kwargs):
+        testid = self._get_key_id(d)
+        if testid is None:
+            return None
+
+        try:
+            result = self.cache[str(testid)]
+            return result
+        except KeyError:
+            message = "Key [{}] not defined in cache".format(str(testid))
+            self.log_error(d, message, ErrorSeverity.Invalid)
+            return None
+
+    def _db_get_document(self, d, *args, **kwargs):
+        testid = self._get_key_id(d)
+        if testid is None:
+            return None
+
+        query = {"_id": testid}
+        doc = self.dbhandle.find_one(query)
+
+        if doc is None:
+            message = "Key [{}] not defined in normalization collection = {}".format(
+                str(testid), self.collection
+            )
+            self.log_error(d, message, ErrorSeverity.Invalid)
+            return None
+
+        result = self._load_doc(doc, d)
+        return result
+
+class ID_matcher(single_key_matcher):
     """
     This class is used to match a data object to a normalizing collection
     using a MongoDB ObjectId and the key naming convention of MsPASS.
@@ -412,6 +414,7 @@ class ID_matcher(NMF):
         super().__init__(
             db,
             collection,
+            collection+"_id",
             attributes_to_load,
             load_if_defined,
             query,
@@ -420,61 +423,6 @@ class ID_matcher(NMF):
             verbose,
             cache_normalization_data,
         )
-
-    def get_document(self, d):
-        """
-        Implementation of the get_document class for this class.  The
-        document, in this case, is actually a MsPASS Metadata container.
-        Only attributes defined by the attribute_to_load and load_if_defined
-        lists will be returned in the result.  For standard use that
-        data will be returned from the internal cache of that list of
-        attributes.  If caching was turned off in construction a
-        database query will be invoked for each call to this method.
-        Note in that case the type of the return will be different; a
-        python dict of the entire document contents instead of a Metadata
-        container with only the attributes cached on construction.
-
-        Any failures will cause d to be marked dead if kill_on_failure
-        was set in the constructor (the default).  The only exception is
-        attributes in the load_if_defined are not considered required so
-        if they are missing it is not considered an error.
-
-        :param d:  Data object with a Metadata container to be tested.
-        That means this can be any valid MsPASS data object or even
-        a raw Metadata container.  Only the class defined id key is
-        accessed by d.  That id drives the algorithm as described above.
-
-        :return:  Metadata container with the matching data when
-        caching is enabled. A python dict of the entire matching
-        document when caching is off. Returns None if there is not match
-        AND posts a message to elog of d.
-        """
-
-        return super().get_document(d)
-
-    def normalize(self, d):
-        """
-        Implementation of the normalize method for this class.  This method
-        first tests if the input is a valid MsPASS data object.  It will
-        silently do nothing if the data are not valid returning a None.
-        It then tests if the datum is marked live.  If it is found marked
-        dead it silently returns d with no changes.   For live data it calls the get_document
-        method.  If that succeeds it extracts the (constructor defined) list of
-        desired attributes and posts them to the data's Metadata container.
-        If get_document fails a message is posted to elog and if the
-        constructor defined "kill_on_failure" parameter is set True the
-        returned datum will be killed.
-
-        :param d:  data to be normalized.  This must be a MsPASS data object.
-          For this function that means TimeSeries, Seismogram, TimeSeriesEnsemble,
-          or SeismogramEnsemble.  Not for ensembles the normalizing data will
-          be posted to the ensemble metadata container not the members.
-          This can be used, for example, to normalize a parallel container
-          (rdd or bad) of common source gathers more efficiently than
-          at the atomic level.
-        """
-
-        return super().normalize(d)
 
 def _channel_composite_key(net, sta, chan, loc, separator="_"):
     """
@@ -917,7 +865,7 @@ class mseed_site_matcher(NMF):
         self.cache_normalization_data = cache_normalization_data
         if self.cache_normalization_data:
             # We dogmatically require prepend_collection_name=True
-            self.cache = _load_normalization_cache(
+            self.cache = self._load_normalization_cache(
                 db,
                 "site",
                 required_attributes=self.attributes_to_load,
@@ -1354,7 +1302,7 @@ class origin_time_source_matcher(NMF):
         self.cache_normalization_data = cache_normalization_data
         if self.cache_normalization_data:
             # We dogmatically require prepend_collection_name=True
-            self.cache = _load_normalization_cache(
+            self.cache = self._load_normalization_cache(
                 db,
                 self.collection,
                 required_attributes=self.attributes_to_load,
