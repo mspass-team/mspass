@@ -424,23 +424,6 @@ class ID_matcher(single_key_matcher):
             cache_normalization_data,
         )
 
-def _channel_composite_key(net, sta, chan, loc, separator="_"):
-    """
-    Returns a composite key that is unique for a seed channel defined
-    (by default) a net_sta_chan_loc.  Optional separator argument
-    can be used to use a different separator character.
-    Loc is often null so choose to not include a trailing separator
-    when that is the case.  Similarly, when chan is a zero length
-    string it is omitted.  That allows this same function to be used for
-    site and channel
-    """
-    key = net + separator + sta
-    if len(chan) > 0:
-        key = key + separator + chan
-    if len(loc) > 0:
-        key = key + separator + loc
-    return key
-
 class composite_key_matcher(NMF):
     def __init__(
         self,
@@ -783,7 +766,7 @@ class mseed_channel_matcher(composite_key_matcher):
             readonly_tag
         )
 
-class mseed_site_matcher(NMF):
+class mseed_site_matcher(composite_key_matcher):
     """
     This class is used to match derived from seed data to the site collection using
     the mseed standard site string tags net, sta, and (optionally) loc.
@@ -812,22 +795,20 @@ class mseed_site_matcher(NMF):
     channel documents or by editing the channel document to reduce the
     debris from extraneous data.
     """
-
     def __init__(
         self,
         db,
+        collection="site",
         attributes_to_load=None,
         load_if_defined=None,
-        cache_normalization_data=True,
         query=None,
-        readonly_tag="READONLYERROR_",
         prepend_collection_name=True,
         kill_on_failure=True,
         verbose=True,
-    ):
-        super().__init__(kill_on_failure, verbose)
-        self.dbhandle = db["site"]
+        cache_normalization_data=True,
 
+        readonly_tag="READONLYERROR_",
+    ):
         if attributes_to_load is None:
             attributes_to_load = [
                 "_id",
@@ -841,349 +822,25 @@ class mseed_site_matcher(NMF):
             ]
         if load_if_defined is None:
             load_if_defined = ["loc"]
-        # assume type errors will be thrown if attributes_to_load is not array like
-        self.attributes_to_load = list()
-        for x in attributes_to_load:
-            self.attributes_to_load.append(x)
-        self.load_if_defined = list()
-        for x in load_if_defined:
-            self.load_if_defined.append(x)
-        self.cache_normalization_data = cache_normalization_data
-        if self.cache_normalization_data:
-            # We dogmatically require prepend_collection_name=True
-            self.cache = self._load_normalization_cache(
-                db,
-                "site",
-                required_attributes=self.attributes_to_load,
-                optional_attributes=self.load_if_defined,
-                query=query,
-            )
-            self.xref = self._build_xref()
-        else:
-            self.cache = dict()
-            self.xref = dict()
 
-        self.readonly_tag = readonly_tag
-        self.prepend_collection_name = prepend_collection_name
+        keys = ["net", "sta"]
+        optional_keys = ["loc"]
 
-    def _build_xref(self):
-        """
-        Used by constructor to build mseed cross reference dict
-        with mseed key and list of object_ids matching for each unique
-        key
-        """
-        xref = dict()
-        for id, md in self.cache.items():
-            net = md["net"]
-            sta = md["sta"]
-            chan = ""
-            if md.is_defined("loc"):
-                loc = md["loc"]
-            else:
-                loc = ""
-            key = _channel_composite_key(net, sta, chan, loc)
-            if key in xref:
-                xref[key].append(id)
-            else:
-                xref[key] = [id]  # initializes array of id strings
-        return xref
-
-    def get_document(self, d, time=None):
-        if not isinstance(d, (TimeSeries, Seismogram, Metadata, dict)):
-            raise TypeError(
-                "mseed_site_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object"
-            )
-        # We need to convert a dict to Metadata to match the api for
-        # data objects.  We need support for dict for interacting
-        # directly with mongodb query results
-        if isinstance(d, dict):
-            d_to_use = Metadata(d)
-        else:
-            d_to_use = d
-        if self.cache_normalization_data:
-            doc = self._cached_get_document(d_to_use, time)
-        else:
-            doc = self._db_get_document(d_to_use, time)
-        return doc
-
-    def _cached_get_document(self, d, time=None):
-        """
-        Private method to do work of get_document method when site
-        data have been previously cached.
-        """
-        # do this test once to avoid repetitious calls later - minimal cost
-        error_logging_allowed = isinstance(d, (TimeSeries, Seismogram))
-
-        if d.is_defined("net"):
-            net = d["net"]
-        elif d.is_defined(self.readonly_tag + "net"):
-            net = d[self.readonly_tag + "net"]
-        else:
-            if error_logging_allowed:
-                self.log_error(
-                    d,
-                    "mseed_site_matcher",
-                    "Required match key=net or "
-                    + self.readonly_tag
-                    + "net are not defined for this datum",
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-            return None
-
-        if d.is_defined("sta"):
-            sta = d["sta"]
-        elif d.is_defined(self.readonly_tag + "sta"):
-            sta = d[self.readonly_tag + "sta"]
-        else:
-            if error_logging_allowed:
-                self.log_error(
-                    d,
-                    "mseed_site_matcher",
-                    "Required match key=sta or "
-                    + self.readonly_tag
-                    + "sta are not defined for this datum",
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-            return None
-
-        # loc has to be handled differently because it is often not defined
-        # We just don't add loc to the query if it isn't defined
-        if d.is_defined("loc"):
-            loc = d["loc"]
-        elif d.is_defined(self.readonly_tag + "loc"):
-            loc = d[self.readonly_tag + "loc"]
-        else:
-            loc = ""  # this cas is assumed handled by _channel_composite_key
-
-        # always set to a zero length string to allow use of this common function
-        chan = ""
-
-        key = _channel_composite_key(net, sta, chan, loc)
-        # Try to recover if time is not explicitly passed as an arg
-        if time == None:
-            if isinstance(d, (TimeSeries, Seismogram)):
-                test_time = d.t0
-            else:
-                if d.is_defined("starttime"):
-                    test_time = d["starttime"]
-                else:
-                    # Use None for test_time as a signal to ignore time field
-                    test_time = None
-        else:
-            test_time = time
-        if key in self.xref:
-            doclist = self.xref[key]
-            # avoid a test and assume this is a match if there is only
-            # one entry in the list
-            if len(doclist) == 1:
-                idkey = doclist[0]
-                return self.cache[idkey]
-            # When time is not defined (None) just return first entry
-            # but post a warning
-            if test_time == None:
-                if error_logging_allowed:
-                    message = "Warning - no time specified for match and data has no starttime field defined.  Using first match found in channel collection"
-                    self.log_error(
-                        d,
-                        "mseed_site_matcher._cached_get_document",
-                        message,
-                        False,
-                        ErrorSeverity.Suspect,
-                    )
-                idkey = doclist[0]
-                return self.cache[idkey]
-            for key_doc in doclist:
-                doc = self.cache[key_doc]
-                stime = doc["starttime"]
-                etime = doc["endtime"]
-                if test_time >= stime and test_time <= etime:
-                    return doc
-            if error_logging_allowed:
-                message = (
-                    "No match for net_sta_chan_loc ="
-                    + key
-                    + " and time="
-                    + str(UTCDateTime(test_time))
-                )
-                self.log_error(
-                    d,
-                    "mseed_site_matcher._cached_get_document",
-                    message,
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-            return None
-        else:
-            if error_logging_allowed:
-                message = (
-                    "No entries are present in channel collection for net_sta_chan_loc = "
-                    + key
-                )
-                self.log_error(
-                    d,
-                    "mseed_site_matcher._cached_get_document",
-                    message,
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-            return None
-
-    def _db_get_document(self, d, time=None):
-        # do this test once to avoid repetitious calls later - minimal cost
-        error_logging_allowed = isinstance(d, (TimeSeries, Seismogram))
-        query_is_ok = True
-        query = {}
-        if d.is_defined("net"):
-            query["net"] = d["net"]
-        elif d.is_defined(self.readonly_tag + "net"):
-            query["net"] = d[self.readonly_tag + "net"]
-        else:
-            query_is_ok = False
-            if error_logging_allowed:
-                self.log_error(
-                    d,
-                    "mseed_site_matcher",
-                    "Required match key=net or "
-                    + self.readonly_tag
-                    + "net are not defined for this datum",
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-        # We repeat the above logic for sta and chan for debugging but it
-        # could cause bloated elog messages if a user makes a dumb error
-        # with a large data set.  that seems preferable to mysterious behavior
-        # could make it a verbose option but for now we will always blunder on
-        if d.is_defined("sta"):
-            query["sta"] = d["sta"]
-        elif d.is_defined(self.readonly_tag + "sta"):
-            query["sta"] = d[self.readonly_tag + "sta"]
-        else:
-            query_is_ok = False
-            if error_logging_allowed:
-                self.log_error(
-                    d,
-                    "mseed_site_matcher",
-                    "Required match key=sta or "
-                    + self.readonly_tag
-                    + "sta are not defined for this datum",
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-
-        # loc has to be handled differently because it is often not defined
-        # We just don't add loc to the query if it isn't defined
-        if d.is_defined("loc"):
-            query["loc"] = d["loc"]
-        elif d.is_defined(self.readonly_tag + "loc"):
-            query["loc"] = d[self.readonly_tag + "loc"]
-
-        # return now if this datum has been marked dead
-        if not query_is_ok:
-            return None
-
-        # default to data start time if time is not explicitly passed
-        if time == None:
-            if isinstance(d, (TimeSeries, Seismogram)):
-                querytime = d.t0
-            else:
-                if d.is_defined("starttime"):
-                    querytime = d["starttime"]
-                else:
-                    # Use None for test_time as a signal to ignore time field
-                    querytime = None
-        else:
-            querytime = time
-
-        if querytime is not None:
-            query["starttime"] = {"$lt": querytime}
-            query["endtime"] = {"$gt": querytime}
-
-        matchsize = self.dbhandle.count_documents(query)
-        if matchsize == 0:
-            if error_logging_allowed:
-                message = "No match for query = " + str(query)
-                self.log_error(
-                    d,
-                    "mseed_channel_matcher._db_get_document",
-                    message,
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-            return None
-        if matchsize > 1 and self.verbose and error_logging_allowed:
-            self.log_error(
-                d,
-                "mseed_site_matcher",
-                "Multiple channel docs match net:sta:loc:time for this datum - using first one found",
-                False,
-                ErrorSeverity.Complaint,
-            )
-        match_doc = self.dbhandle.find_one(query)
-        ret_doc = {}
-        for key in self.attributes_to_load:
-            if key in match_doc:
-                ret_doc[key] = match_doc[key]
-            else:
-                raise MsPASSError(
-                    "get document:   required attribute with key = "
-                    + key
-                    + " not found",
-                    ErrorSeverity.Fatal,
-                )
-        for key in self.load_if_defined:
-            if key in match_doc:
-                ret_doc[key] = match_doc[key]
-        return ret_doc
-
-    def normalize(self, d, time=None):
-        if d.dead():
-            return d
-        if _input_is_atomic(d):
-            doc = self.get_document(d, time)
-            if doc == None:
-                message = (
-                    "No matching document was found in site collection for this datum"
-                )
-                self.log_error(
-                    d,
-                    "mseed_site_matcher",
-                    message,
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-            else:
-                for key in self.attributes_to_load:
-                    if key in doc:
-                        if self.prepend_collection_name:
-                            mdkey = "site_" + key
-                        else:
-                            mdkey = key
-                        d[mdkey] = doc[key]
-                    else:
-                        # We accumulate error messages to aid user debugging
-                        # but it could create bloated elog collections
-                        message = (
-                            "No data for key="
-                            + self.mdkey
-                            + " in document returned from collection="
-                            + self.collection
-                        )
-                        self.log_error(
-                            d,
-                            "mseed_site_matcher",
-                            message,
-                            self.kill_on_failure,
-                            ErrorSeverity.Invalid,
-                        )
-            # Notice logic that if no match is found we log the error
-            # (and usually kill it) and land here. Allows application in a map
-            # operation
-            return d
-        else:
-            raise TypeError("mseed_site_matcher.normalize:  received invalid data type")
-
+        composite_key_matcher.__init__(
+            self,
+            db,
+            collection,
+            keys,
+            optional_keys,
+            attributes_to_load,
+            load_if_defined,
+            query,
+            prepend_collection_name,
+            kill_on_failure,
+            verbose,
+            cache_normalization_data,
+            readonly_tag
+        )
 
 class origin_time_source_matcher(NMF):
     """
