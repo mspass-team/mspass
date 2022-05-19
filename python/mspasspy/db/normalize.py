@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from functools import cache
+import sys
 from attr import attrib
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, Metadata
 from mspasspy.ccore.seismic import (
@@ -1080,145 +1081,87 @@ class css30_arrival_interval_matcher(NMF):
     def __init__(
         self,
         db,
-        startime_offset=60.0,
+        collection="arrival",
+        time_offset=60.0,
         phasename="P",
         phasename_key="phase",
         attributes_to_load=None,
         load_if_defined=None,
-        kill_on_failure=False,
+        query=None,
         prepend_collection_name=True,
+        kill_on_failure=False,
         verbose=True,
-        arrival_collection_name="arrival",
+        cache_normalization_data=False,
     ):
-        """ """
-        super().__init__(kill_on_failure, verbose)
-        self.phasename = phasename
-        self.phasename_key = phasename_key
-
         if attributes_to_load is None:
             attributes_to_load = ["time"]
         if load_if_defined is None:
             load_if_defined = ["evid", "iphase", "seaz", "esaz", "deltim", "timeres"]
 
-        for x in attributes_to_load:
-            self.attributes_to_load.append(x)
-        self.load_if_defined = []
-        for x in load_if_defined:
-            self.load_if_defined.append(x)
-        self.prepend_collection_name = prepend_collection_name
-        self.dbhandle = db[arrival_collection_name]
+        NMF.__init__(
+            self,
+            db,
+            collection,
+            attributes_to_load,
+            load_if_defined,
+            query,
+            prepend_collection_name,
+            kill_on_failure,
+            verbose,
+            cache_normalization_data,
+        )
 
-    def get_document(self, d):
-        stime = d.t0
-        etime = d.endtime()
-        query = {self.phasename_key: self.phasename}
-        query["time"] = {"$ge": stime, "$le": etime}
+        self.phasename = phasename
+        self.phasename_key = phasename_key
+        self.time_offset = time_offset
+
+    def _get_doc_time(self, d):
+        if isinstance(d, (TimeSeries, Seismogram)):
+            stime = d.t0
+            etime = d.endtime()
+            return (stime, etime)
+        else:
+            if d.is_defined("starttime") and d.is_defined("endtime"):
+                stime = d["starttime"]
+                etime = d["endtime"]
+                return (stime, etime)
+            else:
+                raise MsPASSError(
+                    "css30_arrival_interval_matcher._get_doc_time: can't extract time from input",
+                    ErrorSeverity.Fatal,
+                )
+
+    def _db_get_document(self, d):
+        (stime, etime) = self._get_doc_time(d)
+
+        query = copy.deepcopy(self.query)
+        query[self.phasename_key] = self.phasename
+        query["time"] = {"$gte": stime, "$lte": etime}
+
         n = self.dbhandle.count_documents(query)
         if n == 0:
             return None
-        elif n == 1:
-            return self.dbhandle.find_one(query)
         else:
             cursor = self.dbhandle.find(query)
-            matchlist = []
             # the key here perhaps should be set in constructor
             # for now it is frozen as this constant
+            min_doc = None
+            min_abs_dt = sys.float_info.max
             for doc in cursor:
                 # ignore any docs with the time attribute not set
                 if "time" in doc:
-                    dt = doc["time"] - self.time_offset
-                    matchlist.append([abs(dt), doc])
-            # handle these special cases
-            n_to_test = len(matchlist)
-            if n_to_test == 0:
+                    abs_dt = abs(doc["time"] - self.time_offset)
+                    if abs_dt < min_abs_dt:
+                        min_abs_dt = abs_dt
+                        min_doc = doc
+            if min_doc is None:  # handle these special cases
                 raise MsPASSError(
                     "css30_arrival_interval_matcher.get_document:  no arrival docs found with phasename set as"
                     + self.phasename
                     + " with a time attribute defined.  This should not happen and indicates a serious database inconsistence.  Aborting",
                     ErrorSeverity.Fatal,
                 )
-            elif n_to_test == 1:
-                # weird syntax but this returns to doc of the one and only
-                # tuple getting through the above loop.  Execution of this
-                # block should be very very rare
-                return matchlist[0][1]
-            else:
-                dtmin = matchlist[0][0]
-                imin = 0
-                for i in range(len(matchlist)):
-                    dt = matchlist[i][0]
-                    # not dt values are stored as abs differences
-                    if dt < dtmin:
-                        imin = i
-                        dtmin = dt
-                return matchlist[imin][1]
-
-    def normalize(self, d):
-        if d.dead():
-            return d
-        if _input_is_atomic(d):
-            doc = self.get_document(d)
-            if doc == None:
-                message = (
-                    "No matching document was found in"
-                    + self.arrival_collection_name
-                    + " collection for this datum"
-                )
-                self.log_error(
-                    d,
-                    "css30_arrival_interval_matcher",
-                    message,
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
-            else:
-                for key in self.attributes_to_load:
-                    if key in doc:
-                        if self.prepend_collection_name:
-                            mdkey = self.collection + "_" + key
-                        else:
-                            mdkey = key
-                        d[mdkey] = doc[key]
-                    else:
-                        # We accumulate error messages to aid user debugging
-                        # but it could create bloated elog collections
-                        message = (
-                            "No data for key="
-                            + self.mdkey
-                            + " in document returned from collection="
-                            + self.collection
-                        )
-                        self.log_error(
-                            d,
-                            "css30_arrival_interval_matcher",
-                            message,
-                            self.kill_on_failure,
-                            ErrorSeverity.Invalid,
-                        )
-                # similar for optional but don't log errors for missing
-                # attributes unless verbose is set true
-                for key in self.load_if_defined:
-                    if key in doc:
-                        if self.prepend_collection_name:
-                            mdkey = self.collection + "_" + key
-                        else:
-                            mdkey = key
-                        d[mdkey] = doc[key]
-                    elif self.verbose:
-                        self.log_error(
-                            "css30_arrival_interval_matcher",
-                            "No data found with optional load key=" + key,
-                            ErrorSeverity.Informational,
-                        )
-
-            # Notice logic that if no match is found we log the error
-            # (and usually kill it) and land here. Allows application in a map
-            # operation
-            return d
-        else:
-            raise TypeError(
-                "css30_arrival_interval_matcher.normalize:  received invalid data type"
-            )
+            return self._load_doc(doc)
 
 
 def bulk_normalize(
