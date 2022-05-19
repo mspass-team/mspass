@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
-from functools import cache
 import sys
-from attr import attrib
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, Metadata
 from mspasspy.ccore.seismic import (
     TimeSeries,
@@ -68,13 +66,19 @@ class NMF(ABC):
         cache_normalization_data=None,
     ):
         """
-        Base class constructor.   The implementation requires 3
-        defaulted parameters that most subclasses can find useful.
+        Base class constructor. The implementation requires defaulted parameters
+        that most subclasses can find useful.
 
         :param db:  MongoDB Database handle
-        :param collection:   string defining the collection this object
-          should use for normalization.   If this argument is not a valid
+        :param collection:  string defining the collection this object
+          should use for normalization. If this argument is not a valid
           string the constructor will abort with a TypeError exception.
+        :param attributes_to_load:  is a list of keys (strings) that are to
+          be loaded with data by the normalize method. Default is None here, 
+          subclass should set their own default values.
+        :param load_if_defined:   is a secondary list of keys (strings) that
+          should be loaded only if they are defined. Default is None here, 
+          subclass should set their own default values.
         :param query:  optional query to apply to collection before loading.
           The default is load all.  If your data set is time limited and
           the collection has a time attribute (true of the standard channel,
@@ -93,6 +97,13 @@ class NMF(ABC):
         :param verbose:  most subclasses will want a verbose option
           to control what is posted to elog messages or printed
           (most useful for serial jobs)
+        :param cache_normalization_data:  When set True the specified
+          collection is preloaded in an internal cache on construction and 
+          used for all subsequent matching.  This mode is highly recommended
+          as it has been found to speed normalization by an order of magnitude
+          or more relative to a database transaction for each call to normalize,
+          which is what happens when this parameter is set False. Subclasses might
+          not support the caching feature, so the default value is None.
         """
         if not isinstance(collection, str):
             raise TypeError(
@@ -134,6 +145,28 @@ class NMF(ABC):
         return self.normalize(d, *args, **kwargs)
 
     def get_document(self, d, *args, **kwargs):
+        """
+        This is a method to fetch the document that matches. The
+        document, in this case, is actually a MsPASS Metadata container.
+        Only attributes defined by the attribute_to_load and load_if_defined
+        lists will be returned in the result.
+        This method works as an entry to two different implementations:
+        1. If caching was enabled, _cached_get_document will be invoked, and 
+        data will be returned from the internal cache.
+        2. If caching was turned off, _db_get_document will be invoked, a db 
+        query will then be invoked for each call to this method.
+        The subclasses can call this method and extend it with extra arguments
+        (*args, **kwargs), a typical extra argument is time (see composite_key_matcher)
+        Any failures will cause d to be marked dead if kill_on_failure
+        was set in the constructor (the default).
+
+        :param d:  Data object with a Metadata container to be tested.
+        That means this can be any valid MsPASS data object or even
+        a raw Metadata container.  Only the class defined id key is
+        accessed by d.  That id drives the algorithm as described above.
+        :return:  Metadata container with the matching data. Returns None 
+        if there is not match AND posts a message to elog of d.
+        """
         if (
             self.cache_normalization_data is None
             or self.cache_normalization_data == False
@@ -144,13 +177,39 @@ class NMF(ABC):
 
     @abstractmethod
     def _cached_get_document(self, d, *args, **kwargs):
+        """
+        This method looks for the qualified document in the cache constructed
+        before. Subclasses are required to implement this method.
+        """
         pass
 
     @abstractmethod
     def _db_get_document(self, d, *args, **kwargs):
+        """
+        This method looks for the qualified document by sending a new query to
+        the database. Subclasses are required to implement this method.
+        """
         pass
 
     def _load_doc(self, doc, d=None):
+        """
+        This is a helper function that takes a dict input, and extract the
+        attributes defined in attribute_to_load and load_if_defined.
+        The return is a Metadata with the matching data.
+        This function is called in _load_normalization_cache and _db_get_document.
+        These two cases are only different when handling errors (attributes_to_load
+        not defined in the doc)
+        In the former case, there is no data object related with the document to
+        load, so a MsPassError will be raised.
+        In the latter case, one single data object d is related, a error message will
+        be stored to the elog of d.
+
+        :param doc:  A dict object from the mongodb
+        :param d: The MsPass data object that invokes this method, default is None, meaning
+        that no data object is related.
+        :return: Metadata container with the matching data. Return None if some keys in
+        attribues_to_load are not defined in the doc.
+        """
         #   d is not given when used in caching method
         result = Metadata()
         for key in self.attributes_to_load:
@@ -167,6 +226,7 @@ class NMF(ABC):
                 ):  #   Don't have an object to save error log
                     raise MsPASSError(message, ErrorSeverity.Invalid)
                 self.log_error(d, message, ErrorSeverity.Invalid)
+                return None
         for key in self.load_if_defined:
             if key in doc:
                 result[key] = doc[key]
@@ -180,25 +240,21 @@ class NMF(ABC):
         found in the normalizing collection.   The value associated with each
         key is a Metadata container of a (usually) reduced set of data that
         is to be merged with the Metadata of a set of mspass data objects
-        to produce the "normalization".
-
-        :param db: MongoDB database handle
-        :param collection:  database collection to be indexed to define the cache
-        :param required_attributes:  list of key for attributes the function will
-        dogmatically try to extract from each document.   If any of these are
-        missing in any collection the function will abort with a MsPASSError
-        exception
-        :param optional_attributes:  Treated like required_attributes but
-        if these are missing they are silently ignored an not posted to the
-        python dict containers associated with each id string.
-        :param query:  optional query to apply before loading the normalizing
-        collection defined by the collection argument.  By default the
-        entire collection is loaded and returned.   This can be useful with
-        large collection to reduce memory bloat.  e.g. if you have a large
-        collection of channel data but your data set only spans a 1 year
-        period you might set a query to only load data for stations
+        to produce the "normalization". 
+        This method use the db[collection] in the class to define the 
+        database collection to be indexed to the cache
+        self.required_attributes is used to indicate list of keys for attributes 
+        the function will dogmatically try to extract from each document. If any
+        of these are missing in any collection the function will abort with a 
+        MsPASSError exception (throwed in _load_doc)
+        self.optional_attributes is used to indicate list of keys, which are
+        are silently ignored if they are missing.
+        self.query is applied before loading the normalizing collection defined by
+        the collection argument.  By default the entire collection is loaded and 
+        returned. This can be useful with large collection to reduce memory bloat.  
+        e.g. if you have a large collection of channel data but your data set only 
+        spans a 1 year period you might set a query to only load data for stations
         running during that time period.
-
         """
         cursor = self.dbhandle.find(self.query)
         normcache = dict()
@@ -209,6 +265,29 @@ class NMF(ABC):
         return normcache
 
     def normalize(self, d, *args, **kwargs):
+        """
+        This is a method to fetch and copy specified key-value pairs to a valid
+        MsPASS data object. 
+        This method first tests if the input is a valid MsPASS data object.  It will
+        silently do nothing if the data are not valid returning a None.
+        It then tests if the datum is marked live. If it is found marked
+        dead it silently returns d with no changes. For live data it calls the get_document
+        method. If that succeeds it extracts the (constructor defined) list of
+        desired attributes and posts them to the data's Metadata container.
+        If get_document fails a message is posted to elog and if the
+        constructor defined "kill_on_failure" parameter is set True the
+        returned datum will be killed.
+        Note that for most of the subclasses, the functionalities of normalize are 
+        the same. So in most cases, we don't need to overwrite this method.
+        
+        :param d:  data to be normalized.  This must be a MsPASS data object.
+          For this function that means TimeSeries, Seismogram, TimeSeriesEnsemble,
+          or SeismogramEnsemble.  Not for ensembles the normalizing data will
+          be posted to the ensemble metadata container not the members.
+          This can be used, for example, to normalize a parallel container
+          (rdd or bad) of common source gathers more efficiently than
+          at the atomic level.
+        """
         if not _input_is_valid(d):
             raise TypeError("ID_matcher.normalize:  received invalid data type")
         if d.dead():
@@ -251,12 +330,12 @@ class NMF(ABC):
           written.
         :param message:  specialized message to post - this string is added
         to an internal generic message.
+        :param severity:  ErrorSeverity to assign to elog message
+        (See ErrorLogger docstring).  Default is Informational
         :param kill:  boolean controlling if the message should cause the
         datum to be killed. Default None meaning the kill_on_failure boolean of
         the class will be used. If kill is set, it will be overwritten temporarily.
         is posted.
-        :param severity:  ErrorSeverity to assign to elog message
-        (See ErrorLogger docstring).  Default is Informational
         """
         if not _input_is_valid(d):
             #   If we can't log error to the object, simply return
