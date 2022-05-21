@@ -278,8 +278,8 @@ class NMF(ABC):
         constructor defined "kill_on_failure" parameter is set True the
         returned datum will be killed.
         Note that for most of the subclasses, the functionalities of normalize are 
-        the same. So in most cases, we don't need to overwrite this method.
-        
+        the same. So in most cases, we don't need to override this method.
+
         :param d:  data to be normalized.  This must be a MsPASS data object.
           For this function that means TimeSeries, Seismogram, TimeSeriesEnsemble,
           or SeismogramEnsemble.  Not for ensembles the normalizing data will
@@ -287,6 +287,7 @@ class NMF(ABC):
           This can be used, for example, to normalize a parallel container
           (rdd or bad) of common source gathers more efficiently than
           at the atomic level.
+        :return: The normalized document
         """
         if not _input_is_valid(d):
             raise TypeError("ID_matcher.normalize:  received invalid data type")
@@ -335,7 +336,6 @@ class NMF(ABC):
         :param kill:  boolean controlling if the message should cause the
         datum to be killed. Default None meaning the kill_on_failure boolean of
         the class will be used. If kill is set, it will be overwritten temporarily.
-        is posted.
         """
         if not _input_is_valid(d):
             #   If we can't log error to the object, simply return
@@ -525,6 +525,23 @@ class ID_matcher(single_key_matcher):
 
 
 class composite_key_matcher(NMF):
+    """
+    This class is an intermediate class that implements the shared functionalities
+    of mseed_channel_matcher and mseed_site_matcher.
+
+    A composite_key_matcher uses a composite key to match the documents, it is created
+    by concatenating all required keys and their values. For example: mseed_channel_matcher's
+    required keys are ["net", "sta", "chan"]. So the composite key will be something like: 
+    "cmp_id_net=TA_sta=034A_chan=BHE". This composite key can identify all the documents 
+    that have the same value for ["net", "sta", "chan"]. In addition, user can define a list
+    of optional_keys that are not always present in a document. For example, "doc" in
+    the mseed_channel_matcher.
+
+    It can also be used to normalize data saved in wf_TimeSeries where the mseed tags
+    are often altered by MsPASS to change fields like "net" to "READONLYERROR_net".
+    There is an automatic fallback for each of the tags where if the proper name is not 
+    found we alway try to use the READONLYERROR_ version before giving up.
+    """
     def __init__(
         self,
         db,
@@ -541,24 +558,48 @@ class composite_key_matcher(NMF):
         readonly_tag="READONLYERROR_",
     ):
         """
-        Constructor for this class.  Includes the important boolean
-        that enables or disables caching.
+        Constructor for this class. Most of the arguments are inherited from the base
+        class NMF.
 
         :param db:  MongoDB Database handle
-        :param attributes_to_load:  list of keys that will always be loaded
-          from each document in the normalization collection satisfying the
-          query.   Note the constructor will abort with a MsPASSError if
-          any documents are missing one of these key-value pairs.
-        :param load_if_defined: is like attributes_to_load (a list of
-          key strings) but the key-value pairs are not required.
-        :param cache_normalization_data:  when True (default) all documents
-          satisfying the query parameter in the channel collection will
-          be loaded into memory in an internal cache.  When False each
-          call to get_document or normalize will invoke a database query
-          (find).  (see class description)
-        :param query:  (optional) query to pass to find to prefilter the
-          data loaded when cache_normalization_data is True.  This argument
-          is ignore if cache_normalization_data is False.
+        :param collection:  string defining the collection this object
+          should use for normalization. If this argument is not a valid
+          string the constructor will abort with a TypeError exception.
+        :param keys: a list of fields that are used to create a composite key,
+        these fields are always cached if caching is enabled
+        :param optional_keys: a list of fields, very similar to keys, the only
+        difference is that optional_keys can be missing in a document.
+        :param attributes_to_load:  is a list of keys (strings) that are to
+          be loaded with data by the normalize method. Default is None here, 
+          subclass should set their own default values.
+        :param load_if_defined:   is a secondary list of keys (strings) that
+          should be loaded only if they are defined. Default is None here, 
+          subclass should set their own default values.
+        :param query:  optional query to apply to collection before loading.
+          The default is load all.  If your data set is time limited and
+          the collection has a time attribute (true of the standard channel,
+          site, and source collections) you can reduce the memory footprint
+          by using a time range query (python dict) for this argument.
+        :param prepend_collection_name:  boolean controlling a standard
+          renaming option.   When True (default)   all normalizing data
+          keys get a collection name prepended to the key to give it a
+          unique key.  e.g. if loading data from "channel" the "lat"
+          (latitude of the instrument's location) field will be changed on
+           posting to d to "channel_lat".   Setting this false should be
+           a rare or never used option and should be done only if you deeply
+           understand the consequences.
+        :param kill_on_failure:  when set true (Default) match errors
+          will cause data passed to the normalize method to be killed.
+        :param verbose:  most subclasses will want a verbose option
+          to control what is posted to elog messages or printed
+          (most useful for serial jobs)
+        :param cache_normalization_data:  When set True the specified
+          collection is preloaded in an internal cache on construction and 
+          used for all subsequent matching.  This mode is highly recommended
+          as it has been found to speed normalization by an order of magnitude
+          or more relative to a database transaction for each call to normalize,
+          which is what happens when this parameter is set False. Subclasses might
+          not support the caching feature, so the default value is None.
         :param readonly_tag:  As noted in the class docstring attributes
           marked read only in the schema can sometimes be saved with a
           prefix.  The get_document and normalize methods have an auto
@@ -567,25 +608,10 @@ class composite_key_matcher(NMF):
           The default is "READONLYERROR_" which is what is used by
           default in MsPASS.  Few if any users will likely need to
           ever set this parameter.
-        :param prepend_collection_name:   When set True (the default)
-          all data pulled from channel will have the prefix "channel_"
-          added to the key before they are posted to a data object by
-          in the normalize method.  (e.g. "sta" will be posted as "channel_sta").
-          That is the standard convention used in MsPASS to tag datat that
-          come from normalization like this class does.  Set False only for
-          the special case of wanting to load a set of attributes that will
-          be renamed downstream and saved in some other schema.
-        :param kill_on_failure:  When True (the default) any data passed
-          processed by the normalize method will be kill if there is no
-          match to the id key requested or if the data lack an id key to
-          do the match.
-        :param verbose:   when set True (default) the normalize method will
-          post informational warnings about duplicate matches. For large
-          data sets with a lot of duplicate channel records (e.g. from
-          loading errors) consider setting this false to reduce bloat in the
-          elog collection.   Normal use should leave it True.
-
         """
+        self.keys = keys
+        self.optional_keys = optional_keys
+        self.readonly_tag = readonly_tag
         super().__init__(
             db,
             collection,
@@ -598,15 +624,18 @@ class composite_key_matcher(NMF):
             cache_normalization_data,
         )
 
-        self.keys = keys
-        self.optional_keys = optional_keys
-        self.readonly_tag = readonly_tag
-        if self.cache_normalization_data:
-            self._build_xref()
 
     def _get_readonly_field(self, d, field, error_logging_enabled=True):
         """
-        used to get some fields that might have a readonly prefix
+        This function is used to get some fields and retry by adding a readonly
+        prefix to the field before giving up.
+        :param d: Data object with a Metadata container to extract the field
+        :param field: The name of the field
+        :param error_logging_enabled: a boolean value that indicates whether the error
+        should be logged to the elog. Default is True, user can ignore the error
+        by setting it to False
+        :return: the value of the field in d, if the field is not defined, an error
+        is logged, and None is return.
         """
         error_logging_allowed = isinstance(d, (TimeSeries, Seismogram))
         if d.is_defined(field):
@@ -624,21 +653,17 @@ class composite_key_matcher(NMF):
                 )
             return None
 
-    def _get_test_time(self, d, time):
-        if time == None:
-            if isinstance(d, (TimeSeries, Seismogram)):
-                test_time = d.t0
-            else:
-                if d.is_defined("starttime"):
-                    test_time = d["starttime"]
-                else:
-                    # Use None for test_time as a signal to ignore time field
-                    test_time = None
-        else:
-            test_time = time
-        return test_time
 
     def _create_composite_key(self, d, separator="_"):
+        """
+        Create a composite key by concatenating the fields in self.keys and
+        their value.
+        A typical composite key is in the following format:
+        "cmp_id_{FIELD1}={VALUE1}__{FIELD2}={VALUE2}_{FIELD3}={VALUE4}...".
+        :param d: Data object with a Metadata container to extract the field
+        :param separator: Optional, can be used to use a different separator
+        character.
+        """
         composite_key = "cmp_id"
         for key in self.keys:
             val = self._get_readonly_field(d, key)
@@ -654,28 +679,54 @@ class composite_key_matcher(NMF):
                 composite_key += "{}{}={}".format(separator, key, val)
         return composite_key
 
-    def _build_xref(self):
+    def _load_normalization_cache(self):
         """
-        Update the cache to use the composite key as index
-        Used by constructor to build mseed cross reference dict
-        with mseed key and list of object_ids matching for each unique
-        key
+        This method is overriden to add/modify 2 features:
+        (1) Instead of using "_id" field, a composite key is created and
+            used as the index for the document
+        (2) Always caching keys and optional_keys, in order to
+            Make sure (1) can work when attributes_to_load doesn't 
+            contain certain keys needed for a composite key
+        (3) Always caching ["starttime", "endtime"] because these two
+        fields are essential for the query in get_document
         """
-        xref = dict()
-        for id, md in self.cache.items():
-            composite_key = self._create_composite_key(md)
+        cursor = self.dbhandle.find(self.query)
+        normcache = dict()
+        for doc in cursor:
+            #   we can't just simply call _load_result because we need to load
+            #   keys and optional_keys
+            mdresult = self._load_doc(doc)
+            for k in (self.keys + ['starttime', 'endtime']):
+                if k in (self.attributes_to_load + self.load_if_defined):
+                    continue
+                if k not in doc:
+                    message = (
+                        "Required key={} not found in normalization collection = {}".format(
+                            k, self.collection
+                        )
+                    )
+                    raise MsPASSError(message, ErrorSeverity.Invalid)
+                else:
+                    mdresult[k] = doc[k]
+            for k in self.optional_keys:
+                if k in (self.attributes_to_load + self.load_if_defined):
+                    continue
+                if k in doc:
+                    mdresult[k] = doc[k]
+            composite_key = self._create_composite_key(mdresult)
             if composite_key is None:
                 raise MsPASSError(
                     "_build_xref: can't create composite key for {} because some keys are missing".format(
-                        str(md)
+                        str(mdresult)
                     ),
                     ErrorSeverity.Fatal,
                 )
-            if composite_key in xref:
-                xref[composite_key].append(md)
+            if composite_key in normcache:
+                normcache[composite_key].append(mdresult)
             else:
-                xref[composite_key] = [md]  # initializes array of id strings
-        self.cache = xref
+                normcache[composite_key] = [mdresult]  # initializes array of id strings
+        return normcache
+
 
     def get_document(self, d, time=None):
         if not isinstance(d, (TimeSeries, Seismogram, Metadata, dict)):
@@ -694,6 +745,32 @@ class composite_key_matcher(NMF):
         else:
             doc = self._db_get_document(d_to_use, time)
         return doc
+
+
+    def _get_test_time(self, d, time):
+        """
+        A helper function to get the test time used for searching.
+        If the time is given, we simply use that as the test time.
+        Otherwise (the time is None), we first try to get the start
+        time from d. If start time is not defined in d, None is 
+        return to indicate the time field should be ignored.
+        :param d: Data object with a Metadata container to extract the field
+        :param time: the start time used for matching
+        :return: the test_time extracted
+        """
+        if time == None:
+            if isinstance(d, (TimeSeries, Seismogram)):
+                test_time = d.t0
+            else:
+                if d.is_defined("starttime"):
+                    test_time = d["starttime"]
+                else:
+                    # Use None for test_time as a signal to ignore time field
+                    test_time = None
+        else:
+            test_time = time
+        return test_time
+
 
     def _cached_get_document(self, d, time=None):
         """
@@ -1257,9 +1334,8 @@ def bulk_normalize(
     wf_miniseed
     :param blockssize:   To speed up updates this function uses the
     bulk writer/updater methods of MongoDB that can be orders of
-    magnitude faster than one-at-a-time updates for setting
-    channel_id and site_id.  A user should not normally need to alter this
-    parameter.
+    magnitude faster than one-at-a-time updates. A user should not normally 
+    need to alter this parameter.
     :param wfquery: is a query to apply to the collection.  The output of this
     query defines the list of documents that the algorithm will attempt
     to normalize as described above.  The default will process the entire
@@ -1417,63 +1493,43 @@ def normalize_mseed(
     and 2 contains the number of site documents set.  1 or 2 should
     contain 0 if normalization for that collection was set false.
     """
-    # this is a prototype - use all defaults for initial test
-    matcher = mseed_channel_matcher(
-        db,
-        attributes_to_load=["_id", "net", "sta", "chan", "starttime", "endtime"],
-        verbose=verbose,
-    )
+    
+    nmf_function_list = []
+    if normalize_channel:
+        matcher = mseed_channel_matcher(
+            db,
+            attributes_to_load=["_id"], #   We only want to add channel_id to the db collection
+            verbose=False,
+        )
+        nmf_function_list.append(matcher)
+
     if normalize_site:
         sitematcher = mseed_site_matcher(
             db,
-            attributes_to_load=["_id", "net", "sta", "starttime", "endtime"],
-            verbose=verbose,
+            attributes_to_load=["_id"],
+            verbose=False,
         )
-    ndocs = db.wf_miniseed.count_documents(wfquery)
-    if ndocs == 0:
-        raise MsPASSError(
-            "normalize_mseed: "
-            + "query of wf_miniseed yielded 0 documents\nNothing to process",
-            ErrorSeverity.Fatal,
-        )
-    # An immortal cursor should not be necssary for this algorithm
-    cursor = db.wf_miniseed.find(wfquery)
-    counter = 0
-    number_channel_set = 0
-    number_site_set = 0
+        nmf_function_list.append(sitematcher)
 
-    # this form was used in older versions of MongoDB but has been
-    # depricated in favor of the simpler bulk_write
-    # commented out lines using the symbol bulk are the old form
-    # revision sets bulk to a simple list of instructions ent to bulk_write
-    # bulk = db.wf_miniseed.initialize_unordered_bulk_op()
-    # bulk = db.wf_miniseed.initialize_ordered_bulk_op()
-    bulk = []
-    for doc in cursor:
-        wfid = doc["_id"]
-        stime = doc["starttime"]
-        if normalize_channel:
-            chandoc = matcher.get_document(doc, time=stime)
+    bulk_nml_ret = bulk_normalize(
+        db,
+        wfquery={},
+        src_col="wf_miniseed",
+        nmf_list=nmf_function_list,
+        verbose=False,
+    )
+    
+    ret = [bulk_nml_ret[0]]
+    if normalize_channel:
+        ret.append(bulk_nml_ret[1])
         if normalize_site:
-            sitedoc = sitematcher.get_document(doc, time=stime)
-        # signal if no match is returning None so don't update in that situation
-        update_dict = dict()
-        if normalize_channel:
-            if chandoc != None:
-                update_dict["channel_id"] = chandoc["_id"]
-                number_channel_set += 1
+            ret.append(bulk_nml_ret[2])
+        else:
+            ret.append(0)
+    else:
+        ret.append(0)
         if normalize_site:
-            if sitedoc != None:
-                update_dict["site_id"] = sitedoc["_id"]
-                number_site_set += 1
-        # this conditional is needed in case neither channel or site have a match
-        if len(update_dict) > 0:
-            bulk.append(pymongo.UpdateOne({"_id": wfid}, {"$set": update_dict}))
-            counter += 1
-        if counter % blocksize == 0 and counter != 0:
-            db.wf_miniseed.bulk_write(bulk)
-
-    if counter % blocksize != 0:
-        db.wf_miniseed.bulk_write(bulk)
-
-    return [ndocs, number_channel_set, number_site_set]
+            ret.append(bulk_nml_ret[1])
+        else:
+            ret.append(0)
+    return ret
