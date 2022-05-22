@@ -1388,6 +1388,9 @@ class css30_arrival_interval_matcher(NMF):
                 )
             return self._load_doc(doc)
 
+    def _cached_get_document(self, d, *args, **kwargs):
+        return super()._cached_get_document(d, *args, **kwargs)
+
 
 def bulk_normalize(
     db, wfquery={}, src_col="wf_miniseed", blocksize=1000, nmf_list=None, verbose=False

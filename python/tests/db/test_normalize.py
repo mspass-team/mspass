@@ -3,6 +3,7 @@ from mspasspy.db.normalize import (
     mseed_channel_matcher,
     mseed_site_matcher,
     origin_time_source_matcher,
+    css30_arrival_interval_matcher,
     normalize_mseed,
     bulk_normalize,
 )
@@ -520,7 +521,11 @@ class TestNormalize:
         assert "site_id" in rand_doc
 
     def test_css30_arrival_interval_matcher(self):
-        pass
+        css_matcher = css30_arrival_interval_matcher(self.db)
+        retdoc = css_matcher.get_document(self.ts)
+        assert retdoc is not None
+        assert "time" in retdoc
+        assert numpy.isclose(1299825728.649998, retdoc["time"])
 
     def test_bulk_normalize(self):
         nmf_function_list = []
