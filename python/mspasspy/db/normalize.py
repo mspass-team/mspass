@@ -194,15 +194,12 @@ class NMF(ABC):
 
     def _load_doc(self, doc, d=None):
         """
-        This is a helper function that takes a dict input, and extract the
-        attributes defined in attribute_to_load and load_if_defined.
-        The return is a Metadata with the matching data.
-        This function is called in _load_normalization_cache and _db_get_document.
-        These two cases are only different when handling errors (attributes_to_load
-        not defined in the doc)
-        In the former case, there is no data object related with the document to
-        load, so a MsPassError will be raised.
-        In the latter case, one single data object d is related, a error message will
+        This is a helper function that takes a dict input, and return a Metadata
+        that only loads attribues defined in attribute_to_load and load_if_defined.
+        An optional mspass object d can be useful to log the error.  The default is None,
+        meaning that there is no data object related with the document to load, so a
+        MsPassError will be raised when an error occurs.
+        If d is not None, meaning one single data object d is related, a error message will
         be stored to the elog of d.
 
         :param doc:  A dict object from the mongodb
@@ -243,10 +240,10 @@ class NMF(ABC):
         is to be merged with the Metadata of a set of mspass data objects
         to produce the "normalization".
         This method use the db[collection] in the class to define the
-        database collection to be indexed to the cache
+        database collection to be indexed to the cache.
         self.required_attributes is used to indicate list of keys for attributes
         the function will dogmatically try to extract from each document. If any
-        of these are missing in any collection the function will abort with a
+        of these are missing in any document the function will abort with a
         MsPASSError exception (throwed in _load_doc)
         self.optional_attributes is used to indicate list of keys, which are
         are silently ignored if they are missing.
@@ -365,7 +362,7 @@ class single_key_matcher(NMF):
     An intermediate class. It extends the NMF by adding a variable: mdkey.
     mdkey is the field defined for matching a document.
     The matching logic is as follows:
-        d[mdkey] = DOC_TO_MATCH['_id']
+        d[mdkey] == DOC_TO_MATCH['_id']
     This class is useful for implementing the ID_matcher (see below). Users
     may also find it useful for implementing other match classes.
     """
@@ -632,13 +629,9 @@ class composite_key_matcher(NMF):
         :param verbose:  most subclasses will want a verbose option
           to control what is posted to elog messages or printed
           (most useful for serial jobs)
-        :param cache_normalization_data:  When set True the specified
+        :param cache_normalization_data:  When set True (default) the specified
           collection is preloaded in an internal cache on construction and
-          used for all subsequent matching.  This mode is highly recommended
-          as it has been found to speed normalization by an order of magnitude
-          or more relative to a database transaction for each call to normalize,
-          which is what happens when this parameter is set False. Subclasses might
-          not support the caching feature, so the default value is None.
+          used for all subsequent matching.
         :param readonly_tag:  As noted in the class docstring attributes
           marked read only in the schema can sometimes be saved with a
           prefix.  The get_document and normalize methods have an auto
@@ -665,8 +658,8 @@ class composite_key_matcher(NMF):
 
     def _get_readonly_field(self, d, field, error_logging_enabled=True):
         """
-        This function is used to get some fields and retry by adding a readonly
-        prefix to the field before giving up.
+        This function is used to get some fields from a document and retry by adding
+        a readonly prefix to the field before giving up.
         :param d: Data object with a Metadata container to extract the field
         :param field: The name of the field
         :param error_logging_enabled: a boolean value that indicates whether the error
@@ -822,20 +815,34 @@ class composite_key_matcher(NMF):
             if len(doclist) == 1:
                 return doclist[0]
 
-            # When time is not defined (None) just return first entry
-            # but post a warning
-            if test_time == None:
-                # We might never enter this branch, since mspass objects always have a test_time = d.t0
-                if error_logging_allowed:
-                    message = "Warning - no time specified for match and data has no starttime field defined.  Using first match found in channel collection"
-                    self.log_error(d, message, ErrorSeverity.Suspect, False)
-                return doclist[0]
+            if len(doclist) > 1:
+                # When time is not defined (None) just return first entry
+                # but post a warning
+                if test_time == None:
+                    # We might never enter this branch, since mspass objects always have a test_time = d.t0
+                    if error_logging_allowed:
+                        message = "Warning - no time specified for match and data has no starttime field defined.  Using first match found in channel collection"
+                        self.log_error(d, message, ErrorSeverity.Suspect, False)
+                    return doclist[0]
 
-            for doc in doclist:
-                stime = doc["starttime"]
-                etime = doc["endtime"]
-                if test_time >= stime and test_time <= etime:
-                    return doc
+                cnt = 0
+                ret = None
+                for doc in doclist:
+                    stime = doc["starttime"]
+                    etime = doc["endtime"]
+                    if test_time >= stime and test_time <= etime:
+                        cnt += 1  #   We need to calculate the count of matchs, to decide if we need to log an warning
+                        if ret is None:
+                            ret = doc
+                if cnt > 1:
+                    self.log_error(
+                        d,
+                        "Multiple channel docs match net:sta:chan:loc:time for this datum - using first one found",
+                        ErrorSeverity.Complaint,
+                        False,
+                    )
+                if ret is not None:
+                    return ret
 
             # If there is no qualified doc
             if error_logging_allowed:
@@ -885,6 +892,9 @@ class composite_key_matcher(NMF):
         if querytime is not None:
             query["starttime"] = {"$lt": querytime}
             query["endtime"] = {"$gt": querytime}
+        elif error_logging_allowed:
+            message = "Warning - no time specified for match and data has no starttime field defined.  Using first match found in channel collection"
+            self.log_error(d, message, ErrorSeverity.Suspect, False)
 
         matchsize = self.dbhandle.count_documents(query)
         if matchsize == 0:
@@ -969,6 +979,51 @@ class mseed_channel_matcher(composite_key_matcher):
         Constructor for this class.
         It instantiates a composite_key_matcher with default values for collection,
         attributes_to_load, load_if_defiend, keys, optional_keys.
+        Note that although the default value of attributes_to_load, load_if_defined
+        is None, they are actually initialized in the function body.
+
+        :param db:  MongoDB Database handle
+        :param collection:  string defining the collection this object
+          should use for normalization. Default is "channel"
+        :param keys: a list of fields that are used to create a composite key,
+        these fields are always cached if caching is enabled. Default is None, but is
+        initialized with ["net", "sta", "chan"].
+        :param optional_keys: a list of fields, very similar to keys, the only
+        difference is that optional_keys can be missing in a document. Default is None,
+        but is initialized with ["loc"].
+        :param attributes_to_load:  is a list of keys (strings) that are to
+          be loaded with data by the normalize method.
+          Note that the Default value is None, but it will then be initialized
+          to a list of common channel attributes: "_id","net","sta","chan","lat",
+          "lon","elev","hang","vang","starttime" and "endtime". This is necessary
+          because we need to cope with the mutable default argument (see https://
+          stackoverflow.com/questions/1132941/least-astonishment-and-the-mutable-default-argument)
+        :param load_if_defined:   is a secondary list of keys (strings) that
+          should be loaded only if they are defined. Default is None, but is initialized
+          with ["loc"].
+        :param query:  optional query to apply to collection before loading.
+          The default is load all.  If your data set is time limited and
+          the collection has a time attribute (true of the standard channel,
+          site, and source collections) you can reduce the memory footprint
+          by using a time range query (python dict) for this argument.
+        :param prepend_collection_name:  boolean controlling a standard
+          renaming option.   When True (default)   all normalizing data
+          keys get a collection name prepended to the key to give it a
+          unique key.
+        :param kill_on_failure:  when set true (Default) match errors
+          will cause data passed to the normalize method to be killed.
+        :param verbose:  most subclasses will want a verbose option
+          to control what is posted to elog messages or printed
+          (most useful for serial jobs)
+        :param cache_normalization_data:  When set True (default) the specified
+          collection is preloaded in an internal cache on construction and
+          used for all subsequent matching.
+        :param readonly_tag: The get_document and normalize methods have an auto
+          recover to try to match read only parameters.  This
+          argument defines the prefix used to define such attributes.
+          The default is "READONLYERROR_" which is what is used by
+          default in MsPASS.  Few if any users will likely need to
+          ever set this parameter.
         """
         if attributes_to_load is None:
             attributes_to_load = [
@@ -1054,6 +1109,51 @@ class mseed_site_matcher(composite_key_matcher):
         Constructor for this class.
         It instantiates a composite_key_matcher with default values for collection,
         attributes_to_load, load_if_defiend, keys, optional_keys.
+        Note that although the default value of attributes_to_load, load_if_defined
+        is None, they are actually initialized in the function body.
+
+        :param db:  MongoDB Database handle
+        :param collection:  string defining the collection this object
+          should use for normalization. Default is "site"
+        :param keys: a list of fields that are used to create a composite key,
+        these fields are always cached if caching is enabled. Default is None, but is
+        initialized with ["net", "sta"].
+        :param optional_keys: a list of fields, very similar to keys, the only
+        difference is that optional_keys can be missing in a document. Default is None,
+        but is initialized with ["loc"].
+        :param attributes_to_load:  is a list of keys (strings) that are to
+          be loaded with data by the normalize method.
+          Note that the Default value is None, but it will then be initialized
+          to a list of common channel attributes: "_id","net","sta","lat","lon","elev",
+          "starttime" and "endtime". This is necessary because we need to cope with the
+          mutable default argument (see https://stackoverflow.com/questions/1132941/
+          least-astonishment-and-the-mutable-default-argument)
+        :param load_if_defined:   is a secondary list of keys (strings) that
+          should be loaded only if they are defined. Default is None, but is initialized
+          with ["loc"].
+        :param query:  optional query to apply to collection before loading.
+          The default is load all.  If your data set is time limited and
+          the collection has a time attribute (true of the standard channel,
+          site, and source collections) you can reduce the memory footprint
+          by using a time range query (python dict) for this argument.
+        :param prepend_collection_name:  boolean controlling a standard
+          renaming option.   When True (default)   all normalizing data
+          keys get a collection name prepended to the key to give it a
+          unique key.
+        :param kill_on_failure:  when set true (Default) match errors
+          will cause data passed to the normalize method to be killed.
+        :param verbose:  most subclasses will want a verbose option
+          to control what is posted to elog messages or printed
+          (most useful for serial jobs)
+        :param cache_normalization_data:  When set True (default) the specified
+          collection is preloaded in an internal cache on construction and
+          used for all subsequent matching.
+        :param readonly_tag: The get_document and normalize methods have an auto
+          recover to try to match read only parameters.  This
+          argument defines the prefix used to define such attributes.
+          The default is "READONLYERROR_" which is what is used by
+          default in MsPASS.  Few if any users will likely need to
+          ever set this parameter.
         """
         if attributes_to_load is None:
             attributes_to_load = [
@@ -1142,10 +1242,11 @@ class origin_time_source_matcher(NMF):
         range (see class description)
         :param attributes_to_load:  list of keys that will always be loaded
           from each document in the normalization collection satisfying the
-          query.   Note the constructor will abort with a MsPASSError if
-          any documents are missing one of these key-value pairs.
+          query. Default is None but is initialized in the function body as
+          ["lat", "lon", "depth", "time"].
         :param load_if_defined: is like attributes_to_load (a list of
-          key strings) but the key-value pairs are not required.
+          key strings) but the key-value pairs are not required. Default is
+          None (an empty list).
         :param cache_normalization_data:  when True (default) all documents
           satisfying the query parameter in the channel collection will
           be loaded into memory in an internal cache.  When False each
@@ -1316,8 +1417,51 @@ class css30_arrival_interval_matcher(NMF):
         prepend_collection_name=True,
         kill_on_failure=False,
         verbose=True,
-        cache_normalization_data=False,
+        cache_normalization_data=None,
     ):
+        """
+        Constructor for this class.
+
+        :param db:  MongoDB Database handle
+        :param collection: the string that represents the name of the source
+          collection, default value is "arrival"
+        :param time_offset: the offset between t0 and the test origin time, it
+        will be used in the query (see class description)
+        :param phasename: the phasename used in the query, default is "P".
+        :param phasename_key: the name of the phasename's key in the collection,
+        default is "phase".
+        :param attributes_to_load:  list of keys that will always be loaded
+          from each document in the normalization collection satisfying the
+          query. Default is None but is initialized in the function body as
+          ["time"].
+        :param load_if_defined: is like attributes_to_load (a list of
+          key strings) but the key-value pairs are not required. Default is
+          None but is initialized in the function body as ["evid", "iphase", "seaz",
+          "esaz", "deltim", "timeres"].
+        :param kill_on_failure:  When True (the default) any data passed
+          processed by the normalize method will be kill if there is no
+          match to the id key requested or if the data lack an id key to
+          do the match.
+        :param query:  (optional) query to pass to find to prefilter the
+          data loaded when cache_normalization_data is True.  This argument
+          is ignore if cache_normalization_data is False.
+        :param prepend_collection_name:   When set True (the default)
+          all data pulled from channel will have the prefix "channel_"
+          added to the key before they are posted to a data object by
+          in the normalize method.  (e.g. "sta" will be posted as "channel_sta").
+          That is the standard convention used in MsPASS to tag datat that
+          come from normalization like this class does.  Set False only for
+          the special case of wanting to load a set of attributes that will
+          be renamed downstream and saved in some other schema.
+        :param verbose:   when set True (default) the normalize method will
+          post informational warnings about duplicate matches. For large
+          data sets with a lot of duplicate channel records (e.g. from
+          loading errors) consider setting this false to reduce bloat in the
+          elog collection.   Normal use should leave it True.
+        :param cache_normalization_data:  The argument required by NMF to turn on/off
+          the caching. Currently the caching for this class is not implemented for
+          this class, so the default value is None.
+        """
         if attributes_to_load is None:
             attributes_to_load = ["time"]
         if load_if_defined is None:
@@ -1397,8 +1541,10 @@ def bulk_normalize(
 ):
     """
     This function iterates through the collection specified by db and src_col,
-    and run all the given normalize functions on each doc. It will save the
-    time of multiple db updating operations, by using the bulk methods of MongoDB.
+    and run a chain of normalization funtions in serial on each document in one
+    single pass.
+    It will save the time of multiple db updating operations, by using the bulk
+    methods of MongoDB.
 
     :param db: should be a MsPASS database handle containing the src_col
     and the collections defined by the nmf_list list.
@@ -1477,7 +1623,7 @@ def bulk_normalize(
                         #   We assume that every NMF should contain a dbhandler
                         new_key = nmf.dbhandle.name + "_" + key
                     update_doc[new_key] = norm_doc[key]
-            except TypeError:  # Some nmf dervied classes don't accept time argument
+            except TypeError:  # Some NMF dervied classes don't accept time argument
                 norm_doc = nmf.get_document(doc)
                 if norm_doc is None:
                     continue
