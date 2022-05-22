@@ -241,8 +241,9 @@ class TestNormalize:
         assert uncached_retdoc is None
         assert ts_1.dead()
         assert ts_2.dead()
-        assert "No match for composite key=cmp_id_net=TA_sta=034A_chan=BHE and time=" in str(
-            ts_1.elog.get_error_log()
+        assert (
+            "No match for composite key=cmp_id_net=TA_sta=034A_chan=BHE and time="
+            in str(ts_1.elog.get_error_log())
         )
         assert "No match for query = " in str(ts_2.elog.get_error_log())
 
@@ -490,14 +491,36 @@ class TestNormalize:
         assert Metadata_cmp(self.ts, cached_retdoc)
 
     def test_normalize_mseed(self):
+        #   First delete all the existing references:
+        self.db.wf_miniseed.update_many(
+            {}, {"$unset": {"channel_id": None, "site_id": None}}
+        )
         ret = normalize_mseed(self.db, normalize_channel=False, normalize_site=False)
         assert ret == [3934, 0, 0]
+        rand_doc = self.db.wf_miniseed.find_one()
+        assert "channel_id" not in rand_doc
+        assert "site_id" not in rand_doc
 
+        self.db.wf_miniseed.update_many(
+            {}, {"$unset": {"channel_id": None, "site_id": None}}
+        )
         ret = normalize_mseed(self.db, normalize_channel=True, normalize_site=False)
         assert ret == [3934, 3934, 0]
+        rand_doc = self.db.wf_miniseed.find_one()
+        assert "channel_id" in rand_doc
+        assert "site_id" not in rand_doc
 
+        self.db.wf_miniseed.update_many(
+            {}, {"$unset": {"channel_id": None, "site_id": None}}
+        )
         ret = normalize_mseed(self.db, normalize_channel=True, normalize_site=True)
         assert ret == [3934, 3934, 3934]
+        rand_doc = self.db.wf_miniseed.find_one()
+        assert "channel_id" in rand_doc
+        assert "site_id" in rand_doc
+
+    def test_css30_arrival_interval_matcher(self):
+        pass
 
     def test_bulk_normalize(self):
         nmf_function_list = []
