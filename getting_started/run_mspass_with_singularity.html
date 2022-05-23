@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Run MsPASS with Singularity &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Deploy MsPASS on HPC" href="deploy_mspass_on_HPC.html" />
+    <link rel="prev" title="Deploy MsPASS with Docker Compose" href="deploy_mspass_with_docker_compose.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Run MsPASS with Singularity</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction-to-singularity">Introduction to Singularity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-mspass-container">Create MsPASS Container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-mspass-with-singularity-in-all-in-one-mode">Running MsPass with Singularity in All-in-one Mode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Run MsPASS with Singularity</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/getting_started/run_mspass_with_singularity.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="run-mspass-with-singularity">
+<span id="id1"></span><h1>Run MsPASS with Singularity<a class="headerlink" href="#run-mspass-with-singularity" title="Permalink to this headline"></a></h1>
+<section id="introduction-to-singularity">
+<h2>Introduction to Singularity<a class="headerlink" href="#introduction-to-singularity" title="Permalink to this headline"></a></h2>
+<p>Singularity is a container implementation that runs on HPC cluster environments. Singularity provides similar features as Docker, and can handle the “escalated privilege” issue of Docker. Singularity is compatible with Docker containers, which means that one can develop the container in Docker, and use Singularity as the runtime on HPC clusters.</p>
+</section>
+<section id="create-mspass-container">
+<h2>Create MsPASS Container<a class="headerlink" href="#create-mspass-container" title="Permalink to this headline"></a></h2>
+<p>Singularity is compatible with docker container, which is a more widely-used implementation. So we would recommend building a singularity image from docker.</p>
+<p>First of all, use the following command to load the singularity module on HPC system:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">load</span> <span class="n">tacc</span><span class="o">-</span><span class="n">singularity</span>
+</pre></div>
+</div>
+<p>Then, execute:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">singularity</span> <span class="n">build</span> <span class="n">mspass</span><span class="o">.</span><span class="n">simg</span> <span class="n">docker</span><span class="p">:</span><span class="o">//</span><span class="n">wangyinz</span><span class="o">/</span><span class="n">mspass</span>
+</pre></div>
+</div>
+<p>The command above will build a Singularity container corresponding to the latest released MsPass docker container, and save to mspass.simg in the current directory.</p>
+</section>
+<section id="running-mspass-with-singularity-in-all-in-one-mode">
+<h2>Running MsPass with Singularity in All-in-one Mode<a class="headerlink" href="#running-mspass-with-singularity-in-all-in-one-mode" title="Permalink to this headline"></a></h2>
+<p>MsPass consists of 3 components: Mongodb server, Workers and Scheduler. In this section, we will introduce how to run these applications (MongoDB, Dask/Spark) with Singularity on a single standalone machine.</p>
+<p>To use the Singularity command to launch a MsPass container, one can use the entrypoint script. The entrypoint script contains all the commands for setting up and starting MongoDB and Dask/Spark. Users only need to configure some variables before running the script.</p>
+<p>To start a standalone instance, use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span><span class="nb">all</span><span class="p">;</span>
+<span class="n">singularity</span> <span class="n">run</span> <span class="n">mspass</span><span class="o">.</span><span class="n">simg</span>
+</pre></div>
+</div>
+<p>You might want to collect the log output of dask-scheduler by adding &gt; ./mspass_log 2&gt;&amp;1 &amp; at the end of the command.
+For more information on the usage of entrypoint script, please refer to the source code
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/scripts/start-mspass.sh">here</a>. Some other important environment variables are listed below:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SINGULARITYENV_MSPASS_WORK_DIR</span></code>: The directory that stores worker’s runtime data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span></code>: This is the IP address or hostname of the <code class="docutils literal notranslate"><span class="pre">scheduler</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SINGULARITYENV_MSPASS_DB_PATH</span></code>: This is the directory that stores mongodb data, should be either <code class="docutils literal notranslate"><span class="pre">tmp</span></code> or <code class="docutils literal notranslate"><span class="pre">scratch</span></code> on the TACC machine.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SINGULARITYENV_MSPASS_SCHEDULER</span></code>: User can use <code class="docutils literal notranslate"><span class="pre">dask</span></code> or <code class="docutils literal notranslate"><span class="pre">spark</span></code> to run parallel computations.
+<code class="docutils literal notranslate"><span class="pre">dask</span></code> is the default.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deploy_mspass_with_docker_compose.html" class="btn btn-neutral float-left" title="Deploy MsPASS with Docker Compose" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="deploy_mspass_on_HPC.html" class="btn btn-neutral float-right" title="Deploy MsPASS on HPC" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
