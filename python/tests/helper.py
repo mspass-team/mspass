@@ -100,6 +100,14 @@ def get_live_timeseries_ensemble(n):
     return tse
 
 
+def get_live_seismogram_list(n, ts_size=255):
+    seis_e = []
+    for i in range(n):
+        seis = get_live_seismogram(ts_size)
+        seis_e.append(seis)
+    return seis_e
+
+
 def get_trace():
     dict1 = {
         "network": "IU",

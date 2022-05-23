@@ -23,6 +23,7 @@ from helper import (
     get_live_timeseries,
     get_live_timeseries_ensemble,
     get_live_seismogram_ensemble,
+    get_live_seismogram_list,
     get_stream,
     get_trace,
 )
@@ -148,6 +149,29 @@ def test_reduce_dask_spark(spark_context):
     assert np.isclose(res, dask_res.data).all()
     assert np.isclose(res, spark_res.data).all()
     assert len(res) == len(spark_res.data)
+
+
+def list2SSeismogramEnsemble(l):
+    res = SeismogramEnsemble()
+    for d in l:
+        res.member.append(d)
+    return res
+    
+def reduce_to_Ensemble(key, list_of_keys = None):
+    pass
+
+
+def test_foldby():
+    seis1 = get_live_seismogram_list(2, 200)
+    seis2 = get_live_seismogram_list(4, 100)
+    bag1 = db.from_sequence(seis1 + seis2)
+    res = bag1.foldby(lambda x: x["npts"], 
+                      lambda x, y: (x if isinstance(x, list) else [x]) + 
+                                   (y if isinstance(y, list) else [y])
+                     )
+    res = res.map(lambda x: list2SSeismogramEnsemble(x[1]))
+    fin = res.compute()
+    print(fin)
 
 
 if __name__ == "__main__":
