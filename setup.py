@@ -67,6 +67,7 @@ ENTRY_POINTS = {
     'console_scripts': [
         'mspass-dbclean = mspasspy.db.script.dbclean:main',
         'mspass-dbverify = mspasspy.db.script.dbverify:main',
+        'mspass-normalize_mseed.py = mspasspy.db.script.normalize_mseed:main',
     ],
 }
 

@@ -1537,7 +1537,7 @@ class css30_arrival_interval_matcher(NMF):
 
 
 def bulk_normalize(
-    db, wfquery={}, src_col="wf_miniseed", blocksize=1000, nmf_list=None, verbose=False
+    db, wfquery=None, src_col="wf_miniseed", blocksize=1000, nmf_list=None, verbose=False
 ):
     """
     This function iterates through the collection specified by db and src_col,
@@ -1575,6 +1575,9 @@ def bulk_normalize(
     one on one (nmf_list[x] -> ret[x+1]).
     """
 
+    if wfquery is None:
+        wfquery = {}
+        
     if nmf_list is None:
         #   The default value for nmf_list is one default
         channel_matcher = mseed_channel_matcher(
@@ -1649,7 +1652,7 @@ def bulk_normalize(
 
 def normalize_mseed(
     db,
-    wfquery={},
+    wfquery=None,
     blocksize=1000,
     normalize_channel=True,
     normalize_site=False,
@@ -1711,6 +1714,9 @@ def normalize_mseed(
     and 2 contains the number of site documents set.  1 or 2 should
     contain 0 if normalization for that collection was set false.
     """
+
+    if wfquery is None:
+        wfquery = {}
 
     nmf_function_list = []
     if normalize_channel:
