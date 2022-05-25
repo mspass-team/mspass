@@ -456,13 +456,11 @@ a raw epoch time stored as a python float.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.get_seed_channel">
-<span class="sig-name descname"><span class="pre">get_seed_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_channel" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_seed_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_channel" title="Permalink to this definition"></a></dt>
 <dd><p>The channel collection is assumed to have a one to one
 mapping of net:sta:loc:chan:starttime - endtime.
 This method uses a restricted query to match the
-keys given and returns a dict of the document contents
-associated with that key.  Note net, sta, and chan are required
-but loc is optional.</p>
+keys given and returns the document matching the specified keys.</p>
 <p>The optional loc code is handled specially.  The reason is
 that it is common to have the loc code empty.  In seed data that
 puts two ascii blank characters in the 2 byte packet header
@@ -493,7 +491,15 @@ time variable channel metadata.</p>
 </dd>
 </dl>
 <p>default ignores loc in query.
-:param time: epoch time for requested metadata</p>
+:param time: epoch time for requested metadata
+:param verbose:  When True (the default) this method will issue a</p>
+<blockquote>
+<div><p>print warning message when the match is ambiguous - multiple
+docs match the specified keys.   When set False such warnings
+will be suppressed.  Use false only if you know the duplicates
+are harmless and you are running on a large data set and
+you want to reduce the log size.</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>handle to query return</p>
@@ -506,15 +512,19 @@ time variable channel metadata.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.get_seed_site">
-<span class="sig-name descname"><span class="pre">get_seed_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NONE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_site"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_site" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_seed_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NONE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_site"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_site" title="Permalink to this definition"></a></dt>
 <dd><p>The site collection is assumed to have a one to one
 mapping of net:sta:loc:starttime - endtime.
 This method uses a restricted query to match the
-keys given and returns a dict of coordinate data;
-lat, lon, elev, edepth.
+keys given and returns the MongoDB document matching the keys.
 The (optional) time arg is used for a range match to find
 period between the site startime and endtime.
 Returns None if there is no match.</p>
+<p>An all to common metadata problem is to have duplicate entries in
+site for the same data.   The default behavior of this method is
+to print a warning whenever a match is ambiguous
+(i.e. more than on document matches the keys).  Set verbose false to
+silence such warnings if you know they are harmless.</p>
 <p>The seed modifier in the name is to emphasize this method is
 for data originating as the SEED format that use net:sta:loc:chan
 as the primary index.</p>
@@ -528,13 +538,26 @@ as the primary index.</p>
 </dd>
 </dl>
 <p>default ignores loc in query.
-:param time: epoch time for requested metadata</p>
+:param time: epoch time for requested metadata.  Default undefined</p>
+<blockquote>
+<div><p>and will cause the function to simply return the first document
+matching the name keys only.   (This is rarely what you want, but
+there is no standard default for this argument.)</p>
+</div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>MongoDB doc (dict) matching query</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>verbose</strong> – When True (the default) this method will issue a
+print warning message when the match is ambiguous - multiple
+docs match the specified keys.   When set False such warnings
+will be suppressed.  Use false only if you know the duplicates
+are harmless and you are running on a large data set and
+you want to reduce the log size.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>python dict (document) of result.  None if there is no match.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>MongoDB doc matching query</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>python dict (document) of result.  None if there is no match.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -546,7 +569,7 @@ as the primary index.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.index_mseed_file">
-<span class="sig-name descname"><span class="pre">index_mseed_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_miniseed'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_time_tears</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elog_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'elog'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_file" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">index_mseed_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_miniseed'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_time_tears</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elog_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'elog'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_file" title="Permalink to this definition"></a></dt>
 <dd><p>This is the first stage import function for handling the import of
 miniseed data.  This function scans a data file defined by a directory
 (dir arg) and dfile (file name) argument.  I builds an index
@@ -632,6 +655,23 @@ for specialized processing that can be done more efficiently.
 By default it is fast only to associate an error log entry with
 a particular waveform index entry. (we store the saved index
 MongoDB document id with each elog entry)</p></li>
+<li><p><strong>normalize_channel</strong> – boolean controlling normalization with
+the channel collection.   When set True (default is false) the
+method will call the Database.get_seed_channel method, extract
+the id from the result, and set the result as “channel_id” before
+writing the wf_miniseed document.  Set this argument true if
+you have a relatively complete channel collection assembled
+before running a workflow to index a set of miniseed files
+(a common raw data starting point).</p></li>
+<li><p><strong>verbose</strong> – boolean passed to get_seed_channel.  This
+argument has no effect unless normalize_channel is set True.
+It is necessary because the get_seed_channel function has no
+way to log errors except calling print.  A very common metadata
+error is duplicate and/or time overlaps in channel metadata.
+Those are usually harmless so the default for this parameter is
+False.  Set this True if you are using inline normalization
+(normalize_channel set True) and you aren’t certain your
+channel collection has no serious inconsistencies.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Exception</dt>

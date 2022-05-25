@@ -3644,28 +3644,28 @@
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a private method used under the hood to save the sample data</span>
-<span class="sd">        of atomic MsPASS data objects.  How the save happens is highly </span>
-<span class="sd">        dependent upon the format argument.  When None, which is the </span>
-<span class="sd">        default, the data are written to the file specified by dir and dfile </span>
-<span class="sd">        using low-level C fwrite calls.  The function used always appends </span>
-<span class="sd">        data to eof if the file already exists to allow accumation of data </span>
-<span class="sd">        in &quot;gather&quot; files to reduce file name overhead in hpc systems. </span>
-<span class="sd">        If format is anything else the function attempts to use one of </span>
-<span class="sd">        the obspy formatted writers.  That means the format string must be </span>
+<span class="sd">        of atomic MsPASS data objects.  How the save happens is highly</span>
+<span class="sd">        dependent upon the format argument.  When None, which is the</span>
+<span class="sd">        default, the data are written to the file specified by dir and dfile</span>
+<span class="sd">        using low-level C fwrite calls.  The function used always appends</span>
+<span class="sd">        data to eof if the file already exists to allow accumation of data</span>
+<span class="sd">        in &quot;gather&quot; files to reduce file name overhead in hpc systems.</span>
+<span class="sd">        If format is anything else the function attempts to use one of</span>
+<span class="sd">        the obspy formatted writers.  That means the format string must be</span>
 <span class="sd">        one of the `supported formats &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats&gt;`__ of ObsPy reader.</span>
-<span class="sd">        </span>
-<span class="sd">        </span>
-<span class="sd">        Writing to a file can fail for any number of reasons.   write errors </span>
+
+
+<span class="sd">        Writing to a file can fail for any number of reasons.   write errors</span>
 <span class="sd">        are trapped internally in this function any errors posted to elog of</span>
-<span class="sd">        mspass_object.   If the kill_on_failure boolean is set true the </span>
-<span class="sd">        function will call the kill method of the data function and the </span>
-<span class="sd">        that datum will be marked dead.   That is not normally a good idea </span>
+<span class="sd">        mspass_object.   If the kill_on_failure boolean is set true the</span>
+<span class="sd">        function will call the kill method of the data function and the</span>
+<span class="sd">        that datum will be marked dead.   That is not normally a good idea</span>
 <span class="sd">        if there is any additional work to do on the data so the default</span>
-<span class="sd">        for that parameter is false.  </span>
-<span class="sd">        </span>
-<span class="sd">        Because we use a stream model for file storage be aware </span>
-<span class="sd">        that insertion and deletion in a file are not possible.  If you </span>
-<span class="sd">        need lots of editing functionality with files you should use the </span>
+<span class="sd">        for that parameter is false.</span>
+
+<span class="sd">        Because we use a stream model for file storage be aware</span>
+<span class="sd">        that insertion and deletion in a file are not possible.  If you</span>
+<span class="sd">        need lots of editing functionality with files you should use the</span>
 <span class="sd">        one file to one object model or (better yet) use gridfs storage.</span>
 
 <span class="sd">        :param mspass_object: the target object.</span>
@@ -3676,9 +3676,9 @@
 <span class="sd">        :type dfile: :class:`str`</span>
 <span class="sd">        :param format: the format of the file. This can be one of the `supported formats &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats&gt;`__ of ObsPy reader. By default (``None``), the format will be the binary waveform.</span>
 <span class="sd">        :type format: :class:`str`</span>
-<span class="sd">        :param kill_on_failure:  When true if an io error occurs the data object&#39;s </span>
-<span class="sd">          kill method will be invoked.  When false (the default) io errors are </span>
-<span class="sd">          logged and left set live.  (Note data already marked dead are return </span>
+<span class="sd">        :param kill_on_failure:  When true if an io error occurs the data object&#39;s</span>
+<span class="sd">          kill method will be invoked.  When false (the default) io errors are</span>
+<span class="sd">          logged and left set live.  (Note data already marked dead are return</span>
 <span class="sd">          are ignored by this function. )</span>
 <span class="sd">        :type kill_on_failure: boolean</span>
 <span class="sd">        :return: Position of first data sample (foff) and the size of the saved chunk.</span>
@@ -4550,16 +4550,21 @@
                 <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">netw</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Database.get_seed_site"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_site">[docs]</a>    <span class="k">def</span> <span class="nf">get_seed_site</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">):</span>
+<div class="viewcode-block" id="Database.get_seed_site"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_site">[docs]</a>    <span class="k">def</span> <span class="nf">get_seed_site</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The site collection is assumed to have a one to one</span>
 <span class="sd">        mapping of net:sta:loc:starttime - endtime.</span>
 <span class="sd">        This method uses a restricted query to match the</span>
-<span class="sd">        keys given and returns a dict of coordinate data;</span>
-<span class="sd">        lat, lon, elev, edepth.</span>
+<span class="sd">        keys given and returns the MongoDB document matching the keys.</span>
 <span class="sd">        The (optional) time arg is used for a range match to find</span>
 <span class="sd">        period between the site startime and endtime.</span>
 <span class="sd">        Returns None if there is no match.</span>
+
+<span class="sd">        An all to common metadata problem is to have duplicate entries in</span>
+<span class="sd">        site for the same data.   The default behavior of this method is</span>
+<span class="sd">        to print a warning whenever a match is ambiguous</span>
+<span class="sd">        (i.e. more than on document matches the keys).  Set verbose false to</span>
+<span class="sd">        silence such warnings if you know they are harmless.</span>
 
 <span class="sd">        The seed modifier in the name is to emphasize this method is</span>
 <span class="sd">        for data originating as the SEED format that use net:sta:loc:chan</span>
@@ -4569,9 +4574,18 @@
 <span class="sd">        :param sta:  station name to match</span>
 <span class="sd">        :param loc:   optional loc code to made (empty string ok and common)</span>
 <span class="sd">        default ignores loc in query.</span>
-<span class="sd">        :param time: epoch time for requested metadata</span>
+<span class="sd">        :param time: epoch time for requested metadata.  Default undefined</span>
+<span class="sd">          and will cause the function to simply return the first document</span>
+<span class="sd">          matching the name keys only.   (This is rarely what you want, but</span>
+<span class="sd">          there is no standard default for this argument.)</span>
+<span class="sd">        :param verbose:  When True (the default) this method will issue a</span>
+<span class="sd">          print warning message when the match is ambiguous - multiple</span>
+<span class="sd">          docs match the specified keys.   When set False such warnings</span>
+<span class="sd">          will be suppressed.  Use false only if you know the duplicates</span>
+<span class="sd">          are harmless and you are running on a large data set and</span>
+<span class="sd">          you want to reduce the log size.</span>
 
-<span class="sd">        :return: MongoDB doc (dict) matching query</span>
+<span class="sd">        :return: MongoDB doc matching query</span>
 <span class="sd">        :rtype:  python dict (document) of result.  None if there is no match.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbsite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span>
@@ -4587,21 +4601,19 @@
         <span class="k">if</span> <span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get_seed_site (WARNING):  query=&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Returned &quot;</span><span class="p">,</span> <span class="n">matchsize</span><span class="p">,</span> <span class="s2">&quot; documents - should be exactly one&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Returning first entry found&quot;</span><span class="p">)</span>
             <span class="n">stadoc</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">stadoc</span></div>
 
-<div class="viewcode-block" id="Database.get_seed_channel"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_channel">[docs]</a>    <span class="k">def</span> <span class="nf">get_seed_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">):</span>
+<div class="viewcode-block" id="Database.get_seed_channel"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_channel">[docs]</a>    <span class="k">def</span> <span class="nf">get_seed_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The channel collection is assumed to have a one to one</span>
 <span class="sd">        mapping of net:sta:loc:chan:starttime - endtime.</span>
 <span class="sd">        This method uses a restricted query to match the</span>
-<span class="sd">        keys given and returns a dict of the document contents</span>
-<span class="sd">        associated with that key.  Note net, sta, and chan are required</span>
-<span class="sd">        but loc is optional.</span>
+<span class="sd">        keys given and returns the document matching the specified keys.</span>
 
 <span class="sd">        The optional loc code is handled specially.  The reason is</span>
 <span class="sd">        that it is common to have the loc code empty.  In seed data that</span>
@@ -4630,6 +4642,12 @@
 <span class="sd">        :param loc:   optional loc code to made (empty string ok and common)</span>
 <span class="sd">        default ignores loc in query.</span>
 <span class="sd">        :param time: epoch time for requested metadata</span>
+<span class="sd">        :param verbose:  When True (the default) this method will issue a</span>
+<span class="sd">          print warning message when the match is ambiguous - multiple</span>
+<span class="sd">          docs match the specified keys.   When set False such warnings</span>
+<span class="sd">          will be suppressed.  Use false only if you know the duplicates</span>
+<span class="sd">          are harmless and you are running on a large data set and</span>
+<span class="sd">          you want to reduce the log size.</span>
 
 <span class="sd">        :return: handle to query return</span>
 <span class="sd">        :rtype:  MondoDB Cursor object of query result.</span>
@@ -4666,17 +4684,18 @@
                     <span class="k">return</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">testquery</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span>
-                            <span class="s2">&quot;get_seed_channel:  multiple matches found for net=&quot;</span><span class="p">,</span>
-                            <span class="n">net</span><span class="p">,</span>
-                            <span class="s2">&quot; sta=&quot;</span><span class="p">,</span>
-                            <span class="n">sta</span><span class="p">,</span>
-                            <span class="s2">&quot; and channel=&quot;</span><span class="p">,</span>
-                            <span class="n">chan</span><span class="p">,</span>
-                            <span class="s2">&quot; with null loc code</span><span class="se">\n</span><span class="s2">&quot;</span>
-                            <span class="s2">&quot;Assuming database problem with duplicate documents in channel collection</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
-                            <span class="s2">&quot;Returning first one found&quot;</span><span class="p">,</span>
-                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span>
+                                <span class="s2">&quot;get_seed_channel:  multiple matches found for net=&quot;</span><span class="p">,</span>
+                                <span class="n">net</span><span class="p">,</span>
+                                <span class="s2">&quot; sta=&quot;</span><span class="p">,</span>
+                                <span class="n">sta</span><span class="p">,</span>
+                                <span class="s2">&quot; and channel=&quot;</span><span class="p">,</span>
+                                <span class="n">chan</span><span class="p">,</span>
+                                <span class="s2">&quot; with null loc code</span><span class="se">\n</span><span class="s2">&quot;</span>
+                                <span class="s2">&quot;Assuming database problem with duplicate documents in channel collection</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;Returning first one found&quot;</span><span class="p">,</span>
+                            <span class="p">)</span>
                         <span class="k">return</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">testquery</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
@@ -4701,17 +4720,18 @@
                         <span class="k">return</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">testquery</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
-                            <span class="nb">print</span><span class="p">(</span>
-                                <span class="s2">&quot;get_seed_channel:  multiple matches found for net=&quot;</span><span class="p">,</span>
-                                <span class="n">net</span><span class="p">,</span>
-                                <span class="s2">&quot; sta=&quot;</span><span class="p">,</span>
-                                <span class="n">sta</span><span class="p">,</span>
-                                <span class="s2">&quot; and channel=&quot;</span><span class="p">,</span>
-                                <span class="n">chan</span><span class="p">,</span>
-                                <span class="s2">&quot; with null loc code tested with empty string</span><span class="se">\n</span><span class="s2">&quot;</span>
-                                <span class="s2">&quot;Assuming database problem with duplicate documents in channel collection</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
-                                <span class="s2">&quot;Returning first one found&quot;</span><span class="p">,</span>
-                            <span class="p">)</span>
+                            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                                <span class="nb">print</span><span class="p">(</span>
+                                    <span class="s2">&quot;get_seed_channel:  multiple matches found for net=&quot;</span><span class="p">,</span>
+                                    <span class="n">net</span><span class="p">,</span>
+                                    <span class="s2">&quot; sta=&quot;</span><span class="p">,</span>
+                                    <span class="n">sta</span><span class="p">,</span>
+                                    <span class="s2">&quot; and channel=&quot;</span><span class="p">,</span>
+                                    <span class="n">chan</span><span class="p">,</span>
+                                    <span class="s2">&quot; with null loc code tested with empty string</span><span class="se">\n</span><span class="s2">&quot;</span>
+                                    <span class="s2">&quot;Assuming database problem with duplicate documents in channel collection</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;Returning first one found&quot;</span><span class="p">,</span>
+                                <span class="p">)</span>
                             <span class="k">return</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">testquery</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
@@ -4914,6 +4934,8 @@
         <span class="n">segment_time_tears</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">elog_collection</span><span class="o">=</span><span class="s2">&quot;elog&quot;</span><span class="p">,</span>
         <span class="n">return_ids</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">normalize_channel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the first stage import function for handling the import of</span>
@@ -5003,6 +5025,23 @@
 <span class="sd">          By default it is fast only to associate an error log entry with</span>
 <span class="sd">          a particular waveform index entry. (we store the saved index</span>
 <span class="sd">          MongoDB document id with each elog entry)</span>
+<span class="sd">        :param normalize_channel:  boolean controlling normalization with</span>
+<span class="sd">          the channel collection.   When set True (default is false) the</span>
+<span class="sd">          method will call the Database.get_seed_channel method, extract</span>
+<span class="sd">          the id from the result, and set the result as &quot;channel_id&quot; before</span>
+<span class="sd">          writing the wf_miniseed document.  Set this argument true if</span>
+<span class="sd">          you have a relatively complete channel collection assembled</span>
+<span class="sd">          before running a workflow to index a set of miniseed files</span>
+<span class="sd">          (a common raw data starting point).</span>
+<span class="sd">        :param verbose:  boolean passed to get_seed_channel.  This</span>
+<span class="sd">          argument has no effect unless normalize_channel is set True.</span>
+<span class="sd">          It is necessary because the get_seed_channel function has no</span>
+<span class="sd">          way to log errors except calling print.  A very common metadata</span>
+<span class="sd">          error is duplicate and/or time overlaps in channel metadata.</span>
+<span class="sd">          Those are usually harmless so the default for this parameter is</span>
+<span class="sd">          False.  Set this True if you are using inline normalization</span>
+<span class="sd">          (normalize_channel set True) and you aren&#39;t certain your</span>
+<span class="sd">          channel collection has no serious inconsistencies.</span>
 <span class="sd">        :exception: This function can throw a range of error types for</span>
 <span class="sd">          a long list of possible io issues.   Callers should use a</span>
 <span class="sd">          generic handler to avoid aborts in a large job.</span>
@@ -5028,6 +5067,25 @@
             <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
             <span class="n">thisid</span> <span class="o">=</span> <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
             <span class="n">ids_affected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thisid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">normalize_channel</span><span class="p">:</span>
+            <span class="c1"># these quantities are always defined unless there was a read error</span>
+            <span class="c1"># and I don&#39;t think we can get here if we had a read error.</span>
+            <span class="n">net</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
+            <span class="n">sta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+            <span class="n">chan</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span>
+            <span class="n">stime</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;loc&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                <span class="n">loc</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
+                <span class="n">chandoc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_seed_channel</span><span class="p">(</span>
+                    <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">stime</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">chandoc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_seed_channel</span><span class="p">(</span>
+                    <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">stime</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">chandoc</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;channel_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chandoc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+
         <span class="c1"># log_ids is created here so it is defined but empty in</span>
         <span class="c1"># the tuple returned when return_ids is true</span>
         <span class="n">log_ids</span> <span class="o">=</span> <span class="p">[]</span>
@@ -5270,9 +5328,7 @@
             <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">s3_input_bucket</span> <span class="o">=</span> <span class="s2">&quot;scedc-pds&quot;</span>
-        <span class="n">s3_output_bucket</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;mspass-scedcdata&quot;</span>
-        <span class="p">)</span>  <span class="c1">#   The output file can be saved to this bucket, user might want to change it into their own bucket</span>
+        <span class="n">s3_output_bucket</span> <span class="o">=</span> <span class="s2">&quot;mspass-scedcdata&quot;</span>  <span class="c1">#   The output file can be saved to this bucket, user might want to change it into their own bucket</span>
         <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
         <span class="n">day_of_year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
