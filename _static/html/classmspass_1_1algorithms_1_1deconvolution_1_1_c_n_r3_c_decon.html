@@ -642,7 +642,7 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;      <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(ss.str(),ErrorSeverity::Invalid);</div>
 <div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    }</div>
 <div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html">CoreSeismogram</a> dtmp(WindowData(d,this-&gt;processing_window));</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    this-&gt;decondata=<a class="code" href="classmspass_1_1seismic_1_1_seismogram.html">Seismogram</a>(dtmp,<span class="stringliteral">&quot;invalid&quot;</span>);</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    this-&gt;decondata=<a class="code" href="classmspass_1_1seismic_1_1_seismogram.html">Seismogram</a>(dtmp,<span class="keywordtype">string</span>(<span class="stringliteral">&quot;invalid&quot;</span>));</div>
 <div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    <span class="keywordflow">if</span>(FFTDeconOperator::nfft&lt;(2*this-&gt;winlength))</div>
 <div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;    {</div>
 <div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;      cerr &lt;&lt; <span class="stringliteral">&quot;CNR3CDecon:  coding error in loaddata method&quot;</span>&lt;&lt;endl</div>
@@ -690,7 +690,7 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;    this-&gt;pssignal=this-&gt;ThreeCPower(dtmp);</div>
 <div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;    <span class="keywordflow">if</span>(nload)</div>
 <div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;    {</div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;      <a class="code" href="classmspass_1_1seismic_1_1_seismogram.html">Seismogram</a> ntmp(WindowData(d,this-&gt;noise_window),<span class="stringliteral">&quot;Invalid&quot;</span>);</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;      <a class="code" href="classmspass_1_1seismic_1_1_seismogram.html">Seismogram</a> ntmp(WindowData(d,this-&gt;noise_window),<span class="keywordtype">string</span>(<span class="stringliteral">&quot;Invalid&quot;</span>));</div>
 <div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;      this-&gt;<a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a9d050c0940ada32cc3ddfecff9cade4a">loadnoise_data</a>(ntmp);</div>
 <div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;    }</div>
 <div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;    signal_bwd=EstimateBandwidth(FFTDeconOperator::df(this-&gt;operator_dt),</div>
