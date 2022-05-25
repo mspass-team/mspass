@@ -611,11 +611,11 @@ def test_Seismogram():
     seis.rotate(sc)
     assert all(np.isclose(seis.data[:, 3], [0, -0.707107, 0.707107]))
     seis.rotate_to_standard()
-    assert all(seis.data[:, 3] == [0, 0, 1])
+    assert all(np.isclose(seis.data[:, 3], [0, 0, 1]))
     sc.phi = -np.pi / 4
     seis.data[:, 3] = sc.unit_vector
     seis.rotate(sc)
-    assert all(seis.data[:, 3] == [0, 0, 1])
+    assert all(np.isclose(seis.data[:, 3], [0, 0, 1]))
     seis.rotate_to_standard()
     assert all(np.isclose(seis.data[:, 3], [0.5, -0.5, 0.707107]))
     seis.data[:, 3] = [0, 0, 1]
