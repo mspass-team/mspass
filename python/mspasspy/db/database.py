@@ -3540,28 +3540,28 @@ class Database(pymongo.database.Database):
     ):
         """
         This is a private method used under the hood to save the sample data
-        of atomic MsPASS data objects.  How the save happens is highly 
-        dependent upon the format argument.  When None, which is the 
-        default, the data are written to the file specified by dir and dfile 
-        using low-level C fwrite calls.  The function used always appends 
-        data to eof if the file already exists to allow accumation of data 
-        in "gather" files to reduce file name overhead in hpc systems. 
-        If format is anything else the function attempts to use one of 
-        the obspy formatted writers.  That means the format string must be 
+        of atomic MsPASS data objects.  How the save happens is highly
+        dependent upon the format argument.  When None, which is the
+        default, the data are written to the file specified by dir and dfile
+        using low-level C fwrite calls.  The function used always appends
+        data to eof if the file already exists to allow accumation of data
+        in "gather" files to reduce file name overhead in hpc systems.
+        If format is anything else the function attempts to use one of
+        the obspy formatted writers.  That means the format string must be
         one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__ of ObsPy reader.
-        
-        
-        Writing to a file can fail for any number of reasons.   write errors 
+
+
+        Writing to a file can fail for any number of reasons.   write errors
         are trapped internally in this function any errors posted to elog of
-        mspass_object.   If the kill_on_failure boolean is set true the 
-        function will call the kill method of the data function and the 
-        that datum will be marked dead.   That is not normally a good idea 
+        mspass_object.   If the kill_on_failure boolean is set true the
+        function will call the kill method of the data function and the
+        that datum will be marked dead.   That is not normally a good idea
         if there is any additional work to do on the data so the default
-        for that parameter is false.  
-        
-        Because we use a stream model for file storage be aware 
-        that insertion and deletion in a file are not possible.  If you 
-        need lots of editing functionality with files you should use the 
+        for that parameter is false.
+
+        Because we use a stream model for file storage be aware
+        that insertion and deletion in a file are not possible.  If you
+        need lots of editing functionality with files you should use the
         one file to one object model or (better yet) use gridfs storage.
 
         :param mspass_object: the target object.
@@ -3572,9 +3572,9 @@ class Database(pymongo.database.Database):
         :type dfile: :class:`str`
         :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__ of ObsPy reader. By default (``None``), the format will be the binary waveform.
         :type format: :class:`str`
-        :param kill_on_failure:  When true if an io error occurs the data object's 
-          kill method will be invoked.  When false (the default) io errors are 
-          logged and left set live.  (Note data already marked dead are return 
+        :param kill_on_failure:  When true if an io error occurs the data object's
+          kill method will be invoked.  When false (the default) io errors are
+          logged and left set live.  (Note data already marked dead are return
           are ignored by this function. )
         :type kill_on_failure: boolean
         :return: Position of first data sample (foff) and the size of the saved chunk.
@@ -4446,16 +4446,21 @@ class Database(pymongo.database.Database):
                 result.extend([netw])
         return result
 
-    def get_seed_site(self, net, sta, loc="NONE", time=-1.0):
+    def get_seed_site(self, net, sta, loc="NONE", time=-1.0, verbose=True):
         """
         The site collection is assumed to have a one to one
         mapping of net:sta:loc:starttime - endtime.
         This method uses a restricted query to match the
-        keys given and returns a dict of coordinate data;
-        lat, lon, elev, edepth.
+        keys given and returns the MongoDB document matching the keys.
         The (optional) time arg is used for a range match to find
         period between the site startime and endtime.
         Returns None if there is no match.
+
+        An all to common metadata problem is to have duplicate entries in
+        site for the same data.   The default behavior of this method is
+        to print a warning whenever a match is ambiguous
+        (i.e. more than on document matches the keys).  Set verbose false to
+        silence such warnings if you know they are harmless.
 
         The seed modifier in the name is to emphasize this method is
         for data originating as the SEED format that use net:sta:loc:chan
@@ -4465,9 +4470,18 @@ class Database(pymongo.database.Database):
         :param sta:  station name to match
         :param loc:   optional loc code to made (empty string ok and common)
         default ignores loc in query.
-        :param time: epoch time for requested metadata
+        :param time: epoch time for requested metadata.  Default undefined
+          and will cause the function to simply return the first document
+          matching the name keys only.   (This is rarely what you want, but
+          there is no standard default for this argument.)
+        :param verbose:  When True (the default) this method will issue a
+          print warning message when the match is ambiguous - multiple
+          docs match the specified keys.   When set False such warnings
+          will be suppressed.  Use false only if you know the duplicates
+          are harmless and you are running on a large data set and
+          you want to reduce the log size.
 
-        :return: MongoDB doc (dict) matching query
+        :return: MongoDB doc matching query
         :rtype:  python dict (document) of result.  None if there is no match.
         """
         dbsite = self.site
@@ -4483,21 +4497,19 @@ class Database(pymongo.database.Database):
         if matchsize == 0:
             return None
         else:
-            if matchsize > 1:
+            if matchsize > 1 and verbose:
                 print("get_seed_site (WARNING):  query=", query)
                 print("Returned ", matchsize, " documents - should be exactly one")
                 print("Returning first entry found")
             stadoc = dbsite.find_one(query)
             return stadoc
 
-    def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0):
+    def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0, verbose=True):
         """
         The channel collection is assumed to have a one to one
         mapping of net:sta:loc:chan:starttime - endtime.
         This method uses a restricted query to match the
-        keys given and returns a dict of the document contents
-        associated with that key.  Note net, sta, and chan are required
-        but loc is optional.
+        keys given and returns the document matching the specified keys.
 
         The optional loc code is handled specially.  The reason is
         that it is common to have the loc code empty.  In seed data that
@@ -4526,6 +4538,12 @@ class Database(pymongo.database.Database):
         :param loc:   optional loc code to made (empty string ok and common)
         default ignores loc in query.
         :param time: epoch time for requested metadata
+        :param verbose:  When True (the default) this method will issue a
+          print warning message when the match is ambiguous - multiple
+          docs match the specified keys.   When set False such warnings
+          will be suppressed.  Use false only if you know the duplicates
+          are harmless and you are running on a large data set and
+          you want to reduce the log size.
 
         :return: handle to query return
         :rtype:  MondoDB Cursor object of query result.
@@ -4562,17 +4580,18 @@ class Database(pymongo.database.Database):
                     return dbchannel.find_one(testquery)
                 elif matchsize > 1:
                     if time > 0.0:
-                        print(
-                            "get_seed_channel:  multiple matches found for net=",
-                            net,
-                            " sta=",
-                            sta,
-                            " and channel=",
-                            chan,
-                            " with null loc code\n"
-                            "Assuming database problem with duplicate documents in channel collection\n",
-                            "Returning first one found",
-                        )
+                        if verbose:
+                            print(
+                                "get_seed_channel:  multiple matches found for net=",
+                                net,
+                                " sta=",
+                                sta,
+                                " and channel=",
+                                chan,
+                                " with null loc code\n"
+                                "Assuming database problem with duplicate documents in channel collection\n",
+                                "Returning first one found",
+                            )
                         return dbchannel.find_one(testquery)
                     else:
                         raise MsPASSError(
@@ -4597,17 +4616,18 @@ class Database(pymongo.database.Database):
                         return dbchannel.find_one(testquery)
                     elif matchsize > 1:
                         if time > 0.0:
-                            print(
-                                "get_seed_channel:  multiple matches found for net=",
-                                net,
-                                " sta=",
-                                sta,
-                                " and channel=",
-                                chan,
-                                " with null loc code tested with empty string\n"
-                                "Assuming database problem with duplicate documents in channel collection\n",
-                                "Returning first one found",
-                            )
+                            if verbose:
+                                print(
+                                    "get_seed_channel:  multiple matches found for net=",
+                                    net,
+                                    " sta=",
+                                    sta,
+                                    " and channel=",
+                                    chan,
+                                    " with null loc code tested with empty string\n"
+                                    "Assuming database problem with duplicate documents in channel collection\n",
+                                    "Returning first one found",
+                                )
                             return dbchannel.find_one(testquery)
                         else:
                             raise MsPASSError(
@@ -4810,6 +4830,8 @@ class Database(pymongo.database.Database):
         segment_time_tears=False,
         elog_collection="elog",
         return_ids=False,
+        normalize_channel=False,
+        verbose=False,
     ):
         """
         This is the first stage import function for handling the import of
@@ -4899,6 +4921,23 @@ class Database(pymongo.database.Database):
           By default it is fast only to associate an error log entry with
           a particular waveform index entry. (we store the saved index
           MongoDB document id with each elog entry)
+        :param normalize_channel:  boolean controlling normalization with
+          the channel collection.   When set True (default is false) the
+          method will call the Database.get_seed_channel method, extract
+          the id from the result, and set the result as "channel_id" before
+          writing the wf_miniseed document.  Set this argument true if
+          you have a relatively complete channel collection assembled
+          before running a workflow to index a set of miniseed files
+          (a common raw data starting point).
+        :param verbose:  boolean passed to get_seed_channel.  This
+          argument has no effect unless normalize_channel is set True.
+          It is necessary because the get_seed_channel function has no
+          way to log errors except calling print.  A very common metadata
+          error is duplicate and/or time overlaps in channel metadata.
+          Those are usually harmless so the default for this parameter is
+          False.  Set this True if you are using inline normalization
+          (normalize_channel set True) and you aren't certain your
+          channel collection has no serious inconsistencies.
         :exception: This function can throw a range of error types for
           a long list of possible io issues.   Callers should use a
           generic handler to avoid aborts in a large job.
@@ -4924,6 +4963,25 @@ class Database(pymongo.database.Database):
             doc["dfile"] = dfile
             thisid = dbh.insert_one(doc).inserted_id
             ids_affected.append(thisid)
+        if normalize_channel:
+            # these quantities are always defined unless there was a read error
+            # and I don't think we can get here if we had a read error.
+            net = doc["net"]
+            sta = doc["sta"]
+            chan = doc["chan"]
+            stime = doc["starttime"]
+            if "loc" in doc:
+                loc = doc["loc"]
+                chandoc = self.get_seed_channel(
+                    net, sta, chan, loc, time=stime, verbose=False
+                )
+            else:
+                chandoc = self.get_seed_channel(
+                    net, sta, chan, time=stime, verbose=False
+                )
+            if chandoc != None:
+                doc["channel_id"] = chandoc["_id"]
+
         # log_ids is created here so it is defined but empty in
         # the tuple returned when return_ids is true
         log_ids = []
@@ -5166,9 +5224,7 @@ class Database(pymongo.database.Database):
             aws_secret_access_key=aws_secret_access_key,
         )
         s3_input_bucket = "scedc-pds"
-        s3_output_bucket = (
-            "mspass-scedcdata"
-        )  #   The output file can be saved to this bucket, user might want to change it into their own bucket
+        s3_output_bucket = "mspass-scedcdata"  #   The output file can be saved to this bucket, user might want to change it into their own bucket
         year = str(year)
         day_of_year = str(day_of_year)
         if len(day_of_year) < 3:
