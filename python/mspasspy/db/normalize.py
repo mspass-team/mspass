@@ -1537,7 +1537,12 @@ class css30_arrival_interval_matcher(NMF):
 
 
 def bulk_normalize(
-    db, wfquery=None, src_col="wf_miniseed", blocksize=1000, nmf_list=None, verbose=False
+    db,
+    wfquery=None,
+    src_col="wf_miniseed",
+    blocksize=1000,
+    nmf_list=None,
+    verbose=False,
 ):
     """
     This function iterates through the collection specified by db and src_col,
@@ -1577,7 +1582,7 @@ def bulk_normalize(
 
     if wfquery is None:
         wfquery = {}
-        
+
     if nmf_list is None:
         #   The default value for nmf_list is one default
         channel_matcher = mseed_channel_matcher(
