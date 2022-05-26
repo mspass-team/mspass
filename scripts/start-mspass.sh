@@ -25,9 +25,10 @@ MONGO_LOG=${MSPASS_LOG_DIR}/mongo_log
 export SPARK_WORKER_DIR=${MSPASS_WORKER_DIR}
 export SPARK_LOG_DIR=${MSPASS_LOG_DIR}
 
-if [ $# -eq 0 ]; then
+if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
 
   function start_mspass_frontend {
+    BATCH_MODE_ARGS="--to notebook --inplace --execute $1"
     NOTEBOOK_ARGS="--notebook-dir=${MSPASS_WORKDIR} --port=${JUPYTER_PORT} --no-browser --ip=0.0.0.0 --allow-root"
     # if MSPASS_JUPYTER_PWD is not set, notebook will generate a default token
     if [[ ! -z ${MSPASS_JUPYTER_PWD+x} ]]; then
@@ -37,7 +38,11 @@ if [ $# -eq 0 ]; then
     fi
     if [ "$MSPASS_SCHEDULER" = "spark" ]; then
       export PYSPARK_DRIVER_PYTHON=jupyter
-      export PYSPARK_DRIVER_PYTHON_OPTS="notebook ${NOTEBOOK_ARGS}"
+      if [ -z $1 ]; then
+        export PYSPARK_DRIVER_PYTHON_OPTS="notebook ${NOTEBOOK_ARGS}"
+      else
+        export PYSPARK_DRIVER_PYTHON_OPTS="nbconvert ${BATCH_MODE_ARGS}"
+      fi
       pyspark \
         --conf "spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
         --conf "spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
@@ -45,7 +50,11 @@ if [ $# -eq 0 ]; then
         --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0
     else # if [ "$MSPASS_SCHEDULER" = "dask" ]
       export DASK_SCHEDULER_ADDRESS=${MSPASS_SCHEDULER_ADDRESS}:${DASK_SCHEDULER_PORT}
-      jupyter notebook ${NOTEBOOK_ARGS}
+      if [ -z $1 ]; then
+        jupyter notebook ${NOTEBOOK_ARGS}
+      else
+        jupyter nbconvert ${BATCH_MODE_ARGS}
+      fi
     fi
   }
 
@@ -281,7 +290,7 @@ if [ $# -eq 0 ]; then
     fi
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "frontend" ]; then
-    start_mspass_frontend
+    start_mspass_frontend $2
     if [ "$MSPASS_DB_MODE" = "shard" ]; then
       clean_up_multiple_nodes
     else
@@ -297,7 +306,7 @@ if [ $# -eq 0 ]; then
     else
       start_db_scratch
     fi
-    start_mspass_frontend
+    start_mspass_frontend $2
     clean_up_single_node
   fi
 else
