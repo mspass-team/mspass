@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # If running with docker use /home, else use pwd to store all data and logs
-if grep docker /proc/1/cgroup -qa; then
+if grep "docker/containers" /proc/self/mountinfo -qa; then
   MSPASS_WORKDIR=/home
 elif [[ -z ${MSPASS_WORK_DIR} ]]; then
   MSPASS_WORKDIR=`pwd`
