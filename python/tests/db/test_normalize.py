@@ -546,7 +546,7 @@ class TestNormalize:
         ret = bulk_normalize(
             self.db,
             wfquery={},
-            src_col="wf_miniseed",
+            wf_col="wf_miniseed",
             nmf_list=nmf_function_list,
             verbose=False,
         )
