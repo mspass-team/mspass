@@ -28,8 +28,9 @@ package.
 
    getting_started/run_mspass_with_docker
    getting_started/deploy_mspass_with_docker_compose
-
-
+   getting_started/run_mspass_with_singularity
+   getting_started/deploy_mspass_on_HPC
+   
 .. toctree::
    :maxdepth: 1
    :caption: User Manual
