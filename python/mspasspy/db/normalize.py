@@ -303,7 +303,7 @@ class NMF(ABC):
             # Hence we copy all.
             for key in doc:
                 if self.prepend_collection_name:
-                    # Handle "_id" specially or we get double _ for 
+                    # Handle "_id" specially or we get double _ for
                     # common constructs like channel_id
                     if key == "_id":
                         newkey = self.collection + key
@@ -1658,13 +1658,13 @@ def bulk_normalize(
         if need_update:
             bulk.append(pymongo.UpdateOne({"_id": wf_id}, {"$set": update_doc}))
             counter += 1
-        # Tests for counter and len(bulk) are needed because the logic here 
-        # allows this block to be entered the first pass and if the pass 
+        # Tests for counter and len(bulk) are needed because the logic here
+        # allows this block to be entered the first pass and if the pass
         # after the previous call to bulk_write did not yield a match
         # either will cause bulk_write to throw an error when it gets an
-        # an empty list.   Should consider a logic  change here 
+        # an empty list.   Should consider a logic  change here
         # to make this less obscure
-        if counter % blocksize == 0 and counter != 0  and len(bulk) > 0:
+        if counter % blocksize == 0 and counter != 0 and len(bulk) > 0:
             db[wf_col].bulk_write(bulk)
             bulk = []
 
