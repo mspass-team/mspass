@@ -7,7 +7,6 @@ from mspasspy.ccore.seismic import (
     TimeSeriesEnsemble,
     SeismogramEnsemble,
 )
-from numpy import block
 
 from obspy import UTCDateTime
 import pymongo
@@ -304,7 +303,12 @@ class NMF(ABC):
             # Hence we copy all.
             for key in doc:
                 if self.prepend_collection_name:
-                    newkey = self.collection + "_" + key
+                    # Handle "_id" specially or we get double _ for 
+                    # common constructs like channel_id
+                    if key == "_id":
+                        newkey = self.collection + key
+                    else:
+                        newkey = self.collection + "_" + key
                     d[newkey] = doc[key]
                 else:
                     d[key] = doc[key]
@@ -1539,21 +1543,21 @@ class css30_arrival_interval_matcher(NMF):
 def bulk_normalize(
     db,
     wfquery=None,
-    src_col="wf_miniseed",
+    wf_col="wf_miniseed",
     blocksize=1000,
     nmf_list=None,
     verbose=False,
 ):
     """
-    This function iterates through the collection specified by db and src_col,
+    This function iterates through the collection specified by db and wf_col,
     and run a chain of normalization funtions in serial on each document in one
     single pass.
     It will save the time of multiple db updating operations, by using the bulk
     methods of MongoDB.
 
-    :param db: should be a MsPASS database handle containing the src_col
+    :param db: should be a MsPASS database handle containing the wf_col
     and the collections defined by the nmf_list list.
-    :param src_col: The collection that need to be normalized, default is
+    :param wf_col: The collection that need to be normalized, default is
     wf_miniseed
     :param blockssize:   To speed up updates this function uses the
     bulk writer/updater methods of MongoDB that can be orders of
@@ -1602,7 +1606,7 @@ def bulk_normalize(
             )
         nmf.verbose = verbose
 
-    ndocs = db[src_col].count_documents(wfquery)
+    ndocs = db[wf_col].count_documents(wfquery)
     if ndocs == 0:
         raise MsPASSError(
             "bulk_normalize: "
@@ -1613,23 +1617,27 @@ def bulk_normalize(
     cnt_list = [0] * len(nmf_list)
     counter = 0
 
-    cursor = db[src_col].find(wfquery)
+    cursor = db[wf_col].find(wfquery)
     bulk = []
     for doc in cursor:
-        src_id = doc["_id"]
-        src_stime = doc["starttime"]
+        wf_id = doc["_id"]
+        wf_stime = doc["starttime"]
         need_update = False
         update_doc = {}
         for ind, nmf in enumerate(nmf_list):
             try:
-                norm_doc = nmf.get_document(doc, time=src_stime)
+                norm_doc = nmf.get_document(doc, time=wf_stime)
                 if norm_doc is None:
                     continue
                 for key in nmf.attributes_to_load:
                     new_key = key
                     if nmf.prepend_collection_name:
                         #   We assume that every NMF should contain a dbhandler
-                        new_key = nmf.dbhandle.name + "_" + key
+                        # handle _id specially to avoid double _
+                        if key == "_id":
+                            new_key = nmf.dbhandle.name + key
+                        else:
+                            new_key = nmf.dbhandle.name + "_" + key
                     update_doc[new_key] = norm_doc[key]
             except TypeError:  # Some NMF dervied classes don't accept time argument
                 norm_doc = nmf.get_document(doc)
@@ -1638,19 +1646,30 @@ def bulk_normalize(
                 for key in nmf.attributes_to_load:
                     new_key = key
                     if nmf.prepend_collection_name:
-                        new_key = nmf.dbhandle.name + "_" + key
+                        # again handle _id specially to avoid double _
+                        if key == "_id":
+                            new_key = nmf.dbhandle.name + key
+                        else:
+                            new_key = nmf.dbhandle.name + "_" + key
             #   If we reach here, we've got a norm_doc return
             cnt_list[ind] += 1
             need_update = True
 
         if need_update:
-            bulk.append(pymongo.UpdateOne({"_id": src_id}, {"$set": update_doc}))
+            bulk.append(pymongo.UpdateOne({"_id": wf_id}, {"$set": update_doc}))
             counter += 1
-        if counter % blocksize == 0 and counter != 0:
-            db.wf_miniseed.bulk_write(bulk)
+        # Tests for counter and len(bulk) are needed because the logic here 
+        # allows this block to be entered the first pass and if the pass 
+        # after the previous call to bulk_write did not yield a match
+        # either will cause bulk_write to throw an error when it gets an
+        # an empty list.   Should consider a logic  change here 
+        # to make this less obscure
+        if counter % blocksize == 0 and counter != 0  and len(bulk) > 0:
+            db[wf_col].bulk_write(bulk)
+            bulk = []
 
     if counter % blocksize != 0:
-        db[src_col].bulk_write(bulk)
+        db[wf_col].bulk_write(bulk)
 
     return [ndocs] + cnt_list
 
@@ -1745,14 +1764,10 @@ def normalize_mseed(
     bulk_nml_ret = bulk_normalize(
         db,
         wfquery=wfquery,
-        src_col="wf_miniseed",
+        wf_col="wf_miniseed",
         blocksize=blocksize,
         nmf_list=nmf_function_list,
         verbose=verbose,
-    )
-
-    db["wf_miniseed"].update_many(
-        {}, {"$rename": {"channel__id": "channel_id", "site__id": "site_id"}}
     )
 
     ret = [bulk_nml_ret[0]]
