@@ -329,10 +329,13 @@ processing is trivial.
 
 For more information, the dask documentation found
 `here<https://docs.dask.org/en/latest/scheduling.html>`_ is a good
-starting point.
+starting point..
 
 Examples:
 ~~~~~~~~~~~~~
+
+Maybe move this to top of the page
+
 Atomic Data Example
 -------------------------------
 The simplest workflow is one that works only with atomic
@@ -355,6 +358,7 @@ using the data start time, and then saves the results.
   data = data.map(signals.filter,"bandpass",freqmin=0.01,freqmax=2.0)
   # windowing is relative to start time.  300 s window starting at d.t0+200
   data = data.map(lambda d : WindowData(d,200.0,500.0,t0shift=d.t0))
+  res = data.map(db.save_data,collection="wf_Seismogram")
   data_out = data.compute()
 
 Ensemble Example
@@ -386,6 +390,9 @@ Here is an untested prototype for this manual
 
 New Organization for discussion
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+this should be a new page
+
 Cluster fundamentals
 ~~~~~~~~~~~~~~~~~~~~~~~
 Overview of what one has to deal with to configure a parallel system
