@@ -26,6 +26,7 @@ package.
    :maxdepth: 1
    :caption: Getting Started
 
+   getting_started/getting_started_overview
    getting_started/run_mspass_with_docker
    getting_started/deploy_mspass_with_docker_compose
    getting_started/run_mspass_with_singularity
@@ -41,6 +42,7 @@ package.
    user_manual/obspy_interface
    user_manual/database_concepts
    user_manual/CRUD_operations
+   user_manual/importing_data
    user_manual/handling_errors
    user_manual/data_editing
    user_manual/header_math
