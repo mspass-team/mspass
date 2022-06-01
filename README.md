@@ -1,7 +1,7 @@
 # Massive Parallel Analysis System for Seismologists 
 
 [![GitHub Build Status](https://img.shields.io/github/workflow/status/mspass-team/mspass/Python%20package/master?logo=GitHub)](https://github.com/mspass-team/mspass/actions/workflows/python-package.yml)
-[![Docker Cloud Build Status](https://img.shields.io/github/workflow/status/mspass-team/mspass/Docker/master?label=docker%20build&logo=Docker)](https://hub.docker.com/r/mspass/mspass/builds)
+[![Docker Cloud Build Status](https://img.shields.io/github/workflow/status/mspass-team/mspass/Docker/master?label=docker%20build&logo=Docker)](https://github.com/mspass-team/mspass/actions/workflows/docker-publish.yml)
 [![Docker Cloud Pulls](https://img.shields.io/docker/pulls/mspass/mspass?logo=Docker)](https://hub.docker.com/r/mspass/mspass/)
 [![Docker Cloud Size](https://img.shields.io/docker/image-size/mspass/mspass/master?logo=Docker)](https://hub.docker.com/r/mspass/mspass/)
 
