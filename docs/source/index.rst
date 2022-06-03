@@ -26,11 +26,10 @@ package.
    :maxdepth: 1
    :caption: Getting Started
 
-   getting_started/getting_started_overview
    getting_started/run_mspass_with_docker
    getting_started/deploy_mspass_with_docker_compose
-   getting_started/run_mspass_with_singularity
    getting_started/deploy_mspass_on_HPC
+   getting_started/getting_started_overview
    
 .. toctree::
    :maxdepth: 1
