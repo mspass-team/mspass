@@ -48,7 +48,7 @@ alternative construct:
     from mspasspy.db.client import Client
     from mspasspy.db.database import Database
     dbclient = Client()
-    db=Database(dbclient, 'database_name', db_schema='wf_Seismogram')
+    db = Database(dbclient, 'database_name', db_schema='wf_Seismogram')
 
 If your workflow requires reading both TimeSeries and Seismogram
 data, best practice (i.e. it isn't required but a good idea)
@@ -63,7 +63,7 @@ the synonymous word "save".   Here we list all save methods with a brief
 description of each method.  Consult the docstring pages for detailed
 and most up to date usage:
 
-1.  :code:`save_data` is probably the most common method you will use.  The
+1.  :py:meth:`save_data <mspasspy.db.database.Database.save_data>` is probably the most common method you will use.  The
     first argument is one of the atomic objects defined in MsPASS
     (Seismogram or TimeSeries) that you wish to save.  Options are
     described in the docstring.  Here is an example usage:
@@ -84,7 +84,7 @@ and most up to date usage:
     normalized collections (:code:`source`, :code:`channel`, and/or :code:`site`) with no
     safety checks.  We discuss additional common options in a later section.
 
-2.  :code:`save_ensemble_data`  is similar to :code:`save_data` except the first argument
+2.  :py:meth:`save_ensemble_data <mspasspy.db.database.Database.save_ensemble_data>` is similar to :code:`save_data` except the first argument
     is an Ensemble object.  There are currently two of them:  (1) TimeSeriesEnsemble
     and (2) SeismogramEnsemble.   As discussed in the section
     :ref:`data_object_design_concepts` an Ensemble
@@ -101,7 +101,7 @@ and most up to date usage:
     are copied verbatim to each member.  If previous values existed in any
     of the members they will be silently replaced by the ensemble groups version.
 
-3.  :code:`save_catalog` should be viewed mostly as a convenience method to build
+3.  :py:meth:`save_catalog <mspasspy.db.database.Database.save_catalog>` should be viewed mostly as a convenience method to build
     the :code:`source` collection from QUAKEML data downloaded from FDSN data
     centers via obspy's web services functions.   :code:`save_catalog` can be
     thought of as a converter that translates the contents of a QUAKEML
@@ -133,7 +133,7 @@ and most up to date usage:
     This particular example pulls 11 large aftershocks of the 2011 Tohoku
     Earthquake.
 
-4.  :code:`save_inventory` is similar in concept to :code:`save_catalog`, but instead of
+4.  :py:meth:`save_inventory <mspasspy.db.database.Database.save_inventory>` is similar in concept to :code:`save_catalog`, but instead of
     translating data for source information it translates information to
     MsPASS for station metadata.  The station information problem is slightly
     more complicated than the source problem because of an implementation
@@ -204,7 +204,7 @@ and Seismogram.  There are also convenience functions for reading ensembles.
 As with the save operators we discuss here the key methods, but refer the
 reader to the sphinx documentation for full usage.
 
-1.  :code:`read_data` is the core method for reading atomic data.  The method has
+1.  :py:meth:`read_data <mspasspy.db.database.Database.read_data>` is the core method for reading atomic data.  The method has
     one required argument.  That argument is an ObjectID for the document used
     to define the read operation OR a MongoDB document (python dict) that
     contains the ObjectID.  The ObjectID is guaranteed to provide a
@@ -215,10 +215,10 @@ reader to the sphinx documentation for full usage.
 
     .. code-block:: python
 
-    query={...Some MongoDB query dict entry...}
-    cursor=db.wf_TimeSeries.find(query) # Changed to wf_Seismogram for 3D data
-    for doc in cursor:
-      d=db.read_data(doc)  # Add option collection='wf_Seismogram' for 3C reads
+        query = {...Some MongoDB query dict entry...}
+        cursor = db.wf_TimeSeries.find(query) # Changed to wf_Seismogram for 3D data
+        for doc in cursor:
+            d = db.read_data(doc)  # Add option collection='wf_Seismogram' for 3C reads
 
     By default :code:`read_data` will use the waveform collection defined
     in the schema defined for the handle.  The default for the standard
@@ -283,7 +283,7 @@ reader to the sphinx documentation for full usage.
     3.  The "pedantic" mode is mainly of use for data export where a
         type mismatch could produce invalid data required by another package.
 
-2.  A closely related function to :code:`read_data` is :code:`read_ensemble_data`.  Like
+2.  A closely related function to :code:`read_data` is :py:meth:`read_ensemble_data <mspasspy.db.database.Database.read_ensemble_data>`.  Like
     :code:`save_ensemble_data` it is mostly a loop to assemble an ensemble of
     atomic data using a sequence of calls to :code:`read_data`.  The sequence of
     what to read is defined by arg 0.   That arg must be one of two things:
@@ -311,7 +311,7 @@ reader to the sphinx documentation for full usage.
 3.  A workflow that needs to read and process a large data sets in
     a parallel environment should use
     the parallel equivalent of :code:`read_data` and :code:`read_ensemble_data` called
-    :code:`read_distributed_data`.  MsPASS supports two parallel frameworks called
+    :py:meth:`read_distributed_data <mspasspy.db.database.Database.read_distributed_data>`.  MsPASS supports two parallel frameworks called
     SPARK and DASK.   Both abstract the concept of the parallel data set in
     a container they call an RDD and Bag respectively.   Both are best thought
     of as a handle to the entire data set that can be passed between
@@ -420,12 +420,7 @@ In MsPASS we adopt these rules to keep delete operations under control.
 We trust rules 1 and 2 require no further comment.  Rule 3, however,
 needs some clarification to understand how we handle deletes.
 A good starting point is to look at the signature of the simple core delete
-method of the Database class:
-
-.. code-block:: python
-
-  def delete_data(self,id,remove_unreferenced_files=False,
-                      clear_history=True,clear_elog=False):)
+method of the Database class: :py:meth:`delete_data <mspasspy.db.database.Database.delete_data>`
 
 As with the read methods id is the ObjectID of the wf collection document
 that references the data to be deleted.
@@ -631,12 +626,12 @@ list of elog messages:
 
     # This needs to be checked for correctness - done while off the grid
     query = {'$def' : 'tombstone'}
-    cursor=db.elog.find(query)
+    cursor = db.elog.find(query)
     for doc in cursor:
-      wfmd=doc['tombstone']
+      wfmd = doc['tombstone']
       print('Error log contents for this Seismogram marked dead:',
-         wfmd['net'],wfmd['sta'],UTCDateTime(wfmd['startime'])
-      err=doc['logdata']
+            wfmd['net'], wfmd['sta'], UTCDateTime(wfmd['startime']))
+      err = doc['logdata']
       for e in err:
         print(e.message)
 
