@@ -43,7 +43,7 @@ TimeSeries::TimeSeries(const Metadata& md) : ProcessingHistory()
           else
           {
             this->set_tref(TimeReferenceType::Relative);
-            this->elog.log_error("CoreSeismogram Metadata constructor",
+            this->elog.log_error("TimeSeries Metadata constructor",
               SEISMICMD_time_standard+" attribute is not defined - set to Relative",
               ErrorSeverity::Complaint);
           }
@@ -58,7 +58,19 @@ TimeSeries::TimeSeries(const Metadata& md) : ProcessingHistory()
             this->force_t0_shift(t0shift);
           }
         }
-        long int ns = md.get_long(SEISMICMD_npts);
+        /* this default construct is needed to handle miniseed data in 
+        MsPASS.  It perhaps should generate a log message a information 
+        but for now we do this silently.   since the constructor returns 
+        a result marked dead in all cases a default of 0 is sensible.*/
+        long int ns;
+        if(md.is_defined(SEISMICMD_npts))
+        {
+          ns = md.get_long(SEISMICMD_npts);
+        }
+        else
+        {
+          ns = 0;
+        } 
         /* this CoreTimeSeries method sets the npts attribute and
         initializes the s buffer to all zeros */
         this->set_npts(ns);

@@ -114,7 +114,6 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
         same value passed. */
         this->mdt = this->get_double(SEISMICMD_dt);
         this->mt0 = this->get_double(SEISMICMD_t0);
-        this->nsamp = this->get_long(SEISMICMD_npts);
         if(this->is_defined(SEISMICMD_time_standard))
         {
           if(this->get_string(SEISMICMD_time_standard) == "UTC")
@@ -167,8 +166,24 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
           components_are_orthogonal = true;
           components_are_cardinal = true;
         }
-
-        u=dmatrix(3,nsamp);
+        /* We have to handle nsamp specially in the case when load_data 
+        is false.  To be consistent with TimeSeries we use a feature that 
+        if the Metadata container does not define npts we default it.  
+        In this case that means the default constructor for u and set
+        nsamp to 0 (via set_npts). */
+        if(md.is_defined(SEISMICMD_npts))
+        {
+          long int ns = md.get_long(SEISMICMD_npts);
+          this->set_npts(ns);  /* note this is assumed to initialize u*/
+        }
+        else
+        {
+          this->set_npts(0);
+        }
+        /* Note previous code had an else clause to to with the 
+        following conditional.  It used to zero the u matrix.  
+        The call to set_npts above will always do that so that would
+        have been redundant and was removed June 2022*/
         if(load_data)
         {
             dir = this->get_string(SEISMICMD_dir);
@@ -189,17 +204,12 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
             if(fread((void *)(inbuffer),sizeof(double),nt,fp)
                     != nt )
             {
+                fclose(fp);
                 throw(MsPASSError(string("CoreSeismogram constructor:  fread error on file ")+fname,
                       ErrorSeverity::Invalid));
             }
             fclose(fp);
-	          mlive=true;
-	    }
-        else
-        {
-          /* Initialize the matrix in this case but leave the object marked
-          as dead */
-          this->u.zero();
+	    mlive=true;
         }
     } catch (MsPASSError& mpe) {
         throw(mpe);
@@ -1072,8 +1082,15 @@ void CoreSeismogram::set_npts(const size_t npts)
   }
   /* this method has the further complication that npts sets the size of the
   data matrix.   Here we resize the matrix and initialize it to 0s.*/
-  this->u=dmatrix(3,npts);
-  this->u.zero();
+  if(npts==0)
+  {
+    this->u = dmatrix();
+  }
+  else
+  {
+    this->u=dmatrix(3,npts);
+    this->u.zero();
+  }
 }
 void CoreSeismogram::sync_npts()
 {
