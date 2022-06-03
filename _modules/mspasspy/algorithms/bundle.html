@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.algorithms.bundle &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/clipboard.min.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../../../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>mspasspy.algorithms.bundle</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mspasspy.algorithms.bundle</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is a set of thin wrappers for C++ code to do a process we call </span>
+<span class="sd">&quot;bundling&quot;.   That is, a Seismogram object can be constructed from </span>
+<span class="sd">3 TimeSeries objects spanning a common time period and having the </span>
+<span class="sd">same sample rate but with orientation pointing in 3 linearly </span>
+<span class="sd">independent directions.   There are a lot of complexities to assembling</span>
+<span class="sd">such data and manipulating the data objects, which is why the </span>
+<span class="sd">process was implemented in C++.   The algorithms here are not completely </span>
+<span class="sd">generic and will likely need additions at some future data for nonstandard</span>
+<span class="sd">data.  &quot;standard&quot; in this context means passive array data archived in </span>
+<span class="sd">the SEED (Standard Earthquake Exchange Data) format (aka miniseed which is</span>
+<span class="sd">a standard subset of seed used for archives).  The algorithms here </span>
+<span class="sd">depend upon seismic channels being uniquely defined by four metadata keys:</span>
+<span class="sd">net, sta, chan, and loc.   Bundles are formed by sorting data in the </span>
+<span class="sd">following key order:  net, sta, loc, chan.   The algorithms here are </span>
+<span class="sd">further limited to applications to ensembles that are the generalization </span>
+<span class="sd">of a reflection seismology &quot;shot gather&quot;.   That means an implict assumption</span>
+<span class="sd">is the ensembles contain data assembled from one and only one event so </span>
+<span class="sd">there is a one-to-one relationship between each channel and an event tag.</span>
+<span class="sd">if data from multiple events or something other than a shot gather </span>
+<span class="sd">are to be handled used the BundleGroup function station by station </span>
+<span class="sd">sorting the inputs by some other method to create triples of channels </span>
+<span class="sd">that can be merged into one Seismogram object.</span>
+
+<span class="sd">Created on Mon Jan 11 05:34:10 2021</span>
+
+<span class="sd">@author: pavlis</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">_bundle_seed_data</span><span class="p">,</span> <span class="n">_BundleSEEDGroup</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">TimeSeriesEnsemble</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
+
+
+<div class="viewcode-block" id="bundle_seed_data"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.bundle.bundle_seed_data">[docs]</a><span class="k">def</span> <span class="nf">bundle_seed_data</span><span class="p">(</span><span class="n">ensemble</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function can be used to take an (unordered) input ensemble of</span>
+<span class="sd">    TimeSeries objects generated from miniseed data and produce an output</span>
+<span class="sd">    ensemble of Seismograms produced by bundles linked to the seed name</span>
+<span class="sd">    codes net, sta, chan, and loc.   An implicit assumption of the algorithm</span>
+<span class="sd">    used here is that the data are a variant of a shot gather and the</span>
+<span class="sd">    input ensemble defines one net:sta:chan:loc:time_interval for each</span>
+<span class="sd">    record that is to be bundled.   It can only properly handle pure</span>
+<span class="sd">    duplicates for a given net:sta:chan:loc combination.  (i.e. if</span>
+<span class="sd">    the input has the same TimeSeries defined by net:sta:chan:loc AND</span>
+<span class="sd">    a common start and end time).   Data with gaps broken into multiple</span>
+<span class="sd">    net:sta:chan:loc TimeSeries with different start and end times</span>
+<span class="sd">    will produce incomplete results.   That is, Seismograms in the output</span>
+<span class="sd">    associated with such inputs will either be killed with an associated</span>
+<span class="sd">    error log entry or in the best case truncated to the overlap range of</span>
+<span class="sd">    one of the segments with the gap(s) between.</span>
+
+<span class="sd">    Irregular start times of any set of TimeSeries forming a single</span>
+<span class="sd">    bundle are subject to the same truncation or discard rules described</span>
+<span class="sd">    in the related function Bundle3C.</span>
+
+<span class="sd">    Note there is not guarantee the Seismogram objects returned</span>
+<span class="sd">    will be in standard coordinates.  In fact, they will never be</span>
+<span class="sd">    with standard channel names because of the internal sorting.</span>
+<span class="sd">    It would normally be highly recommended the user call the</span>
+<span class="sd">    rotate_to_standard method on each Seismogram before any use.</span>
+
+
+<span class="sd">    :param ensemble: is the input ensemble of TimeSeries to be processed.</span>
+<span class="sd">    :return:   ensemble of Seismogram objects made by bundling input data</span>
+<span class="sd">    :rtype:  SeismogramEnsemble</span>
+
+<span class="sd">    :exception:  Can throw a MsPASSError for a number of conditions.</span>
+<span class="sd">    Caller should be enclosed in a handler if run on a large data set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+            <span class="s2">&quot;bundle_seed_data:  illegal input - must be a TimeSeriesEnsemble&quot;</span><span class="p">,</span>
+            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">d3c</span> <span class="o">=</span> <span class="n">_bundle_seed_data</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+            <span class="s2">&quot;_bundle_seed_data threw an exception - see more messages below&quot;</span><span class="p">,</span>
+            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+    <span class="k">return</span> <span class="n">d3c</span></div>
+
+
+<div class="viewcode-block" id="BundleSEEDGroup"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.bundle.BundleSEEDGroup">[docs]</a><span class="k">def</span> <span class="nf">BundleSEEDGroup</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">i0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">iend</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Combine a grouped set of TimeSeries into one Seismogram.</span>
+
+<span class="sd">    A Seismogram object is a bundle of TimeSeries objects that define a</span>
+<span class="sd">    nonsingular tranformation matrix that can be used to reconstruct vector</span>
+<span class="sd">    group motion.   That requires three TimeSeries objects that have</span>
+<span class="sd">    define directions that are linearly independent.   This function does not</span>
+<span class="sd">    directly test for linear independence but depends upon channel codes</span>
+<span class="sd">    to assemble one or more bundles needed to build a Seismogram.  The</span>
+<span class="sd">    algorithm used here is simple and ONLY works if the inputs have been</span>
+<span class="sd">    sorted so the channels define a group of three unique channel codes.</span>
+<span class="sd">    For example,</span>
+<span class="sd">        HHE, HHN, HHZ</span>
+<span class="sd">    would form a typical seed channel grouping.</span>
+
+<span class="sd">    The function will attempt to handle duplicates.  By that I mean</span>
+<span class="sd">    if the group has two of the same channel code like these sequences:</span>
+<span class="sd">        HHE, HHE, HHN, HHZ  or HHE, HHN, HHN, HHZ, HHZ</span>
+<span class="sd">    If the duplicates are pure duplicates there is no complication and</span>
+<span class="sd">    the result will be clean.   If the time spans of the duplicate</span>
+<span class="sd">    channels are different the decision of which to use keys on a simple</span>
+<span class="sd">    idea that is most appropriate for data assembled by event with</span>
+<span class="sd">    mistakes in associations.  That is, it attempts to scans the group for</span>
+<span class="sd">    the earliest start time.  When duplicates are found it uses the one</span>
+<span class="sd">    with a start time closest to the minimum as the one merged to make the</span>
+<span class="sd">    output Seismogram.</span>
+
+<span class="sd">    The output will be marked as dead data with no valid data in one of</span>
+<span class="sd">    two conditions:  (1)  less than 3 unique channel names or (2) more than</span>
+<span class="sd">    three inputs with an inconsistent set of SEED names.   That &quot;inconsistent&quot;</span>
+<span class="sd">    test is obscure and yet another example that SEED is a four letter word.</span>
+<span class="sd">    Commentary aside, the rules are:</span>
+<span class="sd">        1.  The net code must be defined and the same in all TimeSeries passed</span>
+<span class="sd">        2.  The station (sta) code must also be the same for all inputs</span>
+<span class="sd">        3.  Similarly the loc code must be the same in all inputs.</span>
+<span class="sd">        4.  Finally, there is a more obscure test on channel names.  They must</span>
+<span class="sd">    all have the same first two characters.   That is, BHE, BHN, BHN, BHZ</span>
+<span class="sd">    is ok but BHE, BHN, BHZ, HHE will cause an immediate exit with no</span>
+<span class="sd">    attempt to resolve the ambiguity - that is viewed a usage error in</span>
+<span class="sd">    defining the range of the bundle.</span>
+
+
+<span class="sd">    In all cases where the bundling is not possible the function does not</span>
+<span class="sd">    throw an exception but does four things:</span>
+<span class="sd">        1.  Merges the Metadata of all inputs (uses the += operator so only the</span>
+<span class="sd">            last values of duplicate keys will be preserved in the return)</span>
+<span class="sd">        2.  If ProcessingHistory is defined in the input they history records  are</span>
+<span class="sd">            posted to the returned Seismogram using as if the data were live but the</span>
+<span class="sd">            number of input will always be a number different from 3.</span>
+<span class="sd">        3.  The return is marked dead.</span>
+<span class="sd">        4.  The function posts a (hopefully) informative message to elog of the</span>
+<span class="sd">            returned Seismogram.</span>
+
+<span class="sd">    ProcessingHistory is handled internally by this function.  If all the</span>
+<span class="sd">    components in a group have a nonempty ProcessingHistory the data to link</span>
+<span class="sd">    the outputs to the inputs will be posted to ProcessingHistory.</span>
+
+<span class="sd">    :param d: This is assumed to be an array like object of TimeSeries data</span>
+<span class="sd">    that are to be used to build the Seismogram objects.  They must be</span>
+<span class="sd">    sorted as described above or the algorithm will fail.   Two typical</span>
+<span class="sd">    array like objects to use are the member attribute of a TimeSeriesEnsemble</span>
+<span class="sd">    or a python array constructed from a (sorted) collection of TimeSeries</span>
+<span class="sd">    objects.</span>
+<span class="sd">    :param i0:  starting array position for constructing output(s).</span>
+<span class="sd">    The default is 0 which would be the normal request for an full ensemble</span>
+<span class="sd">    or a single grouping assembled by some other mechanism.  A nonzero is</span>
+<span class="sd">    useful to work through a larger container one Seismogram at a time.</span>
+<span class="sd">    :param iend:  end array position.   The function will attempt to</span>
+<span class="sd">    assemble one or more Seismograms from TimeSeries in the range</span>
+<span class="sd">    d[i0] to d[iend].  Default is 2 for a single Seismogram without</span>
+<span class="sd">    duplicates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d3c</span> <span class="o">=</span> <span class="n">_BundleSEEDGroup</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">,</span> <span class="n">i0</span><span class="p">,</span> <span class="n">iend</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">d3c</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

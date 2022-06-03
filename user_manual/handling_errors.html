@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Data Editing" href="data_editing.html" />
-    <link rel="prev" title="CRUD Operations in MsPASS" href="CRUD_operations.html" />  
+    <link rel="prev" title="Importing Data" href="importing_data.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -52,8 +52,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_singularity.html">Run MsPASS with Singularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul class="current">
@@ -63,6 +63,7 @@
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Handling Errors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exceptions-and-error-handlers">Exceptions and Error Handlers</a></li>
@@ -154,9 +155,11 @@ seismologists of that approach is the elog library used in
 system but is more problematic in a large cluster of distributed machines
 or (worse) a cloud system.  In a distributed system a centralized error
 logger would need to maintain a connection to every running process, which
-would to a challenge to implement.</p>
+would to a challenge to implement from scratch.   We originally considered
+using python’s logging mechanism, but recognized that would not solve the
+large log file issue.</p>
 <p>The above issues led us to a completely different solution for error logging.
-We include an ErrorLogger class as a base class to all supported data
+We include an ErrorLogger class a member of all supported data
 objects.  That model simplifies the error handling because the error
 handling model can be stated as two simple rules:</p>
 <ol class="arabic simple">
@@ -302,28 +305,32 @@ to handle such issues.</p>
 <section id="undertaker">
 <h2>Undertaker<a class="headerlink" href="#undertaker" title="Permalink to this headline"></a></h2>
 <p>The class name is a programming joke, but the name is descriptive;  its jobs
-is to deal with dead data.  It has three basic methods that can be applied in
-a serial job:</p>
+is to deal with dead data.  The class is an extension of Database and has
+three methods that are most useful for parallel jobs handling ensembles.</p>
 <ol class="arabic simple">
-<li><p>The <code class="code docutils literal notranslate"><span class="pre">bury_the_dead</span></code> is the recommended method for most workflows
-to handle dead data.  It accepts TimeSeries, Seismogram, and ensembles of
-either as input.  It saves error logs and metadata for killed data to a
-special collection we call “graveyard”.  (NOT YET IMPLEMENTED AND SUBJECT
-TO CHANGE).   For ensembles the function returns an edited version of the
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">bury_the_dead</span></code> method is the recommended method for many workflows
+to clear dead data from ensembles.
+It saves error logs and metadata for killed data
+in the elog collection as a subdocument with the key “tombstone”.
+It returns an edited version of the
 ensemble with the dead data removed.</p></li>
-<li><p>The <code class="code docutils literal notranslate"><span class="pre">cremate</span></code> method can only be applied to ensembles.  It
-clears the dead data members from an ensemble and returns a clean
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">cremate</span></code> method is a variant of <code class="code docutils literal notranslate"><span class="pre">bury_the_dead</span></code>  It
+also clears the dead data members from an ensemble and returns a clean
 copy with he dead data removed.  We call it <code class="code docutils literal notranslate"><span class="pre">cremate</span></code> because
 all traces of the data vanish; neither the error log or any identifiers
 of the destroyed data will be retained.</p></li>
 <li><p>The <code class="code docutils literal notranslate"><span class="pre">bring_out_your_dead</span></code> method, other than being the best python programming
-joke ever, is more specialized.  It is only relevant for
-ensembles.  It returns two ensembles:  one with all the live and one
+joke ever, is more specialized.  It returns two ensembles:  one with all the live and one
 with all the dead data.  That approach can be used, for example, in
 testing automatic editing code.  An interactive job to evaluate
 how well the editing worked could use this method.</p></li>
 </ol>
-<p>For parallel workflows - NEEDS SOMETHING WHEN THAT IS FINISHED.</p>
+<p>The <code class="code docutils literal notranslate"><span class="pre">Undertaker</span></code> class only works on ensembles because clearing a
+dead datum in a serial job makes little sense.   In all cases we know
+the same functionality is achieved in a python script by conditionals to
+test if the datum is marked live.  Furthermore, the user should recognize that
+any call to the <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> method will lead to a <code class="code docutils literal notranslate"><span class="pre">tombstone</span></code>
+subdocument being written for all data marked dead.</p>
 </section>
 </section>
 
@@ -331,7 +338,7 @@ how well the editing worked could use this method.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="CRUD_operations.html" class="btn btn-neutral float-left" title="CRUD Operations in MsPASS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="importing_data.html" class="btn btn-neutral float-left" title="Importing Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="data_editing.html" class="btn btn-neutral float-right" title="Data Editing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

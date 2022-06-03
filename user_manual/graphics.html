@@ -52,8 +52,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_singularity.html">Run MsPASS with Singularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul class="current">
@@ -63,6 +63,7 @@
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
@@ -138,6 +139,7 @@
 <span id="graphics"></span><h1>Graphics in MsPASS<a class="headerlink" href="#graphics-in-mspass" title="Permalink to this headline"></a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p>THIS SECTION NEEDS FIGURES - THE GRAPHICS TUTORIAL CREATES ALL THE EXAMPLES NEEDED</p>
 <p>Data visualization in general and graphics to visualize seismic data
 in particular are critical elements to understand data and the
 result of a processing workflow.   On the other hand, because of the
@@ -148,7 +150,7 @@ unfeasible data sets and/or algorithms feasible.  Consequently, in our
 initial development we aimed to provide only basic support for graphics
 of native data types.  Users should understand that custom graphics beyond our
 basic support support is the user’s responsibility.  Because of the
-large number of options in existence believe that is reasonable compromise
+large number of options in existence we believe that is reasonable compromise
 with finite resources.</p>
 <p>The current support for graphics has two component.</p>
 <ol class="arabic simple">
@@ -197,16 +199,16 @@ first a wiggle trace plot, but the plot adds a “variable area”.  The
 Traditional plots from past when paper records were the norm is black but
 other colors are common in published papers today.  Our plotting
 classes allow changing the fill to any color.</p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">image</span> <span class="pre">plot</span> <span class="pre">(img)</span></code> graphics became the norm in plotting reflection data since
+<li><p><code class="code docutils literal notranslate"><span class="pre">image</span> <span class="pre">plot</span> <span class="pre">(img)</span></code> graphics have been the norm in plotting reflection data since
 at least the 1990s.  An image plot uses a color map scaled by amplitude.
-These plots are most appropriate that are like modern reflection data:
+These plots are most appropriate for data that are like modern reflection data:
 the data density is high and there is a strong correlation between
 signals plotted side-by-side.</p></li>
 <li><p>The most complicated plot is what we call a
 <code class="code docutils literal notranslate"><span class="pre">wiggle</span> <span class="pre">trace</span> <span class="pre">variable</span> <span class="pre">area</span> <span class="pre">with</span> <span class="pre">image</span> <span class="pre">overlay</span> <span class="pre">(wtvaimg)</span></code> plot.
 The best way to understand this plot, and in fact is exactly how it is
 produced, is first plot the data as an image plot and then overlay a
-wiggle trace plot.</p></li>
+wiggle trace variable area plot.</p></li>
 </ol>
 <p>Below are examples of all four types of plots from our graphics tutorial.
 For details of the API and how to use our plotting capabilities is
@@ -225,9 +227,9 @@ we note are:</p>
 <li><p><code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>  data generate one plot frame with a time axis and
 a y axis of amplitude.</p></li>
 <li><p><code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> data are displayed on one plot frame.  The three
-components plotted at equal y intervals in SeismicPlotter
-(equal x intervals in SectionPlotter) with the x1, x2, x3 components arranged in
-from the bottum up (left to right for SectionPlotter).   There is an option
+components are plotted at equal y intervals in SeismicPlotter
+(equal x intervals in SectionPlotter) with the x1, x2, x3 components arranged
+from the bottom up (left to right for SectionPlotter).   There is an option
 for both types of plots to reverse the order.</p></li>
 <li><p><code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsmble</span></code> data in a SeismicPlotter plot are plotted
 at equal intervals from the bottom up (i.e. member[0] is at the bottom)
@@ -245,8 +247,8 @@ data - one for each component.</p></li>
 </ol>
 <p>A final point is that any plotting of earthquake data nearly always
 requires some form of scaling to prevent some data from clipping while others
-will look like flat lines even if they contain valid.  The technical reason
-is that the dynamic range of any graphics devices is tiny compared that
+will look like flat lines even if they contain valid data.  The technical reason
+is that the dynamic range of any graphics devices is tiny compared to that
 of modern digital data acquisition systems (about 8 bits for graphics compared
 to 24 bit acquisition that is now the norm for earthquake data).  There is
 an internal scaling parameter that can be used for all graphics, but the
@@ -256,11 +258,11 @@ use one of the functions for data scaling in <a class="reference internal" href=
 <section id="obspy-graphics">
 <h2>Obspy Graphics<a class="headerlink" href="#obspy-graphics" title="Permalink to this headline"></a></h2>
 <p>User’s familiar with obspy may, in come cases, prefer to utilize obspy’s
-buil in graphics.   Obspy’s data objects
+built in graphics.   Obspy’s data objects
 (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>
 and
 <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a>)
-have a plot method as a member of the data object.  Part of MsPASS are
+have a plot method as a member of the data object.  MsPASS has
 a suite of fast converters between obspy and MsPASS data objects.
 These converters can be used in plotting scrips like the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Something above created d as a TimeSeriesEnsemble</span>

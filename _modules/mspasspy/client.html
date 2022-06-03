@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.client &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>mspasspy.client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mspasspy.client</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pymongo</span>
+
+<span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">DBClient</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span> <span class="nn">mspasspy.global_history.manager</span> <span class="kn">import</span> <span class="n">GlobalHistoryManager</span>
+<span class="kn">from</span> <span class="nn">pyspark</span> <span class="kn">import</span> <span class="n">SparkConf</span><span class="p">,</span> <span class="n">SparkContext</span>
+<span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="kn">import</span> <span class="n">SparkSession</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span>
+<span class="kn">from</span> <span class="nn">dask.distributed</span> <span class="kn">import</span> <span class="n">Client</span> <span class="k">as</span> <span class="n">DaskClient</span>
+
+
+<div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client">[docs]</a><span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A client-side representation of MSPASS.</span>
+
+<span class="sd">    This is the only client users should use in MSPASS. The client manages all the other clients or instances.</span>
+<span class="sd">    It creates and manages a Database client.</span>
+<span class="sd">    It creates and manages a Global Hisotry Manager.</span>
+<span class="sd">    It creates and manages a scheduler(spark/dask)</span>
+
+<span class="sd">    For the address and port of each client/instances, we first check the user specified parameters, if not then</span>
+<span class="sd">    serach the environment varibales values, if not againm then use the default settings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">database_host</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">scheduler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">scheduler_host</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">job_name</span><span class="o">=</span><span class="s2">&quot;mspass&quot;</span><span class="p">,</span>
+        <span class="n">database_name</span><span class="o">=</span><span class="s2">&quot;mspass&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="c1"># job_name should be a string</span>
+        <span class="k">if</span> <span class="n">database_host</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">database_host</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;database_host should be a string but &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">database_host</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot; is found.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">scheduler</span> <span class="o">!=</span> <span class="s2">&quot;dask&quot;</span> <span class="ow">and</span> <span class="n">scheduler</span> <span class="o">!=</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;scheduler should be either dask or spark but &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheduler</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot; is found.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">scheduler_host</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">scheduler_host</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;scheduler_host should be a string but &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">scheduler_host</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot; is found.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">job_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">job_name</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;job_name should be a string but &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">job_name</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; is found.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">database_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">database_name</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;database_name should be a string but &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">database_name</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot; is found.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="c1"># collection should be a string</span>
+        <span class="k">if</span> <span class="n">collection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;collection should be a string but &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">collection</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot; is found.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># check env variables</span>
+        <span class="n">MSPASS_DB_ADDRESS</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MSPASS_DB_ADDRESS&quot;</span><span class="p">)</span>
+        <span class="n">MONGODB_PORT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MONGODB_PORT&quot;</span><span class="p">)</span>
+        <span class="n">MSPASS_SCHEDULER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MSPASS_SCHEDULER&quot;</span><span class="p">)</span>
+        <span class="n">MSPASS_SCHEDULER_ADDRESS</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MSPASS_SCHEDULER_ADDRESS&quot;</span><span class="p">)</span>
+        <span class="n">DASK_SCHEDULER_PORT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DASK_SCHEDULER_PORT&quot;</span><span class="p">)</span>
+        <span class="n">SPARK_MASTER_PORT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SPARK_MASTER_PORT&quot;</span><span class="p">)</span>
+
+        <span class="c1"># create a database client</span>
+        <span class="c1"># priority: parameter -&gt; env -&gt; default</span>
+        <span class="n">database_host_has_port</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">database_host</span><span class="p">:</span>
+            <span class="n">database_address</span> <span class="o">=</span> <span class="n">database_host</span>
+            <span class="c1"># check if database_host contains port number already</span>
+            <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">database_address</span><span class="p">:</span>
+                <span class="n">database_host_has_port</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">elif</span> <span class="n">MSPASS_DB_ADDRESS</span><span class="p">:</span>
+            <span class="n">database_address</span> <span class="o">=</span> <span class="n">MSPASS_DB_ADDRESS</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">database_address</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+        <span class="c1"># add port</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">database_host_has_port</span> <span class="ow">and</span> <span class="n">MONGODB_PORT</span><span class="p">:</span>
+            <span class="n">database_address</span> <span class="o">+=</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">MONGODB_PORT</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">(</span><span class="n">database_address</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span><span class="o">.</span><span class="n">server_info</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;Runntime error: cannot create a database client with: &quot;</span>
+                <span class="o">+</span> <span class="n">database_address</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># set default database name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_database_name</span> <span class="o">=</span> <span class="n">database_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_schema</span> <span class="o">=</span> <span class="n">schema</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_collection</span> <span class="o">=</span> <span class="n">collection</span>
+
+        <span class="c1"># create a Global History Manager</span>
+        <span class="k">if</span> <span class="n">schema</span><span class="p">:</span>
+            <span class="n">global_history_manager_db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span><span class="p">,</span> <span class="n">database_name</span><span class="p">,</span> <span class="n">db_schema</span><span class="o">=</span><span class="n">schema</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">global_history_manager_db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span><span class="p">,</span> <span class="n">database_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_global_history_manager</span> <span class="o">=</span> <span class="n">GlobalHistoryManager</span><span class="p">(</span>
+            <span class="n">global_history_manager_db</span><span class="p">,</span> <span class="n">job_name</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span>
+        <span class="p">)</span>
+
+        <span class="c1"># set scheduler</span>
+        <span class="k">if</span> <span class="n">scheduler</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="n">scheduler</span>
+        <span class="k">elif</span> <span class="n">MSPASS_SCHEDULER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="n">MSPASS_SCHEDULER</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="s2">&quot;dask&quot;</span>
+
+        <span class="c1"># scheduler configuration</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+            <span class="n">scheduler_host_has_port</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">scheduler_host</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="n">scheduler_host</span>
+                <span class="c1"># add spark:// prefix if not exist</span>
+                <span class="k">if</span> <span class="s2">&quot;spark://&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scheduler_host</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="s2">&quot;spark://&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span>
+                <span class="c1"># check if spark host address contains port number already</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">scheduler_host_has_port</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">elif</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span>
+                <span class="c1"># add spark:// prefix if not exist</span>
+                <span class="k">if</span> <span class="s2">&quot;spark://&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="s2">&quot;spark://&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="s2">&quot;local&quot;</span>
+
+            <span class="c1"># add port number</span>
+            <span class="c1"># 1. not the default &#39;local&#39;</span>
+            <span class="c1"># 2. scheduler_host and does not contain port number</span>
+            <span class="c1"># 3. SPARK_MASTER_PORT exists</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">scheduler_host</span> <span class="ow">or</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">scheduler_host_has_port</span>
+                <span class="ow">and</span> <span class="n">SPARK_MASTER_PORT</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">+=</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">SPARK_MASTER_PORT</span>
+
+            <span class="c1"># sanity check</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">spark</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">SparkSession</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">appName</span><span class="p">(</span><span class="s2">&quot;mspass&quot;</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">master</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">getOrCreate</span><span class="p">()</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">sparkContext</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">&quot;Runntime error: cannot create a spark configuration with: &quot;</span>
+                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span><span class="p">,</span>
+                    <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">==</span> <span class="s2">&quot;dask&quot;</span><span class="p">:</span>
+            <span class="c1"># if no defind scheduler_host and no MSPASS_SCHEDULER_ADDRESS, use local cluster to create a client</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">scheduler_host</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span> <span class="o">=</span> <span class="n">DaskClient</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">scheduler_host_has_port</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="c1"># set host</span>
+                <span class="k">if</span> <span class="n">scheduler_host</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span> <span class="o">=</span> <span class="n">scheduler_host</span>
+                    <span class="c1"># check if scheduler_host contains port number already</span>
+                    <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">scheduler_host</span><span class="p">:</span>
+                        <span class="n">scheduler_host_has_port</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span> <span class="o">=</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span>
+
+                <span class="c1"># add port</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">scheduler_host_has_port</span> <span class="ow">and</span> <span class="n">DASK_SCHEDULER_PORT</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span> <span class="o">+=</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">DASK_SCHEDULER_PORT</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># use to port 8786 by default if not specified</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span> <span class="o">+=</span> <span class="s2">&quot;:8786&quot;</span>
+                <span class="c1"># sanity check</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span> <span class="o">=</span> <span class="n">DaskClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                        <span class="s2">&quot;Runntime error: cannot create a dask client with: &quot;</span>
+                        <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span><span class="p">,</span>
+                        <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<div class="viewcode-block" id="Client.get_database_client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_database_client">[docs]</a>    <span class="k">def</span> <span class="nf">get_database_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the database client in the global history manager</span>
+
+<span class="sd">        :return: :class:`mspasspy.db.database.Database`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span></div>
+
+<div class="viewcode-block" id="Client.get_database"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_database">[docs]</a>    <span class="k">def</span> <span class="nf">get_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a database by database_name, if database_name is not specified, use the default one</span>
+
+<span class="sd">        :param database_name: the name of database</span>
+<span class="sd">        :type database_name: :class:`str`</span>
+<span class="sd">        :return: :class:`mspasspy.db.database.Database`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">database_name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Database</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_database_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Database</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span><span class="p">,</span> <span class="n">database_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.get_global_history_manager"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_global_history_manager">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_history_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the global history manager with this client</span>
+
+<span class="sd">        :return: :class:`mspasspy.global_history.manager.GlobalHistoryManager`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_history_manager</span></div>
+
+<div class="viewcode-block" id="Client.get_scheduler"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_scheduler">[docs]</a>    <span class="k">def</span> <span class="nf">get_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the scheduler(spark/dask) with this client</span>
+
+<span class="sd">        :return: :class:`pyspark.SparkContext`/:class:`dask.distributed.Client`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span></div>
+
+<div class="viewcode-block" id="Client.set_database_client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_database_client">[docs]</a>    <span class="k">def</span> <span class="nf">set_database_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_host</span><span class="p">,</span> <span class="n">database_port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a database client by database_host(and database_port)</span>
+
+<span class="sd">        :param database_host: the host address of database client</span>
+<span class="sd">        :type database_host: :class:`str`</span>
+<span class="sd">        :param database_port: the port of database client</span>
+<span class="sd">        :type database_port: :class:`str`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">database_host_has_port</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">database_address</span> <span class="o">=</span> <span class="n">database_host</span>
+        <span class="c1"># check if port is already in the database_host address</span>
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">database_host</span><span class="p">:</span>
+            <span class="n">database_host_has_port</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># add port</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">database_host_has_port</span> <span class="ow">and</span> <span class="n">database_port</span><span class="p">:</span>
+            <span class="n">database_address</span> <span class="o">+=</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">database_port</span>
+        <span class="c1"># sanity check</span>
+        <span class="n">temp_db_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">(</span><span class="n">database_address</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span><span class="o">.</span><span class="n">server_info</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="c1"># restore the _db_client</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span> <span class="o">=</span> <span class="n">temp_db_client</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;Runntime error: cannot create a database client with: &quot;</span>
+                <span class="o">+</span> <span class="n">database_address</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.set_global_history_manager"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_global_history_manager">[docs]</a>    <span class="k">def</span> <span class="nf">set_global_history_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">history_db</span><span class="p">,</span> <span class="n">job_name</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a global history manager by history_db, job_name(and collection)</span>
+
+<span class="sd">        :param history_db: the database will be set in the global history manager</span>
+<span class="sd">        :type history_db: :class:`mspasspy.db.database.Database`</span>
+<span class="sd">        :param job_name: the job name will be set in the global history manager</span>
+<span class="sd">        :type job_name: :class:`str`</span>
+<span class="sd">        :param collection: the collection name will be set in the history_db</span>
+<span class="sd">        :type collection: :class:`str`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">history_db</span><span class="p">,</span> <span class="n">Database</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;history_db should be a mspasspy.db.Database but &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">history_db</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot; is found.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">job_name</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;job_name should be a string but &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">job_name</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; is found.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">collection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;collection should be a string but &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">collection</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot; is found.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_global_history_manager</span> <span class="o">=</span> <span class="n">GlobalHistoryManager</span><span class="p">(</span>
+            <span class="n">history_db</span><span class="p">,</span> <span class="n">job_name</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.set_scheduler"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_scheduler">[docs]</a>    <span class="k">def</span> <span class="nf">set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scheduler</span><span class="p">,</span> <span class="n">scheduler_host</span><span class="p">,</span> <span class="n">scheduler_port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a scheduler by scheduler type, scheduler_host(and scheduler_port)</span>
+
+<span class="sd">        :param scheduler: the scheduler type, should be either dask or spark</span>
+<span class="sd">        :type scheduler: :class:`str`</span>
+<span class="sd">        :param scheduler_host: the host address of scheduler</span>
+<span class="sd">        :type scheduler_host: :class:`str`</span>
+<span class="sd">        :param scheduler_port: the port of scheduler</span>
+<span class="sd">        :type scheduler_port: :class:`str`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">!=</span> <span class="s2">&quot;dask&quot;</span> <span class="ow">and</span> <span class="n">scheduler</span> <span class="o">!=</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;scheduler should be either dask or spark but &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheduler</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot; is found.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">prev_scheduler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="n">scheduler</span>
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+            <span class="n">scheduler_host_has_port</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="n">scheduler_host</span>
+            <span class="c1"># add spark:// prefix if not exist</span>
+            <span class="k">if</span> <span class="s2">&quot;spark://&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scheduler_host</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="s2">&quot;spark://&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span>
+            <span class="c1"># check if spark host address contains port number already</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">scheduler_host_has_port</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># add port</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">scheduler_host_has_port</span> <span class="ow">and</span> <span class="n">scheduler_port</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">+=</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">scheduler_port</span>
+
+            <span class="c1"># sanity check</span>
+            <span class="n">prev_spark_context</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">prev_spark_conf</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_spark_context&quot;</span><span class="p">):</span>
+                <span class="n">prev_spark_context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span>
+                <span class="n">prev_spark_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span><span class="o">.</span><span class="n">getConf</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_spark_context&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span><span class="p">,</span> <span class="n">SparkContext</span>
+                <span class="p">):</span>
+                    <span class="c1"># update the confinguration</span>
+                    <span class="n">spark_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span><span class="o">.</span><span class="n">_conf</span><span class="o">.</span><span class="n">setMaster</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">spark_conf</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">SparkConf</span><span class="p">()</span>
+                        <span class="o">.</span><span class="n">setAppName</span><span class="p">(</span><span class="s2">&quot;mspass&quot;</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">setMaster</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="c1"># stop the previous spark context</span>
+                <span class="c1"># FIXME if the new context does not start, we shouldn&#39;t stop the previous here.</span>
+                <span class="c1"># if prev_spark_context:</span>
+                <span class="c1">#    prev_spark_context.stop()</span>
+                <span class="c1"># create a new spark context -&gt; might cause error so that execute exception code</span>
+                <span class="n">spark</span> <span class="o">=</span> <span class="n">SparkSession</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">conf</span><span class="o">=</span><span class="n">spark_conf</span><span class="p">)</span><span class="o">.</span><span class="n">getOrCreate</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">sparkContext</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="c1"># restore the spark context by the previous spark configuration</span>
+                <span class="k">if</span> <span class="n">prev_spark_conf</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span> <span class="o">=</span> <span class="n">SparkContext</span><span class="o">.</span><span class="n">getOrCreate</span><span class="p">(</span><span class="n">conf</span><span class="o">=</span><span class="n">prev_spark_conf</span><span class="p">)</span>
+                <span class="c1"># restore the scheduler type</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span> <span class="ow">and</span> <span class="n">prev_scheduler</span> <span class="o">==</span> <span class="s2">&quot;dask&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="n">prev_scheduler</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">&quot;Runntime error: cannot create a spark configuration with: &quot;</span>
+                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span><span class="p">,</span>
+                    <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="c1"># close previous dask client if success</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_dask_client&quot;</span><span class="p">):</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span>
+
+        <span class="k">elif</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;dask&quot;</span><span class="p">:</span>
+            <span class="n">scheduler_host_has_port</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span> <span class="o">=</span> <span class="n">scheduler_host</span>
+            <span class="c1"># check if scheduler_host contains port number already</span>
+            <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">scheduler_host</span><span class="p">:</span>
+                <span class="n">scheduler_host_has_port</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># add port</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">scheduler_host_has_port</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">scheduler_port</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span> <span class="o">+=</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">scheduler_port</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># use to port 8786 by default if not specified</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span> <span class="o">+=</span> <span class="s2">&quot;:8786&quot;</span>
+
+            <span class="c1"># sanity check</span>
+            <span class="n">prev_dask_client</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_dask_client&quot;</span><span class="p">):</span>
+                <span class="n">prev_dask_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># create a new dask client</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span> <span class="o">=</span> <span class="n">DaskClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="c1"># restore the dask client if exists</span>
+                <span class="k">if</span> <span class="n">prev_dask_client</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span> <span class="o">=</span> <span class="n">prev_dask_client</span>
+                <span class="c1"># restore the scheduler type</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">==</span> <span class="s2">&quot;dask&quot;</span> <span class="ow">and</span> <span class="n">prev_scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="n">prev_scheduler</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">&quot;Runntime error: cannot create a dask client with: &quot;</span>
+                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span><span class="p">,</span>
+                    <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="c1"># remove previous spark context if success setting new dask client</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_spark_context&quot;</span><span class="p">):</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

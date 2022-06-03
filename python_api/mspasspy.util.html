@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="C++ API" href="../cxx_api/index.html" />
-    <link rel="prev" title="mspasspy.history" href="mspasspy.history.html" />  
+    <link rel="prev" title="mspasspy.reduce" href="mspasspy.reduce.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -52,8 +52,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_singularity.html">Run MsPASS with Singularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul>
@@ -63,6 +63,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
@@ -76,14 +77,18 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.client.html">mspasspy.client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.global_history.html">mspasspy.global_history</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.reduce.html">mspasspy.reduce</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.util</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.converter">converter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.decorators">decorators</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.logging_helper">logging_helper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.seispp">seispp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.Undertaker">Undertaker</a></li>
 </ul>
 </li>
 </ul>
@@ -952,13 +957,63 @@ filebase.ext (Arg 3 defaulting to d3C).</p></li>
 </dd></dl>
 
 </section>
+<section id="module-mspasspy.util.Undertaker">
+<span id="undertaker"></span><h2>Undertaker<a class="headerlink" href="#module-mspasspy.util.Undertaker" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.Undertaker.</span></span><span class="sig-name descname"><span class="pre">Undertaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a></p>
+<p>Class to handle dead data.  Many for ensembles, but has methods to
+save elog entries for Seismogram or TimeSeries objects marked dead.
+A concept of this class is any thing received that is live is not
+changed.   It only handles the dead.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.bring_out_your_dead">
+<span class="sig-name descname"><span class="pre">bring_out_your_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bury</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.bring_out_your_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead" title="Permalink to this definition"></a></dt>
+<dd><p>Seperate an ensemble into live and dead members.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – must be either a TimeSeriesEnsemble or SeismogramEnsemble of
+data to be processed.</p></li>
+<li><p><strong>bury</strong> – if true the bury_the_dead method will be called on the
+ensemble of dead data before returning</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>python list with two elements. 0 is ensemble with live data
+and 1 is ensemble with dead data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>python list with two components</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.bury_the_dead">
+<span class="sig-name descname"><span class="pre">bury_the_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.bury_the_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.bury_the_dead" title="Permalink to this definition"></a></dt>
+<dd><p>Clear the contents of an ensemble and optionally save the history and
+error log of the dead.  Return the cleaned ensmble.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.cremate">
+<span class="sig-name descname"><span class="pre">cremate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.cremate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.cremate" title="Permalink to this definition"></a></dt>
+<dd><p>Like bury_the_dead but nothing is preserved of the dead.   Functionally equivalent to
+bury_the_dead with save_history False, but with a more memorable name.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="mspasspy.history.html" class="btn btn-neutral float-left" title="mspasspy.history" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mspasspy.reduce.html" class="btn btn-neutral float-left" title="mspasspy.reduce" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../cxx_api/index.html" class="btn btn-neutral float-right" title="C++ API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

@@ -52,8 +52,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_singularity.html">Run MsPASS with Singularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul class="current">
@@ -112,6 +112,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
@@ -219,11 +220,13 @@ the open source package <a class="reference external" href="https://www.mongodb.
 The top-level concept for understanding MongoDB is name-value pairs.
 One way of thinking of MongoDB is that it only implements each attribute
 as a name-value pair:  the name is the key that defines the concept and
-the attribute is the thing that defines that concept.  The thing can
+the attribute is the thing that defines a particular instance of that
+concept.  The contents can
 be something as simple as an integer number or as elaborate as any python
-object.  Tables (relations) are replaced with their concept of a “collection”.
-A MongoDB <em>collection</em> is conceptually similar but operationally very different
-from a relational database table.  In MongoDB a <em>collection</em> contains
+object.  Tables (relations) are synonymous with what is called a <em>collection</em>
+in MongoDB.
+Although a <em>collection</em> is conceptually similar to a table
+it is operationally very different.  In MongoDB a <em>collection</em> contains
 one or more <em>documents</em>, which play the same role as a single tuple in
 a relational database.  In a relational database an attribute has one
 keyword used to define the content that is visualized as a table with
@@ -232,7 +235,16 @@ effectively has the name tag with each entry as a MongoDB document is made
 up of a set of name-value pairs.  For readers already familiar with python
 the name-value pairs map exactly into the concept of a python dict.  The
 python API (pymongo), in fact, retrieves documents into a data structure
-that behaves exactly like a python dict.</p>
+that behaves exactly like a python dict.  One critical point about that
+distinction is that a relational database has to define a mechanism to
+flag a particular cell in a table as null.   In a MongoDB document a null
+is defined a true null;   a key-value pair not defined in the document.</p>
+<p>We close this section by noting that a schema is not required by
+MongoDB. As we discussed in detail in <a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">Data Object Design Concepts</span></a>
+MsPASS data objects are implemented in C++.   Strong typing in C++
+makes a schema a necessary evil to make the system more robust.
+A schema also provides a necessary central location to define the
+namespace of what kind of content is expected for a particular key.</p>
 </section>
 <section id="design-concepts">
 <h3>Design Concepts<a class="headerlink" href="#design-concepts" title="Permalink to this headline"></a></h3>
@@ -240,9 +252,9 @@ that behaves exactly like a python dict.</p>
 aims to solve.   The schema for MsPASS was aimed to address the
 following design goals:</p>
 <ol class="arabic simple">
-<li><p><em>Efficient flow through Spark.</em> A key reason MongoDB was chosen as
+<li><p><em>Efficient flow through Spark and DASK.</em> A key reason MongoDB was chosen as
 the database engine for MsPASS was that it is cleanly integrated with
-Spark.   Nonetheless, the design needs to minimize database
+Spark and DASK.   Nonetheless, the design needs to minimize database
 transaction within a workflow.   Our aim was to try to limit database
 transaction to reading input data, saving intermediate results, and
 saving a final result.</p></li>
@@ -258,26 +270,25 @@ Although MsPASS supports <a class="reference internal" href="data_object_design_
 data,</span></a> our view is that the
 greater need in the community is an efficient system for handling 3C
 data.   In reality, our schema design ended up completely neutral on
-this point and scalar and 3C data are handled identically.  The only
-differences is what attributes (Metadata) are required.</p></li>
+this point; scalar and 3C data are handled identically.  The only
+differences is what attributes (Metadata) are required for each data type.</p></li>
 <li><p><em>Provide a clean mechanism to manage static metadata.</em> MsPASS is a
 system designed to process a “data set”, which means the data are
 preassembled, validated, and then passed into a processing chain.
 The first two steps (assembly and validation) are standalone tasks
 that require assembly of waveform data and a heterogenous collection
 of metadata from a range of sources.   Much of that problem has been
-the focus of extensive development work by IRIS and the FDSN.   We
-thus provide tools for importing datasets through web services that
-have become the current, standard exchange for data and Metadata.
-The complexity of the Metadata is the reason that that development effort
-has been far from trivial.   A primary issue is that some attributes
-change with nearly every seismogram (e.g. the start time of a
-waveform), while many others either never change (e.g. a station name
-almost never changes) or change rarely (e.g. a change in sensor
-orientation).  We aimed for a balance to efficiently manage static
-data while avoiding all the things that can go wrong that have to be
-handled by network operators and the PIs of shorter term
-deployments.</p></li>
+the focus of extensive development work by IRIS and the FDSN.
+Furthermore, obspy already had a well-developed, solid system
+for interaction with FDSN web services.  We saw no reason to
+“reinvent the wheel” and lean heavily on obspy’s web service tools
+for assembling data from FDSN sources.  The MsPASS schema for
+receiver metadata can, in fact, be thought of a little more than a
+dialect of StationXML.   Similarly, the MsPASS schema for source
+metadata can be thought of as a dialect of QuakeML.
+Furthermore, because we utilized obspy’s web service tools the
+python objects obspy defines for storing source and receiver metadata
+are mostly echoed in the schema.</p></li>
 <li><p><em>Extensible.</em> A DBMS cannot be too rigid in a research environnment,
 or it will create barriers to progress.  This is especially important to MsPASS as our
 objective is to produce a system for seismic research, not a
@@ -320,8 +331,8 @@ A single document is roughly equivalent to a tuple in a relational database.
 In this section we describe how we group documents into collections defined
 in MsPASS.   These collections and the attributes they contain are the
 <em>schema</em> for MsPASS.  In this section we describe how the schema of MsPASS is
-defined and used to maintain the integrity of a database used to manage
-a daa set.  A useful feature of MsPASS is that the schema is readily
+defined and used to maintain the integrity of a database.
+A useful feature of MsPASS is that the schema is readily
 adaptable.  We defer custom schema definitions to a section in “Advanced
 Topics”.</div>
 </div>
@@ -392,13 +403,29 @@ we use <code class="code docutils literal notranslate"><span class="pre">site_id
 That means that when <code class="code docutils literal notranslate"><span class="pre">site_id</span></code> appears in another collection it is a
 reference to the ObjectId (referenced directly with alternate key <code class="code docutils literal notranslate"><span class="pre">_id</span></code>
 in the site collection) of the related document in the <code class="code docutils literal notranslate"><span class="pre">site</span></code> collection.</p>
+<p>The major motivation for using the normalized data model for handling
+source and receiver metadata is the data involved have two important
+properties.   First, since MsPASS was designed as a system for efficiently
+handling an assembled data set, the data these collections can be treated
+as static (immutable) within a workflow.   Waveform data readers must thus do
+what is MongoDB’s version of a database join between the waveform collection
+and one or more of the normalizing collections.   Second, in every case
+we know the source and receiver metadata are small compared to any
+data set for which one would need to use the parallel processing machinery
+of MsPASS.  That means the time to query the normalizing collections is
+always expected to be much smaller than the time to query a waveform collection that often
+has millions of documents. Although experience showed that expectation was
+true, we also found there are situations where embedded database operations
+can be a bottleneck in a workflow.   For that reason we developed a set of
+normalization classes in python that cache tables of attributes needed for
+normalization.   That idea is described below in the section <span class="xref std std-ref">NEW SUBSECTION TO BE ADDE DTO THIS FILE</span></p>
 </section>
 </section>
 <section id="waveform-processing">
 <h3>Waveform Processing<a class="headerlink" href="#waveform-processing" title="Permalink to this headline"></a></h3>
 <section id="concepts">
 <h4>Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline"></a></h4>
-<p>A first-order concept in our database design is that processing workflows
+<p>A first-order concept in our database design is that a processing workflows
 should driven by one primary collection.  We emphasize that idea by
 stating this rule:</p>
 <blockquote>
@@ -1012,6 +1039,7 @@ example of how to use these functions.</p>
 <h2>Advanced Topics<a class="headerlink" href="#advanced-topics" title="Permalink to this headline"></a></h2>
 <section id="customizing-the-schema">
 <h3>Customizing the schema<a class="headerlink" href="#customizing-the-schema" title="Permalink to this headline"></a></h3>
+<p>THIS NEEDS TO BE WRITTEN</p>
 </section>
 <section id="importing-data-formats-other-than-miniseed">
 <h3>Importing Data Formats other than miniSEED<a class="headerlink" href="#importing-data-formats-other-than-miniseed" title="Permalink to this headline"></a></h3>

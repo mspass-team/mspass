@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mspasspy.graphics" href="mspasspy.graphics.html" />
-    <link rel="prev" title="mspasspy.ccore" href="mspasspy.ccore.html" />  
+    <link rel="next" title="mspasspy.global_history" href="mspasspy.global_history.html" />
+    <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -52,8 +52,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_singularity.html">Run MsPASS with Singularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul>
@@ -63,6 +63,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
@@ -76,14 +77,18 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.client.html">mspasspy.client</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.db</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.db.client">client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.db.database">database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.db.normalize">normalize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.db.schema">schema</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.global_history.html">mspasspy.global_history</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.reduce.html">mspasspy.reduce</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html">mspasspy.util</a></li>
 </ul>
 </li>
@@ -1053,7 +1058,7 @@ all attributes with a key defined as readonly are tested
 with a method in the Metadata container that keeps track of
 any Metadata changes.  If a readonly attribute is found to
 have been changed it will be renamed with the prefix
-“<a href="#id5"><span class="problematic" id="id6">READONLYERROR_</span></a>”, saved, and an error posted (e.g. if you try
+“<a href="#id17"><span class="problematic" id="id18">READONLYERROR_</span></a>”, saved, and an error posted (e.g. if you try
 to alter site_lat (a readonly attribute) in a workflow when
 you save the waveform you will find an entry with the key
 READONERROR_site_lat.)   In the default ‘promiscuous’ mode
@@ -1539,7 +1544,7 @@ method for handling this as the save_data method.  That is,
 for all “mode” parameters if an key is defined in the schema as
 readonly and it is listed as having been modified, it will
 be save with a new key creating by adding the prefix
-“<a href="#id7"><span class="problematic" id="id8">READONLYERROR_</span></a>” .  e.g. if we had a site_sta read as
+“<a href="#id19"><span class="problematic" id="id20">READONLYERROR_</span></a>” .  e.g. if we had a site_sta read as
 ‘AAK’ but we changed it to ‘XYZ’ in a workflow, when we tried
 to save the data you will find an entry in the document
 of {‘READONLYERROR_site_sta’ : ‘XYZ’}</p>
@@ -1685,6 +1690,456 @@ read operations.   Default turns this off by setting the tag null (None).</p></l
 is “Spark” and a dask ‘bag’ if format is “dask”</p>
 </dd>
 </dl>
+</dd></dl>
+
+</section>
+<section id="module-mspasspy.db.normalize">
+<span id="normalize"></span><h2>normalize<a class="headerlink" href="#module-mspasspy.db.normalize" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.ID_matcher">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">ID_matcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'channel'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes_to_load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_if_defined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend_collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_normalization_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#ID_matcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.ID_matcher" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.db.normalize.single_key_matcher" title="mspasspy.db.normalize.single_key_matcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.normalize.single_key_matcher</span></code></a></p>
+<p>This class is used to match a data object to a normalizing collection
+using a MongoDB ObjectId and the key naming convention of MsPASS.
+That is, if the normalizing collection is channel it will look
+in the data object’s Metadata for an attribute with the key “channel_id”.
+If that attribute is found it will try to load the document for which
+the “_id” of that collection == the key constructed (channel_id for the example).</p>
+<p>By default this class will cache a (usually) reduced image of the
+normalizing collertion data.  This can improve performance significantly with large
+data sets at the cost of needing to store and, when the scheduler finds
+it necessary, to move a copy of the contents to a worker node.  Turn
+the caching off (set cache_normalization_data False in the constructor)
+if normalizing collection is large and could cause a memory problem.
+Note, the size can be computed as the size of the expected return of
+the (attribute_to_load list + objectid string size)*Ncol where Ncol is
+the number of documents in the normalizing collection.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.NMF">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">NMF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes_to_load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_if_defined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend_collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_normalization_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#NMF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.NMF" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for a family of Normalization Match Functions (NMF).
+This family of object are used in MsPASS to standize the api for
+generic mongodb match operation for “normalizing” a collection.
+Normalization is comparable to a relational database join.
+With MongoDB normalization is most sensible for the case when the
+collection to be normalized is much smaller than collection that is
+to be joined (normalized)  i.e. the normalization operation is many
+to one with many links from the documents in the collection to be
+normalized to each normalizing document.  The stock normalizing collections
+in MsPASS are channel, site, and source.</p>
+<p>The api defines two basic operations any concrete instance of the
+class must implement:  (1)  a method to fetch the entire document
+defining a match and (2) a method to fetch and copy specified
+key-value pairs to a valid MsPASS data object.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.NMF.get_document">
+<span class="sig-name descname"><span class="pre">get_document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#NMF.get_document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.NMF.get_document" title="Permalink to this definition"></a></dt>
+<dd><p>This is a method to fetch the document that matches. The
+document, in this case, is actually a MsPASS Metadata container.
+Only attributes defined by the attribute_to_load and load_if_defined
+lists will be returned in the result.
+This method works as an entry to two different implementations:
+1. If caching was enabled, _cached_get_document will be invoked, and
+data will be returned from the internal cache.
+2. If caching was turned off, _db_get_document will be invoked, a db
+query will then be invoked for each call to this method.
+The subclasses can call this method and extend it with extra arguments
+(<a href="#id5"><span class="problematic" id="id6">*</span></a>args, <a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs), a typical extra argument is time (see composite_key_matcher)
+Any failures will cause d to be marked dead if kill_on_failure
+was set in the constructor (the default).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> – Data object with a Metadata container to be tested.</p>
+</dd>
+</dl>
+<p>That means this can be any valid MsPASS data object or even
+a raw Metadata container.  Only the class defined id key is
+accessed by d.  That id drives the algorithm as described above.
+:return:  Metadata container with the matching data. Returns None
+if there is not match AND posts a message to elog of d.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.NMF.log_error">
+<span class="sig-name descname"><span class="pre">log_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">severity=&lt;ErrorSeverity.Informational:</span> <span class="pre">5&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#NMF.log_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.NMF.log_error" title="Permalink to this definition"></a></dt>
+<dd><p>This base class method is used to standardize the error logging
+functionality of all NMF objects.   It writes a standardized
+message to simplify writing of subclasses - they only need to
+format a specific message to be posted.  The caller may optionally
+kill the datum and specify an alternative severity level to
+the default warning.</p>
+<p>Note most subclasses may want to include a verbose option in the constructor
+(or the reciprocal silent) that provide an option of only writing log messages when
+verbose is set true. There are possible cases with large data sets where
+verbose messages can cause bottlenecks and bloated elog collections. If verbose is
+set true, the datum will still be killed, but the message won’t be written.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – MsPASS data object to which elog message is to be
+written.</p></li>
+<li><p><strong>message</strong> – specialized message to post - this string is added</p></li>
+</ul>
+</dd>
+</dl>
+<p>to an internal generic message.
+:param severity:  ErrorSeverity to assign to elog message
+(See ErrorLogger docstring).  Default is Informational
+:param kill:  boolean controlling if the message should cause the
+datum to be killed. Default None meaning the kill_on_failure boolean of
+the class will be used. If kill is set, it will be overwritten temporarily.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.NMF.normalize">
+<span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#NMF.normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.NMF.normalize" title="Permalink to this definition"></a></dt>
+<dd><p>This is a method to fetch and copy specified key-value pairs to a valid
+MsPASS data object.
+This method first tests if the input is a valid MsPASS data object.  It will
+silently do nothing if the data are not valid returning a None.
+It then tests if the datum is marked live. If it is found marked
+dead it silently returns d with no changes. For live data it calls the get_document
+method. If that succeeds it extracts the (constructor defined) list of
+desired attributes and posts them to the data’s Metadata container.
+If get_document fails a message is posted to elog and if the
+constructor defined “kill_on_failure” parameter is set True the
+returned datum will be killed.
+Note that for most of the subclasses, the functionalities of normalize are
+the same. So in most cases, we don’t need to override this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> – data to be normalized.  This must be a MsPASS data object.
+For this function that means TimeSeries, Seismogram, TimeSeriesEnsemble,
+or SeismogramEnsemble.  Not for ensembles the normalizing data will
+be posted to the ensemble metadata container not the members.
+This can be used, for example, to normalize a parallel container
+(rdd or bad) of common source gathers more efficiently than
+at the atomic level.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The normalized document</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.bulk_normalize">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">bulk_normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wfquery</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wf_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_miniseed'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmf_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#bulk_normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.bulk_normalize" title="Permalink to this definition"></a></dt>
+<dd><p>This function iterates through the collection specified by db and wf_col,
+and run a chain of normalization funtions in serial on each document in one
+single pass.
+It will save the time of multiple db updating operations, by using the bulk
+methods of MongoDB.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>db</strong> – should be a MsPASS database handle containing the wf_col</p>
+</dd>
+</dl>
+<p>and the collections defined by the nmf_list list.
+:param wf_col: The collection that need to be normalized, default is
+wf_miniseed
+:param blockssize:   To speed up updates this function uses the
+bulk writer/updater methods of MongoDB that can be orders of
+magnitude faster than one-at-a-time updates. A user should not normally
+need to alter this parameter.
+:param wfquery: is a query to apply to the collection.  The output of this
+query defines the list of documents that the algorithm will attempt
+to normalize as described above.  The default will process the entire
+collection (query set to an emtpy dict).
+:param nmf_list: a list of NMF instances. These instances should at least
+contain a get_document function and a dbhandler. The default will be a simple
+mseed_channel_matcher.
+:param verbose: When set true the get_document and normalize functions will
+be run in verbose mode.  Those methods will print a diagnostic for all
+ambiguous matches.  Because this function is expected to be run on potentially
+large raw data sets of miniseed inputs the default is False to reduce the
+overhead of potentially large log messages created by the all to common
+duplicate metadata problem. Please note that this function will alter the
+verbose levels of all NMF instances in nmf_list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a list with a length of len(nmf_list)+1.  0 is the number of documents</p>
+</dd>
+</dl>
+<p>processed in the collection (output of query), The rest are the numbers of
+success normalizations for the corresponding NMF instances, they are mapped
+one on one (nmf_list[x] -&gt; ret[x+1]).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.composite_key_matcher">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">composite_key_matcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes_to_load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_if_defined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend_collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_normalization_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readonly_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'READONLYERROR_'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#composite_key_matcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.composite_key_matcher" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.db.normalize.NMF" title="mspasspy.db.normalize.NMF"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.normalize.NMF</span></code></a></p>
+<p>An intermediate class that implements the shared functionalities of
+mseed_channel_matcher and mseed_site_matcher. Users may also extend this class to
+define their own matcher.</p>
+<p>A composite_key_matcher uses a composite key to match the documents, it is created
+by concatenating all required keys and their values. For example: mseed_channel_matcher’s
+required keys are [“net”, “sta”, “chan”]. So the composite key will be something like:
+“cmp_id_net=TA_sta=034A_chan=BHE”. This composite key can identify all the documents
+that have the same value for [“net”, “sta”, “chan”]. In addition, user can define a list
+of optional_keys that are not always present in a document. For example, “doc” in
+the mseed_channel_matcher.</p>
+<p>It can also be used to normalize data saved in wf_TimeSeries where the mseed tags
+are often altered by MsPASS to change fields like “net” to “READONLYERROR_net”.
+There is an automatic fallback for each of the tags where if the proper name is not
+found we alway try to use the <a href="#id21"><span class="problematic" id="id22">READONLYERROR_</span></a> version before giving up.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.composite_key_matcher.get_document">
+<span class="sig-name descname"><span class="pre">get_document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#composite_key_matcher.get_document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.composite_key_matcher.get_document" title="Permalink to this definition"></a></dt>
+<dd><p>This is a method to fetch the document that matches. The
+document, in this case, is actually a MsPASS Metadata container.
+Only attributes defined by the attribute_to_load and load_if_defined
+lists will be returned in the result.
+This method works as an entry to two different implementations:
+1. If caching was enabled, _cached_get_document will be invoked, and
+data will be returned from the internal cache.
+2. If caching was turned off, _db_get_document will be invoked, a db
+query will then be invoked for each call to this method.
+The subclasses can call this method and extend it with extra arguments
+(<a href="#id9"><span class="problematic" id="id10">*</span></a>args, <a href="#id11"><span class="problematic" id="id12">**</span></a>kwargs), a typical extra argument is time (see composite_key_matcher)
+Any failures will cause d to be marked dead if kill_on_failure
+was set in the constructor (the default).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> – Data object with a Metadata container to be tested.</p>
+</dd>
+</dl>
+<p>That means this can be any valid MsPASS data object or even
+a raw Metadata container.  Only the class defined id key is
+accessed by d.  That id drives the algorithm as described above.
+:return:  Metadata container with the matching data. Returns None
+if there is not match AND posts a message to elog of d.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.composite_key_matcher.normalize">
+<span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#composite_key_matcher.normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.composite_key_matcher.normalize" title="Permalink to this definition"></a></dt>
+<dd><p>Implementation of the normalize method for this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> – input data object to be normalized.  Must be a TimeSeries
+or Seismogram object.  If d is anything else the function will
+raise a TypeError.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.css30_arrival_interval_matcher">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">css30_arrival_interval_matcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phasename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'P'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phasename_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'phase'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes_to_load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_if_defined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend_collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_normalization_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#css30_arrival_interval_matcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.css30_arrival_interval_matcher" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.db.normalize.NMF" title="mspasspy.db.normalize.NMF"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.normalize.NMF</span></code></a></p>
+<p>This matcher is used to match phase picks stored in the database
+(default is arrival collection) to waveforms.  The basic algorithm
+is an interval match.  That is, an arrival with a time between
+starttime and endtime is considered a match.   If multiple matches
+are found for same phase name the algorithm uses a time offset test
+of starttime relative to the phase time.  The data for the arrival
+doc with time most closely matched to starttime+time_offset is
+selected.</p>
+<p>The main use of this class is to match a collection of raw data
+with arrival time picks made by another source
+(e.g. the Array Network Facilty of Earthscope css3.0 arrival picks)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.mseed_channel_matcher">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">mseed_channel_matcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'channel'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes_to_load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_if_defined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend_collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_normalization_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readonly_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'READONLYERROR_'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#mseed_channel_matcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.mseed_channel_matcher" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.db.normalize.composite_key_matcher" title="mspasspy.db.normalize.composite_key_matcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.normalize.composite_key_matcher</span></code></a></p>
+<p>This class is used to match wf_miniseed to the channel collection using
+the mseed standard channel string tags net, sta, chan, and (optionally) loc.
+It can also be used to normalize data saved in wf_TimeSeries where the mseed tags
+are often altered by MsPASS to change fields like “net” to “READONLYERROR_net”.
+There is an automatic fallback for each of the tags where if the proper
+name is not found we alway try to use the <a href="#id23"><span class="problematic" id="id24">READONLYERROR_</span></a> version before
+giving up.
+An issue with this matcher is that it is very common to have redundant
+entries in the channel collection for the same channel of data.  That
+can happen for a variety of reasons that are harmless.  When that happens
+the method of this object will normally post an elog message warning of the
+potential issue.  Those warnings can be silenced by setting verbose
+in the constructor to False.
+The class also has a cache option that can dramatically improve
+performance for large data sets.  When using the database option
+(caching turned off) the normalize method issues a database query
+at each call.  If applied to a data set with a large number of
+waveforms that can add up.  We have found the cache algorithm is
+an order of magnitude or more faster than the database algorithm
+for typical channel collections assembled from FDSN web services.
+It is recommended unless the memory foot print is excessive.
+That too can usually be avoided by using a query to weed out unnecessary
+channel documents or by editing the channel document to reduce the
+debris from extraneous data.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.mseed_site_matcher">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">mseed_site_matcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'site'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes_to_load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_if_defined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend_collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_normalization_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readonly_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'READONLYERROR_'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#mseed_site_matcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.mseed_site_matcher" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.db.normalize.composite_key_matcher" title="mspasspy.db.normalize.composite_key_matcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.normalize.composite_key_matcher</span></code></a></p>
+<p>This class is used to match derived from seed data to the site collection using
+the mseed standard site string tags net, sta, and (optionally) loc.
+It can also be used to data saved in wf_TimeSeries or wf_Seismogram where the mseed tags
+are often altered by MsPASS to change fields like “net” to “READONLYERROR_net”.
+There is an automatic fallback for each of the tags where if the proper
+name is not found we alway try to use the <a href="#id25"><span class="problematic" id="id26">READONLYERROR_</span></a> version before
+giving up.</p>
+<p>An issue with this matcher is that it is very common to have redundant
+entries in the site collection for the same site of data.  That
+can happen for a variety of reasons that are harmless.  When that happens
+the method of this object will normally post an elog message warning of the
+potential issue.  Those warnings can be silenced by setting verbose
+in the constructor to False.</p>
+<p>The class also has a cache option that can dramatically improve
+performance for large data sets.  When using the database option
+(caching turned off) the normalize method issues a database query
+at each call.  If applied to a data set with a large number of
+waveforms that can add up.  We have found the cache algorithm is
+an order of magnitude or more faster than the database algorithm
+for typical channel collections assembled from FDSN web services.
+It is recommended unless the memory foot print is excessive.
+That too can usually be avoided by using a query to weed out unnecessary
+channel documents or by editing the channel document to reduce the
+debris from extraneous data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.normalize_mseed">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">normalize_mseed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wfquery</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_site</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#normalize_mseed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.normalize_mseed" title="Permalink to this definition"></a></dt>
+<dd><p>In MsPASS the standard support for station information is stored in
+two collections called “channel” and “site”.   When normalized
+with channel collection data a miniseed record can be associated with
+station metadata downloaded by FDSN web services and stored previously
+with MsPASS database methods.   The default behavior tries to associate
+each wf_miniseed document with an entry in “site”.  In MsPASS site is a
+smaller collection intended for use only with data already assembled
+into three component bundles we call Seismogram objects.</p>
+<p>For both channel and site the association algorithm used assumes
+the SEED convention wherein the strings stored with the keys
+“net”,”sta”,”chan”, and (optionally) “loc” define a unique channel
+of data registered globally through the FDSN.   The algorithm then
+need only query for a match of these keys and a time interval
+match with the start time of the waveform defined by each wf_miniseed
+document.   The only distinction in the algorithm between site and
+channel is that “chan” is not used in site since by definition site
+data refer to common attributes of one seismic observatory (commonly
+also called a “station”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>db</strong> – should be a MsPASS database handle containing at least</p>
+</dd>
+</dl>
+<p>wf_miniseed and the collections defined by the norm_collection list.
+:param blockssize:   To speed up updates this function uses the
+bulk writer/updater methods of MongoDB that can be orders of
+magnitude faster than one-at-a-time updates for setting
+channel_id and site_id.  A user should not normally need to alter this
+parameter.
+:param wfquery: is a query to apply to wf_miniseed.  The output of this
+query defines the list of documents that the algorithm will attempt
+to normalize as described above.  The default will process the entire
+wf_miniseed collection (query set to an emtpy dict).
+:param normalize_channel:  boolean for handling channel collection.
+When True (default) matches will be attempted with the channel collection
+and when matches are found the associated channel document id will be
+set in the associated wf_miniseed document as channel_id.
+:param normalize_site:  boolean for handling site collection.
+When True (default) matches will be attempted with the site collection
+and when matches are found the associated site document id will
+be set wf_miniseed document as site_id.
+:param verbose: When set true the database methods for matching the
+net:sta:chan:loc:time keys will be run in verbose mode.  Those database
+methods will print a diagnostic for all ambiguous matches.  Because
+this function is expected to be run on potentially large raw data sets of
+miniseed inputs the default is False to reduce the overhead of potentially
+large log messages created by the all to common duplicate metadata problem.
+Users are encouraged to verify the channel and site collections have
+no serious problems with ambiguous net:sta:loc(chan) that are truly
+inconsistent (i.e. have different attributes for the same keys)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list with three integers.  0 is the number of documents processed in</p>
+</dd>
+</dl>
+<p>wf_miniseed (output of query), 1 is the number with channel ids set,
+and 2 contains the number of site documents set.  1 or 2 should
+contain 0 if normalization for that collection was set false.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.origin_time_source_matcher">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">origin_time_source_matcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'source'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes_to_load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_if_defined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend_collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_normalization_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#origin_time_source_matcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.origin_time_source_matcher" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.db.normalize.NMF" title="mspasspy.db.normalize.NMF"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.normalize.NMF</span></code></a></p>
+<p>One common scheme for fetching seismic data from an FDSN data center
+is event based with fixed time windows being selected relative to the
+origin time of each event in a data set.   Standard miniseed data
+obtained via that mechanism does not keep source data so such data need
+to be linked to the source collection for any event-based processing.
+This matcher can be used to do that.</p>
+<p>The algorithm used here is very simple.   It looks for data with
+start times in an interval defined by two parameters set in the
+constructor:  t0offset and tolerance.   If we define t0 as the
+start time of a given waveform and t_origin as a test origin
+time, the algorithm looks does a database query to find all
+events matching this inequality relationship:</p>
+<blockquote>
+<div><p>t_origin + t0offset - tolerance &lt;= t0 &lt;= t_origin + t0offset + tolerance</p>
+</div></blockquote>
+<p>This class uses database queries to find matching source collection
+documents satisfying the above relation.  It can be slow for
+large source collection, especially if the source collection time
+field is not indexed.  A development agenda for MsPASS in the future
+would be to provide an option to cache the source collection
+like some of the other implementations of the NMF base class in this
+module.  Community contributions to implement that are welcome.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.origin_time_source_matcher.get_document">
+<span class="sig-name descname"><span class="pre">get_document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#origin_time_source_matcher.get_document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.origin_time_source_matcher.get_document" title="Permalink to this definition"></a></dt>
+<dd><p>This is a method to fetch the document that matches. The
+document, in this case, is actually a MsPASS Metadata container.
+Only attributes defined by the attribute_to_load and load_if_defined
+lists will be returned in the result.
+This method works as an entry to two different implementations:
+1. If caching was enabled, _cached_get_document will be invoked, and
+data will be returned from the internal cache.
+2. If caching was turned off, _db_get_document will be invoked, a db
+query will then be invoked for each call to this method.
+The subclasses can call this method and extend it with extra arguments
+(<a href="#id13"><span class="problematic" id="id14">*</span></a>args, <a href="#id15"><span class="problematic" id="id16">**</span></a>kwargs), a typical extra argument is time (see composite_key_matcher)
+Any failures will cause d to be marked dead if kill_on_failure
+was set in the constructor (the default).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> – Data object with a Metadata container to be tested.</p>
+</dd>
+</dl>
+<p>That means this can be any valid MsPASS data object or even
+a raw Metadata container.  Only the class defined id key is
+accessed by d.  That id drives the algorithm as described above.
+:return:  Metadata container with the matching data. Returns None
+if there is not match AND posts a message to elog of d.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.single_key_matcher">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">single_key_matcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdkey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes_to_load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_if_defined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend_collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_normalization_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#single_key_matcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.single_key_matcher" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.db.normalize.NMF" title="mspasspy.db.normalize.NMF"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.normalize.NMF</span></code></a></p>
+<p>An intermediate class. It extends the NMF by adding a variable: mdkey.
+mdkey is the field defined for matching a document.
+The matching logic is as follows:</p>
+<blockquote>
+<div><p>d[mdkey] == DOC_TO_MATCH[‘_id’]</p>
+</div></blockquote>
+<p>This class is useful for implementing the ID_matcher (see below). Users
+may also find it useful for implementing other match classes.</p>
 </dd></dl>
 
 </section>
@@ -2369,8 +2824,8 @@ attribute. Note that if the input is already the unique name, it will return its
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="mspasspy.ccore.html" class="btn btn-neutral float-left" title="mspasspy.ccore" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="mspasspy.graphics.html" class="btn btn-neutral float-right" title="mspasspy.graphics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mspasspy.client.html" class="btn btn-neutral float-left" title="mspasspy.client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mspasspy.global_history.html" class="btn btn-neutral float-right" title="mspasspy.global_history" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -32,3 +32,11 @@ seispp
     :members:
     :undoc-members:
     :show-inheritance:
+
+Undertaker
+----------
+
+.. automodule:: mspasspy.util.Undertaker
+    :members:
+    :undoc-members:
+    :show-inheritance:

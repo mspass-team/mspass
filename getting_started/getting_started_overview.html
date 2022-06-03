@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MsPASS Setup In-Depth Overview &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction" href="../user_manual/introduction.html" />
+    <link rel="prev" title="Deploy MsPASS on HPC" href="deploy_mspass_on_HPC.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MsPASS Setup In-Depth Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#audience">Audience</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fundamental-concepts">Fundamental Concepts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#range-of-hardware-to-run-mspass">Range of Hardware to run MsPASS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#containers">Containers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#foreman-worker-model">Foreman-worker Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#schedulers">Schedulers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mongodb">MongoDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#frontend">Frontend</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mspass-configuration">MsPASS Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-1-simple-four-node-virtual-cluster">Example 1:  Simple four node virtual cluster</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-2-multiple-nodes-with-multiple-roles">Example 2:  Multiple nodes with multiple roles`</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-3-multiple-nodes-with-optional-sharding">Example 3:  Multiple nodes with optional Sharding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-4-all-in-one-desktop-setup">Example 4:  All-in-one desktop setup</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tacc-stampede2-example-implementation">TACC-Stampede2 Example Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#job-script">Job Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#start-mspass-sh">start-mspass.sh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-configuration-file">Docker Configuration File</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>MsPASS Setup In-Depth Overview</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/getting_started/getting_started_overview.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="mspass-setup-in-depth-overview">
+<span id="getting-started-overview"></span><h1>MsPASS Setup In-Depth Overview<a class="headerlink" href="#mspass-setup-in-depth-overview" title="Permalink to this headline"></a></h1>
+<section id="audience">
+<h2>Audience<a class="headerlink" href="#audience" title="Permalink to this headline"></a></h2>
+<p>This section is mainly for user’s new to MsPASS.  Those readers
+may find the general issue about HPC concepts helpful, but
+how helpful will be entirely dependent upon the background of the reader.
+Parts of this section will also
+be of use to experienced users needing to configure MsPASS for
+new system.  If that is you, then you will more likely want to
+skip to the configuration section titled
+“TACC-Stampede2 Example Implementation”.</p>
+<p>All readers should note this section leans heavily on several more
+specialized sections for specific environments.   That is, a
+primary design goal of MsPASS was scalability.   MsPASS is known to
+allow prototyping a workflow on a desktop system or login node in an HPC system
+and then porting the same python script with minimal changes to run on
+a cluster with hundreds of cores.  To make that work, however,
+requires some up-front work to tell the system how to deal with a
+range of differences that define the system dependencies.
+An idea we will use repeatedly below is that the configuration
+process is used to build a <em>virtual cluster</em>.</p>
+<p>Finally, for readers new to MsPASS we advise you to consider
+reading the <a class="reference internal" href="../user_manual/introduction.html#user-manual-introduction"><span class="std std-ref">Introduction</span></a> section at the same time
+your read the section here titled <a class="reference internal" href="#fundamental-concepts">Fundamental Concepts</a>.
+We created these sections to help you understand some
+of the fundamentals that shaped the design of MsPASS.
+That background can help you understand this section.</p>
+</section>
+<section id="fundamental-concepts">
+<h2>Fundamental Concepts<a class="headerlink" href="#fundamental-concepts" title="Permalink to this headline"></a></h2>
+<section id="range-of-hardware-to-run-mspass">
+<h3>Range of Hardware to run MsPASS<a class="headerlink" href="#range-of-hardware-to-run-mspass" title="Permalink to this headline"></a></h3>
+<p>The most basic issue that created a need for a framework like MsPASS
+is a fundamental change in computing that began more than 20 years ago.
+That is, prior to that time a computer was synonymous with a single cpu
+and an associated set of hardware to feed the processor.  Today only
+antique desktops have only a single cpu.   Multicore processors are
+now universal other than for specialized hardware like low-power data
+loggers.  The worlds largest “supercomputers” (alias HPC system or cluster)
+have thousands of nodes and tens of thousands of cores, noting that
+sentence is likely to become quickly out of date as the upper limit
+grows yearly.  A special form of computer cluster is what is
+now called “cloud computing”.  Cloud systems add a few
+special constraints and abstractions, but are fundamentally
+the same as an HPC cluster in the sense both are a single entry point
+to a large array of cores.
+Readers who are unfamiliar with the terminology
+here of <em>core</em>, <em>multicore</em>, <em>node</em>, <em>multiprocessor</em>, and
+<em>cloud computing</em> are
+encouraged to do an internet search on these terms before continuing.
+The terms encapsulate some key concepts we assume throughout this user
+manual.</p>
+<p>Why is this issue important for seismology?   The reason is that
+all of the most common data analysis tools in our field were developed
+prior to the multiprocessor revolution.   Packages like SAC and
+the Datascope offline data analysis components of Antelope
+(Antelope’s real-time system is an exception) are all fundamentally
+“single-threaded”, which is another way of saying they can only use
+one cpu in a system at a time.   Anyone who has tried to process
+large data volumes with SAC or Datascope will understand what a
+severe throttle they impose on what is feasible.</p>
+<p>There is one final key point all users must understand about
+the role of parallel processing versus desktop processing.
+A concise summary is this:  if the processing requires human
+intervention it probably should not be done on a cluster.
+That means interactive graphics
+or any text response within a workflow.
+The reason, of course, is that human response time to any event
+is at least 9 orders of magnitude slower than a cpu clock cycle.
+We thus assume the batch model of processing for HPC and cluster systems
+wherein a “job” is submitted to a global scheduling system for the cluster.
+Workflows requiring interactive graphics or other human interaction
+are normally best run on the HPC login node or move the relevant
+data to your desktop.  Note a key word above is <em>interactive</em> graphics.
+Workflows that generate saved graphics are required as end products of
+many workflows and are more than possible through multiple mechanisms.
+Alternatively, some institutional setups may allow interactive work on your desktop computer
+accessing the data through a cloud file system, which would have
+very different performance and use restrictions.  A key point
+is that MsPASS can fill all these roles, but there is a configuration
+step to run each component in your local computing environment.</p>
+</section>
+<section id="containers">
+<h3>Containers<a class="headerlink" href="#containers" title="Permalink to this headline"></a></h3>
+<p>The enabling technology that allows MsPASS to be readily run on a wide variety
+of platforms is relevant to the concept of <code class="code docutils literal notranslate"><span class="pre">virtual</span> <span class="pre">machine</span></code> or
+<code class="code docutils literal notranslate"><span class="pre">virtualization</span></code>.   If you are unfamiliar with this topic,
+an internet search will yield all the sources you can ever have the
+stomach to read.   MsPASS uses a much lighter weight technology than virtual machine
+called a <code class="code docutils literal notranslate"><span class="pre">container</span></code>.  Those who, to use a modern cliche, want to get
+into the weeds, on this topic may want to read
+<a class="reference external" href="https://kodekloud.com/docker-introduction-for-beginners-new-updated/?utm_source=google&amp;utm_medium=&amp;utm_id=16440672657&amp;utm_content=&amp;utm_term=&amp;creativeId=&amp;gclid=EAIaIQobChMI_-GBhLXN9wIVTcmUCR3UYw0YEAAYAiAAEgJ6CfD_BwE&amp;gclid=EAIaIQobChMI_-GBhLXN9wIVTcmUCR3UYw0YEAAYAiAAEgJ6CfD_BwE">this article</a></p>
+<p>MsPASS currently supports two container technologies:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://docs.docker.com/">docker</a> is the container software
+supported by MsPASS.  It is the tool of choice for desktop systems.
+It requires installing a client on your desktop system called,
+appropriately for this use, <a class="reference external" href="https://docs.docker.com/desktop/">docker desktop</a>.
+The links above contain secondary links to doownload pages and installation
+instruction for the package.</p></li>
+<li><p>For HPC systems we use a comparable software for HPC systems
+called <code class="code docutils literal notranslate"><span class="pre">singularity</span></code> as an example.  If you are reading this to
+adapt MsPASS to an HPC system there is probably a web page describing
+singularity or something similar.   If not, there are numerous sources on the
+web.  A simplistic perspective is that singularity is docker for
+an HPC system.   It has command line tools similar to those for
+docker desktop and runs containers built on docker hub directly.
+In addition, a fundamental property of singularity is that it runs docker
+containers directly.</p></li>
+</ol>
+<p>Current cloud systems support docker containers.   That is, there is a system
+dependent procedure to “pull” the MsPASS container but once loaded the container
+is used directly to run your job.</p>
+<p>The key point about containers, in general, is that a container eliminates
+the long list of system dependency issues that arise with conventional
+software installation.   It also allows MsPASS to run on any operating
+systems with the x86 architecture (Intel or AMD processors).
+Additional hardware support is possible.  For instance, at
+this writing we have an experimental container to run on
+machines using Apple silicon chips.
+That may be available by the time you read this.</p>
+</section>
+<section id="foreman-worker-model">
+<h3>Foreman-worker Model<a class="headerlink" href="#foreman-worker-model" title="Permalink to this headline"></a></h3>
+<p>A foundational concept of MsPASS is the foreman-worker model of
+parallel processing.  (Some sources will use the less politically correct
+term master-slave to describe the came concept.)
+The idea is simple and intuitive to anyone who has tried to organize a
+group of people.   If you have big job to do that you couldn’t possibly do
+yourself, you break the job into a set of manageable tasks.   The
+foreman (aka project manager or master) assigns tasks to workers (slaves)
+as schedule dictates.  Dependencies always exist wherein when a worker finishes
+one task he/she has to pass the result on to another.  Three key concepts
+that appear throughout this user’s manual are direct consequences of this model:</p>
+<ol class="arabic simple">
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">foreman</span></code> is what we also call a <code class="code docutils literal notranslate"><span class="pre">scheduler</span></code>.   That piece
+of software is the boss whose only job is to assign work.</p></li>
+<li><p>A <code class="code docutils literal notranslate"><span class="pre">worker</span></code> is a single-minded individual who only does what the
+<code class="code docutils literal notranslate"><span class="pre">foreman</span></code> tells him/her to do (That is why “slave” is sometimes used to describe
+the concept.).</p></li>
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">foreman</span></code> needs to communicate with the workers to tell them
+what to do.   Less obvious is the fact that all the workers also need
+to communicate with each other as well as the foreman.   The reason is
+that the most common paradigm is worker A finishes task X and passes
+the result to to worker B to do task Y where in our case X and Y
+are two different processing algorithms.  As a result interprocesses
+communication is a fundamental requirement to make processing with the
+foreman-worker model possible.</p></li>
+</ol>
+</section>
+<section id="schedulers">
+<h3>Schedulers<a class="headerlink" href="#schedulers" title="Permalink to this headline"></a></h3>
+<p>As noted a number of other places in this user’s manual MsPASS
+achieves parallelization in a cluster through one of two
+schedulers called <a class="reference external" href="https://dask.org/">dask</a>
+and <a class="reference external" href="https://spark.apache.org/">Spark</a>.  Both achieve parallellism
+by running a series of processes on cores to which the software
+has access.   More details about how these packages do
+scheduling to achieve parallelism can be found in
+the links above and a variety of online sources and published books.
+This section addresses the issue of configuration of MsPASS.
+For that purpose, you need to understand the following points about
+setting up dask or spark on a cluster:</p>
+<ol class="arabic simple">
+<li><p>Most clusters are shared facilities with many simultaneous users.
+All cluster use some form of higher level scheduler to schedule
+“jobs”, which is the modern ancestor of batch systems developed for
+“mainframe computers” in the 1960s.   A “batch job” means you
+submit a script of command line instructions to run your application(s)
+on the system.   Hence, the first thing to understand is that to run
+MsPASS on a cluster will normally require preparing that script of
+instructions.   Part of that script is instructions to the batch
+scheduler (the software called Slurm in our example below). The
+batch scheduler has to be told how many nodes and/or cores the
+job will require and often other resources like minimum memory needs or
+access to auxiliary resources not required by all jobs.  You then
+“submit” your job script to a “queue”.  The batch scheduler then determines
+when the cluster has sufficient resources available for the time period
+you define to run your “job”.  Do NOT confuse the issue of scheduling
+a set of nodes for a “job” with the “scheduling” done by Dask/Spark.
+They are very different things that both utilize the same English word
+in their definitions.</p></li>
+<li><p>Once a “job” has been scheduled on a cluster task-level scheduling in
+MsPASS is controlled by <a class="reference external" href="https://dask.org/">dask</a>
+or <a class="reference external" href="https://spark.apache.org/">Spark</a>.   Either require additional
+configuration setup that tells the software what environment it is
+running in and how many workers it should define for the job.
+A less obvious issue with using Spark or Dask is the need to define
+communication channels between tasks. Both packages use the modern
+concept of abstracting what “interprocess communication” means.
+You have no control of what this means for communication
+between processes running on a single node.  In contrast,
+communication between nodes on HPC systems normally requires
+some configuration.   The reason is that a “job” is assigned a set of
+nodes (physical machines) by the job scheduler and your script (job) cannot
+know the network address of those nodes until the job scheduler has
+assigned them.   For that reason we will see below the configuration
+scripts for HPC setups need a mechanism to ascertain what physical
+nodes are being used and set up communication channels between them
+manually.</p></li>
+</ol>
+</section>
+<section id="mongodb">
+<h3>MongoDB<a class="headerlink" href="#mongodb" title="Permalink to this headline"></a></h3>
+<p>What MongoDB is, why is chosen for MsPASS, and how it is used in MsPASS are
+topics discussed throughout this User’s Manual.   Two key sections on this
+topic are <a class="reference internal" href="../user_manual/database_concepts.html#database-concepts"><span class="std std-ref">Database Concepts</span></a> and <a class="reference internal" href="../user_manual/CRUD_operations.html#crud-operations"><span class="std std-ref">CRUD Operations in MsPASS</span></a>.
+The purpose of this section is to clarify several more basic concepts
+that may help you understand the configuration requirements needed to
+make MongoDB functional on a cluster.</p>
+<ol class="arabic simple">
+<li><p>MongoDB like most modern database engines acts in a client-server
+arrangement.  Your application acts as a client and MongoDB is
+running a service that defines its role as a “server”.</p></li>
+<li><p>Like most servers we have to launch MongoDB as a daemon.  That
+could be done using standard linux methods for launching daemons when the
+container boots.  That approach would not work
+for MsPASS, however, as when multiple containers are running, which
+is the norm, the multiple instances would collide.   For that reason
+our setup launches MongoDB manually only on containers
+defined in the configuration.</p></li>
+<li><p>The MongoDB server communicates with clients through a network
+connection.   As a result a critical configuration parameter is
+the IP address and port number
+(If you aren’t familiar with IP numbers and ports there are may
+internet sources on this topic.
+<a class="reference external" href="https://www.techtarget.com/searchnetworking/definition/port-number">This one</a>
+is a good starting point.)  of the node(s) running the MongoDB server.</p></li>
+<li><p>MongoDB has a feature they call
+<a class="reference external" href="https://www.mongodb.com/docs/manual/tutorial/deploy-shard-cluster/">sharding</a>.
+The purpose of sharding is to distribute data on multiple nodes of a
+cluster to improve performance.   The reason that can be a good idea
+with database intensive operations is database transaction in any
+database system can be very slow compared to the compute time of the
+algorithm driving the transactions.  That fundamental fact
+means if your workflow requires extensive database operations
+that are a bottleneck, sharding is a potential solution.  MsPASS
+supports sharding using MongoDB native setup.   That is, turning on
+sharding is a configuration option.</p></li>
+</ol>
+</section>
+<section id="frontend">
+<h3>Frontend<a class="headerlink" href="#frontend" title="Permalink to this headline"></a></h3>
+<p>The standard MsPASS container assumes the use of a
+<a class="reference external" href="https://jupyter.org/">jupyter notebook</a>
+to assemble and test your workflow.  As noted elsewhere
+we believe jupyter notebooks can be used to encourage reproducible
+science.   We use a jupyter notebook service to define the
+role we call <code class="code docutils literal notranslate"><span class="pre">frontend</span></code>.  The concept of the <code class="code docutils literal notranslate"><span class="pre">frontend</span></code>
+is the abstract box that communicates directly with you as the user.
+The process of driving a jupyter notebook is well documented
+on many internet pages so if you are now familiar with jupyter notebook
+we advise you to find a good tutorial on the topic before you try to use
+MsPASS.</p>
+<p>For this overview it is important to stress that the expectation is
+that you will use jupyter notebook in two ways:</p>
+<ol class="arabic simple">
+<li><p>Jupyter is an effective tool to assemble and test your python
+code (your workflow) on a desktop or interactive node in an HPC cluster.
+The thing jupyter allows that goes far beyond contentional code comments
+is the ability to insert full-featured text as “markdown” boxes between
+code blocks.   Our
+<a class="reference external" href="https://github.com/mspass-team/mspass_tutorial/tree/master/notebooks">tutorials</a>
+all use this approach and demonstrate this
+fundamental idea.</p></li>
+<li><p>When you have a functional workflow you want to run on a large cluster
+to process a full dataset, MsPASS has a feature to run the notebook
+from the batch job script (see below) using a command line argument.</p></li>
+</ol>
+<p>Perhaps the most important feature of this model is you can and should plan
+to publish your notebook to allow other scientists to reproduce your work
+as a near turnkey operation.</p>
+</section>
+</section>
+<section id="mspass-configuration">
+<h2>MsPASS Configuration<a class="headerlink" href="#mspass-configuration" title="Permalink to this headline"></a></h2>
+<section id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h3>
+<p>To understand how to configure MsPASS it is important to first
+understand some fundamental concepts that are treated as abstractions.
+You can think of the configuration as making the abstractions concrete.</p>
+<ol class="arabic simple">
+<li><p>The MsPASS framework is generic and has to be informed about
+that actual physical configuration.   How much it can determine automatically
+and what it needs to be told manually are system dependent.</p></li>
+<li><p>As much as possible we abstract all IO.   Input means you use a handle of
+some kind to create some data object.   Output means you use a handle to
+save that data in a form that allows it to be reconstructed later.
+Whether that is done by reading from a file on file system,
+cloud (via a URL), or something not yet invented
+is irrelevant.  All that matters is that you have a software handle to
+manage the reads and writes.</p></li>
+<li><p>A special case of IO is interprocess communication.   Spark and Dask
+both abstract that process in a manner opaque to you as a user.
+This allows them to automatically determine if a connection is
+process-to-process within a shared memory environment (within a node)
+or between nodes.   Mechanisms for the first are varied.  For the later
+it means network communications between two processes on two nodes with the cluster’s
+internal network.</p></li>
+<li><p>We made a design choice in MsPASS to further abstract the overall system
+in terms of one a finite set of functional blocks we refer to as the
+blocks <code class="code docutils literal notranslate"><span class="pre">role</span></code>.   There are three core “roles” any MsPASS
+setup needs to define:  (1) <code class="code docutils literal notranslate"><span class="pre">scheduler</span></code>, (2) <code class="code docutils literal notranslate"><span class="pre">worker</span></code>,
+and <code class="code docutils literal notranslate"><span class="pre">db</span></code>.  Sharding adds a level of complexity.  When sharding is
+enabled two additional function “roles” are required we call
+<code class="code docutils literal notranslate"><span class="pre">dbmanager</span></code> (replaces <code class="code docutils literal notranslate"><span class="pre">db</span></code> in a sharded environment) and
+<code class="code docutils literal notranslate"><span class="pre">shard</span></code>.  Finally, we define the role of <code class="code docutils literal notranslate"><span class="pre">frontend</span></code>
+as an abstraction of the user interface.  Sections below will
+provide more details on what these different “roles” mean and how
+they are used.</p></li>
+</ol>
+<p>A final point for this overview is that a good summary of the purpose of
+configuration is to define a virtual cluster in which your job should be run.
+The scalability of MsPASS is possible because of the abstraction that
+allows the definition of a virtual cluster.  How complicated that
+configuration will be is dependent upon what you are building.
+We have a turnkey system for a desktop system, but any other cluster will
+require a nonzero commitment to configure and run jobs in the virtual
+cluster you define.  MsPASS is a “framework” which means it can handle complex
+definitions, but it will not produce a workable system
+until someone adds a skin to the framework.</p>
+<p>We first consider a series of example configurations that we illustrate
+using abstractions we described immediately above.   After
+the examples we turn to the implementation detail of how we
+make an abstract model concrete.</p>
+</section>
+<section id="example-1-simple-four-node-virtual-cluster">
+<h3>Example 1:  Simple four node virtual cluster<a class="headerlink" href="#example-1-simple-four-node-virtual-cluster" title="Permalink to this headline"></a></h3>
+<p><a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 1</span></a> is
+a block diagram of a virtual cluster that is largely useful
+only for it’s pedagogic value.   i.e. we show it
+as an introductory example to help further demonstrate key
+concepts and how they fit together.  The actual configuration here would
+not be very prudent because it would not make efficient use of resources for
+reasons we discuss at the end of this section.</p>
+<figure class="align-center" id="id2">
+<span id="configuration-figure1"></span><a class="reference internal image-reference" href="../_images/OneRolePerVM.jpg"><img alt="../_images/OneRolePerVM.jpg" src="../_images/OneRolePerVM.jpg" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">Block diagram showing abstract components of the virtual cluster
+configuration of example 1.  This example assumes four physical
+nodes illustrated by the four larger boxes with solid lines.
+The dashed line boxes define containers running within
+each physical node.   Each physical node is illustrated as
+connected to a high speed LAN used for node-to-node communication
+in the cluster.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>This simple example is helpful to clarify some important implementation
+details that we use in MsPASS to define a virtual cluster:</p>
+<ul class="simple">
+<li><p>The fundamental components are defined by what we call a <code class="code docutils literal notranslate"><span class="pre">role</span></code>.
+In this example there are four:  <code class="code docutils literal notranslate"><span class="pre">db</span></code>, <code class="code docutils literal notranslate"><span class="pre">frontend</span></code>,
+<code class="code docutils literal notranslate"><span class="pre">scheduler</span></code>, and <code class="code docutils literal notranslate"><span class="pre">worker</span></code>.  Those names define the
+following:</p>
+<ul>
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">db</span></code> container runs MongoDB.</p></li>
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">frontend</span></code> container is running a jupyter  notebook
+service.   That is currently the default user interface for MsPASS.</p></li>
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">scheduler</span></code> container runs the dask or spark scheduler.</p></li>
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">worker</span></code> container runs a dask or spark worker.</p></li>
+</ul>
+</li>
+<li><p>The configuration is all driven by a master script illustrated at the top
+of the figure with the tag “start-mspass.sh”.  Because our container
+runs a version of linux that script is a Bourne (bash) shell script.
+We discuss the contents of that script below.</p></li>
+<li><p>This example shows a simple configuration with one container per
+physical node.  However, it also shows that the worker node is configured
+with four processes labeled P1, P2, P3, and P4.  Note our terminology
+has created an ambiguity of language in the current setup you need to
+understand.  A single instance of a container is
+run with its “role” defined as <code class="code docutils literal notranslate"><span class="pre">worker</span></code> but both dask and spark,
+by default, will have its worker spin up one process per core defined for that
+container. That is, a worker hosts multiple processes.</p></li>
+<li><p>The worker node has lines with arrows drawn between the four boxes labeled P1, P2, P3, and P4.
+Those lines symbolize intra-node, interprocess communication between the worker processes.
+As noted above dask and spark abstract that communication.</p></li>
+<li><p>We illustrate node-to-node communications through a common symbol for a
+local area network.  That is, the heavy line labeled “Cluster LAN”.
+A key point here is that such communications use a physical connection
+between nodes and the nodes operating system has to handle routing
+data traffic to and from the container it is running.</p></li>
+<li><p><a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 1</span></a> has node2 running with a
+role set as <code class="code docutils literal notranslate"><span class="pre">frontend</span></code>.   As noted earlier the <code class="code docutils literal notranslate"><span class="pre">frontend</span></code> box is an
+abstraction of a user interface but in our implementation it runs the
+service that allows a web browswer to connect to the virtual cluster
+by running a jupyter notebook on your local machine.</p></li>
+</ul>
+<p>Before continuing it is worth noting why this simple configuration is
+useful for understanding but likely a bad idea for an actual configuration,
+The example is useful because of simplicity.  In this example each
+node has one and only one “role”.   The examples below show that isn’t
+essential, but does introduce some potentially confusing complexity we
+think is important to consider independently.   Why this configuration
+would almost certainly be a “bad idea” for an actual implementation is
+inefficiency.   All but archaic clusters today have multicore nodes.
+Dedicating a full node to each “role” would waste resources.  The most
+extreme is the <code class="code docutils literal notranslate"><span class="pre">frontend</span></code> box that in our implementation launches a
+container dedicated only to running a jupyter notebook server.
+The jupyter notebook server is a very lightweight process tha consumes very
+few resources.   A run in this cofiguration would show node2 nearly idle
+for an entire run.   In contrast, we have found devoting a node to
+the <code class="code docutils literal notranslate"><span class="pre">scheduler</span></code> role may often be prudent.   The key point here is
+that “fine-tuning” of a production workflow may require some
+benchmark tests for load balancing.  On the other hand, we also caution
+all users to keep your objectives in mind.   If you are doing a one-up
+workflow for a research project fine-tuning configuration would be
+a waste of your time.  If you face a task with months of compute time, however,
+some fine-tuning may be justified.</p>
+</section>
+<section id="example-2-multiple-nodes-with-multiple-roles">
+<h3>Example 2:  Multiple nodes with multiple roles`<a class="headerlink" href="#example-2-multiple-nodes-with-multiple-roles" title="Permalink to this headline"></a></h3>
+<p><a class="reference internal" href="#configuration-figure2"><span class="std std-numref">Fig. 2</span></a> is
+a block diagram of a virtual cluster that is a minor variant of
+that in <a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 1</span></a>.   This configuration
+has less of the inefficiency of that in <a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 1</span></a>
+by not dedicating a node to the <code class="code docutils literal notranslate"><span class="pre">frontend</span></code> role.  It also
+illustrates a more subtle point that is an implementation detail
+we were avoiding in Example 1.   That is, note that when a node is
+set up to run multiple “roles” each role is run in a separate
+container.  We emphasize that is an
+“implementation detail” we made to simplify the already complicated
+start-mspass.sh script.  We note that approach would have been a bad
+idea with “virtual machine” software that would require loading a
+full implmentation of a guest operating system into memory, but
+this is an example of the merits of a “container”.
+The approach we used is common and is not at all onerous in
+the consumption of system resources.  The key differences between this
+and example 1 are:</p>
+<ol class="arabic simple">
+<li><p>Nodes 1 and 2 are both running two containers with different “roles”.</p></li>
+<li><p>Node 2 illustrates a different configurable feature that can be used to
+provide better load balancing.   That is, it is possible to launch
+a container running with the role of <code class="code docutils literal notranslate"><span class="pre">worker</span></code> and limit the number
+of workers that scheduler can assign.  This example shows the node 2
+worker with only 2 processes while the node dedicated to workers (node 3)
+is assigned 4 worker processes.</p></li>
+</ol>
+<figure class="align-center" id="id3">
+<span id="configuration-figure2"></span><a class="reference internal image-reference" href="../_images/MultipleRolesPerNode.jpg"><img alt="../_images/MultipleRolesPerNode.jpg" src="../_images/MultipleRolesPerNode.jpg" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 2 </span><span class="caption-text">Block diagram showing abstract components of the virtual cluster
+configuration of example 2.  This example shows a cluster with
+three physical nodes running containers with multiple roles on two of the three
+nodes.  See the caption of <a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 1</span></a>
+for details on the meaning of different lines in the diagram.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="example-3-multiple-nodes-with-optional-sharding">
+<h3>Example 3:  Multiple nodes with optional Sharding<a class="headerlink" href="#example-3-multiple-nodes-with-optional-sharding" title="Permalink to this headline"></a></h3>
+<p><a class="reference internal" href="#configuration-figure3"><span class="std std-numref">Fig. 3</span></a> is the first example
+that is known to give reasonable load balancing on an HPC system.
+It is, in fact, a schematic diagram of our example configuration for
+creating a virtual cluster at TACC.   A configuration file that would
+create this virtual cluster is given below.   The most up-to-date
+version can be found
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh">here</a> on GitHub.</p>
+<figure class="align-center" id="id4">
+<span id="configuration-figure3"></span><a class="reference internal image-reference" href="../_images/FiveNodeExampleComposite.jpg"><img alt="../_images/FiveNodeExampleComposite.jpg" src="../_images/FiveNodeExampleComposite.jpg" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 3 </span><span class="caption-text">Block diagram showing abstract components of the virtual cluster
+configuration of example 3.  This example shows a cluster with
+five physical nodes that define alternative operational modes
+in our example “distributed node” script.  (a) shows a configuration
+without MongoDB sharding enabled.   In that case node  1 has a
+container running a single instance of MongoDB (box labeled db).
+Node 1 also has two other containers: one running with role
+<code class="code docutils literal notranslate"><span class="pre">scheduler</span></code> and another running with role <code class="code docutils literal notranslate"><span class="pre">frontend</span></code>.
+(b) shows a similar configuration that would be created with the
+configuration script if shading is enabled.  Note that in that
+situation the <code class="code docutils literal notranslate"><span class="pre">db</span></code> box is assigned the role <code class="code docutils literal notranslate"><span class="pre">dbmanager</span></code>.
+The <code class="code docutils literal notranslate"><span class="pre">dbmanager</span></code> coordinates database transitions with the
+shards defined in the other nodes.  In this example each node running
+a worker container also runs a container with a role defined as
+<code class="code docutils literal notranslate"><span class="pre">shard</span></code>.</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>This figure actually illusrates two different configurations.   We consider
+them together because the script that could be run at TACC to create this
+virtual cluster has an option for turning MongoDB’s “sharding” feature (see above
+and the MongoDB documentation) on and off.  Consider first the case with
+sharding False (off) as it has much in common with example 2.  Some key
+points about the case with sharding off are the following:</p>
+<ul class="simple">
+<li><p>In this case we have four dedicated worker nodes and put all the other
+required “roles” in a single node.</p></li>
+<li><p>As in example 2 all each container runs one and only one role.</p></li>
+<li><p>We don’t illustrate the worker processes in this figure for simplicity.
+We note that both dask and spark will default to creating one worker
+process per core assigned to the container.   In this configuration that
+would normally mean all the cores of that node.  Thus if each node had,
+for example, 16 cores, this virtual cluster would represent a 64 processor
+engine.</p></li>
+</ul>
+<p>Whether or not this configuration is well balanced depends upon the
+workflow and the physical nodes on which it is run.
+Putting the database server on the same node as the scheduler
+could cause issues for a workflow running lots of database operations.
+We show the example with sharding turned on (part b of the figure) as
+an illustration of how sharding could be enabld to possibly improve load balancing
+in such a situation.  Some key points about the sharding example are the
+following:</p>
+<ul class="simple">
+<li><p>When sharding is used we add two new MsPASS “role” definitions:
+<code class="code docutils literal notranslate"><span class="pre">shard</span></code> and <code class="code docutils literal notranslate"><span class="pre">dbmanager</span></code>.   We emphasize the “role” concept is
+a feature of MsPASS and not something you will find in the MongoDB
+documentation.   Both define configurations defined in the start-mspass.sh
+script used to launch each container.   To see exactly what each do
+look at the contents of start-mspass.sh found <a class="reference external" href="https://github.com/mspass-team/mspass/blob/extend_normalization_options/scripts/start-mspass.sh">here</a>.</p></li>
+<li><p>Sharding adds complexity to a setup and run time environment that
+should not be taken lightly.   In general, we would recommend avoiding
+it unless you have a production workflow you find limited by
+database transactions.   Our example below and with start-mspass.sh
+provide a starting point to implement a sharded cluster.   That should,
+however, be viewed only as a supplement the MongoDB documentation on
+sharding easily found by a web search.</p></li>
+</ul>
+</section>
+<section id="example-4-all-in-one-desktop-setup">
+<h3>Example 4:  All-in-one desktop setup<a class="headerlink" href="#example-4-all-in-one-desktop-setup" title="Permalink to this headline"></a></h3>
+<p>We leave the special case we call “all-in-one” until now even
+though virtually all MsPASS users will likely first use it in that mode.
+The reason is that although
+it is implemented through the same master script (start-msspas.sh),
+it is a special case that might be confusing if we had started there.
+That is, because the framework is primarily designed for running on
+a cluster running on a desktop has to simulate elements of cluster.
+That said, the following figure illustrates an abstraction of the
+all-in-one mode with symbols the same as the examples above:</p>
+<figure class="align-center" id="id5">
+<span id="configuration-figure4"></span><a class="reference internal image-reference" href="../_images/AllInOne.jpg"><img alt="../_images/AllInOne.jpg" src="../_images/AllInOne.jpg" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 4 </span><span class="caption-text">Block diagram showing abstract components of what we
+call the all-in-one mode used for running on a single node.
+Symbols and line styles are as with all the related figures above.</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>The fundamental difference to note in this run mode is all four
+of the required mspass “roles” (<code class="code docutils literal notranslate"><span class="pre">scheduler,</span> <span class="pre">worker,</span> <span class="pre">db,</span> <span class="pre">frontend</span></code>)
+are run in the same container.  All the previous examples used
+used multiple containers with only one “role” per container.
+We emphasize either choice (one role per container or multiple roles
+per container instance) is an implementation detail.   The single container
+mode is more straightforward for a desktop.  Multiple containers are more appropriate
+for clusters to make the configuration more generic.</p>
+<p>A final point about this configuration is that by default both dask and
+spark will define the number of process devoted to workers to be the number of
+cores defined for the container.   If you are running MsPASS on a desktop
+you want to simultaneously use for other purposes you may want to configure docker
+to not use all the cores on the system.   That process is described
+<a class="reference external" href="https://docs.docker.com/config/containers/resource_constraints/">here</a>.</p>
+</section>
+</section>
+<section id="tacc-stampede2-example-implementation">
+<h2>TACC-Stampede2 Example Implementation<a class="headerlink" href="#tacc-stampede2-example-implementation" title="Permalink to this headline"></a></h2>
+<section id="id1">
+<h3>Overview<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<p>In this section we show a concrete implementation of our abstract
+example 3.  This example will is known to run on the
+<a class="reference external" href="https://www.tacc.utexas.edu/use-tacc/getting-started">TACC</a>
+system called stampede2.  On that system a package called
+<code class="code docutils literal notranslate"><span class="pre">singularity</span></code> is used to launch containers.
+Job level scheduling is handled by a system called <code class="code docutils literal notranslate"><span class="pre">Slurm</span></code>.
+Details on how to use those two packages to run jobs are found
+in <a class="reference internal" href="deploy_mspass_on_HPC.html#deploy-mspass-on-hpc"><span class="std std-ref">Deploy MsPASS on HPC</span></a>.
+This section covers some of the same material, but relates some of the
+details back to the more abstract concepts discussed above.
+A practical guide is that this section of this document
+is the tutorial while the other sections of Getting Started
+are reference material better used after you are familiar with the
+material found here.</p>
+<p>The subsections below give some of the details of three files
+MsPASS uses to construct a virtual cluster:</p>
+<ol class="arabic simple">
+<li><p>We show an example job control script that implements the abstract,
+five-node cluster illustrated above in <a class="reference internal" href="#configuration-figure3"><span class="std std-numref">Fig. 3</span></a>
+for the case with sharding turned off.</p></li>
+<li><p>We cover highlights of the  <code class="code docutils literal notranslate"><span class="pre">start-mspass.sh</span></code> file illustrated in all
+the figures above.  As noted it is a master shell script used to
+launch a single instance of a container.</p></li>
+<li><p>We include a brief discussion of the docker configuration file.
+That discussion is not all inclusive, but it might make some
+unix shell incantations slightly less mysterious.  We emphasize that
+file has no direct role in configuration.   The issue we clarify below
+is how <code class="code docutils literal notranslate"><span class="pre">start-mspass.sh</span></code> is used in the container setup.</p></li>
+</ol>
+<p>These three files are tightly connected.  The first two define
+the configuration for the virtual cluster in which you run the job.
+The third is important only to understand the way the contaienr is
+constructed to use these two configuration files.
+Understanding how they work together is much like understanding
+the control flow of any piece of
+computer code that has subprograms (functions).   The job script
+is like a main program (function).   It defines the environment in which
+the job is to be run, launches containers used to define the virtual
+cluster, configures the containers, and then run the desired workflow.
+The docker configuration file can be thought of as like the operating
+system code:  you only interact with it, you don’t change it.</p>
+</section>
+<section id="job-script">
+<h3>Job Script<a class="headerlink" href="#job-script" title="Permalink to this headline"></a></h3>
+<p>Because the job script is effectively the main program for any workflow
+we begin with our example.  Note this script was derived from an
+ancestor of the current file found on github
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh">here</a>.
+It differs mainly with some minor changes to match the configuration
+described in this  document.   I also includes some additional comments
+with the tag <em>Section n</em> used as anchors for descriptions following the
+script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="ch">#!/bin/bash</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="c1">#SECTION 1:  slurm commands (see below for more details)</span>
+<span class="linenos">  4</span><span class="c1">#SBATCH -J mspass           # Job name</span>
+<span class="linenos">  5</span><span class="c1">#SBATCH -o mspass.o%j       # Name of stdout output file</span>
+<span class="linenos">  6</span><span class="c1">#SBATCH -p skx-dev          # Queue (partition) name - system dependent</span>
+<span class="linenos">  7</span><span class="c1">#SBATCH -N 3                # Total # of nodes </span>
+<span class="linenos">  8</span><span class="c1">#SBATCH -n 3                # Total # of mpi tasks (normally the same as -N)</span>
+<span class="linenos">  9</span><span class="c1">#SBATCH -t 02:00:00         # Run time (hh:mm:ss)</span>
+<span class="linenos"> 10</span><span class="c1">#SBATCH -A MsPASS           # Allocation name (req&#39;d if you have more than 1)</span>
+<span class="linenos"> 11</span>
+<span class="linenos"> 12</span>
+<span class="linenos"> 13</span><span class="c1"># SECTION 2:  Define the software environment</span>
+<span class="linenos"> 14</span><span class="c1"># Most HPC systems like stampede2 use a softwere module</span>
+<span class="linenos"> 15</span><span class="c1"># manager to allow each job to define any special packages it needs to</span>
+<span class="linenos"> 16</span><span class="c1"># run.  In our case that is only tacc-singularity.</span>
+<span class="linenos"> 17</span>ml unload xalt
+<span class="linenos"> 18</span>ml tacc-singularity
+<span class="linenos"> 19</span>module list
+<span class="linenos"> 20</span><span class="nb">pwd</span>
+<span class="linenos"> 21</span>date
+<span class="linenos"> 22</span>
+<span class="linenos"> 23</span>
+<span class="linenos"> 24</span><span class="c1">#SECTION 3:  Define some basic control variables for this shell</span>
+<span class="linenos"> 25</span><span class="c1"># this sets the working directory</span>
+<span class="linenos"> 26</span><span class="c1"># SCRATCH is an environment variable defined for all jobs on stempede2</span>
+<span class="linenos"> 27</span><span class="nv">WORK_DIR</span><span class="o">=</span><span class="nv">$SCRATCH</span>/mspass/workdir
+<span class="linenos"> 28</span><span class="c1"># This defines the path to the docker container file.</span>
+<span class="linenos"> 29</span><span class="c1"># like SCRATCH WORK2 is an environment variable defining a file system</span>
+<span class="linenos"> 30</span><span class="c1"># on stampede2</span>
+<span class="linenos"> 31</span><span class="nv">MSPASS_CONTAINER</span><span class="o">=</span><span class="nv">$WORK2</span>/mspass/mspass_latest.sif
+<span class="linenos"> 32</span><span class="c1"># specify the location where user wants to store the data</span>
+<span class="linenos"> 33</span><span class="c1"># should be in either tmp or scratch</span>
+<span class="linenos"> 34</span><span class="nv">DB_PATH</span><span class="o">=</span><span class="s1">&#39;scratch&#39;</span>
+<span class="linenos"> 35</span><span class="c1"># the base for all hostname addresses</span>
+<span class="linenos"> 36</span><span class="nv">HOSTNAME_BASE</span><span class="o">=</span><span class="s1">&#39;stampede2.tacc.utexas.edu&#39;</span>
+<span class="linenos"> 37</span><span class="c1"># Sets whether to use sharding or not (here sharding is turned on)</span>
+<span class="linenos"> 38</span><span class="nv">DB_SHARDING</span><span class="o">=</span><span class="nb">true</span>
+<span class="linenos"> 39</span><span class="c1"># define database that enable sharding</span>
+<span class="linenos"> 40</span><span class="nv">SHARD_DATABASE</span><span class="o">=</span><span class="s2">&quot;usarraytest&quot;</span>
+<span class="linenos"> 41</span><span class="c1"># define (collection:shard_key) pairs</span>
+<span class="linenos"> 42</span><span class="nv">SHARD_COLLECTIONS</span><span class="o">=(</span>
+<span class="linenos"> 43</span>    <span class="s2">&quot;arrival:_id&quot;</span>
+<span class="linenos"> 44</span><span class="o">)</span>
+<span class="linenos"> 45</span><span class="c1"># This variable is used to simplify launching each container</span>
+<span class="linenos"> 46</span><span class="c1"># Arguments are added to this string to launch each instance of a</span>
+<span class="linenos"> 47</span><span class="c1"># container.  stampede2 uses a package called singularity to launch</span>
+<span class="linenos"> 48</span><span class="c1"># each container instances</span>
+<span class="linenos"> 49</span><span class="nv">SING_COM</span><span class="o">=</span><span class="s2">&quot;singularity run </span><span class="nv">$MSPASS_CONTAINER</span><span class="s2">&quot;</span>
+<span class="linenos"> 50</span>
+<span class="linenos"> 51</span>
+<span class="linenos"> 52</span><span class="c1"># Section 4:  Set up some necessary communication channels</span>
+<span class="linenos"> 53</span><span class="c1"># obtain the hostname of the node, and generate a random port number</span>
+<span class="linenos"> 54</span><span class="nv">NODE_HOSTNAME</span><span class="o">=</span><span class="sb">`</span>hostname -s<span class="sb">`</span>
+<span class="linenos"> 55</span><span class="nb">echo</span> <span class="s2">&quot;primary node </span><span class="nv">$NODE_HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos"> 56</span><span class="nv">LOGIN_PORT</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$NODE_HOSTNAME</span> <span class="p">|</span> perl -ne <span class="s1">&#39;print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;&#39;</span><span class="sb">`</span>
+<span class="linenos"> 57</span><span class="nv">STATUS_PORT</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$LOGIN_PORT</span><span class="s2"> + 1&quot;</span> <span class="p">|</span> bc -l<span class="sb">`</span>
+<span class="linenos"> 58</span><span class="nb">echo</span> <span class="s2">&quot;got login node port </span><span class="nv">$LOGIN_PORT</span><span class="s2">&quot;</span>
+<span class="linenos"> 59</span>
+<span class="linenos"> 60</span><span class="c1"># create reverse tunnel port to login nodes.  Make one tunnel for each login so the user can just</span>
+<span class="linenos"> 61</span><span class="c1"># connect to stampede2.tacc.utexas.edu</span>
+<span class="linenos"> 62</span><span class="k">for</span> i <span class="k">in</span> <span class="sb">`</span>seq <span class="m">4</span><span class="sb">`</span><span class="p">;</span> <span class="k">do</span>
+<span class="linenos"> 63</span>    ssh -q -f -g -N -R <span class="nv">$LOGIN_PORT</span>:<span class="nv">$NODE_HOSTNAME</span>:8888 login<span class="nv">$i</span>
+<span class="linenos"> 64</span>    ssh -q -f -g -N -R <span class="nv">$STATUS_PORT</span>:<span class="nv">$NODE_HOSTNAME</span>:8787 login<span class="nv">$i</span>
+<span class="linenos"> 65</span><span class="k">done</span>
+<span class="linenos"> 66</span><span class="nb">echo</span> <span class="s2">&quot;Created reverse ports on Stampede2 logins&quot;</span>
+<span class="linenos"> 67</span>
+<span class="linenos"> 68</span>
+<span class="linenos"> 69</span><span class="c1"># Section 5:  Launch all the containers</span>
+<span class="linenos"> 70</span><span class="c1"># In this job we create a working directory on stampede2&#39;s scratch area</span>
+<span class="linenos"> 71</span><span class="c1"># Most workflows may omit the mkdir and just use cd to a working</span>
+<span class="linenos"> 72</span><span class="c1"># directory created and populated earlier</span>
+<span class="linenos"> 73</span>mkdir -p <span class="nv">$WORK_DIR</span>
+<span class="linenos"> 74</span><span class="nb">cd</span> <span class="nv">$WORK_DIR</span>
+<span class="linenos"> 75</span>
+<span class="linenos"> 76</span><span class="c1"># start a distributed scheduler container in the primary node</span>
+<span class="linenos"> 77</span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
+<span class="linenos"> 78</span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>scheduler <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
+<span class="linenos"> 79</span>
+<span class="linenos"> 80</span><span class="c1"># get the all the hostnames of worker nodes</span>
+<span class="linenos"> 81</span><span class="nv">WORKER_LIST</span><span class="o">=</span><span class="sb">`</span>scontrol show hostname <span class="si">${</span><span class="nv">SLURM_NODELIST</span><span class="si">}</span> <span class="p">|</span> <span class="se">\</span>
+<span class="linenos"> 82</span>             awk -vORS<span class="o">=</span>, -v <span class="nv">hostvar</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NODE_HOSTNAME</span><span class="s2">&quot;</span> <span class="s1">&#39;{ if ($0!=hostvar) print $0 }&#39;</span> <span class="p">|</span> <span class="se">\</span>
+<span class="linenos"> 83</span>             sed <span class="s1">&#39;s/,$/\n/&#39;</span><span class="sb">`</span>
+<span class="linenos"> 84</span><span class="nb">echo</span> <span class="nv">$WORKER_LIST</span>
+<span class="linenos"> 85</span>
+<span class="linenos"> 86</span><span class="c1"># start worker container in each worker node</span>
+<span class="linenos"> 87</span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
+<span class="linenos"> 88</span><span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos"> 89</span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>worker <span class="se">\</span>
+<span class="linenos"> 90</span>mpiexec.hydra -n <span class="k">$((</span>SLURM_NNODES-1<span class="k">))</span> -ppn <span class="m">1</span> -hosts <span class="nv">$WORKER_LIST</span> <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
+<span class="linenos"> 91</span>
+<span class="linenos"> 92</span><span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$DB_SHARDING</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="nb">true</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+<span class="linenos"> 93</span>    <span class="nb">echo</span> <span class="s1">&#39;Using Sharding MongoDB&#39;</span>
+<span class="linenos"> 94</span>    <span class="c1"># extract the hostname of each worker node</span>
+<span class="linenos"> 95</span>    <span class="nv">OLD_IFS</span><span class="o">=</span><span class="nv">$IFS</span>
+<span class="linenos"> 96</span>    <span class="nv">IFS</span><span class="o">=</span><span class="s2">&quot;,&quot;</span>
+<span class="linenos"> 97</span>    <span class="nv">WORKER_LIST_ARR</span><span class="o">=(</span><span class="nv">$WORKER_LIST</span><span class="o">)</span>
+<span class="linenos"> 98</span>    <span class="nv">IFS</span><span class="o">=</span><span class="nv">$OLD_IFS</span>
+<span class="linenos"> 99</span>
+<span class="linenos">100</span>    <span class="c1"># control the interval between mongo instance and mongo shell execution</span>
+<span class="linenos">101</span>    <span class="nv">SLEEP_TIME</span><span class="o">=</span><span class="m">15</span>
+<span class="linenos">102</span>
+<span class="linenos">103</span>    <span class="c1"># start a dbmanager container in the primary node</span>
+<span class="linenos">104</span>    <span class="nv">username</span><span class="o">=</span><span class="sb">`</span>whoami<span class="sb">`</span>
+<span class="linenos">105</span>    <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="p">!WORKER_LIST_ARR[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
+<span class="linenos">106</span>        SHARD_LIST<span class="o">[</span><span class="nv">$i</span><span class="o">]=</span><span class="s2">&quot;rs</span><span class="nv">$i</span><span class="s2">/</span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">:27017&quot;</span>
+<span class="linenos">107</span>        SHARD_ADDRESS<span class="o">[</span><span class="nv">$i</span><span class="o">]=</span><span class="s2">&quot;</span><span class="nv">$username</span><span class="s2">@</span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">108</span>        SHARD_DB_PATH<span class="o">[</span><span class="nv">$i</span><span class="o">]=</span><span class="s2">&quot;</span><span class="nv">$username</span><span class="s2">@</span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">:/tmp/db/data_shard_</span><span class="nv">$i</span><span class="s2">&quot;</span>
+<span class="linenos">109</span>        SHARD_LOGS_PATH<span class="o">[</span><span class="nv">$i</span><span class="o">]=</span><span class="s2">&quot;</span><span class="nv">$username</span><span class="s2">@</span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">:/tmp/logs/mongo_log_shard_</span><span class="nv">$i</span><span class="s2">&quot;</span>
+<span class="linenos">110</span>    <span class="k">done</span>
+<span class="linenos">111</span>
+<span class="linenos">112</span>    <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
+<span class="linenos">113</span>    <span class="nv">SINGULARITYENV_MSPASS_SHARD_DATABASE</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_DATABASE</span><span class="si">}</span> <span class="se">\</span>
+<span class="linenos">114</span>    <span class="nv">SINGULARITYENV_MSPASS_SHARD_COLLECTIONS</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_COLLECTIONS</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
+<span class="linenos">115</span>    <span class="nv">SINGULARITYENV_MSPASS_SHARD_LIST</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_LIST</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
+<span class="linenos">116</span>    <span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span> <span class="se">\</span>
+<span class="linenos">117</span>    <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>dbmanager <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
+<span class="linenos">118</span>
+<span class="linenos">119</span>    <span class="c1"># ensure enough time for dbmanager to finish</span>
+<span class="linenos">120</span>    sleep <span class="m">30</span>
+<span class="linenos">121</span>
+<span class="linenos">122</span>    <span class="c1"># start a shard container in each worker node</span>
+<span class="linenos">123</span>    <span class="c1"># mipexec could be cleaner while ssh would induce more complexity</span>
+<span class="linenos">124</span>    <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="p">!WORKER_LIST_ARR[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
+<span class="linenos">125</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
+<span class="linenos">126</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_ID</span><span class="o">=</span><span class="nv">$i</span> <span class="se">\</span>
+<span class="linenos">127</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span> <span class="se">\</span>
+<span class="linenos">128</span>        <span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span> <span class="se">\</span>
+<span class="linenos">129</span>        <span class="nv">SINGULARITYENV_MSPASS_CONFIG_SERVER_ADDR</span><span class="o">=</span><span class="s2">&quot;configserver/</span><span class="si">${</span><span class="nv">NODE_HOSTNAME</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">:27018&quot;</span> <span class="se">\</span>
+<span class="linenos">130</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>shard <span class="se">\</span>
+<span class="linenos">131</span>        mpiexec.hydra -n <span class="m">1</span> -ppn <span class="m">1</span> -hosts <span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[i]</span><span class="si">}</span> <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
+<span class="linenos">132</span>    <span class="k">done</span>
+<span class="linenos">133</span>
+<span class="linenos">134</span>    <span class="c1"># Launch the jupyter notebook frontend in the primary node.  </span>
+<span class="linenos">135</span>    <span class="c1"># Run in batch mode if the script was</span>
+<span class="linenos">136</span>    <span class="c1"># submitted with a &quot;-b notebook.ipynb&quot; </span>
+<span class="linenos">137</span>    <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">138</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
+<span class="linenos">139</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos">140</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos">141</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span> <span class="se">\</span>
+<span class="linenos">142</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_ADDRESS</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_ADDRESS</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
+<span class="linenos">143</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_DB_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_DB_PATH</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
+<span class="linenos">144</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_LOGS_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_LOGS_PATH</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
+<span class="linenos">145</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_MODE</span><span class="o">=</span><span class="s2">&quot;shard&quot;</span> <span class="se">\</span>
+<span class="linenos">146</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span>
+<span class="linenos">147</span>    <span class="k">else</span>
+<span class="linenos">148</span>        <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;b:&quot;</span> flag
+<span class="linenos">149</span>        <span class="k">do</span>
+<span class="linenos">150</span>            <span class="k">case</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">flag</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">in</span>
+<span class="linenos">151</span>                b<span class="o">)</span> <span class="nv">notebook_file</span><span class="o">=</span><span class="si">${</span><span class="nv">OPTARG</span><span class="si">}</span><span class="p">;</span>
+<span class="linenos">152</span>            <span class="k">esac</span>
+<span class="linenos">153</span>        <span class="k">done</span>
+<span class="linenos">154</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
+<span class="linenos">155</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos">156</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos">157</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span> <span class="se">\</span>
+<span class="linenos">158</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_ADDRESS</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_ADDRESS</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
+<span class="linenos">159</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_DB_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_DB_PATH</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
+<span class="linenos">160</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_LOGS_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_LOGS_PATH</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
+<span class="linenos">161</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_MODE</span><span class="o">=</span><span class="s2">&quot;shard&quot;</span> <span class="se">\</span>
+<span class="linenos">162</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span> --batch <span class="nv">$notebook_file</span>
+<span class="linenos">163</span><span class="k">else</span>
+<span class="linenos">164</span>    <span class="nb">echo</span> <span class="s2">&quot;Using Single node MongoDB&quot;</span>
+<span class="linenos">165</span>    <span class="c1"># start a db container in the primary node</span>
+<span class="linenos">166</span>    <span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span> <span class="se">\</span>
+<span class="linenos">167</span>    <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
+<span class="linenos">168</span>    <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>db <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
+<span class="linenos">169</span>    <span class="c1"># ensure enough time for db instance to finish</span>
+<span class="linenos">170</span>    sleep <span class="m">10</span>
+<span class="linenos">171</span>
+<span class="linenos">172</span>    <span class="c1"># Launch the jupyter notebook frontend in the primary node.  </span>
+<span class="linenos">173</span>    <span class="c1"># Run in batch mode if the script was</span>
+<span class="linenos">174</span>    <span class="c1"># submitted with a &quot;-b notebook.ipynb&quot; </span>
+<span class="linenos">175</span>    <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">176</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
+<span class="linenos">177</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos">178</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos">179</span>        <span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span> <span class="se">\</span>
+<span class="linenos">180</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span>
+<span class="linenos">181</span>    <span class="k">else</span>
+<span class="linenos">182</span>        <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;b:&quot;</span> flag
+<span class="linenos">183</span>        <span class="k">do</span>
+<span class="linenos">184</span>            <span class="k">case</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">flag</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">in</span>
+<span class="linenos">185</span>                b<span class="o">)</span> <span class="nv">notebook_file</span><span class="o">=</span><span class="si">${</span><span class="nv">OPTARG</span><span class="si">}</span><span class="p">;</span>
+<span class="linenos">186</span>            <span class="k">esac</span>
+<span class="linenos">187</span>        <span class="k">done</span>
+<span class="linenos">188</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
+<span class="linenos">189</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos">190</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos">191</span>        <span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span> <span class="se">\</span>
+<span class="linenos">192</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span> --batch <span class="nv">$notebook_file</span>
+<span class="linenos">193</span><span class="k">fi</span>
+</pre></div>
+</div>
+<p>There are lots of details you may need to consider to adapt this
+script but we highlight a few key points here.  The points are
+organized by the “Section” tags in the comments:</p>
+<ul class="simple">
+<li><p><em>Section 1</em>  These are system dependent commands to control the
+global scheduler (see above), which in the case of stampede2 is
+a package called Slurm.  Any HPC system will have a basic introduction
+describing Slurm or a similar package used for the same
+purpose.  For example, Slurm is discussed in the User Guide for
+stampede2 found <a class="reference external" href="https://portal.tacc.utexas.edu/user-guides/stampede2#running-slurm">here</a>.</p></li>
+<li><p><em>Section 2</em> may or may not be necessary on your system.   These lines
+are calls to a software management system. All large
+HPC clusters we know of use a software management system like that
+at stampede2.   The reason is that large clusters serve a diverse
+group of uses with different software needs.   Some packages have
+incompatibilities that can be managed with such systems.   Note
+that issue is an important advantage of using container technology in
+MsPASS.  This example is simple because using the container eliminates
+most such dependencies.</p></li>
+<li><p><em>Section 3</em> sets some basic control variables.  The most important point
+to understand at this point is that this script is using shell variables
+(local and environmental) to define basic properties that need to be
+used later.   Those familiar with shell programming will recognize this
+as common practice to define parameters subject to change.  The lesson
+for this manual is that all shell variables are details you may need to change
+to match your configuration.</p></li>
+<li><p><em>Section 4</em> contains a number of complicated shell constructs that
+border on incantations.   These constructs are necessary to set up
+communications between the physical nodes of the cluster and the
+“login nodes” of stampede2. This sequence is necessary only if you
+are running interactively from web server on a stampede2 login node.
+If you are running this script with the –batch option your notebook
+will be executed when the <code class="code docutils literal notranslate"><span class="pre">frontend</span></code> container is launched.</p></li>
+<li><p><em>Section 5</em> launches the containers that define the virtual cluster
+configuration illustrated in  <a class="reference internal" href="#configuration-figure3"><span class="std std-numref">Fig. 3</span></a>.
+This example has complexity because it provides the option for sharding.
+There are two big-picture points we note about this section.  First,
+individual configuration parameters to run a particular container
+are defined with the prefix <code class="code docutils literal notranslate"><span class="pre">SINGULARITYENV_</span></code>.  This example
+assumes the job is run using the packaged called
+singularity to launch the containers (for more details on using
+MsPASS with singularity see the related section <a class="reference internal" href="deploy_mspass_on_HPC.html#deploy-mspass-on-hpc"><span class="std std-ref">Deploy MsPASS on HPC</span></a>).
+Singularity strips that magic string and defines the variable within the container.
+Second, a potentially confusing issue is that
+the script can launch commands directly from the master/foreman node.
+You should realize this shell script is run in that special node.
+In the other nodes the MsPASS container is launched with mode set to
+<code class="code docutils literal notranslate"><span class="pre">worker</span></code>.   The workers then simply wait for instructions
+until told to exit by the <code class="code docutils literal notranslate"><span class="pre">scheduler</span></code>.
+Hence “Node 1” in <a class="reference internal" href="#configuration-figure3"><span class="std std-numref">Fig. 3</span></a> is that “master”/”foreman”
+node.  The workers are launched here with a mpiexec.hydra.
+Users familiar with mpi should understand we are only using this program to
+launch our worker containers.   MsPASS does not use mpi.</p></li>
+</ul>
+<p>A final, auxiliary point about this script is an important detail
+about launching the <code class="code docutils literal notranslate"><span class="pre">frontend</span></code>.  The final few lines of <em>Section 5</em>
+launches the <code class="code docutils literal notranslate"><span class="pre">frontend</span></code>.   The bash incantation here is one way to
+check for the arg combination “-b notebook” in the job submission line.
+That is how this script implements running a notebook without human
+interaction (a “batch” (-b) mode).  Note that what that does is pass
+the notebook file name to the startup script for the <code class="code docutils literal notranslate"><span class="pre">frontend</span></code>
+container.  One could simplify this a bit by hard coding the notebook
+file name, but this example provides a template for defining a generic
+configuration that could be used to run multiple notebooks.</p>
+</section>
+<section id="start-mspass-sh">
+<h3>start-mspass.sh<a class="headerlink" href="#start-mspass-sh" title="Permalink to this headline"></a></h3>
+<p>We reiterate that our current implementation of MsPASS uses a single
+master shell script called <code class="code docutils literal notranslate"><span class="pre">start-mspass.sh</span></code> to configure each
+running container.   i.e. the way this file is used is after
+linux boots in each container instance the <code class="code docutils literal notranslate"><span class="pre">start-mspass.sh</span></code>
+is run.
+Like the job script above we show the current version of ths script
+below adding some additional comments for anchors to this text.
+Be warned it may differ from the
+master found on github
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/scripts/start-mspass.sh">here</a>
+due to inevitable version skew of documentation
+relative to the code base and the anchor comments.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="ch">#!/bin/bash</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="c1"># If running with docker use /home, else use pwd to store all data and logs</span>
+<span class="linenos">  4</span><span class="k">if</span> grep <span class="s2">&quot;docker/containers&quot;</span> /proc/self/mountinfo -qa<span class="p">;</span> <span class="k">then</span>
+<span class="linenos">  5</span>  <span class="nv">MSPASS_WORKDIR</span><span class="o">=</span>/home
+<span class="linenos">  6</span><span class="k">elif</span> <span class="o">[[</span> -z <span class="si">${</span><span class="nv">MSPASS_WORK_DIR</span><span class="si">}</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">  7</span>  <span class="nv">MSPASS_WORKDIR</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>
+<span class="linenos">  8</span><span class="k">else</span>
+<span class="linenos">  9</span>  <span class="nv">MSPASS_WORKDIR</span><span class="o">=</span><span class="nv">$MSPASS_WORK_DIR</span>
+<span class="linenos"> 10</span><span class="k">fi</span>
+<span class="linenos"> 11</span>
+<span class="linenos"> 12</span><span class="c1"># define SLEEP_TIME</span>
+<span class="linenos"> 13</span><span class="k">if</span> <span class="o">[[</span> -z <span class="nv">$MSPASS_SLEEP_TIME</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos"> 14</span>  <span class="nv">MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="m">15</span>
+<span class="linenos"> 15</span><span class="k">fi</span>
+<span class="linenos"> 16</span>
+<span class="linenos"> 17</span><span class="nv">MSPASS_DB_DIR</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_WORKDIR</span><span class="si">}</span>/db
+<span class="linenos"> 18</span><span class="nv">MSPASS_LOG_DIR</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_WORKDIR</span><span class="si">}</span>/logs
+<span class="linenos"> 19</span><span class="nv">MSPASS_WORKER_DIR</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_WORKDIR</span><span class="si">}</span>/work
+<span class="linenos"> 20</span><span class="c1"># Note that only log is required for all roles. Other dirs will be created later when needed.</span>
+<span class="linenos"> 21</span><span class="o">[[</span> -d <span class="nv">$MSPASS_LOG_DIR</span> <span class="o">]]</span> <span class="o">||</span> mkdir -p <span class="nv">$MSPASS_LOG_DIR</span>
+<span class="linenos"> 22</span>
+<span class="linenos"> 23</span><span class="nv">MONGO_DATA</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data
+<span class="linenos"> 24</span><span class="nv">MONGO_LOG</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_LOG_DIR</span><span class="si">}</span>/mongo_log
+<span class="linenos"> 25</span><span class="nb">export</span> <span class="nv">SPARK_WORKER_DIR</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_WORKER_DIR</span><span class="si">}</span>
+<span class="linenos"> 26</span><span class="nb">export</span> <span class="nv">SPARK_LOG_DIR</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_LOG_DIR</span><span class="si">}</span>
+<span class="linenos"> 27</span>
+<span class="linenos"> 28</span><span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span> <span class="o">||</span> <span class="o">[</span> <span class="nv">$1</span> <span class="o">=</span> <span class="s2">&quot;--batch&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos"> 29</span>
+<span class="linenos"> 30</span>  <span class="k">function</span> start_mspass_frontend <span class="o">{</span>
+<span class="linenos"> 31</span>    <span class="nv">BATCH_MODE_ARGS</span><span class="o">=</span><span class="s2">&quot;--to notebook --inplace --execute </span><span class="nv">$1</span><span class="s2">&quot;</span>
+<span class="linenos"> 32</span>    <span class="nv">NOTEBOOK_ARGS</span><span class="o">=</span><span class="s2">&quot;--notebook-dir=</span><span class="si">${</span><span class="nv">MSPASS_WORKDIR</span><span class="si">}</span><span class="s2"> --port=</span><span class="si">${</span><span class="nv">JUPYTER_PORT</span><span class="si">}</span><span class="s2"> --no-browser --ip=0.0.0.0 --allow-root&quot;</span>
+<span class="linenos"> 33</span>    <span class="c1"># if MSPASS_JUPYTER_PWD is not set, notebook will generate a default token</span>
+<span class="linenos"> 34</span>    <span class="k">if</span> <span class="o">[[</span> ! -z <span class="si">${</span><span class="nv">MSPASS_JUPYTER_PWD</span><span class="p">+x</span><span class="si">}</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos"> 35</span>      <span class="c1"># we rely on jupyter&#39;s python function to hash the password</span>
+<span class="linenos"> 36</span>      <span class="nv">MSPASS_JUPYTER_PWD_HASHED</span><span class="o">=</span><span class="k">$(</span>python3 -c <span class="s2">&quot;from notebook.auth import passwd; print(passwd(&#39;</span><span class="si">${</span><span class="nv">MSPASS_JUPYTER_PWD</span><span class="si">}</span><span class="s2">&#39;))&quot;</span><span class="k">)</span>
+<span class="linenos"> 37</span>      <span class="nv">NOTEBOOK_ARGS</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">NOTEBOOK_ARGS</span><span class="si">}</span><span class="s2"> --NotebookApp.password=</span><span class="si">${</span><span class="nv">MSPASS_JUPYTER_PWD_HASHED</span><span class="si">}</span><span class="s2">&quot;</span> 
+<span class="linenos"> 38</span>    <span class="k">fi</span>
+<span class="linenos"> 39</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_SCHEDULER</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;spark&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos"> 40</span>      <span class="nb">export</span> <span class="nv">PYSPARK_DRIVER_PYTHON</span><span class="o">=</span>jupyter
+<span class="linenos"> 41</span>      <span class="k">if</span> <span class="o">[</span> -z <span class="nv">$1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos"> 42</span>        <span class="nb">export</span> <span class="nv">PYSPARK_DRIVER_PYTHON_OPTS</span><span class="o">=</span><span class="s2">&quot;notebook </span><span class="si">${</span><span class="nv">NOTEBOOK_ARGS</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos"> 43</span>      <span class="k">else</span>
+<span class="linenos"> 44</span>        <span class="nb">export</span> <span class="nv">PYSPARK_DRIVER_PYTHON_OPTS</span><span class="o">=</span><span class="s2">&quot;nbconvert </span><span class="si">${</span><span class="nv">BATCH_MODE_ARGS</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos"> 45</span>      <span class="k">fi</span>
+<span class="linenos"> 46</span>      pyspark <span class="se">\</span>
+<span class="linenos"> 47</span>        --conf <span class="s2">&quot;spark.mongodb.input.uri=mongodb://</span><span class="si">${</span><span class="nv">MSPASS_DB_ADDRESS</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">MONGODB_PORT</span><span class="si">}</span><span class="s2">/test.misc&quot;</span> <span class="se">\</span>
+<span class="linenos"> 48</span>        --conf <span class="s2">&quot;spark.mongodb.output.uri=mongodb://</span><span class="si">${</span><span class="nv">MSPASS_DB_ADDRESS</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">MONGODB_PORT</span><span class="si">}</span><span class="s2">/test.misc&quot;</span> <span class="se">\</span>
+<span class="linenos"> 49</span>        --conf <span class="s2">&quot;spark.master=spark://</span><span class="si">${</span><span class="nv">MSPASS_SCHEDULER_ADDRESS</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">SPARK_MASTER_PORT</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
+<span class="linenos"> 50</span>        --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0
+<span class="linenos"> 51</span>    <span class="k">else</span> <span class="c1"># if [ &quot;$MSPASS_SCHEDULER&quot; = &quot;dask&quot; ]</span>
+<span class="linenos"> 52</span>      <span class="nb">export</span> <span class="nv">DASK_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_SCHEDULER_ADDRESS</span><span class="si">}</span>:<span class="si">${</span><span class="nv">DASK_SCHEDULER_PORT</span><span class="si">}</span>
+<span class="linenos"> 53</span>      <span class="k">if</span> <span class="o">[</span> -z <span class="nv">$1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos"> 54</span>        jupyter notebook <span class="si">${</span><span class="nv">NOTEBOOK_ARGS</span><span class="si">}</span>
+<span class="linenos"> 55</span>      <span class="k">else</span>
+<span class="linenos"> 56</span>        jupyter nbconvert <span class="si">${</span><span class="nv">BATCH_MODE_ARGS</span><span class="si">}</span>
+<span class="linenos"> 57</span>      <span class="k">fi</span>
+<span class="linenos"> 58</span>    <span class="k">fi</span>
+<span class="linenos"> 59</span>  <span class="o">}</span>
+<span class="linenos"> 60</span>
+<span class="linenos"> 61</span>  <span class="k">function</span> clean_up_single_node <span class="o">{</span>
+<span class="linenos"> 62</span>    <span class="c1"># ---------------------- clean up workflow -------------------------</span>
+<span class="linenos"> 63</span>    <span class="c1"># stop mongodb</span>
+<span class="linenos"> 64</span>    mongo --port <span class="nv">$MONGODB_PORT</span> admin --eval <span class="s2">&quot;db.shutdownServer({force:true})&quot;</span>
+<span class="linenos"> 65</span>    sleep <span class="m">5</span>
+<span class="linenos"> 66</span>    <span class="c1"># copy shard data to scratch</span>
+<span class="linenos"> 67</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;tmp&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos"> 68</span>      <span class="nb">echo</span> <span class="s2">&quot;standalone: copy shard data to scratch&quot;</span>
+<span class="linenos"> 69</span>      <span class="c1"># copy data</span>
+<span class="linenos"> 70</span>      scp -r /tmp/db/data <span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>
+<span class="linenos"> 71</span>      <span class="c1"># copy log</span>
+<span class="linenos"> 72</span>      scp -r /tmp/logs/mongo_log <span class="si">${</span><span class="nv">MSPASS_LOG_DIR</span><span class="si">}</span>
+<span class="linenos"> 73</span>    <span class="k">fi</span>
+<span class="linenos"> 74</span>    sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos"> 75</span>  <span class="o">}</span>
+<span class="linenos"> 76</span>
+<span class="linenos"> 77</span>  <span class="k">function</span> clean_up_multiple_nodes <span class="o">{</span>
+<span class="linenos"> 78</span>    <span class="c1"># ---------------------- clean up workflow -------------------------</span>
+<span class="linenos"> 79</span>    <span class="c1"># stop mongos routers</span>
+<span class="linenos"> 80</span>    mongo --port <span class="nv">$MONGODB_PORT</span> admin --eval <span class="s2">&quot;db.shutdownServer({force:true})&quot;</span>
+<span class="linenos"> 81</span>    sleep <span class="m">5</span>
+<span class="linenos"> 82</span>    <span class="c1"># stop each shard replica set</span>
+<span class="linenos"> 83</span>    <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="nv">MSPASS_SHARD_ADDRESS</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
+<span class="linenos"> 84</span>        ssh -o <span class="s2">&quot;StrictHostKeyChecking no&quot;</span> <span class="si">${</span><span class="nv">i</span><span class="si">}</span> <span class="s2">&quot;kill -2 \$(pgrep mongo)&quot;</span>
+<span class="linenos"> 85</span>        sleep <span class="m">5</span>
+<span class="linenos"> 86</span>    <span class="k">done</span>
+<span class="linenos"> 87</span>    <span class="c1"># stop config servers</span>
+<span class="linenos"> 88</span>    mongo --port <span class="k">$((</span><span class="nv">$MONGODB_PORT</span><span class="o">+</span><span class="m">1</span><span class="k">))</span> admin --eval <span class="s2">&quot;db.shutdownServer({force:true})&quot;</span>
+<span class="linenos"> 89</span>
+<span class="linenos"> 90</span>    <span class="c1"># copy the shard data to scratch if the shards are deployed in /tmp</span>
+<span class="linenos"> 91</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;tmp&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos"> 92</span>      <span class="nb">echo</span> <span class="s2">&quot;distributed: copy shard data to scratch&quot;</span>
+<span class="linenos"> 93</span>      <span class="c1"># copy data</span>
+<span class="linenos"> 94</span>      <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="nv">MSPASS_SHARD_DB_PATH</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
+<span class="linenos"> 95</span>        scp -r -o <span class="nv">StrictHostKeyChecking</span><span class="o">=</span>no <span class="si">${</span><span class="nv">i</span><span class="si">}</span> <span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>
+<span class="linenos"> 96</span>      <span class="k">done</span>
+<span class="linenos"> 97</span>      <span class="c1"># copy log</span>
+<span class="linenos"> 98</span>      <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="nv">MSPASS_SHARD_LOGS_PATH</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
+<span class="linenos"> 99</span>        scp -r -o <span class="nv">StrictHostKeyChecking</span><span class="o">=</span>no <span class="si">${</span><span class="nv">i</span><span class="si">}</span> <span class="si">${</span><span class="nv">MSPASS_LOG_DIR</span><span class="si">}</span>
+<span class="linenos">100</span>      <span class="k">done</span>
+<span class="linenos">101</span>    <span class="k">fi</span>
+<span class="linenos">102</span>    sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">103</span>  <span class="o">}</span>
+<span class="linenos">104</span>
+<span class="linenos">105</span>  <span class="k">function</span> start_db_scratch <span class="o">{</span>
+<span class="linenos">106</span>    <span class="o">[[</span> -d <span class="nv">$MONGO_DATA</span> <span class="o">]]</span> <span class="o">||</span> mkdir -p <span class="nv">$MONGO_DATA</span>
+<span class="linenos">107</span>    mongod --port <span class="nv">$MONGODB_PORT</span> --dbpath <span class="nv">$MONGO_DATA</span> --logpath <span class="nv">$MONGO_LOG</span> --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">108</span>  <span class="o">}</span>
+<span class="linenos">109</span>
+<span class="linenos">110</span>  <span class="k">function</span> start_db_tmp <span class="o">{</span>
+<span class="linenos">111</span>    <span class="c1"># create db and log dirs if not exists</span>
+<span class="linenos">112</span>    <span class="o">[[</span> -d /tmp/db <span class="o">]]</span> <span class="o">||</span> mkdir -p /tmp/db
+<span class="linenos">113</span>    <span class="o">[[</span> -d /tmp/logs <span class="o">]]</span> <span class="o">||</span> mkdir -p /tmp/logs <span class="o">&amp;&amp;</span> touch /tmp/logs/mongo_log
+<span class="linenos">114</span>    <span class="c1"># copy all data on scratch to the local tmp folder</span>
+<span class="linenos">115</span>    <span class="k">if</span> <span class="o">[[</span> -d <span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">116</span>      cp -r <span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data /tmp/db
+<span class="linenos">117</span>    <span class="k">else</span>
+<span class="linenos">118</span>      mkdir -p /tmp/db/data
+<span class="linenos">119</span>    <span class="k">fi</span>
+<span class="linenos">120</span>    <span class="c1"># copy dfiles to /tmp</span>
+<span class="linenos">121</span>    <span class="k">if</span> <span class="o">[[</span> -d <span class="nv">$MSPASS_SCRATCH_DATA_DIR</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">122</span>      cp -r <span class="nv">$MSPASS_SCRATCH_DATA_DIR</span> /tmp
+<span class="linenos">123</span>    <span class="k">fi</span>
+<span class="linenos">124</span>    <span class="c1"># start mongodb on /tmp</span>
+<span class="linenos">125</span>    mongod --port <span class="nv">$MONGODB_PORT</span> --dbpath /tmp/db/data --logpath /tmp/logs/mongo_log --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">126</span>  <span class="o">}</span>
+<span class="linenos">127</span>
+<span class="linenos">128</span>  <span class="nv">MY_ID</span><span class="o">=</span><span class="k">$(</span>cat /dev/urandom <span class="p">|</span> tr -dc <span class="s1">&#39;a-zA-Z0-9&#39;</span> <span class="p">|</span> fold -w <span class="m">12</span> <span class="p">|</span> head -n <span class="m">1</span><span class="k">)</span>
+<span class="linenos">129</span>  <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_SCHEDULER</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;spark&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">130</span>    <span class="nv">MSPASS_SCHEDULER_CMD</span><span class="o">=</span><span class="s1">&#39;$SPARK_HOME/sbin/start-master.sh&#39;</span>
+<span class="linenos">131</span>    <span class="nv">MSPASS_WORKER_CMD</span><span class="o">=</span><span class="s1">&#39;$SPARK_HOME/sbin/start-slave.sh spark://$MSPASS_SCHEDULER_ADDRESS:$SPARK_MASTER_PORT&#39;</span>
+<span class="linenos">132</span>  <span class="k">else</span> <span class="c1"># if [ &quot;$MSPASS_SCHEDULER&quot; = &quot;dask&quot; ]</span>
+<span class="linenos">133</span>    <span class="nv">MSPASS_SCHEDULER_CMD</span><span class="o">=</span><span class="s1">&#39;dask-scheduler --port $DASK_SCHEDULER_PORT &gt; ${MSPASS_LOG_DIR}/dask-scheduler_log_${MY_ID} 2&gt;&amp;1 &amp; sleep 5&#39;</span>
+<span class="linenos">134</span>    <span class="nv">MSPASS_WORKER_CMD</span><span class="o">=</span><span class="s1">&#39;dask-worker ${MSPASS_WORKER_ARG} --local-directory $MSPASS_WORKER_DIR tcp://$MSPASS_SCHEDULER_ADDRESS:$DASK_SCHEDULER_PORT &gt; ${MSPASS_LOG_DIR}/dask-worker_log_${MY_ID} 2&gt;&amp;1 &amp;&#39;</span>
+<span class="linenos">135</span>  <span class="k">fi</span>
+<span class="linenos">136</span>
+<span class="linenos">137</span>  <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;db&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">138</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;tmp&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">139</span>      start_db_tmp
+<span class="linenos">140</span>    <span class="k">else</span>
+<span class="linenos">141</span>      start_db_scratch
+<span class="linenos">142</span>    <span class="k">fi</span>
+<span class="linenos">143</span>  <span class="k">elif</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;dbmanager&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">144</span>    <span class="c1"># config server configuration</span>
+<span class="linenos">145</span>    <span class="nv">MONGODB_CONFIG_PORT</span><span class="o">=</span><span class="k">$((</span><span class="nv">$MONGODB_PORT</span><span class="o">+</span><span class="m">1</span><span class="k">))</span>
+<span class="linenos">146</span>    <span class="k">if</span> <span class="o">[</span> -d <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">147</span>      <span class="nb">echo</span> <span class="s2">&quot;restore config server </span><span class="nv">$HOSTNAME</span><span class="s2"> cluster&quot;</span>
+<span class="linenos">148</span>      <span class="c1"># start a mongod instance</span>
+<span class="linenos">149</span>      mongod --port <span class="nv">$MONGODB_CONFIG_PORT</span> --dbpath <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_config --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">150</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">151</span>      <span class="c1"># drop the local database</span>
+<span class="linenos">152</span>      <span class="nb">echo</span> <span class="s2">&quot;drop local database for config server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">153</span>      mongo --port <span class="nv">$MONGODB_CONFIG_PORT</span> <span class="nb">local</span> --eval <span class="s2">&quot;db.dropDatabase()&quot;</span>
+<span class="linenos">154</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">155</span>      <span class="c1"># update config.shards collections</span>
+<span class="linenos">156</span>      <span class="nb">echo</span> <span class="s2">&quot;update shard host names for config server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">157</span>      <span class="c1"># if using ${!MSPASS_SHARD_LIST[@]} style for loop, it doesn&#39;t work. Not sure why it doesn&#39;t work.</span>
+<span class="linenos">158</span>      <span class="nv">ITER</span><span class="o">=</span><span class="m">0</span>
+<span class="linenos">159</span>      <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="nv">MSPASS_SHARD_LIST</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
+<span class="linenos">160</span>        <span class="nb">echo</span> <span class="s2">&quot;update rs</span><span class="si">${</span><span class="nv">ITER</span><span class="si">}</span><span class="s2"> with host </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">161</span>        mongo --port <span class="nv">$MONGODB_CONFIG_PORT</span> config --eval <span class="s2">&quot;db.shards.updateOne({\&quot;_id\&quot;: \&quot;rs</span><span class="si">${</span><span class="nv">ITER</span><span class="si">}</span><span class="s2">\&quot;}, {\$set: {\&quot;host\&quot;: \&quot;</span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">\&quot;}})&quot;</span>
+<span class="linenos">162</span>        <span class="o">((</span>ITER++<span class="o">))</span>
+<span class="linenos">163</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">164</span>      <span class="k">done</span>
+<span class="linenos">165</span>      <span class="nb">echo</span> <span class="s2">&quot;restart the config server </span><span class="nv">$HOSTNAME</span><span class="s2"> as a replica set&quot;</span>
+<span class="linenos">166</span>      <span class="c1"># restart the mongod as a new single-node replica set</span>
+<span class="linenos">167</span>      mongo --port <span class="nv">$MONGODB_CONFIG_PORT</span> admin --eval <span class="s2">&quot;db.shutdownServer()&quot;</span>
+<span class="linenos">168</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">169</span>      mongod --port <span class="nv">$MONGODB_CONFIG_PORT</span> --configsvr --replSet configserver --dbpath <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_config --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">170</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">171</span>      <span class="c1"># initiate the new replica set</span>
+<span class="linenos">172</span>      mongo --port <span class="nv">$MONGODB_CONFIG_PORT</span> --eval <span class="se">\</span>
+<span class="linenos">173</span>        <span class="s2">&quot;rs.initiate({_id: \&quot;configserver\&quot;, configsvr: true, version: 1, members: [{ _id: 0, host : \&quot;</span><span class="nv">$HOSTNAME</span><span class="s2">:</span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="s2">\&quot; }]})&quot;</span>
+<span class="linenos">174</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">175</span>
+<span class="linenos">176</span>      <span class="c1"># start a mongos router server</span>
+<span class="linenos">177</span>      mongos --port <span class="nv">$MONGODB_PORT</span> --configdb configserver/<span class="nv">$HOSTNAME</span>:<span class="nv">$MONGODB_CONFIG_PORT</span> --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_router --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">178</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">179</span>    <span class="k">else</span>
+<span class="linenos">180</span>      <span class="c1"># create a config dir</span>
+<span class="linenos">181</span>      mkdir -p <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config
+<span class="linenos">182</span>      <span class="nb">echo</span> <span class="s2">&quot;dbmanager config server </span><span class="nv">$HOSTNAME</span><span class="s2"> replicaSet is initialized&quot;</span>
+<span class="linenos">183</span>      <span class="c1"># start a config server</span>
+<span class="linenos">184</span>      mongod --port <span class="nv">$MONGODB_CONFIG_PORT</span> --configsvr --replSet configserver --dbpath <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_config --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">185</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">186</span>      mongo --port <span class="nv">$MONGODB_CONFIG_PORT</span> --eval <span class="se">\</span>
+<span class="linenos">187</span>        <span class="s2">&quot;rs.initiate({_id: \&quot;configserver\&quot;, configsvr: true, version: 1, members: [{ _id: 0, host : \&quot;</span><span class="nv">$HOSTNAME</span><span class="s2">:</span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="s2">\&quot; }]})&quot;</span>
+<span class="linenos">188</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">189</span>      
+<span class="linenos">190</span>      <span class="c1"># start a mongos router server</span>
+<span class="linenos">191</span>      mongos --port <span class="nv">$MONGODB_PORT</span> --configdb configserver/<span class="nv">$HOSTNAME</span>:<span class="nv">$MONGODB_CONFIG_PORT</span> --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_router --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">192</span>      <span class="c1"># add shard clusters</span>
+<span class="linenos">193</span>      <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="nv">MSPASS_SHARD_LIST</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
+<span class="linenos">194</span>        <span class="nb">echo</span> <span class="s2">&quot;add shard with host </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">195</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">196</span>        mongo --host <span class="nv">$HOSTNAME</span> --port <span class="nv">$MONGODB_PORT</span> --eval <span class="s2">&quot;sh.addShard(\&quot;</span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">\&quot;)&quot;</span>
+<span class="linenos">197</span>      <span class="k">done</span>
+<span class="linenos">198</span>    <span class="k">fi</span>
+<span class="linenos">199</span>
+<span class="linenos">200</span>    <span class="c1"># enable database sharding</span>
+<span class="linenos">201</span>    <span class="nb">echo</span> <span class="s2">&quot;enable database </span><span class="nv">$MSPASS_SHARD_DATABASE</span><span class="s2"> sharding&quot;</span>
+<span class="linenos">202</span>    mongo --host <span class="nv">$HOSTNAME</span> --port <span class="nv">$MONGODB_PORT</span> --eval <span class="s2">&quot;sh.enableSharding(\&quot;</span><span class="si">${</span><span class="nv">MSPASS_SHARD_DATABASE</span><span class="si">}</span><span class="s2">\&quot;)&quot;</span>
+<span class="linenos">203</span>    sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">204</span>    <span class="c1"># shard collection(using hashed)</span>
+<span class="linenos">205</span>    <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="nv">MSPASS_SHARD_COLLECTIONS</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
+<span class="linenos">206</span>      <span class="nb">echo</span> <span class="s2">&quot;shard collection </span><span class="nv">$MSPASS_SHARD_DATABASE</span><span class="s2">.</span><span class="si">${</span><span class="nv">i</span><span class="p">%%:*</span><span class="si">}</span><span class="s2"> and shard key is </span><span class="si">${</span><span class="nv">i</span><span class="p">##*:</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">207</span>      mongo --host <span class="nv">$HOSTNAME</span> --port <span class="nv">$MONGODB_PORT</span> --eval <span class="s2">&quot;sh.shardCollection(\&quot;</span><span class="nv">$MSPASS_SHARD_DATABASE</span><span class="s2">.</span><span class="si">${</span><span class="nv">i</span><span class="p">%%:*</span><span class="si">}</span><span class="s2">\&quot;, {</span><span class="si">${</span><span class="nv">i</span><span class="p">##*:</span><span class="si">}</span><span class="s2">: \&quot;hashed\&quot;})&quot;</span>
+<span class="linenos">208</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">209</span>    <span class="k">done</span>
+<span class="linenos">210</span>    tail -f /dev/null
+<span class="linenos">211</span>  <span class="k">elif</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;shard&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">212</span>    <span class="o">[[</span> -n <span class="nv">$MSPASS_SHARD_ID</span> <span class="o">]]</span> <span class="o">||</span> <span class="nv">MSPASS_SHARD_ID</span><span class="o">=</span><span class="nv">$MY_ID</span>
+<span class="linenos">213</span>    <span class="c1"># Note that we have to create a one-member replica set here </span>
+<span class="linenos">214</span>    <span class="c1"># because certain pymongo API will use &quot;retryWrites=true&quot; </span>
+<span class="linenos">215</span>    <span class="c1"># and thus trigger an error.</span>
+<span class="linenos">216</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;tmp&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">217</span>      <span class="nb">echo</span> <span class="s2">&quot;store shard data in tmp for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">218</span>      <span class="c1"># create db and log dirs if not exists</span>
+<span class="linenos">219</span>      <span class="o">[[</span> -d /tmp/db <span class="o">]]</span> <span class="o">||</span> mkdir -p /tmp/db
+<span class="linenos">220</span>      <span class="o">[[</span> -d /tmp/logs <span class="o">]]</span> <span class="o">||</span> mkdir -p /tmp/logs <span class="o">&amp;&amp;</span> touch /tmp/logs/mongo_log_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span>
+<span class="linenos">221</span>      <span class="c1"># copy all the shard data to the local tmp folder</span>
+<span class="linenos">222</span>      <span class="k">if</span> <span class="o">[[</span> -d <span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">223</span>        scp -r -o <span class="nv">StrictHostKeyChecking</span><span class="o">=</span>no <span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> /tmp/db
+<span class="linenos">224</span>      <span class="k">else</span>
+<span class="linenos">225</span>        mkdir -p /tmp/db/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span>
+<span class="linenos">226</span>      <span class="k">fi</span>
+<span class="linenos">227</span>      <span class="c1"># reconfig the shard replica set</span>
+<span class="linenos">228</span>      <span class="k">if</span> <span class="o">[</span> -d <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">229</span>        <span class="c1"># restore the shard replica set</span>
+<span class="linenos">230</span>        mongod --port <span class="nv">$MONGODB_PORT</span> --dbpath /tmp/db/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --logpath /tmp/logs/mongo_log_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">231</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">232</span>        <span class="c1"># drop local database</span>
+<span class="linenos">233</span>        <span class="nb">echo</span> <span class="s2">&quot;drop local database for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">234</span>        mongo --port <span class="nv">$MONGODB_PORT</span> <span class="nb">local</span> --eval <span class="s2">&quot;db.dropDatabase()&quot;</span>
+<span class="linenos">235</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">236</span>        <span class="c1"># update shard metadata in each shard&#39;s identity document</span>
+<span class="linenos">237</span>        <span class="nb">echo</span> <span class="s2">&quot;update config server host names for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">238</span>        mongo --port <span class="nv">$MONGODB_PORT</span> admin --eval <span class="s2">&quot;db.system.version.updateOne({\&quot;_id\&quot;: \&quot;shardIdentity\&quot;}, {\$set: {\&quot;configsvrConnectionString\&quot;: \&quot;</span><span class="si">${</span><span class="nv">MSPASS_CONFIG_SERVER_ADDR</span><span class="si">}</span><span class="s2">\&quot;}})&quot;</span>
+<span class="linenos">239</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">240</span>        <span class="c1"># restart the mongod as a new single-node replica set</span>
+<span class="linenos">241</span>        <span class="nb">echo</span> <span class="s2">&quot;restart the shard server </span><span class="nv">$HOSTNAME</span><span class="s2"> as a replica set&quot;</span>
+<span class="linenos">242</span>        mongo --port <span class="nv">$MONGODB_PORT</span> admin --eval <span class="s2">&quot;db.shutdownServer()&quot;</span>
+<span class="linenos">243</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">244</span>        mongod --port <span class="nv">$MONGODB_PORT</span> --shardsvr --replSet <span class="s2">&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">&quot;</span> --dbpath /tmp/db/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --logpath /tmp/logs/mongo_log_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">245</span>      <span class="k">else</span>
+<span class="linenos">246</span>        <span class="c1"># store the shard data in the /tmp folder in local machine</span>
+<span class="linenos">247</span>        mongod --port <span class="nv">$MONGODB_PORT</span> --shardsvr --replSet <span class="s2">&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">&quot;</span> --dbpath /tmp/db/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --logpath /tmp/logs/mongo_log_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">248</span>      <span class="k">fi</span>
+<span class="linenos">249</span>    <span class="k">else</span>
+<span class="linenos">250</span>      <span class="nb">echo</span> <span class="s2">&quot;store shard data in scratch for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">251</span>      <span class="k">if</span> <span class="o">[</span> -d <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">252</span>        <span class="c1"># restore the shard replica set</span>
+<span class="linenos">253</span>        mongod --port <span class="nv">$MONGODB_PORT</span> --dbpath <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">254</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">255</span>        <span class="c1"># drop local database</span>
+<span class="linenos">256</span>        <span class="nb">echo</span> <span class="s2">&quot;drop local database for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">257</span>        mongo --port <span class="nv">$MONGODB_PORT</span> <span class="nb">local</span> --eval <span class="s2">&quot;db.dropDatabase()&quot;</span>
+<span class="linenos">258</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">259</span>        <span class="c1"># update shard metadata in each shard&#39;s identity document</span>
+<span class="linenos">260</span>        <span class="nb">echo</span> <span class="s2">&quot;update config server host names for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">261</span>        mongo --port <span class="nv">$MONGODB_PORT</span> admin --eval <span class="s2">&quot;db.system.version.updateOne({\&quot;_id\&quot;: \&quot;shardIdentity\&quot;}, {\$set: {\&quot;configsvrConnectionString\&quot;: \&quot;</span><span class="si">${</span><span class="nv">MSPASS_CONFIG_SERVER_ADDR</span><span class="si">}</span><span class="s2">\&quot;}})&quot;</span>
+<span class="linenos">262</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">263</span>        <span class="c1"># restart the mongod as a new single-node replica set</span>
+<span class="linenos">264</span>        <span class="nb">echo</span> <span class="s2">&quot;restart the shard server </span><span class="nv">$HOSTNAME</span><span class="s2"> as a replica set&quot;</span>
+<span class="linenos">265</span>        mongo --port <span class="nv">$MONGODB_PORT</span> admin --eval <span class="s2">&quot;db.shutdownServer()&quot;</span>
+<span class="linenos">266</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">267</span>        mongod --port <span class="nv">$MONGODB_PORT</span> --shardsvr --replSet <span class="s2">&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">&quot;</span> --dbpath <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">268</span>      <span class="k">else</span>
+<span class="linenos">269</span>        <span class="c1"># initialize the shard replica set</span>
+<span class="linenos">270</span>        mkdir -p <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span>
+<span class="linenos">271</span>        mongod --port <span class="nv">$MONGODB_PORT</span> --shardsvr --replSet <span class="s2">&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">&quot;</span> --dbpath <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --bind_ip_all <span class="p">&amp;</span>
+<span class="linenos">272</span>      <span class="k">fi</span>
+<span class="linenos">273</span>    <span class="k">fi</span>
+<span class="linenos">274</span>    sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">275</span>
+<span class="linenos">276</span>    <span class="c1"># shard server configuration</span>
+<span class="linenos">277</span>    <span class="nb">echo</span> <span class="s2">&quot;shard server </span><span class="nv">$HOSTNAME</span><span class="s2"> replicaSet is initialized&quot;</span>
+<span class="linenos">278</span>    mongo --port <span class="nv">$MONGODB_PORT</span> --eval <span class="se">\</span>
+<span class="linenos">279</span>      <span class="s2">&quot;rs.initiate({_id: \&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">\&quot;, version: 1, members: [{ _id: 0, host : \&quot;</span><span class="nv">$HOSTNAME</span><span class="s2">:</span><span class="nv">$MONGODB_PORT</span><span class="s2">\&quot; }]})&quot;</span>
+<span class="linenos">280</span>    tail -f /dev/null
+<span class="linenos">281</span>  <span class="k">elif</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;scheduler&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">282</span>    <span class="nb">eval</span> <span class="nv">$MSPASS_SCHEDULER_CMD</span>
+<span class="linenos">283</span>    tail -f /dev/null
+<span class="linenos">284</span>  <span class="k">elif</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;worker&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">285</span>    <span class="o">[[</span> -d <span class="nv">$MSPASS_WORKER_DIR</span> <span class="o">]]</span> <span class="o">||</span> mkdir -p <span class="nv">$MSPASS_WORKER_DIR</span>
+<span class="linenos">286</span>    <span class="nb">eval</span> <span class="nv">$MSPASS_WORKER_CMD</span>
+<span class="linenos">287</span>    <span class="c1"># copy dfiles to /tmp</span>
+<span class="linenos">288</span>    <span class="k">if</span> <span class="o">[[</span> -d <span class="nv">$MSPASS_SCRATCH_DATA_DIR</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">289</span>      cp -r <span class="nv">$MSPASS_SCRATCH_DATA_DIR</span> /tmp
+<span class="linenos">290</span>    <span class="k">fi</span>
+<span class="linenos">291</span>    tail -f /dev/null
+<span class="linenos">292</span>  <span class="k">elif</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;frontend&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">293</span>    start_mspass_frontend <span class="nv">$2</span>
+<span class="linenos">294</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_DB_MODE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;shard&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">295</span>      clean_up_multiple_nodes
+<span class="linenos">296</span>    <span class="k">else</span>
+<span class="linenos">297</span>      clean_up_single_node
+<span class="linenos">298</span>    <span class="k">fi</span>
+<span class="linenos">299</span>  <span class="k">else</span> <span class="c1"># if [ &quot;$MSPASS_ROLE&quot; = &quot;all&quot; ]</span>
+<span class="linenos">300</span>    <span class="nv">MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$HOSTNAME</span>
+<span class="linenos">301</span>    <span class="nv">MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$HOSTNAME</span>
+<span class="linenos">302</span>    <span class="nb">eval</span> <span class="nv">$MSPASS_SCHEDULER_CMD</span>
+<span class="linenos">303</span>    <span class="nb">eval</span> <span class="nv">$MSPASS_WORKER_CMD</span>
+<span class="linenos">304</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;tmp&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">305</span>      start_db_tmp
+<span class="linenos">306</span>    <span class="k">else</span>
+<span class="linenos">307</span>      start_db_scratch
+<span class="linenos">308</span>    <span class="k">fi</span>
+<span class="linenos">309</span>    start_mspass_frontend <span class="nv">$2</span>
+<span class="linenos">310</span>    clean_up_single_node
+<span class="linenos">311</span>  <span class="k">fi</span>
+<span class="linenos">312</span><span class="k">else</span>
+<span class="linenos">313</span>  docker-entrypoint.sh <span class="nv">$@</span>
+<span class="linenos">314</span><span class="k">fi</span>
+</pre></div>
+</div>
+<p>There is a lot there, but we highlight a few key points:</p>
+<ul class="simple">
+<li><p>The file is a unix shells script using the bash dialect.</p></li>
+<li><p>The behavior of the script is driven by a long list of
+environment variables.   Remember this is the master script used to
+launch each instance of a container.   The suite
+of containers that are to be launched are defined outside of this
+master script through a job script.   Comparing this script with the
+job script above note names like <code class="code docutils literal notranslate"><span class="pre">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span></code>
+are converted by singularity to the <code class="code docutils literal notranslate"><span class="pre">MSPASS_SCHEDULER_ADDRESS</span></code>
+when running <code class="code docutils literal notranslate"><span class="pre">start-mspass.sh</span></code>.</p></li>
+<li><p>The primary flow control is the environment variable
+<code class="code docutils literal notranslate"><span class="pre">MSPASS_ROLE</span></code>.   i.e. the overall control flow is a single
+chain of <code class="code docutils literal notranslate"><span class="pre">if,</span> <span class="pre">elif,</span> <span class="pre">elif,</span>&#160; <span class="pre">...</span> <span class="pre">,</span> <span class="pre">else,</span>&#160; <span class="pre">fi</span></code>.   That implementation
+detail is why the MsPASS container is limited to one “role” per container.
+(see above)</p></li>
+<li><p>Note the <code class="code docutils literal notranslate"><span class="pre">else</span></code> block on the chain of <code class="code docutils literal notranslate"><span class="pre">MSPASS_ROLE</span></code> values
+creates an instance of the container we call the all-in-one mode (<a class="reference internal" href="#configuration-figure4"><span class="std std-numref">Fig. 4</span></a>).
+The comments call this “all” but it is more appropriately called a default.
+Note also the final else is actually different - it links to a default
+behavior (the shell script docker-entrypoint.sh) and should not be changed.</p></li>
+</ul>
+</section>
+<section id="docker-configuration-file">
+<h3>Docker Configuration File<a class="headerlink" href="#docker-configuration-file" title="Permalink to this headline"></a></h3>
+<p>The docker configuration file is not something any user should need to
+change.  The only exception is if you have a code suite you want to use
+to extend MsPASS as an independent package.   If that is you, will need to
+dig deeper into the docker documentation.   For most of you the key point
+we want to make here is how the <code class="code docutils literal notranslate"><span class="pre">start-mspass.sh</span></code> script is used
+in combination with the configuration.</p>
+<p>First, the master docker configuration file is found
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/Dockerfile">here</a>
+on GitHub.   We highlioght only a few key points:</p>
+<ul class="simple">
+<li><p>You will see a number of lines like this one:  <code class="code docutils literal notranslate"><span class="pre">ENV</span> <span class="pre">DASK_SCHEDULER_PORT</span> <span class="pre">8786</span></code>.
+“ENV” is docker shorthard for “ENVIRONMENT” which means the symbol
+“DASK_SCHEDULER_PORT” is assigned a value 8786 when the container boots.
+You will see the same symbol (DASK_SCHEDULER_PORT) appears in the
+<code class="code docutils literal notranslate"><span class="pre">start-mspass.sh</span></code> script.   Hence, you should realize the
+docker configuration file defines defaults for required environment
+variables like this one.  They can be changed in <code class="code docutils literal notranslate"><span class="pre">start-mspass.sh</span></code> OR
+by setting the variable name in the job script.</p></li>
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">start-mspass.sh</span></code> script is add to the container by the following block of
+code.</p></li>
+</ul>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="c"># Add startup script</span>
+<span class="k">ADD</span><span class="w"> </span>scripts/start-mspass.sh /usr/sbin/start-mspass.sh
+<span class="k">RUN</span><span class="w"> </span>chmod +x /usr/sbin/start-mspass.sh
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The run line for the <code class="code docutils literal notranslate"><span class="pre">start-mspass.sh</span></code> is tightly linked to this special
+line that is no something users should ever need to alter:</p></li>
+</ul>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/usr/sbin/tini&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;-g&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/usr/sbin/start-mspass.sh&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deploy_mspass_on_HPC.html" class="btn btn-neutral float-left" title="Deploy MsPASS on HPC" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../user_manual/introduction.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

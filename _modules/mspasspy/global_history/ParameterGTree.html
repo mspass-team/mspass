@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.global_history.ParameterGTree &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/clipboard.min.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../../../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>mspasspy.global_history.ParameterGTree</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mspasspy.global_history.ParameterGTree</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">AntelopePf</span>
+<span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="n">AntelopePf2dict</span>
+
+
+<div class="viewcode-block" id="str_to_parameters_dict"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.str_to_parameters_dict">[docs]</a><span class="k">def</span> <span class="nf">str_to_parameters_dict</span><span class="p">(</span><span class="n">parameter_str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Parse the parameter string defined by user into an ordered dict.</span>
+<span class="sd">     The input str should be in the format like &quot;a, b, c=d, e=f, ...&quot;</span>
+<span class="sd">    :param parameter_str: a parameter string defined by user</span>
+<span class="sd">    :return: An OrderedDict of parameters and arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parameters_dict</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+
+    <span class="n">pairs</span> <span class="o">=</span> <span class="n">parameter_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="n">unkeyword_index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">:</span>
+        <span class="n">k_v</span> <span class="o">=</span> <span class="n">pair</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span>
+        <span class="c1">#   unkeyworded para</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">k_v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;arg_</span><span class="si">{arg_index:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arg_index</span><span class="o">=</span><span class="n">unkeyword_index</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">k_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">unkeyword_index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">k_v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">k_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">k_v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">k_v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;Wrong parameter string format: &quot;</span> <span class="o">+</span> <span class="n">parameter_str</span> <span class="o">+</span> <span class="s2">&quot; Fatal&quot;</span>
+            <span class="p">)</span>
+        <span class="n">parameters_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">return</span> <span class="n">parameters_dict</span></div>
+
+
+<div class="viewcode-block" id="params_to_parameters_dict"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.params_to_parameters_dict">[docs]</a><span class="k">def</span> <span class="nf">params_to_parameters_dict</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Capture a function&#39;s parameters, return a dict that stores parameters and arguments.</span>
+<span class="sd">     Filepath arguments will be parsed into python object, and then turned into a dict. Now we support pf files</span>
+<span class="sd">     and yaml files.</span>
+<span class="sd">    :param args: Non-keyworded arguments</span>
+<span class="sd">    :param kwargs: Keyworded arguments</span>
+<span class="sd">    :return: An OrderedDict of parameters and arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parameters_dict</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="c1">#   Iterate over non-keyworded args and store them in dict, each one is assigned a key &quot;arg_1&quot; &quot;arg_2&quot; ...</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;arg_</span><span class="si">{index:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">parameters_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1">#   Iterate over keyworded args and store them in dict</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">parameters_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parameters_dict</span></div>
+
+
+<div class="viewcode-block" id="parse_filepath_in_parameters"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.parse_filepath_in_parameters">[docs]</a><span class="k">def</span> <span class="nf">parse_filepath_in_parameters</span><span class="p">(</span><span class="n">parameters_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Parse the filepath parameters in a function&#39;s parameters dict,</span>
+<span class="sd">     Filepath arguments will be parsed into python object, and then turned into a dict.</span>
+<span class="sd">     Currently we support pf files and yaml files.</span>
+<span class="sd">    :param parameters_dict: parameter dict of a function</span>
+<span class="sd">    :return: An OrderedDict of parameters and arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">check_and_parse_file</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+        <span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pf&quot;</span><span class="p">):</span>
+                <span class="n">pf</span> <span class="o">=</span> <span class="n">AntelopePf</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+                <span class="c1">#   Convert PF into an OrderedDict to coordinate with the GTree</span>
+                <span class="n">pf_value</span> <span class="o">=</span> <span class="n">AntelopePf2dict</span><span class="p">(</span><span class="n">pf</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">pf_value</span>
+            <span class="k">elif</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.yaml&quot;</span><span class="p">):</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">yaml_file</span><span class="p">:</span>
+                    <span class="n">yaml_value</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">yaml_value</span>
+            <span class="c1">#   Currently only support pf and yaml</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;Cannot handle file: &quot;</span> <span class="o">+</span> <span class="n">file_path</span> <span class="o">+</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">arg</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">parameters_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">parameters_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">check_and_parse_file</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parameters_dict</span></div>
+
+
+<div class="viewcode-block" id="parameter_to_GTree"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.parameter_to_GTree">[docs]</a><span class="k">def</span> <span class="nf">parameter_to_GTree</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">parameters_str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     A helper function to parse parameters and build a GTree accordingly. This function would</span>
+<span class="sd">     be used in GlobalHistoryManager to help record the parameters.</span>
+<span class="sd">    :param args: Non-keyworded arguments</span>
+<span class="sd">    :param kwargs: Keyworded arguments</span>
+<span class="sd">    :param parameter_str: a parameter string defined by user</span>
+<span class="sd">    :return: An OrderedDict of parameters and arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">parameters_str</span><span class="p">:</span>
+        <span class="c1">#   preprocess parameters and parse files, store in parsed_args_list and parsed_kwargs_dict</span>
+        <span class="n">parameters_dict</span> <span class="o">=</span> <span class="n">str_to_parameters_dict</span><span class="p">(</span><span class="n">parameters_str</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parameters_dict</span> <span class="o">=</span> <span class="n">params_to_parameters_dict</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">parameters_dict</span> <span class="o">=</span> <span class="n">parse_filepath_in_parameters</span><span class="p">(</span><span class="n">parameters_dict</span><span class="p">)</span>
+    <span class="n">gTree</span> <span class="o">=</span> <span class="n">ParameterGTree</span><span class="p">(</span><span class="n">parameters_dict</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gTree</span></div>
+
+
+<div class="viewcode-block" id="ParameterGTree"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.ParameterGTree">[docs]</a><span class="k">class</span> <span class="nc">ParameterGTree</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for family of objects used to hold an abstraction of a</span>
+<span class="sd">    set of control parameters for a data processing function.   The</span>
+<span class="sd">    base class abstracts the concept of storing such data in an g-tree</span>
+<span class="sd">    structure.  In the documentation here the tree should be pictures as</span>
+<span class="sd">    upright in the biological tree analog. i.e. up mean higher levels in</span>
+<span class="sd">    the tree and down means dropping to lower levels in the tree.</span>
+
+<span class="sd">    This class is inherited from collections.OrderedDict, so users can get</span>
+<span class="sd">    access to the data using common index operation, for example:</span>
+<span class="sd">    gTree[&#39;phases&#39;][&#39;travel_time_calculator&#39;][&#39;taup&#39;][&#39;model_name&#39;]</span>
+<span class="sd">    In addition, user can operate adding, deleting, updating, creating in</span>
+<span class="sd">    the same way as the operations on OrderedDict.</span>
+
+<span class="sd">    Each node of the g-tree may have leaves and/or a set</span>
+<span class="sd">    of branches.   Most simple algorithms need only one node with leaves</span>
+<span class="sd">    made up of name-value pairs.  More complex algorithms often need</span>
+<span class="sd">    the tree structure to describe more complicated data control structures.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct from a MongoDB document, which with pymongo is equivalenced</span>
+<span class="sd">        to a python dict.  Branches are defined by subdocuments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;[Error] Doc must be an OrderedDict.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="o">=</span> <span class="n">doc</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">):</span>
+                    <span class="n">branch</span> <span class="o">=</span> <span class="n">ParameterGTree</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">branch</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">):</span>
+            <span class="c1">#   First check if the input value is already a GTree.</span>
+            <span class="c1">#   if so, we don&#39;t need to construct it.</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ParameterGTree</span><span class="p">):</span>
+                <span class="n">branch</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">branch</span> <span class="o">=</span> <span class="n">ParameterGTree</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_leaf_keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">&quot;[Warning] There already exists a leaf in this GTree with key &#39;</span><span class="si">{leaf_key}</span><span class="s2">&#39;, Please check again.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">leaf_key</span><span class="o">=</span><span class="n">key</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">branch</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_branch_keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">&quot;[Warning] There already exists a branch in this GTree with key &#39;</span><span class="si">{branch_key}</span><span class="s2">&#39;, Please check again.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">branch_key</span><span class="o">=</span><span class="n">key</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;[Warning] The key provided (</span><span class="si">{branch_key}</span><span class="s2">) is not in this GTree, Please check again.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">branch_key</span><span class="o">=</span><span class="n">key</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ParameterGTree.update_control"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.ParameterGTree.update_control">[docs]</a>    <span class="k">def</span> <span class="nf">update_control</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the control doc according to the children in this level.</span>
+<span class="sd">        As the hierarchy data may change in deeper level, so we need to check</span>
+<span class="sd">        every sub tree. It is implemented by recursively updating the control</span>
+<span class="sd">        doc of a tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">branch_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_branch_keys</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">branch_keys</span><span class="p">:</span>
+            <span class="n">branch</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">new_control</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">asdict</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="o">=</span> <span class="n">new_control</span></div>
+
+<div class="viewcode-block" id="ParameterGTree.asdict"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.ParameterGTree.asdict">[docs]</a>    <span class="k">def</span> <span class="nf">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the dictionary representation of the ParameterGTree instance.</span>
+<span class="sd">        This function will first update the internal dictionary control doc.</span>
+<span class="sd">        Its return can be a build-in dict or a collections.OrderedDict,</span>
+<span class="sd">        according to the input when building this GTree.</span>
+
+<span class="sd">        Since ParameterGTree is inheritted from OrderedDict, an instance can be</span>
+<span class="sd">        directed transfered into a dict/OrderedDict without calling this function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_control</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span></div>
+
+<div class="viewcode-block" id="ParameterGTree.get_leaf_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.ParameterGTree.get_leaf_keys">[docs]</a>    <span class="k">def</span> <span class="nf">get_leaf_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the keys for all key-value pairs that are leaves at the current</span>
+<span class="sd">        level of the parameter tree.   For branches this method can be used</span>
+<span class="sd">        to extract leaves at the current level. Return is a dict of key-value</span>
+<span class="sd">        pairs that we are calling the leaves of the tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">leaf_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ParameterGTree</span><span class="p">):</span>
+                <span class="n">leaf_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">leaf_keys</span></div>
+
+<div class="viewcode-block" id="ParameterGTree.get_branch_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.ParameterGTree.get_branch_keys">[docs]</a>    <span class="k">def</span> <span class="nf">get_branch_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the keys for all branches from this level.   Branches are keyed with a keyword</span>
+<span class="sd">        string like leaves.  Branches can be extracted with prune or we can</span>
+<span class="sd">        walk the tree with a set of methods defined below.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">branch_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ParameterGTree</span><span class="p">):</span>
+                <span class="n">branch_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">branch_keys</span></div>
+
+<div class="viewcode-block" id="ParameterGTree.get_branch"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.ParameterGTree.get_branch">[docs]</a>    <span class="k">def</span> <span class="nf">get_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract the contents of a named branch.  Returns a copy of the tree</span>
+<span class="sd">        with the associated key from the branch name upward.  The tree</span>
+<span class="sd">        returned will have the root of the tree set as current.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_branch_keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;[Error] Wrong Key, Please check your input key again.&quot;</span><span class="p">)</span>
+
+        <span class="n">branch</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">branch</span></div>
+
+<div class="viewcode-block" id="ParameterGTree.get_leaf"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.ParameterGTree.get_leaf">[docs]</a>    <span class="k">def</span> <span class="nf">get_leaf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a copy of the key-value pair defined by key.</span>
+<span class="sd">        This function only search for the key in this layer, and won&#39;t return</span>
+<span class="sd">        value stored in higher levels.</span>
+<span class="sd">        To search in the entire tree, use &quot;get&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_leaf_keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;[Error] Wrong Key, Please check your input key again.&quot;</span><span class="p">)</span>
+
+        <span class="n">leaf</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">leaf</span></div>
+
+<div class="viewcode-block" id="ParameterGTree.prune"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.ParameterGTree.prune">[docs]</a>    <span class="k">def</span> <span class="nf">prune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a branch or leaf defined by key from self. Return a copy of the</span>
+<span class="sd">        branch/leaf pruned in the process (like get_branch/get_leaf but self is altered)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;[Error] Wrong Key, Please check your input key again.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_leaf_keys</span><span class="p">():</span>
+            <span class="n">ret_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_leaf</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_branch_keys</span><span class="p">():</span>
+            <span class="n">ret_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret_val</span></div>
+
+<div class="viewcode-block" id="ParameterGTree.get"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.ParameterGTree.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">seperator</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch a value defined by key.  For leaves at the root node the</span>
+<span class="sd">        key can be a simple string.  For a leaf attached at a higher level node</span>
+<span class="sd">        we specify a chain of one or more branch names with keys between</span>
+<span class="sd">        the specified seperator.  Examples (all used default value of seperator):</span>
+<span class="sd">        1.  If we had a leaf node with the key &#39;name&#39; under the branch name</span>
+<span class="sd">            &#39;phases&#39; we use the compound key &#39;phases.name&#39;. Such a tag could, for</span>
+<span class="sd">            example, contain &#39;P&#39; for the seismic to define this set of parameters</span>
+<span class="sd">            as related to the P phase.</span>
+<span class="sd">        2.  Suppose the phases branch was linked to higher level branch with</span>
+<span class="sd">            the key &#39;travel_time_calculator&#39; that had a leaf parameter &#39;taup&#39;</span>
+<span class="sd">            that is itself a branch name with terminal leaf keys under it.</span>
+<span class="sd">            A real life example might be &#39;model_name&#39;.  We would refer to that</span>
+<span class="sd">            leaf with the string &#39;phases.travel_time_calculator.taup.model_name&#39;.</span>
+<span class="sd">            That key might, for example, have he value &#39;iasp91&#39; which could be</span>
+<span class="sd">            passed to obspy&#39;s taup calculator.</span>
+
+<span class="sd">        This method should also support key defined as a python list.   The list</span>
+<span class="sd">        would need to be a set of keys that would define the path to climb the</span>
+<span class="sd">        tree to fetch the desired leaf.  For this form the two examples above</span>
+<span class="sd">        would be represented as follows:</span>
+<span class="sd">        1.  [&#39;phases&#39;,&#39;name&#39;]</span>
+<span class="sd">        2.  [&#39;phases&#39;,&#39;travel_time_calculator&#39;,&#39;taup&#39;,&#39;model_name&#39;]</span>
+
+<span class="sd">        Users can also use the build-in index operation to access the children elements,</span>
+<span class="sd">        which is more natural.</span>
+<span class="sd">        for example:</span>
+<span class="sd">        1.  [&#39;phases&#39;][&#39;name&#39;]</span>
+<span class="sd">        2.  [&#39;phases&#39;][&#39;travel_time_calculator&#39;][&#39;taup&#39;][&#39;model_name&#39;]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key_list</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">key_list</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">seperator</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;The key is empty, please check again.&quot;</span><span class="p">)</span>
+
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">key_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">key_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">root</span><span class="o">.</span><span class="n">get_leaf</span><span class="p">(</span><span class="n">key_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="ParameterGTree.put"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.ParameterGTree.put">[docs]</a>    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        putter with same behavior for compound keys defined for get method.</span>
+<span class="sd">        A put would create a new branch it implies if that branch is not</span>
+<span class="sd">        already present.</span>
+
+<span class="sd">        Same as the setter function, users can also use index to put new</span>
+<span class="sd">        data in GTree here. Please note that when put data using indexes,</span>
+<span class="sd">        new branches won&#39;t be created automatically, and users should add the</span>
+<span class="sd">        intermediate branches themselves.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key_list</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">key_list</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">separator</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;The key is empty, please check again.&quot;</span><span class="p">)</span>
+
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">key_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">branch_level</span> <span class="o">=</span> <span class="n">key_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">branch_level</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">get_leaf_keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">&quot;[Error] Invalid compound Key, there is a leaf with the same name in level &quot;</span>
+                    <span class="o">+</span> <span class="n">branch_level</span>
+                    <span class="o">+</span> <span class="s2">&quot;. Please check your input key again.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">branch_level</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">get_branch_keys</span><span class="p">():</span>
+                <span class="n">root</span><span class="p">[</span><span class="n">branch_level</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterGTree</span><span class="p">()</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">branch_level</span><span class="p">)</span>
+
+        <span class="n">leaf_key</span> <span class="o">=</span> <span class="n">key_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">leaf_key</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">get_branch_keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;[Error] Invalid compound Key, there is a branch with the same name in &quot;</span>
+                <span class="o">+</span> <span class="n">leaf_key</span>
+                <span class="o">+</span> <span class="s2">&quot;. Please check your input key again.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">root</span><span class="p">[</span><span class="n">leaf_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function here is not necessary, user can just use index to add new data,</span>
+<span class="sd">    for example:</span>
+<span class="sd">        root[branch_level] = ParameterGTree()</span>
+
+<span class="sd">    def sprout(self, key, seperator=&quot;.&quot;):</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        Add an empty branch with tag key. Compound keys are as described in</span>
+<span class="sd">        get method above.</span>
+<span class="sd">        Similar to the putter method, but create a branch in the end.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        key_list = key</span>
+<span class="sd">        if isinstance(key, str):</span>
+<span class="sd">            key_list = key.split(seperator)</span>
+
+<span class="sd">        if len(key_list) == 0:</span>
+<span class="sd">            raise MsPASSError(&quot;The key is empty, please check again.&quot;)</span>
+
+<span class="sd">        root = self</span>
+<span class="sd">        for i in range(len(key_list) - 1):</span>
+<span class="sd">            branch_level = key_list[i]</span>
+<span class="sd">            if branch_level in root.get_leaf_keys():</span>
+<span class="sd">                raise MsPASSError(</span>
+<span class="sd">                    &quot;[Error] Invalid compound Key, there is a leaf with the same name in level &quot;</span>
+<span class="sd">                    + branch_level</span>
+<span class="sd">                    + &quot;. Please check your input key again.&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            if branch_level not in root.get_branch_keys():</span>
+<span class="sd">                root[branch_level] = ParameterGTree()</span>
+<span class="sd">            root = root.get_branch(branch_level)</span>
+
+<span class="sd">        branch_key = key_list[-1]</span>
+<span class="sd">        if branch_key in root.get_leaf_keys():</span>
+<span class="sd">            raise MsPASSError(</span>
+<span class="sd">                &quot;[Error] Invalid compound Key, there is a leaf with the same name in &quot;</span>
+<span class="sd">                + branch_key</span>
+<span class="sd">                + &quot;. Please check your input key again.&quot;</span>
+<span class="sd">            )</span>
+<span class="sd">        root[branch_key] = ParameterGTree()</span>
+<span class="sd">    &#39;&#39;&#39;</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

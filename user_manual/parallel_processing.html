@@ -52,8 +52,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_singularity.html">Run MsPASS with Singularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul class="current">
@@ -63,6 +63,7 @@
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
@@ -74,11 +75,15 @@
 <li class="toctree-l2"><a class="reference internal" href="#functional-programming-concepts">Functional Programming Concepts</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#the-map-operator">The map operator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reduce-fold-operators">Reduce/fold operators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#schedulers">Schedulers</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#reduce-fold-operators">Reduce/fold operators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#schedulers">Schedulers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples:</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#atomic-data-example">Atomic Data Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ensemble-example">Ensemble Example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
@@ -155,18 +160,18 @@ Chapter 1 of Daniel (2019) has a particularly useful description using
 a cooking analogy.  Our framework supports two well developed systems
 for handling such problems called Spark and Dask.
 Dask is the default.</p>
-<p>A key perspective on this issue is that classical seismic processing systems
+<p>An important perspective on this issue is that classical seismic processing systems
 concepts are well matched to the DAG Dask and Spark use for scheduling.  Classic
 seismic reflection processing systems runs a data set through a series of
 processing algorithms.  Each processor acts on either a single signal at
 at time (e.g. time-domain filtering) or a group of signals (what we call
 a TimeSeriesEnsmble in MsPASS) to produce an output of one or more modified
-sigals.   e.g. stacking takes an ensemble and produces a single output
+signals.   e.g. stacking takes an ensemble and produces a single output
 while migration takes an input ensemble and produces a (modified) ensemble.
 All these examples can be implemented in MsPASS framework to take advantage
 of the repetitious nature of the processors.  That is, all can be the thought of
 as black boxes that take one or more seismic data objects as input and emit
-more or modified data objects (not necessarily of the same type or number as
+one or more modified data objects (not necessarily of the same type or number as
 the inputs).  A full processing workflow is assembled by chaining a series of
 processing steps with data moving between the processing steps by a system
 dependent process.   Dask and Spark generalize this by fragmenting the processing
@@ -175,7 +180,7 @@ process largely opaque to you as the user.  An added benefit that is less
 obvious is that lower-level parallel granularity is possible for a
 python function designed to exploit the capability.  This user manual,
 however, focuses exclusively on algorithm level granularity.   We refer
-the reader to extensive printed and online documentation for DASK and Spark
+the reader to extensive printed and online documentation for Dask and Spark
 for functionality needed to add parallelism inside an individual python
 function.</p>
 </section>
@@ -186,8 +191,8 @@ A simple way to view the concept is that we aim to break “our data”
 into a finite set of <em>N</em> things (objects) that are each to be handled
 identically.   The raw input to any complete seismic data set fits this
 idea;  the “data set” is a set of <em>N</em> raw signals.  A serial version of
-processing that data set could be reduced to a loop over each of the <em>N</em>
-objects applying some algorithm to each datum one at a time.   In Spark
+processing a typical data set could be reduced to a loop over each of the <em>N</em>
+objects applying one or more algorithms to each datum one at a time.   In Spark
 and Dask the data are treated collectively as a single data set.
 The “data set” is abstracted by a single container that is used
 to symbolically represents the
@@ -196,21 +201,20 @@ computer’s memory.   Spark refers to this abstraction as a
 Resiliant Distributed Dataset (RDD) while Dask calls the same thing a “bag”.</p>
 <p>In MsPASS the normal content of a bag/RDD is a dataset made up of <em>N</em>
 MsPASS data objects:  TimeSeries, Seismogram, or one of the ensemble of
-either of the atomic types.  An implicit assumption in the current
+either of the atomic types.   An implicit assumption in the current
 implementation is that any processing
 was proceeded by a data assembly and validation phase.
 Procedures for data import and data validation
-are described in this section (NEEDS A LINK - this section does not yet exist).
+are described in the section <a class="reference internal" href="importing_data.html#importing-data"><span class="std std-ref">Importing Data</span></a>.
 A key concept here is that “importing” a data set to MsPASS means the
 entire data set has been assembled and loaded either into the gridfs
 file system internal to MongoDB or an index has been built for all data
-stored in files.   (In the future this may also mean data stored on the
-cloud and accessible via a URL, but that has not yet been implemented at the
-time this manual was last updated.)   The entire data set can, if desired, be a mix of the two
+stored in local or cloud-based files.   The entire data set can, if necessary,
+be a mix of the two
 because the MsPASS readers abstract the entire process of loading data
 for processing.  In addition, any required normalization data (i.e.
-data in the <em>site</em>, <em>channel</em>, and/or <em>source</em> collections) must have
-the normalization id’s set on all waveform data that define your data set.
+data in the <em>site</em>, <em>channel</em>, and/or <em>source</em> collections) must be
+loaded and cross-referencing validated as described in <span class="xref std std-ref">database_normalization</span>.
 Once the data set is fully assembled the bag/RDD defining the abstraction of the
 data is easily defined by a variant of the following code section:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">DBClient</span>
@@ -246,9 +250,9 @@ a common concept of a buffered list.</p>
 <h3>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h3>
 <p>A second key concept we utilize for processing algorithms in MsPASS is the
 abstraction of
-<a href="#id1"><span class="problematic" id="id2">`functional programming&lt;https://en.wikipedia.org/wiki/Functional_programming&gt;`__</span></a>,
+<a class="reference external" href="https://en.wikipedia.org/wiki/Functional_programming">functional programming</a>,
 which is a branch of programming founded on
-<a href="#id1"><span class="problematic" id="id3">`lambda calculus&lt;https://en.wikipedia.org/wiki/Lambda_calculus&gt;`__</span></a>.
+<a class="reference external" href="https://en.wikipedia.org/wiki/Lambda_calculus">lambda calculus</a>.
 For most seismologists that abstraction is likely best treated only as
 a foundational concept that may or may not be helpful depending on your
 background. It is important, however,
@@ -264,13 +268,22 @@ a bag or RDD.  There are two forms we use in MsPASS with these general forms:</p
 </div>
 <p>Noting that Spark calls the later operation the (more common) name <em>reduce</em>.</p>
 <p>These two constructs can be thought of as black boxes that handle inputs
-as illustrated below:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>simple figure here showing map and reduce in a graphical form -</p></li>
-</ul>
-</div></blockquote>
-<p>We expand on each of these constructs below.</p>
+as illustrated below in Figure <code class="xref std std-numref docutils literal notranslate"><span class="pre">map_reduce_figure</span></code>:</p>
+<figure class="align-center" id="id2">
+<span id="map-reduce"></span><a class="reference internal image-reference" href="../_images/map_reduce.png"><img alt="../_images/map_reduce.png" src="../_images/map_reduce.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 6 </span><span class="caption-text">Figure <code class="xref std std-numref docutils literal notranslate"><span class="pre">map_reduce_figure</span></code>.  Illustration of map-reduce concepts.
+The boxes labeled “Transformation” are map operators and those
+labeled “Action” are reduce operators.  Both are alternative terms used
+by some sources for the same concepts. The top boxes illustrate the
+overall workflow as four steps.   The middle section shows how that
+would be fragmented and handled as distinct tasks by Spark (Dask is similar).
+The lower set of boxes illustrate how other component of MsPASS interact
+with Spark/Dask.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>We expand on the map/transformation and reduce/action operators in subsection
+below.</p>
 </section>
 <section id="the-map-operator">
 <h3>The map operator<a class="headerlink" href="#the-map-operator" title="Permalink to this headline"></a></h3>
@@ -280,10 +293,10 @@ but not always (e.g the <em>bundle</em> algorithm takes a TimeSeriesEnsemble as
 and input and emits a SeismogramEnsemble).   A concrete example for
 the application of a simple filter in dask is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume dbhandle is set as a Database class as above</span>
-<span class="n">cursor</span><span class="o">=</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
-<span class="n">d_in</span><span class="o">=</span><span class="n">read_distributed_data</span><span class="p">(</span><span class="n">dbhandle</span><span class="p">,</span><span class="n">cursor</span><span class="p">)</span>
-<span class="n">d_out</span><span class="o">=</span><span class="n">d_in</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
-<span class="n">d_compute</span><span class="o">=</span><span class="n">d_out</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">dbhandle</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
+<span class="n">d_in</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">dbhandle</span><span class="p">,</span><span class="n">cursor</span><span class="p">)</span>
+<span class="n">d_out</span> <span class="o">=</span> <span class="n">d_in</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+<span class="n">d_compute</span> <span class="o">=</span> <span class="n">d_out</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>This example applies the obpsy default bandpass filter to all data
@@ -295,7 +308,10 @@ output in the created (new) bag <em>d_out</em>.    The last line is way you tell
 “go” (i.e. proceed with the calculations) and store the computed result in the <em>d_compute</em>.
 The idea and reasons for the concept of of “lazy” or “delayed”
 operation is discussed at length in various sources on dask (and Spark).
-We refer the reader to (LIST OF A FEW KEY URLS) for more on this general topic.</p>
+We refer the reader to online sources easily found by searching for
+the keyword for more on this general topic.
+The final output, which we chose above to give a new symbol name
+of <code class="code docutils literal notranslate"><span class="pre">d_compute</span></code>, is a list containing the processed data.</p>
 <p>The same construct in Spark, unfortunately, requires a different set of
 constructs for two reasons:  (1) pyspark demands a functional
 programming construct called a lambda function, and (2) spark uses a
@@ -311,40 +327,47 @@ example is the translation of the above to Spark:</p>
 </div>
 <p>Notice the call to map in spark needs to be preceded by a call to the <em>parallelize</em>
 method of the SparkContext object, which is called inside <em>read_distributed_data</em>.
-That operator is more or less a constructor for the container (what Spark calls and RDD) d_out.
+That operator is more or less a constructor for the container that Spark
+calls an RDD that is assigned the symbol d_out in the example above.
 The following line, which from a programming perspective is a call to the map method of the RDD we call
 d_out, uses the functional programming construct of a lambda function.
 This tutorial in <a class="reference external" href="https://realpython.com/python-lambda/">realpython.com</a>
 and <a class="reference external" href="https://www.w3schools.com/python/python_lambda.asp">this one</a> by w3schools.com
 are good starting points.</p>
-</section>
+<p>Both scripts create a final processed data set python associates
+with the symbol <code class="code docutils literal notranslate"><span class="pre">d_compute</span></code>.   A potentially confusing issue for
+beginners is that the content of <code class="code docutils literal notranslate"><span class="pre">d_compute</span></code> are largely opaque.
+The reason is that both a bag and RDD are designed to handle a data set
+that will not fit in memory.  Dask and Spark have different methods
+for disaggregating the container, but most MsPASS workflows would normally
+terminate with a database save operation.</p>
 </section>
 <section id="reduce-fold-operators">
-<h2>Reduce/fold operators<a class="headerlink" href="#reduce-fold-operators" title="Permalink to this headline"></a></h2>
+<h3>Reduce/fold operators<a class="headerlink" href="#reduce-fold-operators" title="Permalink to this headline"></a></h3>
 <p>A second parallel construct we use is the the <cite>Reduce</cite> clause of the <cite>MapReduce</cite>
 paradigm that was a core idea in Hadoop
 (see for example the document in <a class="reference external" href="https://www.talend.com/resources/what-is-mapreduce/">this link</a> )
-that was adopted by both Spark and Dask.</p>
+that was the ancestor of both Spark and Dask.</p>
 <p>The generic problem of stacking (averaging) a set of signals
 is an example familiar to all seismologists that can be used to illustrate
 what a <cite>Reduce</cite> operator is.
 The following is a crude MsPASS serial implementation of
 stacking all the members of an ensemble:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ensemble</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">read_ensemble_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
-<span class="n">stack</span><span class="o">=</span><span class="n">TimeSeries</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-  <span class="n">stack</span> <span class="o">+=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_ensemble_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+<span class="n">stack</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">stack</span> <span class="o">+=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>That code is pretty simple because the += operator is defined for the TimeSeries
 class and handles time mismatches.  It is not robust for several reasons and
 could be done other ways, but that is not the key point.  The point is
 that the operation is summing a set of TimeSeries objects to produce the
-single result stored with the symbol <cite>stack</cite>.</p>
+single result stored with the symbol <code class="code docutils literal notranslate"><span class="pre">stack</span></code>.</p>
 <p>We will get to the rules that constrain <cite>Reduce</cite> operators in a moment, but
 it might be more helpful to you as a user to see how that algorithm
-translates into dask/spark.  MsPASS has a parallel stack algorithm described
-<a href="#id4"><span class="problematic" id="id5">`here&lt;&gt;`_</span></a>  It is used in a parallel context as follows for dask:</p>
+translates into dask/spark.  MsPASS has a parallel <a class="reference internal" href="../python_api/mspasspy.reduce.html#mspasspy.reduce.stack" title="mspasspy.reduce.stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">stack</span></code></a> algorithm.
+It is used in a parallel context as follows for dask:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">ddb</span><span class="o">.</span><span class="n">fold</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">stack</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -352,24 +375,29 @@ translates into dask/spark.  MsPASS has a parallel stack algorithm described
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">rdd</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">stack</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>The <em>stack</em> symbol refers to a python function that is actually quite simple. You can view
-the source code <a href="#id6"><span class="problematic" id="id7">`here&lt;https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py&gt;`_</span></a>.
+<p>The <a class="reference internal" href="../python_api/mspasspy.reduce.html#mspasspy.reduce.stack" title="mspasspy.reduce.stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">stack</span></code></a> symbol refers to a python function that is actually quite simple. You can view
+the source code <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py">here</a>.
 It is simple because most of the complexity is hidden behind the +=
 symbol that invokes that operation in C++ (<cite>TimeSeries::operator+=</cite> for anyone
 familiar with C++) to add the right hand side to the left hand side of
 the operator.  The python function is also simplified significantly by
 the use of python decorator defined by this line in the stack source code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@mspass_reduce_func_wrapper</span>
+</pre></div>
+</div>
 <p>which is a generic wrapper to adapt any suitable reduce function to MsPASS.</p>
 <p>The final issue we need to cover in this section is what exactly is meant
 by the phrase “any suitable reduce function” at the end of the previous paragraph?
 To mesh with the reduce framework used by spark and dask a function has
-to satisfy the following rules (need a source):</p>
-<p>1. The first two arguments (a and b symbols in the example above)
+to satisfy <a class="reference external" href="https://en.wikipedia.org/wiki/Reduction_operator">the following rules</a></p>
+<ol class="arabic simple">
+<li><p>The first two arguments (a and b symbols in the example above)
 must define two instances of the same type
-that are to be combined in some way.
-2. The function must return an object of the same type as the inputs.
-3. The combination algorithm must be commutative.</p>
-<p>The commutative restriction arises because in a parallel setting a type
+that are to be combined in some way.</p></li>
+<li><p>The function must return an object of the same type as the inputs.</p></li>
+<li><p>The combination algorithm must be commutative and associative.</p></li>
+</ol>
+<p>The commutative and associative restriction arises because in a parallel setting a type
 reduce operation like a summation is done on multiple processors and
 eventually summed to a single output.  Which processor does what part of the
 sum is completely determined by the scheduler so an order cannot be
@@ -384,7 +412,7 @@ summation loop into a reduce operator can parallelize the loop.  Users
 should consider that approach in writing pure python algorithms.</p>
 </section>
 <section id="schedulers">
-<h2>Schedulers<a class="headerlink" href="#schedulers" title="Permalink to this headline"></a></h2>
+<h3>Schedulers<a class="headerlink" href="#schedulers" title="Permalink to this headline"></a></h3>
 <p>As noted previously MsPASS currently supports two different schedulers:
 Dask (the default) and Spark.   Both do very similar things but are known
 to perform differently in different cluster environments.  Users needing to
@@ -405,71 +433,90 @@ Spark is Scalar.  PySpark is the python api.)
 and Dask (Python is the native tongue of Dask.) is pickle.   It is important
 to recognize that if you write your own application in this framework the
 data object you pass to map and reduce operators must have a pickle operator
-defined.</p>
-<p>Also, another limit on scalability of this framework is before the computations, dask
-would create a task graph for task scheduling. In task scheduling we break our program
-into many medium-sized tasks or units of computation, often a function call on a non-trivial
-amount of data. We represent these tasks as nodes in a graph with edges between nodes
-if one task depends on data produced by another. We call upon a task scheduler to execute
+defined.  That function needs to be as fast as possible as it will be
+called a lot in a parallel environment.</p>
+<p>Another limit on scalability of this framework is that before the computations,
+Dask and Spark need to create a task graph for task scheduling.
+Task scheduling breaks your program
+into many medium-sized tasks or units of computation.
+These tasks are typically a function call which in MsPASS
+usually involves passing a non-trivial amount of data to the task
+(one or more seismic data objects).
+The schedulers represent these tasks as nodes in a graph
+with links between nodes defining how data moves between tasks.
+The task scheduler uses
 this graph in a way that respects these data dependencies and leverages parallelism where
-possible, multiple independent tasks can be run simultaneously. Usually, this scheduling
-overhead is relatively small if your function would execute for a few seconds. However, if
-the task is finished instantly, this overhead would be magnified and may affect your
-performance results.</p>
-<p>For more information, you can view the dask documentation
-<a href="#id8"><span class="problematic" id="id9">`here&lt;https://docs.dask.org/en/latest/scheduling.html&gt;`_</span></a>.</p>
+possible.  Multiple independent tasks can be run simultaneously that are
+are data driven. Usually this scheduling
+overhead is relatively small unless the execution time for
+processing is trivial.</p>
+<p>For more information, the dask documentation found
+<a class="reference external" href="https://docs.dask.org/en/latest/scheduling.html">here</a> is a good
+starting point..</p>
 </section>
-<section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline"></a></h2>
-<p>In order to leverage the parallel processing ability in our system, we could take advantage of
-the HPC systems and cluster environment. Since we are using Stamepde2 to test our framework, here
-we would show how to configure MsPASS on Stampede2.</p>
-<p>First of all, we need to specify the sbatch options on Stampede2 to submit a job because we can’t
-run things on login nodes. Instead, we should submit a job to the compute nodes and the job script here
-is used to tell the compute nodes that what is needed to be executed.</p>
-<p>The example sbatch options are as follows and they are self explanatory. For more information, you could
-refer to the Stamepde2 <a href="#id10"><span class="problematic" id="id11">`User Guide&lt;https://portal.tacc.utexas.edu/user-guides/stampede2&gt;`_</span></a>.</p>
-<p>It basically means we request for 2 compute nodes from the normal queue and both two nodes will be alive
-up to 2 hours and the output of the job script would be viewd in the mspass.o(job_id) file.</p>
-<p>There are two ways we could deploy our system on stampede2, which are single node mode and distributed mode.
-You could refer those two job script in our /scripts/tacc_examples folder in our source code. Here we would
-introduce the common parts and elements in both scripts.</p>
-<p>In both modes, we would specify the working directory and the place we store our docker image. That’s why
-these two lines are in the job scripts:</p>
-<p>The paths for these two variables can be changed according to your case and where you want to store the image.
-And it doesn’t matter if the directory doesn’t exist, the job script would create one if needed.</p>
-<p>Then we define the SING_COM variable to simplify the workflow in our job script. On Stampede2 and most of HPC
-systems, we use Singularity to manage and run the docker images. There are many options to start a container
-using singularity, which you could refer to their documentation. And for those who are not familiar with Singularity,
-here is a good <a href="#id12"><span class="problematic" id="id13">`source&lt;https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html&gt;`_</span></a>
-to get start with.</p>
-<p>Then we create a login port based on the hostname of our primary compute node we have requested. The
-port number is created in a way that guaranteed to be unique and availale on your own machine. After the
-execution of your job script, you would get the ouput file, and you could get the url for accessing the
-notebook running on your compute node. However, from you own computer, you should use this login port to
-access it instead of 8888 which typically is the port we will be using in jupyter notebook because
-we reserve the port for transmitting all the data and bits through the reverse tunnel.</p>
-<p>Next, we create reverse tunnel port to login nodes and make one tunnel for each login so the user can just
-connect to stampede.tacc. The reverse ssh tunnel is a tech trick that could make your own machine connect to
-the machines in the private TACC network.</p>
-<p>For single node mode, the last thing we need to do is to start a container using the command we defined
-before:</p>
-<p>Here we set the environment variables inside the container using this syntactic sugar SINGULARITYENV_XXX.
-For more information, you could view the usage`here&lt;<a class="reference external" href="https://sylabs.io/guides/3.0/user-guide/appendix.html">https://sylabs.io/guides/3.0/user-guide/appendix.html</a>&gt;`_.
-We define and set different variables in different containers we start because in our start-mspass.sh, we
-define different bahavior under different <em>MSPASS_ROLE</em> so that for each role, it will execute the bash
-script we define in the start-mspass.sh. Though it looks complicated and hard to extend, this is prabably
-the best way we could do under stampede2 environment. In above code snippet, we basically start the container
-in all-in-one way.</p>
-<p>There are more other ways we start a container and it depends on what we need for the deployment. You could
-find more in the distributed_node.sh job script. For example, we start a scheduler, a dbmanager and a front-end
-jupyter notebook in our primary compute node and start a spark/dask worker and a MongoDB shard replica on each
-of our worker nodes. Also you could find that the environment variables needed are different and you could find
-the corresponding usage in the start-mspass.sh script in our source code. We hide the implementation detail and
-encapsulate it inside the Dockerfile. One more thing here is we specify number of nodes in our sbatch options,
-for example 4, stampede2 would reserve 4 compute nodes for us, and we would use 1 node as our primary
-compute nodes and 3 nodes as our worker nodes. Therefore, if you need 4 worker nodes, you should sepcify 5
-as your sbatch option for nodes.</p>
+</section>
+<section id="examples">
+<h2>Examples:<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h2>
+<section id="atomic-data-example">
+<h3>Atomic Data Example<a class="headerlink" href="#atomic-data-example" title="Permalink to this headline"></a></h3>
+<p>The simplest workflow is one that works only with atomic
+data (i.e. TimeSeries or Seismogram objects).  The example
+in the Data Model section above is of this type.
+The following fragment is similar with a few additional processing steps.
+It reads all data indexed in the data base as Seismogram objects,
+runs a demean operator,
+runs a simple bandpass filter, windows the data to a smaller range
+defined by the window_seis function defined at he top, it
+using the data start time, and then saves the results.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
+<span class="c1"># read -&gt; detrend -&gt; filter -&gt; window</span>
+<span class="c1"># example uses dask scheduler</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span><span class="s1">&#39;demean&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="c1"># windowing is relative to start time.  300 s window starting at d.t0+200</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">t0shift</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">))</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
+<span class="n">data_out</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="ensemble-example">
+<h3>Ensemble Example<a class="headerlink" href="#ensemble-example" title="Permalink to this headline"></a></h3>
+<p>This example shows a common construct used to build ensembles as the
+working data object.  In this case the workflow is working with what
+in reflection processing would be called a common-source-gather.
+It uses a construct that exploits MongoDB’s functionality for selecting
+data.  It also demonstrates how a map operator can have drastically
+different inputs than outputs.   In this case, we first assemble
+a list of sources to be process defined by the <code class="code docutils literal notranslate"><span class="pre">source_id</span></code> attribute.
+This example uses a MongoDB incantation to get a list of unique source_id values.
+It then converts the list to a dask bag (<code class="code docutils literal notranslate"><span class="pre">bag.from_sequence</span></code> line).
+We then apply the custom function defined at the top of this code block to
+query MongoDB and return a ensemble of all data with that particular source id.
+It then applies a set of signal processing algorithms similar to above noting
+how the MsPASS functions automatically handle the type switch.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">read_common_source_gather</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="p">,</span><span class="n">srcid</span><span class="p">):</span>
+  <span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
+  <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span> <span class="p">:</span> <span class="n">srcid</span> <span class="p">}</span>
+  <span class="c1"># note with logic of this use we don&#39;t need to test for</span>
+  <span class="c1"># no matches because distinct returns only not null source_id values dbcol</span>
+  <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+  <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_ensemble</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">ensemble</span>
+
+<span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span>
+<span class="n">srcidlist</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">srcidlist</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">srcid</span> <span class="p">:</span> <span class="n">read_common_source_gather</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">,</span> <span class="n">srcid</span><span class="p">))</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span> <span class="s1">&#39;demean&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="c1"># windowing is relative to start time.  300 s window starting at d.t0+200</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">t0shift</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">))</span>
+<span class="n">data_out</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 

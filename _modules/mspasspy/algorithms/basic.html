@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.algorithms.basic &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/clipboard.min.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../../../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>mspasspy.algorithms.basic</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mspasspy.algorithms.basic</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">mspasspy.util.decorators</span> <span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">LinearTaper</span><span class="p">,</span> <span class="n">CosineTaper</span><span class="p">,</span> <span class="n">VectorTaper</span>
+
+
+<div class="viewcode-block" id="ator"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.ator">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">ator</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">tshift</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Absolute to relative time conversion.</span>
+
+<span class="sd">    Sometimes we want to convert data from absolute time (epoch times)</span>
+<span class="sd">    to a relative time standard.  Examples are conversions to travel</span>
+<span class="sd">    time using an event origin time or shifting to an arrival time</span>
+<span class="sd">    reference frame. This operation simply switches the tref</span>
+<span class="sd">    variable and alters t0 by tshift.</span>
+
+<span class="sd">    :param data: data object to be converted.</span>
+<span class="sd">    :type data: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">    :param tshift: time shift applied to data before switching data to relative time mode.</span>
+<span class="sd">    :type tshift: :class:`float`</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
+<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">     define the key used to set that field in the data that is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">ator</span><span class="p">(</span><span class="n">tshift</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="rtoa"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rtoa">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">rtoa</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Relative to absolute time conversion.</span>
+
+<span class="sd">    Sometimes we want to convert data from relative time to</span>
+<span class="sd">    to an UTC time standard.  An example would be converting</span>
+<span class="sd">    segy shot data to something that could be processed like earthquake</span>
+<span class="sd">    data in a css3.0 database. This function returns data</span>
+<span class="sd">    previously converted to relative back to UTC using the</span>
+<span class="sd">    internally stored time shift attribute.</span>
+
+<span class="sd">    :param data: data object to be converted.</span>
+<span class="sd">    :type data: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
+<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">     define the key used to set that field in the data that is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">rtoa</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="rotate"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rotate">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">rotate_param</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rotate data using a P wave type coordinate definition.</span>
+
+<span class="sd">    This function can apply three different types of rotation depending on the type of parameter given.</span>
+<span class="sd">    If a :class:`~mspasspy.ccore.utility.SphericalCoordinate` is given, it will rotate the data</span>
+<span class="sd">    into a coordinate system defined by the direction defined by the spherical coordinate.  The data are</span>
+<span class="sd">    rotated such that x1 becomes the transverse component, x2 becomes radial, and x3 becomes longitudinal.</span>
+
+<span class="sd">    If an unite vector of three components that defines the direction of x3 direction (longitudinal) is give,</span>
+<span class="sd">    it will turn the vector into a :class:`~mspasspy.ccore.utility.SphericalCoordinate` object and calles the</span>
+<span class="sd">    related rotate with it.</span>
+
+<span class="sd">    If a :class:`float` number is given, it will rotate the horizontal components by this much angle in radians.</span>
+
+<span class="sd">    :param data: data object to be rotated.</span>
+<span class="sd">    :type data: :class:`~mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">    :param rotate_param: the parameter that defines the rotation.</span>
+<span class="sd">    :type rotate_param: see above for details.</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
+<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">     define the key used to set that field in the data that is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">rotate_param</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="rotate_to_standard"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rotate_to_standard">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">rotate_to_standard</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply inverse transformation matrix to return data to cardinal direction components.</span>
+
+<span class="sd">    It is frequently necessary to make certain a set of three component data are oriented</span>
+<span class="sd">    to the standard reference frame (EW, NS, Vertical).  This function does this.</span>
+<span class="sd">    For efficiency it checks the components_are_cardinal variable and does nothing if</span>
+<span class="sd">    it is set true.  Otherwise, it applies the inverse transformation and then sets this variable true.</span>
+<span class="sd">    Note even if the current transformation matrix is not orthogonal it will be put back into</span>
+<span class="sd">    cardinal coordinates.</span>
+
+<span class="sd">    :param data: data object to be rotated.</span>
+<span class="sd">    :type data: :class:`~mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
+<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">     define the key used to set that field in the data that is returned.</span>
+<span class="sd">    :exception: :class:`~mspasspy.ccore.utility.MsPASSError` thrown if the an inversion of the</span>
+<span class="sd">        transformation matrix is required and that matrix is singular.  This can happen if the</span>
+<span class="sd">        transformation matrix is incorrectly defined or the actual data are coplanar.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">rotate_to_standard</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="free_surface_transformation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.free_surface_transformation">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">free_surface_transformation</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">uvec</span><span class="p">,</span>
+    <span class="n">vp0</span><span class="p">,</span>
+    <span class="n">vs0</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes and applies the Kennett [1991] free surface transformation matrix.</span>
+
+<span class="sd">    Kennett [1991] gives the form for a free surface transformation operator</span>
+<span class="sd">    that reduces to a nonorthogonal transformation matrix when the wavefield is</span>
+<span class="sd">    not evanescent.  On output x1 will be transverse, x2 will be SV (radial),</span>
+<span class="sd">    and x3 will be longitudinal.</span>
+
+<span class="sd">    :param data: data object to be transformed.</span>
+<span class="sd">    :type data: :class:`~mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">    :param uvec: slowness vector of the incident wavefield</span>
+<span class="sd">    :type uvec: :class:`~mspasspy.ccore.seismic.SlownessVector`</span>
+<span class="sd">    :param vp0: Surface P wave velocity</span>
+<span class="sd">    :type vp0: :class:`float`</span>
+<span class="sd">    :param vs0: Surface S wave velocity.</span>
+<span class="sd">    :type vs0: :class:`float`</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
+<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">     define the key used to set that field in the data that is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">free_surface_transformation</span><span class="p">(</span><span class="n">uvec</span><span class="p">,</span> <span class="n">vp0</span><span class="p">,</span> <span class="n">vs0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="transform"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.transform">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">transform</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">matrix</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies an arbitrary transformation matrix to the data.</span>
+
+<span class="sd">    i.e. after calling this function the data will have been multiplied by the matrix</span>
+<span class="sd">    and the transformation matrix will be updated.  The later allows cascaded</span>
+<span class="sd">    transformations to data.</span>
+
+<span class="sd">    :param data: data object to be transformed.</span>
+<span class="sd">    :type data: :class:`~mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">    :param matrix: a 3x3 matrix that defines the transformation.</span>
+<span class="sd">    :type matrix: :class:`numpy.array`</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
+<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">     define the key used to set that field in the data that is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="linear_taper"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.linear_taper">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">linear_taper</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">t0head</span><span class="p">,</span>
+    <span class="n">t1head</span><span class="p">,</span>
+    <span class="n">t1tail</span><span class="p">,</span>
+    <span class="n">t0tail</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Taper front and/or end of a data object with a linear taper.</span>
+
+<span class="sd">    Linear tapers are defined here as a time spanning a ramp running from 0 to 1.</span>
+<span class="sd">    Data will be zeroed on each end of a 0 mark and a linear weight applied between</span>
+<span class="sd">    0 points and 1 points.  Postive ramp slope on left and negative slope ramp on</span>
+<span class="sd">    right. Setting t0 == t1 will disable the taper on the specified end (e.g., t0head == t1head).</span>
+
+<span class="sd">    :param data: data object to be processed.</span>
+<span class="sd">    :type data: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">    :param t0head: t0 of the head taper</span>
+<span class="sd">    :type t0head: :class:`float`</span>
+<span class="sd">    :param t1head: t1 of the head taper</span>
+<span class="sd">    :type t1head: :class:`float`</span>
+<span class="sd">    :param t1tail: t1 of the tail taper</span>
+<span class="sd">    :type t1tail: :class:`float`</span>
+<span class="sd">    :param t0tail: t0 of the tail taper</span>
+<span class="sd">    :type t0tail: :class:`float`</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
+<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">     define the key used to set that field in the data that is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">taper</span> <span class="o">=</span> <span class="n">LinearTaper</span><span class="p">(</span><span class="n">t0head</span><span class="p">,</span> <span class="n">t1head</span><span class="p">,</span> <span class="n">t1tail</span><span class="p">,</span> <span class="n">t0tail</span><span class="p">)</span>
+    <span class="n">taper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cosine_taper"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.cosine_taper">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">cosine_taper</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">t0head</span><span class="p">,</span>
+    <span class="n">t1head</span><span class="p">,</span>
+    <span class="n">t1tail</span><span class="p">,</span>
+    <span class="n">t0tail</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Taper front and/or end of a data object with a half cosine function.</span>
+
+<span class="sd">    A cosine taper is a common, simple approach to taper data.  When applied at the</span>
+<span class="sd">    front it defnes a half cycle of a cosine curve +1.0 in range -pi to 0.  On</span>
+<span class="sd">    the right it defines the same function for the range 0 to pi.  The period</span>
+<span class="sd">    of the left and right operator can be different.  Turn off left or right by</span>
+<span class="sd">    giving illegal start and end points and the operator will silently be</span>
+<span class="sd">    only one sided.</span>
+
+<span class="sd">    :param data: data object to be processed.</span>
+<span class="sd">    :type data: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">    :param t0head: t0 of the head taper</span>
+<span class="sd">    :type t0head: :class:`float`</span>
+<span class="sd">    :param t1head: t1 of the head taper</span>
+<span class="sd">    :type t1head: :class:`float`</span>
+<span class="sd">    :param t1tail: t1 of the tail taper</span>
+<span class="sd">    :type t1tail: :class:`float`</span>
+<span class="sd">    :param t0tail: t0 of the tail taper</span>
+<span class="sd">    :type t0tail: :class:`float`</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
+<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">     define the key used to set that field in the data that is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">taper</span> <span class="o">=</span> <span class="n">CosineTaper</span><span class="p">(</span><span class="n">t0head</span><span class="p">,</span> <span class="n">t1head</span><span class="p">,</span> <span class="n">t1tail</span><span class="p">,</span> <span class="n">t0tail</span><span class="p">)</span>
+    <span class="n">taper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="vector_taper"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.vector_taper">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">vector_taper</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">taper_array</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply a general taper defined by a vector to the data object.</span>
+
+<span class="sd">    This method provides a simple way to build a taper from a set of uniformly</span>
+<span class="sd">    spaced points. The apply methods will dogmatically only accept input</span>
+<span class="sd">    data of the same length as the taper defined in the operator.</span>
+
+<span class="sd">    :param data: data object to be processed.</span>
+<span class="sd">    :type data: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">    :param taper_array: the array that defines the taper</span>
+<span class="sd">    :type taper_array: :class:`numpy.array`</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
+<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">     define the key used to set that field in the data that is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">taper</span> <span class="o">=</span> <span class="n">VectorTaper</span><span class="p">(</span><span class="n">taper_array</span><span class="p">)</span>
+    <span class="n">taper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -52,8 +52,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_singularity.html">Run MsPASS with Singularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul class="current">
@@ -82,6 +82,7 @@
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
@@ -160,13 +161,13 @@ MsPASS as <code class="code docutils literal notranslate"><span class="pre">Time
 </div>
 <div class="line-block">
 <div class="line">These data objects were designed to simply interactions with MongoDB.
-MongoDB is completely flexible in attributes names handled by the
+MongoDB is completely flexible in attribute names handled by the
 database.  In all cases, the components of a data object should be conceptualized
 as four distinct components handled separately and discussed in more detail
 below:</div>
 </div>
 <ol class="arabic simple">
-<li><p>The waveform data (normally largest in size).</p></li>
+<li><p>The waveform data (normally the largest in size).</p></li>
 <li><p>A generalization of the traditional concept of a trace header.  These
 are accessible as simple name value pairs but the value can be anything.
 It is a bit like a python dictionary, but implemented with standard C++.</p></li>
@@ -186,7 +187,7 @@ and <code class="code docutils literal notranslate"><span class="pre">Seismogram
 <div class="line-block">
 <div class="line">The C++ objects have wrappers for python that hide implementation details from
 the user.   All MongoDB operations implemented with the pymongo
-package using these wrappers.   Compute intensive numerical operations on the sample
+package use these wrappers.   Compute intensive numerical operations on the sample
 data should either be written in C/C++ with their own wrappers or
 exploit numpy/scipy numerical routines.   The later is possible
 because the wrappers make the data arrays look like numpy arrays.</div>
@@ -206,12 +207,12 @@ the original code can be found
 <a class="reference external" href="https://github.com/antelopeusersgroup/antelope_contrib/tree/master/lib/seismic/libseispp">here</a>
 in github, and doxygen generated pages comparable to those found with
 this package can be found
-<a class="reference external" href="http://www.indiana.edu/%7Epavlab/software/seispp/html/index.html">here</a>.</div>
+<a class="reference external" href="https://pavlab.sitehost.iu.edu/software/seispp/index.html">here</a>.</div>
 </div>
 <div class="line-block">
 <div class="line">To design the core data objects from this older library we followed
 standard advice and mostly burned the original code keeping only the most
-generic to handle concepts the authors had found essential over the
+generic components needed to handle concepts the authors had found essential over the
 years.   The revisions followed these guidelines:</div>
 </div>
 <ul class="simple">
@@ -430,7 +431,7 @@ data to an absolute time standard when the true time is not well
 constrained.</div>
 </div>
 <div class="line-block">
-<div class="line">For an expanded discussion on this topic go here (need a link to time_standard_constraints.rst).</div>
+<div class="line">For an expanded discussion on this topic go <a class="reference internal" href="time_standard_constraints.html#time-standard-constraints"><span class="std std-ref">here</span></a>.</div>
 </div>
 </section>
 <section id="metadata-concepts">
@@ -453,12 +454,12 @@ key word and that can contain any valid data.   For example, a typical
 obspy script will contain a line like the following to fetch the station
 name from a Trace object <code class="code docutils literal notranslate"><span class="pre">d</span></code>.</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sta</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">Stats</span><span class="p">[</span><span class="s2">&quot;station]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sta</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">Stats</span><span class="p">[</span><span class="s2">&quot;station&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="line-block">
-<div class="line">In MsPASS we use a similar concept building on Pavlis’s SEISPP library
-developed originally a number of years before obspy.   The Metadata
+<div class="line">In MsPASS we use a similar concept based on Pavlis’s SEISPP library
+but developed a number of years before obspy.   The Metadata
 object in MsPASS, however, has additional features not in the older
 SEISPP version.</div>
 </div>
@@ -468,8 +469,8 @@ data much like a python dictionary.   The current implementation uses
 the <a class="reference external" href="https://theboostcpplibraries.com/boost.any">any</a> library that
 is part of the widely used boost library.   In a C++ program Metadata
 can contain any data that, to quote the documentation from boost, is “copy
-constructable”.  Thus Metadata acts much like a python dict in put
-operation and get operations within a python program.</div>
+constructable”.  Thus Metadata acts much like a python dict using put
+and get operations within a python program.</div>
 </div>
 <div class="line-block">
 <div class="line">The flexibility of either a python dict or Metadata present a serious
@@ -539,7 +540,7 @@ contrived code segment:</div>
 </pre></div>
 </div>
 <div class="line-block">
-<div class="line">There are parallel strongly-typed “putters”:</div>
+<div class="line">There are comparable, strongly-typed “putters”:</div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="s2">&quot;t0_shift&quot;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
 <span class="n">d</span><span class="o">.</span><span class="n">put_int</span><span class="p">(</span><span class="s2">&quot;evid&quot;</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
@@ -640,7 +641,7 @@ of understanding how to use this feature to planned tutorials.</div>
 <section id="scalar-versus-3c-data">
 <h3>Scalar versus 3C data<a class="headerlink" href="#scalar-versus-3c-data" title="Permalink to this headline"></a></h3>
 <div class="line-block">
-<div class="line">MsPASS currently supports two different data objects:   TimeSeries objects are
+<div class="line">MsPASS currently supports two different atomic data objects:   TimeSeries objects are
 used to store single channel data while Seismogram objects are used to store
 data from three component instruments.  TimeSeries objects are based
 on the standard concept for storing scalar data that has been around

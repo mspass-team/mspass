@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Introduction" href="../user_manual/introduction.html" />
-    <link rel="prev" title="Run MsPASS with Singularity" href="run_mspass_with_singularity.html" />  
+    <link rel="next" title="MsPASS Setup In-Depth Overview" href="getting_started_overview.html" />
+    <link rel="prev" title="Deploy MsPASS with Docker Compose" href="deploy_mspass_with_docker_compose.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -52,13 +52,15 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
-<li class="toctree-l1"><a class="reference internal" href="run_mspass_with_singularity.html">Run MsPASS with Singularity</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Deploy MsPASS on HPC</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction-to-singularity">Introduction to Singularity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-mspass-container">Create MsPASS Container</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick Start</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#configuration-for-single-node-script">Configuration for Single Node script</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#configuration-for-distributed-node-script">Configuration for Distributed Node Script</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul>
@@ -68,6 +70,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
@@ -135,16 +138,36 @@
 </style>
 <section id="deploy-mspass-on-hpc">
 <span id="id1"></span><h1>Deploy MsPASS on HPC<a class="headerlink" href="#deploy-mspass-on-hpc" title="Permalink to this headline"></a></h1>
-<p>As described in <a class="reference internal" href="run_mspass_with_singularity.html#run-mspass-with-singularity"><span class="std std-ref">previous section</span></a>,
-We can run a MsPASS instance using the singularity command. However, lots of configurations are needed, especially when
+<section id="introduction-to-singularity">
+<h2>Introduction to Singularity<a class="headerlink" href="#introduction-to-singularity" title="Permalink to this headline"></a></h2>
+<p>Singularity is a container implementation that runs on HPC cluster environments. Singularity provides similar features as Docker, and can handle the “escalated privilege” issue of Docker. Singularity is compatible with Docker containers, which means that one can develop the container in Docker, and use Singularity as the runtime on HPC clusters.</p>
+</section>
+<section id="create-mspass-container">
+<h2>Create MsPASS Container<a class="headerlink" href="#create-mspass-container" title="Permalink to this headline"></a></h2>
+<p>Singularity is compatible with docker container, which is a more widely-used implementation.
+So we can build a singularity image from the MsPASS container hosted on Docker Hub.
+First of all, use the following command to load the singularity module.
+Here we use TACC’s Stampede2 system as an example, where you need to first get on to a compute node to be able to use Singularity.
+For other systems, you should be able to find specific instructions on running containers there.
+For example, <a class="reference external" href="https://containers-at-tacc.readthedocs.io/en/latest/index.html">this</a> is the container tutorial at TACC.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">load</span> <span class="n">tacc</span><span class="o">-</span><span class="n">singularity</span>
+</pre></div>
+</div>
+<p>Then, execute:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">singularity</span> <span class="n">build</span> <span class="n">mspass_latest</span><span class="o">.</span><span class="n">sif</span> <span class="n">docker</span><span class="p">:</span><span class="o">//</span><span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>
+</pre></div>
+</div>
+<p>The command above will build a Singularity container corresponding to the latest released MsPASS docker container and save as <code class="code docutils literal notranslate"><span class="pre">mspass_latest.sif`</span></code> in the current directory.</p>
+<p>Now we can run MsPASS using Singularity. However, lots of configurations are needed, especially when
 user wants to run MsPASS on distributed nodes, where each node perform a different role. To simplify the configuration,
 two example scripts are given: <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/single_node.sh">single_node.sh</a>
 and <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh">distributed_node.sh</a>.</p>
 <p>In this section, we will briefly describe how to use these scripts.</p>
 <p>Please note that these scripts are written for the TACC environment, users might need to make some changes to the scripts to accustom them with their own HPC environment.</p>
+</section>
 <section id="quick-start">
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline"></a></h2>
-<p>To run the MsPass on TACC Stampede machines, simply use:</p>
+<p>To run the MsPass on Stampede2, simply use:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sbatch</span> <span class="o">./</span><span class="n">single_node</span><span class="o">.</span><span class="n">sh</span>
 </pre></div>
 </div>
@@ -252,8 +275,8 @@ For more details on the difference between tmp and scratch, please refer to <a c
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="run_mspass_with_singularity.html" class="btn btn-neutral float-left" title="Run MsPASS with Singularity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../user_manual/introduction.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="deploy_mspass_with_docker_compose.html" class="btn btn-neutral float-left" title="Deploy MsPASS with Docker Compose" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="getting_started_overview.html" class="btn btn-neutral float-right" title="MsPASS Setup In-Depth Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

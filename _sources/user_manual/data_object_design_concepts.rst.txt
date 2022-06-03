@@ -13,12 +13,12 @@ Overview
   MsPASS as :code:`TimeSeries` and :code:`Seismogram` respectively.  
 
 | These data objects were designed to simply interactions with MongoDB. 
-  MongoDB is completely flexible in attributes names handled by the
+  MongoDB is completely flexible in attribute names handled by the
   database.  In all cases, the components of a data object should be conceptualized
   as four distinct components handled separately and discussed in more detail
   below:
 
-1. The waveform data (normally largest in size).
+1. The waveform data (normally the largest in size).
 
 2. A generalization of the traditional concept of a trace header.  These
    are accessible as simple name value pairs but the value can be anything.
@@ -39,7 +39,7 @@ Overview
 
 | The C++ objects have wrappers for python that hide implementation details from
   the user.   All MongoDB operations implemented with the pymongo
-  package using these wrappers.   Compute intensive numerical operations on the sample
+  package use these wrappers.   Compute intensive numerical operations on the sample
   data should either be written in C/C++ with their own wrappers or
   exploit numpy/scipy numerical routines.   The later is possible
   because the wrappers make the data arrays look like numpy arrays.  
@@ -59,11 +59,11 @@ History
   `here <https://github.com/antelopeusersgroup/antelope_contrib/tree/master/lib/seismic/libseispp>`__
   in github, and doxygen generated pages comparable to those found with
   this package can be found
-  `here <http://www.indiana.edu/%7Epavlab/software/seispp/html/index.html>`__. 
+  `here <https://pavlab.sitehost.iu.edu/software/seispp/index.html>`__. 
 
 | To design the core data objects from this older library we followed
   standard advice and mostly burned the original code keeping only the most
-  generic to handle concepts the authors had found essential over the
+  generic components needed to handle concepts the authors had found essential over the
   years.   The revisions followed these guidelines:
 
 -  Make the API as generic as possible.
@@ -269,7 +269,7 @@ Handling Time
   data to an absolute time standard when the true time is not well
   constrained. 
 
-| For an expanded discussion on this topic go here (need a link to time_standard_constraints.rst).
+| For an expanded discussion on this topic go :ref:`here<time_standard_constraints>`.
 
 Metadata Concepts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -293,10 +293,10 @@ Metadata Concepts
 
 .. code-block:: python
 
-  sta=d.Stats["station]
+  sta=d.Stats["station"]
 
-| In MsPASS we use a similar concept building on Pavlis's SEISPP library
-  developed originally a number of years before obspy.   The Metadata
+| In MsPASS we use a similar concept based on Pavlis's SEISPP library
+  but developed a number of years before obspy.   The Metadata
   object in MsPASS, however, has additional features not in the older
   SEISPP version.  
 
@@ -305,8 +305,8 @@ Metadata Concepts
   the `any <https://theboostcpplibraries.com/boost.any>`__ library that
   is part of the widely used boost library.   In a C++ program Metadata
   can contain any data that, to quote the documentation from boost, is "copy
-  constructable".  Thus Metadata acts much like a python dict in put
-  operation and get operations within a python program.
+  constructable".  Thus Metadata acts much like a python dict using put
+  and get operations within a python program.
 
 | The flexibility of either a python dict or Metadata present a serious
   potential for unexpected results or crashes if not managed.   Any algorithm
@@ -373,7 +373,7 @@ Metadata Concepts
    s=d.get_string("sta")  # example fetching a UTF-8 string
    b=d.get_bool("LPSPOL") # boolean for positive polarity used in SAC
 
-| There are parallel strongly-typed "putters":
+| There are comparable, strongly-typed "putters":
 
 .. code-block:: python
 
@@ -465,7 +465,7 @@ Managing Metadata type with mspasspy.db.Schema
 Scalar versus 3C data
 ^^^^^^^^^^^^^^^^^^^^^
 
-| MsPASS currently supports two different data objects:   TimeSeries objects are
+| MsPASS currently supports two different atomic data objects:   TimeSeries objects are
   used to store single channel data while Seismogram objects are used to store
   data from three component instruments.  TimeSeries objects are based
   on the standard concept for storing scalar data that has been around

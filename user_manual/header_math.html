@@ -52,8 +52,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_singularity.html">Run MsPASS with Singularity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul class="current">
@@ -63,6 +63,7 @@
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Header (Metadata) Math</a><ul>
@@ -141,7 +142,7 @@
 <span id="header-math"></span><h1>Header (Metadata) Math<a class="headerlink" href="#header-metadata-math" title="Permalink to this headline"></a></h1>
 <section id="concepts">
 <h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline"></a></h2>
-<p>Anyone familiar with seismic reflection data processing has seen the
+<p>Anyone with experience in seismc reflection data processing is aware of the
 common need for what is sometimes called “header math”.   That term in the
 seismic reflection world is inherited from the days of tape-based processing
 where the processing workflow was driven by “header” attributes that were
@@ -157,17 +158,16 @@ system knows exactly why “header math” is a frequent requirement in
 a workflow.   The general problem is that it is often necessary to
 compute other attributes using the contents of one or more other
 (Metadata) attributes.   A common example in reflection processing
-of simple surveys is geometry formulas that
-can be used to compute line geometry attributes from other attributes
-like survey flag numbers.  Another from passive array processing is
+of simple surveys is computing common midpoint coordinates from source
+and receiver coordinates.  An example from passive array processing is
 a need to compute some combined score of signal-to-noise ratio based on
 a linear combination of single metrics.</p>
 <p>The collection of edit operators covered in this section were implemented
-to cover the main arithmetic operations to do “header math”.  They have the
+to cover the main arithmetic operations needed to do most “header math”.  They have the
 advantage of being expressed through a standardized API that allows a chain
 of operation to be computed that can implement fairly elaborate
 calculations.  The user should recognize that the main advantage of using
-these operators over a custom-code python function
+these operators over a custom-coded python function
 (see the <em>Alternative</em> subsection at the end of this document) is robustness
 and integration of the steps into the history and error logging
 concepts of MsPASS.</p>
@@ -176,14 +176,14 @@ concepts of MsPASS.</p>
 <h2>Unary Operators<a class="headerlink" href="#unary-operators" title="Permalink to this headline"></a></h2>
 <p>The first set of operations are “unary” because they implement
 all the standard unary arithmetic operations in python.
-By that we me operations like <cite>a+=b</cite> which adds the value of b to a.
+By that we me operations like <code class="docutils literal notranslate"><span class="pre">a+=b</span></code> which adds the value of b to a.
 The distinction is that the operators automatically (and robustly) fetch and update the
 Metadata attribute on the left hand side of that operation.</p>
 <p>It is likely clearest to show an example of how this is used.
-Suppose we wanted found the <cite>calib</cite> attribute in our entire data set
-was now off by a factor or 2 because some custom algorithm did that and
-made all the amplitudes wrong by a factor of 2.  We could define an
-operator to do that with this construct</p>
+Suppose we found the <code class="docutils literal notranslate"><span class="pre">calib</span></code> attribute in our entire data set
+was off by a factor or 2 because some custom algorithm had a scaling error.
+We could define an
+operator to correct this problem with the following construct:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mspasspy.algorithms.edit</span> <span class="k">as</span> <span class="nn">mde</span>
 <span class="n">myop</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Multiply</span><span class="p">(</span><span class="s2">&quot;calib&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
 <span class="c1"># parallel example with dask - assumes data are in dask bag mydata</span>
@@ -200,8 +200,8 @@ operation that is to be performed.  In the example that means
 <p>All the unary operators use exactly the same API and can be used the
 same way but for different arithmetic operations with a constant.
 The following table summarizes the available operators:</p>
-<table class="colwidths-given docutils align-default" id="id3">
-<caption><span class="caption-number">Table 3 </span><span class="caption-text">Unary Metadata Operators</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<table class="colwidths-given docutils align-default" id="id5">
+<caption><span class="caption-number">Table 3 </span><span class="caption-text">Unary Metadata Operators</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -261,13 +261,13 @@ a common constructor signature:</p>
 <p>where <code class="docutils literal notranslate"><span class="pre">op</span></code> is the name for the operation (see table below), keyc is the
 key to set for the output of the operator, while keya and keyb are the keys used
 to fetch a and b in the formula <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">a</span> <span class="pre">op</span> <span class="pre">b</span></code>.  keyc can be the same as either
-keya or keyb but be aware if it is that the contents of that key will be
+keya or keyb but be aware the contents of what appears as keyc will be
 overwritten.</p>
 <p>The names for the <code class="docutils literal notranslate"><span class="pre">op</span></code> variable above are illustrated in the table below.
 They are essentially the same as the unary operators with a “2” added to the
 name.</p>
-<table class="colwidths-given docutils align-default" id="id4">
-<caption><span class="caption-number">Table 4 </span><span class="caption-text">Binary Metadata Operators</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
+<table class="colwidths-given docutils align-default" id="id6">
+<caption><span class="caption-number">Table 4 </span><span class="caption-text">Binary Metadata Operators</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -368,13 +368,15 @@ the MsPASS framework:</p>
 <ul class="simple">
 <li><p>All handle error consistently using the ErrorLogging mechanism of MsPASS
 data objects.</p></li>
-<li><p>All behave identically on some standard error situations.  There are three
+<li><p>All behave identically on some common error situations.  There are three
+common errors all handle that
 users need to be aware of.  (1) If a key-value that the operator needs to fetch from
 Metadata is not defined the operator will kill the datum missing and
 log a standard message.  (2) if
-the value extracted fails on the arithmetic operation the datum will again
+the value extracted fails for the defined <a href="#id3"><span class="problematic" id="id4">`</span></a>arithmetic operation the datum will again
 be killed with a standard message posted to the elog attribute of the
-data object. (3) If the operator receives a datum that is not a MsPASS
+data object. An example of this would be trying to do arithmetic on
+an attribute with a string value.  (3) If the operator receives a datum that is not a MsPASS
 data object the operator will throw a MsPASSError object marked Fatal.</p></li>
 <li><p>All operators handle Ensembles in a consistent manner.   Editing Metadata
 for an Ensemble object has an ambiguity because Ensemble objects often
@@ -394,8 +396,8 @@ history mechanism for each datum processed.</p></li>
 <li><p>It is important to be aware of the consistency of the Metadata attributes
 for a data set before running these operators.  They will dogmatically kill
 data when required attributes are missing.   If your data set has a lot of
-missing metadata you need to do the calculations these operators will
-kill every datum that is lacking.</p></li>
+missing metadata required by the operator, the operators will
+kill every datum that is lacking that metadata attribute.</p></li>
 <li><p>It is far to easy to kill every datum in your data set if you read
 data by ensembles and fail to use the <cite>apply_to_members</cite> switch correctly.
 With the default value of False if you mix up the names for fields you
