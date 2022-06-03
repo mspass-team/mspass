@@ -27,7 +27,7 @@ while migration takes an input ensemble and produces a (modified) ensemble.
 All these examples can be implemented in MsPASS framework to take advantage
 of the repetitious nature of the processors.  That is, all can be the thought of
 as black boxes that take one or more seismic data objects as input and emit
-more or modified data objects (not necessarily of the same type or number as
+one or more modified data objects (not necessarily of the same type or number as
 the inputs).  A full processing workflow is assembled by chaining a series of
 processing steps with data moving between the processing steps by a system
 dependent process.   Dask and Spark generalize this by fragmenting the processing
@@ -36,7 +36,7 @@ process largely opaque to you as the user.  An added benefit that is less
 obvious is that lower-level parallel granularity is possible for a
 python function designed to exploit the capability.  This user manual,
 however, focuses exclusively on algorithm level granularity.   We refer
-the reader to extensive printed and online documentation for DASK and Spark
+the reader to extensive printed and online documentation for Dask and Spark
 for functionality needed to add parallelism inside an individual python
 function.
 
@@ -110,9 +110,9 @@ Overview
 -----------
 A second key concept we utilize for processing algorithms in MsPASS is the
 abstraction of
-`functional programming<https://en.wikipedia.org/wiki/Functional_programming>`__,
+`functional programming <https://en.wikipedia.org/wiki/Functional_programming>`__,
 which is a branch of programming founded on
-`lambda calculus<https://en.wikipedia.org/wiki/Lambda_calculus>`__.
+`lambda calculus <https://en.wikipedia.org/wiki/Lambda_calculus>`__.
 For most seismologists that abstraction is likely best treated only as
 a foundational concept that may or may not be helpful depending on your
 background. It is important, however,
@@ -165,10 +165,10 @@ the application of a simple filter in dask is:
 .. code-block:: python
 
   # Assume dbhandle is set as a Database class as above
-  cursor=dbhandle.wf_TimeSeries.find({})
-  d_in=read_distributed_data(dbhandle,cursor)
-  d_out=d_in.map(signals.filter, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0')
-  d_compute=d_out.compute()
+  cursor = dbhandle.wf_TimeSeries.find({})
+  d_in = read_distributed_data(dbhandle,cursor)
+  d_out = d_in.map(signals.filter, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0')
+  d_compute = d_out.compute()
 
 This example applies the obpsy default bandpass filter to all data
 stored in the wf_TimeSeries collection for the database to which dbhandle
@@ -182,7 +182,7 @@ operation is discussed at length in various sources on dask (and Spark).
 We refer the reader to online sources easily found by searching for
 the keyword for more on this general topic.
 The final output, which we chose above to give a new symbol name
-of :code:`d_compute`, is bag containing the processed data.
+of :code:`d_compute`, is a list containing the processed data.
 
 The same construct in Spark, unfortunately, requires a different set of
 constructs for two reasons:  (1) pyspark demands a functional
@@ -205,7 +205,7 @@ That operator is more or less a constructor for the container that Spark
 calls an RDD that is assigned the symbol d_out in the example above.
 The following line, which from a programming perspective is a call to the map method of the RDD we call
 d_out, uses the functional programming construct of a lambda function.
-This tutorial in `realpython.com  <https://realpython.com/python-lambda/>`_
+This tutorial in `realpython.com <https://realpython.com/python-lambda/>`_
 and `this one <https://www.w3schools.com/python/python_lambda.asp>`_ by w3schools.com
 are good starting points.
 
@@ -232,10 +232,10 @@ stacking all the members of an ensemble:
 
 .. code-block:: python
 
-  ensemble=db.read_ensemble_data(cursor)
-  stack=TimeSeries(d.member[0])
-  for i in range(len(d.member)-1):
-    stack += ensemble.member[i+1]
+  ensemble = db.read_ensemble_data(cursor)
+  stack = TimeSeries(d.member[0])
+  for i in range(len(d.member) - 1):
+      stack += ensemble.member[i + 1]
 
 That code is pretty simple because the += operator is defined for the TimeSeries
 class and handles time mismatches.  It is not robust for several reasons and
@@ -245,8 +245,7 @@ single result stored with the symbol :code:`stack`.
 
 We will get to the rules that constrain `Reduce` operators in a moment, but
 it might be more helpful to you as a user to see how that algorithm
-translates into dask/spark.  MsPASS has a parallel stack algorithm found
-`here<https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`_
+translates into dask/spark.  MsPASS has a parallel :py:func:`stack <mspasspy.reduce.stack>` algorithm.
 It is used in a parallel context as follows for dask:
 
 .. code-block:: python
@@ -259,8 +258,8 @@ For spark the syntax is identical but the name of the method changes to reduce:
 
   res = rdd.reduce(lambda a, b: stack(a, b))
 
-The :code:`stack` symbol refers to a python function that is actually quite simple. You can view
-the source code `here<https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`_.
+The :py:func:`stack <mspasspy.reduce.stack>` symbol refers to a python function that is actually quite simple. You can view
+the source code `here <https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`_.
 It is simple because most of the complexity is hidden behind the +=
 symbol that invokes that operation in C++ (`TimeSeries::operator+=` for anyone
 familiar with C++) to add the right hand side to the left hand side of
@@ -276,7 +275,7 @@ which is a generic wrapper to adapt any suitable reduce function to MsPASS.
 The final issue we need to cover in this section is what exactly is meant
 by the phrase "any suitable reduce function" at the end of the previous paragraph?
 To mesh with the reduce framework used by spark and dask a function has
-to satisfy `the following rules<https://en.wikipedia.org/wiki/Reduction_operator>`_
+to satisfy `the following rules <https://en.wikipedia.org/wiki/Reduction_operator>`_
 
 1. The first two arguments (a and b symbols in the example above)
    must define two instances of the same type
@@ -343,7 +342,7 @@ overhead is relatively small unless the execution time for
 processing is trivial.
 
 For more information, the dask documentation found
-`here<https://docs.dask.org/en/latest/scheduling.html>`_ is a good
+`here <https://docs.dask.org/en/latest/scheduling.html>`_ is a good
 starting point..
 
 Examples:
@@ -363,14 +362,14 @@ using the data start time, and then saves the results.
 
 .. code-block:: python
 
-  cursor=db.wf_Seismogram.find({})
+  cursor = db.wf_Seismogram.find({})
   # read -> detrend -> filter -> window
   # example uses dask scheduler
   data = read_distributed_data(db, cursor)
   data = data.map(signals.detrend,'demean')
-  data = data.map(signals.filter,"bandpass",freqmin=0.01,freqmax=2.0)
+  data = data.map(signals.filter,"bandpass", freqmin=0.01, freqmax=2.0)
   # windowing is relative to start time.  300 s window starting at d.t0+200
-  data = data.map(lambda d : WindowData(d,200.0,500.0,t0shift=d.t0))
+  data = data.map(lambda d : WindowData(d, 200.0, 500.0, t0shift=d.t0))
   res = data.map(db.save_data,collection="wf_Seismogram")
   data_out = data.compute()
 
@@ -398,15 +397,15 @@ how the MsPASS functions automatically handle the type switch.
     # note with logic of this use we don't need to test for
     # no matches because distinct returns only not null source_id values dbcol
     cursor = dbcol.find(query)
-    ensemble = db.read_ensemble(db,collection=collection)
+    ensemble = db.read_ensemble(db, collection=collection)
     return ensemble
 
   dbcol = db.wf_Seismogram
   srcidlist = db.wf_Seismogram.distinct("source_id")
   data = dask.bag.from_sequence(srcidlist)
-  data = data.map(lambda srcid : read_common_source_gather(db,"wf_Seismogram",srcid))
-  data = data.map(signals.detrend,'demean')
-  data = data.map(signals.filter,"bandpass",freqmin=0.01,freqmax=2.0)
+  data = data.map(lambda srcid : read_common_source_gather(db, "wf_Seismogram", srcid))
+  data = data.map(signals.detrend, 'demean')
+  data = data.map(signals.filter, "bandpass", freqmin=0.01, freqmax=2.0)
   # windowing is relative to start time.  300 s window starting at d.t0+200
-  data = data.map(lambda d : WindowData(d,200.0,500.0,t0shift=d.t0))
+  data = data.map(lambda d : WindowData(d, 200.0, 500.0, t0shift=d.t0))
   data_out = data.compute()
