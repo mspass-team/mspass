@@ -17,6 +17,14 @@ database
     :undoc-members:
     :show-inheritance:
 
+normalize
+---------
+
+.. automodule:: mspasspy.db.normalize
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 schema
 ------
 
