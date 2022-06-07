@@ -59,6 +59,3 @@ package.
    cxx_api/index
    mspass_schema/mspass_schema
 
-.. warning::
-
-    The current version is under development. The APIs are subject to breaking change.
