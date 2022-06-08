@@ -201,7 +201,7 @@
         <span class="k">elif</span> <span class="n">MSPASS_DB_ADDRESS</span><span class="p">:</span>
             <span class="n">database_address</span> <span class="o">=</span> <span class="n">MSPASS_DB_ADDRESS</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">database_address</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+            <span class="n">database_address</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
         <span class="c1"># add port</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">database_host_has_port</span> <span class="ow">and</span> <span class="n">MONGODB_PORT</span><span class="p">:</span>
             <span class="n">database_address</span> <span class="o">+=</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">MONGODB_PORT</span>
