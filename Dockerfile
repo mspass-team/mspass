@@ -104,4 +104,4 @@ ENV JUPYTER_PORT 8888
 ENV MSPASS_ROLE all
 ENV MSPASS_SCHEDULER dask
 
-ENTRYPOINT ["/usr/sbin/tini", "-g", "--", "/usr/sbin/start-mspass.sh"]
+ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
