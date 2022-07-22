@@ -114,6 +114,10 @@ class NMF(ABC):
         self.collection = collection
         self.dbhandle = db[collection]
 
+        if attributes_to_load is None:
+            attributes_to_load = []
+        if load_if_defined is None:
+            load_if_defined = []
         if query is None:
             query = {}
         self.query = query
@@ -463,7 +467,7 @@ class single_key_matcher(NMF):
         testid = self._get_key_id(d)
         if testid is None:
             return None
-        query["_id"] = testid
+        query[self.mdkey] = testid
 
         doc = self.dbhandle.find_one(query)
         if doc is None:
@@ -560,6 +564,25 @@ class ID_matcher(single_key_matcher):
             verbose,
             cache_normalization_data,
         )
+
+    def _db_get_document(self, d):
+        query = copy.deepcopy(self.query)
+
+        testid = self._get_key_id(d)
+        if testid is None:
+            return None
+        query["_id"] = testid
+
+        doc = self.dbhandle.find_one(query)
+        if doc is None:
+            message = "Key [{}] not defined in normalization collection = {}".format(
+                str(testid), self.collection
+            )
+            self.log_error(d, message, ErrorSeverity.Invalid)
+            return None
+
+        result = self._load_doc(doc, d)
+        return result
 
 
 class composite_key_matcher(NMF):

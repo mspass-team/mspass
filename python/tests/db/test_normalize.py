@@ -1,4 +1,6 @@
+from attr import attrib
 from mspasspy.db.normalize import (
+    single_key_matcher,
     ID_matcher,
     mseed_channel_matcher,
     mseed_site_matcher,
@@ -92,6 +94,69 @@ class TestNormalize:
             {"_id": ObjectId("627fc20559a116ff99f38243")}
         )
         self.ts = self.db.read_data(self.doc, collection="wf_miniseed")
+
+    def test_single_key_matcher_get_document(self):
+        cached_matcher = single_key_matcher(self.db, "site", "net")
+        uncached_matcher = single_key_matcher(
+            self.db, "site", "net", cache_normalization_data=False
+        )
+
+        norm_key_undefine_msg = (
+            "Normalizing ID with key=channel_id is not defined in this object"
+        )
+        cache_id_undefine_msg = "] not defined in cache"
+        uncache_id_undefine_msg = "] not defined in normalization collection"
+
+        #   Test get_document
+        ts = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher.get_document(ts)
+        uncached_retdoc = uncached_matcher.get_document(ts)
+        assert Metadata_cmp(cached_retdoc, uncached_retdoc)
+
+    def test_single_key_matcher_normalize(self):
+        cached_matcher = single_key_matcher(
+            self.db, "site", "net", attributes_to_load=["coords"]
+        )
+        uncached_matcher = single_key_matcher(
+            self.db,
+            "site",
+            "net",
+            attributes_to_load=["coords"],
+            cache_normalization_data=False,
+        )
+
+        cache_id_undefine_msg = "] not defined in cache"
+
+        #   Test normalize
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher(ts_1)
+        uncached_retdoc = uncached_matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc, uncached_retdoc)
+        assert "site_coords" in cached_retdoc
+
+        #   Test prepend_collection_name
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        matcher = single_key_matcher(
+            self.db,
+            "site",
+            "net",
+            attributes_to_load=["coords"],
+            prepend_collection_name=False,
+        )
+        cached_retdoc = matcher(ts_1)
+        matcher = single_key_matcher(
+            self.db,
+            "site",
+            "net",
+            attributes_to_load=["coords"],
+            prepend_collection_name=False,
+            cache_normalization_data=False,
+        )
+        uncached_retdoc = matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc, uncached_retdoc)
+        assert "coords" in cached_retdoc
 
     def test_ID_matcher_get_document(self):
         cached_matcher = ID_matcher(self.db)
