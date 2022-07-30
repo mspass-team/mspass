@@ -462,9 +462,9 @@ class TestNormalize:
         assert Metadata_cmp(self.ts, cached_retdoc)
 
     def test_origin_time_source_matcher_get_document(self):
-        cached_matcher = origin_time_source_matcher(self.db)
+        cached_matcher = origin_time_source_matcher(self.db, time_key="starttime")
         uncached_matcher = origin_time_source_matcher(
-            self.db, cache_normalization_data=False
+            self.db, time_key="starttime", cache_normalization_data=False
         )
 
         orig_doc = self.db.wf_miniseed.find_one(
@@ -496,15 +496,25 @@ class TestNormalize:
         assert "No match for time between" in str(ts_1.elog.get_error_log())
         assert "No match for query = {'time':" in str(ts_2.elog.get_error_log())
 
-        #   test without a time, or a startime, take first doc, warning
-        cached_matcher = origin_time_source_matcher(self.db, tolerance=1000000000.0)
+        #   test TimeSeries without defining time_key
+        cached_matcher = origin_time_source_matcher(self.db)
         uncached_matcher = origin_time_source_matcher(
-            self.db, tolerance=1000000000.0, cache_normalization_data=False
+            self.db, cache_normalization_data=False
+        )
+        ts = copy.deepcopy(orig_ts)
+        cached_retdoc = cached_matcher.get_document(ts)
+        uncached_retdoc = uncached_matcher.get_document(ts)
+        assert Metadata_cmp(cached_retdoc, uncached_retdoc)
+
+        #   test without a time, or a startime, take first doc, warning
+        cached_matcher = origin_time_source_matcher(self.db)
+        uncached_matcher = origin_time_source_matcher(
+            self.db, cache_normalization_data=False
         )
         cached_retdoc = cached_matcher.get_document(doc)
         uncached_retdoc = uncached_matcher.get_document(doc)
-        assert cached_retdoc is not None
-        assert uncached_retdoc is not None
+        assert cached_retdoc is None
+        assert uncached_retdoc is None
 
     def test_origin_time_source_matcher_normalize(self):
         cached_matcher = origin_time_source_matcher(self.db)
