@@ -1248,6 +1248,7 @@ class origin_time_source_matcher(NMF):
         collection="source",
         t0offset=0.0,
         tolerance=4.0,
+        time_key=None,
         attributes_to_load=None,
         load_if_defined=None,
         query=None,
@@ -1267,6 +1268,7 @@ class origin_time_source_matcher(NMF):
         will be used in the query (see class description)
         :param tolerance: the tolerance used in the query to form a time
         range (see class description)
+        :param time_key: the key defining t0.
         :param attributes_to_load:  list of keys that will always be loaded
           from each document in the normalization collection satisfying the
           query. Default is None but is initialized in the function body as
@@ -1320,6 +1322,7 @@ class origin_time_source_matcher(NMF):
 
         self.t0offset = t0offset
         self.tolerance = tolerance
+        self.time_key = time_key
 
     def get_document(self, d, time=None):
         if not isinstance(
@@ -1344,14 +1347,15 @@ class origin_time_source_matcher(NMF):
 
     def _get_test_time(self, d, time):
         if time == None:
-            if isinstance(
-                d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)
-            ):
-                test_time = d.t0 - self.t0offset
+            if self.time_key:
+                if d.is_defined(self.time_key):
+                    test_time = d[self.time_key] - self.t0offset
+                else:
+                    return None  # matches logic but may not be right approach here
             else:
-                if d.is_defined("starttime"):
-                    test_time = d["starttime"] - self.t0offset
-                else:  #   t0 can't be extracted from the object
+                if isinstance(d, (TimeSeries, Seismogram)):
+                    test_time = d.t0 - self.t0offset
+                else:
                     return None
         else:
             test_time = time - self.t0offset
