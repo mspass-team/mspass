@@ -1353,6 +1353,7 @@
         <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
         <span class="n">t0offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">tolerance</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+        <span class="n">time_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">attributes_to_load</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">load_if_defined</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1372,6 +1373,7 @@
 <span class="sd">        will be used in the query (see class description)</span>
 <span class="sd">        :param tolerance: the tolerance used in the query to form a time</span>
 <span class="sd">        range (see class description)</span>
+<span class="sd">        :param time_key: the key defining t0.</span>
 <span class="sd">        :param attributes_to_load:  list of keys that will always be loaded</span>
 <span class="sd">          from each document in the normalization collection satisfying the</span>
 <span class="sd">          query. Default is None but is initialized in the function body as</span>
@@ -1425,6 +1427,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span> <span class="o">=</span> <span class="n">t0offset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span> <span class="o">=</span> <span class="n">tolerance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_key</span> <span class="o">=</span> <span class="n">time_key</span>
 
 <div class="viewcode-block" id="origin_time_source_matcher.get_document"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.origin_time_source_matcher.get_document">[docs]</a>    <span class="k">def</span> <span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
@@ -1449,14 +1452,15 @@
 
     <span class="k">def</span> <span class="nf">_get_test_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">time</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
-                <span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)</span>
-            <span class="p">):</span>
-                <span class="n">test_time</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_key</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_key</span><span class="p">):</span>
+                    <span class="n">test_time</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time_key</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># matches logic but may not be right approach here</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;starttime&quot;</span><span class="p">):</span>
-                    <span class="n">test_time</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
-                <span class="k">else</span><span class="p">:</span>  <span class="c1">#   t0 can&#39;t be extracted from the object</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+                    <span class="n">test_time</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
+                <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">test_time</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
