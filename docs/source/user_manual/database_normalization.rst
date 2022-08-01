@@ -47,7 +47,7 @@ waveform index collections (wf_miniseed, wf_TimeSeries, or wf_Seismogram)
 or, in the case of in-line normalization functions, the Metadata container of
 one of the MsPaSS data objects.
 
-Data reader normalization option
+Data reader normalization method
 --------------------------------------
 
 Overview
@@ -60,7 +60,7 @@ that returns a MongoDB :code:`cursor` object, or (2) a function call that
 creates an RDD/bag of query strings.   The first is used if the processing
 is limited to atomic level operations like filtering while the second is
 the norm for ensemble processing.   In either case, :code:`normalization`
-is best done through the readers that workflows uses to create the
+is best done through the readers that particular workflow uses to create the
 working RDD/bag.  In both cases a key argument to the read functions is
 :code:`normalize`.   In all cases :code:`normalize` should contain a
 python list of strings defining mongodb collection names that should be
@@ -117,32 +117,33 @@ defined.   MsPASS currently has support for only two source association
 methods:  (1) one where the start time of each datum is a constant offset
 relative to an event origin time, and (2) a more complicated method based on
 arrival times that can be used to associate data with start times relative
-to a measured or predicted phase arrival time.
+to a measured or predicted phase arrival time.  The later can easily violate
+the assumption of the normalizing collection being small compared to the
+waveform collection.  The number of arrivals can easily exceed the number of
+waveform segments.
 In both cases, normalization to set :code:`source_id` values are best
 done with the mspass function :py:func:`bulk_normalize<mspasspy.db.normalize.bulk_normalize>`.
 How to actually accomplish that is best understood by consulting the examples
 below.
 
-Example 1:  using normalize_mseed
-+++++++++++++++++++++++++++++++++++++++
+Here is a simple example of running normalize_mseed as a precursor to
+reading and normalizing miniseed data:
 
-Example 2:  normalizing source with origin-time based start times
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.. code-block:: python
 
-Example 3:  normalizing source with arrival data
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+  from mspasspy.client import Client
+  from mspasspy.database.normalize import normalize_mseed
+  dbclient = Client()
+  db = dbclient.get_database("mydatabase")
+  retcodes = normalize_mseed(db)
+  print("Number of wf_miniseed documents processed=",retcodes[0])
+  print("Number of documents that normalize_mseed set channel_id=",retcode[1])
 
-Normalization while reading
---------------------------------
+Examples of normalization while reading
++++++++++++++++++++++++++++++++++++++++++++
 
-We stress that cross-referencing ObjectIds (e.g. "channel_id" for channel)
-are defined using a variant of the examples above, all data with successful
-matches can be "normalized" during read operations by using the
-optional argument :code:`normalize`.
-
-Here is a simple, serial example reading records from wf_miniseed
-normalized with :py:func:`normalize_mseed<mspasspy.db.normalize.normalize_mseed>`
-and normalizing during reading with matching records in the channel collection.
+Here is a simple serial job that would use the result after the normalization
+with normalize_mseed in the example immediately above completed:
 
 .. code-block:: python
 
@@ -154,14 +155,32 @@ and normalizing during reading with matching records in the channel collection.
   for doc in cursor:
     d = db.read_data(doc,normalize=["channel"])
     # processing functions here
+    # normally terminated with a save operation or a graphic display
 
-where we note "mydatabase" would, of course, vary with the data set and
-to be of ay use the final comment line would need to be expanded to some
-set of processing steps.
+Notice the use of the normalize argument that tells the reader to
+normalize with the channel collection.   A parallel version of the
+example above requires use of the function
+:py:func:`read_distributed_data<mspasspy.db.database.read_distributed_data`.
+The following does the same operation as above in parallel with dask
+
+.. code-block:: python
+
+  from mspasspy.client import Client
+  from mspasspy.db.database import read_distributed_data
+  dbclient = Client()
+  db = dbclient.get_database("mydatabase")
+  # loop over all wf_miniseed records
+  cursor = db.wf_miniseed.find({})
+  dataset = read_distributed_data(db,normalize=["channel"])
+  # porocessing steps as map operators follow
+  # normally terminate with a save
+  dataset.compute()
 
 Reading ensembles with normalization is similar.   The following is a
 serial job that reads ensembles and normalizes each ensemble with data from
-the source and channel collections:
+the source and channel collections.  It assumes not only
+normalize_mseed has been run on the data but some version of bulk_normalize
+was used to set the source_id values for all documents in wf_miniseed.
 
 .. code-block:: python
 
@@ -174,6 +193,8 @@ the source and channel collections:
     cursor = db.wf_miniseed.find({"source_id" : srcid})
     ensemble = db.read_ensemble_data(cursor,normalize=["channel","source"])
     # processing functions for ensembles to follow here
+    # normally would be followed by a save
+
 
 Normalization within a Workflow
 -----------------------------------
@@ -204,13 +225,13 @@ but efficiency.  As noted earlier database transactions are expensive in
 execution time and we have found it important to avoid unnecessary transactions.
 
 Normalization API
-++++++++++++++++++++++=
+++++++++++++++++++++++
 
 MsPASS normalization is handled through a family of python
 classes.  The family has a common root in the base class we
 call :py:class:`NMF<mspasspy.db.normalize.NMF>`, which is an
 abbreviation for "Normalization Match Function".  All
-concrete implementations of this base class are required to
+subclasses of this base class are required to
 implement two methods that require concrete implementations of
 the two concepts noted above.
 
@@ -241,7 +262,7 @@ to revert to database transaction mode through the keyword argument
 all MsPaSS normalizers revert to database transaction mode.
 
 The normalization classes currently available in MsPASS are
-defined below with links the docstrings that define their purpose:
+defined below with links to the docstrings that define their purpose:
 
 .. list-table:: Normalization Operators
    :widths: 30 50 30
@@ -252,19 +273,19 @@ defined below with links the docstrings that define their purpose:
      - Docstring
    * - ID_matcher
      - Generic ObjectId matching
-     - :py:class:`Id_matcher<mspasspy.db.normalize.ID_matcher>`
+     - :py:class:`ID-based normalization<mspasspy.db.normalize.ID_matcher>`
    * - mseed_channel_matcher
      - in-line version of normalize_mseed for channel
-     - :py:class:`Id_matcher<mspasspy.db.normalize.mseed_channel_matcher>`
+     - :py:class:`mseed_channel_matcher<mspasspy.db.normalize.mseed_channel_matcher>`
    * - mseed_site_matcher
      - in-line version of normalize_mseed for site
-     - :py:class:`Id_matcher<mspasspy.db.normalize.mseed_site_matcher>`
+     - :py:class:`mseed_site_matcher<mspasspy.db.normalize.mseed_site_matcher>`
    * - origin_time_source_matcher
      - match data with start time defined by event origin time
-     - :py:class:`Id_matcher<mspasspy.db.normalize.origin_time_source_matcher>`
+     - :py:class:`origin_source_matcher<mspasspy.db.normalize.origin_time_source_matcher>`
    * - arrival_interval_matcher
      - match arrival times to waveforms
-     - :py:class:`Id_matcher<mspasspy.db.normalize.arrival_interval_matcher>`
+     - :py:class:`arrival_interval_matcher<mspasspy.db.normalize.arrival_interval_matcher>`
 
 The model for using these python classes is to create a single instance of
 the class and then apply the :code:`normalize` method in a spark/dask map
@@ -403,9 +424,36 @@ id for the source collection :code:`source_id`.
 Custom Normalization Functions
 ------------------------------------
 
-When writing a custom normalization algorithm,
-it if first important to realize that there are two fundamentally different
-algorithms needed to define a normalization:
+If the current set of normalization algorithms are not sufficient for
+your data, you will need to develop a custom normalization algorithm.
+We know of two solutions to that problem:
 
-This section should discuss the intermediate classes composite_key_matcher
-and single_key_matcher.   They can be useful building blocks.
+#.  Write a custom python function for matching keys in a wf collection
+    and a normalizing correction.  The recommended approach is to
+    have the function set the
+    ObjectId of the normalizing collection in the wf collection using
+    the MsPASS naming convention for such ids (e.g. "source_id" to
+    normalize source).  With this approach you would use the standard
+    update methods of pymongo easily found from numerous web tutorials.
+    You will also find examples in the MsPASS tutorials found
+    `here<https://github.com/mspass-team/mspass_tutorial>`__.  Then
+    you can use the :code:`normalize` argument with the readers to
+    load normalizing data at read time.
+#.  Write an extension class to the base class found in
+    the MsPASS normalize module (:code:`import mspasspy.database.normalize`).
+    The remainder of this section discuss that approach.  We assume
+    the reader has a basic understanding of object-oriented programming
+    in general ahd how python implements objects (classes).
+
+We assume the reader has some familiarity with the general concept of inheritance
+in object-oriented programming.  If not, some supplementary web research
+may be needed to understand the concepts behind some of the terminology below
+before an extension is attempted.
+
+We strongly advise any extensions to normalization classes be created
+as subclasses of the base class we call :py:class:`NMF<mspasspy.db.normalize.NMF>`
+that we discussed above.  At the time of this writing some of the details of the
+API described the :py:class:`docstring for NMF<mspasspy.db.normalize.NMF>`
+are subject to change.  The best advice is to look at the existing subclasses
+of :code:`NMF` in the normalize module and use the existing subclasses as
+a guide for writing a custom normalization class.
