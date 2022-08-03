@@ -37,6 +37,8 @@ RUN wget -qO - ${DOCKERIZE_URL} | tar -xz -C /usr/local/bin
 RUN wget -qO - ${SPARK_URL} | tar -xz -C /usr/local/ \
     && cd /usr/local && ln -s spark-${SPARK_VERSION}-bin-hadoop2.7 spark
 RUN ln -s /usr/local/spark/bin/pyspark /usr/bin/pyspark
+RUN ln -s /usr/local/spark/python/pyspark /usr/local/lib/python3.6/dist-packages/pyspark
+RUN unzip /usr/local/spark/python/lib/py4j-0.10.9-src.zip -d /usr/local/lib/python3.6/dist-packages/
 
 # Patch pyspark for machines don't have localhost defined in /etc/hosts
 RUN sed -i 's/localhost/127.0.0.1/' /usr/local/spark/python/pyspark/accumulators.py
@@ -102,4 +104,4 @@ ENV JUPYTER_PORT 8888
 ENV MSPASS_ROLE all
 ENV MSPASS_SCHEDULER dask
 
-ENTRYPOINT ["/usr/sbin/tini", "-g", "--", "/usr/sbin/start-mspass.sh"]
+ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]

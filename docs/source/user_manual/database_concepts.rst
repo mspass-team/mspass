@@ -44,11 +44,13 @@ the open source package `MongoDB <https://www.mongodb.com/>`__.
 The top-level concept for understanding MongoDB is name-value pairs.
 One way of thinking of MongoDB is that it only implements each attribute
 as a name-value pair:  the name is the key that defines the concept and
-the attribute is the thing that defines that concept.  The thing can
+the attribute is the thing that defines a particular instance of that
+concept.  The contents can
 be something as simple as an integer number or as elaborate as any python
-object.  Tables (relations) are replaced with their concept of a "collection".
-A MongoDB *collection* is conceptually similar but operationally very different
-from a relational database table.  In MongoDB a *collection* contains
+object.  Tables (relations) are synonymous with what is called a *collection*
+in MongoDB.
+Although a *collection* is conceptually similar to a table
+it is operationally very different.  In MongoDB a *collection* contains
 one or more *documents*, which play the same role as a single tuple in
 a relational database.  In a relational database an attribute has one
 keyword used to define the content that is visualized as a table with
@@ -57,7 +59,17 @@ effectively has the name tag with each entry as a MongoDB document is made
 up of a set of name-value pairs.  For readers already familiar with python
 the name-value pairs map exactly into the concept of a python dict.  The
 python API (pymongo), in fact, retrieves documents into a data structure
-that behaves exactly like a python dict.
+that behaves exactly like a python dict.  One critical point about that
+distinction is that a relational database has to define a mechanism to
+flag a particular cell in a table as null.   In a MongoDB document a null
+is defined a true null;   a key-value pair not defined in the document.
+
+We close this section by noting that a schema is not required by
+MongoDB. As we discussed in detail in :ref:`data_object_design_concepts`
+MsPASS data objects are implemented in C++.   Strong typing in C++
+makes a schema a necessary evil to make the system more robust.
+A schema also provides a necessary central location to define the
+namespace of what kind of content is expected for a particular key.
 
 Design Concepts
 ~~~~~~~~~~~~~~~~~
@@ -66,9 +78,9 @@ A properly designed database schema needs to prioritize the problem it
 aims to solve.   The schema for MsPASS was aimed to address the
 following design goals:
 
-#. *Efficient flow through Spark.* A key reason MongoDB was chosen as
+#. *Efficient flow through Spark and DASK.* A key reason MongoDB was chosen as
    the database engine for MsPASS was that it is cleanly integrated with
-   Spark.   Nonetheless, the design needs to minimize database
+   Spark and DASK.   Nonetheless, the design needs to minimize database
    transaction within a workflow.   Our aim was to try to limit database
    transaction to reading input data, saving intermediate results, and
    saving a final result.
@@ -84,26 +96,25 @@ following design goals:
    data, <data_object_design_concepts>` our view is that the
    greater need in the community is an efficient system for handling 3C
    data.   In reality, our schema design ended up completely neutral on
-   this point and scalar and 3C data are handled identically.  The only
-   differences is what attributes (Metadata) are required.
+   this point; scalar and 3C data are handled identically.  The only
+   differences is what attributes (Metadata) are required for each data type.
 #. *Provide a clean mechanism to manage static metadata.* MsPASS is a
    system designed to process a "data set", which means the data are
    preassembled, validated, and then passed into a processing chain.
    The first two steps (assembly and validation) are standalone tasks
    that require assembly of waveform data and a heterogenous collection
    of metadata from a range of sources.   Much of that problem has been
-   the focus of extensive development work by IRIS and the FDSN.   We
-   thus provide tools for importing datasets through web services that
-   have become the current, standard exchange for data and Metadata.
-   The complexity of the Metadata is the reason that that development effort
-   has been far from trivial.   A primary issue is that some attributes
-   change with nearly every seismogram (e.g. the start time of a
-   waveform), while many others either never change (e.g. a station name
-   almost never changes) or change rarely (e.g. a change in sensor
-   orientation).  We aimed for a balance to efficiently manage static
-   data while avoiding all the things that can go wrong that have to be
-   handled by network operators and the PIs of shorter term
-   deployments.
+   the focus of extensive development work by IRIS and the FDSN.
+   Furthermore, obspy already had a well-developed, solid system
+   for interaction with FDSN web services.  We saw no reason to
+   "reinvent the wheel" and lean heavily on obspy's web service tools
+   for assembling data from FDSN sources.  The MsPASS schema for
+   receiver metadata can, in fact, be thought of a little more than a
+   dialect of StationXML.   Similarly, the MsPASS schema for source
+   metadata can be thought of as a dialect of QuakeML.
+   Furthermore, because we utilized obspy's web service tools the
+   python objects obspy defines for storing source and receiver metadata
+   are mostly echoed in the schema.
 #. *Extensible.* A DBMS cannot be too rigid in a research environnment,
    or it will create barriers to progress.  This is especially important to MsPASS as our
    objective is to produce a system for seismic research, not a
@@ -141,8 +152,8 @@ Overview
   In this section we describe how we group documents into collections defined
   in MsPASS.   These collections and the attributes they contain are the
   *schema* for MsPASS.  In this section we describe how the schema of MsPASS is
-  defined and used to maintain the integrity of a database used to manage
-  a daa set.  A useful feature of MsPASS is that the schema is readily
+  defined and used to maintain the integrity of a database.
+  A useful feature of MsPASS is that the schema is readily
   adaptable.  We defer custom schema definitions to a section in "Advanced
   Topics".
 
@@ -222,12 +233,29 @@ That means that when :code:`site_id` appears in another collection it is a
 reference to the ObjectId (referenced directly with alternate key :code:`_id`
 in the site collection) of the related document in the :code:`site` collection.
 
+The major motivation for using the normalized data model for handling
+source and receiver metadata is the data involved have two important
+properties.   First, since MsPASS was designed as a system for efficiently
+handling an assembled data set, the data these collections can be treated
+as static (immutable) within a workflow.   Waveform data readers must thus do
+what is MongoDB's version of a database join between the waveform collection
+and one or more of the normalizing collections.   Second, in every case
+we know the source and receiver metadata are small compared to any
+data set for which one would need to use the parallel processing machinery
+of MsPASS.  That means the time to query the normalizing collections is
+always expected to be much smaller than the time to query a waveform collection that often
+has millions of documents. Although experience showed that expectation was
+true, we also found there are situations where embedded database operations
+can be a bottleneck in a workflow.   For that reason we developed a set of
+normalization classes in python that cache tables of attributes needed for
+normalization.   That idea is described below in the section :ref:`NEW SUBSECTION TO BE ADDE DTO THIS FILE`
+
 Waveform Processing
 ~~~~~~~~~~~~~~~~~~~~~~~
 Concepts
 ::::::::::
 
-A first-order concept in our database design is that processing workflows
+A first-order concept in our database design is that a processing workflows
 should driven by one primary collection.  We emphasize that idea by
 stating this rule:
 
@@ -493,7 +521,7 @@ summaries for Antelope and obspy users:
 
 * Antelope user's should think of the channel collection as nearly identical
   to the CSS3.0 sitechan table with response data handled through obspy.
-  
+
 * Obspy users can think of both :code:`site` and :code:`sitechan` as a way to
   manage the same information obspy handles with their
   `Inventory <https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.Inventory.html>`__
@@ -864,6 +892,8 @@ Advanced Topics
 
 Customizing the schema
 ~~~~~~~~~~~~~~~~~~~~~~
+
+THIS NEEDS TO BE WRITTEN
 
 Importing Data Formats other than miniSEED
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

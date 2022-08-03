@@ -3,8 +3,33 @@
 Deploy MsPASS on HPC
 ====================
 
-As described in :ref:`previous section <run_mspass_with_singularity>`,
-We can run a MsPASS instance using the singularity command. However, lots of configurations are needed, especially when
+Introduction to Singularity
+---------------------------
+Singularity is a container implementation that runs on HPC cluster environments. Singularity provides similar features as Docker, and can handle the “escalated privilege” issue of Docker. Singularity is compatible with Docker containers, which means that one can develop the container in Docker, and use Singularity as the runtime on HPC clusters. 
+
+
+Create MsPASS Container
+-----------------------
+Singularity is compatible with docker container, which is a more widely-used implementation. 
+So we can build a singularity image from the MsPASS container hosted on Docker Hub.
+First of all, use the following command to load the singularity module. 
+Here we use TACC's Stampede2 system as an example, where you need to first get on to a compute node to be able to use Singularity.
+For other systems, you should be able to find specific instructions on running containers there.
+For example, `this <https://containers-at-tacc.readthedocs.io/en/latest/index.html>`__ is the container tutorial at TACC.
+
+.. code-block::
+
+    module load tacc-singularity
+
+Then, execute:
+
+.. code-block::
+
+    singularity build mspass_latest.sif docker://mspass/mspass
+
+The command above will build a Singularity container corresponding to the latest released MsPASS docker container and save as :code:`mspass_latest.sif`` in the current directory.
+
+Now we can run MsPASS using Singularity. However, lots of configurations are needed, especially when
 user wants to run MsPASS on distributed nodes, where each node perform a different role. To simplify the configuration,
 two example scripts are given: `single_node.sh <https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/single_node.sh>`__
 and `distributed_node.sh <https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh>`__.
@@ -16,7 +41,7 @@ Please note that these scripts are written for the TACC environment, users might
 Quick Start
 -----------
 
-To run the MsPass on TACC Stampede machines, simply use: 
+To run the MsPass on Stampede2, simply use: 
 
 .. code-block::
 

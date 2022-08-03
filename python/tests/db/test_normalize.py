@@ -1,4 +1,6 @@
+from attr import attrib
 from mspasspy.db.normalize import (
+    single_key_matcher,
     ID_matcher,
     mseed_channel_matcher,
     mseed_site_matcher,
@@ -92,6 +94,69 @@ class TestNormalize:
             {"_id": ObjectId("627fc20559a116ff99f38243")}
         )
         self.ts = self.db.read_data(self.doc, collection="wf_miniseed")
+
+    def test_single_key_matcher_get_document(self):
+        cached_matcher = single_key_matcher(self.db, "site", "net")
+        uncached_matcher = single_key_matcher(
+            self.db, "site", "net", cache_normalization_data=False
+        )
+
+        norm_key_undefine_msg = (
+            "Normalizing ID with key=channel_id is not defined in this object"
+        )
+        cache_id_undefine_msg = "] not defined in cache"
+        uncache_id_undefine_msg = "] not defined in normalization collection"
+
+        #   Test get_document
+        ts = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher.get_document(ts)
+        uncached_retdoc = uncached_matcher.get_document(ts)
+        assert Metadata_cmp(cached_retdoc, uncached_retdoc)
+
+    def test_single_key_matcher_normalize(self):
+        cached_matcher = single_key_matcher(
+            self.db, "site", "net", attributes_to_load=["coords"]
+        )
+        uncached_matcher = single_key_matcher(
+            self.db,
+            "site",
+            "net",
+            attributes_to_load=["coords"],
+            cache_normalization_data=False,
+        )
+
+        cache_id_undefine_msg = "] not defined in cache"
+
+        #   Test normalize
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher(ts_1)
+        uncached_retdoc = uncached_matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc, uncached_retdoc)
+        assert "site_coords" in cached_retdoc
+
+        #   Test prepend_collection_name
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        matcher = single_key_matcher(
+            self.db,
+            "site",
+            "net",
+            attributes_to_load=["coords"],
+            prepend_collection_name=False,
+        )
+        cached_retdoc = matcher(ts_1)
+        matcher = single_key_matcher(
+            self.db,
+            "site",
+            "net",
+            attributes_to_load=["coords"],
+            prepend_collection_name=False,
+            cache_normalization_data=False,
+        )
+        uncached_retdoc = matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc, uncached_retdoc)
+        assert "coords" in cached_retdoc
 
     def test_ID_matcher_get_document(self):
         cached_matcher = ID_matcher(self.db)
@@ -397,9 +462,9 @@ class TestNormalize:
         assert Metadata_cmp(self.ts, cached_retdoc)
 
     def test_origin_time_source_matcher_get_document(self):
-        cached_matcher = origin_time_source_matcher(self.db)
+        cached_matcher = origin_time_source_matcher(self.db, time_key="starttime")
         uncached_matcher = origin_time_source_matcher(
-            self.db, cache_normalization_data=False
+            self.db, time_key="starttime", cache_normalization_data=False
         )
 
         orig_doc = self.db.wf_miniseed.find_one(
@@ -431,15 +496,25 @@ class TestNormalize:
         assert "No match for time between" in str(ts_1.elog.get_error_log())
         assert "No match for query = {'time':" in str(ts_2.elog.get_error_log())
 
-        #   test without a time, or a startime, take first doc, warning
-        cached_matcher = origin_time_source_matcher(self.db, tolerance=1000000000.0)
+        #   test TimeSeries without defining time_key
+        cached_matcher = origin_time_source_matcher(self.db)
         uncached_matcher = origin_time_source_matcher(
-            self.db, tolerance=1000000000.0, cache_normalization_data=False
+            self.db, cache_normalization_data=False
+        )
+        ts = copy.deepcopy(orig_ts)
+        cached_retdoc = cached_matcher.get_document(ts)
+        uncached_retdoc = uncached_matcher.get_document(ts)
+        assert Metadata_cmp(cached_retdoc, uncached_retdoc)
+
+        #   test without a time, or a startime, take first doc, warning
+        cached_matcher = origin_time_source_matcher(self.db)
+        uncached_matcher = origin_time_source_matcher(
+            self.db, cache_normalization_data=False
         )
         cached_retdoc = cached_matcher.get_document(doc)
         uncached_retdoc = uncached_matcher.get_document(doc)
-        assert cached_retdoc is not None
-        assert uncached_retdoc is not None
+        assert cached_retdoc is None
+        assert uncached_retdoc is None
 
     def test_origin_time_source_matcher_normalize(self):
         cached_matcher = origin_time_source_matcher(self.db)

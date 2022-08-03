@@ -28,8 +28,8 @@ package.
 
    getting_started/run_mspass_with_docker
    getting_started/deploy_mspass_with_docker_compose
-   getting_started/run_mspass_with_singularity
    getting_started/deploy_mspass_on_HPC
+   getting_started/getting_started_overview
    
 .. toctree::
    :maxdepth: 1
@@ -41,6 +41,7 @@ package.
    user_manual/obspy_interface
    user_manual/database_concepts
    user_manual/CRUD_operations
+   user_manual/importing_data
    user_manual/handling_errors
    user_manual/data_editing
    user_manual/header_math
@@ -58,6 +59,3 @@ package.
    cxx_api/index
    mspass_schema/mspass_schema
 
-.. warning::
-
-    The current version is under development. The APIs are subject to breaking change.

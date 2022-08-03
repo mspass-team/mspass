@@ -83,7 +83,7 @@ class TestMsPASSClient:
     def test_default(self):
         # test db_client
         host, port = self.client._db_client.address
-        assert host == "localhost"
+        assert host == "127.0.0.1"
         assert port == 27017
 
         # test database_name
@@ -174,7 +174,7 @@ class TestMsPASSClient:
         db_client = self.client.get_database_client()
         assert isinstance(db_client, DBClient)
         host, port = db_client.address
-        assert host == "localhost"
+        assert host == "127.0.0.1"
         assert port == 27017
 
     def test_get_database(self):
