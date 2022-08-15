@@ -359,7 +359,7 @@ class DatabaseMatcher(BasicMatcher):
         if mdlist_length == 0:
             return [None,find_output[1]]
         elif mdlist_length == 1:
-            return [find_output[0][0]]
+            return [find_output[0][0],find_output[1]]
         else:
             #somewhat messy logic to handle differnt situations 
             # we throw an exception if the constructor set require_unique_match 
@@ -382,7 +382,7 @@ class DatabaseMatcher(BasicMatcher):
                      message,
                      ErrorSeverity.Complaint
                    )
-                return [find_output[0],elog]
+                return [find_output[0][0],elog]
             
                 
 class CachedMatcher(BasicMatcher):
@@ -582,7 +582,7 @@ class CachedMatcher(BasicMatcher):
         if number_hits <= 0:
             return [None,find_output[1]]
         elif number_hits == 1:
-            return [find_output[0],find_output[1]]
+            return [find_output[0][0],find_output[1]]
         else:
             # as with the database version we use require_unique_match 
             # to define if we should be dogmatic or not

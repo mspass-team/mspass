@@ -98,7 +98,12 @@ class TestNormalize:
         self.ts = self.db.read_data(self.doc, collection="wf_miniseed")
 
     def test_EqualityMatcher_find_one(self):
-        cached_matcher = EqualityMatcher(self.db, "site", {"net":"net"})
+        cached_matcher = EqualityMatcher(
+            self.db, 
+            "site", 
+            {"net":"net"},
+            ["net","coords"]
+            )
         db_matcher = EqualityDBMatcher(
             self.db, "site", {"net":"net"}
         )
@@ -114,13 +119,16 @@ class TestNormalize:
 
     def test_EqualityMatcher_normalize(self):
         cached_matcher = EqualityMatcher(
-            self.db, "site", {"site_net":"net"}, attributes_to_load=["coords"]
+            self.db, 
+            "site", 
+            {"site_net":"net"}, 
+            attributes_to_load=["net","coords"]
         )
         db_matcher = EqualityDBMatcher(
             self.db,
             "site",
             {"site_net":"net"},
-            attributes_to_load=["coords"],
+            attributes_to_load=["net","coords"],
         )
 
 
@@ -147,7 +155,7 @@ class TestNormalize:
             self.db,
             "site",
             {"net":"net"},
-            attributes_to_load=["coords"],
+            attributes_to_load=["net","coords"],
             prepend_collection_name=False,
         )
         cached_retdoc = matcher(ts_1)
@@ -155,7 +163,7 @@ class TestNormalize:
             self.db,
             "site",
             {"net":"net"},
-            attributes_to_load=["coords"],
+            attributes_to_load=["net","coords"],
             prepend_collection_name=False,
         )
         db_retdoc = matcher(ts_2)
