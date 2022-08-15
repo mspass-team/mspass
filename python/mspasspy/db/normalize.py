@@ -96,7 +96,7 @@ class BasicMatcher(ABC):
         called IDMatcher we assign to the symbol "matcher" we can 
         get a Metadata container of the matching content for a MsPASS 
         data object with symbol d using md = matcher(d) versus 
-        md = matcher.find(d).  All subclasses have this interface 
+        md = matcher.find_one(d).  All subclasses have this interface 
         define because it is a (nonvirtual) base class method. 
         """
         return self.find_one(d, *args, **kwargs)
@@ -284,7 +284,7 @@ class DatabaseMatcher(BasicMatcher):
             message = "received invalid data.  Arg0 must be a valid MsPASS data object"
             elog.log_error("DatabaseMatcher.find",message,ErrorSeverity.Invalid)
         if mspass_object.dead():
-            return [None, None]
+            return [[], None]
         query = self.query_generator(mspass_object)
         if query is None:
             elog = ErrorLogger()
@@ -300,7 +300,7 @@ class DatabaseMatcher(BasicMatcher):
                     + "query = " \
                     + str(query) \
                     + " yielded no documents"
-            return [None,elog]
+            return [[],elog]
         cursor = self.dbhandle.find(query)
         elog = ErrorLogger()
         metadata_list = []
@@ -645,7 +645,7 @@ class CachedMatcher(BasicMatcher):
                   "Received datum that was not a valid MsPASS data object",
                   ErrorSeverity.Invalid
                 )
-            return [None, elog]
+            return [[], elog]
             
         thisid = self.cache_id(mspass_object)
         # this should perhaps generate two different messages as the 
@@ -657,7 +657,7 @@ class CachedMatcher(BasicMatcher):
             elog.log_error("CachedMatcher.find",
                            error_message,
                            ErrorSeverity.Invalid)
-            return [None,elog]
+            return [[],elog]
         else:
             return [self.normcache[thisid],None]
 
