@@ -12,6 +12,8 @@ from mspasspy.ccore.seismic import (
     SeismogramEnsemble,
 )
 from mspasspy.db.database import Database
+from mspasspy.util.decorators import mspass_func_wrapper
+
 
 from bson import ObjectId
 
@@ -2256,7 +2258,7 @@ class ArrivalDBMatcher(DatabaseMatcher):
         
         
 
-            
+@mspass_func_wrapper          
 def normalize(mspass_object,matcher,kill_on_failure=True):
     """
     Generic function to do in line normalization with dask/spark map operator.
