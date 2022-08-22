@@ -14,7 +14,6 @@ from mspasspy.ccore.seismic import (
 from mspasspy.db.database import Database
 from mspasspy.util.decorators import mspass_func_wrapper
 
-
 from bson import ObjectId
 
 from obspy import UTCDateTime
@@ -22,6 +21,7 @@ import pymongo
 import inspect
 import copy
 import pandas as pd
+import dask
 
 class BasicMatcher(ABC):
     """
@@ -43,7 +43,7 @@ class BasicMatcher(ABC):
     the find and find_one methods of MongoDB to a wider class of 
     algorithms that may or may not utilize MongoDB directly.   
     For instance, an intermediate class we define below called 
-    CachedMatcher abstracts loading of any tabular data defined in 
+    DictionaryCacheMatcher abstracts loading of any tabular data defined in 
     a pandas array to be accessible through this same interface.  
     That can potentially provide a wide variety of applications of 
     matching data to tabular data contained in files loaded into 
@@ -62,6 +62,7 @@ class BasicMatcher(ABC):
         self,
         attributes_to_load=None,
         load_if_defined=None,
+        aliases=None,
     ):
         """
         Base class constructor sets only attributes considered necessary for all
@@ -79,15 +80,36 @@ class BasicMatcher(ABC):
           should be loaded only if they are defined. Default is None here,
           subclass should set their own default values.
           
+        :param aliases:   should be a python dictionary used to define 
+          alternative keys to access a data object's Metata from that 
+          defining the same attribute in the collection/table being 
+          matched.   Note carefully the key of the dictionary is the 
+          collection/table attribute name and the value associated with 
+          that key is the alias to use to fetch Metadata.  When matchers
+          scan the attributes_to_load and load_if_defined list they 
+          should treat missing entries in alias as meaning the key in 
+          the collection/table and Metadata are identical.  Default is 
+          a None which is used as a signal to this constructor to 
+          create an empty dictionary meaning there are not aliases. 
+        :type aliases:  python dictionary
+          
 
         """
         if attributes_to_load is None:
-            attributes_to_load = []
+            self.attributes_to_load = []
+        else:
+            self.attributes_to_load = attributes_to_load
         if load_if_defined is None:
-            load_if_defined = []
-
-        self.attributes_to_load = attributes_to_load
-        self.load_if_defined = load_if_defined
+            self.load_if_defined = []
+        else:
+            self.load_if_defined = load_if_defined
+        if aliases is None:
+            self.aliases = dict()
+        elif isinstance(aliases,dict):
+            self.aliases = aliases
+        else:
+            raise TypeError("BasicMatcher constructor: aliases argument must be either None or define a python dictionary")
+            
 
     def __call__(self, d, *args, **kwargs):
         """
@@ -212,6 +234,7 @@ class DatabaseMatcher(BasicMatcher):
             collection,
             attributes_to_load=None,
             load_if_defined=None,
+            aliases=None,
             require_unique_match=False,
             prepend_collection_name=False,
             ):
@@ -223,6 +246,7 @@ class DatabaseMatcher(BasicMatcher):
         super().__init__(
             attributes_to_load=attributes_to_load,
             load_if_defined=load_if_defined,
+            aliases=aliases,
             )
         if not isinstance(collection, str):
             raise TypeError(
@@ -286,7 +310,7 @@ class DatabaseMatcher(BasicMatcher):
             message = "received invalid data.  Arg0 must be a valid MsPASS data object"
             elog.log_error("DatabaseMatcher.find",message,ErrorSeverity.Invalid)
         if mspass_object.dead():
-            return [[], None]
+            return [None, None]
         query = self.query_generator(mspass_object)
         if query is None:
             elog = ErrorLogger()
@@ -294,7 +318,7 @@ class DatabaseMatcher(BasicMatcher):
             elog.log_error("DatabaseMatcher.find",
                            message,
                            ErrorSeverity.Invalid)
-            return [ [], elog]
+            return [None, elog]
         number_hits = self.dbhandle.count_documents(query)
         if number_hits <= 0:
             elog = ErrorLogger()
@@ -302,7 +326,7 @@ class DatabaseMatcher(BasicMatcher):
                     + "query = " \
                     + str(query) \
                     + " yielded no documents"
-            return [[],elog]
+            return [None, elog]
         cursor = self.dbhandle.find(query)
         elog = ErrorLogger()
         metadata_list = []
@@ -357,10 +381,10 @@ class DatabaseMatcher(BasicMatcher):
         uniqueness issue.  
         """
         find_output = self.find(mspass_object)
-        mdlist_length = len(find_output[0])
-        if mdlist_length == 0:
+        if find_output[0] is None:
             return [None,find_output[1]]
-        elif mdlist_length == 1:
+        mdlist_length = len(find_output[0])
+        if mdlist_length== 1:
             return [find_output[0][0],find_output[1]]
         else:
             #somewhat messy logic to handle differnt situations 
@@ -387,12 +411,16 @@ class DatabaseMatcher(BasicMatcher):
                 return [find_output[0][0],elog]
             
                 
-class CachedMatcher(BasicMatcher):
+class DictionaryCacheMatcher(BasicMatcher):
     """
-    Matcher implementing a caching method.   This class is an
-    intermediate class for instances where the database collection
+    Matcher implementing a caching method based on a python dictionary.
+
+    This is an intermediate class for instances where the database collection
     to be matched is small enough that the in-memory model is appropriate. 
-    The class defines a generic cache with a string key.   The way that 
+    It should also only be used if the matching algorithm can be reduced 
+    to a single string that can serve as a unique id for each tuple.
+    
+    The class defines a generic dictionary cache with a string key.   The way that 
     key is define is abstracted through two virtual methods:  
     (1) The cache_id method creates a match key from a mspass data object. 
         That is normally from the Metadata container but it is not 
@@ -415,28 +443,7 @@ class CachedMatcher(BasicMatcher):
     easy when running subclasses of this to get null results with 
     all members of a dataset.   As always testing with a subset of 
     data is strongly recommended before running versions of this on 
-    a large dataset. 
-    
-    An additional feature of this class that expands its functionality 
-    is the ability to be constructed from a pandas DataFrame 
-    as well as a MongoDB collection.   The pandas interface provides a
-    very generic way to import data stored in a relational database 
-    tables (or views).  Be WARNED, however, that that approach makes 
-    sense ONLY IF the table to be matched is small enough to match the 
-    in memory cache model.  A complication of the pandas data model 
-    is defining the index.  A simple solution in some cases is to 
-    use the row index of the pandas array to define the 
-    cache index.  That is feasible, however, only if the data that 
-    will need to reference the data in pandas array can reconstruct
-    the index through the cache_id method from attributes stored in 
-    its Metadata container of each datum.   That disconnect makes the pandas 
-    row index likely an unusual option, but one this interface supports.
-    If that feature is used the docstring for the concrete implementation 
-    must describe in detail how that issue is to be handled. That feature 
-    is turned on by setting the constructor argument 
-    "use_dataframe_index_as_cache_id" True.   That boolean is ignored
-    if loading from a MongoDB database.    
-    
+    a large dataset.   
     
     This class cannot be instantiated because it is not concrete 
     (has abstract - virtual - methods that must be defined by subclasses)
@@ -444,10 +451,11 @@ class CachedMatcher(BasicMatcher):
     """
     def __init__(
             self,
-            db_or_df,
+            db,
             collection,
             query=None,
             attributes_to_load=None,
+            aliases=None,
             load_if_defined=None,
             require_unique_match=False,
             prepend_collection_name=False,
@@ -457,7 +465,7 @@ class CachedMatcher(BasicMatcher):
         Constructor for this intermediate class.  It should not be 
         used except by subclasses as this intermediate class 
         is not concrete.   It calls the base class constructor 
-        and then lolads two internal attributes:  query and collection.
+        and then loads two internal attributes:  query and collection.
         It then creates the normalization python dict that applies the 
         abstract cache_id method.  Note that only works for 
         concrete subclasses of this intermediate class.  
@@ -465,6 +473,7 @@ class CachedMatcher(BasicMatcher):
         super().__init__(
             attributes_to_load=attributes_to_load,
             load_if_defined=load_if_defined,
+            aliases=aliases,
             )
         if not isinstance(collection, str):
             raise TypeError(
@@ -485,28 +494,16 @@ class CachedMatcher(BasicMatcher):
         self.collection = collection
         self.require_unique_match = require_unique_match
         self.prepend_collection_name = prepend_collection_name
-        self.use_dataframe_index_as_cache_id = use_dataframe_index_as_cache_id
+
         
         # This is a redundant initialization but a minor cost for stability
         self.normcache = dict()
-        if isinstance(db_or_df,pd.DataFrame):
-            # mismatch in concept here requires this test.  load_if_defined 
-            # is not implemented so throw an exception if someone tries 
-            # to use that feature in this context
-            if (load_if_defined is None) or (len(load_if_defined)<=0):
-                # above works because if None the len check is bypassed
-                # a bit dangerous as I can imagine that behavior 
-                # may be version dependent.
-                raise MsPASSError(
-                    "{} constructor:  input is a pandas DataFrame but the load_if_defined is not empty - null DataFrame fields are currently not supported".format(
-                    self.__class__.__name__)
-                    )
-            self._df_load_normalization_cache(db_or_df)
-        elif isinstance(db_or_df,Database):
-            self._db_load_normalization_cache(db_or_df,collection)
+
+        if isinstance(db,Database):
+            self._db_load_normalization_cache(db,collection)
         else:
             raise TypeError(
-                "{} constructor:  required arg0 must be either a mspass Database handle or a string defining a filename".format(
+                "{} constructor:  required arg0 must be a mspass Database handle".format(
                     self.__class__.__name__
                 )
             )
@@ -580,10 +577,10 @@ class CachedMatcher(BasicMatcher):
  
         """
         find_output = self.find(mspass_object)
-        number_hits = len(find_output[0])
-        if number_hits <= 0:
-            return [None,find_output[1]]
-        elif number_hits == 1:
+
+        if find_output[0] is None:
+            return find_output
+        elif len(find_output[0]) == 1:
             return [find_output[0][0],find_output[1]]
         else:
             # as with the database version we use require_unique_match 
@@ -591,7 +588,7 @@ class CachedMatcher(BasicMatcher):
             if self.require_unique_match:
                 message = "query does not yield a unique match and require_unique_match is set true"
                 raise MsPASSError(
-                      "CachedMatcher.find:  " + message,
+                      "DictionaryCacheMatcher.find:  " + message,
                       ErrorSeverity.Fatal
                     )
             else:
@@ -601,7 +598,7 @@ class CachedMatcher(BasicMatcher):
                 else:
                     elog = find_output[1]
                 elog.log_error(
-                      "CachedMatcher.find:  ",
+                      "DictionaryCacheMatcher.find:  ",
                       message,
                       ErrorSeverity.Complaint
                     )
@@ -643,11 +640,11 @@ class CachedMatcher(BasicMatcher):
         """
         if not _input_is_valid(mspass_object):
             elog = ErrorLogger(
-                  "CachedMatcher.find",
+                  "DictionaryCacheMatcher.find",
                   "Received datum that was not a valid MsPASS data object",
                   ErrorSeverity.Invalid
                 )
-            return [[], elog]
+            return [None, elog]
             
         thisid = self.cache_id(mspass_object)
         # this should perhaps generate two different messages as the 
@@ -656,10 +653,10 @@ class CachedMatcher(BasicMatcher):
         if (thisid == None) or (thisid not in self.normcache) :
             error_message = "cache_id method found no match for this datum"
             elog = ErrorLogger()
-            elog.log_error("CachedMatcher.find",
+            elog.log_error("DictionaryCacheMatcher.find",
                            error_message,
                            ErrorSeverity.Invalid)
-            return [[],elog]
+            return [None,elog]
         else:
             return [self.normcache[thisid],None]
 
@@ -704,7 +701,7 @@ class CachedMatcher(BasicMatcher):
         self.collection_size = dbhandle.count_documents(self.query)
         if self.collection_size <= 0:
             message = "Query=" + self.query + " of collection=" + collection + " yielded 0 documents - cannot construct this object"
-            raise MsPASSError("CachedMatcher._load_normalization_cache:  " 
+            raise MsPASSError("DictionaryCacheMatcher._load_normalization_cache:  " 
                               + message,
                               ErrorSeverity.Fatal)
         cursor = dbhandle.find(self.query)
@@ -716,7 +713,7 @@ class CachedMatcher(BasicMatcher):
             # to handle a None return
             if cache_key == None:
                 raise MsPASSError(
-                    "CachedMatcher._load_normalization_cache:  "
+                    "DictionaryCacheMatcher._load_normalization_cache:  "
                     + "db_make_cache_id failed - coding problem or major problem with collection=" + self.collection,
                     ErrorSeverity.Fatal
                     )
@@ -733,7 +730,7 @@ class CachedMatcher(BasicMatcher):
                     md[mdkey] = doc[k]
                 else:
                     message = "Required attribute {key} was not found in document number {n} of collection {col}".format(key=k,n=count,col=collection)
-                    raise MsPASSError("CachedMatcher._load_normalization_cache:  "
+                    raise MsPASSError("DictionaryCacheMatcher._load_normalization_cache:  "
                                           + message,
                                           ErrorSeverity.Fatal)
             for k in self.load_if_defined:
@@ -753,61 +750,199 @@ class CachedMatcher(BasicMatcher):
                 self.normcache[cache_key] = [md]
             count += 1
         
-    def _df_load_normalization_cache(self,df):
-        """
-        Private method used to load the cache when the input is a 
-        pandas DataFrame.  
-       
-        This method loads the entire contents of df extracting the 
-        attributes defined by the attributes_to_load list.  The 
-        load_if_defined list is ignored as that concept does not map 
-        well to a dataframe.   It could be changed if we added a feature 
-        to define null for each attribute, but that is a future development 
-        task to be done only if it proves necessary. 
-        
-        Normal use is to generate the key by calls to the db_make_cache_id 
-        for each row of the DataFrame.  If use_dataframe_index_as_cache_id 
-        is True the row index will be used as the python dict key
-        directly and db_make_cache_id will be ignored.  
-       
-        :param df:  pandas DataFrame to be loaded as cache.  Note the abstract
-          cache_id and db_make_cache_id methods will need to define a unique 
-          index from the dataframe AND the attributes of that index
-          will need to always exist.
-        """
-        # first verify all the attributes needed have an index entry in DataFrame
-        dfkeys = df.keys()
-        for key in self.attributes_to_load:
-            if key not in dfkeys:
-                raise MsPASSError(
-                   "CachedMatcher._df_load_normalization_cache:  "
-                    + "DataFrame received does not contained requested attribute with key name="
-                    + key,
-                    ErrorSeverity.Fatal
-                   )
-               
-        nrows = len(df)
-        for n in range(nrows):
-            row_n_series = df.iloc[n]
-            fulldoc = row_n_series.to_dict()
-            if self.use_dataframe_index_as_cache_id:
-                # iloc returns a pandas Series. The name property is the row index
-                cache_key = row_n_series.name
-            else:
-                cache_key = self.db_make_cache_id(fulldoc)
-                
-            md = Metadata()
-            for k in self.attributes_to_load:
-                # the test at the top of this function should guarantee
-                # this will never throw an exception
-                md[k] = fulldoc[k]
-                   
-            if cache_key in self.normcache:
-                self.normcache[cache_key].append(md)
-            else:
-                self.normcache[cache_key] = [md]
+ 
                     
+class DataFrameCacheMatcher(BasicMatcher):
+    def __init__(
+            self,
+            df,
+            collection=None,
+            attributes_to_load=None,
+            load_if_defined=None,
+            aliases=None,
+            require_unique_match=False,
+            prepend_collection_name=False,
+            # for consideration as a feature
+            #custom_null_values=None,
+            #aliases=None,
+            ):
+        """
+        Constructor for this intermediate class.  It should not be 
+        used except by subclasses as this intermediate class 
+        is not concrete.    
+        """
+        self.prepend_collection_name = prepend_collection_name
+        self.require_unique_match = require_unique_match
+        # this is a necessary sanity check
+        if prepend_collection_name:
+            if collection is None:
+                raise TypeError("DataFrameCacheMatcher constructor:  collection name must be defined when prepend_collection_name is set True")
+            elif isinstance(collection,str):
+                self.collection = collection
+                
+            else:
+                raise TypeError("DataFrameCacheMatcher constructor:   collection argument must be a string type")
+        if not isinstance(df,[pd.DataFrame,dask.DataFrame]):
+            raise TypeError("DataFrameCacheMatcher constructor:  required arg0 must be either a pandas or dask Dataframe")
+        if attributes_to_load is None:
+            if load_if_defined is None:
+                raise MsPASSError("DataFrameCacheMatcher constructor:  usage error.  Cannot use default of attributes_to_load (triggers loading all columns) and define a list of names for argument load_if_defined")
+            aload = list()
+            for key in df.columns:
+                aload.append(key)
+        else:
+            aload = attributes_to_load
+        
+        super().__init__(
+            attributes_to_load=aload,
+            load_if_defined=load_if_defined,
+            aliases=aliases,
+            )
+        
+        self._load_dataframe_cache(df)
 
+    def find(self,mspass_object)->tuple:
+        """
+        DataFrame generic implementation of find method.  
+        
+        This method uses content in any part of the mspass_object
+        (data object) to subset the internal DataFrame cache to 
+        return subset of tuples matching some condition defined 
+        computed through the abstract (virtual) methdod subset.  
+        It then copies entries in attributes_to_load and when not 
+        null load_if_defined into one Metadata container for each 
+        row of the returned DataFrame.  
+        """
+        if not _input_is_valid(mspass_object):
+            elog = ErrorLogger(
+                  "DataFrameCacheMatcher.find",
+                  "Received datum that was not a valid MsPASS data object",
+                  ErrorSeverity.Invalid
+                )
+            return [None, elog]
+            
+        subset_df = self.subset(mspass_object)
+        # assume all implementations will return a 0 length dataframe
+        # if the subset failed.  
+        if len(subset_df) <= 0:
+            error_message = "subset method found no match for this datum"
+            elog = ErrorLogger()
+            elog.log_error("DataFrameCacheMatcher.find",
+                           error_message,
+                           ErrorSeverity.Invalid)
+            return [None,elog]
+        else:
+            # This loop cautiously fills one or more Metadata 
+            # containers with each row of the DataFrame generating
+            # one Metadata container.
+            mdlist = list()
+            elog = None
+            for index, row in subset_df.iterrows():
+                md = Metadata()
+                notnulltest = row.notnull()
+                for k in self.attributes_to_load:
+                    if notnulltest[k]:
+                        if self.prepend_collection_name:
+                            if k=="_id":
+                                mdkey = self.collection + k
+                            else:
+                                mdkey = self.collection + "_" + k
+                        else:
+                            mdkey = k
+                        md[mdkey] = row[k]
+                    else:
+                        if elog is None:
+                            elog = ErrorLogger()
+                        error_message = "Encountered Null value for required attribute {key} - repairs of the input DataFrame are required".format(key=k)
+                        elog.log_error(
+                            "DataFrameCacheMatcher.find",
+                             error_message,
+                             ErrorSeverity.Invalid
+                            )
+                        return [None,elog]
+                for k in self.load_if_defined:
+                    if notnulltest(k):
+                        if self.prepend_collection_name:
+                            if k=="_id":
+                                mdkey = self.collection + k
+                            else:
+                                mdkey = self.collection + "_" + k
+                        else:
+                            mdkey = k
+                        md[mdkey] = row[k]
+                mdlist.append(md)
+            return [mdlist,None]
+                
+    def find_one(self,mspass_object)->tuple:
+        """
+        DataFrame implementation of the find_one method.
+        
+        This method is mostly a wrapper around the find method.  
+        It calls the find method and then does one of two thing s
+        depending upon the value of self.require_unique_match.   
+        When that boolean is True if the match is not unique it 
+        creates an ErrorLogger object, posts a message to the log, 
+        and then returns a [Null,elog] pair.  If self.require_unique_match 
+        is False and the match is not ambiguous, it again creates an 
+        ErrorLogger and posts a message, but it also takes the first 
+        container in the list returned by find and returns in as 
+        component 0 of the pair.  
+        """
+        findreturn = self.find(mspass_object)
+        mdlist = findreturn[0]
+        if mdlist is None:
+            return findreturn
+        elif len(mdlist)==1:
+            return [mdlist,findreturn[1]]
+        elif len(mdlist)>1:
+            if self.require_unique_match:
+                raise MsPASSError("DataFrameCacheMatcher.find_one:  found {n} matches when require_unique_match was set true".format(n=len(mdlist)),
+                                  ErrorSeverity.Fatal)
+            if findreturn[1] is None:
+                elog = ErrorLogger()
+            else:
+                elog = findreturn[1]
+            # This maybe should be only posted with a verbose option????
+            error_message = "found {n} matches.  Returned first one found.  You should use find instead of find_one if the match is not unique".format(n=len(mdlist))
+            elog.log_error("DataFrameCacheMatcher.find_one",
+                             error_message,
+                             ErrorSeverity.Complaint
+                            )
+            return [mdlist[0],elog]
+        else:
+            # only land here if mdlist is something for which len returns 0
+            raise MsPASSError("DataFrameCacheMatchter.find_one:   find returned an empty list.  Can only happen if custom matcher has overridden find.  Find should return None if the match fails",
+                              ErrorSeverity.Fatal)
+            
+        
+    @abstractmethod
+    def subset(self,mspass_object)->pd.DataFrame:
+        """
+        Required method defining how the internal DataFrame cache is 
+        to be subsetted using the contents of the data object 
+        mspass_object.   Concrete implementation must implement this class. 
+        The point of this abstract method is that the way one defines 
+        how to get the information needed to define a match with the 
+        cache is application dependent.  An implementation can use Metadata 
+        attributes, data object attributes (e.g. TimeSeries t0 attribute), 
+        or even sample data to compute a value to use in DataFrame 
+        subset condition.   This simplifies writing a custom matcher to 
+        implementing only this method as find and find_one use it.
+        
+        Implementations should return a zero length DataFrame if the 
+        subset condition yields a null result.  i.e. the test 
+        len(return_result) should work and return 0 if the subset 
+        produced no rows.
+        """
+        pass
+    
+    def _load_dataframe_cache(self,df):
+        # This is a bit error prone.  It assumes the BasicMatcher 
+        # constructor initializes a None default to an empty list
+        fulllist = self.attributes_to_laod + self.load_if_defined
+        self.cache = df[fulllist]
+
+        
 class ObjectIdDBMatcher(DatabaseMatcher):
     """
     Implementation of DatabaseMatcher for ObjectIds.  In this class the virtual 
@@ -856,6 +991,7 @@ class ObjectIdDBMatcher(DatabaseMatcher):
             collection="channel",
             attributes_to_load=["_id","lat","lon","elev","hang","vang"],
             load_if_defined=None,
+            aliases=None,
             prepend_collection_name=True,
             ):
         """
@@ -868,6 +1004,7 @@ class ObjectIdDBMatcher(DatabaseMatcher):
             collection,
             attributes_to_load=attributes_to_load,
             load_if_defined=load_if_defined,
+            aliases=aliases,
             require_unique_match=True,
             prepend_collection_name=prepend_collection_name,
             )
@@ -886,10 +1023,10 @@ class ObjectIdDBMatcher(DatabaseMatcher):
             return None
             
 
-class ObjectIdMatcher(CachedMatcher):
+class ObjectIdMatcher(DictionaryCacheMatcher):
     """
     Implement an ObjectId match with caching.  Most of the code for 
-    this class is derived from the superclass CachedMatcher.   
+    this class is derived from the superclass DictionaryCacheMatcher.   
     It adds only a concrete implementation of the cache_id method 
     used to construct a key for the cache defined by a python dict 
     (self.normcache).  In this case the cache key is simply the 
@@ -945,6 +1082,7 @@ class ObjectIdMatcher(CachedMatcher):
             query=None,
             attributes_to_load=["_id","lat","lon","elev","hang","vang"],
             load_if_defined=None,
+            aliases=None,
             prepend_collection_name=True,
             ):
         """
@@ -961,6 +1099,7 @@ class ObjectIdMatcher(CachedMatcher):
             query=query,
             attributes_to_load=attributes_to_load,
             load_if_defined=load_if_defined,
+            aliases=aliases,
             require_unique_match=True,
             prepend_collection_name=prepend_collection_name,
             )
@@ -1117,6 +1256,7 @@ class MiniseedDBMatcher(DatabaseMatcher):
             collection="channel",
             attributes_to_load=["lat","lon","elev","_id"],
             load_if_defined=None,
+            aliases=None,
             prepend_collection_name=True,
             ):
         aload_tmp = attributes_to_load
@@ -1137,6 +1277,7 @@ class MiniseedDBMatcher(DatabaseMatcher):
                 collection,
                 attributes_to_load=aload_tmp,
                 load_if_defined=load_if_defined,
+                aliases=aliases,
                 require_unique_match=False
             )
       
@@ -1267,13 +1408,13 @@ class MiniseedDBMatcher(DatabaseMatcher):
             raise TypeError("MiniseedDBMatcher.find_one:  this class method can only be applied to TimeSeries or Seismogram objects")
           
 
-class MiniseedMatcher(CachedMatcher):
+class MiniseedMatcher(DictionaryCacheMatcher):
     """
     Cached version of matcher for miniseed station/channel Metadata. 
     
     Miniseed data require 6 keys to uniquely define a single channel 
     of data (5 at the Seismogram level where the channels are merged).
-    A further complication for using the CachedMatcher interface is 
+    A further complication for using the DictionaryCacheMatcher interface is 
     that part of the definition is a UTC time interval defining when the 
     metadata is valid.  We handle that in this implementation by 
     implementing a two stage search algorithm for the find_one method. 
@@ -1301,7 +1442,7 @@ class MiniseedMatcher(CachedMatcher):
     
     Users should only call the find_one method for this application.   
     The find_one method here overrides the generic find_one in the 
-    superclass CachedMatcher.  It implements the linear search for a
+    superclass DictionaryCacheMatcher.  It implements the linear search for a
     matching time interval test as noted above.  Note also this 
     class does not support Ensembles directly.   Matching instrument 
     data is by definition what we call atomic. If you are processing 
@@ -1309,20 +1450,8 @@ class MiniseedMatcher(CachedMatcher):
     would run find_one and handle the out looping over each member of 
     the ensemble.  
         
-    :param db_or_df:  MongoDB database handle or a pandas DataFrame.  
-      Most users will use the database handle version.   In that case 
-      the collection argument is used to determine what collection is 
-      loaded into the cache.   The DataFrame version makes sense if 
-      the station information you are trying to reference is in a css3.0 
-      relational database.  The css3.0 site table defines a similar 
-      concept to the mspass site collection and the css3.0 sitechan 
-      table is similar to the mspass channel collection.  THE fundamental 
-      difference is that css3.0 does not define the net or loc attributes. 
-      To load css3.0 site or sitechan through this interface add two 
-      columns to the data frame with the column labels "net" and "loc"
-      with constant (empty but not null strings) would be most efficient
-      for storage but any constant would do.  
-    :type db_or_df: MongoDB database handle or pandas DataFrame.   
+    :param db:  MongoDB database handle containing collection to be loaded.   
+    :type db: mspass Database handle(mspasspy.db.database.Database).   
     
     :param collection:  Name of MongoDB collection that is to be queried
        The default is "channel".  Use "site" for Seismogram data.
@@ -1380,11 +1509,12 @@ class MiniseedMatcher(CachedMatcher):
     """
     def __init__(
             self,
-            db_or_df,
+            db,
             collection="channel",
             query=None,
             attributes_to_load=["starttime","endtime","lat","lon","elev","_id"],
             load_if_defined=None,
+            aliases=None,
             prepend_collection_name=True,
             ):
         aload_tmp = attributes_to_load
@@ -1411,11 +1541,12 @@ class MiniseedMatcher(CachedMatcher):
                 )
             
         super().__init__(
-            db_or_df,
+            db,
             collection,
             query=query,
             attributes_to_load=aload_tmp,
             load_if_defined=load_if_defined,
+            aliases=aliases,
             require_unique_match=True,
             prepend_collection_name=prepend_collection_name,
             )
@@ -1662,32 +1793,32 @@ class MiniseedMatcher(CachedMatcher):
             
         return None
     
-class EqualityMatcher(CachedMatcher):
+class EqualityMatcher(DataFrameCacheMatcher):
     """
     Match with an equality test for the values of one or more keys 
     with possible aliasing between data keys and database keys.
     
     This class can be used for matching a set of keys that together 
-    provide a unique matching capability.   The matching algorithm 
-    used in this case is assured of working only if the values being 
-    compared are strings.   Other matches are possible if the values 
-    associated with the match key can be converted to a unique string 
-    with the python str type conversion used within the class to 
-    construct the internal index.  This can work fine, for example, 
-    with integers where str of any integer is always the same.  It is 
-    a bad idea, in contrast, for float values as str may not properly 
-    resolve issues with precision and roundoff. (2.0 numerically is 
-    close to 1.999999999999 but the str representations are drastically 
-    different)   If in doubt use the database version of this class
-    as it uses MongoDBs equality matching algorithm.   Alternatively, 
-    a cleaner path for float approximate comparison would be using 
-    a pandas implementation instead of a python dict used here and use a pandas
-    comparison subset method. 
+    provide a unique matching capability.   Note the keys are 
+    applied sequentially to reduce the size of internal DataFrame 
+    cache in stages.  Especially if the DataFrame is large or 
+    a dask DataFrame it may improve performance if the most unique 
+    key in a series appears first.  
     
     A special feature of the implementation is that we allow 
-    aliases in key naming between Metadata stored with data 
-    and the keys used in the database.  See description below of 
-    match_keys for details.  
+    what is best thought of as reverse aliasing for the keys to 
+    be used for matching.   That is, the base class of this family 
+    has an attribute self.aliases that allow mapping from collection names
+    to data object names.  The match_keys parameter here is done in 
+    the reverse order.  That is, the key of the match_keys dictionary 
+    is the data object key while the value associated with that key 
+    is the DataFrame column name to match.  The constructor of the 
+    class does a sanity check to verify the two are consistent.
+    The constructor will throw an exception if the two dictionaries 
+    are inconstent.  Note that means if you an actual alias through 
+    match_keys (i.e. the key and value are different) you must define 
+    the aliases dictionary with the same combination reversed.   
+    (e.g.  matchkeys={"channel_sta":"sta"} requires aliases={"sta":"channel_sta"})
     
     :param db_or_df:  MongoDB database handle or a pandas DataFrame.  
       Most users will use the database handle version.   In that case 
@@ -1762,6 +1893,7 @@ class EqualityMatcher(CachedMatcher):
             attributes_to_load,
             query=None,
             load_if_defined=None,
+            aliases=None,
             require_unique_match=True,
             prepend_collection_name=False,
             ):
@@ -1770,72 +1902,87 @@ class EqualityMatcher(CachedMatcher):
               collection,
               attributes_to_load=attributes_to_load,
               load_if_defined=load_if_defined,
+              aliases=aliases,
               require_unique_match=require_unique_match,
               prepend_collection_name=prepend_collection_name,
             )
         if isinstance(match_keys,dict):
             self.match_keys = match_keys
+            for key in match_keys:
+                testkey = match_keys[key]
+                # this means no aliasing for key
+                if testkey == key:
+                    continue
+                if testkey in self.aliases:
+                    backtestkey = self.aliases[testkey]
+                    if backtestkey != key:
+                        error_message = "EqualityMatcher constructor:  " \
+                            + "match_keys and aliases are inconsistent.\n" \
+                            + "match_keys=" + str(match_keys) \
+                            + "  aliases=" + str(self.aliases) 
+                        raise MsPASSError(
+                              error_message,
+                              ErrorSeverity.Fatal
+                            )
+                else:
+                    error_message = "EqualityMatcher constructor:  " \
+                            + "match_keys and aliases are inconsistent.\n" \
+                            + "match_key defines key=" + key \
+                            + " to have alias name=" + testkey \
+                            + " but alias name is not defined by aliases parameter"
+                    raise MsPASSError(
+                          error_message,
+                          ErrorSeverity.Fatal
+                        )
         else:
             raise TypeError("EqualityMatcher Constructor:  required argument 2 (matchkeys) must be a python dictionary")
-            
-    def cache_id(self,mspass_object):
-        """
-        Concrete implementation of this required method for this class.
-        
-        The key for this class is constructed as the str representation 
-        of the values of one or more keys combined with the key and 
-        value of the self.match_keys dictionary used to define the 
-        keys for matching.   
-        
-        :param mspass_object:  data object that must contain the 
-        required match keys. If they are missing the function will 
-        return a None used to define failure.
-        :type mspass_object:  any mspass container that implements [], len, 
-          and the keys method will work, but usually assumed to be a 
-          mspass data object containing a Metadata component.
-          
-        :return:  string defining a key for normal return.  Returns a None 
-         if one of the required keys is missing.
-        """
-        SEPARATOR="_"
-        testid=str()
-        nkeys = len(self.match_keys)
-        n = 0
-        for key in self.match_keys.keys():
-            if key in mspass_object:
-                testid += key + SEPARATOR + self.match_keys[key] \
-                           + SEPARATOR + self.mspass_object[key]
-            else:
-                # Silently exit with None if a key is missing
-                return None
-            # This logic avoids an unnecessary trailing separator
-            n += 1
-            if n != nkeys:
-                testid += SEPARATOR
-        return testid
     
-    def db_make_cache_id(self,doc):
+    def subset(self,mspass_object)->pd.DataFrame:
         """
-        Concrete implementation of this required method for this class.
-        It is nearly identical to cache_id except it assumes a 
-        document from MongoDB as an input.  
+        Concrete implementation of this virtual method of DataFrameMatcher 
+        for this class.
         
-        The key for this class is constructed as the str representation 
-        of the values of one or more keys combined with the key and 
-        value of the self.match_keys dictionary used to define the 
-        keys for matching.  
+        The subset is done sequentially driven by the order key order 
+        of the self.match_keys dictionary.   i.e. the algorithm uses 
+        the row reduction operation of a dataframe one key at a time.  
+        An implementation detail is that there may be a more clever way 
+        instead create a single conditional clause to pass to the 
+        DataFrame operator [] combining the key matches with "and".
+        That would likely improve performance, particulary on large tables.
+        Note the alias is applied using the self.match_keys.  i.e. one 
+        can have different keys on the left (mspass_data side is the 
+        match_keys dictionary key) than the right (dataframe column name).
+        
+        :param mspass_object:  Any valid mspass data object with a 
+        Metadata container.  The container must contain all the 
+        required match keys or the function will return an error condition
+        (see below)
+        :type mspass_object:  TimeSeries, Seismogram, TimeSeriesEnsemble 
+          or SeismogramEnsemble object
+        
+        :return:  DataFrame containing all data satisying the match
+           series of match conditions defined on construction.  Silently 
+           returns a zero length DataFrame if is no match.   Be warned 
+           two other situations can cause the return to have no data:
+               (1) dead input, and (2) match keys missing from mspass_object.
         """
-        SEPARATOR="_"
-        testid=str()
+        if mspass_object.dead():
+            return pd.DateFrame()
+        # I don't think this can cause a memory problem as in python 
+        # this make dfret a temporary alias for self.cache
+        # In the loop it is replaced by subset dataframes
+        dfret = self.cache
         for key in self.match_keys.keys():
-            dockey = self.match_keys[key]
-            if dockey in doc:
-                testid += key + SEPARATOR + self.match_keys[key] \
-                   + SEPARATOR + doc[dockey]
+            if mspass_object.is_defined(key):
+                testval = mspass_object[key]
+                # this allows an alias between data and dataframe keys
+                dfret = dfret[dfret[self.match_keys[key] == testval]]
             else:
-                # Silently exit with None if a key is missing
-                return None
-        return testid
+                return pd.DataFrame()
+        return dfret
+                
+    
+
  
 class EqualityDBMatcher(DatabaseMatcher):
     """
@@ -1896,6 +2043,7 @@ class EqualityDBMatcher(DatabaseMatcher):
             match_keys,
             attributes_to_load,
             load_if_defined=None,
+            aliases=None,
             require_unique_match=False,
             prepend_collection_name=False,
             ):
@@ -1904,6 +2052,7 @@ class EqualityDBMatcher(DatabaseMatcher):
             collection,
             attributes_to_load=attributes_to_load,
             load_if_defined=load_if_defined,
+            aliases=aliases,
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
             )
@@ -2024,6 +2173,7 @@ class OriginTimeDBMatcher(DatabaseMatcher):
             query=None,
             attributes_to_load=["lat","lon","depth","time"],
             load_if_defined=["magnitude"],
+            aliases=None,
             require_unique_match=False,
             prepend_collection_name=True,
             time_key=None,
@@ -2033,6 +2183,7 @@ class OriginTimeDBMatcher(DatabaseMatcher):
             collection,
             attributes_to_load=attributes_to_load,
             load_if_defined=load_if_defined,
+            aliases=aliases,
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
             )
@@ -2103,7 +2254,160 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         }
         return query
     
+class OriginTimeMatcher(DataFrameCacheMatcher):
+    """
+    Generic class to match data by comparing a time defined in data to an origin time.
+    
+    The default behavior of this matcher class is to match data to 
+    source documents based on origin time with an optional time offset. 
+    Conceptually the data model for this matching is identical to conventional
+    multichannel shot gathers where the start time is usually the origin time. 
+    It is also a common model for downloaded source oriented waveform 
+    segments from FDSN web services with obspy.  Obspy has an example 
+    in their documentation for how to download data defined exactly this way.  
+    In that mode we match each source document that matches a projected 
+    origin time within a specified tolerance. Specifically, let t0 
+    be the start time extracted from the data.  We then compute the 
+    projected, test origin time as test_otime = t0 - t0offset.  
+    Note the sign convention that a positive offset means the time t0 
+    is after the event origin time.   We then select all source 
+    records for which the time field satisifies:
+        source.time - tolerance <= test_time <= source.time + tolerance
+        
+    The test_time value for matching from a datum can come through 
+    one of two methods driven by the constructor argument "time_key".
+    When time_key is a None (default) the algorithm assumes all input 
+    are mspass atomic data objects that have the start time defined by 
+    the attribute "t0" (mspass_object.t0).  If time_key is a string 
+    it is assumed to be a Metadata key used to fetch an epoch time 
+    to use for the test.   The most likely use of that feature would be 
+    for ensemble processing where test_time is set as a field in the 
+    ensemble Metadata.  Note that form of associating source data to
+    ensembles that are common source gathers can be much faster than 
+    the atomic version because only one query is needed per ensemble.
+    
+    :param db:  MongoDB database handle  (positional - no default)
+    :type db: normally a MsPASS Database class but with this algorithm 
+      it can be the superclass from which Database is derived.
+    
+    :param collection:  Name of MongoDB collection that is to be queried
+       (default "source").  
+    :type collection: string
+    
+    :param t0offset: constant offset from data start time that is expected 
+      as origin time.  A positive t0offset means the origin time is before 
+      the data start time.  Units are always assumed to be seconds.
+    :type t0offset:  float 
+    
+    :param tolerance:   time tolerance to test for match of origin time. 
+      (see formula above for exact use)
+      If the source estimates are exactly the same as the ones used to 
+      define data start time this number can be a few samples.  
+      Otherwise a few seconds is safter for teleseismic data and 
+      less for local/regional events.  i.e. the choice depends up on 
+      how the source estimates relate to the data.
+    :type tolerance:  float
+    
+    
+    :param attributes_to_load:  list of keys of required attributes that will 
+      be returned in the output of the find method.   The keys listed 
+      must ALL have defined values for all documents in the collection or
+      some calls to find_one will fail.   Default is 
+      ["lat","lon","depth","time"]
+    :type attributes_to_load:  list of string defining keys in collection 
+      documents
+    
+    :param load_if_defined: list of keys of optional attributes to be 
+      extracted by find method.  Any data attached to these keys will only 
+      be posted in the find return if they are defined in the database 
+      document retrieved in the query.  Default is ["magnitude"]
+    :param type:  list of strings defining collection keys
+    
+    :param prepend_collection_name:  when True attributes returned in 
+      Metadata containers by the find and find_one method will all have the 
+      collection name prepended with a (fixed) separator.  For example, if 
+      the collection name is "channel" the "lat" attribute in the channel 
+      document would be returned as "channel_lat".  
+    :type prepend_collection_name:  boolean
+    
+    :param require_unique_match:  boolean handling of ambiguous matches.  
+      When True find_one will throw an error if an entry is tries to match 
+      is not unique.  When False find_one returns the first document 
+      found and logs a complaint message.  (default is False)
+    :type require_unique_match:  boolean 
+    
+    :param data_time_key:  data object Metadata key used to fetch 
+    time for testing as alternative to data start time.  If set None
+    (default) the test will use the start time of an atomic data object
+    for the time test.  If nonzero it is assumed to be a string used 
+    to fetch a time from the data's Metadata container.  That is the 
+    best way to run this matcher on Ensembles.   
+    :type data_time_key:  string
+    
+    :param source_time_key:  dataframe column name to use as source
+    origin time field.   Default is None which is translated to 
+    collection + "_time"  (default default is "source_time").   
+    :type source_time_key:  string
+    """
+    def __init__(
+            self,
+            db,
+            collection="source",
+            t0offset=0.0,
+            tolerance=4.0,
+            attributes_to_load=["lat","lon","depth","time"],
+            load_if_defined=["magnitude"],
+            aliases=None,
+            require_unique_match=False,
+            prepend_collection_name=True,
+            data_time_key=None,
+            source_time_key=None,
+            ):
+        super().__init__(
+            db,
+            collection,
+            attributes_to_load=attributes_to_load,
+            load_if_defined=load_if_defined,
+            aliases=aliases,
+            require_unique_match=require_unique_match,
+            prepend_collection_name=prepend_collection_name,
+            )
+        self.t0offset = t0offset
+        self.tolerance = tolerance
+        self.data_time_key = data_time_key
+        if source_time_key is None:
+            self.source_time_key = collection + "_time"
+        else:
+            self.source_time_key = source_time_key
 
+    def subset(self,mspass_object)->pd.DataFrame:
+        """
+        """
+        if not _input_is_valid(mspass_object):
+            return pd.DataFrame()
+        if mspass_object.dead():
+            return pd.DataFrame()
+
+        if self.data_time_key is None:
+            # this maybe should have a test to assure UTC time standard
+            # but will defer for now
+            test_time = mspass_object.t0
+        else:
+            if mspass_object.is_defined(self.data_time_key):
+                test_time = mspass_object[self.data_time_key]
+            else:
+                return pd.DataFrame()
+            
+        tmin = test_time - self.tolerance
+        tmax = test_time + self.tolerance
+        # For this matcher we dogmatically use <= equivalent in the between
+        # construct here - inclusive=True.  In this context seems appropriate
+        dfquery = self.source_time_key +".between({tmin},{tmax},inclusive=True)".format(tmin=tmin,tmax=tmax)
+        dfret = self.cache.query(dfquery)
+
+        
+        return dfret
+        
 class ArrivalDBMatcher(DatabaseMatcher):
     """
     This is a class for matching a table of arrival times to an input 
@@ -2195,6 +2499,7 @@ class ArrivalDBMatcher(DatabaseMatcher):
             collection="arrival",
             attributes_to_load=["phase","time"],
             load_if_defined=None,
+            aliases=None,
             require_unique_match=False,
             prepend_collection_name=True,
             ensemble_starttime_key="starttime",
@@ -2206,6 +2511,7 @@ class ArrivalDBMatcher(DatabaseMatcher):
             collection,
             attributes_to_load=attributes_to_load,
             load_if_defined=load_if_defined,
+            aliases=aliases,
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
             )
@@ -2252,11 +2558,170 @@ class ArrivalDBMatcher(DatabaseMatcher):
                     "$gte": stime,
                     "$lte": etime
                     }
+                # these names are frozen
+                sta = _get_with_readonly_recovery(mspass_object,"sta")
+                net = _get_with_readonly_recovery(mspass_object,"net")
+                if net is not None:
+                    query["net"] = net
+                if sta is not None:
+                    query["sta"] = sta
+                # intentionally ignore loc as option
                 return query
         else:
             return None
         
-        
+class ArrivalMatcher(DataFrameCacheMatcher):
+    """
+    This is a class for matching a table of arrival times to an input 
+    waveform data object.  It is intended mainly as an example user's 
+    can modify to match custom needs as the range of possibilities is
+    quite large.
+    
+    Phase arrival time matching is a common need when waveform segments 
+    are downloaded as miniseed where preserving such metadata is not
+    possible.  The concept of an arrival time is also mixed as in 
+    some contexts it means a time computed from an earth model and other 
+    time a measured time that is "picked" by a human or computer algorithm.
+    This class does not distinguish model-based from measured times.  It 
+    uses a very crude matching algorithm that finds all "arrival" data 
+    that have times within the time span defined by the input data.  
+    
+    The algorithm handles both atomic data and ensemble data.  It can 
+    handle both simultaneously but that use is strongly discouraged.   
+    For atomic data the time span for the query is obtained from 
+    the time range of the data (d.t0 <= t <= d.endtime()).  With 
+    ensembles the query is generated by trying to extract start and 
+    end time from the ensemble Metadata container using keys defined 
+    in the constructor.   That model can be used, for example, to 
+    assemble a reasonably sized list of arrival times that fall in the 
+    time span of an ensemble defined by a common source gather.  
+    With that example more work would be needed to associate arrivals 
+    with the correct station, but it does provide a more efficient 
+    algorithm than atomic queries.
+    
+    :param db:  MongoDB database handle  (positional - no default)
+    :type db: normally a MsPASS Database class but with this algorithm 
+      it can be the superclass from which Database is derived.
+    
+    :param collection:  Name of MongoDB collection that is to be queried
+       (default "arrival", which is not currently part of the stock 
+        mspass schema.   Note it isn't required to be in the schema 
+        and illustrates flexibility').  
+    :type collection: string
+      
+    :param attributes_to_load:  list of keys of required attributes that will 
+      be returned in the output of the find method.   The keys listed 
+      must ALL have defined values for all documents in the collection or
+      some calls to find_one will fail.   
+      Default ["phase","time"].   
+    :type attributes_to_load:  list of string defining keys in collection 
+      documents
+    
+    :param load_if_defined: list of keys of optional attributes to be 
+      extracted by find method.  Any data attached to these keys will only 
+      be posted in the find return if they are defined in the database 
+      document retrieved in the query.  Default is None
+    :param type:  list of strings defining collection keys
+    
+    :param prepend_collection_name:  when True attributes returned in 
+      Metadata containers by the find and find_one method will all have the 
+      collection name prepended with a (fixed) separator.  For example, if 
+      the collection name is "channel" the "lat" attribute in the channel 
+      document would be returned as "channel_lat".  
+    :type prepend_collection_name:  boolean
+    
+    :param require_unique_match:  boolean handling of ambiguous matches.  
+      When True find_one will throw an error if an entry is tries to match 
+      is not unique.  When False find_one returns the first document 
+      found and logs a complaint message.  (default is False)
+    :type require_unique_match:  boolean 
+    
+    :param ensemble_starttime_key:  defines the key used to fetch a 
+     start time for the interval test when processing with ensemble data. 
+     Default is "starttime".
+    :type ensemble_starttime_key:  string
+    
+    :param ensemble_endtime_key:  defines the key used to fetch a 
+     end time for the interval test when processing with ensemble data. 
+     Default is "endtime".
+    :type ensemble_endtime_key:  string
+    
+    :param query:   optional query predicate.  That is, if set the 
+      interval query is appended to this query to build a more specific 
+      query.   An example might be station code keys to match a
+      specific pick for a specific station like {"sta":"AAK"}.
+      Default is None.
+    :type query:  python dictionary or None.  None is equivalewnt to 
+      passing an empty dictionary.  A TypeError will be thrown if this
+      argument is not None or a dict.
+    """
+    def __init__(
+            self,
+            db,
+            collection="arrival",
+            attributes_to_load=["phase","time"],
+            load_if_defined=None,
+            aliases=None,
+            require_unique_match=False,
+            prepend_collection_name=True,
+            ensemble_starttime_key="starttime",
+            ensemble_endtime_key="endtime",
+            arrival_time_key=None,
+
+            ):
+        super().__init__(
+            db,
+            collection,
+            attributes_to_load=attributes_to_load,
+            load_if_defined=load_if_defined,
+            aliases=aliases,
+            require_unique_match=require_unique_match,
+            prepend_collection_name=prepend_collection_name,
+            )
+        # maybe a bit confusing to shorten the names here but the
+        # argument names are a bit much
+        self.starttime_key = ensemble_starttime_key
+        self.endtime_key = ensemble_endtime_key
+        if arrival_time_key is None:
+            self.arrival_time_key = collection + "_time"
+        elif isinstance(arrival_time_key,str):
+            self.arrival_time_key = arrival_time_key
+        else:
+            raise TypeError("ArrivalDBMatcher constructor: arrival_time_key argument must define a string")
+       
+    def subset(self,mspass_object)->pd.DataFrame:
+        """
+        Concrete implementation of method required by superclass 
+        DataFramematcher
+        """
+
+        if _input_is_valid(mspass_object):
+            if mspass_object.live:
+                if _input_is_atomic(mspass_object):
+                    stime = mspass_object.t0
+                    etime = mspass_object.endtime()
+                else:
+                    if mspass_object.is_defined(self.starttime_key) \
+                        and mspass_object.is_defined(self.endtimekey):
+                        stime = mspass_object[self.starttime_key]   
+                        etime = mspass_object[self.endtime_key]
+                    else:
+                        return pd.DataFrame()
+                sta = _get_with_readonly_recovery(mspass_object,"sta")
+                if sta is not None:        
+                    dfret = self.cache[("sta" == sta) \
+                                   & (self.arrival_time_key >= stime) \
+                                   & (self.arrival_time_key <= etime) 
+                        ]
+                    if len(dfret)>1:
+                        net = _get_with_readonly_recovery(mspass_object,"net")
+                        if net is not None:           
+                            dfret = dfret["net" == net]
+                    return dfret
+            else:
+                return pd.DataFrame()
+        else:
+            return pd.DataFrame()        
 
 @mspass_func_wrapper          
 def normalize(mspass_object,matcher,kill_on_failure=True):
@@ -2650,3 +3115,50 @@ def _input_is_atomic(d):
     like asking for d.t0 doesn't generate an exception.
     """
     return isinstance(d, (TimeSeries, Seismogram))
+
+def _load_as_df(db,collection,query,attributes_to_load,load_if_defined):
+    """
+    Internal helper function used to translate all or part of a 
+    collection to a DataFrame.  This algorithm should only be used 
+    for small collections as it makes an intermediate copy of the 
+    collection as a dictionary before calling the DataFrame.from_dict 
+    method to create the working dataframe. 
+    
+    :param db:  Database handle assumed to contain collection
+    :param collection:  collection from which the data are to be extracted
+    :param query:  python dict defining a query to apply to the collection. 
+      If you want the entire collection specify None or an empty dictionary.
+    :type query:  python dict defining a pymongo query or None.  
+    :param attributes_to_load: list of keys to extract of required attributes 
+    to load from collection.   This function will abort if any document 
+    does not contain one of these attributes.
+    :param load_if_defined:  attributes loaded more cautiously.  If the 
+    attributes for any of the keys in this list are not found in a document 
+    the output dataframe has a Null defined for that cell.
+    """
+    if query is None:
+        query = dict()
+    ntuples = db[collection].count_documents(query)
+    if ntuples==0:
+        return pd.DataFrame()
+    # create dictionary with empty array values to initialize
+    dict_tmp = dict()
+    for k in attributes_to_load:
+        dict_tmp[k] = []
+    for k in load_if_defined:
+        dict_tmp[k] = []
+    cursor = db[collection].find(query)
+    for doc in cursor:
+        # attributes_to_load list are required.  For now let this 
+        # thow an exception if that is not true - may need a handler
+        for k in attributes_to_load:
+            dict_tmp[k].append(doc[k])
+        for k in load_if_defined:
+            if k in doc:
+                dict_tmp[k].append(doc[k])
+            else:
+                dict_tmp[k].append(None)
+    return pd.DataFrame.from_dict(dict_tmp)
+
+            
+    
