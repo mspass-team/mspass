@@ -28,35 +28,30 @@ class BasicMatcher(ABC):
     Base class defining the api for a generic matching capability for
     MongoDB normalization.   The base class is a skeleton that
     defines on required abstract methods and initializes a set of
-    universal attributes all matchers need.  I cannot and should 
-    never be instatiated directly.  
+    universal attributes all matchers need.  It cannot be instatiated directly.  
     
     Matching is defined as one of two things:  (1)  a one-to-one 
     match algorithm is guaranteed to have each search yield either 
     exactly one match or none.  That is defined through a find_one 
     method following the same concept in MongoDB.  (2) some 
     matches are not unique and yield more than one document.  
-    For that case use the find method which returns a list of 
-    Metadata containers.   
+    For that case use the find method.  Unlike the MongoDB 
+    find method, however, find in this context returns a list of 
+    Metadata containers holding the set of attributes requested 
+    in lists defined on constuction. 
     
-    Another way of viewing this interface is an abstraction of 
+    Another way of viewing this interface, in fact, is an abstraction of 
     the find and find_one methods of MongoDB to a wider class of 
-    algorithms that may or may not utilize MongoDB directly.   
-    For instance, an intermediate class we define below called 
-    DictionaryCacheMatcher abstracts loading of any tabular data defined in 
-    a pandas array to be accessible through this same interface.  
+    algorithms that may or may not utilize MongoDB directly. 
+    In particular, intermediate level classes defined below that implement 
+    different cache data structures allow input either by 
+    loading data from a MongoDB collection of from a pandas DataFrame.
     That can potentially provide a wide variety of applications of 
     matching data to tabular data contained in files loaded into 
     pandas by any of long list of standard dataframe read methods.  
     Examples are any SQL database or antelope raw tables or views 
     loaded as text files.  
-    
-    To use this interface the data to be matched must contain an
-    index used for matching.  Matched content through the interface must be expressible 
-    as a container of key value pairs that can be converted into a 
-    MsPASS Metadata container (similar to a python dict).  That is 
-    necessary because the primary virtual method is required to return 
-    a Metadata container.  
+     
     """
     def __init__(
         self,
@@ -81,7 +76,7 @@ class BasicMatcher(ABC):
           subclass should set their own default values.
           
         :param aliases:   should be a python dictionary used to define 
-          alternative keys to access a data object's Metata from that 
+          alternative keys to access a data object's Metadata from that 
           defining the same attribute in the collection/table being 
           matched.   Note carefully the key of the dictionary is the 
           collection/table attribute name and the value associated with 
@@ -90,7 +85,7 @@ class BasicMatcher(ABC):
           should treat missing entries in alias as meaning the key in 
           the collection/table and Metadata are identical.  Default is 
           a None which is used as a signal to this constructor to 
-          create an empty dictionary meaning there are not aliases. 
+          create an empty dictionary meaning there are no aliases. 
         :type aliases:  python dictionary
           
 
@@ -334,14 +329,18 @@ class DatabaseMatcher(BasicMatcher):
             md = Metadata()
             for k in self.attributes_to_load:
                 if k in doc:
-                    if self.prepend_collection_name:
-                        if k == "_id":
-                            mdkey = self.collection+k
-                        else:
-                            mdkey = self.collection  + "_" + k
+                    if k in self.aliases:
+                        key = self.aliases[k]
                     else:
-                        mdkey = k
-                    md[mdkey] = doc[k]
+                        key = k
+                    if self.prepend_collection_name:
+                        if key == "_id":
+                            mdkey = self.collection+key
+                        else:
+                            mdkey = self.collection  + "_" + key
+                    else:
+                        mdkey = key
+                    md[mdkey] = doc[key]
                 else:
                     raise MsPASSError("DatabaseMatcher.find:  "
                                    + "Retrieved document has no data for required key={}",format(k),
@@ -349,14 +348,18 @@ class DatabaseMatcher(BasicMatcher):
                 
             for k in self.load_if_defined:
                 if k in doc:
-                    if self.prepend_collection_name:
-                        if k == "_id":
-                            mdkey = self.collection+k
-                        else:
-                            mdkey = self.collection  + "_" + k
+                    if k in self.aliases:
+                        key = self.aliases[k]
                     else:
-                        mdkey = k
-                    md[mdkey] = doc[k]
+                        key = k
+                    if self.prepend_collection_name:
+                        if key == "_id":
+                            mdkey = self.collection + key
+                        else:
+                            mdkey = self.collection  + "_" + key
+                    else:
+                        mdkey = key
+                    md[mdkey] = doc[key]
             
             metadata_list.append(md)
             
@@ -448,6 +451,8 @@ class DictionaryCacheMatcher(BasicMatcher):
     This class cannot be instantiated because it is not concrete 
     (has abstract - virtual - methods that must be defined by subclasses)
     See implementations for constructor argument definitions.  
+    
+    TODO:   needs an option to load from a DataFrame
     """
     def __init__(
             self,
@@ -717,17 +722,24 @@ class DictionaryCacheMatcher(BasicMatcher):
                     + "db_make_cache_id failed - coding problem or major problem with collection=" + self.collection,
                     ErrorSeverity.Fatal
                     )
+            # This section is almost identical to the find method of 
+            # DatabaseMatcher but I couldn't see how to cleanly make it 
+            # a function accessible by either class.
             md = Metadata()
             for k in self.attributes_to_load:
                 if k in doc:
-                    if self.prepend_collection_name:
-                        if k == "_id":
-                            mdkey = self.collection+k
-                        else:
-                            mdkey = self.collection  + "_" + k
+                    if k in self.aliases:
+                        key = self.aliases[k]
                     else:
-                        mdkey = k
-                    md[mdkey] = doc[k]
+                        key = k
+                    if self.prepend_collection_name:
+                        if key == "_id":
+                            mdkey = self.collection + key
+                        else:
+                            mdkey = self.collection  + "_" + key
+                    else:
+                        mdkey = key
+                    md[mdkey] = doc[key]
                 else:
                     message = "Required attribute {key} was not found in document number {n} of collection {col}".format(key=k,n=count,col=collection)
                     raise MsPASSError("DictionaryCacheMatcher._load_normalization_cache:  "
@@ -735,14 +747,18 @@ class DictionaryCacheMatcher(BasicMatcher):
                                           ErrorSeverity.Fatal)
             for k in self.load_if_defined:
                 if k in doc:
-                    if self.prepend_collection_name:
-                        if k == "_id":
-                            mdkey = self.collection+k
-                        else:
-                            mdkey = self.collection  + "_" + k
+                    if k in self.aliases:
+                        key = self.aliases[k]
                     else:
-                        mdkey = k
-                    md[mdkey] = doc[k]
+                        key = k
+                    if self.prepend_collection_name:
+                        if key == "_id":
+                            mdkey = self.collection + key
+                        else:
+                            mdkey = self.collection  + "_" + key
+                    else:
+                        mdkey = key
+                    md[mdkey] = doc[key]
             
             if cache_key in self.normcache:
                 self.normcache[cache_key].append(md)
@@ -753,6 +769,42 @@ class DictionaryCacheMatcher(BasicMatcher):
  
                     
 class DataFrameCacheMatcher(BasicMatcher):
+    """
+    Matcher implementing a caching method based on a Pandas DataFrame
+
+    This is an intermediate class for instances where the database collection
+    to be matched is small enough that the in-memory model is appropriate. 
+    It should be used when the matching algorithm is readily cast into the
+    subsetting api of a pandas DataFrame.  
+    
+    The constructor of this intermediate class first calls the BasicMatcher
+    (base class) constructor to initialize some common attribute including 
+    the critical lists of attributes to be loaded.   This constructor then 
+    creates the internal DataFrame cache by one of two methods.  
+    If arg0 is a MongoDB database handle it loads the data in the 
+    named collection to a DataFrame created during construction.  If the 
+    input is a DataFrame already it is simply copied selecting only 
+    columns defined by the attributes_to_load and load_if_defined lists.
+    There is also an optional parameter, custom_null_values, that is a 
+    python dictionary defining values in a field that should be treated 
+    as a definition of a Null for that field.  The constuctor converts 
+    such values to a standard pandas null field value.  
+    
+    This class implements generic find and find_one methods.  
+    Subclasses of this class must implement a "subset" method to be 
+    concrete.  A subset method is the abstract algorithm that defines 
+    a match for that instance expressed as a pandas subset operation.
+    (For most algorithms there are multiple ways to skin that cat or is 
+     it a panda?)  See concrete subclasses for examples.
+    
+    This class cannot be instantiated because it is not concrete 
+    (has abstract - virtual - methods that must be defined by subclasses)
+    See implementations for constructor argument definitions.  
+    
+    TODO:   needs an option to load from a MongoDB database.   An untested 
+    prototype is at the end of this file with the name _load_as_df.   
+    May want to convert that function to a method of this class.
+    """
     def __init__(
             self,
             df,
@@ -762,9 +814,7 @@ class DataFrameCacheMatcher(BasicMatcher):
             aliases=None,
             require_unique_match=False,
             prepend_collection_name=False,
-            # for consideration as a feature
-            #custom_null_values=None,
-            #aliases=None,
+            custom_null_values=None,
             ):
         """
         Constructor for this intermediate class.  It should not be 
@@ -842,14 +892,18 @@ class DataFrameCacheMatcher(BasicMatcher):
                 notnulltest = row.notnull()
                 for k in self.attributes_to_load:
                     if notnulltest[k]:
-                        if self.prepend_collection_name:
-                            if k=="_id":
-                                mdkey = self.collection + k
-                            else:
-                                mdkey = self.collection + "_" + k
+                        if k in self.aliases:
+                            key = self.aliases[k]
                         else:
-                            mdkey = k
-                        md[mdkey] = row[k]
+                            key = k
+                        if self.prepend_collection_name:
+                            if key == "_id":
+                                mdkey = self.collection + key
+                            else:
+                                mdkey = self.collection + "_" + key
+                        else:
+                            mdkey = key
+                        md[mdkey] = row[key]
                     else:
                         if elog is None:
                             elog = ErrorLogger()
@@ -862,14 +916,18 @@ class DataFrameCacheMatcher(BasicMatcher):
                         return [None,elog]
                 for k in self.load_if_defined:
                     if notnulltest(k):
-                        if self.prepend_collection_name:
-                            if k=="_id":
-                                mdkey = self.collection + k
-                            else:
-                                mdkey = self.collection + "_" + k
+                        if k in self.aliases:
+                            key = self.aliases[k]
                         else:
-                            mdkey = k
-                        md[mdkey] = row[k]
+                            key = k
+                        if self.prepend_collection_name:
+                            if key=="_id":
+                                mdkey = self.collection + key
+                            else:
+                                mdkey = self.collection + "_" + key
+                        else:
+                            mdkey = key
+                        md[mdkey] = row[key]
                 mdlist.append(md)
             return [mdlist,None]
                 
@@ -952,7 +1010,7 @@ class ObjectIdDBMatcher(DatabaseMatcher):
     string used in MongoDB for the  ObjectId of each document.  
     
     Users should only utilize the find_one method of this class as find,
-    by definition, will always return one and only one record.   
+    by definition, will always return only one record or None.   
     The find method, in fact, is overloaded and attempts to use it will 
     result in raising a MsPASSError exception.  
     
@@ -977,6 +1035,14 @@ class ObjectIdDBMatcher(DatabaseMatcher):
       be posted in the find return if they are defined in the database 
       document retrieved in the query.
     :param type:  list of strings defining collection keys
+    
+    :param aliases:  python dictionary defining alias names to apply 
+     when fetching from a data object's Metadata container.   The key sense 
+     of the mapping is important to keep straight.  The key of this 
+     dictionary should match one  of the attributes in attributes_to_load 
+     or load_if_defined.  The value the key defines should be the alias 
+     used to fetch the comparable attribute from the data. 
+    :type aliaes:  python dictionary
     
     :param prepend_collection_name:  when True attributes returned in 
       Metadata containers by the find and find_one method will all have the 
@@ -1067,6 +1133,14 @@ class ObjectIdMatcher(DictionaryCacheMatcher):
       document retrieved in the query.
     :param type:  list of strings defining collection keys  
     
+    :param aliases:  python dictionary defining alias names to apply 
+     when fetching from a data object's Metadata container.   The key sense 
+     of the mapping is important to keep straight.  The key of this 
+     dictionary should match one  of the attributes in attributes_to_load 
+     or load_if_defined.  The value the key defines should be the alias 
+     used to fetch the comparable attribute from the data. 
+    :type aliaes:  python dictionary
+    
     :param prepend_collection_name:  when set true all attributes loaded 
        from the normalizing collection will have the channel name prepended.
        That is essential if the collection contains generic names like "lat"
@@ -1074,6 +1148,11 @@ class ObjectIdMatcher(DictionaryCacheMatcher):
        (e.g. lat is used for source, channel, and site collections in the 
         default schema.)
     :type prepend_collection_name:  boolean
+    
+    TODO:   Needs an option to load from a DataFrame with the id being any 
+    specified field of the DataFrame or (ideally) the row index itself.  
+    An example of this would be an integer id from a relational database
+    export.
     """      
     def __init__(
             self,
@@ -1241,6 +1320,14 @@ class MiniseedDBMatcher(DatabaseMatcher):
       document retrieved in the query.  Default is ["loc"].   A common 
       addition here may be response data (see schema definition for keys)
     :type load_if_defined:  list of strings defining collection keys 
+    
+    :param aliases:  python dictionary defining alias names to apply 
+     when fetching from a data object's Metadata container.   The key sense 
+     of the mapping is important to keep straight.  The key of this 
+     dictionary should match one  of the attributes in attributes_to_load 
+     or load_if_defined.  The value the key defines should be the alias 
+     used to fetch the comparable attribute from the data. 
+    :type aliaes:  python dictionary
     
     :param prepend_collection_name:  when True attributes returned in 
       Metadata containers by the find and find_one method will all have the 
@@ -1499,12 +1586,22 @@ class MiniseedMatcher(DictionaryCacheMatcher):
       addition here may be response data (see schema definition for keys)
     :type load_if_defined:  list of strings defining collection keys 
     
+    :param aliases:  python dictionary defining alias names to apply 
+     when fetching from a data object's Metadata container.   The key sense 
+     of the mapping is important to keep straight.  The key of this 
+     dictionary should match one  of the attributes in attributes_to_load 
+     or load_if_defined.  The value the key defines should be the alias 
+     used to fetch the comparable attribute from the data. 
+    :type aliaes:  python dictionary
+    
     :param prepend_collection_name:  when True attributes returned in 
       Metadata containers by the find and find_one method will all have the 
       collection name prepended with a (fixed) separator.  For example, if 
       the collection name is "channel" the "lat" attribute in the channel 
       document would be returned as "channel_lat".  
     :type prepend_collection_name:  boolean
+    
+    TODO:  Needs option of DataFrame input
     
     """
     def __init__(
@@ -1801,9 +1898,8 @@ class EqualityMatcher(DataFrameCacheMatcher):
     This class can be used for matching a set of keys that together 
     provide a unique matching capability.   Note the keys are 
     applied sequentially to reduce the size of internal DataFrame 
-    cache in stages.  Especially if the DataFrame is large or 
-    a dask DataFrame it may improve performance if the most unique 
-    key in a series appears first.  
+    cache in stages.  If the DataFrame is large it may improve performance 
+    if the most unique key in a series appears first.  
     
     A special feature of the implementation is that we allow 
     what is best thought of as reverse aliasing for the keys to 
@@ -1815,10 +1911,10 @@ class EqualityMatcher(DataFrameCacheMatcher):
     is the DataFrame column name to match.  The constructor of the 
     class does a sanity check to verify the two are consistent.
     The constructor will throw an exception if the two dictionaries 
-    are inconstent.  Note that means if you an actual alias through 
+    are inconstent.  Note that means if you use an actual alias through 
     match_keys (i.e. the key and value are different) you must define 
     the aliases dictionary with the same combination reversed.   
-    (e.g.  matchkeys={"channel_sta":"sta"} requires aliases={"sta":"channel_sta"})
+    (e.g.  matchkeys={"KSTA":"sta"} requires aliases={"sta":"KSTA"})
     
     :param db_or_df:  MongoDB database handle or a pandas DataFrame.  
       Most users will use the database handle version.   In that case 
@@ -1873,6 +1969,14 @@ class EqualityMatcher(DataFrameCacheMatcher):
       Note this parameter is ignored for DataFrame input.
     :type load_if_defined:  list of strings defining collection keys 
     
+    :param aliases:  python dictionary defining alias names to apply 
+     when fetching from a data object's Metadata container.   The key sense 
+     of the mapping is important to keep straight.  The key of this 
+     dictionary should match one  of the attributes in attributes_to_load 
+     or load_if_defined.  The value the key defines should be the alias 
+     used to fetch the comparable attribute from the data. 
+    :type aliaes:  python dictionary
+    
     :param prepend_collection_name:  when True attributes returned in 
       Metadata containers by the find and find_one method will all have the 
       collection name prepended with a (fixed) separator.  Default is 
@@ -1884,6 +1988,11 @@ class EqualityMatcher(DataFrameCacheMatcher):
       is not unique.  When False find_one returns the first document 
       found and logs a complaint message.  (default is True)
     :type require_unique_match:  boolean 
+    
+    TODO:  although in this case the docstring says it can use 
+    db or df that is a lie.   Left the doc string alone because that is the 
+    plan.  That means all the other docstrings will need to have the 
+    ":param db:" sections changed to something more like above.
     """
     def __init__(
             self,
@@ -2022,6 +2131,14 @@ class EqualityDBMatcher(DatabaseMatcher):
       optional data. 
     :param type:  list of strings defining collection keys 
     
+    :param aliases:  python dictionary defining alias names to apply 
+     when fetching from a data object's Metadata container.   The key sense 
+     of the mapping is important to keep straight.  The key of this 
+     dictionary should match one  of the attributes in attributes_to_load 
+     or load_if_defined.  The value the key defines should be the alias 
+     used to fetch the comparable attribute from the data. 
+    :type aliaes:  python dictionary
+    
     :param prepend_collection_name:  when True attributes returned in 
       Metadata containers by find and find_one method will all have the 
       collection name prepended with a (fixed) separator.  For example, if 
@@ -2084,7 +2201,8 @@ class EqualityDBMatcher(DatabaseMatcher):
 
 class OriginTimeDBMatcher(DatabaseMatcher):
     """
-    Generic class to match data by comparing a time defined in data to an origin time.
+    Generic class to match data by comparing a time defined in data to an 
+    origin time using a database query algorithm.
     
     The default behavior of this matcher class is to match data to 
     source documents based on origin time with an optional time offset. 
@@ -2150,6 +2268,14 @@ class OriginTimeDBMatcher(DatabaseMatcher):
       be posted in the find return if they are defined in the database 
       document retrieved in the query.  Default is ["magnitude"]
     :param type:  list of strings defining collection keys
+    
+    :param aliases:  python dictionary defining alias names to apply 
+     when fetching from a data object's Metadata container.   The key sense 
+     of the mapping is important to keep straight.  The key of this 
+     dictionary should match one  of the attributes in attributes_to_load 
+     or load_if_defined.  The value the key defines should be the alias 
+     used to fetch the comparable attribute from the data. 
+    :type aliaes:  python dictionary
     
     :param prepend_collection_name:  when True attributes returned in 
       Metadata containers by the find and find_one method will all have the 
@@ -2256,7 +2382,8 @@ class OriginTimeDBMatcher(DatabaseMatcher):
     
 class OriginTimeMatcher(DataFrameCacheMatcher):
     """
-    Generic class to match data by comparing a time defined in data to an origin time.
+    Generic class to match data by comparing a time defined in data to 
+    an origin time using a cached DataFrame.
     
     The default behavior of this matcher class is to match data to 
     source documents based on origin time with an optional time offset. 
@@ -2285,6 +2412,10 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
     ensemble Metadata.  Note that form of associating source data to
     ensembles that are common source gathers can be much faster than 
     the atomic version because only one query is needed per ensemble.
+    
+    This implentation should be used only if the catalog of events
+    is reasonably small.  If the catalog is huge the database version 
+    may be more appropriate.
     
     :param db:  MongoDB database handle  (positional - no default)
     :type db: normally a MsPASS Database class but with this algorithm 
@@ -2323,6 +2454,14 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
       document retrieved in the query.  Default is ["magnitude"]
     :param type:  list of strings defining collection keys
     
+    :param aliases:  python dictionary defining alias names to apply 
+     when fetching from a data object's Metadata container.   The key sense 
+     of the mapping is important to keep straight.  The key of this 
+     dictionary should match one  of the attributes in attributes_to_load 
+     or load_if_defined.  The value the key defines should be the alias 
+     used to fetch the comparable attribute from the data. 
+    :type aliaes:  python dictionary
+    
     :param prepend_collection_name:  when True attributes returned in 
       Metadata containers by the find and find_one method will all have the 
       collection name prepended with a (fixed) separator.  For example, if 
@@ -2348,6 +2487,8 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
     origin time field.   Default is None which is translated to 
     collection + "_time"  (default default is "source_time").   
     :type source_time_key:  string
+    
+    TODO:  needs an alternative DataFrame input 
     """
     def __init__(
             self,
@@ -2410,32 +2551,34 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         
 class ArrivalDBMatcher(DatabaseMatcher):
     """
-    This is a class for matching a table of arrival times to an input 
-    waveform data object.  It is intended mainly as an example user's 
-    can modify to match custom needs as the range of possibilities is
-    quite large.
+    This is a class for matching a table of arrival times to input 
+    waveform data objects.  Use this version if the table of arrivals 
+    is huge and database query delays will not create a bottleneck 
+    in your workflow.  
     
     Phase arrival time matching is a common need when waveform segments 
-    are downloaded as miniseed where preserving such metadata is not
-    possible.  The concept of an arrival time is also mixed as in 
+    are downloaded.  When data are assembled as miniseed files or 
+    url downloads of miniseed data, the format has no way to hold
+    arrival time data.  This matcher can prove useful for matching 
+    waveform segments with an origin as miniseed.  
+    
+    The algorithm it uses for matching is a logic and of two tests:
+        1.  We first match all arrival times falling between the 
+            sample range of an input MsPASS data object, d.  That is, 
+            first component of the query is to find all arrival times, 
+            t_a, that obey the relation:  d.t0 <= t_a <= d.endtime().
+        2.  Match only data for which the (fixed) name "sta" 
+            in arrival and the data match.   A secondary key match using 
+            the "net" attribute is used only if "net" is defined with 
+            the data.  That is done to streamline processing of css3.0 
+            data where "net"  is not defined.  
+    
+    Note the concept of an arrival time is also mixed as in 
     some contexts it means a time computed from an earth model and other 
     time a measured time that is "picked" by a human or computer algorithm.
     This class does not distinguish model-based from measured times.  It 
-    uses a very crude matching algorithm that finds all "arrival" data 
-    that have times within the time span defined by the input data.  
-    
-    The algorithm handles both atomic data and ensemble data.  It can 
-    handle both simultaneously but that use is strongly discouraged.   
-    For atomic data the time span for the query is obtained from 
-    the time range of the data (d.t0 <= t <= d.endtime()).  With 
-    ensembles the query is generated by trying to extract start and 
-    end time from the ensemble Metadata container using keys defined 
-    in the constructor.   That model can be used, for example, to 
-    assemble a reasonably sized list of arrival times that fall in the 
-    time span of an ensemble defined by a common source gather.  
-    With that example more work would be needed to associate arrivals 
-    with the correct station, but it does provide a more efficient 
-    algorithm than atomic queries.
+    simply uses the time and station tag information with the algorithm 
+    noted above to attempt a match.  
     
     :param db:  MongoDB database handle  (positional - no default)
     :type db: normally a MsPASS Database class but with this algorithm 
@@ -2461,6 +2604,14 @@ class ArrivalDBMatcher(DatabaseMatcher):
       document retrieved in the query.  Default is None
     :param type:  list of strings defining collection keys
     
+    :param aliases:  python dictionary defining alias names to apply 
+     when fetching from a data object's Metadata container.   The key sense 
+     of the mapping is important to keep straight.  The key of this 
+     dictionary should match one  of the attributes in attributes_to_load 
+     or load_if_defined.  The value the key defines should be the alias 
+     used to fetch the comparable attribute from the data. 
+    :type aliaes:  python dictionary
+    
     :param prepend_collection_name:  when True attributes returned in 
       Metadata containers by the find and find_one method will all have the 
       collection name prepended with a (fixed) separator.  For example, if 
@@ -2474,24 +2625,22 @@ class ArrivalDBMatcher(DatabaseMatcher):
       found and logs a complaint message.  (default is False)
     :type require_unique_match:  boolean 
     
-    :param ensemble_starttime_key:  defines the key used to fetch a 
-     start time for the interval test when processing with ensemble data. 
-     Default is "starttime".
-    :type ensemble_starttime_key:  string
-    
-    :param ensemble_endtime_key:  defines the key used to fetch a 
-     end time for the interval test when processing with ensemble data. 
-     Default is "endtime".
-    :type ensemble_endtime_key:  string
-    
     :param query:   optional query predicate.  That is, if set the 
       interval query is appended to this query to build a more specific 
       query.   An example might be station code keys to match a
       specific pick for a specific station like {"sta":"AAK"}.
-      Default is None.
+      Another would be to limit arrivals to a specific phase name 
+      like {"phase" : "ScS"}.  Default is None which reverts to no 
+      query predicate.
     :type query:  python dictionary or None.  None is equivalewnt to 
       passing an empty dictionary.  A TypeError will be thrown if this
       argument is not None or a dict.
+      
+      
+    TODO:  It may be desirable to have a dataframe input option for 
+    this one as there is currently no "arrival" collection in our 
+    standard mspass schema.  Also I don't know if aliases will be handled 
+    correctly with this code.
     """
     def __init__(
             self,
@@ -2502,8 +2651,6 @@ class ArrivalDBMatcher(DatabaseMatcher):
             aliases=None,
             require_unique_match=False,
             prepend_collection_name=True,
-            ensemble_starttime_key="starttime",
-            ensemble_endtime_key="endtime",
             query=None,
             ):
         super().__init__(
@@ -2515,10 +2662,7 @@ class ArrivalDBMatcher(DatabaseMatcher):
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
             )
-        # maybe a bit confusing to shorten the names here but the
-        # argument names are a bit much
-        self.starttime_key = ensemble_starttime_key
-        self.endtime_key = ensemble_endtime_key
+
         if query is None:
             self.query = dict()
         elif isinstance(query,dict):
@@ -2541,19 +2685,11 @@ class ArrivalDBMatcher(DatabaseMatcher):
         the query dict components derived are added to the self.query. 
         """
 
-        if _input_is_valid(mspass_object):
+        if _input_is_atomic(mspass_object):
             if mspass_object.live:
                 query = copy.deepcopy(self.query)
-                if _input_is_atomic(mspass_object):
-                    stime = mspass_object.t0
-                    etime = mspass_object.endtime()
-                else:
-                    if mspass_object.is_defined(self.starttime_key) \
-                        and mspass_object.is_defined(self.endtimekey):
-                        stime = mspass_object[self.starttime_key]   
-                        etime = mspass_object[self.endtime_key]
-                    else:
-                        return None
+                stime = mspass_object.t0
+                etime = mspass_object.endtime()
                 query["time"] = {
                     "$gte": stime,
                     "$lte": etime
@@ -2572,32 +2708,42 @@ class ArrivalDBMatcher(DatabaseMatcher):
         
 class ArrivalMatcher(DataFrameCacheMatcher):
     """
-    This is a class for matching a table of arrival times to an input 
-    waveform data object.  It is intended mainly as an example user's 
-    can modify to match custom needs as the range of possibilities is
-    quite large.
+    This is a class for matching a table of arrival times to input 
+    waveform data objects.  Use this version if the table of arrivals 
+    is not huge enough to cause a memory problem. 
     
     Phase arrival time matching is a common need when waveform segments 
-    are downloaded as miniseed where preserving such metadata is not
-    possible.  The concept of an arrival time is also mixed as in 
+    are downloaded.  When data are assembled as miniseed files or 
+    url downloads of miniseed data, the format has no way to hold
+    arrival time data.  This matcher can prove useful for matching 
+    waveform segments with an origin as miniseed.  
+    
+    The algorithm it uses for matching is a logic and of two tests:
+        1.  We first match all arrival times falling between the 
+            sample range of an input MsPASS data object, d.  That is, 
+            first component of the query is to find all arrival times, 
+            t_a, that obey the relation:  d.t0 <= t_a <= d.endtime().
+        2.  Match only data for which the (fixed) name "sta" 
+            in arrival and the data match.   A secondary key match using 
+            the "net" attribute is used only if "net" is defined with 
+            the data.  That is done to streamline processing of css3.0 
+            data where "net"  is not defined.  
+    
+    Note the concept of an arrival time is also mixed as in 
     some contexts it means a time computed from an earth model and other 
     time a measured time that is "picked" by a human or computer algorithm.
     This class does not distinguish model-based from measured times.  It 
-    uses a very crude matching algorithm that finds all "arrival" data 
-    that have times within the time span defined by the input data.  
+    simply uses the time and station tag information with the algorithm 
+    noted above to attempt a match.
     
-    The algorithm handles both atomic data and ensemble data.  It can 
-    handle both simultaneously but that use is strongly discouraged.   
-    For atomic data the time span for the query is obtained from 
-    the time range of the data (d.t0 <= t <= d.endtime()).  With 
-    ensembles the query is generated by trying to extract start and 
-    end time from the ensemble Metadata container using keys defined 
-    in the constructor.   That model can be used, for example, to 
-    assemble a reasonably sized list of arrival times that fall in the 
-    time span of an ensemble defined by a common source gather.  
-    With that example more work would be needed to associate arrivals 
-    with the correct station, but it does provide a more efficient 
-    algorithm than atomic queries.
+    This implementation caches the table of attributes desired to an 
+    internal pandas DataFrame.   It is thus most appropriate for 
+    arrival tables that are not huge.  Note it may be possible to 
+    do appropriate preprocessing to manage the arrival table size. 
+    e.g. the table can be grouped by station or in time blocks and 
+    then processed in a loop updating waveform database records 
+    in multiple passes.  The alternative for large arrival tables
+    is to use the DB version of this matcher.  
     
     :param db:  MongoDB database handle  (positional - no default)
     :type db: normally a MsPASS Database class but with this algorithm 
@@ -2621,7 +2767,15 @@ class ArrivalMatcher(DataFrameCacheMatcher):
       extracted by find method.  Any data attached to these keys will only 
       be posted in the find return if they are defined in the database 
       document retrieved in the query.  Default is None
-    :param type:  list of strings defining collection keys
+    :param type:  list of strings defining collection keyes
+    
+    :param aliases:  python dictionary defining alias names to apply 
+     when fetching from a data object's Metadata container.   The key sense 
+     of the mapping is important to keep straight.  The key of this 
+     dictionary should match one  of the attributes in attributes_to_load 
+     or load_if_defined.  The value the key defines should be the alias 
+     used to fetch the comparable attribute from the data. 
+    :type aliaes:  python dictionary
     
     :param prepend_collection_name:  when True attributes returned in 
       Metadata containers by the find and find_one method will all have the 
@@ -2654,6 +2808,12 @@ class ArrivalMatcher(DataFrameCacheMatcher):
     :type query:  python dictionary or None.  None is equivalewnt to 
       passing an empty dictionary.  A TypeError will be thrown if this
       argument is not None or a dict.
+      
+    TODO:  db arg needs to be db_or_df and allow loading from 
+    a database or datafram.  I also think it would be smart to 
+    add a query argument to the database input as it would facilitate 
+    the idea in the docstring above to prefilter the input into things 
+    like year time blocks.  
     """
     def __init__(
             self,
