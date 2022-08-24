@@ -1,4 +1,3 @@
-
 # TODO based on Aug 15, 2022 group meeting
 """
 1.  Add decorator for mspass history to normalize function - DONE
@@ -16,7 +15,7 @@ from mspasspy.db.normalize import (
     MiniseedDBMatcher,
     OriginTimeDBMatcher,
     normalize_mseed,
-    bulk_normalize
+    bulk_normalize,
 )
 
 from mspasspy.db.database import Database
@@ -106,38 +105,28 @@ class TestNormalize:
 
     def test_EqualityMatcher_find_one(self):
         cached_matcher = EqualityMatcher(
-            self.db, 
-            "site", 
-            {"net":"net"},
-            ["net","coords"]
-            )
-        db_matcher = EqualityDBMatcher(
-            self.db, "site", {"net":"net"}
+            self.db, "site", {"net": "net"}, ["net", "coords"]
         )
-
+        db_matcher = EqualityDBMatcher(self.db, "site", {"net": "net"})
 
         #   Test find_one
         ts = copy.deepcopy(self.ts)
         cached_retdoc = cached_matcher.find_one(ts)
         db_retdoc = db_matcher.find_one(ts)
         assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-        assert cached_retdoc[1] is None 
+        assert cached_retdoc[1] is None
         assert db_retdoc[1] is None
 
     def test_EqualityMatcher_normalize(self):
         cached_matcher = EqualityMatcher(
-            self.db, 
-            "site", 
-            {"site_net":"net"}, 
-            attributes_to_load=["net","coords"]
+            self.db, "site", {"site_net": "net"}, attributes_to_load=["net", "coords"]
         )
         db_matcher = EqualityDBMatcher(
             self.db,
             "site",
-            {"site_net":"net"},
-            attributes_to_load=["net","coords"],
+            {"site_net": "net"},
+            attributes_to_load=["net", "coords"],
         )
-
 
         #   Test __call__ method is find_one
         ts_1 = copy.deepcopy(self.ts)
@@ -146,12 +135,12 @@ class TestNormalize:
         db_retdoc = db_matcher(ts_2)
         assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
         assert "site_coords" in cached_retdoc[0]
-        
+
         # repeat run through normalize function
         ts_1 = copy.deepcopy(self.ts)
         ts_2 = copy.deepcopy(self.ts)
-        cached_retdoc = normalize(ts_1,cached_matcher)
-        db_retdoc = normalize(ts_2,db_matcher)
+        cached_retdoc = normalize(ts_1, cached_matcher)
+        db_retdoc = normalize(ts_2, db_matcher)
         assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
         assert "site_coords" in cached_retdoc
 
@@ -161,16 +150,16 @@ class TestNormalize:
         matcher = EqualityMatcher(
             self.db,
             "site",
-            {"net":"net"},
-            attributes_to_load=["net","coords"],
+            {"net": "net"},
+            attributes_to_load=["net", "coords"],
             prepend_collection_name=False,
         )
         cached_retdoc = matcher(ts_1)
         matcher = EqualityDBMatcher(
             self.db,
             "site",
-            {"net":"net"},
-            attributes_to_load=["net","coords"],
+            {"net": "net"},
+            attributes_to_load=["net", "coords"],
             prepend_collection_name=False,
         )
         db_retdoc = matcher(ts_2)
@@ -192,16 +181,15 @@ class TestNormalize:
         cached_retdoc = cached_matcher.find_one(ts)
         db_retdoc = db_matcher.find_one(ts)
         assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-        assert cached_retdoc[1] is None 
+        assert cached_retdoc[1] is None
         assert db_retdoc[1] is None
 
         #       Match key undefined
         ts = copy.deepcopy(self.ts)
         del ts["channel_id"]
         retdoc = cached_matcher.find_one(ts)
-        assert (
-            (retdoc[0] is None)
-            and (norm_key_undefine_msg in str(retdoc[1].get_error_log()))
+        assert (retdoc[0] is None) and (
+            norm_key_undefine_msg in str(retdoc[1].get_error_log())
         )
         ts = copy.deepcopy(self.ts)
         del ts["channel_id"]
@@ -213,21 +201,19 @@ class TestNormalize:
         )
 
         #       Id can't be found
-        # This test is a relic of the old qpi.  It tests am error 
+        # This test is a relic of the old qpi.  It tests am error
         # condition of the DatabaseMatcher and CachedMatcher find method
-        # For clarity it should probably be done in a different part of 
+        # For clarity it should probably be done in a different part of
         # this class.  For now this is just a documenation of that fact
         ts = copy.deepcopy(self.ts)
         ts["channel_id"] = "something_random"
         cached_retdoc = cached_matcher.find_one(ts)
-        assert (
-            (cached_retdoc[0] is None)
-            and (cache_id_undefine_msg in str(cached_retdoc[1].get_error_log()))
+        assert (cached_retdoc[0] is None) and (
+            cache_id_undefine_msg in str(cached_retdoc[1].get_error_log())
         )
         retdoc = db_matcher.find_one(ts)
-        assert (
-            (retdoc[0] is None)
-            and (uncache_id_undefine_msg in str(retdoc[1].get_error_log()))
+        assert (retdoc[0] is None) and (
+            uncache_id_undefine_msg in str(retdoc[1].get_error_log())
         )
 
     def test_ID_matcher_normalize(self):
@@ -247,13 +233,10 @@ class TestNormalize:
         ts_2 = copy.deepcopy(self.ts)
         matcher = ObjectIdMatcher(self.db, prepend_collection_name=False)
         cached_retdoc = matcher(ts_1)
-        matcher = ObjectIdDBMatcher(
-            self.db, prepend_collection_name=False
-        )
+        matcher = ObjectIdDBMatcher(self.db, prepend_collection_name=False)
         db_retdoc = matcher(ts_2)
         assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
         assert "lat" in cached_retdoc
-
 
         #       Test handling of dead data
         matcher = ObjectIdMatcher(self.db)
@@ -264,7 +247,6 @@ class TestNormalize:
         matcher = ObjectIdDBMatcher(self.db)
         retdoc = matcher(ts)
         assert retdoc[0] is None
-        
 
     def test_MiniseedMatcher_find_one(self):
         cached_matcher = MiniseedMatcher(self.db)
@@ -292,8 +274,8 @@ class TestNormalize:
         ts = self.db.read_data(doc, collection="wf_miniseed")
         ts_1 = copy.deepcopy(ts)
         ts_2 = copy.deepcopy(ts)
-        # Done as a bit of a hack to match test from old api 
-        # Old api allowed a metadata key to fetch time.  new api for 
+        # Done as a bit of a hack to match test from old api
+        # Old api allowed a metadata key to fetch time.  new api for
         # this class only support TimeSeries input and gets time from t0
         ts_1.set_t0(1272908800.0)
         ts_2.set_t0(1272908800.0)
@@ -324,12 +306,10 @@ class TestNormalize:
         # probably should have a test for the content of the elog return here
         assert cached_retdoc[1] is not None
         assert db_matcher[1] is not None
- 
 
     def test_MiniseedMatcher_normalize(self):
         cached_matcher = MiniseedMatcher(self.db)
         db_matcher = MiniseedDBMatcher(self.db)
-
 
         #   Test call method
         ts_1 = copy.deepcopy(self.ts)
@@ -344,9 +324,7 @@ class TestNormalize:
         ts_2 = copy.deepcopy(self.ts)
         matcher = MiniseedMatcher(self.db, prepend_collection_name=False)
         cached_retdoc = matcher(ts_1)
-        matcher = MiniseedDBMatcher(
-            self.db, prepend_collection_name=False
-        )
+        matcher = MiniseedDBMatcher(self.db, prepend_collection_name=False)
         db_retdoc = matcher(ts_2)
         assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
         assert "lat" in cached_retdoc[0] and "channel_lat" not in cached_retdoc[0]
@@ -377,18 +355,16 @@ class TestNormalize:
         db_retdoc = db_matcher.find_one(ts)
         assert db_retdoc[0] is not None
 
-
         #   test using time key from Metadata
-        db_matcher = OriginTimeDBMatcher(self.db,time_key="testtime")
-            
+        db_matcher = OriginTimeDBMatcher(self.db, time_key="testtime")
+
         ts = copy.deepcopy(orig_ts)
         ts["testtime"] = ts.t0
         db_retdoc = db_matcher.find_one(ts)
         assert db_retdoc[0] is not None
 
-
         # validate handling of mismatched time (no match)
-        db_matcher = OriginTimeDBMatcher(self.db,time_key="testtime")
+        db_matcher = OriginTimeDBMatcher(self.db, time_key="testtime")
         ts = copy.deepcopy(orig_ts)
         ts["testtime"] = 9999.99
         db_retdoc = db_matcher.find_one(ts)
@@ -396,7 +372,7 @@ class TestNormalize:
 
     def test_OriginTimeMatcher_normalize(self):
         db_matcher = OriginTimeDBMatcher(self.db)
-        
+
         orig_doc = self.db.wf_miniseed.find_one(
             {"_id": ObjectId("62812b08178bf05fe5787d82")}
         )
@@ -404,7 +380,7 @@ class TestNormalize:
 
         #   Test call
         ts_2 = copy.deepcopy(orig_ts)
-        db_retdoc = db_matcher(ts_2)       
+        db_retdoc = db_matcher(ts_2)
         assert "source_time" in db_retdoc[0]
 
         #       Test prepend_collection_name turned off
@@ -413,7 +389,6 @@ class TestNormalize:
         matcher = OriginTimeDBMatcher(self.db, prepend_collection_name=False)
         db_retdoc = matcher(ts_2)
         assert "time" in db_retdoc[0] and "source_time" not in db_retdoc[0]
-
 
         #       Test handling of dead data
 
@@ -451,7 +426,6 @@ class TestNormalize:
         rand_doc = self.db.wf_miniseed.find_one()
         assert "channel_id" in rand_doc
         assert "site_id" in rand_doc
-
 
     def test_bulk_normalize(self):
         matcher_function_list = []

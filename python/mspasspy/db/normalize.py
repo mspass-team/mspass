@@ -1,10 +1,6 @@
 from abc import ABC, abstractmethod
 
-from mspasspy.ccore.utility import (
-    MsPASSError, 
-    ErrorSeverity, 
-    ErrorLogger,
-    Metadata)
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, ErrorLogger, Metadata
 from mspasspy.ccore.seismic import (
     TimeSeries,
     Seismogram,
@@ -23,36 +19,38 @@ import copy
 import pandas as pd
 import dask
 
+
 class BasicMatcher(ABC):
     """
     Base class defining the api for a generic matching capability for
     MongoDB normalization.   The base class is a skeleton that
     defines on required abstract methods and initializes a set of
-    universal attributes all matchers need.  It cannot be instatiated directly.  
-    
-    Matching is defined as one of two things:  (1)  a one-to-one 
-    match algorithm is guaranteed to have each search yield either 
-    exactly one match or none.  That is defined through a find_one 
-    method following the same concept in MongoDB.  (2) some 
-    matches are not unique and yield more than one document.  
-    For that case use the find method.  Unlike the MongoDB 
-    find method, however, find in this context returns a list of 
-    Metadata containers holding the set of attributes requested 
-    in lists defined on constuction. 
-    
-    Another way of viewing this interface, in fact, is an abstraction of 
-    the find and find_one methods of MongoDB to a wider class of 
-    algorithms that may or may not utilize MongoDB directly. 
-    In particular, intermediate level classes defined below that implement 
-    different cache data structures allow input either by 
+    universal attributes all matchers need.  It cannot be instatiated directly.
+
+    Matching is defined as one of two things:  (1)  a one-to-one
+    match algorithm is guaranteed to have each search yield either
+    exactly one match or none.  That is defined through a find_one
+    method following the same concept in MongoDB.  (2) some
+    matches are not unique and yield more than one document.
+    For that case use the find method.  Unlike the MongoDB
+    find method, however, find in this context returns a list of
+    Metadata containers holding the set of attributes requested
+    in lists defined on constuction.
+
+    Another way of viewing this interface, in fact, is an abstraction of
+    the find and find_one methods of MongoDB to a wider class of
+    algorithms that may or may not utilize MongoDB directly.
+    In particular, intermediate level classes defined below that implement
+    different cache data structures allow input either by
     loading data from a MongoDB collection of from a pandas DataFrame.
-    That can potentially provide a wide variety of applications of 
-    matching data to tabular data contained in files loaded into 
-    pandas by any of long list of standard dataframe read methods.  
-    Examples are any SQL database or antelope raw tables or views 
-    loaded as text files.  
-     
+    That can potentially provide a wide variety of applications of
+    matching data to tabular data contained in files loaded into
+    pandas by any of long list of standard dataframe read methods.
+    Examples are any SQL database or antelope raw tables or views
+    loaded as text files.
+
     """
+
     def __init__(
         self,
         attributes_to_load=None,
@@ -63,31 +61,31 @@ class BasicMatcher(ABC):
         Base class constructor sets only attributes considered necessary for all
         subclasses.   Most if not all subclasses will want to call this
         constructor driven by an arg list passed to the subclass constructor.
-         
+
         :param attributes_to_load:  is a list of keys (strings) that are to
-          be loaded from the normalizing table/collection.   Default for 
-          this base class is None, but subclasses should normally define 
-          a default list.  It is important to realize that all subclasses 
-          should normally treat this list as a set of required attributes. 
-          Optional values should appear in the load_if_defined list.  
-          
+          be loaded from the normalizing table/collection.   Default for
+          this base class is None, but subclasses should normally define
+          a default list.  It is important to realize that all subclasses
+          should normally treat this list as a set of required attributes.
+          Optional values should appear in the load_if_defined list.
+
         :param load_if_defined:   is a secondary list of keys (strings) that
           should be loaded only if they are defined. Default is None here,
           subclass should set their own default values.
-          
-        :param aliases:   should be a python dictionary used to define 
-          alternative keys to access a data object's Metadata from that 
-          defining the same attribute in the collection/table being 
-          matched.   Note carefully the key of the dictionary is the 
-          collection/table attribute name and the value associated with 
+
+        :param aliases:   should be a python dictionary used to define
+          alternative keys to access a data object's Metadata from that
+          defining the same attribute in the collection/table being
+          matched.   Note carefully the key of the dictionary is the
+          collection/table attribute name and the value associated with
           that key is the alias to use to fetch Metadata.  When matchers
-          scan the attributes_to_load and load_if_defined list they 
-          should treat missing entries in alias as meaning the key in 
-          the collection/table and Metadata are identical.  Default is 
-          a None which is used as a signal to this constructor to 
-          create an empty dictionary meaning there are no aliases. 
+          scan the attributes_to_load and load_if_defined list they
+          should treat missing entries in alias as meaning the key in
+          the collection/table and Metadata are identical.  Default is
+          a None which is used as a signal to this constructor to
+          create an empty dictionary meaning there are no aliases.
         :type aliases:  python dictionary
-          
+
 
         """
         if attributes_to_load is None:
@@ -100,149 +98,152 @@ class BasicMatcher(ABC):
             self.load_if_defined = load_if_defined
         if aliases is None:
             self.aliases = dict()
-        elif isinstance(aliases,dict):
+        elif isinstance(aliases, dict):
             self.aliases = aliases
         else:
-            raise TypeError("BasicMatcher constructor: aliases argument must be either None or define a python dictionary")
-            
+            raise TypeError(
+                "BasicMatcher constructor: aliases argument must be either None or define a python dictionary"
+            )
 
     def __call__(self, d, *args, **kwargs):
         """
         Convenience method that allows the shorthand of the find_one method
-        using the standard python meaning of this symbol.  e.g. if 
+        using the standard python meaning of this symbol.  e.g. if
         we have an concrete instance of a subclass of this base class
-        for matching against ObjectIds using the implementation below 
-        called IDMatcher we assign to the symbol "matcher" we can 
-        get a Metadata container of the matching content for a MsPASS 
-        data object with symbol d using md = matcher(d) versus 
-        md = matcher.find_one(d).  All subclasses have this interface 
-        define because it is a (nonvirtual) base class method. 
+        for matching against ObjectIds using the implementation below
+        called IDMatcher we assign to the symbol "matcher" we can
+        get a Metadata container of the matching content for a MsPASS
+        data object with symbol d using md = matcher(d) versus
+        md = matcher.find_one(d).  All subclasses have this interface
+        define because it is a (nonvirtual) base class method.
         """
         return self.find_one(d, *args, **kwargs)
 
     @abstractmethod
-    def find(self, mspass_object, *args, **kwargs)->tuple:
+    def find(self, mspass_object, *args, **kwargs) -> tuple:
         """
-        Abstraction of the MongoDB database find method with the 
-        matching criteria defined when a concrete instance is instantiated. 
-        Like the MongoDB method implementations it should return a list 
-        of containers matching the keys found in the data passed through 
-        the mspass_object.  A key difference from MongoDB, however, is 
+        Abstraction of the MongoDB database find method with the
+        matching criteria defined when a concrete instance is instantiated.
+        Like the MongoDB method implementations it should return a list
+        of containers matching the keys found in the data passed through
+        the mspass_object.  A key difference from MongoDB, however, is
         that instead of a MongoDB cursor we return a python list of Metadata
-        containers.   In some instances that is a 
-        direct translation of a MongoDB cursor to a list of Metadata 
-        objects.  The abstraction is useful to allow small collections 
+        containers.   In some instances that is a
+        direct translation of a MongoDB cursor to a list of Metadata
+        objects.  The abstraction is useful to allow small collections
         to be accessed faster with a generic cache algorithm (see below)
-        and loading of tables of data through a file-based subclass 
-        of this base.  All can be treated through a common interface. 
-        WE STRESS STRONGLY that the abstraction assumes returns are 
-        always small enough to not cause a memory bloating problem.  
+        and loading of tables of data through a file-based subclass
+        of this base.  All can be treated through a common interface.
+        WE STRESS STRONGLY that the abstraction assumes returns are
+        always small enough to not cause a memory bloating problem.
         If you need the big-memory model of a cursor use it directly.
-        
-        All subclasses must implement this virtual 
-        method to be concrete or they cannot be instantiated.   
-        If the matching algorithm implemented is always expected to 
-        be a unique one-to-one match applications may want to have this 
-        method throw an exception as a use error.  That case should 
-        use the find_one interface defined below. 
-        
+
+        All subclasses must implement this virtual
+        method to be concrete or they cannot be instantiated.
+        If the matching algorithm implemented is always expected to
+        be a unique one-to-one match applications may want to have this
+        method throw an exception as a use error.  That case should
+        use the find_one interface defined below.
+
         All implementations should return a pair (2 component tuple).
-        0 is expected to hold a list of Metadata containers and 
-        1 is expected to contain either a None type or an ErrorLogger 
-        object.   The ErrorLogger is a convenient way to pass error 
-        messages back to the caller in a manner that is easier to handle 
-        with the MsPASS error system than an exception mechanism.  
+        0 is expected to hold a list of Metadata containers and
+        1 is expected to contain either a None type or an ErrorLogger
+        object.   The ErrorLogger is a convenient way to pass error
+        messages back to the caller in a manner that is easier to handle
+        with the MsPASS error system than an exception mechanism.
         Callers should handle four cases that are possible for a return
         (Noting [] means an empty list and [...] a list with data)
-            
-           1. []  None  - notmatch found 
-           2. [] ErrorLog - failure with an informational message in the 
-             ErrorLog that should be preserved.  The presence of an error 
+
+           1. []  None  - notmatch found
+           2. [] ErrorLog - failure with an informational message in the
+             ErrorLog that should be preserved.  The presence of an error
              should imply something went wrong and it was simply a null result.
            3. [...] None - all is good with no detected errors
            4. [...] ErrorLog - valid data returned but there is a warning
-              or informational message posted.  In this case handlers 
-              may want to examine the ErrorSeverity components of the log 
-              and handle different levels differently  (e.g. Fatal and 
+              or informational message posted.  In this case handlers
+              may want to examine the ErrorSeverity components of the log
+              and handle different levels differently  (e.g. Fatal and
               Informational should always be treated differently)
 
         """
-        
+
     @abstractmethod
-    def find_one(self, mspass_object, *args, **kwargs)->tuple:
+    def find_one(self, mspass_object, *args, **kwargs) -> tuple:
         """
-        Abstraction of the MongoDB database find_one method with the 
-        matching criteria defined when a concrete instance is instantiated. 
-        Like the MongoDB method implementations should return the 
-        unique document that the keys in mspass_object are expected 
-        to define with the matching criteria defined by the instance.  
-        A type example of an always unique match is ObjectIds.  
-        When a match is found the result should be returned in a 
-        Metadata container.  The attributes returned are normally 
+        Abstraction of the MongoDB database find_one method with the
+        matching criteria defined when a concrete instance is instantiated.
+        Like the MongoDB method implementations should return the
+        unique document that the keys in mspass_object are expected
+        to define with the matching criteria defined by the instance.
+        A type example of an always unique match is ObjectIds.
+        When a match is found the result should be returned in a
+        Metadata container.  The attributes returned are normally
         a subset of the document and are defined by the base class
         attributes "attributes_to_load" and "load_if_defined".
-        For database instances this is little more than copying 
-        desired attributes from the matching document returned by 
-        MongoDB, but for abstraction more may be involved.  
-        e.g., implemented below is a generic cached algorithm that 
+        For database instances this is little more than copying
+        desired attributes from the matching document returned by
+        MongoDB, but for abstraction more may be involved.
+        e.g., implemented below is a generic cached algorithm that
         stores a collection to be matched in memory for efficiency.
-        That implementation allows the "collection" to be loaded from 
+        That implementation allows the "collection" to be loaded from
         MongoDB or a pandas DataFrame.
-        
+
         All implementations should return a pair (2 component tuple).
-        0 is expected to hold a Metadata containers that was yielded by 
+        0 is expected to hold a Metadata containers that was yielded by
         the match.  It should be returned as None if there is no match.
-        1 is expected to contain either a None type or an ErrorLogger 
-        object.   The ErrorLogger is a convenient way to pass error 
-        messages back to the caller in a manner that is easier to handle 
-        with the MsPASS error system than an exception mechanism.  
+        1 is expected to contain either a None type or an ErrorLogger
+        object.   The ErrorLogger is a convenient way to pass error
+        messages back to the caller in a manner that is easier to handle
+        with the MsPASS error system than an exception mechanism.
         Callers should handle four cases that are possible for a return:
-            
-           1, None  None  - no match found 
-           2. None ErrorLog - failure with an informational message in the 
-             ErrorLog that the caller may want be preserved or convert to 
+
+           1, None  None  - no match found
+           2. None ErrorLog - failure with an informational message in the
+             ErrorLog that the caller may want be preserved or convert to
              an exception.
            3. Metadata None - all is good with no detected errors
            4. Metadata ErrorLog - valid data was returned but there is a warning
-              or informational message posted.  In this case handlers 
-              may want to examine the ErrorSeverity components of the log 
-              and handle different levels differently  (e.g. Fatal and 
+              or informational message posted.  In this case handlers
+              may want to examine the ErrorSeverity components of the log
+              and handle different levels differently  (e.g. Fatal and
               Informational should always be treated differently)
 
         """
         pass
-    
+
+
 class DatabaseMatcher(BasicMatcher):
     """
     Matcher using direct database queries to MongoDB.   Each call to
     the find method of this class constructs a query, calls the MongoDB
     database find method with that query, and extracts desired attributes
-    from the return in the form of a Metadata container.  The query 
+    from the return in the form of a Metadata container.  The query
     construction is abstracted by a virtual method called query_generator.
-    This is an intermediate class that cannot be instantiated directly 
-    because it contains a virtual method.   User's should consult 
+    This is an intermediate class that cannot be instantiated directly
+    because it contains a virtual method.   User's should consult
     docstrings for constructors for subclasses of this intermediate class.
     """
+
     def __init__(
-            self,
-            db,
-            collection,
-            attributes_to_load=None,
-            load_if_defined=None,
-            aliases=None,
-            require_unique_match=False,
-            prepend_collection_name=False,
-            ):
+        self,
+        db,
+        collection,
+        attributes_to_load=None,
+        load_if_defined=None,
+        aliases=None,
+        require_unique_match=False,
+        prepend_collection_name=False,
+    ):
         """
-        Constructor for this intermediate class.  It should not be 
-        used except by subclasses as this intermediate class 
-        is not concrete. 
+        Constructor for this intermediate class.  It should not be
+        used except by subclasses as this intermediate class
+        is not concrete.
         """
         super().__init__(
             attributes_to_load=attributes_to_load,
             load_if_defined=load_if_defined,
             aliases=aliases,
-            )
+        )
         if not isinstance(collection, str):
             raise TypeError(
                 "{} constructor:  required arg1 must be a collection name - received invalid type".format(
@@ -251,76 +252,76 @@ class DatabaseMatcher(BasicMatcher):
             )
         self.collection = collection
         self.dbhandle = db[collection]
-        self.require_unique_match=require_unique_match
-        self.prepend_collection_name=prepend_collection_name
-    
+        self.require_unique_match = require_unique_match
+        self.prepend_collection_name = prepend_collection_name
+
     @abstractmethod
-    def query_generator(self,mspass_object)->dict:
+    def query_generator(self, mspass_object) -> dict:
         """
-        Subclasses of this intermediate class MUST implement this 
-        method.  It should extract content from mspass_object and 
-        use that content to generate a MongoDB query that is 
-        passed directly to the find method of the MongoDB database 
-        handle stored within this object (self) during 
-        the class construction.  Since pymongo uses a 
-        python dict for that purpose it must return a valid 
-        query dict.  Implementations should return None if no 
-        query could be generated.  Common, for example, if a key 
-        required to generate the query is missing from mspass_object.  
+        Subclasses of this intermediate class MUST implement this
+        method.  It should extract content from mspass_object and
+        use that content to generate a MongoDB query that is
+        passed directly to the find method of the MongoDB database
+        handle stored within this object (self) during
+        the class construction.  Since pymongo uses a
+        python dict for that purpose it must return a valid
+        query dict.  Implementations should return None if no
+        query could be generated.  Common, for example, if a key
+        required to generate the query is missing from mspass_object.
         """
         pass
-    
-    def find(self,mspass_object):
+
+    def find(self, mspass_object):
         """
-        Generic database implementation of the find method for this 
-        abstraction.   It returns what the base class api specifies. 
-        That is, normally it returns a tuple with component 0 being 
-        a python list of Metadata containers.  Each container holds 
-        the subset of attributes defined by attributes_to_load and 
-        (if present) load_if_defined.  The list is the set of all 
+        Generic database implementation of the find method for this
+        abstraction.   It returns what the base class api specifies.
+        That is, normally it returns a tuple with component 0 being
+        a python list of Metadata containers.  Each container holds
+        the subset of attributes defined by attributes_to_load and
+        (if present) load_if_defined.  The list is the set of all
         documents matching the query, which at this level of the class
-        structure is abstract.   
-        
-        The method dogmatically requires data for all keys 
-        defined by attributes_to_load.  It will throw a MsPASSError 
-        exception with a Fatal tag if any of the required attributes 
+        structure is abstract.
+
+        The method dogmatically requires data for all keys
+        defined by attributes_to_load.  It will throw a MsPASSError
+        exception with a Fatal tag if any of the required attributes
         are not defined in any of the documents.  The return matches
-        the API specification for BasicMatcher.  
-        
-        It also handles failures of the abstract query_generator 
-        through the mechanism the base class api specified:  a None 
-        return means the method could not create a valid query.  
-        Failures in the query will always post a message to elog 
+        the API specification for BasicMatcher.
+
+        It also handles failures of the abstract query_generator
+        through the mechanism the base class api specified:  a None
+        return means the method could not create a valid query.
+        Failures in the query will always post a message to elog
         tagging the result as "Invalid".
-        
-        It also handles the common problem of dead data or accidentally 
-        receiving invalid data like a None.   The later may cause other 
+
+        It also handles the common problem of dead data or accidentally
+        receiving invalid data like a None.   The later may cause other
         algorithms to abort, but we handle it here return [None,None].
-        We don't return an ErrorLogger in that situation as the assumption 
-        is there is no place to put it and something else has gone really 
+        We don't return an ErrorLogger in that situation as the assumption
+        is there is no place to put it and something else has gone really
         wrong.
         """
         if not _input_is_valid(mspass_object):
             elog = ErrorLogger()
             message = "received invalid data.  Arg0 must be a valid MsPASS data object"
-            elog.log_error("DatabaseMatcher.find",message,ErrorSeverity.Invalid)
+            elog.log_error("DatabaseMatcher.find", message, ErrorSeverity.Invalid)
         if mspass_object.dead():
             return [None, None]
         query = self.query_generator(mspass_object)
         if query is None:
             elog = ErrorLogger()
             message = "query_generator method failed to generate a valid query - required attributes are probably missing"
-            elog.log_error("DatabaseMatcher.find",
-                           message,
-                           ErrorSeverity.Invalid)
+            elog.log_error("DatabaseMatcher.find", message, ErrorSeverity.Invalid)
             return [None, elog]
         number_hits = self.dbhandle.count_documents(query)
         if number_hits <= 0:
             elog = ErrorLogger()
-            message = "DatabaseMatcher.find:  " \
-                    + "query = " \
-                    + str(query) \
-                    + " yielded no documents"
+            message = (
+                "DatabaseMatcher.find:  "
+                + "query = "
+                + str(query)
+                + " yielded no documents"
+            )
             return [None, elog]
         cursor = self.dbhandle.find(query)
         elog = ErrorLogger()
@@ -335,17 +336,20 @@ class DatabaseMatcher(BasicMatcher):
                         key = k
                     if self.prepend_collection_name:
                         if key == "_id":
-                            mdkey = self.collection+key
+                            mdkey = self.collection + key
                         else:
-                            mdkey = self.collection  + "_" + key
+                            mdkey = self.collection + "_" + key
                     else:
                         mdkey = key
                     md[mdkey] = doc[key]
                 else:
-                    raise MsPASSError("DatabaseMatcher.find:  "
-                                   + "Retrieved document has no data for required key={}",format(k),
-                                   ErrorSeverity.Fatal)
-                
+                    raise MsPASSError(
+                        "DatabaseMatcher.find:  "
+                        + "Retrieved document has no data for required key={}",
+                        format(k),
+                        ErrorSeverity.Fatal,
+                    )
+
             for k in self.load_if_defined:
                 if k in doc:
                     if k in self.aliases:
@@ -356,64 +360,65 @@ class DatabaseMatcher(BasicMatcher):
                         if key == "_id":
                             mdkey = self.collection + key
                         else:
-                            mdkey = self.collection  + "_" + key
+                            mdkey = self.collection + "_" + key
                     else:
                         mdkey = key
                     md[mdkey] = doc[key]
-            
+
             metadata_list.append(md)
-            
+
         if elog.size() <= 0:
-            return [metadata_list,None]
+            return [metadata_list, None]
         else:
-            return [metadata_list,elog]
-            
-    def find_one(self,mspass_object):
+            return [metadata_list, elog]
+
+    def find_one(self, mspass_object):
         """
-        Generic database implementation of the find_one method.  The tacit 
-        assumption is that if you call find_one you are expecting a unique 
-        match to the algorithm implemented.  The actual behavior for a 
-        nonunique match is controlled by the class attribute 
+        Generic database implementation of the find_one method.  The tacit
+        assumption is that if you call find_one you are expecting a unique
+        match to the algorithm implemented.  The actual behavior for a
+        nonunique match is controlled by the class attribute
         require_unique_match.  Subclasses that want to dogmatically enforce
-        uniqueness (appropriate for example with ObjectIds) should 
-        set require_unique_match True.   In that case if a match is not 
-        unique the method will throw an exception.  When False, which is 
+        uniqueness (appropriate for example with ObjectIds) should
+        set require_unique_match True.   In that case if a match is not
+        unique the method will throw an exception.  When False, which is
         the default, an informational message is posted and the method
-        returns the first list element returned by find.  This method is 
-        actually little more than a wrapper around find to handle that 
-        uniqueness issue.  
+        returns the first list element returned by find.  This method is
+        actually little more than a wrapper around find to handle that
+        uniqueness issue.
         """
         find_output = self.find(mspass_object)
         if find_output[0] is None:
-            return [None,find_output[1]]
+            return [None, find_output[1]]
         mdlist_length = len(find_output[0])
-        if mdlist_length== 1:
-            return [find_output[0][0],find_output[1]]
+        if mdlist_length == 1:
+            return [find_output[0][0], find_output[1]]
         else:
-            #somewhat messy logic to handle differnt situations 
-            # we throw an exception if the constructor set require_unique_match 
-            # True.  Otherwise we need to handle the distinction on whether or 
-            # not the return from find had an ErrorLogger defined with data. 
+            # somewhat messy logic to handle differnt situations
+            # we throw an exception if the constructor set require_unique_match
+            # True.  Otherwise we need to handle the distinction on whether or
+            # not the return from find had an ErrorLogger defined with data.
             if self.require_unique_match:
-                message = "query of collection {col} did not yield a unique match.  Found {n} matching documents.  Aborting".format(col=self.collection,n=mdlist_length)
+                message = "query of collection {col} did not yield a unique match.  Found {n} matching documents.  Aborting".format(
+                    col=self.collection, n=mdlist_length
+                )
                 raise MsPASSError(
-                      "DatabaseMatcher.find_one:  " + message,
-                      ErrorSeverity.Fatal
-                     )
+                    "DatabaseMatcher.find_one:  " + message, ErrorSeverity.Fatal
+                )
             else:
                 if find_output[1] is None:
-                    elog  = ErrorLogger()
+                    elog = ErrorLogger()
                 else:
                     elog = find_output[1]
-                message = "query of collection {col} did not yield a unique match.  Found {n} matching documents.  Using first one in list".format(col=self.collection,n=mdlist_length)
+                message = "query of collection {col} did not yield a unique match.  Found {n} matching documents.  Using first one in list".format(
+                    col=self.collection, n=mdlist_length
+                )
                 elog.log_error(
-                     "DatabaseMatcher.find_one",
-                     message,
-                     ErrorSeverity.Complaint
-                   )
-                return [find_output[0][0],elog]
-            
-                
+                    "DatabaseMatcher.find_one", message, ErrorSeverity.Complaint
+                )
+                return [find_output[0][0], elog]
+
+
 class DictionaryCacheMatcher(BasicMatcher):
     """
     Matcher implementing a caching method based on a python dictionary.
@@ -427,7 +432,7 @@ class DictionaryCacheMatcher(BasicMatcher):
     key is define is abstracted through two virtual methods:  
     (1) The cache_id method creates a match key from a mspass data object. 
         That is normally from the Metadata container but it is not 
-        restricted to that. e.g. start time for TimeSeries or \
+        restricted to that. e.g. start time for TimeSeries or 
         Seismogram objects can be obtained from the t0 attribute
         directly.  
     (2) The db_make_cache_id is called by the internal method of this 
@@ -438,7 +443,7 @@ class DictionaryCacheMatcher(BasicMatcher):
     Two different methods to define the cache index are necessary as a
     generic way to implement aliases.  A type example is the mspass use 
     of names like "channel_id" to refer to the ObjectId of a specific 
-    documenbt in the channel collection.   When loading channel the name 
+    document in the channel collection.   When loading channel the name 
     key is "_id" but data objects would normally have that same data 
     defined with the key "channel_id".   Similarly, if data have had 
     aliases applied a key in the data may not match the name in a 
@@ -454,41 +459,42 @@ class DictionaryCacheMatcher(BasicMatcher):
     
     TODO:   needs an option to load from a DataFrame
     """
+
     def __init__(
-            self,
-            db,
-            collection,
-            query=None,
-            attributes_to_load=None,
-            aliases=None,
-            load_if_defined=None,
-            require_unique_match=False,
-            prepend_collection_name=False,
-            use_dataframe_index_as_cache_id=False,
-            ):
+        self,
+        db,
+        collection,
+        query=None,
+        attributes_to_load=None,
+        aliases=None,
+        load_if_defined=None,
+        require_unique_match=False,
+        prepend_collection_name=False,
+        use_dataframe_index_as_cache_id=False,
+    ):
         """
-        Constructor for this intermediate class.  It should not be 
-        used except by subclasses as this intermediate class 
-        is not concrete.   It calls the base class constructor 
+        Constructor for this intermediate class.  It should not be
+        used except by subclasses as this intermediate class
+        is not concrete.   It calls the base class constructor
         and then loads two internal attributes:  query and collection.
-        It then creates the normalization python dict that applies the 
-        abstract cache_id method.  Note that only works for 
-        concrete subclasses of this intermediate class.  
+        It then creates the normalization python dict that applies the
+        abstract cache_id method.  Note that only works for
+        concrete subclasses of this intermediate class.
         """
         super().__init__(
             attributes_to_load=attributes_to_load,
             load_if_defined=load_if_defined,
             aliases=aliases,
-            )
+        )
         if not isinstance(collection, str):
             raise TypeError(
                 "{} constructor:  required arg1 must be a collection name - received invalid type".format(
                     self.__class__.__name__
                 )
             )
-        if query==None:
+        if query == None:
             self.query = dict()
-        elif isinstance(query,dict):
+        elif isinstance(query, dict):
             self.query = query
         else:
             raise TypeError(
@@ -500,12 +506,11 @@ class DictionaryCacheMatcher(BasicMatcher):
         self.require_unique_match = require_unique_match
         self.prepend_collection_name = prepend_collection_name
 
-        
         # This is a redundant initialization but a minor cost for stability
         self.normcache = dict()
 
-        if isinstance(db,Database):
-            self._db_load_normalization_cache(db,collection)
+        if isinstance(db, Database):
+            self._db_load_normalization_cache(db, collection)
         else:
             raise TypeError(
                 "{} constructor:  required arg0 must be a mspass Database handle".format(
@@ -514,88 +519,87 @@ class DictionaryCacheMatcher(BasicMatcher):
             )
 
     @abstractmethod
-    def cache_id(self,mspass_object)->str:
+    def cache_id(self, mspass_object) -> str:
         """
-        Concrete implementations must implement this method to define 
-        how a mspass data object, mspass_object, is to be used to 
-        construct the key to the cache dict container.   It is 
-        distinct from db_make_cache_id to allow differences in naming 
+        Concrete implementations must implement this method to define
+        how a mspass data object, mspass_object, is to be used to
+        construct the key to the cache dict container.   It is
+        distinct from db_make_cache_id to allow differences in naming
         or even the algorithm used to construct the key from a datum
-        relative to the database.  This complicates the interface but 
-        makes it more generic. 
-        
-        :param mspass_object:  is expected to be a MsPASS object.  
-          Any type restrictions should be implemented in subclasses 
-          that implement the method. 
-          
-        :return: should always return a valid string and never throw 
-          an exception.  If the algorithm fails the implementation should 
-          return a None. 
-        """
-        pass
-    
-    @abstractmethod
-    def db_make_cache_id(self,doc)->str:
-        """
-        Concrete implementation must implement this method to define how 
-        the cache index is to be created from database documents passed 
-        through the arg doc, which pymongo always returns as a python dict. 
-        It is distinct from cache_id to allow differences in naming or 
-        the algorithm for loading the cache compared to accessing it 
-        using attributes of a data object.   If the id string cannot 
-        be created from doc an implementation should return None.  
-        The generic loaders in this class, db_load_normalization_cache
-        and df_load_normalization_class, handle that situation cleanly 
-        but if a subclass overrides the load methods they should handle 
-        such errors.  "cleanly" in this case means they throw an 
-        exception which is appropriate since they are run during construction 
-        and any invalid key is not acceptable in that situation.  
+        relative to the database.  This complicates the interface but
+        makes it more generic.
+
+        :param mspass_object:  is expected to be a MsPASS object.
+          Any type restrictions should be implemented in subclasses
+          that implement the method.
+
+        :return: should always return a valid string and never throw
+          an exception.  If the algorithm fails the implementation should
+          return a None.
         """
         pass
 
-    def find_one(self,mspass_object)->tuple:
+    @abstractmethod
+    def db_make_cache_id(self, doc) -> str:
+        """
+        Concrete implementation must implement this method to define how
+        the cache index is to be created from database documents passed
+        through the arg doc, which pymongo always returns as a python dict.
+        It is distinct from cache_id to allow differences in naming or
+        the algorithm for loading the cache compared to accessing it
+        using attributes of a data object.   If the id string cannot
+        be created from doc an implementation should return None.
+        The generic loaders in this class, db_load_normalization_cache
+        and df_load_normalization_class, handle that situation cleanly
+        but if a subclass overrides the load methods they should handle
+        such errors.  "cleanly" in this case means they throw an
+        exception which is appropriate since they are run during construction
+        and any invalid key is not acceptable in that situation.
+        """
+        pass
+
+    def find_one(self, mspass_object) -> tuple:
         """
         Implementation of find for generic cached method.   It uses the cache_id
         method to create the indexing string from mspass_object and then returns
-        a match to the cache stored in self.  Only subclasses of this 
+        a match to the cache stored in self.  Only subclasses of this
         intermediate class can work because the cache_id method is
-        defined as a pure virtual method in this intermediate class.  
-        That construct is used to simplify writing additional matcher 
-        classes.  All extensions need to do is define the cache_id 
+        defined as a pure virtual method in this intermediate class.
+        That construct is used to simplify writing additional matcher
+        classes.  All extensions need to do is define the cache_id
         and db_make_cache_id algorithms to build that index.
-        
-        :param mspass_object:  Any valid MsPASS data object.  That means 
+
+        :param mspass_object:  Any valid MsPASS data object.  That means
           TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
-          This datum is passed to the (abstract) cache_id method to 
-          create an index string and the result is used to fetch the 
-          Metadata container matching that key.   What is required of the 
-          input is dependent on the subclass implementation of cache_id.  
-         
-        :return:  2-component tuple following API specification in BasicMatcher.  
+          This datum is passed to the (abstract) cache_id method to
+          create an index string and the result is used to fetch the
+          Metadata container matching that key.   What is required of the
+          input is dependent on the subclass implementation of cache_id.
+
+        :return:  2-component tuple following API specification in BasicMatcher.
           Only two possible results are possible from this implementation:
 
            None ErrorLog - failure with an error message that can be passed on
-             if desired or printed 
+             if desired or printed
            Metadata None - all is good with no detected errors.  The Metadata
-             container holds all attributes_to_load and any defined 
-             load_if_defined values.  
- 
+             container holds all attributes_to_load and any defined
+             load_if_defined values.
+
         """
         find_output = self.find(mspass_object)
 
         if find_output[0] is None:
             return find_output
         elif len(find_output[0]) == 1:
-            return [find_output[0][0],find_output[1]]
+            return [find_output[0][0], find_output[1]]
         else:
-            # as with the database version we use require_unique_match 
+            # as with the database version we use require_unique_match
             # to define if we should be dogmatic or not
             if self.require_unique_match:
                 message = "query does not yield a unique match and require_unique_match is set true"
                 raise MsPASSError(
-                      "DictionaryCacheMatcher.find:  " + message,
-                      ErrorSeverity.Fatal
-                    )
+                    "DictionaryCacheMatcher.find:  " + message, ErrorSeverity.Fatal
+                )
             else:
                 message = "encountered a nonunique match calling find_one - returning contents of first matching document found"
                 if find_output[1] is None:
@@ -603,127 +607,133 @@ class DictionaryCacheMatcher(BasicMatcher):
                 else:
                     elog = find_output[1]
                 elog.log_error(
-                      "DictionaryCacheMatcher.find:  ",
-                      message,
-                      ErrorSeverity.Complaint
-                    )
-                return [find_output[0][0],elog]
-        
-    def find(self,mspass_object)->tuple:
+                    "DictionaryCacheMatcher.find:  ", message, ErrorSeverity.Complaint
+                )
+                return [find_output[0][0], elog]
+
+    def find(self, mspass_object) -> tuple:
         """
-        Generic implementation of find method for cached tables/collections.  
-        
+        Generic implementation of find method for cached tables/collections.
+
         This method is a generalization of the MongoDB database find method.
-        It differs in two ways. First, it creates the "query" directly from 
+        It differs in two ways. First, it creates the "query" directly from
         a MsPASS data object (pymongo find requires a dict as input).
         Second, the result is return as a python list of Metadata containers
-        containing what is (usually) a subset of the data stored in the 
-        original collection (table).   In contrast pymongo database find 
-        returns a database "Cursor" object which is their implementation of 
-        a large list that may exceed the size of memory.  A key point is 
-        the model here makes sense only if the original table itself is small 
-        enough to not cause a memory problem.  Further, find calls that 
-        yield long list may cause efficiency problems as subclasses that 
-        build on this usually will need to do a linear search through the 
+        containing what is (usually) a subset of the data stored in the
+        original collection (table).   In contrast pymongo database find
+        returns a database "Cursor" object which is their implementation of
+        a large list that may exceed the size of memory.  A key point is
+        the model here makes sense only if the original table itself is small
+        enough to not cause a memory problem.  Further, find calls that
+        yield long list may cause efficiency problems as subclasses that
+        build on this usually will need to do a linear search through the
         list if they need to find a particular instance (e.g. call to find_one).
-        
-        :param mspass_object: data object to match against 
+
+        :param mspass_object: data object to match against
           data in cache (i.e. query).
-        :type mspass_object:  must be a valid MsPASS data object. 
+        :type mspass_object:  must be a valid MsPASS data object.
           currently that means TimeSeries, Seismogram, TimeSeriesEnsemble,
-          or SeismogramEnsemble.   If it is anything else (e.g. None) 
-          this method will return a tuple [None, elog] with elog being 
+          or SeismogramEnsemble.   If it is anything else (e.g. None)
+          this method will return a tuple [None, elog] with elog being
           a ErrorLogger with a posted message.
-          
-        :return: tuple with two elements.  0 is either a list of valid Metadata 
-          container(s) or None and 1 is either None or an ErrorLogger object. 
+
+        :return: tuple with two elements.  0 is either a list of valid Metadata
+          container(s) or None and 1 is either None or an ErrorLogger object.
           There are only two possible returns from this method:
               [None, elog] - find failed.  See/save elog for why it failed.
               [ [md1, md2, ..., mdn], None] - success with 0 a list of Metadata
-                containing attributes_to_load and load_if_defined 
-                (if appropriate) in each component.    
+                containing attributes_to_load and load_if_defined
+                (if appropriate) in each component.
         """
         if not _input_is_valid(mspass_object):
             elog = ErrorLogger(
-                  "DictionaryCacheMatcher.find",
-                  "Received datum that was not a valid MsPASS data object",
-                  ErrorSeverity.Invalid
-                )
+                "DictionaryCacheMatcher.find",
+                "Received datum that was not a valid MsPASS data object",
+                ErrorSeverity.Invalid,
+            )
             return [None, elog]
-            
+
         thisid = self.cache_id(mspass_object)
-        # this should perhaps generate two different messages as the 
-        # they imply slightly different things - the current message 
+        # this should perhaps generate two different messages as the
+        # they imply slightly different things - the current message
         # is accurate though
-        if (thisid == None) or (thisid not in self.normcache) :
+        if (thisid == None) or (thisid not in self.normcache):
             error_message = "cache_id method found no match for this datum"
             elog = ErrorLogger()
-            elog.log_error("DictionaryCacheMatcher.find",
-                           error_message,
-                           ErrorSeverity.Invalid)
-            return [None,elog]
+            elog.log_error(
+                "DictionaryCacheMatcher.find", error_message, ErrorSeverity.Invalid
+            )
+            return [None, elog]
         else:
-            return [self.normcache[thisid],None]
+            return [self.normcache[thisid], None]
 
     def _db_load_normalization_cache(
-            self,
-            db,
-            collection,
-            ):
+        self,
+        db,
+        collection,
+    ):
         """
-        This private method abstracts the process of loading a cached 
-        version of a normalizing collection.  It creates a python 
-        dict stored internally with the name self.normcache.  The 
-        container is keyed by a string created by 
-        the virtual method cache_id.  The value associated with each 
-        dict key is a python list of Metadata containers.  
-        Each component is constructed from any document matching the 
-        algorithm defined by cache_id.   The list is constructed by 
-        essentially appending a new Metadata object whenever a 
-        matching cache_id is returned.   
-        
-        The Metadata containers normally contain only a subset of 
+        This private method abstracts the process of loading a cached
+        version of a normalizing collection.  It creates a python
+        dict stored internally with the name self.normcache.  The
+        container is keyed by a string created by
+        the virtual method cache_id.  The value associated with each
+        dict key is a python list of Metadata containers.
+        Each component is constructed from any document matching the
+        algorithm defined by cache_id.   The list is constructed by
+        essentially appending a new Metadata object whenever a
+        matching cache_id is returned.
+
+        The Metadata containers normally contain only a subset of
         the original attributes in the collection.  The list
-        attributes_to_load is treated as required and this method 
-        will throw a MsPASSError exception if any of them are missing 
-        from any document parsed.  Use load_if_define for attributes 
-        that are not required for your workflow.  
-        
+        attributes_to_load is treated as required and this method
+        will throw a MsPASSError exception if any of them are missing
+        from any document parsed.  Use load_if_define for attributes
+        that are not required for your workflow.
+
         This method will throw a MsPASS fatal error in two situations:
             1.  If the collection following the (optional) query is empty
-            2.  If any attribute in the self.attributes_to_load is not 
-                defined in any document loaded.  In all BasicMatcher 
-                subclasses attributes_to_load are considered required.  
-        
-        :param db:  MsPASS Database class MongoDB database handle.  Note 
+            2.  If any attribute in the self.attributes_to_load is not
+                defined in any document loaded.  In all BasicMatcher
+                subclasses attributes_to_load are considered required.
+
+        :param db:  MsPASS Database class MongoDB database handle.  Note
           it can be the subclass of the base class MongooDB handle
           as extensions for MsPASS to the handle are not used in this method.
-        :param collection:  string defining the MongoDB collection that is 
-          to be loaded and indexed - the normalizing collection target.  
-          
+        :param collection:  string defining the MongoDB collection that is
+          to be loaded and indexed - the normalizing collection target.
+
         """
         dbhandle = db[collection]
         self.collection_size = dbhandle.count_documents(self.query)
         if self.collection_size <= 0:
-            message = "Query=" + self.query + " of collection=" + collection + " yielded 0 documents - cannot construct this object"
-            raise MsPASSError("DictionaryCacheMatcher._load_normalization_cache:  " 
-                              + message,
-                              ErrorSeverity.Fatal)
+            message = (
+                "Query="
+                + self.query
+                + " of collection="
+                + collection
+                + " yielded 0 documents - cannot construct this object"
+            )
+            raise MsPASSError(
+                "DictionaryCacheMatcher._load_normalization_cache:  " + message,
+                ErrorSeverity.Fatal,
+            )
         cursor = dbhandle.find(self.query)
         self.normcache = dict()
         count = 0
         for doc in cursor:
             cache_key = self.db_make_cache_id(doc)
-            # This error trap may not be necessary but the api requires us 
+            # This error trap may not be necessary but the api requires us
             # to handle a None return
             if cache_key == None:
                 raise MsPASSError(
                     "DictionaryCacheMatcher._load_normalization_cache:  "
-                    + "db_make_cache_id failed - coding problem or major problem with collection=" + self.collection,
-                    ErrorSeverity.Fatal
-                    )
-            # This section is almost identical to the find method of 
-            # DatabaseMatcher but I couldn't see how to cleanly make it 
+                    + "db_make_cache_id failed - coding problem or major problem with collection="
+                    + self.collection,
+                    ErrorSeverity.Fatal,
+                )
+            # This section is almost identical to the find method of
+            # DatabaseMatcher but I couldn't see how to cleanly make it
             # a function accessible by either class.
             md = Metadata()
             for k in self.attributes_to_load:
@@ -736,15 +746,18 @@ class DictionaryCacheMatcher(BasicMatcher):
                         if key == "_id":
                             mdkey = self.collection + key
                         else:
-                            mdkey = self.collection  + "_" + key
+                            mdkey = self.collection + "_" + key
                     else:
                         mdkey = key
                     md[mdkey] = doc[key]
                 else:
-                    message = "Required attribute {key} was not found in document number {n} of collection {col}".format(key=k,n=count,col=collection)
-                    raise MsPASSError("DictionaryCacheMatcher._load_normalization_cache:  "
-                                          + message,
-                                          ErrorSeverity.Fatal)
+                    message = "Required attribute {key} was not found in document number {n} of collection {col}".format(
+                        key=k, n=count, col=collection
+                    )
+                    raise MsPASSError(
+                        "DictionaryCacheMatcher._load_normalization_cache:  " + message,
+                        ErrorSeverity.Fatal,
+                    )
             for k in self.load_if_defined:
                 if k in doc:
                     if k in self.aliases:
@@ -755,134 +768,142 @@ class DictionaryCacheMatcher(BasicMatcher):
                         if key == "_id":
                             mdkey = self.collection + key
                         else:
-                            mdkey = self.collection  + "_" + key
+                            mdkey = self.collection + "_" + key
                     else:
                         mdkey = key
                     md[mdkey] = doc[key]
-            
+
             if cache_key in self.normcache:
                 self.normcache[cache_key].append(md)
             else:
                 self.normcache[cache_key] = [md]
             count += 1
-        
- 
-                    
+
+
 class DataFrameCacheMatcher(BasicMatcher):
     """
     Matcher implementing a caching method based on a Pandas DataFrame
 
     This is an intermediate class for instances where the database collection
-    to be matched is small enough that the in-memory model is appropriate. 
+    to be matched is small enough that the in-memory model is appropriate.
     It should be used when the matching algorithm is readily cast into the
-    subsetting api of a pandas DataFrame.  
-    
+    subsetting api of a pandas DataFrame.
+
     The constructor of this intermediate class first calls the BasicMatcher
-    (base class) constructor to initialize some common attribute including 
-    the critical lists of attributes to be loaded.   This constructor then 
-    creates the internal DataFrame cache by one of two methods.  
-    If arg0 is a MongoDB database handle it loads the data in the 
-    named collection to a DataFrame created during construction.  If the 
-    input is a DataFrame already it is simply copied selecting only 
+    (base class) constructor to initialize some common attribute including
+    the critical lists of attributes to be loaded.   This constructor then
+    creates the internal DataFrame cache by one of two methods.
+    If arg0 is a MongoDB database handle it loads the data in the
+    named collection to a DataFrame created during construction.  If the
+    input is a DataFrame already it is simply copied selecting only
     columns defined by the attributes_to_load and load_if_defined lists.
-    There is also an optional parameter, custom_null_values, that is a 
-    python dictionary defining values in a field that should be treated 
-    as a definition of a Null for that field.  The constuctor converts 
-    such values to a standard pandas null field value.  
-    
-    This class implements generic find and find_one methods.  
-    Subclasses of this class must implement a "subset" method to be 
-    concrete.  A subset method is the abstract algorithm that defines 
+    There is also an optional parameter, custom_null_values, that is a
+    python dictionary defining values in a field that should be treated
+    as a definition of a Null for that field.  The constuctor converts
+    such values to a standard pandas null field value.
+
+    This class implements generic find and find_one methods.
+    Subclasses of this class must implement a "subset" method to be
+    concrete.  A subset method is the abstract algorithm that defines
     a match for that instance expressed as a pandas subset operation.
-    (For most algorithms there are multiple ways to skin that cat or is 
+    (For most algorithms there are multiple ways to skin that cat or is
      it a panda?)  See concrete subclasses for examples.
-    
-    This class cannot be instantiated because it is not concrete 
+
+    This class cannot be instantiated because it is not concrete
     (has abstract - virtual - methods that must be defined by subclasses)
-    See implementations for constructor argument definitions.  
-    
-    TODO:   needs an option to load from a MongoDB database.   An untested 
-    prototype is at the end of this file with the name _load_as_df.   
+    See implementations for constructor argument definitions.
+
+    TODO:   needs an option to load from a MongoDB database.   An untested
+    prototype is at the end of this file with the name _load_as_df.
     May want to convert that function to a method of this class.
     """
+
     def __init__(
-            self,
-            df,
-            collection=None,
-            attributes_to_load=None,
-            load_if_defined=None,
-            aliases=None,
-            require_unique_match=False,
-            prepend_collection_name=False,
-            custom_null_values=None,
-            ):
+        self,
+        df,
+        collection=None,
+        attributes_to_load=None,
+        load_if_defined=None,
+        aliases=None,
+        require_unique_match=False,
+        prepend_collection_name=False,
+        custom_null_values=None,
+    ):
         """
-        Constructor for this intermediate class.  It should not be 
-        used except by subclasses as this intermediate class 
-        is not concrete.    
+        Constructor for this intermediate class.  It should not be
+        used except by subclasses as this intermediate class
+        is not concrete.
         """
         self.prepend_collection_name = prepend_collection_name
         self.require_unique_match = require_unique_match
         # this is a necessary sanity check
         if prepend_collection_name:
             if collection is None:
-                raise TypeError("DataFrameCacheMatcher constructor:  collection name must be defined when prepend_collection_name is set True")
-            elif isinstance(collection,str):
+                raise TypeError(
+                    "DataFrameCacheMatcher constructor:  collection name must be defined when prepend_collection_name is set True"
+                )
+            elif isinstance(collection, str):
                 self.collection = collection
-                
+
             else:
-                raise TypeError("DataFrameCacheMatcher constructor:   collection argument must be a string type")
-        if not isinstance(df,[pd.DataFrame,dask.DataFrame]):
-            raise TypeError("DataFrameCacheMatcher constructor:  required arg0 must be either a pandas or dask Dataframe")
+                raise TypeError(
+                    "DataFrameCacheMatcher constructor:   collection argument must be a string type"
+                )
+        if not isinstance(df, [pd.DataFrame, dask.DataFrame]):
+            raise TypeError(
+                "DataFrameCacheMatcher constructor:  required arg0 must be either a pandas or dask Dataframe"
+            )
         if attributes_to_load is None:
             if load_if_defined is None:
-                raise MsPASSError("DataFrameCacheMatcher constructor:  usage error.  Cannot use default of attributes_to_load (triggers loading all columns) and define a list of names for argument load_if_defined")
+                raise MsPASSError(
+                    "DataFrameCacheMatcher constructor:  usage error.  Cannot use default of attributes_to_load (triggers loading all columns) and define a list of names for argument load_if_defined"
+                )
             aload = list()
             for key in df.columns:
                 aload.append(key)
         else:
             aload = attributes_to_load
-        
+
         super().__init__(
             attributes_to_load=aload,
             load_if_defined=load_if_defined,
             aliases=aliases,
-            )
-        
+        )
+
         self._load_dataframe_cache(df)
 
-    def find(self,mspass_object)->tuple:
+    def find(self, mspass_object) -> tuple:
         """
-        DataFrame generic implementation of find method.  
-        
+        DataFrame generic implementation of find method.
+
         This method uses content in any part of the mspass_object
-        (data object) to subset the internal DataFrame cache to 
-        return subset of tuples matching some condition defined 
-        computed through the abstract (virtual) methdod subset.  
-        It then copies entries in attributes_to_load and when not 
-        null load_if_defined into one Metadata container for each 
-        row of the returned DataFrame.  
+        (data object) to subset the internal DataFrame cache to
+        return subset of tuples matching some condition defined
+        computed through the abstract (virtual) methdod subset.
+        It then copies entries in attributes_to_load and when not
+        null load_if_defined into one Metadata container for each
+        row of the returned DataFrame.
         """
         if not _input_is_valid(mspass_object):
             elog = ErrorLogger(
-                  "DataFrameCacheMatcher.find",
-                  "Received datum that was not a valid MsPASS data object",
-                  ErrorSeverity.Invalid
-                )
+                "DataFrameCacheMatcher.find",
+                "Received datum that was not a valid MsPASS data object",
+                ErrorSeverity.Invalid,
+            )
             return [None, elog]
-            
+
         subset_df = self.subset(mspass_object)
         # assume all implementations will return a 0 length dataframe
-        # if the subset failed.  
+        # if the subset failed.
         if len(subset_df) <= 0:
             error_message = "subset method found no match for this datum"
             elog = ErrorLogger()
-            elog.log_error("DataFrameCacheMatcher.find",
-                           error_message,
-                           ErrorSeverity.Invalid)
-            return [None,elog]
+            elog.log_error(
+                "DataFrameCacheMatcher.find", error_message, ErrorSeverity.Invalid
+            )
+            return [None, elog]
         else:
-            # This loop cautiously fills one or more Metadata 
+            # This loop cautiously fills one or more Metadata
             # containers with each row of the DataFrame generating
             # one Metadata container.
             mdlist = list()
@@ -907,13 +928,15 @@ class DataFrameCacheMatcher(BasicMatcher):
                     else:
                         if elog is None:
                             elog = ErrorLogger()
-                        error_message = "Encountered Null value for required attribute {key} - repairs of the input DataFrame are required".format(key=k)
+                        error_message = "Encountered Null value for required attribute {key} - repairs of the input DataFrame are required".format(
+                            key=k
+                        )
                         elog.log_error(
                             "DataFrameCacheMatcher.find",
-                             error_message,
-                             ErrorSeverity.Invalid
-                            )
-                        return [None,elog]
+                            error_message,
+                            ErrorSeverity.Invalid,
+                        )
+                        return [None, elog]
                 for k in self.load_if_defined:
                     if notnulltest(k):
                         if k in self.aliases:
@@ -921,7 +944,7 @@ class DataFrameCacheMatcher(BasicMatcher):
                         else:
                             key = k
                         if self.prepend_collection_name:
-                            if key=="_id":
+                            if key == "_id":
                                 mdkey = self.collection + key
                             else:
                                 mdkey = self.collection + "_" + key
@@ -929,141 +952,148 @@ class DataFrameCacheMatcher(BasicMatcher):
                             mdkey = key
                         md[mdkey] = row[key]
                 mdlist.append(md)
-            return [mdlist,None]
-                
-    def find_one(self,mspass_object)->tuple:
+            return [mdlist, None]
+
+    def find_one(self, mspass_object) -> tuple:
         """
         DataFrame implementation of the find_one method.
-        
-        This method is mostly a wrapper around the find method.  
+
+        This method is mostly a wrapper around the find method.
         It calls the find method and then does one of two thing s
-        depending upon the value of self.require_unique_match.   
-        When that boolean is True if the match is not unique it 
-        creates an ErrorLogger object, posts a message to the log, 
-        and then returns a [Null,elog] pair.  If self.require_unique_match 
-        is False and the match is not ambiguous, it again creates an 
-        ErrorLogger and posts a message, but it also takes the first 
-        container in the list returned by find and returns in as 
-        component 0 of the pair.  
+        depending upon the value of self.require_unique_match.
+        When that boolean is True if the match is not unique it
+        creates an ErrorLogger object, posts a message to the log,
+        and then returns a [Null,elog] pair.  If self.require_unique_match
+        is False and the match is not ambiguous, it again creates an
+        ErrorLogger and posts a message, but it also takes the first
+        container in the list returned by find and returns in as
+        component 0 of the pair.
         """
         findreturn = self.find(mspass_object)
         mdlist = findreturn[0]
         if mdlist is None:
             return findreturn
-        elif len(mdlist)==1:
-            return [mdlist,findreturn[1]]
-        elif len(mdlist)>1:
+        elif len(mdlist) == 1:
+            return [mdlist, findreturn[1]]
+        elif len(mdlist) > 1:
             if self.require_unique_match:
-                raise MsPASSError("DataFrameCacheMatcher.find_one:  found {n} matches when require_unique_match was set true".format(n=len(mdlist)),
-                                  ErrorSeverity.Fatal)
+                raise MsPASSError(
+                    "DataFrameCacheMatcher.find_one:  found {n} matches when require_unique_match was set true".format(
+                        n=len(mdlist)
+                    ),
+                    ErrorSeverity.Fatal,
+                )
             if findreturn[1] is None:
                 elog = ErrorLogger()
             else:
                 elog = findreturn[1]
             # This maybe should be only posted with a verbose option????
-            error_message = "found {n} matches.  Returned first one found.  You should use find instead of find_one if the match is not unique".format(n=len(mdlist))
-            elog.log_error("DataFrameCacheMatcher.find_one",
-                             error_message,
-                             ErrorSeverity.Complaint
-                            )
-            return [mdlist[0],elog]
+            error_message = "found {n} matches.  Returned first one found.  You should use find instead of find_one if the match is not unique".format(
+                n=len(mdlist)
+            )
+            elog.log_error(
+                "DataFrameCacheMatcher.find_one", error_message, ErrorSeverity.Complaint
+            )
+            return [mdlist[0], elog]
         else:
             # only land here if mdlist is something for which len returns 0
-            raise MsPASSError("DataFrameCacheMatchter.find_one:   find returned an empty list.  Can only happen if custom matcher has overridden find.  Find should return None if the match fails",
-                              ErrorSeverity.Fatal)
-            
-        
+            raise MsPASSError(
+                "DataFrameCacheMatchter.find_one:   find returned an empty list.  Can only happen if custom matcher has overridden find.  Find should return None if the match fails",
+                ErrorSeverity.Fatal,
+            )
+
     @abstractmethod
-    def subset(self,mspass_object)->pd.DataFrame:
+    def subset(self, mspass_object) -> pd.DataFrame:
         """
-        Required method defining how the internal DataFrame cache is 
-        to be subsetted using the contents of the data object 
-        mspass_object.   Concrete implementation must implement this class. 
-        The point of this abstract method is that the way one defines 
-        how to get the information needed to define a match with the 
-        cache is application dependent.  An implementation can use Metadata 
-        attributes, data object attributes (e.g. TimeSeries t0 attribute), 
-        or even sample data to compute a value to use in DataFrame 
-        subset condition.   This simplifies writing a custom matcher to 
+        Required method defining how the internal DataFrame cache is
+        to be subsetted using the contents of the data object
+        mspass_object.   Concrete implementation must implement this class.
+        The point of this abstract method is that the way one defines
+        how to get the information needed to define a match with the
+        cache is application dependent.  An implementation can use Metadata
+        attributes, data object attributes (e.g. TimeSeries t0 attribute),
+        or even sample data to compute a value to use in DataFrame
+        subset condition.   This simplifies writing a custom matcher to
         implementing only this method as find and find_one use it.
-        
-        Implementations should return a zero length DataFrame if the 
-        subset condition yields a null result.  i.e. the test 
-        len(return_result) should work and return 0 if the subset 
+
+        Implementations should return a zero length DataFrame if the
+        subset condition yields a null result.  i.e. the test
+        len(return_result) should work and return 0 if the subset
         produced no rows.
         """
         pass
-    
-    def _load_dataframe_cache(self,df):
-        # This is a bit error prone.  It assumes the BasicMatcher 
+
+    def _load_dataframe_cache(self, df):
+        # This is a bit error prone.  It assumes the BasicMatcher
         # constructor initializes a None default to an empty list
         fulllist = self.attributes_to_laod + self.load_if_defined
         self.cache = df[fulllist]
 
-        
+
 class ObjectIdDBMatcher(DatabaseMatcher):
     """
-    Implementation of DatabaseMatcher for ObjectIds.  In this class the virtual 
-    method query_generator uses the mspass convention of using the 
-    collection name and the magic string "_id" as the data object 
-    key (e.g. channel_id) but runs the query using the "_id" magic 
-    string used in MongoDB for the  ObjectId of each document.  
-    
+    Implementation of DatabaseMatcher for ObjectIds.  In this class the virtual
+    method query_generator uses the mspass convention of using the
+    collection name and the magic string "_id" as the data object
+    key (e.g. channel_id) but runs the query using the "_id" magic
+    string used in MongoDB for the  ObjectId of each document.
+
     Users should only utilize the find_one method of this class as find,
-    by definition, will always return only one record or None.   
-    The find method, in fact, is overloaded and attempts to use it will 
-    result in raising a MsPASSError exception.  
-    
+    by definition, will always return only one record or None.
+    The find method, in fact, is overloaded and attempts to use it will
+    result in raising a MsPASSError exception.
+
     :param db:  MongoDB database handle  (positional - no default)
-    :type db: normally a MsPASS Database class but with this algorithm 
+    :type db: normally a MsPASS Database class but with this algorithm
       it can be the superclass from which Database is derived.
-    
+
     :param collection:  Name of MongoDB collection that is to be queried
-       (default "channel").  
+       (default "channel").
     :type collection: string
-    
-    :param attributes_to_load:  list of keys of required attributes that will 
-      be returned in the output of the find method.   The keys listed 
+
+    :param attributes_to_load:  list of keys of required attributes that will
+      be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find_one will fail.   
-      Default ["_id","lat","lon","elev","hang","vang"].   
-    :type attributes_to_load:  list of string defining keys in collection 
+      some calls to find_one will fail.
+      Default ["_id","lat","lon","elev","hang","vang"].
+    :type attributes_to_load:  list of string defining keys in collection
       documents
-    
-    :param load_if_defined: list of keys of optional attributes to be 
-      extracted by find method.  Any data attached to these keys will only 
-      be posted in the find return if they are defined in the database 
+
+    :param load_if_defined: list of keys of optional attributes to be
+      extracted by find method.  Any data attached to these keys will only
+      be posted in the find return if they are defined in the database
       document retrieved in the query.
     :param type:  list of strings defining collection keys
-    
-    :param aliases:  python dictionary defining alias names to apply 
-     when fetching from a data object's Metadata container.   The key sense 
-     of the mapping is important to keep straight.  The key of this 
-     dictionary should match one  of the attributes in attributes_to_load 
-     or load_if_defined.  The value the key defines should be the alias 
-     used to fetch the comparable attribute from the data. 
+
+    :param aliases:  python dictionary defining alias names to apply
+     when fetching from a data object's Metadata container.   The key sense
+     of the mapping is important to keep straight.  The key of this
+     dictionary should match one  of the attributes in attributes_to_load
+     or load_if_defined.  The value the key defines should be the alias
+     used to fetch the comparable attribute from the data.
     :type aliaes:  python dictionary
-    
-    :param prepend_collection_name:  when True attributes returned in 
-      Metadata containers by the find and find_one method will all have the 
-      collection name prepended with a (fixed) separator.  For example, if 
-      the collection name is "channel" the "lat" attribute in the channel 
-      document would be returned as "channel_lat".  
+
+    :param prepend_collection_name:  when True attributes returned in
+      Metadata containers by the find and find_one method will all have the
+      collection name prepended with a (fixed) separator.  For example, if
+      the collection name is "channel" the "lat" attribute in the channel
+      document would be returned as "channel_lat".
     :type prepend_collection_name:  boolean
     """
+
     def __init__(
-            self,
-            db,
-            collection="channel",
-            attributes_to_load=["_id","lat","lon","elev","hang","vang"],
-            load_if_defined=None,
-            aliases=None,
-            prepend_collection_name=True,
-            ):
+        self,
+        db,
+        collection="channel",
+        attributes_to_load=["_id", "lat", "lon", "elev", "hang", "vang"],
+        load_if_defined=None,
+        aliases=None,
+        prepend_collection_name=True,
+    ):
         """
-        Class Constructor.  Just calls the superclass constructor 
-        directly with no additions.  Sets unique match, however, to 
-        be dogmatically enforce uniqueness. 
+        Class Constructor.  Just calls the superclass constructor
+        directly with no additions.  Sets unique match, however, to
+        be dogmatically enforce uniqueness.
         """
         super().__init__(
             db,
@@ -1073,105 +1103,106 @@ class ObjectIdDBMatcher(DatabaseMatcher):
             aliases=aliases,
             require_unique_match=True,
             prepend_collection_name=prepend_collection_name,
-            )
-            
-    def query_generator(self,mspass_object)->dict:
+        )
+
+    def query_generator(self, mspass_object) -> dict:
         data_object_key = self.collection + "_id"
         if mspass_object.is_defined(data_object_key):
             query_id = mspass_object[data_object_key]
-            # This is a bombproof way to create an ObjectId 
-            # works the same if query_id is a string representation of 
+            # This is a bombproof way to create an ObjectId
+            # works the same if query_id is a string representation of
             # the id or an actual ObjectId. In the later case it calls
-            # the copy constructor.  
+            # the copy constructor.
             testid = ObjectId(query_id)
-            return {"_id" : testid}
+            return {"_id": testid}
         else:
             return None
-            
+
 
 class ObjectIdMatcher(DictionaryCacheMatcher):
     """
-    Implement an ObjectId match with caching.  Most of the code for 
-    this class is derived from the superclass DictionaryCacheMatcher.   
-    It adds only a concrete implementation of the cache_id method 
-    used to construct a key for the cache defined by a python dict 
-    (self.normcache).  In this case the cache key is simply the 
-    string representation of the ObjectId of each document in 
-    the collection defined in construction.   The cache is 
-    then created by the superclass generic method _load_normalization_cache. 
-    
+    Implement an ObjectId match with caching.  Most of the code for
+    this class is derived from the superclass DictionaryCacheMatcher.
+    It adds only a concrete implementation of the cache_id method
+    used to construct a key for the cache defined by a python dict
+    (self.normcache).  In this case the cache key is simply the
+    string representation of the ObjectId of each document in
+    the collection defined in construction.   The cache is
+    then created by the superclass generic method _load_normalization_cache.
+
     :param db:  MongoDB database handle  (positional - no default)
-    :type db: normally a MsPASS Database class but with this algorithm 
+    :type db: normally a MsPASS Database class but with this algorithm
       it can be the superclass from which Database is derived.
-    
-    :param collection:  Name of MongoDB collection that is to be loaded 
+
+    :param collection:  Name of MongoDB collection that is to be loaded
        and cached to memory inside this object (default "channel")
     :type collection: string
-    
-    :param query:  optional query to apply to collection before loading 
-       document attributes into the cache.   A typical example would be 
-       a time range limit for the channel or site collection to 
-       avoid loading instruments not operational during the time span 
-       of a data set.  Default is None which causes the entire collection 
-       to be parsed.  
-    :type query:  python dict with content that defines a valid query 
-       when be passed to MongoDB the MongoDB find method.  If query is 
-       a type other than a None type or dict the constructor will 
+
+    :param query:  optional query to apply to collection before loading
+       document attributes into the cache.   A typical example would be
+       a time range limit for the channel or site collection to
+       avoid loading instruments not operational during the time span
+       of a data set.  Default is None which causes the entire collection
+       to be parsed.
+    :type query:  python dict with content that defines a valid query
+       when be passed to MongoDB the MongoDB find method.  If query is
+       a type other than a None type or dict the constructor will
        throw a TypeError.
-    
-    :param attributes_to_load:  list of keys of required attributes that will 
-      be returned in the output of the find method.   The keys listed 
+
+    :param attributes_to_load:  list of keys of required attributes that will
+      be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find will fail.   
+      some calls to find will fail.
       Default ["_id","lat","lon","elev","hang","vang"]
-    :type attributes_to_load:  list of string defining keys in collection 
+    :type attributes_to_load:  list of string defining keys in collection
       documents
-    
-    :param load_if_defined: list of keys of optional attributes to be 
-      extracted by find method.  Any data attached to these keys will only 
-      be posted in the find return if they are defined in the database 
+
+    :param load_if_defined: list of keys of optional attributes to be
+      extracted by find method.  Any data attached to these keys will only
+      be posted in the find return if they are defined in the database
       document retrieved in the query.
-    :param type:  list of strings defining collection keys  
-    
-    :param aliases:  python dictionary defining alias names to apply 
-     when fetching from a data object's Metadata container.   The key sense 
-     of the mapping is important to keep straight.  The key of this 
-     dictionary should match one  of the attributes in attributes_to_load 
-     or load_if_defined.  The value the key defines should be the alias 
-     used to fetch the comparable attribute from the data. 
+    :param type:  list of strings defining collection keys
+
+    :param aliases:  python dictionary defining alias names to apply
+     when fetching from a data object's Metadata container.   The key sense
+     of the mapping is important to keep straight.  The key of this
+     dictionary should match one  of the attributes in attributes_to_load
+     or load_if_defined.  The value the key defines should be the alias
+     used to fetch the comparable attribute from the data.
     :type aliaes:  python dictionary
-    
-    :param prepend_collection_name:  when set true all attributes loaded 
+
+    :param prepend_collection_name:  when set true all attributes loaded
        from the normalizing collection will have the channel name prepended.
        That is essential if the collection contains generic names like "lat"
-       or "depth" that would produce ambiguous keys if used directly. 
-       (e.g. lat is used for source, channel, and site collections in the 
+       or "depth" that would produce ambiguous keys if used directly.
+       (e.g. lat is used for source, channel, and site collections in the
         default schema.)
     :type prepend_collection_name:  boolean
-    
-    TODO:   Needs an option to load from a DataFrame with the id being any 
-    specified field of the DataFrame or (ideally) the row index itself.  
+
+    TODO:   Needs an option to load from a DataFrame with the id being any
+    specified field of the DataFrame or (ideally) the row index itself.
     An example of this would be an integer id from a relational database
     export.
-    """      
+    """
+
     def __init__(
-            self,
-            db,
-            collection="channel",
-            query=None,
-            attributes_to_load=["_id","lat","lon","elev","hang","vang"],
-            load_if_defined=None,
-            aliases=None,
-            prepend_collection_name=True,
-            ):
+        self,
+        db,
+        collection="channel",
+        query=None,
+        attributes_to_load=["_id", "lat", "lon", "elev", "hang", "vang"],
+        load_if_defined=None,
+        aliases=None,
+        prepend_collection_name=True,
+    ):
         """
-        Class Constructor.  Just calls the superclass constructor 
-        directly with no additions.  It does, however, set the 
-        require_unique_match boolean True which cause the find_one  
-        method to be dogmatic in enforcing unique matches.  
+        Class Constructor.  Just calls the superclass constructor
+        directly with no additions.  It does, however, set the
+        require_unique_match boolean True which cause the find_one
+        method to be dogmatic in enforcing unique matches.
         """
-        # require_unique_match is alwatys set True here as that is 
-        # pretty much by definition.  
+        # require_unique_match is alwatys set True here as that is
+        # pretty much by definition.
         super().__init__(
             db,
             collection,
@@ -1181,171 +1212,175 @@ class ObjectIdMatcher(DictionaryCacheMatcher):
             aliases=aliases,
             require_unique_match=True,
             prepend_collection_name=prepend_collection_name,
-            )
+        )
         if query is None:
             self.query = dict()
-        elif isinstance(query,dict):
+        elif isinstance(query, dict):
             self.query = query
         else:
-            raise TypeError("ObjectIdMatcher constructor:  optional query argument must be either None or a python dict")
-    
-    def cache_id(self,mspass_object)->str:
+            raise TypeError(
+                "ObjectIdMatcher constructor:  optional query argument must be either None or a python dict"
+            )
+
+    def cache_id(self, mspass_object) -> str:
         """
-        Implementation of virtual method with this name for this matcher. 
-        It implements the MsPASS approach of defining the key for a 
+        Implementation of virtual method with this name for this matcher.
+        It implements the MsPASS approach of defining the key for a
         normalizing collection as the collection name and the magic
-        string "_id"  (e.g. channel_id or site_id).   It assumes 
-        the collection name is define as self.collection by the 
-        constructor of the class when it is instantiated.  It attempts 
-        to extract the expanded _id name (e.g. channel_id) from the 
-        input mspass_object.  If successful it returns the string 
-        representation of the resulting (assumed) ObjectId.  If the 
-        key is not defined it returns None as specified by the 
-        superclass api.  
-        
-        It is important to note the class attribute, 
-        self.prepend_collection_name, is indendent of the definition of the 
-        cache_id.  i.e. what we attempt to extract as the id ALWAYS 
+        string "_id"  (e.g. channel_id or site_id).   It assumes
+        the collection name is define as self.collection by the
+        constructor of the class when it is instantiated.  It attempts
+        to extract the expanded _id name (e.g. channel_id) from the
+        input mspass_object.  If successful it returns the string
+        representation of the resulting (assumed) ObjectId.  If the
+        key is not defined it returns None as specified by the
+        superclass api.
+
+        It is important to note the class attribute,
+        self.prepend_collection_name, is indendent of the definition of the
+        cache_id.  i.e. what we attempt to extract as the id ALWAYS
         used the collection name as a prefix (channel_id and not "_id").
-        The internal boolean controls if the attributes returned by find_one 
+        The internal boolean controls if the attributes returned by find_one
         will have the collection name prepended.
-        
-        :param mspass_object:   key-value pair container containing an id that is to 
-          be extracted.   
-        :type mspass_object:  Normally this is expected to be a mspass 
-          data object (TimeSeries, Seismogram, or ensembles of same) but 
-          it can be as simple as a python dict or Metadata with the required 
-          key defined.  
-        
-        :return:  string representation of an ObjectId to be used 
-          to matching the cache index stored internally - find method.  
+
+        :param mspass_object:   key-value pair container containing an id that is to
+          be extracted.
+        :type mspass_object:  Normally this is expected to be a mspass
+          data object (TimeSeries, Seismogram, or ensembles of same) but
+          it can be as simple as a python dict or Metadata with the required
+          key defined.
+
+        :return:  string representation of an ObjectId to be used
+          to matching the cache index stored internally - find method.
         """
 
-        testid = self.collection+"_id"
+        testid = self.collection + "_id"
         if testid in mspass_object:
             return str(mspass_object[testid])
         else:
             return None
-        
-    def db_make_cache_id(self,doc)->str:
+
+    def db_make_cache_id(self, doc) -> str:
         """
-        Implementation of virtual methods with this name for this matcher. 
-        It does nothing more than extract the magic "_id" value from doc 
-        and returns its string representation.  With MongoDB that means 
-        the string representation of the ObjectId of each collection 
-        document is used as the key for the cache.  
-        
-        :param doc:  python dict defining a document return by MongoDB.  
-          Only the "_id" value is used.   
-        :type doc:  python dict container returned by pymongo - usually a 
-          cursor component. 
+        Implementation of virtual methods with this name for this matcher.
+        It does nothing more than extract the magic "_id" value from doc
+        and returns its string representation.  With MongoDB that means
+        the string representation of the ObjectId of each collection
+        document is used as the key for the cache.
+
+        :param doc:  python dict defining a document return by MongoDB.
+          Only the "_id" value is used.
+        :type doc:  python dict container returned by pymongo - usually a
+          cursor component.
         """
         if "_id" in doc:
             return str(doc["_id"])
         else:
             return None
-        
+
+
 class MiniseedDBMatcher(DatabaseMatcher):
     """
     Database implementation of matcher for miniseed data using
-    SEED keys net:sta:chan(channel only):loc and a time interval test.   
-    Miniseed data uses the exessively complex key that combines four unique 
-    string names (net, sta, chan, and loc) and a time interval 
-    of operation to define a unique set of station metadata for each 
-    channel.  In mspass we also create the site collection without the 
-    chan attribute.  This implementation works for both channel and 
-    site under control of the collection argument. 
-    
+    SEED keys net:sta:chan(channel only):loc and a time interval test.
+    Miniseed data uses the exessively complex key that combines four unique
+    string names (net, sta, chan, and loc) and a time interval
+    of operation to define a unique set of station metadata for each
+    channel.  In mspass we also create the site collection without the
+    chan attribute.  This implementation works for both channel and
+    site under control of the collection argument.
+
     This case is the complete opposite of something like the ObjectId
-    matcher above as the match query we need to generate is 
-    excessively long requiring up to 6 fields.    
-    
-    The default collection name is channel which is the only 
-    correct use if applied to data created through readers applied to 
-    wf_miniseed.   The implementation can also work on Seismogram 
-    data if and only if the channel argument is then set to "site".  
+    matcher above as the match query we need to generate is
+    excessively long requiring up to 6 fields.
+
+    The default collection name is channel which is the only
+    correct use if applied to data created through readers applied to
+    wf_miniseed.   The implementation can also work on Seismogram
+    data if and only if the channel argument is then set to "site".
     The difference is that for Seismogram data "chan" is a
-    undefined concept.  In both cases the keys and content assume the mspass 
-    schema for the channel or site collections.  The constructor will 
-    throw a MsPASSError exception if the collection argument is 
-    anything but "channel" or "site" to enforce this limitation.  
-    If you use a schema other than the mspass schema the methods in 
+    undefined concept.  In both cases the keys and content assume the mspass
+    schema for the channel or site collections.  The constructor will
+    throw a MsPASSError exception if the collection argument is
+    anything but "channel" or "site" to enforce this limitation.
+    If you use a schema other than the mspass schema the methods in
     this class will fail if you change any of the following keys:
         net, sta, chan, loc, starttime, endtime, hang, vang
-    
-    Users should only call 
-    the find_one method for this application.   The find_one algorithm 
-    first queries for any matches of net:sta:chan(channel only):loc(optional) and 
+
+    Users should only call
+    the find_one method for this application.   The find_one algorithm
+    first queries for any matches of net:sta:chan(channel only):loc(optional) and
     data t0 within the startime and endtime of the channel document
-    attributes (an interval match).  That combination should yield 
-    either 1 or no matches if the channel collection is clean.  
-    However, there are known issues with station metadata that can 
-    cause multiple matches in unusual cases (Most notably overlapping 
-    time intervals defined for the same channel.)  The find_one method 
-    will handle that case returning the first one found and posting an 
-    error message that should be handled by the caller.  
-    
-    Instantiation of this class is a call to the superclass 
-    constructor with specialized defaults and wrapper code to 
-    automatically handle potential mismatches between site and channel. 
+    attributes (an interval match).  That combination should yield
+    either 1 or no matches if the channel collection is clean.
+    However, there are known issues with station metadata that can
+    cause multiple matches in unusual cases (Most notably overlapping
+    time intervals defined for the same channel.)  The find_one method
+    will handle that case returning the first one found and posting an
+    error message that should be handled by the caller.
+
+    Instantiation of this class is a call to the superclass
+    constructor with specialized defaults and wrapper code to
+    automatically handle potential mismatches between site and channel.
     The arguments for the constructor follow:
-        
+
     :param db:  MongoDB database handle  (positional - no default)
-    :type db: normally a MsPASS Database class but with this algorithm 
+    :type db: normally a MsPASS Database class but with this algorithm
       it can be the superclass from which Database is derived.
-    
+
     :param collection:  Name of MongoDB collection that is to be queried
        The default is "channel".  Use "site" for Seismogram data.
-       Use anything else at your own risk 
+       Use anything else at your own risk
        as the algorithm depends heavily on mspass schema definition
-       and properties guaranteed by using the converter from obspy 
+       and properties guaranteed by using the converter from obspy
        Inventory class loaded through web services or stationml files.
     :type collection: string
-    
-    :param attributes_to_load:  list of keys of required attributes that will 
-      be returned in the output of the find method.   The keys listed 
+
+    :param attributes_to_load:  list of keys of required attributes that will
+      be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find will fail.   
+      some calls to find will fail.
       Default ["_id","lat","lon","elev","hang","vang"]
                "hang","vang","starttime","endtime"]
-      when collection is set as channel.  Smaller list of  
-      ["_id","lat","lon","elev"] is 
-       default when collection is set as "site".  
-    :type attributes_to_load:  list of string defining keys in collection 
+      when collection is set as channel.  Smaller list of
+      ["_id","lat","lon","elev"] is
+       default when collection is set as "site".
+    :type attributes_to_load:  list of string defining keys in collection
       documents
-    
-    :param load_if_defined: list of keys of optional attributes to be 
-      extracted by find method.  Any data attached to these keys will only 
-      be posted in the find return if they are defined in the database 
-      document retrieved in the query.  Default is ["loc"].   A common 
+
+    :param load_if_defined: list of keys of optional attributes to be
+      extracted by find method.  Any data attached to these keys will only
+      be posted in the find return if they are defined in the database
+      document retrieved in the query.  Default is ["loc"].   A common
       addition here may be response data (see schema definition for keys)
-    :type load_if_defined:  list of strings defining collection keys 
-    
-    :param aliases:  python dictionary defining alias names to apply 
-     when fetching from a data object's Metadata container.   The key sense 
-     of the mapping is important to keep straight.  The key of this 
-     dictionary should match one  of the attributes in attributes_to_load 
-     or load_if_defined.  The value the key defines should be the alias 
-     used to fetch the comparable attribute from the data. 
+    :type load_if_defined:  list of strings defining collection keys
+
+    :param aliases:  python dictionary defining alias names to apply
+     when fetching from a data object's Metadata container.   The key sense
+     of the mapping is important to keep straight.  The key of this
+     dictionary should match one  of the attributes in attributes_to_load
+     or load_if_defined.  The value the key defines should be the alias
+     used to fetch the comparable attribute from the data.
     :type aliaes:  python dictionary
-    
-    :param prepend_collection_name:  when True attributes returned in 
-      Metadata containers by the find and find_one method will all have the 
-      collection name prepended with a (fixed) separator.  For example, if 
-      the collection name is "channel" the "lat" attribute in the channel 
-      document would be returned as "channel_lat".  
+
+    :param prepend_collection_name:  when True attributes returned in
+      Metadata containers by the find and find_one method will all have the
+      collection name prepended with a (fixed) separator.  For example, if
+      the collection name is "channel" the "lat" attribute in the channel
+      document would be returned as "channel_lat".
     :type prepend_collection_name:  boolean
-            
+
     """
+
     def __init__(
-            self,
-            db,
-            collection="channel",
-            attributes_to_load=["lat","lon","elev","_id"],
-            load_if_defined=None,
-            aliases=None,
-            prepend_collection_name=True,
-            ):
+        self,
+        db,
+        collection="channel",
+        attributes_to_load=["lat", "lon", "elev", "_id"],
+        load_if_defined=None,
+        aliases=None,
+        prepend_collection_name=True,
+    ):
         aload_tmp = attributes_to_load
         if collection == "channel":
             if "hang" not in aload_tmp:
@@ -1354,269 +1389,272 @@ class MiniseedDBMatcher(DatabaseMatcher):
                 aload_tmp.append("vang")
         elif collection != "site":
             raise MsPASSError(
-                   "MiniseedDBMatcher:  "
-                   + "Illegal collection argument="+collection+" Must be either channel or site",     
-                   ErrorSeverity.Fatal
-                )
-            
-        super().__init__(
-                db,
-                collection,
-                attributes_to_load=aload_tmp,
-                load_if_defined=load_if_defined,
-                aliases=aliases,
-                require_unique_match=False
+                "MiniseedDBMatcher:  "
+                + "Illegal collection argument="
+                + collection
+                + " Must be either channel or site",
+                ErrorSeverity.Fatal,
             )
-      
+
+        super().__init__(
+            db,
+            collection,
+            attributes_to_load=aload_tmp,
+            load_if_defined=load_if_defined,
+            aliases=aliases,
+            require_unique_match=False,
+        )
+
     def query_generator(self, mspass_object):
         """
-        Concrete implementation of (required) abstract method defined 
-        in superclass DatabaseMatcher.  It generates the complex query 
-        for matching net, sta, chan, and optional loc along with the 
-        time interval match of data start time between the channel 
-        defined "starttime" and "endtime" attributes.  
-        
+        Concrete implementation of (required) abstract method defined
+        in superclass DatabaseMatcher.  It generates the complex query
+        for matching net, sta, chan, and optional loc along with the
+        time interval match of data start time between the channel
+        defined "starttime" and "endtime" attributes.
+
         This method provides one safety for a common data problem.
-        A common current issue is that if miniseed data are saved 
-        to wf_TimeSeries and then read back in a later workflow 
+        A common current issue is that if miniseed data are saved
+        to wf_TimeSeries and then read back in a later workflow
         the default schema will alter the keys for net, sta, chan,
-        and loc to add the prefix "READONLY_" (e.g. READONLY_net).  
-        The query automatically tries to recover any of the 
-        station name keys using that recipe. 
-        
-        :param mspass_object:   assumed to be a TimeSeries object 
-          with net, sta, chan, and (optional) loc defined.  
-          The time for the time interval test is translation to 
+        and loc to add the prefix "READONLY_" (e.g. READONLY_net).
+        The query automatically tries to recover any of the
+        station name keys using that recipe.
+
+        :param mspass_object:   assumed to be a TimeSeries object
+          with net, sta, chan, and (optional) loc defined.
+          The time for the time interval test is translation to
           MongoDB syntax of:
            channel["starttime"] <= mspass_object.to <= channel["endtime"]
-           This algorithm will abort if the statement mspass_object.t0 
-           does not resolve, which means the caller should assure 
-           the input is a TimeSeries object.  
-           
-        :return:  normal return is a string defining the query. 
-           If any required station name keys are not defined the 
-           method will silently return a None.  Caller should handle 
-           a None condition. 
+           This algorithm will abort if the statement mspass_object.t0
+           does not resolve, which means the caller should assure
+           the input is a TimeSeries object.
+
+        :return:  normal return is a string defining the query.
+           If any required station name keys are not defined the
+           method will silently return a None.  Caller should handle
+           a None condition.
         """
         query = dict()
-        net = _get_with_readonly_recovery(mspass_object,"net")
+        net = _get_with_readonly_recovery(mspass_object, "net")
         if net is None:
             return None
         query["net"] = net
-        sta = _get_with_readonly_recovery(mspass_object,"sta")
+        sta = _get_with_readonly_recovery(mspass_object, "sta")
         if sta is None:
             return None
         query["sta"] = sta
         if self.collection == "channel":
-            chan = _get_with_readonly_recovery(mspass_object,"chan")
+            chan = _get_with_readonly_recovery(mspass_object, "chan")
             if chan is None:
                 return None
             query["chan"] = chan
-        loc = _get_with_readonly_recovery(mspass_object,"loc")
+        loc = _get_with_readonly_recovery(mspass_object, "loc")
         # loc being null is not unusual so if is is null we just add it to query
         if loc != None:
             query["loc"] = loc
-            
+
         # We don't verify mspass_object is a valid TimeSeries here
-        # assuming it was done prior to calling this method.  
-        # fetching t0 could cause an abort if mspass_object were not 
-        # previously validated.  An alternative would be to test 
+        # assuming it was done prior to calling this method.
+        # fetching t0 could cause an abort if mspass_object were not
+        # previously validated.  An alternative would be to test
         # here and return None if mspass_object was not a valid TimeSeries
-        # done this way because other bad things would happen if find 
+        # done this way because other bad things would happen if find
         # if that assumption was invalid
         query["starttime"] = {"$le": mspass_object.t0}
         query["endtime"] = {"$ge": mspass_object.t0}
         return query
 
-    def find_one(self,mspass_object):
+    def find_one(self, mspass_object):
         """
         We overload find_one to provide the unique match needed.
-        Most of the work is done by the query_generator method in 
-        this case.  This method is little more than a wrapper to 
-        run the find method and translating the output into the 
-        slightly different form required by find_one.   More important 
-        is the fact that the wrapper implements two safties to make the 
+        Most of the work is done by the query_generator method in
+        this case.  This method is little more than a wrapper to
+        run the find method and translating the output into the
+        slightly different form required by find_one.   More important
+        is the fact that the wrapper implements two safties to make the
         code more robust:
-            1.  It immediately tests that mspass_object is a valid TimeSeries 
-                or Seismogram object. It will raise a TypeError exception 
-                if that is not true.  That is enforced because find_one 
+            1.  It immediately tests that mspass_object is a valid TimeSeries
+                or Seismogram object. It will raise a TypeError exception
+                if that is not true.  That is enforced because find_one
                 in this context make sense only for atomic objects.
-            2.  It handles dead data cleanly logging a message complaining 
+            2.  It handles dead data cleanly logging a message complaining
                 that the data was already marked dead.
-                
-        In addition note the find method this calls is assumed to handle 
-        the case of failures in the query_generator function if any of the 
-        required net, sta, chan keys are missing from mspass_object.  
+
+        In addition note the find method this calls is assumed to handle
+        the case of failures in the query_generator function if any of the
+        required net, sta, chan keys are missing from mspass_object.
         """
         # Be dogmatic and demand mspass_object is a TimeSeries or Seismogram (atomic)
         if not _input_is_atomic(mspass_object):
             if mspass_object.live:
-                #trap this unlikely but possible condition as this 
+                # trap this unlikely but possible condition as this
                 # condition could produce mysterious behavior
                 if mspass_object.time_is_relative():
                     elog = ErrorLogger()
                     message = "Usage error:  input has a relative time standard but miniseed matching requires a UTC time stamp"
                     elog.log_error(
-                          "MiniseedDBMatcher.find_one",
-                          message,
-                          ErrorSeverity.Invalid
-                        )
-                    return [None,elog]
+                        "MiniseedDBMatcher.find_one", message, ErrorSeverity.Invalid
+                    )
+                    return [None, elog]
                 find_output = self.find(mspass_object)
                 number_matches = len(find_output[0])
                 if number_matches == 0:
                     return [None, find_output[1]]
                 elif number_matches == 1:
-                    return [ find_output[0][0], find_output[1] ]
+                    return [find_output[0][0], find_output[1]]
                 else:
                     if find_output[1] is None:
                         elog = ErrorLogger()
                     else:
                         elog = find_output[1]
-                    message = "{n} channel recorded match net:sta:chan:loc:time_interval query for this datume\n".format(n=number_matches)
+                    message = "{n} channel recorded match net:sta:chan:loc:time_interval query for this datume\n".format(
+                        n=number_matches
+                    )
                     message += "Using first document in list returned by find method"
                     elog.log_error(
-                           "MiniseedDBMatcher.find_one",
-                          message,
-                          ErrorSeverity.Complaint
-                        )
+                        "MiniseedDBMatcher.find_one", message, ErrorSeverity.Complaint
+                    )
                     return [find_output[0][0], elog]
-                        
+
             else:
-                # logged as complaint because by definition if it was 
+                # logged as complaint because by definition if it was
                 # already killed it is Invalid
                 elog = ErrorLogger()
                 elog.log_error(
-                      "MiniseedDBMatcher.find_one",
-                      "Received a datum marked dead - will not attempt match",
-                       ErrorSeverity.Complaint
-                    )
+                    "MiniseedDBMatcher.find_one",
+                    "Received a datum marked dead - will not attempt match",
+                    ErrorSeverity.Complaint,
+                )
         else:
-            raise TypeError("MiniseedDBMatcher.find_one:  this class method can only be applied to TimeSeries or Seismogram objects")
-          
+            raise TypeError(
+                "MiniseedDBMatcher.find_one:  this class method can only be applied to TimeSeries or Seismogram objects"
+            )
+
 
 class MiniseedMatcher(DictionaryCacheMatcher):
     """
-    Cached version of matcher for miniseed station/channel Metadata. 
-    
-    Miniseed data require 6 keys to uniquely define a single channel 
+    Cached version of matcher for miniseed station/channel Metadata.
+
+    Miniseed data require 6 keys to uniquely define a single channel
     of data (5 at the Seismogram level where the channels are merged).
-    A further complication for using the DictionaryCacheMatcher interface is 
-    that part of the definition is a UTC time interval defining when the 
-    metadata is valid.  We handle that in this implementation by 
-    implementing a two stage search algorithm for the find_one method. 
-    First, the cache index is defined by a unique string created from 
-    the four string keys of miniseed that the MsPASS default schema 
-    refers to with the keywords net, sta, chan, and loc.   
-    At this point in time we know of no examples of a seismic instrument 
-    where the number of distinct time intervals with different Metadata 
-    are huge so the secondary search is a simple linear search through 
-    the python list return by the generic find method using only the 
-    net, sta, chan, and loc keys as the index.   
-    
-    The default collection name is channel which is the only 
-    correct use if applied to data created through readers applied to 
-    wf_miniseed.   The implementation can also work on Seismogram 
-    data if and only if the channel argument is then set to "site".  
+    A further complication for using the DictionaryCacheMatcher interface is
+    that part of the definition is a UTC time interval defining when the
+    metadata is valid.  We handle that in this implementation by
+    implementing a two stage search algorithm for the find_one method.
+    First, the cache index is defined by a unique string created from
+    the four string keys of miniseed that the MsPASS default schema
+    refers to with the keywords net, sta, chan, and loc.
+    At this point in time we know of no examples of a seismic instrument
+    where the number of distinct time intervals with different Metadata
+    are huge so the secondary search is a simple linear search through
+    the python list return by the generic find method using only the
+    net, sta, chan, and loc keys as the index.
+
+    The default collection name is channel which is the only
+    correct use if applied to data created through readers applied to
+    wf_miniseed.   The implementation can also work on Seismogram
+    data if and only if the channel argument is then set to "site".
     The difference is that for Seismogram data "chan" is a
-    undefined concept.  In both cases the keys and content assume the mspass 
-    schema for the channel or site collections.  The constructor will 
-    throw a MsPASSError exception if the collection argument is 
-    anything but "channel" or "site" to enforce this limitation.  
-    If you use a schema other than the mspass schema the methods in 
+    undefined concept.  In both cases the keys and content assume the mspass
+    schema for the channel or site collections.  The constructor will
+    throw a MsPASSError exception if the collection argument is
+    anything but "channel" or "site" to enforce this limitation.
+    If you use a schema other than the mspass schema the methods in
     this class will fail if you change any of the following keys:
         net, sta, chan, loc, starttime, endtime, hang, vang
-    
-    Users should only call the find_one method for this application.   
-    The find_one method here overrides the generic find_one in the 
+
+    Users should only call the find_one method for this application.
+    The find_one method here overrides the generic find_one in the
     superclass DictionaryCacheMatcher.  It implements the linear search for a
-    matching time interval test as noted above.  Note also this 
-    class does not support Ensembles directly.   Matching instrument 
-    data is by definition what we call atomic. If you are processing 
-    ensembles you will need to write a small wrapper function that 
-    would run find_one and handle the out looping over each member of 
-    the ensemble.  
-        
-    :param db:  MongoDB database handle containing collection to be loaded.   
-    :type db: mspass Database handle(mspasspy.db.database.Database).   
-    
+    matching time interval test as noted above.  Note also this
+    class does not support Ensembles directly.   Matching instrument
+    data is by definition what we call atomic. If you are processing
+    ensembles you will need to write a small wrapper function that
+    would run find_one and handle the out looping over each member of
+    the ensemble.
+
+    :param db:  MongoDB database handle containing collection to be loaded.
+    :type db: mspass Database handle(mspasspy.db.database.Database).
+
     :param collection:  Name of MongoDB collection that is to be queried
        The default is "channel".  Use "site" for Seismogram data.
-       Use anything else at your own risk 
+       Use anything else at your own risk
        as the algorithm depends heavily on the mspass schema definition
-       and properties guaranteed by using the converter from obspy 
+       and properties guaranteed by using the converter from obspy
        Inventory class loaded through web services or stationml files.
     :type collection: string
-    
+
     :param query:  optional query to apply to collection before loading
-      data from the database.  This parameter is ignored if the input 
-      is a DataFrame.  A common use would be to reduce the size of the 
-      cache by using a time range limit on station metadata to only 
-      load records relevant to the dataset being processed. 
+      data from the database.  This parameter is ignored if the input
+      is a DataFrame.  A common use would be to reduce the size of the
+      cache by using a time range limit on station metadata to only
+      load records relevant to the dataset being processed.
     :type query:  python dictionary.
-    
-    :param attributes_to_load:  list of keys of required attributes that will 
-      be returned in the output of the find method.   The keys listed 
+
+    :param attributes_to_load:  list of keys of required attributes that will
+      be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find will fail.   
+      some calls to find will fail.
       Default ["_id","lat","lon","elev","hang","vang"]
                "hang","vang","starttime","endtime"]
-      when collection is set as channel.  Smaller list of  
-      ["_id","lat","lon","elev"] is 
-      default when collection is set as "site".  In either case the 
-      list MUST contain "starttime" and "endtime".  The reason is the 
+      when collection is set as channel.  Smaller list of
+      ["_id","lat","lon","elev"] is
+      default when collection is set as "site".  In either case the
+      list MUST contain "starttime" and "endtime".  The reason is the
       linear search step will always use those two fields in the linear
       search for a time interval match. Be careful in how endtime is defined
-      that resolves to an epoch time in the distant future and not some 
-      null database attribute; a possible scenario with DataFrame 
+      that resolves to an epoch time in the distant future and not some
+      null database attribute; a possible scenario with DataFrame
       input but not a concern if using mspass loaders from StationML data.
-       
-      Note there is also an implicit assumption that the keys "net" and 
-      "sta" are always defined.  "chan" must also be defined if the 
-      collection name is "channel".  "loc" is handled as optional for 
-      database input but required if the input is via a Dataframe 
-      because we use the same cache id generator for all cases.   
-    :type attributes_to_load:  list of string defining keys in collection 
+
+      Note there is also an implicit assumption that the keys "net" and
+      "sta" are always defined.  "chan" must also be defined if the
+      collection name is "channel".  "loc" is handled as optional for
+      database input but required if the input is via a Dataframe
+      because we use the same cache id generator for all cases.
+    :type attributes_to_load:  list of string defining keys in collection
       documents
-    
-    :param load_if_defined: list of keys of optional attributes to be 
-      extracted by find method.  Any data attached to these keys will only 
-      be posted in the find return if they are defined in the database 
-      document retrieved in the query.  Default is ["loc"].   A common 
+
+    :param load_if_defined: list of keys of optional attributes to be
+      extracted by find method.  Any data attached to these keys will only
+      be posted in the find return if they are defined in the database
+      document retrieved in the query.  Default is ["loc"].   A common
       addition here may be response data (see schema definition for keys)
-    :type load_if_defined:  list of strings defining collection keys 
-    
-    :param aliases:  python dictionary defining alias names to apply 
-     when fetching from a data object's Metadata container.   The key sense 
-     of the mapping is important to keep straight.  The key of this 
-     dictionary should match one  of the attributes in attributes_to_load 
-     or load_if_defined.  The value the key defines should be the alias 
-     used to fetch the comparable attribute from the data. 
+    :type load_if_defined:  list of strings defining collection keys
+
+    :param aliases:  python dictionary defining alias names to apply
+     when fetching from a data object's Metadata container.   The key sense
+     of the mapping is important to keep straight.  The key of this
+     dictionary should match one  of the attributes in attributes_to_load
+     or load_if_defined.  The value the key defines should be the alias
+     used to fetch the comparable attribute from the data.
     :type aliaes:  python dictionary
-    
-    :param prepend_collection_name:  when True attributes returned in 
-      Metadata containers by the find and find_one method will all have the 
-      collection name prepended with a (fixed) separator.  For example, if 
-      the collection name is "channel" the "lat" attribute in the channel 
-      document would be returned as "channel_lat".  
+
+    :param prepend_collection_name:  when True attributes returned in
+      Metadata containers by the find and find_one method will all have the
+      collection name prepended with a (fixed) separator.  For example, if
+      the collection name is "channel" the "lat" attribute in the channel
+      document would be returned as "channel_lat".
     :type prepend_collection_name:  boolean
-    
+
     TODO:  Needs option of DataFrame input
-    
+
     """
+
     def __init__(
-            self,
-            db,
-            collection="channel",
-            query=None,
-            attributes_to_load=["starttime","endtime","lat","lon","elev","_id"],
-            load_if_defined=None,
-            aliases=None,
-            prepend_collection_name=True,
-            ):
+        self,
+        db,
+        collection="channel",
+        query=None,
+        attributes_to_load=["starttime", "endtime", "lat", "lon", "elev", "_id"],
+        load_if_defined=None,
+        aliases=None,
+        prepend_collection_name=True,
+    ):
         aload_tmp = attributes_to_load
         if collection == "channel":
-            # forcing this may be a bit too dogmatic but hang and vang 
+            # forcing this may be a bit too dogmatic but hang and vang
             # are pretty essential metadata for any channel
             if "hang" not in aload_tmp:
                 aload_tmp.append("hang")
@@ -1625,18 +1663,20 @@ class MiniseedMatcher(DictionaryCacheMatcher):
 
         elif collection != "site":
             raise MsPASSError(
-                   "MiniseedMatcher:  "
-                   + "Illegal collection argument="+collection+" Must be either channel or site",
-                   ErrorSeverity.Fatal
-                )
-            
+                "MiniseedMatcher:  "
+                + "Illegal collection argument="
+                + collection
+                + " Must be either channel or site",
+                ErrorSeverity.Fatal,
+            )
+
         if "starttime" not in aload_tmp or "endtime" not in aload_tmp:
             raise MsPASSError(
-                   "MiniseedMatcher:  "
-                   + "Error in attribute_to_load list - List must contain starttime and endtime keys",
-                   ErrorSeverity.Fatal
-                )
-            
+                "MiniseedMatcher:  "
+                + "Error in attribute_to_load list - List must contain starttime and endtime keys",
+                ErrorSeverity.Fatal,
+            )
+
         super().__init__(
             db,
             collection,
@@ -1646,79 +1686,79 @@ class MiniseedMatcher(DictionaryCacheMatcher):
             aliases=aliases,
             require_unique_match=True,
             prepend_collection_name=prepend_collection_name,
-            )
-        
-    def cache_id(self,mspass_object)->str:
+        )
+
+    def cache_id(self, mspass_object) -> str:
         """
-        Concrete implementations of this required method.  The cache_id 
-        in this algorithm is a composite key made from net, sta, chan, and 
-        loc with a fixed separator string of "_".  A typical example 
-        is IU_AAK_BHZ_00_.  
-        
-        An added feature to mesh with MsPASS conventions is a safety 
-        for attributes that are automatically renamed when saved 
-        that are marked readonly in the schema.   Such attributes 
-        have a prepended tag, (at this time "READONLYERROR_").  If 
+        Concrete implementations of this required method.  The cache_id
+        in this algorithm is a composite key made from net, sta, chan, and
+        loc with a fixed separator string of "_".  A typical example
+        is IU_AAK_BHZ_00_.
+
+        An added feature to mesh with MsPASS conventions is a safety
+        for attributes that are automatically renamed when saved
+        that are marked readonly in the schema.   Such attributes
+        have a prepended tag, (at this time "READONLYERROR_").  If
         one of the required keys for the index is missing (e.g. "net")
-        the function tries to then fetch the modified name 
-        (e.g. "READONLYERROR_net").  If that also fails it returns 
+        the function tries to then fetch the modified name
+        (e.g. "READONLYERROR_net").  If that also fails it returns
         a None as specified by the API.
-        
-        :param mspass_object:  mspass object to be matched with cache. 
-          Must contain net, sta fpr site matching and net, sta, and 
-          chan for the channel collection. If loc is not defined for 
-          any case an emtpy string in defined an the key has two 
+
+        :param mspass_object:  mspass object to be matched with cache.
+          Must contain net, sta fpr site matching and net, sta, and
+          chan for the channel collection. If loc is not defined for
+          any case an emtpy string in defined an the key has two
           trailing separator characters (e.g. IU_AAK_BHZ__)
-          
+
         :return: normal return is a string that can be used as an index string.
           If any of the required keys is missing it will return a None
         """
         # we make this a const
         SEPARATOR = "_"
-        net = _get_with_readonly_recovery(mspass_object,"net")
+        net = _get_with_readonly_recovery(mspass_object, "net")
         if net is None:
             return None
-        sta = _get_with_readonly_recovery(mspass_object,"sta")
+        sta = _get_with_readonly_recovery(mspass_object, "sta")
         if sta is None:
             return None
         if self.collection == "channel":
-            chan = _get_with_readonly_recovery(mspass_object,"chan")
+            chan = _get_with_readonly_recovery(mspass_object, "chan")
             if chan is None:
                 return None
-        loc = _get_with_readonly_recovery(mspass_object,"loc")
+        loc = _get_with_readonly_recovery(mspass_object, "loc")
         if loc == None:
             loc = ""
         idstring = net + SEPARATOR + sta + SEPARATOR + loc + SEPARATOR
-        # a bit nonstandard to put chan at end but this isn't for human 
+        # a bit nonstandard to put chan at end but this isn't for human
         # consumption anyway
         if self.collection == "channel":
             idstring += chan + SEPARATOR
-        return idstring    
-        
-    def db_make_cache_id(self,doc)->str:
+        return idstring
+
+    def db_make_cache_id(self, doc) -> str:
         """
-        Concrete implementations of this required method.  The cache_id 
-        in this algorithm is a composite key made from net, sta, chan, and 
-        loc with a fixed separator string of "_".  A typical example 
-        is IU_AAK_BHZ_00_.  This method creates this string from 
-        a MongoDB document assumed passed through a python dictionary 
+        Concrete implementations of this required method.  The cache_id
+        in this algorithm is a composite key made from net, sta, chan, and
+        loc with a fixed separator string of "_".  A typical example
+        is IU_AAK_BHZ_00_.  This method creates this string from
+        a MongoDB document assumed passed through a python dictionary
         as argument doc.  Unlike the cache_id method this function
-        does not have a safety for readonly errors.  The reason is that 
-        it is designed to be used only while loading the cache from 
-        site or channel documents.  
-        
-        :param doc:  python dict containing a site or channel document. 
-          Must contain net, sta fpr site matching and net, sta, and 
-          chan for the channel collection. If loc is not defined for 
-          any case an emtpy string in defined an the key has two 
+        does not have a safety for readonly errors.  The reason is that
+        it is designed to be used only while loading the cache from
+        site or channel documents.
+
+        :param doc:  python dict containing a site or channel document.
+          Must contain net, sta fpr site matching and net, sta, and
+          chan for the channel collection. If loc is not defined for
+          any case an emtpy string in defined an the key has two
           trailing separator characters (e.g. IU_AAK_BHZ__)
-          
+
         :return: normal return is a string that can be used as an index string.
           If any of the required keys is missing it will return a None
         """
         # we make this a const
         SEPARATOR = "_"
-        #superclass must handle None returns for invalid document
+        # superclass must handle None returns for invalid document
         if "net" in doc:
             net = doc["net"]
         else:
@@ -1737,75 +1777,74 @@ class MiniseedMatcher(DictionaryCacheMatcher):
         else:
             loc = ""
         idstring = net + SEPARATOR + sta + SEPARATOR + loc + SEPARATOR
-        # a bit nonstandard to put chan at end but this isn't for human 
+        # a bit nonstandard to put chan at end but this isn't for human
         # consumption anyway
         if self.collection == "channel":
             idstring += chan + SEPARATOR
         return idstring
-    
-    
-    def find_one(self,mspass_object):
+
+    def find_one(self, mspass_object):
         """
         We overload find_one to provide the unique match needed.
-        The algorithm does a linear search for the first time interval 
-        for which the start time of mspass_object is within the 
-        startime <= t0 <= endtime range of a record stored in 
-        the cache.  This works only if starttime and endtime are 
-        defined in the set of attributes loaded so the constructor 
-        of this class enforces that restriction.   The times in 
-        starttime and endtime are assumed to be defined as epoch 
-        times as the algorithm uses a simple numeric test of the 
-        data start time with the two times.  An issue to watch out 
-        for is endtime not being set to a valid distant time but some 
-        null field that resolves to something that doesn't work in 
-        a numerical test for < endtime.  
-        
-        :param mspass_object:   data to be used for matching against the 
-        cache.  It must contain the required keys or the matching will 
-        fail.  If the datum is marked dead the algorithm will return 
-        immediately with a None response and an error message that 
+        The algorithm does a linear search for the first time interval
+        for which the start time of mspass_object is within the
+        startime <= t0 <= endtime range of a record stored in
+        the cache.  This works only if starttime and endtime are
+        defined in the set of attributes loaded so the constructor
+        of this class enforces that restriction.   The times in
+        starttime and endtime are assumed to be defined as epoch
+        times as the algorithm uses a simple numeric test of the
+        data start time with the two times.  An issue to watch out
+        for is endtime not being set to a valid distant time but some
+        null field that resolves to something that doesn't work in
+        a numerical test for < endtime.
+
+        :param mspass_object:   data to be used for matching against the
+        cache.  It must contain the required keys or the matching will
+        fail.  If the datum is marked dead the algorithm will return
+        immediately with a None response and an error message that
         would usually be dropped by the call in that situation.
-        :type mspass_object:  must be one of the atomic data types of 
-          mspass (currently TimeSeries and Seismogram) with t0 
+        :type mspass_object:  must be one of the atomic data types of
+          mspass (currently TimeSeries and Seismogram) with t0
           defined as an epoch time computed from a UTC time stamp.
         """
         # Be dogmatic and demand mspass_object is a TimeSeries
-        if isinstance(mspass_object,(TimeSeries,Seismogram)):
+        if isinstance(mspass_object, (TimeSeries, Seismogram)):
             if mspass_object.live:
-                #trap this unlikely but possible condition as this 
+                # trap this unlikely but possible condition as this
                 # condition could produce mysterious behavior
                 if mspass_object.time_is_relative():
                     elog = ErrorLogger()
                     message = "Usage error:  input has a relative time standard but miniseed matching requires a UTC time stamp"
-                    elog.log_error(
-                          "MiniseedMatcher",
-                          message,
-                          ErrorSeverity.Invalid
-                        )
-                    return [None,elog]
+                    elog.log_error("MiniseedMatcher", message, ErrorSeverity.Invalid)
+                    return [None, elog]
                 find_output = self.find(mspass_object)
                 number_matches = len(find_output[0])
                 if number_matches == 0:
                     # Current implementation posts a elog message that is
-                    # returned in file_output[1].  Could consider adding to 
+                    # returned in file_output[1].  Could consider adding to
                     # that log message here to clarify it was the miniseed
-                    # instance 
+                    # instance
                     return [None, find_output[1]]
                 else:
                     for md in find_output[0]:
                         stime = md["starttime"]
                         etime = md["endtime"]
                         t0 = mspass_object.t0
-                        if t0>=stime and t0<=etime:
-                            return [md,find_output[1]]
-                        
+                        if t0 >= stime and t0 <= etime:
+                            return [md, find_output[1]]
+
                     # we land here if the linear search failed and no
                     # t0 is within the ranges defined
                     if find_output[1] is None:
                         elog = ErrorLogger()
                     else:
                         elog = find_output[1]
-                    message = "No matching records found in "+self.collection+" collection for:\n"
+                    message = (
+                        "No matching records found in "
+                        + self.collection
+                        + " collection for:\n"
+                    )
                     message += "net=" + mspass_object["net"]
                     message += ", sta=" + mspass_object["sta"]
                     message += ", chan=" + mspass_object["chan"]
@@ -1813,55 +1852,55 @@ class MiniseedMatcher(DictionaryCacheMatcher):
                         message += ", loc=" + mspass_object["loc"]
                     message += "time=" + str(UTCDateTime(mspass_object.t0))
                     message += "\nFound match for station codes but there is data start time is outside all channel time ranges "
-                    elog.log_error(
-                          "MiniseedMatcher",
-                          message,
-                          ErrorSeverity.Invalid
-                        )
-                    return [None,elog]
+                    elog.log_error("MiniseedMatcher", message, ErrorSeverity.Invalid)
+                    return [None, elog]
             else:
                 elog = ErrorLogger()
                 elog.log_error(
-                      "MiniseedMatcher.find_one",
-                      "Received a datum marked dead - will not attempt match",
-                       ErrorSeverity.Invalid
-                    )
+                    "MiniseedMatcher.find_one",
+                    "Received a datum marked dead - will not attempt match",
+                    ErrorSeverity.Invalid,
+                )
         else:
-            raise TypeError("MiniseedMatcher.find_one:  this class method can only be applied to TimeSeries or Seismogram objects")
+            raise TypeError(
+                "MiniseedMatcher.find_one:  this class method can only be applied to TimeSeries or Seismogram objects"
+            )
 
-    def find_doc(self,doc,wfdoc_starttime_key="starttime"):
+    def find_doc(self, doc, wfdoc_starttime_key="starttime"):
         """
-        Optional function to support application to bulk_normalize to 
-        set channel_id or site_id.  Acts like find_one but without support 
-        for readonly recovery.   The bigger difference is that this 
-        method accepts a python dict retrieved in a cursor loop for 
-        bulk_normalize.   Returns the Metadata container that is matched 
-        from the cache.   This uses the same algorithm as the overloaded 
-        find_one above where a linear search is used to handle the time 
-        interval matching.  Here, however, the time field is extracted 
-        from doc with the key defined by starttime.  
-        
+        Optional function to support application to bulk_normalize to
+        set channel_id or site_id.  Acts like find_one but without support
+        for readonly recovery.   The bigger difference is that this
+        method accepts a python dict retrieved in a cursor loop for
+        bulk_normalize.   Returns the Metadata container that is matched
+        from the cache.   This uses the same algorithm as the overloaded
+        find_one above where a linear search is used to handle the time
+        interval matching.  Here, however, the time field is extracted
+        from doc with the key defined by starttime.
+
         :param doc:  document (pretty much assumed to be from wf_miniseed)
-          to be matched with channel or site. 
+          to be matched with channel or site.
         :type doc:  python dictionary - document from MongoDB
-        
-        :param wfdoc_starttime_key:  optional parameter to change the 
-         key used to fetch the start time of waveform data from doc. 
-         Default is "starttime"/  
+
+        :param wfdoc_starttime_key:  optional parameter to change the
+         key used to fetch the start time of waveform data from doc.
+         Default is "starttime"/
         :type wfdoc_starttime_key: string
-        
-        :return:  matching Metadata container if successful. None if 
-          matching fails for any reason.   
+
+        :return:  matching Metadata container if successful. None if
+          matching fails for any reason.
         """
-        # always abort if the starttime key is not defined.  For 
+        # always abort if the starttime key is not defined.  For
         # current implementation wf_miniseed documents always have that
         # key defined so throwing an exception marked Fatal is appropriate.
-        if wfdoc_starttime_key not in doc:  
+        if wfdoc_starttime_key not in doc:
             raise MsPASSError(
-                   "MiniseedMatcher:  "
-                   + "Required key defining waveform start time=" + wfdoc_starttime_key + " is missing from document received",
-                   ErrorSeverity.Fatal
-                )
+                "MiniseedMatcher:  "
+                + "Required key defining waveform start time="
+                + wfdoc_starttime_key
+                + " is missing from document received",
+                ErrorSeverity.Fatal,
+            )
         # we use this version of the method to generate the cache key as
         # it works with the dict, BUT it doesn't allow the READONLYERROR
         # recovery
@@ -1871,7 +1910,7 @@ class MiniseedMatcher(DictionaryCacheMatcher):
         matches = self.normcache[testid]
         if len(matches) <= 0:
             return None
-        
+
         # linear search similar to that in find_one above
         for md in matches:
             if self.prepend_collection_name:
@@ -1880,142 +1919,144 @@ class MiniseedMatcher(DictionaryCacheMatcher):
             else:
                 stkey = "starttime"
                 etkey = "endtime"
-            # let this throw an exception if fetch fails. Constructor 
+            # let this throw an exception if fetch fails. Constructor
             # should guarantee these two attributes are loaded
             stime = md[stkey]
             etime = md[etkey]
             dt0 = doc[wfdoc_starttime_key]
             if dt0 >= stime and dt0 <= etime:
                 return md
-            
+
         return None
-    
+
+
 class EqualityMatcher(DataFrameCacheMatcher):
     """
-    Match with an equality test for the values of one or more keys 
+    Match with an equality test for the values of one or more keys
     with possible aliasing between data keys and database keys.
-    
-    This class can be used for matching a set of keys that together 
-    provide a unique matching capability.   Note the keys are 
-    applied sequentially to reduce the size of internal DataFrame 
-    cache in stages.  If the DataFrame is large it may improve performance 
-    if the most unique key in a series appears first.  
-    
-    A special feature of the implementation is that we allow 
-    what is best thought of as reverse aliasing for the keys to 
-    be used for matching.   That is, the base class of this family 
+
+    This class can be used for matching a set of keys that together
+    provide a unique matching capability.   Note the keys are
+    applied sequentially to reduce the size of internal DataFrame
+    cache in stages.  If the DataFrame is large it may improve performance
+    if the most unique key in a series appears first.
+
+    A special feature of the implementation is that we allow
+    what is best thought of as reverse aliasing for the keys to
+    be used for matching.   That is, the base class of this family
     has an attribute self.aliases that allow mapping from collection names
-    to data object names.  The match_keys parameter here is done in 
-    the reverse order.  That is, the key of the match_keys dictionary 
-    is the data object key while the value associated with that key 
-    is the DataFrame column name to match.  The constructor of the 
+    to data object names.  The match_keys parameter here is done in
+    the reverse order.  That is, the key of the match_keys dictionary
+    is the data object key while the value associated with that key
+    is the DataFrame column name to match.  The constructor of the
     class does a sanity check to verify the two are consistent.
-    The constructor will throw an exception if the two dictionaries 
-    are inconstent.  Note that means if you use an actual alias through 
-    match_keys (i.e. the key and value are different) you must define 
-    the aliases dictionary with the same combination reversed.   
+    The constructor will throw an exception if the two dictionaries
+    are inconstent.  Note that means if you use an actual alias through
+    match_keys (i.e. the key and value are different) you must define
+    the aliases dictionary with the same combination reversed.
     (e.g.  matchkeys={"KSTA":"sta"} requires aliases={"sta":"KSTA"})
-    
-    :param db_or_df:  MongoDB database handle or a pandas DataFrame.  
-      Most users will use the database handle version.   In that case 
-      the collection argument is used to determine what collection is 
-      loaded into the cache.   If using a DataFrame is used the 
-      collection name is only a tag defined by the user.   For a 
-      DataFrame a column index is required that contains at least 
+
+    :param db_or_df:  MongoDB database handle or a pandas DataFrame.
+      Most users will use the database handle version.   In that case
+      the collection argument is used to determine what collection is
+      loaded into the cache.   If using a DataFrame is used the
+      collection name is only a tag defined by the user.   For a
+      DataFrame a column index is required that contains at least
       the attributes defined in attribute_to_load.
-    :type db_or_df: MongoDB database handle or pandas DataFrame.   
-    
-    :param collection:  When using database input this is expected to be 
+    :type db_or_df: MongoDB database handle or pandas DataFrame.
+
+    :param collection:  When using database input this is expected to be
       a string defining a valid MongoDB collection with documents that are
-      to be scanned and loaded into the internal cache.  With DataFrame input 
-      this string is only a tag.  It is relevant then only if the 
-      prepend_collection_name boolean is set True.  There is no default 
+      to be scanned and loaded into the internal cache.  With DataFrame input
+      this string is only a tag.  It is relevant then only if the
+      prepend_collection_name boolean is set True.  There is no default
       for this parameter so it must be specified as arg 1.
     :type collection: string
-    
-    :param match_keys:  python dict of keys that are to be used for 
-      the equality match.  The dict is used as an alias mechanism allowing 
-      different keys to be used for the Metadata container in data to 
-      be tested relative to the keys used in the database for the same 
-      attribute.  (a typical common example would be something like 
-      "source_lat" in the data matching "lat" in the source collection). 
-      The key for each entry in this dict is taken as the key for the 
-      data side (mspass_object) and the value assigned to that key 
-      in this input is taken as the mongoDB/DataFrame key.   
+
+    :param match_keys:  python dict of keys that are to be used for
+      the equality match.  The dict is used as an alias mechanism allowing
+      different keys to be used for the Metadata container in data to
+      be tested relative to the keys used in the database for the same
+      attribute.  (a typical common example would be something like
+      "source_lat" in the data matching "lat" in the source collection).
+      The key for each entry in this dict is taken as the key for the
+      data side (mspass_object) and the value assigned to that key
+      in this input is taken as the mongoDB/DataFrame key.
     :type match_keys:  python dictionary
 
-    :param attributes_to_load:  list of keys of required attributes that will 
-      be returned in the output of the find method.   The keys listed 
+    :param attributes_to_load:  list of keys of required attributes that will
+      be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find will fail.   There is currently no default for 
+      some calls to find will fail.   There is currently no default for
       this parameter and it must be defined as arg 3.
-    :type attributes_to_load:  list of string defining keys in collection 
+    :type attributes_to_load:  list of string defining keys in collection
       documents
-        
+
     :param query:  optional query to apply to collection before loading
-      data from the database.  This parameter is ignored if the input 
-      is a DataFrame.  A common use would be to reduce the size of the 
-      cache by using a time range limit on station metadata to only 
-      load records relevant to the dataset being processed.  This 
-      parameter is currently ignored for DataFrame input as we assume 
-      pandas subsetting would be used for the same functionality 
+      data from the database.  This parameter is ignored if the input
+      is a DataFrame.  A common use would be to reduce the size of the
+      cache by using a time range limit on station metadata to only
+      load records relevant to the dataset being processed.  This
+      parameter is currently ignored for DataFrame input as we assume
+      pandas subsetting would be used for the same functionality
       in the workflow prior to calling the class constructor for this object.
     :type query:  python dictionary.
-    
-    :param load_if_defined: list of keys of optional attributes to be 
-      extracted by find method.  Any data attached to these keys will only 
-      be posted in the find return if they are defined in the database 
+
+    :param load_if_defined: list of keys of optional attributes to be
+      extracted by find method.  Any data attached to these keys will only
+      be posted in the find return if they are defined in the database
       document retrieved in the query.  Default resolves to an empty list.
       Note this parameter is ignored for DataFrame input.
-    :type load_if_defined:  list of strings defining collection keys 
-    
-    :param aliases:  python dictionary defining alias names to apply 
-     when fetching from a data object's Metadata container.   The key sense 
-     of the mapping is important to keep straight.  The key of this 
-     dictionary should match one  of the attributes in attributes_to_load 
-     or load_if_defined.  The value the key defines should be the alias 
-     used to fetch the comparable attribute from the data. 
+    :type load_if_defined:  list of strings defining collection keys
+
+    :param aliases:  python dictionary defining alias names to apply
+     when fetching from a data object's Metadata container.   The key sense
+     of the mapping is important to keep straight.  The key of this
+     dictionary should match one  of the attributes in attributes_to_load
+     or load_if_defined.  The value the key defines should be the alias
+     used to fetch the comparable attribute from the data.
     :type aliaes:  python dictionary
-    
-    :param prepend_collection_name:  when True attributes returned in 
-      Metadata containers by the find and find_one method will all have the 
-      collection name prepended with a (fixed) separator.  Default is 
+
+    :param prepend_collection_name:  when True attributes returned in
+      Metadata containers by the find and find_one method will all have the
+      collection name prepended with a (fixed) separator.  Default is
       False.
     :type prepend_collection_name:  boolean
-    
-    :param require_unique_match:  boolean handling of ambiguous matches.  
-      When True find_one will throw an error if an entry is tries to match 
-      is not unique.  When False find_one returns the first document 
+
+    :param require_unique_match:  boolean handling of ambiguous matches.
+      When True find_one will throw an error if an entry is tries to match
+      is not unique.  When False find_one returns the first document
       found and logs a complaint message.  (default is True)
-    :type require_unique_match:  boolean 
-    
-    TODO:  although in this case the docstring says it can use 
-    db or df that is a lie.   Left the doc string alone because that is the 
-    plan.  That means all the other docstrings will need to have the 
+    :type require_unique_match:  boolean
+
+    TODO:  although in this case the docstring says it can use
+    db or df that is a lie.   Left the doc string alone because that is the
+    plan.  That means all the other docstrings will need to have the
     ":param db:" sections changed to something more like above.
     """
+
     def __init__(
-            self,
+        self,
+        db_or_df,
+        collection,
+        match_keys,
+        attributes_to_load,
+        query=None,
+        load_if_defined=None,
+        aliases=None,
+        require_unique_match=True,
+        prepend_collection_name=False,
+    ):
+        super().__init__(
             db_or_df,
             collection,
-            match_keys,
-            attributes_to_load,
-            query=None,
-            load_if_defined=None,
-            aliases=None,
-            require_unique_match=True,
-            prepend_collection_name=False,
-            ):
-        super().__init__(
-              db_or_df,
-              collection,
-              attributes_to_load=attributes_to_load,
-              load_if_defined=load_if_defined,
-              aliases=aliases,
-              require_unique_match=require_unique_match,
-              prepend_collection_name=prepend_collection_name,
-            )
-        if isinstance(match_keys,dict):
+            attributes_to_load=attributes_to_load,
+            load_if_defined=load_if_defined,
+            aliases=aliases,
+            require_unique_match=require_unique_match,
+            prepend_collection_name=prepend_collection_name,
+        )
+        if isinstance(match_keys, dict):
             self.match_keys = match_keys
             for key in match_keys:
                 testkey = match_keys[key]
@@ -2025,59 +2066,63 @@ class EqualityMatcher(DataFrameCacheMatcher):
                 if testkey in self.aliases:
                     backtestkey = self.aliases[testkey]
                     if backtestkey != key:
-                        error_message = "EqualityMatcher constructor:  " \
-                            + "match_keys and aliases are inconsistent.\n" \
-                            + "match_keys=" + str(match_keys) \
-                            + "  aliases=" + str(self.aliases) 
-                        raise MsPASSError(
-                              error_message,
-                              ErrorSeverity.Fatal
-                            )
-                else:
-                    error_message = "EqualityMatcher constructor:  " \
-                            + "match_keys and aliases are inconsistent.\n" \
-                            + "match_key defines key=" + key \
-                            + " to have alias name=" + testkey \
-                            + " but alias name is not defined by aliases parameter"
-                    raise MsPASSError(
-                          error_message,
-                          ErrorSeverity.Fatal
+                        error_message = (
+                            "EqualityMatcher constructor:  "
+                            + "match_keys and aliases are inconsistent.\n"
+                            + "match_keys="
+                            + str(match_keys)
+                            + "  aliases="
+                            + str(self.aliases)
                         )
+                        raise MsPASSError(error_message, ErrorSeverity.Fatal)
+                else:
+                    error_message = (
+                        "EqualityMatcher constructor:  "
+                        + "match_keys and aliases are inconsistent.\n"
+                        + "match_key defines key="
+                        + key
+                        + " to have alias name="
+                        + testkey
+                        + " but alias name is not defined by aliases parameter"
+                    )
+                    raise MsPASSError(error_message, ErrorSeverity.Fatal)
         else:
-            raise TypeError("EqualityMatcher Constructor:  required argument 2 (matchkeys) must be a python dictionary")
-    
-    def subset(self,mspass_object)->pd.DataFrame:
+            raise TypeError(
+                "EqualityMatcher Constructor:  required argument 2 (matchkeys) must be a python dictionary"
+            )
+
+    def subset(self, mspass_object) -> pd.DataFrame:
         """
-        Concrete implementation of this virtual method of DataFrameMatcher 
+        Concrete implementation of this virtual method of DataFrameMatcher
         for this class.
-        
-        The subset is done sequentially driven by the order key order 
-        of the self.match_keys dictionary.   i.e. the algorithm uses 
-        the row reduction operation of a dataframe one key at a time.  
-        An implementation detail is that there may be a more clever way 
-        instead create a single conditional clause to pass to the 
+
+        The subset is done sequentially driven by the order key order
+        of the self.match_keys dictionary.   i.e. the algorithm uses
+        the row reduction operation of a dataframe one key at a time.
+        An implementation detail is that there may be a more clever way
+        instead create a single conditional clause to pass to the
         DataFrame operator [] combining the key matches with "and".
         That would likely improve performance, particulary on large tables.
-        Note the alias is applied using the self.match_keys.  i.e. one 
-        can have different keys on the left (mspass_data side is the 
+        Note the alias is applied using the self.match_keys.  i.e. one
+        can have different keys on the left (mspass_data side is the
         match_keys dictionary key) than the right (dataframe column name).
-        
-        :param mspass_object:  Any valid mspass data object with a 
-        Metadata container.  The container must contain all the 
+
+        :param mspass_object:  Any valid mspass data object with a
+        Metadata container.  The container must contain all the
         required match keys or the function will return an error condition
         (see below)
-        :type mspass_object:  TimeSeries, Seismogram, TimeSeriesEnsemble 
+        :type mspass_object:  TimeSeries, Seismogram, TimeSeriesEnsemble
           or SeismogramEnsemble object
-        
+
         :return:  DataFrame containing all data satisying the match
-           series of match conditions defined on construction.  Silently 
-           returns a zero length DataFrame if is no match.   Be warned 
+           series of match conditions defined on construction.  Silently
+           returns a zero length DataFrame if is no match.   Be warned
            two other situations can cause the return to have no data:
                (1) dead input, and (2) match keys missing from mspass_object.
         """
         if mspass_object.dead():
             return pd.DateFrame()
-        # I don't think this can cause a memory problem as in python 
+        # I don't think this can cause a memory problem as in python
         # this make dfret a temporary alias for self.cache
         # In the loop it is replaced by subset dataframes
         dfret = self.cache
@@ -2089,81 +2134,80 @@ class EqualityMatcher(DataFrameCacheMatcher):
             else:
                 return pd.DataFrame()
         return dfret
-                
-    
 
- 
+
 class EqualityDBMatcher(DatabaseMatcher):
     """
     Database equivalent of EqualityMatcher.
-    
+
     param db:  MongoDB database handle  (positional - no default)
-    :type db: normally a MsPASS Database class but with this algorithm 
+    :type db: normally a MsPASS Database class but with this algorithm
       it can be the superclass from which Database is derived.
-    
+
     :param collection:  Name of MongoDB collection that is to be queried.
-      This arg is required by the constructor and has not default. 
+      This arg is required by the constructor and has not default.
     :type collection: string
-    
-    :param match_keys:  python dict of keys that are to be used for 
-      the equality match.  The dict is used as an alias mechanism allowing 
-      different keys to be used for the Metadata container in data to 
-      be tested relative to the keys used in the database for the same 
-      attribute.  (a typical common example would be something like 
-      "source_lat" in the data matching "lat" in the source collection). 
-      The key for each entry in this dict is taken as the key for the 
-      data side (mspass_object) and the value assigned to that key 
-      in this input is taken as the mongoDB/DataFrame key.   
+
+    :param match_keys:  python dict of keys that are to be used for
+      the equality match.  The dict is used as an alias mechanism allowing
+      different keys to be used for the Metadata container in data to
+      be tested relative to the keys used in the database for the same
+      attribute.  (a typical common example would be something like
+      "source_lat" in the data matching "lat" in the source collection).
+      The key for each entry in this dict is taken as the key for the
+      data side (mspass_object) and the value assigned to that key
+      in this input is taken as the mongoDB/DataFrame key.
     :type match_keys:  python dictionary
-    
-    :param attributes_to_load:  list of keys of required attributes that will 
-      be returned in the output of the find method.   The keys listed 
+
+    :param attributes_to_load:  list of keys of required attributes that will
+      be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
       some calls to find will fail.  There is no default for this class
-      and the list must be defined as arg3.  
-    :type attributes_to_load:  list of string defining keys in collection 
+      and the list must be defined as arg3.
+    :type attributes_to_load:  list of string defining keys in collection
       documents.
-    
-    :param load_if_defined: list of keys of optional attributes to be 
-      extracted by find method.  Any data attached to these keys will only 
-      be posted in the find return if they are defined in the database 
-      document retrieved in the query.  Default is to add load no 
-      optional data. 
-    :param type:  list of strings defining collection keys 
-    
-    :param aliases:  python dictionary defining alias names to apply 
-     when fetching from a data object's Metadata container.   The key sense 
-     of the mapping is important to keep straight.  The key of this 
-     dictionary should match one  of the attributes in attributes_to_load 
-     or load_if_defined.  The value the key defines should be the alias 
-     used to fetch the comparable attribute from the data. 
+
+    :param load_if_defined: list of keys of optional attributes to be
+      extracted by find method.  Any data attached to these keys will only
+      be posted in the find return if they are defined in the database
+      document retrieved in the query.  Default is to add load no
+      optional data.
+    :param type:  list of strings defining collection keys
+
+    :param aliases:  python dictionary defining alias names to apply
+     when fetching from a data object's Metadata container.   The key sense
+     of the mapping is important to keep straight.  The key of this
+     dictionary should match one  of the attributes in attributes_to_load
+     or load_if_defined.  The value the key defines should be the alias
+     used to fetch the comparable attribute from the data.
     :type aliaes:  python dictionary
-    
-    :param prepend_collection_name:  when True attributes returned in 
-      Metadata containers by find and find_one method will all have the 
-      collection name prepended with a (fixed) separator.  For example, if 
-      the collection name is "channel" the "lat" attribute in the channel 
+
+    :param prepend_collection_name:  when True attributes returned in
+      Metadata containers by find and find_one method will all have the
+      collection name prepended with a (fixed) separator.  For example, if
+      the collection name is "channel" the "lat" attribute in the channel
       document would be returned as "channel_lat".  Default is False.
     :type prepend_collection_name:  boolean
-    
-    :param require_unique_match:  boolean handling of ambiguous matches.  
-      When True find_one will throw an error if an entry is tries to match 
-      is not unique.  When False find_one returns the first document 
+
+    :param require_unique_match:  boolean handling of ambiguous matches.
+      When True find_one will throw an error if an entry is tries to match
+      is not unique.  When False find_one returns the first document
       found and logs a complaint message.  (default is False)
-    :type require_unique_match:  boolean 
+    :type require_unique_match:  boolean
 
     """
+
     def __init__(
-            self,
-            db,
-            collection,
-            match_keys,
-            attributes_to_load,
-            load_if_defined=None,
-            aliases=None,
-            require_unique_match=False,
-            prepend_collection_name=False,
-            ):
+        self,
+        db,
+        collection,
+        match_keys,
+        attributes_to_load,
+        load_if_defined=None,
+        aliases=None,
+        require_unique_match=False,
+        prepend_collection_name=False,
+    ):
         super().__init__(
             db,
             collection,
@@ -2172,8 +2216,8 @@ class EqualityDBMatcher(DatabaseMatcher):
             aliases=aliases,
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
-            )
-        if isinstance(match_keys,dict):
+        )
+        if isinstance(match_keys, dict):
             self.match_keys = match_keys
         else:
             raise TypeError(
@@ -2181,11 +2225,12 @@ class EqualityDBMatcher(DatabaseMatcher):
                     self.__class__.__name__
                 )
             )
-    def query_generator(self,mspass_object)->dict:
+
+    def query_generator(self, mspass_object) -> dict:
         """
-        Implementation of required method for this class.  It simply 
-        applies an equality test for all the keys defined by the values 
-        in the self.match_keys dict. 
+        Implementation of required method for this class.  It simply
+        applies an equality test for all the keys defined by the values
+        in the self.match_keys dict.
         """
         query = dict()
         for dkey in self.match_keys:
@@ -2196,114 +2241,114 @@ class EqualityDBMatcher(DatabaseMatcher):
                 # API says return none if generator fails
                 return None
         return query
-                
 
 
 class OriginTimeDBMatcher(DatabaseMatcher):
     """
-    Generic class to match data by comparing a time defined in data to an 
+    Generic class to match data by comparing a time defined in data to an
     origin time using a database query algorithm.
-    
-    The default behavior of this matcher class is to match data to 
-    source documents based on origin time with an optional time offset. 
+
+    The default behavior of this matcher class is to match data to
+    source documents based on origin time with an optional time offset.
     Conceptually the data model for this matching is identical to conventional
-    multichannel shot gathers where the start time is usually the origin time. 
-    It is also a common model for downloaded source oriented waveform 
-    segments from FDSN web services with obspy.  Obspy has an example 
-    in their documentation for how to download data defined exactly this way.  
-    In that mode we match each source document that matches a projected 
-    origin time within a specified tolerance. Specifically, let t0 
-    be the start time extracted from the data.  We then compute the 
-    projected, test origin time as test_otime = t0 - t0offset.  
-    Note the sign convention that a positive offset means the time t0 
-    is after the event origin time.   We then select all source 
+    multichannel shot gathers where the start time is usually the origin time.
+    It is also a common model for downloaded source oriented waveform
+    segments from FDSN web services with obspy.  Obspy has an example
+    in their documentation for how to download data defined exactly this way.
+    In that mode we match each source document that matches a projected
+    origin time within a specified tolerance. Specifically, let t0
+    be the start time extracted from the data.  We then compute the
+    projected, test origin time as test_otime = t0 - t0offset.
+    Note the sign convention that a positive offset means the time t0
+    is after the event origin time.   We then select all source
     records for which the time field satisifies:
         source.time - tolerance <= test_time <= source.time + tolerance
-        
-    The test_time value for matching from a datum can come through 
+
+    The test_time value for matching from a datum can come through
     one of two methods driven by the constructor argument "time_key".
-    When time_key is a None (default) the algorithm assumes all input 
-    are mspass atomic data objects that have the start time defined by 
-    the attribute "t0" (mspass_object.t0).  If time_key is a string 
-    it is assumed to be a Metadata key used to fetch an epoch time 
-    to use for the test.   The most likely use of that feature would be 
-    for ensemble processing where test_time is set as a field in the 
+    When time_key is a None (default) the algorithm assumes all input
+    are mspass atomic data objects that have the start time defined by
+    the attribute "t0" (mspass_object.t0).  If time_key is a string
+    it is assumed to be a Metadata key used to fetch an epoch time
+    to use for the test.   The most likely use of that feature would be
+    for ensemble processing where test_time is set as a field in the
     ensemble Metadata.  Note that form of associating source data to
-    ensembles that are common source gathers can be much faster than 
+    ensembles that are common source gathers can be much faster than
     the atomic version because only one query is needed per ensemble.
-    
+
     :param db:  MongoDB database handle  (positional - no default)
-    :type db: normally a MsPASS Database class but with this algorithm 
+    :type db: normally a MsPASS Database class but with this algorithm
       it can be the superclass from which Database is derived.
-    
+
     :param collection:  Name of MongoDB collection that is to be queried
-       (default "source").  
+       (default "source").
     :type collection: string
-    
-    :param t0offset: constant offset from data start time that is expected 
-      as origin time.  A positive t0offset means the origin time is before 
+
+    :param t0offset: constant offset from data start time that is expected
+      as origin time.  A positive t0offset means the origin time is before
       the data start time.  Units are always assumed to be seconds.
-    :type t0offset:  float 
-    
-    :param tolerance:   time tolerance to test for match of origin time. 
+    :type t0offset:  float
+
+    :param tolerance:   time tolerance to test for match of origin time.
       (see formula above for exact use)
-      If the source estimates are exactly the same as the ones used to 
-      define data start time this number can be a few samples.  
-      Otherwise a few seconds is safter for teleseismic data and 
-      less for local/regional events.  i.e. the choice depends up on 
+      If the source estimates are exactly the same as the ones used to
+      define data start time this number can be a few samples.
+      Otherwise a few seconds is safter for teleseismic data and
+      less for local/regional events.  i.e. the choice depends up on
       how the source estimates relate to the data.
     :type tolerance:  float
-    
-    
-    :param attributes_to_load:  list of keys of required attributes that will 
-      be returned in the output of the find method.   The keys listed 
+
+
+    :param attributes_to_load:  list of keys of required attributes that will
+      be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find_one will fail.   Default is 
+      some calls to find_one will fail.   Default is
       ["lat","lon","depth","time"]
-    :type attributes_to_load:  list of string defining keys in collection 
+    :type attributes_to_load:  list of string defining keys in collection
       documents
-    
-    :param load_if_defined: list of keys of optional attributes to be 
-      extracted by find method.  Any data attached to these keys will only 
-      be posted in the find return if they are defined in the database 
+
+    :param load_if_defined: list of keys of optional attributes to be
+      extracted by find method.  Any data attached to these keys will only
+      be posted in the find return if they are defined in the database
       document retrieved in the query.  Default is ["magnitude"]
     :param type:  list of strings defining collection keys
-    
-    :param aliases:  python dictionary defining alias names to apply 
-     when fetching from a data object's Metadata container.   The key sense 
-     of the mapping is important to keep straight.  The key of this 
-     dictionary should match one  of the attributes in attributes_to_load 
-     or load_if_defined.  The value the key defines should be the alias 
-     used to fetch the comparable attribute from the data. 
+
+    :param aliases:  python dictionary defining alias names to apply
+     when fetching from a data object's Metadata container.   The key sense
+     of the mapping is important to keep straight.  The key of this
+     dictionary should match one  of the attributes in attributes_to_load
+     or load_if_defined.  The value the key defines should be the alias
+     used to fetch the comparable attribute from the data.
     :type aliaes:  python dictionary
-    
-    :param prepend_collection_name:  when True attributes returned in 
-      Metadata containers by the find and find_one method will all have the 
-      collection name prepended with a (fixed) separator.  For example, if 
-      the collection name is "channel" the "lat" attribute in the channel 
-      document would be returned as "channel_lat".  
+
+    :param prepend_collection_name:  when True attributes returned in
+      Metadata containers by the find and find_one method will all have the
+      collection name prepended with a (fixed) separator.  For example, if
+      the collection name is "channel" the "lat" attribute in the channel
+      document would be returned as "channel_lat".
     :type prepend_collection_name:  boolean
-    
-    :param require_unique_match:  boolean handling of ambiguous matches.  
-      When True find_one will throw an error if an entry is tries to match 
-      is not unique.  When False find_one returns the first document 
+
+    :param require_unique_match:  boolean handling of ambiguous matches.
+      When True find_one will throw an error if an entry is tries to match
+      is not unique.  When False find_one returns the first document
       found and logs a complaint message.  (default is False)
-    :type require_unique_match:  boolean 
+    :type require_unique_match:  boolean
     """
+
     def __init__(
-            self,
-            db,
-            collection="source",
-            t0offset=0.0,
-            tolerance=4.0,
-            query=None,
-            attributes_to_load=["lat","lon","depth","time"],
-            load_if_defined=["magnitude"],
-            aliases=None,
-            require_unique_match=False,
-            prepend_collection_name=True,
-            time_key=None,
-            ):
+        self,
+        db,
+        collection="source",
+        t0offset=0.0,
+        tolerance=4.0,
+        query=None,
+        attributes_to_load=["lat", "lon", "depth", "time"],
+        load_if_defined=["magnitude"],
+        aliases=None,
+        require_unique_match=False,
+        prepend_collection_name=True,
+        time_key=None,
+    ):
         super().__init__(
             db,
             collection,
@@ -2312,13 +2357,13 @@ class OriginTimeDBMatcher(DatabaseMatcher):
             aliases=aliases,
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
-            )
+        )
         self.t0offset = t0offset
         self.tolerance = tolerance
         self.time_key = time_key
         if query is None:
             query = {}
-        elif isinstance(query,dict):
+        elif isinstance(query, dict):
             self.query = query
         else:
             raise TypeError(
@@ -2326,34 +2371,33 @@ class OriginTimeDBMatcher(DatabaseMatcher):
                     self.__class__.__name__
                 )
             )
-        
-        
-    def query_generator(self,mspass_object)->dict:
+
+    def query_generator(self, mspass_object) -> dict:
         """
-        Concrete implementation of this required method for a subclass of 
+        Concrete implementation of this required method for a subclass of
         DatabaseMatcher.
-        
-        This algorithm implements the time test described in detail in 
-        docstring for this class.  Note the fundamental change in how the 
-        test time is computed that depends on the internal (self) 
-        attribute time_key.  When None we use the data's t0 attribute.  
-        Otherwise self.time_key is assumed to be a string key to 
+
+        This algorithm implements the time test described in detail in
+        docstring for this class.  Note the fundamental change in how the
+        test time is computed that depends on the internal (self)
+        attribute time_key.  When None we use the data's t0 attribute.
+        Otherwise self.time_key is assumed to be a string key to
         fetch the test time from the object's Metadata container.
-        
-        :param mspass_object:   MsPASS defined data object that contains 
-          data to be used for this match (t0 attribute or content of 
+
+        :param mspass_object:   MsPASS defined data object that contains
+          data to be used for this match (t0 attribute or content of
           self.time_key).
-        :type mspass_object:  Any valid MsPASS data object.  
-        
-        :return:  query python dictionary on sucess.  Return None if 
-          a query could not be constructed.  That happens two ways here. 
+        :type mspass_object:  Any valid MsPASS data object.
+
+        :return:  query python dictionary on sucess.  Return None if
+          a query could not be constructed.  That happens two ways here.
           (1) If the input is not a valid mspass data object or marked dead.
           (2) if the time_key algorithm is used and time_key isn't defined
               in the input datum.
         """
-        # This could generate mysterious results if a user messes up 
-        # badly, but  it makes the code more stable - otherwise 
-        # a parallel job could, for example, abort if one of the 
+        # This could generate mysterious results if a user messes up
+        # badly, but  it makes the code more stable - otherwise
+        # a parallel job could, for example, abort if one of the
         # components in a bag/rdd got set to None
         if not _input_is_valid(mspass_object):
             return None
@@ -2369,141 +2413,143 @@ class OriginTimeDBMatcher(DatabaseMatcher):
                 test_time = mspass_object[self.time_key]
             else:
                 return None
-            
-        # depends upon self.query being initialized by constructor 
+
+        # depends upon self.query being initialized by constructor
         # as python dictionary
         query = copy.deepcopy(self.query)
-        
+
         query["time"] = {
             "$gte": test_time - self.tolerance,
             "$lte": test_time + self.tolerance,
         }
         return query
-    
+
+
 class OriginTimeMatcher(DataFrameCacheMatcher):
     """
-    Generic class to match data by comparing a time defined in data to 
+    Generic class to match data by comparing a time defined in data to
     an origin time using a cached DataFrame.
-    
-    The default behavior of this matcher class is to match data to 
-    source documents based on origin time with an optional time offset. 
+
+    The default behavior of this matcher class is to match data to
+    source documents based on origin time with an optional time offset.
     Conceptually the data model for this matching is identical to conventional
-    multichannel shot gathers where the start time is usually the origin time. 
-    It is also a common model for downloaded source oriented waveform 
-    segments from FDSN web services with obspy.  Obspy has an example 
-    in their documentation for how to download data defined exactly this way.  
-    In that mode we match each source document that matches a projected 
-    origin time within a specified tolerance. Specifically, let t0 
-    be the start time extracted from the data.  We then compute the 
-    projected, test origin time as test_otime = t0 - t0offset.  
-    Note the sign convention that a positive offset means the time t0 
-    is after the event origin time.   We then select all source 
+    multichannel shot gathers where the start time is usually the origin time.
+    It is also a common model for downloaded source oriented waveform
+    segments from FDSN web services with obspy.  Obspy has an example
+    in their documentation for how to download data defined exactly this way.
+    In that mode we match each source document that matches a projected
+    origin time within a specified tolerance. Specifically, let t0
+    be the start time extracted from the data.  We then compute the
+    projected, test origin time as test_otime = t0 - t0offset.
+    Note the sign convention that a positive offset means the time t0
+    is after the event origin time.   We then select all source
     records for which the time field satisifies:
         source.time - tolerance <= test_time <= source.time + tolerance
-        
-    The test_time value for matching from a datum can come through 
+
+    The test_time value for matching from a datum can come through
     one of two methods driven by the constructor argument "time_key".
-    When time_key is a None (default) the algorithm assumes all input 
-    are mspass atomic data objects that have the start time defined by 
-    the attribute "t0" (mspass_object.t0).  If time_key is a string 
-    it is assumed to be a Metadata key used to fetch an epoch time 
-    to use for the test.   The most likely use of that feature would be 
-    for ensemble processing where test_time is set as a field in the 
+    When time_key is a None (default) the algorithm assumes all input
+    are mspass atomic data objects that have the start time defined by
+    the attribute "t0" (mspass_object.t0).  If time_key is a string
+    it is assumed to be a Metadata key used to fetch an epoch time
+    to use for the test.   The most likely use of that feature would be
+    for ensemble processing where test_time is set as a field in the
     ensemble Metadata.  Note that form of associating source data to
-    ensembles that are common source gathers can be much faster than 
+    ensembles that are common source gathers can be much faster than
     the atomic version because only one query is needed per ensemble.
-    
+
     This implentation should be used only if the catalog of events
-    is reasonably small.  If the catalog is huge the database version 
+    is reasonably small.  If the catalog is huge the database version
     may be more appropriate.
-    
+
     :param db:  MongoDB database handle  (positional - no default)
-    :type db: normally a MsPASS Database class but with this algorithm 
+    :type db: normally a MsPASS Database class but with this algorithm
       it can be the superclass from which Database is derived.
-    
+
     :param collection:  Name of MongoDB collection that is to be queried
-       (default "source").  
+       (default "source").
     :type collection: string
-    
-    :param t0offset: constant offset from data start time that is expected 
-      as origin time.  A positive t0offset means the origin time is before 
+
+    :param t0offset: constant offset from data start time that is expected
+      as origin time.  A positive t0offset means the origin time is before
       the data start time.  Units are always assumed to be seconds.
-    :type t0offset:  float 
-    
-    :param tolerance:   time tolerance to test for match of origin time. 
+    :type t0offset:  float
+
+    :param tolerance:   time tolerance to test for match of origin time.
       (see formula above for exact use)
-      If the source estimates are exactly the same as the ones used to 
-      define data start time this number can be a few samples.  
-      Otherwise a few seconds is safter for teleseismic data and 
-      less for local/regional events.  i.e. the choice depends up on 
+      If the source estimates are exactly the same as the ones used to
+      define data start time this number can be a few samples.
+      Otherwise a few seconds is safter for teleseismic data and
+      less for local/regional events.  i.e. the choice depends up on
       how the source estimates relate to the data.
     :type tolerance:  float
-    
-    
-    :param attributes_to_load:  list of keys of required attributes that will 
-      be returned in the output of the find method.   The keys listed 
+
+
+    :param attributes_to_load:  list of keys of required attributes that will
+      be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find_one will fail.   Default is 
+      some calls to find_one will fail.   Default is
       ["lat","lon","depth","time"]
-    :type attributes_to_load:  list of string defining keys in collection 
+    :type attributes_to_load:  list of string defining keys in collection
       documents
-    
-    :param load_if_defined: list of keys of optional attributes to be 
-      extracted by find method.  Any data attached to these keys will only 
-      be posted in the find return if they are defined in the database 
+
+    :param load_if_defined: list of keys of optional attributes to be
+      extracted by find method.  Any data attached to these keys will only
+      be posted in the find return if they are defined in the database
       document retrieved in the query.  Default is ["magnitude"]
     :param type:  list of strings defining collection keys
-    
-    :param aliases:  python dictionary defining alias names to apply 
-     when fetching from a data object's Metadata container.   The key sense 
-     of the mapping is important to keep straight.  The key of this 
-     dictionary should match one  of the attributes in attributes_to_load 
-     or load_if_defined.  The value the key defines should be the alias 
-     used to fetch the comparable attribute from the data. 
+
+    :param aliases:  python dictionary defining alias names to apply
+     when fetching from a data object's Metadata container.   The key sense
+     of the mapping is important to keep straight.  The key of this
+     dictionary should match one  of the attributes in attributes_to_load
+     or load_if_defined.  The value the key defines should be the alias
+     used to fetch the comparable attribute from the data.
     :type aliaes:  python dictionary
-    
-    :param prepend_collection_name:  when True attributes returned in 
-      Metadata containers by the find and find_one method will all have the 
-      collection name prepended with a (fixed) separator.  For example, if 
-      the collection name is "channel" the "lat" attribute in the channel 
-      document would be returned as "channel_lat".  
+
+    :param prepend_collection_name:  when True attributes returned in
+      Metadata containers by the find and find_one method will all have the
+      collection name prepended with a (fixed) separator.  For example, if
+      the collection name is "channel" the "lat" attribute in the channel
+      document would be returned as "channel_lat".
     :type prepend_collection_name:  boolean
-    
-    :param require_unique_match:  boolean handling of ambiguous matches.  
-      When True find_one will throw an error if an entry is tries to match 
-      is not unique.  When False find_one returns the first document 
+
+    :param require_unique_match:  boolean handling of ambiguous matches.
+      When True find_one will throw an error if an entry is tries to match
+      is not unique.  When False find_one returns the first document
       found and logs a complaint message.  (default is False)
-    :type require_unique_match:  boolean 
-    
-    :param data_time_key:  data object Metadata key used to fetch 
+    :type require_unique_match:  boolean
+
+    :param data_time_key:  data object Metadata key used to fetch
     time for testing as alternative to data start time.  If set None
     (default) the test will use the start time of an atomic data object
-    for the time test.  If nonzero it is assumed to be a string used 
-    to fetch a time from the data's Metadata container.  That is the 
-    best way to run this matcher on Ensembles.   
+    for the time test.  If nonzero it is assumed to be a string used
+    to fetch a time from the data's Metadata container.  That is the
+    best way to run this matcher on Ensembles.
     :type data_time_key:  string
-    
+
     :param source_time_key:  dataframe column name to use as source
-    origin time field.   Default is None which is translated to 
-    collection + "_time"  (default default is "source_time").   
+    origin time field.   Default is None which is translated to
+    collection + "_time"  (default default is "source_time").
     :type source_time_key:  string
-    
-    TODO:  needs an alternative DataFrame input 
+
+    TODO:  needs an alternative DataFrame input
     """
+
     def __init__(
-            self,
-            db,
-            collection="source",
-            t0offset=0.0,
-            tolerance=4.0,
-            attributes_to_load=["lat","lon","depth","time"],
-            load_if_defined=["magnitude"],
-            aliases=None,
-            require_unique_match=False,
-            prepend_collection_name=True,
-            data_time_key=None,
-            source_time_key=None,
-            ):
+        self,
+        db,
+        collection="source",
+        t0offset=0.0,
+        tolerance=4.0,
+        attributes_to_load=["lat", "lon", "depth", "time"],
+        load_if_defined=["magnitude"],
+        aliases=None,
+        require_unique_match=False,
+        prepend_collection_name=True,
+        data_time_key=None,
+        source_time_key=None,
+    ):
         super().__init__(
             db,
             collection,
@@ -2512,7 +2558,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
             aliases=aliases,
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
-            )
+        )
         self.t0offset = t0offset
         self.tolerance = tolerance
         self.data_time_key = data_time_key
@@ -2521,9 +2567,8 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         else:
             self.source_time_key = source_time_key
 
-    def subset(self,mspass_object)->pd.DataFrame:
-        """
-        """
+    def subset(self, mspass_object) -> pd.DataFrame:
+        """ """
         if not _input_is_valid(mspass_object):
             return pd.DataFrame()
         if mspass_object.dead():
@@ -2538,121 +2583,125 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
                 test_time = mspass_object[self.data_time_key]
             else:
                 return pd.DataFrame()
-            
+
         tmin = test_time - self.tolerance
         tmax = test_time + self.tolerance
         # For this matcher we dogmatically use <= equivalent in the between
         # construct here - inclusive=True.  In this context seems appropriate
-        dfquery = self.source_time_key +".between({tmin},{tmax},inclusive=True)".format(tmin=tmin,tmax=tmax)
+        dfquery = (
+            self.source_time_key
+            + ".between({tmin},{tmax},inclusive=True)".format(tmin=tmin, tmax=tmax)
+        )
         dfret = self.cache.query(dfquery)
 
-        
         return dfret
-        
+
+
 class ArrivalDBMatcher(DatabaseMatcher):
     """
-    This is a class for matching a table of arrival times to input 
-    waveform data objects.  Use this version if the table of arrivals 
-    is huge and database query delays will not create a bottleneck 
-    in your workflow.  
-    
-    Phase arrival time matching is a common need when waveform segments 
-    are downloaded.  When data are assembled as miniseed files or 
+    This is a class for matching a table of arrival times to input
+    waveform data objects.  Use this version if the table of arrivals
+    is huge and database query delays will not create a bottleneck
+    in your workflow.
+
+    Phase arrival time matching is a common need when waveform segments
+    are downloaded.  When data are assembled as miniseed files or
     url downloads of miniseed data, the format has no way to hold
-    arrival time data.  This matcher can prove useful for matching 
-    waveform segments with an origin as miniseed.  
-    
+    arrival time data.  This matcher can prove useful for matching
+    waveform segments with an origin as miniseed.
+
     The algorithm it uses for matching is a logic and of two tests:
-        1.  We first match all arrival times falling between the 
-            sample range of an input MsPASS data object, d.  That is, 
-            first component of the query is to find all arrival times, 
+        1.  We first match all arrival times falling between the
+            sample range of an input MsPASS data object, d.  That is,
+            first component of the query is to find all arrival times,
             t_a, that obey the relation:  d.t0 <= t_a <= d.endtime().
-        2.  Match only data for which the (fixed) name "sta" 
-            in arrival and the data match.   A secondary key match using 
-            the "net" attribute is used only if "net" is defined with 
-            the data.  That is done to streamline processing of css3.0 
-            data where "net"  is not defined.  
-    
-    Note the concept of an arrival time is also mixed as in 
-    some contexts it means a time computed from an earth model and other 
+        2.  Match only data for which the (fixed) name "sta"
+            in arrival and the data match.   A secondary key match using
+            the "net" attribute is used only if "net" is defined with
+            the data.  That is done to streamline processing of css3.0
+            data where "net"  is not defined.
+
+    Note the concept of an arrival time is also mixed as in
+    some contexts it means a time computed from an earth model and other
     time a measured time that is "picked" by a human or computer algorithm.
-    This class does not distinguish model-based from measured times.  It 
-    simply uses the time and station tag information with the algorithm 
-    noted above to attempt a match.  
-    
+    This class does not distinguish model-based from measured times.  It
+    simply uses the time and station tag information with the algorithm
+    noted above to attempt a match.
+
     :param db:  MongoDB database handle  (positional - no default)
-    :type db: normally a MsPASS Database class but with this algorithm 
+    :type db: normally a MsPASS Database class but with this algorithm
       it can be the superclass from which Database is derived.
-    
+
     :param collection:  Name of MongoDB collection that is to be queried
-       (default "arrival", which is not currently part of the stock 
-        mspass schema.   Note it isn't required to be in the schema 
-        and illustrates flexibility').  
+       (default "arrival", which is not currently part of the stock
+        mspass schema.   Note it isn't required to be in the schema
+        and illustrates flexibility').
     :type collection: string
-      
-    :param attributes_to_load:  list of keys of required attributes that will 
-      be returned in the output of the find method.   The keys listed 
+
+    :param attributes_to_load:  list of keys of required attributes that will
+      be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find_one will fail.   
-      Default ["phase","time"].   
-    :type attributes_to_load:  list of string defining keys in collection 
+      some calls to find_one will fail.
+      Default ["phase","time"].
+    :type attributes_to_load:  list of string defining keys in collection
       documents
-    
-    :param load_if_defined: list of keys of optional attributes to be 
-      extracted by find method.  Any data attached to these keys will only 
-      be posted in the find return if they are defined in the database 
+
+    :param load_if_defined: list of keys of optional attributes to be
+      extracted by find method.  Any data attached to these keys will only
+      be posted in the find return if they are defined in the database
       document retrieved in the query.  Default is None
     :param type:  list of strings defining collection keys
-    
-    :param aliases:  python dictionary defining alias names to apply 
-     when fetching from a data object's Metadata container.   The key sense 
-     of the mapping is important to keep straight.  The key of this 
-     dictionary should match one  of the attributes in attributes_to_load 
-     or load_if_defined.  The value the key defines should be the alias 
-     used to fetch the comparable attribute from the data. 
+
+    :param aliases:  python dictionary defining alias names to apply
+     when fetching from a data object's Metadata container.   The key sense
+     of the mapping is important to keep straight.  The key of this
+     dictionary should match one  of the attributes in attributes_to_load
+     or load_if_defined.  The value the key defines should be the alias
+     used to fetch the comparable attribute from the data.
     :type aliaes:  python dictionary
-    
-    :param prepend_collection_name:  when True attributes returned in 
-      Metadata containers by the find and find_one method will all have the 
-      collection name prepended with a (fixed) separator.  For example, if 
-      the collection name is "channel" the "lat" attribute in the channel 
-      document would be returned as "channel_lat".  
+
+    :param prepend_collection_name:  when True attributes returned in
+      Metadata containers by the find and find_one method will all have the
+      collection name prepended with a (fixed) separator.  For example, if
+      the collection name is "channel" the "lat" attribute in the channel
+      document would be returned as "channel_lat".
     :type prepend_collection_name:  boolean
-    
-    :param require_unique_match:  boolean handling of ambiguous matches.  
-      When True find_one will throw an error if an entry is tries to match 
-      is not unique.  When False find_one returns the first document 
+
+    :param require_unique_match:  boolean handling of ambiguous matches.
+      When True find_one will throw an error if an entry is tries to match
+      is not unique.  When False find_one returns the first document
       found and logs a complaint message.  (default is False)
-    :type require_unique_match:  boolean 
-    
-    :param query:   optional query predicate.  That is, if set the 
-      interval query is appended to this query to build a more specific 
+    :type require_unique_match:  boolean
+
+    :param query:   optional query predicate.  That is, if set the
+      interval query is appended to this query to build a more specific
       query.   An example might be station code keys to match a
       specific pick for a specific station like {"sta":"AAK"}.
-      Another would be to limit arrivals to a specific phase name 
-      like {"phase" : "ScS"}.  Default is None which reverts to no 
+      Another would be to limit arrivals to a specific phase name
+      like {"phase" : "ScS"}.  Default is None which reverts to no
       query predicate.
-    :type query:  python dictionary or None.  None is equivalewnt to 
+    :type query:  python dictionary or None.  None is equivalewnt to
       passing an empty dictionary.  A TypeError will be thrown if this
       argument is not None or a dict.
-      
-      
-    TODO:  It may be desirable to have a dataframe input option for 
-    this one as there is currently no "arrival" collection in our 
-    standard mspass schema.  Also I don't know if aliases will be handled 
+
+
+    TODO:  It may be desirable to have a dataframe input option for
+    this one as there is currently no "arrival" collection in our
+    standard mspass schema.  Also I don't know if aliases will be handled
     correctly with this code.
     """
+
     def __init__(
-            self,
-            db,
-            collection="arrival",
-            attributes_to_load=["phase","time"],
-            load_if_defined=None,
-            aliases=None,
-            require_unique_match=False,
-            prepend_collection_name=True,
-            query=None,
-            ):
+        self,
+        db,
+        collection="arrival",
+        attributes_to_load=["phase", "time"],
+        load_if_defined=None,
+        aliases=None,
+        require_unique_match=False,
+        prepend_collection_name=True,
+        query=None,
+    ):
         super().__init__(
             db,
             collection,
@@ -2661,28 +2710,31 @@ class ArrivalDBMatcher(DatabaseMatcher):
             aliases=aliases,
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
-            )
+        )
 
         if query is None:
             self.query = dict()
-        elif isinstance(query,dict):
+        elif isinstance(query, dict):
             self.query = query
         else:
-            raise TypeError("ArrivalDBMatcher constructor:  query arg must define a python dictionary")
-    def query_generator(self,mspass_object)->dict:
+            raise TypeError(
+                "ArrivalDBMatcher constructor:  query arg must define a python dictionary"
+            )
+
+    def query_generator(self, mspass_object) -> dict:
         """
-        Concrete implementation of method required by superclass 
-        DatabaseMatcher.  
-        
-        This generator implements the switching algorithm noted in the 
-        class docstring.  That is, for atomic data the time span for 
-        the interval query is determined from the range of the waveform 
-        data received through mspass_object.   For ensembles the 
-        algorithm fetches fields defined by self.startime_key and 
-        self.endtime_key to define the time interval.   
-        
-        The interval test is overlaid on the self.query input.  i.e. 
-        the query dict components derived are added to the self.query. 
+        Concrete implementation of method required by superclass
+        DatabaseMatcher.
+
+        This generator implements the switching algorithm noted in the
+        class docstring.  That is, for atomic data the time span for
+        the interval query is determined from the range of the waveform
+        data received through mspass_object.   For ensembles the
+        algorithm fetches fields defined by self.startime_key and
+        self.endtime_key to define the time interval.
+
+        The interval test is overlaid on the self.query input.  i.e.
+        the query dict components derived are added to the self.query.
         """
 
         if _input_is_atomic(mspass_object):
@@ -2690,13 +2742,10 @@ class ArrivalDBMatcher(DatabaseMatcher):
                 query = copy.deepcopy(self.query)
                 stime = mspass_object.t0
                 etime = mspass_object.endtime()
-                query["time"] = {
-                    "$gte": stime,
-                    "$lte": etime
-                    }
+                query["time"] = {"$gte": stime, "$lte": etime}
                 # these names are frozen
-                sta = _get_with_readonly_recovery(mspass_object,"sta")
-                net = _get_with_readonly_recovery(mspass_object,"net")
+                sta = _get_with_readonly_recovery(mspass_object, "sta")
+                net = _get_with_readonly_recovery(mspass_object, "net")
                 if net is not None:
                     query["net"] = net
                 if sta is not None:
@@ -2705,130 +2754,131 @@ class ArrivalDBMatcher(DatabaseMatcher):
                 return query
         else:
             return None
-        
+
+
 class ArrivalMatcher(DataFrameCacheMatcher):
     """
-    This is a class for matching a table of arrival times to input 
-    waveform data objects.  Use this version if the table of arrivals 
-    is not huge enough to cause a memory problem. 
-    
-    Phase arrival time matching is a common need when waveform segments 
-    are downloaded.  When data are assembled as miniseed files or 
+    This is a class for matching a table of arrival times to input
+    waveform data objects.  Use this version if the table of arrivals
+    is not huge enough to cause a memory problem.
+
+    Phase arrival time matching is a common need when waveform segments
+    are downloaded.  When data are assembled as miniseed files or
     url downloads of miniseed data, the format has no way to hold
-    arrival time data.  This matcher can prove useful for matching 
-    waveform segments with an origin as miniseed.  
-    
+    arrival time data.  This matcher can prove useful for matching
+    waveform segments with an origin as miniseed.
+
     The algorithm it uses for matching is a logic and of two tests:
-        1.  We first match all arrival times falling between the 
-            sample range of an input MsPASS data object, d.  That is, 
-            first component of the query is to find all arrival times, 
+        1.  We first match all arrival times falling between the
+            sample range of an input MsPASS data object, d.  That is,
+            first component of the query is to find all arrival times,
             t_a, that obey the relation:  d.t0 <= t_a <= d.endtime().
-        2.  Match only data for which the (fixed) name "sta" 
-            in arrival and the data match.   A secondary key match using 
-            the "net" attribute is used only if "net" is defined with 
-            the data.  That is done to streamline processing of css3.0 
-            data where "net"  is not defined.  
-    
-    Note the concept of an arrival time is also mixed as in 
-    some contexts it means a time computed from an earth model and other 
+        2.  Match only data for which the (fixed) name "sta"
+            in arrival and the data match.   A secondary key match using
+            the "net" attribute is used only if "net" is defined with
+            the data.  That is done to streamline processing of css3.0
+            data where "net"  is not defined.
+
+    Note the concept of an arrival time is also mixed as in
+    some contexts it means a time computed from an earth model and other
     time a measured time that is "picked" by a human or computer algorithm.
-    This class does not distinguish model-based from measured times.  It 
-    simply uses the time and station tag information with the algorithm 
+    This class does not distinguish model-based from measured times.  It
+    simply uses the time and station tag information with the algorithm
     noted above to attempt a match.
-    
-    This implementation caches the table of attributes desired to an 
-    internal pandas DataFrame.   It is thus most appropriate for 
-    arrival tables that are not huge.  Note it may be possible to 
-    do appropriate preprocessing to manage the arrival table size. 
-    e.g. the table can be grouped by station or in time blocks and 
-    then processed in a loop updating waveform database records 
+
+    This implementation caches the table of attributes desired to an
+    internal pandas DataFrame.   It is thus most appropriate for
+    arrival tables that are not huge.  Note it may be possible to
+    do appropriate preprocessing to manage the arrival table size.
+    e.g. the table can be grouped by station or in time blocks and
+    then processed in a loop updating waveform database records
     in multiple passes.  The alternative for large arrival tables
-    is to use the DB version of this matcher.  
-    
+    is to use the DB version of this matcher.
+
     :param db:  MongoDB database handle  (positional - no default)
-    :type db: normally a MsPASS Database class but with this algorithm 
+    :type db: normally a MsPASS Database class but with this algorithm
       it can be the superclass from which Database is derived.
-    
+
     :param collection:  Name of MongoDB collection that is to be queried
-       (default "arrival", which is not currently part of the stock 
-        mspass schema.   Note it isn't required to be in the schema 
-        and illustrates flexibility').  
+       (default "arrival", which is not currently part of the stock
+        mspass schema.   Note it isn't required to be in the schema
+        and illustrates flexibility').
     :type collection: string
-      
-    :param attributes_to_load:  list of keys of required attributes that will 
-      be returned in the output of the find method.   The keys listed 
+
+    :param attributes_to_load:  list of keys of required attributes that will
+      be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find_one will fail.   
-      Default ["phase","time"].   
-    :type attributes_to_load:  list of string defining keys in collection 
+      some calls to find_one will fail.
+      Default ["phase","time"].
+    :type attributes_to_load:  list of string defining keys in collection
       documents
-    
-    :param load_if_defined: list of keys of optional attributes to be 
-      extracted by find method.  Any data attached to these keys will only 
-      be posted in the find return if they are defined in the database 
+
+    :param load_if_defined: list of keys of optional attributes to be
+      extracted by find method.  Any data attached to these keys will only
+      be posted in the find return if they are defined in the database
       document retrieved in the query.  Default is None
     :param type:  list of strings defining collection keyes
-    
-    :param aliases:  python dictionary defining alias names to apply 
-     when fetching from a data object's Metadata container.   The key sense 
-     of the mapping is important to keep straight.  The key of this 
-     dictionary should match one  of the attributes in attributes_to_load 
-     or load_if_defined.  The value the key defines should be the alias 
-     used to fetch the comparable attribute from the data. 
+
+    :param aliases:  python dictionary defining alias names to apply
+     when fetching from a data object's Metadata container.   The key sense
+     of the mapping is important to keep straight.  The key of this
+     dictionary should match one  of the attributes in attributes_to_load
+     or load_if_defined.  The value the key defines should be the alias
+     used to fetch the comparable attribute from the data.
     :type aliaes:  python dictionary
-    
-    :param prepend_collection_name:  when True attributes returned in 
-      Metadata containers by the find and find_one method will all have the 
-      collection name prepended with a (fixed) separator.  For example, if 
-      the collection name is "channel" the "lat" attribute in the channel 
-      document would be returned as "channel_lat".  
+
+    :param prepend_collection_name:  when True attributes returned in
+      Metadata containers by the find and find_one method will all have the
+      collection name prepended with a (fixed) separator.  For example, if
+      the collection name is "channel" the "lat" attribute in the channel
+      document would be returned as "channel_lat".
     :type prepend_collection_name:  boolean
-    
-    :param require_unique_match:  boolean handling of ambiguous matches.  
-      When True find_one will throw an error if an entry is tries to match 
-      is not unique.  When False find_one returns the first document 
+
+    :param require_unique_match:  boolean handling of ambiguous matches.
+      When True find_one will throw an error if an entry is tries to match
+      is not unique.  When False find_one returns the first document
       found and logs a complaint message.  (default is False)
-    :type require_unique_match:  boolean 
-    
-    :param ensemble_starttime_key:  defines the key used to fetch a 
-     start time for the interval test when processing with ensemble data. 
+    :type require_unique_match:  boolean
+
+    :param ensemble_starttime_key:  defines the key used to fetch a
+     start time for the interval test when processing with ensemble data.
      Default is "starttime".
     :type ensemble_starttime_key:  string
-    
-    :param ensemble_endtime_key:  defines the key used to fetch a 
-     end time for the interval test when processing with ensemble data. 
+
+    :param ensemble_endtime_key:  defines the key used to fetch a
+     end time for the interval test when processing with ensemble data.
      Default is "endtime".
     :type ensemble_endtime_key:  string
-    
-    :param query:   optional query predicate.  That is, if set the 
-      interval query is appended to this query to build a more specific 
+
+    :param query:   optional query predicate.  That is, if set the
+      interval query is appended to this query to build a more specific
       query.   An example might be station code keys to match a
       specific pick for a specific station like {"sta":"AAK"}.
       Default is None.
-    :type query:  python dictionary or None.  None is equivalewnt to 
+    :type query:  python dictionary or None.  None is equivalewnt to
       passing an empty dictionary.  A TypeError will be thrown if this
       argument is not None or a dict.
-      
-    TODO:  db arg needs to be db_or_df and allow loading from 
-    a database or datafram.  I also think it would be smart to 
-    add a query argument to the database input as it would facilitate 
-    the idea in the docstring above to prefilter the input into things 
-    like year time blocks.  
-    """
-    def __init__(
-            self,
-            db,
-            collection="arrival",
-            attributes_to_load=["phase","time"],
-            load_if_defined=None,
-            aliases=None,
-            require_unique_match=False,
-            prepend_collection_name=True,
-            ensemble_starttime_key="starttime",
-            ensemble_endtime_key="endtime",
-            arrival_time_key=None,
 
-            ):
+    TODO:  db arg needs to be db_or_df and allow loading from
+    a database or datafram.  I also think it would be smart to
+    add a query argument to the database input as it would facilitate
+    the idea in the docstring above to prefilter the input into things
+    like year time blocks.
+    """
+
+    def __init__(
+        self,
+        db,
+        collection="arrival",
+        attributes_to_load=["phase", "time"],
+        load_if_defined=None,
+        aliases=None,
+        require_unique_match=False,
+        prepend_collection_name=True,
+        ensemble_starttime_key="starttime",
+        ensemble_endtime_key="endtime",
+        arrival_time_key=None,
+    ):
         super().__init__(
             db,
             collection,
@@ -2837,21 +2887,23 @@ class ArrivalMatcher(DataFrameCacheMatcher):
             aliases=aliases,
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
-            )
+        )
         # maybe a bit confusing to shorten the names here but the
         # argument names are a bit much
         self.starttime_key = ensemble_starttime_key
         self.endtime_key = ensemble_endtime_key
         if arrival_time_key is None:
             self.arrival_time_key = collection + "_time"
-        elif isinstance(arrival_time_key,str):
+        elif isinstance(arrival_time_key, str):
             self.arrival_time_key = arrival_time_key
         else:
-            raise TypeError("ArrivalDBMatcher constructor: arrival_time_key argument must define a string")
-       
-    def subset(self,mspass_object)->pd.DataFrame:
+            raise TypeError(
+                "ArrivalDBMatcher constructor: arrival_time_key argument must define a string"
+            )
+
+    def subset(self, mspass_object) -> pd.DataFrame:
         """
-        Concrete implementation of method required by superclass 
+        Concrete implementation of method required by superclass
         DataFramematcher
         """
 
@@ -2861,71 +2913,74 @@ class ArrivalMatcher(DataFrameCacheMatcher):
                     stime = mspass_object.t0
                     etime = mspass_object.endtime()
                 else:
-                    if mspass_object.is_defined(self.starttime_key) \
-                        and mspass_object.is_defined(self.endtimekey):
-                        stime = mspass_object[self.starttime_key]   
+                    if mspass_object.is_defined(
+                        self.starttime_key
+                    ) and mspass_object.is_defined(self.endtimekey):
+                        stime = mspass_object[self.starttime_key]
                         etime = mspass_object[self.endtime_key]
                     else:
                         return pd.DataFrame()
-                sta = _get_with_readonly_recovery(mspass_object,"sta")
-                if sta is not None:        
-                    dfret = self.cache[("sta" == sta) \
-                                   & (self.arrival_time_key >= stime) \
-                                   & (self.arrival_time_key <= etime) 
-                        ]
-                    if len(dfret)>1:
-                        net = _get_with_readonly_recovery(mspass_object,"net")
-                        if net is not None:           
+                sta = _get_with_readonly_recovery(mspass_object, "sta")
+                if sta is not None:
+                    dfret = self.cache[
+                        ("sta" == sta)
+                        & (self.arrival_time_key >= stime)
+                        & (self.arrival_time_key <= etime)
+                    ]
+                    if len(dfret) > 1:
+                        net = _get_with_readonly_recovery(mspass_object, "net")
+                        if net is not None:
                             dfret = dfret["net" == net]
                     return dfret
             else:
                 return pd.DataFrame()
         else:
-            return pd.DataFrame()        
+            return pd.DataFrame()
 
-@mspass_func_wrapper          
-def normalize(mspass_object,matcher,kill_on_failure=True):
+
+@mspass_func_wrapper
+def normalize(mspass_object, matcher, kill_on_failure=True):
     """
     Generic function to do in line normalization with dask/spark map operator.
-    
+
     In MsPASS we use the normalized data model for receiver and source
-    metadata.  The normalization can be done during any reads if the 
+    metadata.  The normalization can be done during any reads if the
     data have cross-referencing ids defined as described in the User's Manual.
-    This function provides a generic interface to link to a normalizing 
-    collection within a workflow using a map operator applied to a dask 
-    bag or spark rdd containing a dataset of MsPASS data objects.  
+    This function provides a generic interface to link to a normalizing
+    collection within a workflow using a map operator applied to a dask
+    bag or spark rdd containing a dataset of MsPASS data objects.
     The algorithm is made generic through the matcher argument that must
-    point a concrete implementation of the abstract base class 
-    defined in this module as BasicMatcher.  
-    
-    For example, suppose we create a concrete implementation of the 
+    point a concrete implementation of the abstract base class
+    defined in this module as BasicMatcher.
+
+    For example, suppose we create a concrete implementation of the
     MiniseedMatcher using all defaults from a database handle db as
     follows:
         matcher = MiniseedMatcher()
-    Suppose we then load data from wf_miniseed with read_distributed_data 
-    into the dask bag we will call dataset.  We can normalize 
+    Suppose we then load data from wf_miniseed with read_distributed_data
+    into the dask bag we will call dataset.  We can normalize
     that data within a workflow as follows:
         dataset = dataset.map(normalize,matcher)
-    
+
     :param mspass_object:  data to be normalized
-    :type mspass_object:  For all mspass matchers this 
+    :type mspass_object:  For all mspass matchers this
       must be one of the mspass data types of TimeSeries, Seismogram,
-      TimeSeriesEnsemble, or SeismogramEnsemble.  Many matchers have 
-      further restrictions.  e.g. the normal use of the MiniseedMatcher 
-      using the defaults like the example insists the data received are 
-      either TimeSeries or Seismogram objects.   Read the docstring 
-      carefully for your matcher choice for any limitations. 
-      
-    :param matcher:  a generic matching function that is a subclass of 
-      BasicMatcher.   This function only calls the find_one method. 
+      TimeSeriesEnsemble, or SeismogramEnsemble.  Many matchers have
+      further restrictions.  e.g. the normal use of the MiniseedMatcher
+      using the defaults like the example insists the data received are
+      either TimeSeries or Seismogram objects.   Read the docstring
+      carefully for your matcher choice for any limitations.
+
+    :param matcher:  a generic matching function that is a subclass of
+      BasicMatcher.   This function only calls the find_one method.
     :type matcher:  must be a concrete subclass of BasicMatcher
-    
-    :param kill_on_failure:  when True if the call to the find_one 
-    method of matcher fails the datum returned will be marked dead. 
+
+    :param kill_on_failure:  when True if the call to the find_one
+    method of matcher fails the datum returned will be marked dead.
     :type kill_on_failure:  boolean
-    
+
     :return:  copy of mspass_object.  dead data are returned immediately.
-    if kill_on_failure is true the result may be killed on return. 
+    if kill_on_failure is true the result may be killed on return.
     """
     if mspass_object.dead():
         return mspass_object
@@ -2934,17 +2989,18 @@ def normalize(mspass_object,matcher,kill_on_failure=True):
     if find_output[0] is None:
         mspass_object.kill()
     else:
-        # this could be done with operator+= in C++ with appropriate 
+        # this could be done with operator+= in C++ with appropriate
         # casting but I think this is the only solution here
         # we are just copying the return Metadata contents to the data
         for k in find_output[0]:
-            mspass_object[k] =find_output[0][k]
-            
+            mspass_object[k] = find_output[0][k]
+
     # append any error log returns to the data elog
     # operator += is bound to python by pybind11 so this works
     if find_output[1] is not None:
         mspass_object.elog += find_output[1]
     return mspass_object
+
 
 def bulk_normalize(
     db,
@@ -2955,13 +3011,13 @@ def bulk_normalize(
 ):
     """
     This function iterates through the collection specified by db and wf_col,
-    and runs a chain of normalization funtions in serial on each document 
-    defined by the cursor returned by wfquery.  It speeds updates by 
-    using the bulk methods of MongoDB.  The chain also speeds updates 
-    as the all matchers in matcher_list append to the update string 
-    for the same wf_col document.   A typical example would be to 
+    and runs a chain of normalization funtions in serial on each document
+    defined by the cursor returned by wfquery.  It speeds updates by
+    using the bulk methods of MongoDB.  The chain also speeds updates
+    as the all matchers in matcher_list append to the update string
+    for the same wf_col document.   A typical example would be to
     run this function on wf_miniseed data running a matcher to set
-    channel_id, site_id, and source_id.  
+    channel_id, site_id, and source_id.
 
     :param db: should be a MsPASS database handle containing the wf_col
     and the collections defined by the matcher_list list.
@@ -2975,17 +3031,17 @@ def bulk_normalize(
     query defines the list of documents that the algorithm will attempt
     to normalize as described above.  The default (None) will process the entire
     collection (query set to an emtpy dict).
-    :param matcher_list: a list of instances of one or more subclasses of BasicMather. 
-      In addition to the required classes all instances passed to through 
-      this interface must contain two required attributes:  (1) collection 
+    :param matcher_list: a list of instances of one or more subclasses of BasicMather.
+      In addition to the required classes all instances passed to through
+      this interface must contain two required attributes:  (1) collection
       which defines the collection name, and (2) prepend_collection_name is
-      a boolean that determines if the attributes loaded should have 
+      a boolean that determines if the attributes loaded should have
       the collection name prepended (e.g. channel_id).  In addition,
       all instances must define the find_doc method which is not required
       by the BasicMatcher interface.   (find_doc is comparable to find_one
-      but uses a python dictionary as the container instead of referencing 
+      but uses a python dictionary as the container instead of referencing
       a mspass data object.  find_one is the core method for inline normalization)
-      
+
 
 
     :return: a list with a length of len(matcher_list)+1.  0 is the number of documents
@@ -2999,11 +3055,10 @@ def bulk_normalize(
 
     if matcher_list is None:
         #   The default value for matcher_list is for wf_miniseed with channel
-        # Assume the defaults are sufficient but we limit the required 
+        # Assume the defaults are sufficient but we limit the required
         # attribute list to save memory
         channel_matcher = MiniseedMatcher(
-            db,
-            attributes_to_load=["starttime","endtime","_id"]
+            db, attributes_to_load=["starttime", "endtime", "_id"]
         )
         matcher_list = [channel_matcher]
 
@@ -3015,36 +3070,38 @@ def bulk_normalize(
                 ),
                 ErrorSeverity.Fatal,
             )
-        # check that matcher has the find_doc method  implemented - it is 
+        # check that matcher has the find_doc method  implemented - it is
         # not defined in the BasicMatcher interface and is required
-        if not (hasattr(matcher, 'find_doc') and callable(getattr(matcher, 'find_doc'))):
-            message = "matcher_list contains class={classname} that does not have an implementation of the find_doc method required by this function - try using it in a map operator".format(classname=type(matcher).__name__)
-            raise MsPASSError(
-                "bulk_normalize:  " + message,
-                ErrorSeverity.Fatal)
-        # these two attributes are also required and best checked here 
+        if not (
+            hasattr(matcher, "find_doc") and callable(getattr(matcher, "find_doc"))
+        ):
+            message = "matcher_list contains class={classname} that does not have an implementation of the find_doc method required by this function - try using it in a map operator".format(
+                classname=type(matcher).__name__
+            )
+            raise MsPASSError("bulk_normalize:  " + message, ErrorSeverity.Fatal)
+        # these two attributes are also required and best checked here
         # for a minor cost
-        if not hasattr(matcher,'prepend_collection_name'):
-            message = "matcher list class={classname} does not define required attribute prepend_collection_name - trying using it in a map operator".format(classname=type(matcher).__name__)
-            raise MsPASSError(
-                "bulk_normalize:  "
-                + message,
-                ErrorSeverity.Fatal)
-        if not hasattr(matcher,'collection'):
-            message = "matcher list class={classname} does not define required attribute collection - trying using it in a map operator".format(classname=type(matcher).__name__)
-            raise MsPASSError(
-                "bulk_normalize:  "
-                + message,
-                ErrorSeverity.Fatal)
+        if not hasattr(matcher, "prepend_collection_name"):
+            message = "matcher list class={classname} does not define required attribute prepend_collection_name - trying using it in a map operator".format(
+                classname=type(matcher).__name__
+            )
+            raise MsPASSError("bulk_normalize:  " + message, ErrorSeverity.Fatal)
+        if not hasattr(matcher, "collection"):
+            message = "matcher list class={classname} does not define required attribute collection - trying using it in a map operator".format(
+                classname=type(matcher).__name__
+            )
+            raise MsPASSError("bulk_normalize:  " + message, ErrorSeverity.Fatal)
     ndocs = db[wf_col].count_documents(wfquery)
     if ndocs == 0:
         raise MsPASSError(
             "bulk_normalize: "
-            + "query={wfquery} of collection={wf_col} yielded 0 documents\nNothing to process".format(wfquery=wfquery,wf_col=wf_col),
+            + "query={wfquery} of collection={wf_col} yielded 0 documents\nNothing to process".format(
+                wfquery=wfquery, wf_col=wf_col
+            ),
             ErrorSeverity.Fatal,
         )
-        
-    # this incantation initializes cnt_list as a list with number of 
+
+    # this incantation initializes cnt_list as a list with number of
     # components set as the size of matcher_list and initialized to 0
     cnt_list = [0] * len(matcher_list)
     counter = 0
@@ -3141,7 +3198,7 @@ def normalize_mseed(
     and when matches are found the associated site document id will
     be set wf_miniseed document as site_id. Note at least one of
     the two booleans normalize_channel and normalize_site must be set True
-    or the function will immediately abort. 
+    or the function will immediately abort.
 
 
     :return: list with three integers.  0 is the number of documents processed in
@@ -3152,24 +3209,21 @@ def normalize_mseed(
 
     if wfquery is None:
         wfquery = {}
-    
+
     if not (normalize_channel or normalize_site):
         raise MsPASSError(
             "normalize_mseed:  usage error.  normalize_channel and normalize_site cannot both be set False",
-            ErrorSeverity.Fatal)
+            ErrorSeverity.Fatal,
+        )
 
     matcher_function_list = []
-    # in the calls to the constructors below starttime and endtime 
+    # in the calls to the constructors below starttime and endtime
     # must be included for the miniseed matcher to work
     if normalize_channel:
         matcher = MiniseedMatcher(
             db,
             collection="channel",
-            attributes_to_load=[
-                "_id",
-                "starttime",
-                "endtime"
-            ],  
+            attributes_to_load=["_id", "starttime", "endtime"],
             prepend_collection_name=True,
         )
         matcher_function_list.append(matcher)
@@ -3178,11 +3232,7 @@ def normalize_mseed(
         sitematcher = MiniseedMatcher(
             db,
             collection="site",
-            attributes_to_load=[
-                "_id",
-                "starttime",
-                "endtime"
-            ], 
+            attributes_to_load=["_id", "starttime", "endtime"],
             prepend_collection_name=True,
         )
         matcher_function_list.append(sitematcher)
@@ -3224,7 +3274,7 @@ def _get_test_time(d, time):
     """
     if time == None:
         if isinstance(d, (TimeSeries, Seismogram)):
-             test_time = d.t0
+            test_time = d.t0
         else:
             if d.is_defined("starttime"):
                 test_time = d["starttime"]
@@ -3235,23 +3285,25 @@ def _get_test_time(d, time):
         test_time = time
     return test_time
 
-def _get_with_readonly_recovery(d,key):
-        """
-        Private method for repetitious handling of trying to use the 
-        readonly tag to recover if one of net, sta, chan, or loc have 
-        been botched with readonly tag.  d is the datum from with key is 
-        to be extracted.   Returns a None if recovery failed. 
-        """
-        ROTAG = "READONLY_"
-        if d.is_defined(key):
-            return d[key]
+
+def _get_with_readonly_recovery(d, key):
+    """
+    Private method for repetitious handling of trying to use the
+    readonly tag to recover if one of net, sta, chan, or loc have
+    been botched with readonly tag.  d is the datum from with key is
+    to be extracted.   Returns a None if recovery failed.
+    """
+    ROTAG = "READONLY_"
+    if d.is_defined(key):
+        return d[key]
+    else:
+        testkey = ROTAG + key
+        if d.is_defined(testkey):
+            return d[testkey]
         else:
-            testkey = ROTAG + key
-            if d.is_defined(testkey):
-                return d[testkey]
-            else:
-                return None
-            
+            return None
+
+
 def _input_is_valid(d):
     """
     This internal function standardizes the test to certify the
@@ -3270,36 +3322,37 @@ def _input_is_valid(d):
 def _input_is_atomic(d):
     """
     A variant of input_is_valid is to test if a data object is atomic
-    by the mspass definition.  In this case, that means a datum is not 
-    an ensemble.  This is necessary, for example, to assume something 
+    by the mspass definition.  In this case, that means a datum is not
+    an ensemble.  This is necessary, for example, to assume something
     like asking for d.t0 doesn't generate an exception.
     """
     return isinstance(d, (TimeSeries, Seismogram))
 
-def _load_as_df(db,collection,query,attributes_to_load,load_if_defined):
+
+def _load_as_df(db, collection, query, attributes_to_load, load_if_defined):
     """
-    Internal helper function used to translate all or part of a 
-    collection to a DataFrame.  This algorithm should only be used 
-    for small collections as it makes an intermediate copy of the 
-    collection as a dictionary before calling the DataFrame.from_dict 
-    method to create the working dataframe. 
-    
+    Internal helper function used to translate all or part of a
+    collection to a DataFrame.  This algorithm should only be used
+    for small collections as it makes an intermediate copy of the
+    collection as a dictionary before calling the DataFrame.from_dict
+    method to create the working dataframe.
+
     :param db:  Database handle assumed to contain collection
     :param collection:  collection from which the data are to be extracted
-    :param query:  python dict defining a query to apply to the collection. 
+    :param query:  python dict defining a query to apply to the collection.
       If you want the entire collection specify None or an empty dictionary.
-    :type query:  python dict defining a pymongo query or None.  
-    :param attributes_to_load: list of keys to extract of required attributes 
-    to load from collection.   This function will abort if any document 
+    :type query:  python dict defining a pymongo query or None.
+    :param attributes_to_load: list of keys to extract of required attributes
+    to load from collection.   This function will abort if any document
     does not contain one of these attributes.
-    :param load_if_defined:  attributes loaded more cautiously.  If the 
-    attributes for any of the keys in this list are not found in a document 
+    :param load_if_defined:  attributes loaded more cautiously.  If the
+    attributes for any of the keys in this list are not found in a document
     the output dataframe has a Null defined for that cell.
     """
     if query is None:
         query = dict()
     ntuples = db[collection].count_documents(query)
-    if ntuples==0:
+    if ntuples == 0:
         return pd.DataFrame()
     # create dictionary with empty array values to initialize
     dict_tmp = dict()
@@ -3309,7 +3362,7 @@ def _load_as_df(db,collection,query,attributes_to_load,load_if_defined):
         dict_tmp[k] = []
     cursor = db[collection].find(query)
     for doc in cursor:
-        # attributes_to_load list are required.  For now let this 
+        # attributes_to_load list are required.  For now let this
         # thow an exception if that is not true - may need a handler
         for k in attributes_to_load:
             dict_tmp[k].append(doc[k])
@@ -3319,6 +3372,3 @@ def _load_as_df(db,collection,query,attributes_to_load,load_if_defined):
             else:
                 dict_tmp[k].append(None)
     return pd.DataFrame.from_dict(dict_tmp)
-
-            
-    
