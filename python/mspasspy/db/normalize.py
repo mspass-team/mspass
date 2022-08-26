@@ -18,6 +18,10 @@ import inspect
 import copy
 import pandas as pd
 import dask
+import numpy as np
+
+type_pdd = pd.core.frame.DataFrame
+type_ddd = dask.dataframe.core.DataFrame
 
 
 class BasicMatcher(ABC):
@@ -316,56 +320,25 @@ class DatabaseMatcher(BasicMatcher):
         number_hits = self.dbhandle.count_documents(query)
         if number_hits <= 0:
             elog = ErrorLogger()
-            message = (
-                "DatabaseMatcher.find:  "
-                + "query = "
-                + str(query)
-                + " yielded no documents"
-            )
+            message = "query = " + str(query) + " yielded no documents"
+            elog.log_error("DatabaseMatcher.find:  ", message, ErrorSeverity.Complaint)
             return [None, elog]
         cursor = self.dbhandle.find(query)
         elog = ErrorLogger()
         metadata_list = []
         for doc in cursor:
-            md = Metadata()
-            for k in self.attributes_to_load:
-                if k in doc:
-                    if k in self.aliases:
-                        key = self.aliases[k]
-                    else:
-                        key = k
-                    if self.prepend_collection_name:
-                        if key == "_id":
-                            mdkey = self.collection + key
-                        else:
-                            mdkey = self.collection + "_" + key
-                    else:
-                        mdkey = key
-                    md[mdkey] = doc[key]
-                else:
-                    raise MsPASSError(
-                        "DatabaseMatcher.find:  "
-                        + "Retrieved document has no data for required key={}",
-                        format(k),
-                        ErrorSeverity.Fatal,
-                    )
-
-            for k in self.load_if_defined:
-                if k in doc:
-                    if k in self.aliases:
-                        key = self.aliases[k]
-                    else:
-                        key = k
-                    if self.prepend_collection_name:
-                        if key == "_id":
-                            mdkey = self.collection + key
-                        else:
-                            mdkey = self.collection + "_" + key
-                    else:
-                        mdkey = key
-                    md[mdkey] = doc[key]
-
-            metadata_list.append(md)
+            try:
+                md = extractData2Metadata(
+                    doc,
+                    self.attributes_to_load,
+                    self.aliases,
+                    self.prepend_collection_name,
+                    self.collection,
+                    self.load_if_defined,
+                )
+                metadata_list.append(md)
+            except MsPASSError as e:
+                raise MsPASSError("DatabaseMatcher.find: " + e.message, e.severity)
 
         if elog.size() <= 0:
             return [metadata_list, None]
@@ -424,45 +397,43 @@ class DictionaryCacheMatcher(BasicMatcher):
     Matcher implementing a caching method based on a python dictionary.
 
     This is an intermediate class for instances where the database collection
-    to be matched is small enough that the in-memory model is appropriate. 
-    It should also only be used if the matching algorithm can be reduced 
+    to be matched is small enough that the in-memory model is appropriate.
+    It should also only be used if the matching algorithm can be reduced
     to a single string that can serve as a unique id for each tuple.
-    
-    The class defines a generic dictionary cache with a string key.   The way that 
-    key is define is abstracted through two virtual methods:  
-    (1) The cache_id method creates a match key from a mspass data object. 
-        That is normally from the Metadata container but it is not 
-        restricted to that. e.g. start time for TimeSeries or 
+
+    The class defines a generic dictionary cache with a string key.   The way that
+    key is define is abstracted through two virtual methods:
+    (1) The cache_id method creates a match key from a mspass data object.
+        That is normally from the Metadata container but it is not
+        restricted to that. e.g. start time for TimeSeries or
         Seismogram objects can be obtained from the t0 attribute
-        directly.  
-    (2) The db_make_cache_id is called by the internal method of this 
-        intermediate class (method name is _load_normalization_cache) 
-        to build the cache index from MongoDB documents scanned to 
-        construct the cache.  
-        
+        directly.
+    (2) The db_make_cache_id is called by the internal method of this
+        intermediate class (method name is _load_normalization_cache)
+        to build the cache index from MongoDB documents scanned to
+        construct the cache.
+
     Two different methods to define the cache index are necessary as a
-    generic way to implement aliases.  A type example is the mspass use 
-    of names like "channel_id" to refer to the ObjectId of a specific 
-    document in the channel collection.   When loading channel the name 
-    key is "_id" but data objects would normally have that same data 
-    defined with the key "channel_id".   Similarly, if data have had 
-    aliases applied a key in the data may not match the name in a 
-    collection to be matched.   The dark side of this is it is very 
-    easy when running subclasses of this to get null results with 
-    all members of a dataset.   As always testing with a subset of 
-    data is strongly recommended before running versions of this on 
-    a large dataset.   
-    
-    This class cannot be instantiated because it is not concrete 
+    generic way to implement aliases.  A type example is the mspass use
+    of names like "channel_id" to refer to the ObjectId of a specific
+    document in the channel collection.   When loading channel the name
+    key is "_id" but data objects would normally have that same data
+    defined with the key "channel_id".   Similarly, if data have had
+    aliases applied a key in the data may not match the name in a
+    collection to be matched.   The dark side of this is it is very
+    easy when running subclasses of this to get null results with
+    all members of a dataset.   As always testing with a subset of
+    data is strongly recommended before running versions of this on
+    a large dataset.
+
+    This class cannot be instantiated because it is not concrete
     (has abstract - virtual - methods that must be defined by subclasses)
-    See implementations for constructor argument definitions.  
-    
-    TODO:   needs an option to load from a DataFrame
+    See implementations for constructor argument definitions.
     """
 
     def __init__(
         self,
-        db,
+        db_or_df,
         collection,
         query=None,
         attributes_to_load=None,
@@ -505,12 +476,15 @@ class DictionaryCacheMatcher(BasicMatcher):
         self.collection = collection
         self.require_unique_match = require_unique_match
         self.prepend_collection_name = prepend_collection_name
+        self.use_dataframe_index_as_cache_id = use_dataframe_index_as_cache_id
 
         # This is a redundant initialization but a minor cost for stability
         self.normcache = dict()
 
-        if isinstance(db, Database):
-            self._db_load_normalization_cache(db, collection)
+        if isinstance(db_or_df, Database):
+            self._db_load_normalization_cache(db_or_df, collection)
+        elif isinstance(db_or_df, (type_ddd, type_pdd)):
+            self._df_load_normalization_cache(db_or_df, collection)
         else:
             raise TypeError(
                 "{} constructor:  required arg0 must be a mspass Database handle".format(
@@ -646,13 +620,15 @@ class DictionaryCacheMatcher(BasicMatcher):
                 (if appropriate) in each component.
         """
         if not _input_is_valid(mspass_object):
-            elog = ErrorLogger(
+            elog = ErrorLogger()
+            elog.log_error(
                 "DictionaryCacheMatcher.find",
                 "Received datum that was not a valid MsPASS data object",
                 ErrorSeverity.Invalid,
             )
             return [None, elog]
-
+        if mspass_object.dead():
+            return [None, None]
         thisid = self.cache_id(mspass_object)
         # this should perhaps generate two different messages as the
         # they imply slightly different things - the current message
@@ -667,11 +643,7 @@ class DictionaryCacheMatcher(BasicMatcher):
         else:
             return [self.normcache[thisid], None]
 
-    def _db_load_normalization_cache(
-        self,
-        db,
-        collection,
-    ):
+    def _db_load_normalization_cache(self, db, collection):
         """
         This private method abstracts the process of loading a cached
         version of a normalizing collection.  It creates a python
@@ -729,55 +701,97 @@ class DictionaryCacheMatcher(BasicMatcher):
                 raise MsPASSError(
                     "DictionaryCacheMatcher._load_normalization_cache:  "
                     + "db_make_cache_id failed - coding problem or major problem with collection="
-                    + self.collection,
+                    + collection,
                     ErrorSeverity.Fatal,
                 )
-            # This section is almost identical to the find method of
-            # DatabaseMatcher but I couldn't see how to cleanly make it
-            # a function accessible by either class.
-            md = Metadata()
-            for k in self.attributes_to_load:
-                if k in doc:
-                    if k in self.aliases:
-                        key = self.aliases[k]
-                    else:
-                        key = k
-                    if self.prepend_collection_name:
-                        if key == "_id":
-                            mdkey = self.collection + key
-                        else:
-                            mdkey = self.collection + "_" + key
-                    else:
-                        mdkey = key
-                    md[mdkey] = doc[key]
+            try:
+                md = extractData2Metadata(
+                    doc,
+                    self.attributes_to_load,
+                    self.aliases,
+                    self.prepend_collection_name,
+                    collection,
+                    self.load_if_defined,
+                )
+                if cache_key in self.normcache:
+                    self.normcache[cache_key].append(md)
                 else:
-                    message = "Required attribute {key} was not found in document number {n} of collection {col}".format(
-                        key=k, n=count, col=collection
-                    )
-                    raise MsPASSError(
-                        "DictionaryCacheMatcher._load_normalization_cache:  " + message,
-                        ErrorSeverity.Fatal,
-                    )
-            for k in self.load_if_defined:
-                if k in doc:
-                    if k in self.aliases:
-                        key = self.aliases[k]
-                    else:
-                        key = k
-                    if self.prepend_collection_name:
-                        if key == "_id":
-                            mdkey = self.collection + key
-                        else:
-                            mdkey = self.collection + "_" + key
-                    else:
-                        mdkey = key
-                    md[mdkey] = doc[key]
+                    self.normcache[cache_key] = [md]
+                count += 1
+            except MsPASSError as e:
+                raise MsPASSError(
+                    e.message
+                    + " in document number {n} of collection {col}".format(
+                        n=count, col=collection
+                    ),
+                    e.severity,
+                )
 
-            if cache_key in self.normcache:
-                self.normcache[cache_key].append(md)
-            else:
-                self.normcache[cache_key] = [md]
-            count += 1
+    def _df_load_normalization_cache(self, df, collection):
+        """
+        This function does the same thing as _db_load_normalization_cache, the
+        only difference is that this current function takes one argument, which
+        is a dataframe.
+        :param df: a pandas/dask dataframe where we load data from
+        """
+        query_result = df
+        if self.query is not None and len(self.query) > 0:
+            #   Create a query
+            #   There are multiple ways of querying in a dataframe, according to
+            #   the experiments in https://stackoverflow.com/a/46165056/11138718
+            #   We pick the following approach:
+            sub_conds = [df[key].values == val for key, val in self.query.items()]
+            cond = np.logical_and.reduce(sub_conds)
+            query_result = df[cond]
+
+        if len(query_result.index) <= 0:
+            message = (
+                "Query={query_str} of dataframe={dataframe_str}"
+                " yielded 0 documents - cannot construct this object".format(
+                    query_str=str(self.query), dataframe_str=str(df)
+                )
+            )
+            raise MsPASSError(
+                "DictionaryCacheMatcher._load_normalization_cache:  " + message,
+                ErrorSeverity.Fatal,
+            )
+        self.normcache = dict()
+        count = 0
+        for index, doc in query_result.iterrows():
+            cache_key = index
+            if not self.use_dataframe_index_as_cache_id:
+                cache_key = self.db_make_cache_id(doc)
+            # This error trap may not be necessary but the api requires us
+            # to handle a None return
+            if cache_key == None:
+                raise MsPASSError(
+                    "DictionaryCacheMatcher._load_normalization_cache:  "
+                    + "db_make_cache_id failed - coding problem or major problem with collection="
+                    + collection,
+                    ErrorSeverity.Fatal,
+                )
+            try:
+                md = extractData2Metadata(
+                    doc,
+                    self.attributes_to_load,
+                    self.aliases,
+                    self.prepend_collection_name,
+                    collection,
+                    self.load_if_defined,
+                )
+                if cache_key in self.normcache:
+                    self.normcache[cache_key].append(md)
+                else:
+                    self.normcache[cache_key] = [md]
+                count += 1
+            except MsPASSError as e:
+                raise MsPASSError(
+                    e.message
+                    + " in document number {n} of collection {col}".format(
+                        n=count, col=collection
+                    ),
+                    e.severity,
+                )
 
 
 class DataFrameCacheMatcher(BasicMatcher):
@@ -849,9 +863,9 @@ class DataFrameCacheMatcher(BasicMatcher):
                 raise TypeError(
                     "DataFrameCacheMatcher constructor:   collection argument must be a string type"
                 )
-        if not isinstance(df, [pd.DataFrame, dask.DataFrame]):
+        if not isinstance(df, (type_pdd, type_ddd, Database)):
             raise TypeError(
-                "DataFrameCacheMatcher constructor:  required arg0 must be either a pandas or dask Dataframe"
+                "DataFrameCacheMatcher constructor:  required arg0 must be either a pandas, dask Dataframe, or database handle"
             )
         if attributes_to_load is None:
             if load_if_defined is None:
@@ -1026,7 +1040,7 @@ class DataFrameCacheMatcher(BasicMatcher):
     def _load_dataframe_cache(self, df):
         # This is a bit error prone.  It assumes the BasicMatcher
         # constructor initializes a None default to an empty list
-        fulllist = self.attributes_to_laod + self.load_if_defined
+        fulllist = self.attributes_to_load + self.load_if_defined
         self.cache = df[fulllist]
 
 
@@ -1178,11 +1192,6 @@ class ObjectIdMatcher(DictionaryCacheMatcher):
        (e.g. lat is used for source, channel, and site collections in the
         default schema.)
     :type prepend_collection_name:  boolean
-
-    TODO:   Needs an option to load from a DataFrame with the id being any
-    specified field of the DataFrame or (ideally) the row index itself.
-    An example of this would be an integer id from a relational database
-    export.
     """
 
     def __init__(
@@ -1376,7 +1385,7 @@ class MiniseedDBMatcher(DatabaseMatcher):
         self,
         db,
         collection="channel",
-        attributes_to_load=["lat", "lon", "elev", "_id"],
+        attributes_to_load=["starttime", "endtime", "lat", "lon", "elev", "_id"],
         load_if_defined=None,
         aliases=None,
         prepend_collection_name=True,
@@ -1403,6 +1412,7 @@ class MiniseedDBMatcher(DatabaseMatcher):
             load_if_defined=load_if_defined,
             aliases=aliases,
             require_unique_match=False,
+            prepend_collection_name=prepend_collection_name,
         )
 
     def query_generator(self, mspass_object):
@@ -1461,8 +1471,9 @@ class MiniseedDBMatcher(DatabaseMatcher):
         # here and return None if mspass_object was not a valid TimeSeries
         # done this way because other bad things would happen if find
         # if that assumption was invalid
-        query["starttime"] = {"$le": mspass_object.t0}
-        query["endtime"] = {"$ge": mspass_object.t0}
+
+        query["starttime"] = {"$lte": mspass_object.t0}
+        query["endtime"] = {"$gte": mspass_object.endtime()}
         return query
 
     def find_one(self, mspass_object):
@@ -1486,7 +1497,7 @@ class MiniseedDBMatcher(DatabaseMatcher):
         required net, sta, chan keys are missing from mspass_object.
         """
         # Be dogmatic and demand mspass_object is a TimeSeries or Seismogram (atomic)
-        if not _input_is_atomic(mspass_object):
+        if _input_is_atomic(mspass_object):
             if mspass_object.live:
                 # trap this unlikely but possible condition as this
                 # condition could produce mysterious behavior
@@ -1526,6 +1537,7 @@ class MiniseedDBMatcher(DatabaseMatcher):
                     "Received a datum marked dead - will not attempt match",
                     ErrorSeverity.Complaint,
                 )
+                return [None, elog]
         else:
             raise TypeError(
                 "MiniseedDBMatcher.find_one:  this class method can only be applied to TimeSeries or Seismogram objects"
@@ -1637,9 +1649,6 @@ class MiniseedMatcher(DictionaryCacheMatcher):
       the collection name is "channel" the "lat" attribute in the channel
       document would be returned as "channel_lat".
     :type prepend_collection_name:  boolean
-
-    TODO:  Needs option of DataFrame input
-
     """
 
     def __init__(
@@ -1828,8 +1837,18 @@ class MiniseedMatcher(DictionaryCacheMatcher):
                     return [None, find_output[1]]
                 else:
                     for md in find_output[0]:
-                        stime = md["starttime"]
-                        etime = md["endtime"]
+                        stime_key = (
+                            "starttime"
+                            if not self.prepend_collection_name
+                            else self.collection + "_starttime"
+                        )
+                        etime_key = (
+                            "endtime"
+                            if not self.prepend_collection_name
+                            else self.collection + "_endtime"
+                        )
+                        stime = md[stime_key]
+                        etime = md[etime_key]
                         t0 = mspass_object.t0
                         if t0 >= stime and t0 <= etime:
                             return [md, find_output[1]]
@@ -1861,6 +1880,7 @@ class MiniseedMatcher(DictionaryCacheMatcher):
                     "Received a datum marked dead - will not attempt match",
                     ErrorSeverity.Invalid,
                 )
+                return [None, elog]
         else:
             raise TypeError(
                 "MiniseedMatcher.find_one:  this class method can only be applied to TimeSeries or Seismogram objects"
@@ -2130,7 +2150,7 @@ class EqualityMatcher(DataFrameCacheMatcher):
             if mspass_object.is_defined(key):
                 testval = mspass_object[key]
                 # this allows an alias between data and dataframe keys
-                dfret = dfret[dfret[self.match_keys[key] == testval]]
+                dfret = dfret[dfret[self.match_keys[key]] == testval]
             else:
                 return pd.DataFrame()
         return dfret
@@ -3372,3 +3392,51 @@ def _load_as_df(db, collection, query, attributes_to_load, load_if_defined):
             else:
                 dict_tmp[k].append(None)
     return pd.DataFrame.from_dict(dict_tmp)
+
+
+def extractData2Metadata(
+    doc,
+    attributes_to_load,
+    aliases,
+    prepend_collection_name,
+    collection,
+    load_if_defined,
+):
+    md = Metadata()
+    for k in attributes_to_load:
+        if k in doc:
+            if k in aliases:
+                key = aliases[k]
+            else:
+                key = k
+            if prepend_collection_name:
+                if key == "_id":
+                    mdkey = collection + key
+                else:
+                    mdkey = collection + "_" + key
+            else:
+                mdkey = key
+            md[mdkey] = doc[key]
+        else:
+            message = "Required attribute {key} was not found".format(
+                key=k,
+            )
+            raise MsPASSError(
+                "DictionaryCacheMatcher._load_normalization_cache:  " + message,
+                ErrorSeverity.Fatal,
+            )
+    for k in load_if_defined:
+        if k in doc:
+            if k in aliases:
+                key = aliases[k]
+            else:
+                key = k
+            if prepend_collection_name:
+                if key == "_id":
+                    mdkey = collection + key
+                else:
+                    mdkey = collection + "_" + key
+            else:
+                mdkey = key
+            md[mdkey] = doc[key]
+    return md

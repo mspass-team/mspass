@@ -20,12 +20,14 @@ from mspasspy.db.normalize import (
 
 from mspasspy.db.database import Database
 from mspasspy.db.client import DBClient
+from mspasspy.ccore.seismic import TimeReferenceType
 
 import os
 import bson.json_util
 import numpy
 import copy
 from bson.objectid import ObjectId
+import pandas as pd
 
 
 def backup_db(db, backup_db_dir):
@@ -102,7 +104,11 @@ class TestNormalize:
             {"_id": ObjectId("627fc20559a116ff99f38243")}
         )
         self.ts = self.db.read_data(self.doc, collection="wf_miniseed")
+        self.ts.tref = (
+            TimeReferenceType.UTC
+        )  #   Change the reference type to avoid issues in tests
 
+    """
     def test_EqualityMatcher_find_one(self):
         cached_matcher = EqualityMatcher(
             self.db, "site", {"net": "net"}, ["net", "coords"]
@@ -116,6 +122,27 @@ class TestNormalize:
         assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
         assert cached_retdoc[1] is None
         assert db_retdoc[1] is None
+    
+    def test_EqualityMatcher_find_one_dataframe(self):
+        df = pd.DataFrame(self.db['site'].find())
+        cached_matcher = EqualityMatcher(
+            df, "site", {"net": "net"}, ["net", "coords"], require_unique_match=False,
+        )
+
+        db_matcher = EqualityDBMatcher(self.db, "site", {"net": "net"}, ["net", "coords"])
+
+        #   Test find_one
+        ts = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher.find_one(ts)
+        db_retdoc = db_matcher.find_one(ts)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        print(str(cached_retdoc[1].get_error_log()))
+        print(str(db_retdoc[1].get_error_log()))
+        assert cached_retdoc[1] is not None
+        assert db_retdoc[1] is not None
+        print(cached_retdoc[0])
+        print(str(cached_retdoc[1].get_error_log()))
+        assert cached_retdoc[1] is None
 
     def test_EqualityMatcher_normalize(self):
         cached_matcher = EqualityMatcher(
@@ -166,180 +193,7 @@ class TestNormalize:
         assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
         assert "coords" in cached_retdoc
 
-    def test_ID_matcher_find_one(self):
-        cached_matcher = ObjectIdMatcher(self.db)
-        db_matcher = ObjectIdDBMatcher(self.db)
-
-        norm_key_undefine_msg = (
-            "Normalizing ID with key=channel_id is not defined in this object"
-        )
-        uncache_id_undefine_msg = "query_generator method failed to generate a valid query - required attributes are probably missing"
-        cache_id_undefine_msg = "cache_id method found no match for this datum"
-
-        #   Test find_one
-        ts = copy.deepcopy(self.ts)
-        cached_retdoc = cached_matcher.find_one(ts)
-        db_retdoc = db_matcher.find_one(ts)
-        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-        assert cached_retdoc[1] is None
-        assert db_retdoc[1] is None
-
-        #       Match key undefined
-        ts = copy.deepcopy(self.ts)
-        del ts["channel_id"]
-        retdoc = cached_matcher.find_one(ts)
-        assert (retdoc[0] is None) and (
-            norm_key_undefine_msg in str(retdoc[1].get_error_log())
-        )
-        ts = copy.deepcopy(self.ts)
-        del ts["channel_id"]
-        retdoc = db_matcher.find_one(ts)
-        assert (
-            (retdoc is None)
-            and (norm_key_undefine_msg in str(ts.elog.get_error_log()))
-            and ts.dead()
-        )
-
-        #       Id can't be found
-        # This test is a relic of the old qpi.  It tests am error
-        # condition of the DatabaseMatcher and CachedMatcher find method
-        # For clarity it should probably be done in a different part of
-        # this class.  For now this is just a documenation of that fact
-        ts = copy.deepcopy(self.ts)
-        ts["channel_id"] = "something_random"
-        cached_retdoc = cached_matcher.find_one(ts)
-        assert (cached_retdoc[0] is None) and (
-            cache_id_undefine_msg in str(cached_retdoc[1].get_error_log())
-        )
-        retdoc = db_matcher.find_one(ts)
-        assert (retdoc[0] is None) and (
-            uncache_id_undefine_msg in str(retdoc[1].get_error_log())
-        )
-
-    def test_ID_matcher_normalize(self):
-        cached_matcher = ObjectIdMatcher(self.db)
-        db_matcher = ObjectIdDBMatcher(self.db)
-
-        #   Tests call method
-        ts_1 = copy.deepcopy(self.ts)
-        ts_2 = copy.deepcopy(self.ts)
-        cached_retdoc = cached_matcher(ts_1)
-        db_retdoc = db_matcher(ts_2)
-        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-        assert "channel_lat" in cached_retdoc[0]
-
-        #       Test prepend_collection_name turned off
-        ts_1 = copy.deepcopy(self.ts)
-        ts_2 = copy.deepcopy(self.ts)
-        matcher = ObjectIdMatcher(self.db, prepend_collection_name=False)
-        cached_retdoc = matcher(ts_1)
-        matcher = ObjectIdDBMatcher(self.db, prepend_collection_name=False)
-        db_retdoc = matcher(ts_2)
-        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-        assert "lat" in cached_retdoc
-
-        #       Test handling of dead data
-        matcher = ObjectIdMatcher(self.db)
-        ts = copy.deepcopy(self.ts)
-        ts.kill()
-        retdoc = matcher(ts)
-        assert retdoc[0] is None
-        matcher = ObjectIdDBMatcher(self.db)
-        retdoc = matcher(ts)
-        assert retdoc[0] is None
-
-    def test_MiniseedMatcher_find_one(self):
-        cached_matcher = MiniseedMatcher(self.db)
-        db_matcher = MiniseedDBMatcher(self.db)
-
-        #   get document for dict
-        doc = copy.deepcopy(self.doc)
-        cached_retdoc = cached_matcher.find_doc(doc)
-        db_retdoc = db_matcher.find_doc(doc)
-        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-
-        #   get document for TimeSeries
-        ts = copy.deepcopy(self.ts)
-        cached_retdoc = cached_matcher.find_one(ts)
-        db_retdoc = db_matcher.find_one(ts)
-        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-
-        #   Test get document with time arguments:
-        #       test with a time, multi doc found
-        #       1: 'starttime': 1262908800.0, 'endtime': 1321549500.0
-        #       2. 'starttime': 1400000000.0, 'endtime': 1500000000.0
-        doc = self.db.wf_miniseed.find_one(
-            {"_id": ObjectId("627fc20659a116ff99f38356")}
-        )
-        ts = self.db.read_data(doc, collection="wf_miniseed")
-        ts_1 = copy.deepcopy(ts)
-        ts_2 = copy.deepcopy(ts)
-        # Done as a bit of a hack to match test from old api
-        # Old api allowed a metadata key to fetch time.  new api for
-        # this class only support TimeSeries input and gets time from t0
-        ts_1.set_t0(1272908800.0)
-        ts_2.set_t0(1272908800.0)
-        cached_retdoc = cached_matcher.find_one(ts_1)
-        db_retdoc = db_matcher.fine_one(ts_2)
-        assert cached_retdoc[0] is not None
-        assert db_retdoc[0] is not None
-
-        #   test with a doc with incorrect id
-        doc = copy.deepcopy(self.doc)
-        del doc["net"]
-        cached_retdoc = cached_matcher.find_doc(doc)
-        db_retdoc = db_matcher.find_doc(doc)
-        assert cached_retdoc is None
-        assert db_retdoc is None
-
-        #   test with a time, multi doc can't found
-        ts_1 = copy.deepcopy(ts)
-        ts_2 = copy.deepcopy(ts)
-        ts_1.set_t0(1972908800.0)
-        ts_2.set_t0(1972908800.0)
-        cached_retdoc = cached_matcher.find_one(ts_1)
-        db_retdoc = db_matcher.find_one(ts_2)
-        assert cached_retdoc[0] is None
-        assert db_retdoc[0] is None
-        # this is a minimal test - just existence.   maybe should test
-        # contents of elog returned
-        # probably should have a test for the content of the elog return here
-        assert cached_retdoc[1] is not None
-        assert db_matcher[1] is not None
-
-    def test_MiniseedMatcher_normalize(self):
-        cached_matcher = MiniseedMatcher(self.db)
-        db_matcher = MiniseedDBMatcher(self.db)
-
-        #   Test call method
-        ts_1 = copy.deepcopy(self.ts)
-        ts_2 = copy.deepcopy(self.ts)
-        cached_retdoc = cached_matcher(ts_1)
-        db_retdoc = db_matcher(ts_2)
-        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-        assert "channel_lat" in cached_retdoc[0]
-
-        #       Test prepend_collection_name
-        ts_1 = copy.deepcopy(self.ts)
-        ts_2 = copy.deepcopy(self.ts)
-        matcher = MiniseedMatcher(self.db, prepend_collection_name=False)
-        cached_retdoc = matcher(ts_1)
-        matcher = MiniseedDBMatcher(self.db, prepend_collection_name=False)
-        db_retdoc = matcher(ts_2)
-        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-        assert "lat" in cached_retdoc[0] and "channel_lat" not in cached_retdoc[0]
-
-        #       Test handling of dead data
-        matcher = MiniseedMatcher(self.db)
-        ts = copy.deepcopy(self.ts)
-        ts.kill()
-        retdoc = matcher(ts)
-        assert retdoc is None
-        matcher = MiniseedDBMatcher(self.db)
-        ts = copy.deepcopy(self.ts)
-        ts.kill()
-        retdoc = matcher(ts)
-        assert retdoc is None
+   
 
     def test_OriginTimeMatcher_find_one(self):
 
@@ -451,3 +305,337 @@ class TestNormalize:
             verbose=False,
         )
         assert ret == [3934, 3934, 3934]
+    """
+
+
+class TestObjectIdMatcher(TestNormalize):
+    def setup_method(self):
+        super().setup_method()
+        self.df = pd.DataFrame(list(self.db["channel"].find()))
+
+    def test_ID_matcher_find_one(self):
+        cached_matcher = ObjectIdMatcher(self.db)
+        db_matcher = ObjectIdDBMatcher(self.db)
+
+        cached_matcher_key_undefined_msg = (
+            "cache_id method found no match for this datum"
+        )
+        db_matcher_key_undefined_msg = "query_generator method failed to generate a valid query - required attributes are probably missing"
+        cache_id_undefine_msg = "cache_id method found no match for this datum"
+        db_matcher_find_none_msg = "yielded no documents"
+
+        #       Test find_one
+        ts = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher.find_one(ts)
+        db_retdoc = db_matcher.find_one(ts)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert cached_retdoc[1] is None
+        assert db_retdoc[1] is None
+
+        #       Match key undefined
+        ts = copy.deepcopy(self.ts)
+        del ts["channel_id"]
+        retdoc = cached_matcher.find_one(ts)
+        assert (retdoc[0] is None) and (
+            cached_matcher_key_undefined_msg in str(retdoc[1].get_error_log())
+        )
+        ts = copy.deepcopy(self.ts)
+        del ts["channel_id"]
+        retdoc = db_matcher.find_one(ts)
+        assert (retdoc[0] is None) and (
+            db_matcher_key_undefined_msg in str(retdoc[1].get_error_log())
+        )
+
+        #       Id can't be found
+        # This test is a relic of the old qpi.  It tests am error
+        # condition of the DatabaseMatcher and CachedMatcher find method
+        # For clarity it should probably be done in a different part of
+        # this class.  For now this is just a documenation of that fact
+        ts = copy.deepcopy(self.ts)
+        ts["channel_id"] = bson.objectid.ObjectId()
+        cached_retdoc = cached_matcher.find_one(ts)
+        assert (cached_retdoc[0] is None) and (
+            cache_id_undefine_msg in str(cached_retdoc[1].get_error_log())
+        )
+        retdoc = db_matcher.find_one(ts)
+        assert (retdoc[0] is None) and (
+            db_matcher_find_none_msg in str(retdoc[1].get_error_log())
+        )
+
+    def test_ID_matcher_find_one_df(self):
+        #   TODO: There should be a more elegant way to do this instead of copying the whole test
+        cached_matcher = ObjectIdMatcher(self.df)
+        db_matcher = ObjectIdDBMatcher(self.db)
+
+        cached_matcher_key_undefined_msg = (
+            "cache_id method found no match for this datum"
+        )
+        db_matcher_key_undefined_msg = "query_generator method failed to generate a valid query - required attributes are probably missing"
+        cache_id_undefine_msg = "cache_id method found no match for this datum"
+        db_matcher_find_none_msg = "yielded no documents"
+
+        #       Test find_one
+        ts = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher.find_one(ts)
+        db_retdoc = db_matcher.find_one(ts)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert cached_retdoc[1] is None
+        assert db_retdoc[1] is None
+
+        #       Match key undefined
+        ts = copy.deepcopy(self.ts)
+        del ts["channel_id"]
+        retdoc = cached_matcher.find_one(ts)
+        assert (retdoc[0] is None) and (
+            cached_matcher_key_undefined_msg in str(retdoc[1].get_error_log())
+        )
+        ts = copy.deepcopy(self.ts)
+        del ts["channel_id"]
+        retdoc = db_matcher.find_one(ts)
+        assert (retdoc[0] is None) and (
+            db_matcher_key_undefined_msg in str(retdoc[1].get_error_log())
+        )
+
+        #       Id can't be found
+        # This test is a relic of the old qpi.  It tests am error
+        # condition of the DatabaseMatcher and CachedMatcher find method
+        # For clarity it should probably be done in a different part of
+        # this class.  For now this is just a documenation of that fact
+        ts = copy.deepcopy(self.ts)
+        ts["channel_id"] = bson.objectid.ObjectId()
+        cached_retdoc = cached_matcher.find_one(ts)
+        assert (cached_retdoc[0] is None) and (
+            cache_id_undefine_msg in str(cached_retdoc[1].get_error_log())
+        )
+        retdoc = db_matcher.find_one(ts)
+        assert (retdoc[0] is None) and (
+            db_matcher_find_none_msg in str(retdoc[1].get_error_log())
+        )
+
+    def test_ID_matcher_normalize(self):
+        cached_matcher = ObjectIdMatcher(self.db)
+        db_matcher = ObjectIdDBMatcher(self.db)
+
+        #       Tests call method
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher(ts_1)
+        db_retdoc = db_matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert "channel_lat" in cached_retdoc[0]
+
+        #       Test prepend_collection_name turned off
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        matcher = ObjectIdMatcher(self.db, prepend_collection_name=False)
+        cached_retdoc = matcher(ts_1)
+        matcher = ObjectIdDBMatcher(self.db, prepend_collection_name=False)
+        db_retdoc = matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert "lat" in cached_retdoc[0]
+
+        #       Test handling of dead data
+        matcher = ObjectIdMatcher(self.db)
+        ts = copy.deepcopy(self.ts)
+        ts.kill()
+        retdoc = matcher(ts)
+        assert retdoc[0] is None
+        matcher = ObjectIdDBMatcher(self.db)
+        retdoc = matcher(ts)
+        assert retdoc[0] is None
+
+    def test_ID_matcher_normalize_df(self):
+        cached_matcher = ObjectIdMatcher(self.df)
+        db_matcher = ObjectIdDBMatcher(self.db)
+
+        #       Tests call method
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher(ts_1)
+        db_retdoc = db_matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert "channel_lat" in cached_retdoc[0]
+
+        #       Test prepend_collection_name turned off
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        matcher = ObjectIdMatcher(self.db, prepend_collection_name=False)
+        cached_retdoc = matcher(ts_1)
+        matcher = ObjectIdDBMatcher(self.db, prepend_collection_name=False)
+        db_retdoc = matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert "lat" in cached_retdoc[0]
+
+        #       Test handling of dead data
+        matcher = ObjectIdMatcher(self.db)
+        ts = copy.deepcopy(self.ts)
+        ts.kill()
+        retdoc = matcher(ts)
+        assert retdoc[0] is None
+        matcher = ObjectIdDBMatcher(self.db)
+        retdoc = matcher(ts)
+        assert retdoc[0] is None
+
+
+class TestMiniseedMatcher(TestNormalize):
+    def setup_method(self):
+        super().setup_method()
+        self.df = pd.DataFrame(list(self.db["channel"].find()))
+
+    def test_MiniseedMatcher_find_one(self):
+        cached_matcher = MiniseedMatcher(self.db)
+        db_matcher = MiniseedDBMatcher(self.db)
+
+        #   find_one for TimeSeries
+        ts = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher.find_one(ts)
+        db_retdoc = db_matcher.find_one(ts)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+
+        #   Test get document with time arguments:
+        #       test with a time, multi doc found
+        #       1: 'starttime': 1262908800.0, 'endtime': 1321549500.0
+        #       2. 'starttime': 1400000000.0, 'endtime': 1500000000.0
+        doc = self.db.wf_miniseed.find_one(
+            {"_id": ObjectId("627fc20659a116ff99f38356")}
+        )
+        ts = self.db.read_data(doc, collection="wf_miniseed")
+        ts_1 = copy.deepcopy(ts)
+        ts_2 = copy.deepcopy(ts)
+
+        #   test with a doc with incorrect id
+        doc = copy.deepcopy(self.doc)
+        del doc["net"]
+        broken_ts = self.db.read_data(doc, collection="wf_miniseed")
+        cached_retdoc = cached_matcher.find_one(broken_ts)
+        db_retdoc = db_matcher.find_one(broken_ts)
+        assert cached_retdoc[0] is None
+        assert db_retdoc[0] is None
+
+        #   test with a time, multi doc can't found
+        ts_1 = copy.deepcopy(ts)
+        ts_2 = copy.deepcopy(ts)
+        ts_1.set_t0(1972908800.0)
+        ts_2.set_t0(1972908800.0)
+        cached_retdoc = cached_matcher.find_one(ts_1)
+        db_retdoc = db_matcher.find_one(ts_2)
+        assert cached_retdoc[0] is None
+        assert db_retdoc[0] is None
+        # this is a minimal test - just existence.   maybe should test
+        # contents of elog returned
+        # probably should have a test for the content of the elog return here
+        assert cached_retdoc[1] is not None
+        assert db_retdoc[1] is not None
+
+    def test_MiniseedMatcher_find_one_df(self):
+        cached_matcher = MiniseedMatcher(self.df)
+        db_matcher = MiniseedDBMatcher(self.db)
+
+        #   find_one for TimeSeries
+        ts = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher.find_one(ts)
+        db_retdoc = db_matcher.find_one(ts)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+
+        #   Test get document with time arguments:
+        #       test with a time, multi doc found
+        #       1: 'starttime': 1262908800.0, 'endtime': 1321549500.0
+        #       2. 'starttime': 1400000000.0, 'endtime': 1500000000.0
+        doc = self.db.wf_miniseed.find_one(
+            {"_id": ObjectId("627fc20659a116ff99f38356")}
+        )
+        ts = self.db.read_data(doc, collection="wf_miniseed")
+        ts_1 = copy.deepcopy(ts)
+        ts_2 = copy.deepcopy(ts)
+
+        #   test with a doc with incorrect id
+        doc = copy.deepcopy(self.doc)
+        del doc["net"]
+        broken_ts = self.db.read_data(doc, collection="wf_miniseed")
+        cached_retdoc = cached_matcher.find_one(broken_ts)
+        db_retdoc = db_matcher.find_one(broken_ts)
+        assert cached_retdoc[0] is None
+        assert db_retdoc[0] is None
+
+        #   test with a time, multi doc can't found
+        ts_1 = copy.deepcopy(ts)
+        ts_2 = copy.deepcopy(ts)
+        ts_1.set_t0(1972908800.0)
+        ts_2.set_t0(1972908800.0)
+        cached_retdoc = cached_matcher.find_one(ts_1)
+        db_retdoc = db_matcher.find_one(ts_2)
+        assert cached_retdoc[0] is None
+        assert db_retdoc[0] is None
+        # this is a minimal test - just existence.   maybe should test
+        # contents of elog returned
+        # probably should have a test for the content of the elog return here
+        assert cached_retdoc[1] is not None
+        assert db_retdoc[1] is not None
+
+    def test_MiniseedMatcher_normalize(self):
+        cached_matcher = MiniseedMatcher(self.db)
+        db_matcher = MiniseedDBMatcher(self.db)
+
+        #   Test call method
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher(ts_1)
+        db_retdoc = db_matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert "channel_lat" in cached_retdoc[0]
+
+        #       Test prepend_collection_name
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        matcher = MiniseedMatcher(self.db, prepend_collection_name=False)
+        cached_retdoc = matcher(ts_1)
+        matcher = MiniseedDBMatcher(self.db, prepend_collection_name=False)
+        db_retdoc = matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert "lat" in cached_retdoc[0] and "channel_lat" not in cached_retdoc[0]
+
+        #       Test handling of dead data
+        matcher = MiniseedMatcher(self.db)
+        ts = copy.deepcopy(self.ts)
+        ts.kill()
+        retdoc = matcher(ts)
+        assert retdoc[0] is None
+        matcher = MiniseedDBMatcher(self.db)
+        ts = copy.deepcopy(self.ts)
+        ts.kill()
+        retdoc = matcher(ts)
+        assert retdoc[0] is None
+
+    def test_MiniseedMatcher_normalize_df(self):
+        cached_matcher = MiniseedMatcher(self.df)
+        db_matcher = MiniseedDBMatcher(self.db)
+
+        #   Test call method
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher(ts_1)
+        db_retdoc = db_matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert "channel_lat" in cached_retdoc[0]
+
+        #       Test prepend_collection_name
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        matcher = MiniseedMatcher(self.db, prepend_collection_name=False)
+        cached_retdoc = matcher(ts_1)
+        matcher = MiniseedDBMatcher(self.db, prepend_collection_name=False)
+        db_retdoc = matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert "lat" in cached_retdoc[0] and "channel_lat" not in cached_retdoc[0]
+
+        #       Test handling of dead data
+        matcher = MiniseedMatcher(self.db)
+        ts = copy.deepcopy(self.ts)
+        ts.kill()
+        retdoc = matcher(ts)
+        assert retdoc[0] is None
+        matcher = MiniseedDBMatcher(self.db)
+        ts = copy.deepcopy(self.ts)
+        ts.kill()
+        retdoc = matcher(ts)
+        assert retdoc[0] is None
