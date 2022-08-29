@@ -14,6 +14,7 @@ from mspasspy.db.normalize import (
     MiniseedMatcher,
     MiniseedDBMatcher,
     OriginTimeDBMatcher,
+    OriginTimeMatcher,
     normalize_mseed,
     bulk_normalize,
 )
@@ -107,205 +108,6 @@ class TestNormalize:
         self.ts.tref = (
             TimeReferenceType.UTC
         )  #   Change the reference type to avoid issues in tests
-
-    """
-    def test_EqualityMatcher_find_one(self):
-        cached_matcher = EqualityMatcher(
-            self.db, "site", {"net": "net"}, ["net", "coords"]
-        )
-        db_matcher = EqualityDBMatcher(self.db, "site", {"net": "net"})
-
-        #   Test find_one
-        ts = copy.deepcopy(self.ts)
-        cached_retdoc = cached_matcher.find_one(ts)
-        db_retdoc = db_matcher.find_one(ts)
-        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-        assert cached_retdoc[1] is None
-        assert db_retdoc[1] is None
-    
-    def test_EqualityMatcher_find_one_dataframe(self):
-        df = pd.DataFrame(self.db['site'].find())
-        cached_matcher = EqualityMatcher(
-            df, "site", {"net": "net"}, ["net", "coords"], require_unique_match=False,
-        )
-
-        db_matcher = EqualityDBMatcher(self.db, "site", {"net": "net"}, ["net", "coords"])
-
-        #   Test find_one
-        ts = copy.deepcopy(self.ts)
-        cached_retdoc = cached_matcher.find_one(ts)
-        db_retdoc = db_matcher.find_one(ts)
-        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-        print(str(cached_retdoc[1].get_error_log()))
-        print(str(db_retdoc[1].get_error_log()))
-        assert cached_retdoc[1] is not None
-        assert db_retdoc[1] is not None
-        print(cached_retdoc[0])
-        print(str(cached_retdoc[1].get_error_log()))
-        assert cached_retdoc[1] is None
-
-    def test_EqualityMatcher_normalize(self):
-        cached_matcher = EqualityMatcher(
-            self.db, "site", {"site_net": "net"}, attributes_to_load=["net", "coords"]
-        )
-        db_matcher = EqualityDBMatcher(
-            self.db,
-            "site",
-            {"site_net": "net"},
-            attributes_to_load=["net", "coords"],
-        )
-
-        #   Test __call__ method is find_one
-        ts_1 = copy.deepcopy(self.ts)
-        ts_2 = copy.deepcopy(self.ts)
-        cached_retdoc = cached_matcher(ts_1)
-        db_retdoc = db_matcher(ts_2)
-        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-        assert "site_coords" in cached_retdoc[0]
-
-        # repeat run through normalize function
-        ts_1 = copy.deepcopy(self.ts)
-        ts_2 = copy.deepcopy(self.ts)
-        cached_retdoc = normalize(ts_1, cached_matcher)
-        db_retdoc = normalize(ts_2, db_matcher)
-        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-        assert "site_coords" in cached_retdoc
-
-        #   Test turning off prepend_collection_name
-        ts_1 = copy.deepcopy(self.ts)
-        ts_2 = copy.deepcopy(self.ts)
-        matcher = EqualityMatcher(
-            self.db,
-            "site",
-            {"net": "net"},
-            attributes_to_load=["net", "coords"],
-            prepend_collection_name=False,
-        )
-        cached_retdoc = matcher(ts_1)
-        matcher = EqualityDBMatcher(
-            self.db,
-            "site",
-            {"net": "net"},
-            attributes_to_load=["net", "coords"],
-            prepend_collection_name=False,
-        )
-        db_retdoc = matcher(ts_2)
-        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
-        assert "coords" in cached_retdoc
-
-   
-
-    def test_OriginTimeMatcher_find_one(self):
-
-        db_matcher = OriginTimeDBMatcher(self.db)
-
-        orig_doc = self.db.wf_miniseed.find_one(
-            {"_id": ObjectId("62812b08178bf05fe5787d82")}
-        )
-        orig_ts = self.db.read_data(orig_doc, collection="wf_miniseed")
-
-        #   get document for TimeSeries
-        ts = copy.deepcopy(orig_ts)
-        db_retdoc = db_matcher.find_one(ts)
-        assert db_retdoc[0] is not None
-
-        #   test using time key from Metadata
-        db_matcher = OriginTimeDBMatcher(self.db, time_key="testtime")
-
-        ts = copy.deepcopy(orig_ts)
-        ts["testtime"] = ts.t0
-        db_retdoc = db_matcher.find_one(ts)
-        assert db_retdoc[0] is not None
-
-        # validate handling of mismatched time (no match)
-        db_matcher = OriginTimeDBMatcher(self.db, time_key="testtime")
-        ts = copy.deepcopy(orig_ts)
-        ts["testtime"] = 9999.99
-        db_retdoc = db_matcher.find_one(ts)
-        assert db_retdoc[0] is None
-
-    def test_OriginTimeMatcher_normalize(self):
-        db_matcher = OriginTimeDBMatcher(self.db)
-
-        orig_doc = self.db.wf_miniseed.find_one(
-            {"_id": ObjectId("62812b08178bf05fe5787d82")}
-        )
-        orig_ts = self.db.read_data(orig_doc, collection="wf_miniseed")
-
-        #   Test call
-        ts_2 = copy.deepcopy(orig_ts)
-        db_retdoc = db_matcher(ts_2)
-        assert "source_time" in db_retdoc[0]
-
-        #       Test prepend_collection_name turned off
-
-        ts_2 = copy.deepcopy(orig_ts)
-        matcher = OriginTimeDBMatcher(self.db, prepend_collection_name=False)
-        db_retdoc = matcher(ts_2)
-        assert "time" in db_retdoc[0] and "source_time" not in db_retdoc[0]
-
-        #       Test handling of dead data
-
-        matcher = OriginTimeDBMatcher(self.db)
-        ts = copy.deepcopy(self.ts)
-        ts.kill()
-        retdoc = matcher(ts)
-        assert retdoc[0] is None
-
-    def test_normalize_mseed(self):
-        #   First delete all the existing references:
-        self.db.wf_miniseed.update_many(
-            {}, {"$unset": {"channel_id": None, "site_id": None}}
-        )
-        ret = normalize_mseed(self.db, normalize_channel=False, normalize_site=False)
-        assert ret == [3934, 0, 0]
-        rand_doc = self.db.wf_miniseed.find_one()
-        assert "channel_id" not in rand_doc
-        assert "site_id" not in rand_doc
-
-        self.db.wf_miniseed.update_many(
-            {}, {"$unset": {"channel_id": None, "site_id": None}}
-        )
-        ret = normalize_mseed(self.db, normalize_channel=True, normalize_site=False)
-        assert ret == [3934, 3934, 0]
-        rand_doc = self.db.wf_miniseed.find_one()
-        assert "channel_id" in rand_doc
-        assert "site_id" not in rand_doc
-
-        self.db.wf_miniseed.update_many(
-            {}, {"$unset": {"channel_id": None, "site_id": None}}
-        )
-        ret = normalize_mseed(self.db, normalize_channel=True, normalize_site=True)
-        assert ret == [3934, 3934, 3934]
-        rand_doc = self.db.wf_miniseed.find_one()
-        assert "channel_id" in rand_doc
-        assert "site_id" in rand_doc
-
-    def test_bulk_normalize(self):
-        matcher_function_list = []
-        matcher = MiniseedMatcher(
-            self.db,
-            attributes_to_load=["_id", "net", "sta", "chan", "starttime", "endtime"],
-            verbose=False,
-        )
-        matcher_function_list.append(matcher)
-
-        sitematcher = MiniseedMatcher(
-            self.db,
-            collection="site",
-            attributes_to_load=["_id", "net", "sta", "starttime", "endtime"],
-        )
-        matcher_function_list.append(sitematcher)
-
-        ret = bulk_normalize(
-            self.db,
-            wfquery={},
-            wf_col="wf_miniseed",
-            nmf_list=matcher_function_list,
-            verbose=False,
-        )
-        assert ret == [3934, 3934, 3934]
-    """
 
 
 class TestObjectIdMatcher(TestNormalize):
@@ -639,3 +441,342 @@ class TestMiniseedMatcher(TestNormalize):
         ts.kill()
         retdoc = matcher(ts)
         assert retdoc[0] is None
+
+
+class TestEqualityMatcher(TestNormalize):
+    def setup_method(self):
+        super().setup_method()
+        self.df = pd.DataFrame(list(self.db["site"].find()))
+        self.cached_matcher_multi_match_msg = (
+            "You should use find instead of find_one if the match is not unique"
+        )
+        self.db_matcher_multi_match_msg = "Using first one in list"
+
+    def test_EqualityMatcher_find_one(self):
+        cached_matcher = EqualityMatcher(
+            self.db,
+            "site",
+            {"net": "net"},
+            ["net", "coords"],
+            require_unique_match=False,
+        )
+        db_matcher = EqualityDBMatcher(
+            self.db, "site", {"net": "net"}, ["net", "coords"]
+        )
+
+        #   Test find_one
+        ts = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher.find_one(ts)
+        db_retdoc = db_matcher.find_one(ts)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert self.cached_matcher_multi_match_msg in str(
+            cached_retdoc[1].get_error_log()
+        )
+        assert self.db_matcher_multi_match_msg in str(db_retdoc[1].get_error_log())
+
+    def test_EqualityMatcher_find_one_df(self):
+        cached_matcher = EqualityMatcher(
+            self.df,
+            "site",
+            {"net": "net"},
+            ["net", "coords"],
+            require_unique_match=False,
+        )
+
+        db_matcher = EqualityDBMatcher(
+            self.db, "site", {"net": "net"}, ["net", "coords"]
+        )
+
+        #   Test find_one
+        ts = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher.find_one(ts)
+        db_retdoc = db_matcher.find_one(ts)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert self.cached_matcher_multi_match_msg in str(
+            cached_retdoc[1].get_error_log()
+        )
+        assert self.db_matcher_multi_match_msg in str(db_retdoc[1].get_error_log())
+
+    def test_EqualityMatcher_normalize(self):
+        cached_matcher = EqualityMatcher(
+            self.db,
+            "site",
+            {"net": "net"},
+            attributes_to_load=["net", "coords"],
+            require_unique_match=False,
+            prepend_collection_name=True,
+        )
+        db_matcher = EqualityDBMatcher(
+            self.db,
+            "site",
+            {"net": "net"},
+            attributes_to_load=["net", "coords"],
+            require_unique_match=False,
+            prepend_collection_name=True,
+        )
+
+        #   Test __call__ method is find_one
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher(ts_1)
+        db_retdoc = db_matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert "site_coords" in cached_retdoc[0]
+
+        # repeat run through normalize function
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        cached_retdoc = normalize(ts_1, cached_matcher)
+        db_retdoc = normalize(ts_2, db_matcher)
+        assert Metadata_cmp(cached_retdoc, db_retdoc)
+        assert "site_coords" in cached_retdoc
+
+        #   Test turning off prepend_collection_name
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        matcher = EqualityMatcher(
+            self.db,
+            "site",
+            {"net": "net"},
+            attributes_to_load=["net", "coords"],
+            require_unique_match=False,
+            prepend_collection_name=False,
+        )
+        cached_retdoc = matcher(ts_1)
+        matcher = EqualityDBMatcher(
+            self.db,
+            "site",
+            {"net": "net"},
+            attributes_to_load=["net", "coords"],
+            require_unique_match=False,
+            prepend_collection_name=False,
+        )
+        db_retdoc = matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert "coords" in cached_retdoc[0]
+
+    def test_EqualityMatcher_normalize_df(self):
+        cached_matcher = EqualityMatcher(
+            self.db,
+            "site",
+            {"net": "net"},
+            attributes_to_load=["net", "coords"],
+            require_unique_match=False,
+            prepend_collection_name=True,
+        )
+        db_matcher = EqualityDBMatcher(
+            self.db,
+            "site",
+            {"net": "net"},
+            attributes_to_load=["net", "coords"],
+            require_unique_match=False,
+            prepend_collection_name=True,
+        )
+
+        #   Test __call__ method is find_one
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        cached_retdoc = cached_matcher(ts_1)
+        db_retdoc = db_matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert "site_coords" in cached_retdoc[0]
+
+        # repeat run through normalize function
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        cached_retdoc = normalize(ts_1, cached_matcher)
+        db_retdoc = normalize(ts_2, db_matcher)
+        assert Metadata_cmp(cached_retdoc, db_retdoc)
+        assert "site_coords" in cached_retdoc
+
+        #   Test turning off prepend_collection_name
+        ts_1 = copy.deepcopy(self.ts)
+        ts_2 = copy.deepcopy(self.ts)
+        matcher = EqualityMatcher(
+            self.db,
+            "site",
+            {"net": "net"},
+            attributes_to_load=["net", "coords"],
+            require_unique_match=False,
+            prepend_collection_name=False,
+        )
+        cached_retdoc = matcher(ts_1)
+        matcher = EqualityDBMatcher(
+            self.db,
+            "site",
+            {"net": "net"},
+            attributes_to_load=["net", "coords"],
+            require_unique_match=False,
+            prepend_collection_name=False,
+        )
+        db_retdoc = matcher(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+        assert "coords" in cached_retdoc[0]
+
+
+class TestOriginTimeMatcher(TestNormalize):
+    def setup_method(self):
+        super().setup_method()
+        self.df = pd.DataFrame(list(self.db["source"].find()))
+        self.cached_matcher_multi_match_msg = (
+            "You should use find instead of find_one if the match is not unique"
+        )
+        self.db_matcher_multi_match_msg = "Using first one in list"
+
+    def test_OriginTimeMatcher_find_one(self):
+        cached_matcher = OriginTimeMatcher(self.db, source_time_key="time")
+        db_matcher = OriginTimeDBMatcher(self.db, source_time_key="time")
+
+        orig_doc = self.db.wf_miniseed.find_one(
+            {"_id": ObjectId("62812b08178bf05fe5787d82")}
+        )
+        orig_ts = self.db.read_data(orig_doc, collection="wf_miniseed")
+
+        #   get document for TimeSeries
+        ts_1 = copy.deepcopy(orig_ts)
+        ts_2 = copy.deepcopy(orig_ts)
+        cached_retdoc = cached_matcher.find_one(ts_1)
+        db_retdoc = db_matcher.find_one(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+
+        #   test using time key from Metadata
+        cached_matcher = OriginTimeMatcher(
+            self.db, data_time_key="testtime", source_time_key="time"
+        )
+        db_matcher = OriginTimeDBMatcher(
+            self.db, data_time_key="testtime", source_time_key="time"
+        )
+
+        ts = copy.deepcopy(orig_ts)
+        ts["testtime"] = ts.t0
+        db_retdoc = db_matcher.find_one(ts)
+        assert db_retdoc[0] is not None
+
+        # validate handling of mismatched time (no match)
+        db_matcher = OriginTimeDBMatcher(
+            self.db, data_time_key="testtime", source_time_key="time"
+        )
+        ts = copy.deepcopy(orig_ts)
+        ts["testtime"] = 9999.99
+        db_retdoc = db_matcher.find_one(ts)
+        assert db_retdoc[0] is None
+
+    def test_OriginTimeMatcher_normalize(self):
+        db_matcher = OriginTimeDBMatcher(self.db)
+
+        orig_doc = self.db.wf_miniseed.find_one(
+            {"_id": ObjectId("62812b08178bf05fe5787d82")}
+        )
+        orig_ts = self.db.read_data(orig_doc, collection="wf_miniseed")
+
+        #   Test call
+        ts_2 = copy.deepcopy(orig_ts)
+        db_retdoc = db_matcher(ts_2)
+        assert "source_time" in db_retdoc[0]
+
+        #       Test prepend_collection_name turned off
+
+        ts_2 = copy.deepcopy(orig_ts)
+        matcher = OriginTimeDBMatcher(self.db, prepend_collection_name=False)
+        db_retdoc = matcher(ts_2)
+        assert "time" in db_retdoc[0] and "source_time" not in db_retdoc[0]
+
+        #       Test handling of dead data
+
+        matcher = OriginTimeDBMatcher(self.db)
+        ts = copy.deepcopy(self.ts)
+        ts.kill()
+        retdoc = matcher(ts)
+        assert retdoc[0] is None
+
+    def test_OriginTimeMatcher_find_one_df(self):
+        cached_matcher = OriginTimeMatcher(self.df, source_time_key="time")
+        db_matcher = OriginTimeDBMatcher(self.db, source_time_key="time")
+
+        orig_doc = self.db.wf_miniseed.find_one(
+            {"_id": ObjectId("62812b08178bf05fe5787d82")}
+        )
+        orig_ts = self.db.read_data(orig_doc, collection="wf_miniseed")
+
+        #   get document for TimeSeries
+        ts_1 = copy.deepcopy(orig_ts)
+        ts_2 = copy.deepcopy(orig_ts)
+        cached_retdoc = cached_matcher.find_one(ts_1)
+        db_retdoc = db_matcher.find_one(ts_2)
+        assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
+
+        #   test using time key from Metadata
+        cached_matcher = OriginTimeMatcher(
+            self.df, data_time_key="testtime", source_time_key="time"
+        )
+        db_matcher = OriginTimeDBMatcher(
+            self.db, data_time_key="testtime", source_time_key="time"
+        )
+
+        ts = copy.deepcopy(orig_ts)
+        ts["testtime"] = ts.t0
+        db_retdoc = db_matcher.find_one(ts)
+        assert db_retdoc[0] is not None
+
+        # validate handling of mismatched time (no match)
+        db_matcher = OriginTimeDBMatcher(
+            self.db, data_time_key="testtime", source_time_key="time"
+        )
+        ts = copy.deepcopy(orig_ts)
+        ts["testtime"] = 9999.99
+        db_retdoc = db_matcher.find_one(ts)
+        assert db_retdoc[0] is None
+
+
+class TestMatcherHelperFunctions(TestNormalize):
+    def test_normalize_mseed(self):
+        #   First delete all the existing references:
+        self.db.wf_miniseed.update_many(
+            {}, {"$unset": {"channel_id": None, "site_id": None}}
+        )
+        ret = normalize_mseed(self.db, normalize_channel=False, normalize_site=True)
+        assert ret == [3934, 0, 3934]
+        rand_doc = self.db.wf_miniseed.find_one()
+        assert "channel_id" not in rand_doc
+        assert "site_id" in rand_doc
+
+        self.db.wf_miniseed.update_many(
+            {}, {"$unset": {"channel_id": None, "site_id": None}}
+        )
+        ret = normalize_mseed(self.db, normalize_channel=True, normalize_site=False)
+        assert ret == [3934, 3934, 0]
+        rand_doc = self.db.wf_miniseed.find_one()
+        assert "channel_id" in rand_doc
+        assert "site_id" not in rand_doc
+
+        self.db.wf_miniseed.update_many(
+            {}, {"$unset": {"channel_id": None, "site_id": None}}
+        )
+        ret = normalize_mseed(self.db, normalize_channel=True, normalize_site=True)
+        assert ret == [3934, 3934, 3934]
+        rand_doc = self.db.wf_miniseed.find_one()
+        assert "channel_id" in rand_doc
+        assert "site_id" in rand_doc
+
+    def test_bulk_normalize(self):
+        matcher_function_list = []
+        matcher = MiniseedMatcher(
+            self.db,
+            attributes_to_load=["_id", "net", "sta", "chan", "starttime", "endtime"],
+        )
+        matcher_function_list.append(matcher)
+
+        sitematcher = MiniseedMatcher(
+            self.db,
+            collection="site",
+            attributes_to_load=["_id", "net", "sta", "starttime", "endtime"],
+        )
+        matcher_function_list.append(sitematcher)
+
+        ret = bulk_normalize(
+            self.db,
+            wfquery={},
+            wf_col="wf_miniseed",
+            matcher_list=matcher_function_list,
+        )
+        assert ret == [3934, 3934, 3934]

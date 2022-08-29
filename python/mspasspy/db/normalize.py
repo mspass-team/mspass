@@ -826,15 +826,11 @@ class DataFrameCacheMatcher(BasicMatcher):
     This class cannot be instantiated because it is not concrete
     (has abstract - virtual - methods that must be defined by subclasses)
     See implementations for constructor argument definitions.
-
-    TODO:   needs an option to load from a MongoDB database.   An untested
-    prototype is at the end of this file with the name _load_as_df.
-    May want to convert that function to a method of this class.
     """
 
     def __init__(
         self,
-        df,
+        db_or_df,
         collection=None,
         attributes_to_load=None,
         load_if_defined=None,
@@ -851,19 +847,18 @@ class DataFrameCacheMatcher(BasicMatcher):
         self.prepend_collection_name = prepend_collection_name
         self.require_unique_match = require_unique_match
         # this is a necessary sanity check
-        if prepend_collection_name:
-            if collection is None:
-                raise TypeError(
-                    "DataFrameCacheMatcher constructor:  collection name must be defined when prepend_collection_name is set True"
-                )
-            elif isinstance(collection, str):
-                self.collection = collection
+        if collection is None:
+            raise TypeError(
+                "DataFrameCacheMatcher constructor:  collection name must be defined when prepend_collection_name is set True"
+            )
+        elif isinstance(collection, str):
+            self.collection = collection
 
-            else:
-                raise TypeError(
-                    "DataFrameCacheMatcher constructor:   collection argument must be a string type"
-                )
-        if not isinstance(df, (type_pdd, type_ddd, Database)):
+        else:
+            raise TypeError(
+                "DataFrameCacheMatcher constructor:   collection argument must be a string type"
+            )
+        if not isinstance(db_or_df, (type_pdd, type_ddd, Database)):
             raise TypeError(
                 "DataFrameCacheMatcher constructor:  required arg0 must be either a pandas, dask Dataframe, or database handle"
             )
@@ -884,6 +879,11 @@ class DataFrameCacheMatcher(BasicMatcher):
             aliases=aliases,
         )
 
+        df = (
+            db_or_df
+            if isinstance(db_or_df, (type_pdd, type_ddd))
+            else pd.DataFrame(list(db_or_df[self.collection].find({})))
+        )
         self._load_dataframe_cache(df)
 
     def find(self, mspass_object) -> tuple:
@@ -952,7 +952,7 @@ class DataFrameCacheMatcher(BasicMatcher):
                         )
                         return [None, elog]
                 for k in self.load_if_defined:
-                    if notnulltest(k):
+                    if notnulltest[k]:
                         if k in self.aliases:
                             key = self.aliases[k]
                         else:
@@ -2048,11 +2048,6 @@ class EqualityMatcher(DataFrameCacheMatcher):
       is not unique.  When False find_one returns the first document
       found and logs a complaint message.  (default is True)
     :type require_unique_match:  boolean
-
-    TODO:  although in this case the docstring says it can use
-    db or df that is a lie.   Left the doc string alone because that is the
-    plan.  That means all the other docstrings will need to have the
-    ":param db:" sections changed to something more like above.
     """
 
     def __init__(
@@ -2367,7 +2362,8 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         aliases=None,
         require_unique_match=False,
         prepend_collection_name=True,
-        time_key=None,
+        data_time_key=None,
+        source_time_key=None,
     ):
         super().__init__(
             db,
@@ -2380,10 +2376,11 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         )
         self.t0offset = t0offset
         self.tolerance = tolerance
-        self.time_key = time_key
+        self.data_time_key = data_time_key
+        self.source_time_key = source_time_key
         if query is None:
             query = {}
-        elif isinstance(query, dict):
+        if isinstance(query, dict):
             self.query = query
         else:
             raise TypeError(
@@ -2424,13 +2421,13 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         if mspass_object.dead():
             return None
 
-        if self.time_key is None:
+        if self.data_time_key is None:
             # this maybe should have a test to assure UTC time standard
             # but will defer for now
             test_time = mspass_object.t0
         else:
-            if mspass_object.is_defined(self.time_key):
-                test_time = mspass_object[self.time_key]
+            if mspass_object.is_defined(self.data_time_key):
+                test_time = mspass_object[self.data_time_key]
             else:
                 return None
 
@@ -2442,6 +2439,7 @@ class OriginTimeDBMatcher(DatabaseMatcher):
             "$gte": test_time - self.tolerance,
             "$lte": test_time + self.tolerance,
         }
+
         return query
 
 
@@ -2552,13 +2550,11 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
     origin time field.   Default is None which is translated to
     collection + "_time"  (default default is "source_time").
     :type source_time_key:  string
-
-    TODO:  needs an alternative DataFrame input
     """
 
     def __init__(
         self,
-        db,
+        db_or_df,
         collection="source",
         t0offset=0.0,
         tolerance=4.0,
@@ -2571,7 +2567,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         source_time_key=None,
     ):
         super().__init__(
-            db,
+            db_or_df,
             collection,
             attributes_to_load=attributes_to_load,
             load_if_defined=load_if_defined,
@@ -2703,12 +2699,6 @@ class ArrivalDBMatcher(DatabaseMatcher):
     :type query:  python dictionary or None.  None is equivalewnt to
       passing an empty dictionary.  A TypeError will be thrown if this
       argument is not None or a dict.
-
-
-    TODO:  It may be desirable to have a dataframe input option for
-    this one as there is currently no "arrival" collection in our
-    standard mspass schema.  Also I don't know if aliases will be handled
-    correctly with this code.
     """
 
     def __init__(
@@ -2888,7 +2878,7 @@ class ArrivalMatcher(DataFrameCacheMatcher):
 
     def __init__(
         self,
-        db,
+        db_or_df,
         collection="arrival",
         attributes_to_load=["phase", "time"],
         load_if_defined=None,
@@ -2900,7 +2890,7 @@ class ArrivalMatcher(DataFrameCacheMatcher):
         arrival_time_key=None,
     ):
         super().__init__(
-            db,
+            db_or_df,
             collection,
             attributes_to_load=attributes_to_load,
             load_if_defined=load_if_defined,
@@ -3145,7 +3135,7 @@ def bulk_normalize(
                         new_key = matcher.collection + key
                     else:
                         new_key = matcher.collection + "_" + key
-                update_doc[new_key] = norm_doc[key]
+                update_doc[new_key] = norm_doc[new_key]
 
             cnt_list[ind] += 1
             need_update = True
