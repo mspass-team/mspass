@@ -1,5 +1,6 @@
 import copy
 import os
+import pickle
 
 import dask.bag
 import gridfs
@@ -9,6 +10,8 @@ import pytest
 import sys
 import re
 import collections
+
+import obspy.clients.fdsn.client
 
 from mspasspy.util.converter import (
     TimeSeries2Trace,
@@ -2682,22 +2685,28 @@ class TestDatabase:
         assert ts.data is not None
         assert ts.data == DoubleVector(mseed_st[0].data.astype("float64"))
 
-    def test_index_and_read_fdsn(self):
+    def test_index_and_read_fdsn(self, monkeypatch):
+        def mock_fdsn_get_waveform(*args, **kwargs):
+            with open("python/tests/data/index_and_read_fdsn.pickle", "rb") as handle:
+                return pickle.load(handle)
+
+        monkeypatch.setattr(
+            obspy.clients.fdsn.client.Client, "get_waveforms", mock_fdsn_get_waveform
+        )
         self.db.index_mseed_FDSN(
-            "SCEDC", 2017, 5, "CI", "CAC", "", "HNZ", collection="test_s3_fdsn"
+            "IRIS", 2010, 58, "IU", "ANMO", "00", "BHZ", collection="test_s3_fdsn"
         )
         assert self.db["test_s3_fdsn"].count_documents({}) == 1
         fdsn_doc = self.db.test_s3_fdsn.find_one()
-        assert fdsn_doc["provider"] == "SCEDC"
-        assert fdsn_doc["year"] == "2017"
-        assert fdsn_doc["day_of_year"] == "005"
+        assert fdsn_doc["provider"] == "IRIS"
+        assert fdsn_doc["year"] == "2010"
+        assert fdsn_doc["day_of_year"] == "058"
 
         del fdsn_doc["_id"]
         tmp_ts = TimeSeries(fdsn_doc, np.ndarray([0], dtype=np.float64))
         self.db._read_data_from_fdsn(tmp_ts)
-        tmp_ts_2 = TimeSeries(fdsn_doc, np.ndarray([0], dtype=np.float64))
-        self.db._read_data_from_fdsn(tmp_ts_2)
-        assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
+        tmp_st = mock_fdsn_get_waveform()
+        assert all(a == b for a, b in zip(tmp_ts.data, tmp_st[0].data))
 
     def test_save_dataframe(self):
         dir = "python/tests/data/"
