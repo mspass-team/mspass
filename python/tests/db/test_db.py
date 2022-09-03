@@ -2685,14 +2685,14 @@ class TestDatabase:
         assert ts.data is not None
         assert ts.data == DoubleVector(mseed_st[0].data.astype("float64"))
 
-
     def mock_fdsn_get_waveform(*args, **kwargs):
         with open("python/tests/data/index_and_read_fdsn.pickle", "rb") as handle:
             return pickle.load(handle)
 
     def test_index_and_read_fdsn(self):
         with patch(
-            "obspy.clients.fdsn.client.Client.get_waveforms", new=self.mock_fdsn_get_waveform
+            "obspy.clients.fdsn.client.Client.get_waveforms",
+            new=self.mock_fdsn_get_waveform,
         ):
             self.db.index_mseed_FDSN(
                 "IRIS", 2010, 58, "IU", "ANMO", "00", "BHZ", collection="test_s3_fdsn"
