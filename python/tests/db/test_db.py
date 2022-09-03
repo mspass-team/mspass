@@ -1,4 +1,5 @@
 import copy
+import io
 import os
 import pickle
 
@@ -6,12 +7,20 @@ import dask.bag
 import gridfs
 import numpy as np
 import obspy
+import obspy.clients.fdsn.client
 import pytest
 import sys
 import re
 import collections
 
-import obspy.clients.fdsn.client
+import boto3
+from moto import mock_s3
+import botocore.session
+from botocore.stub import Stubber
+from unittest.mock import patch, Mock
+import json
+import base64
+
 
 from mspasspy.util.converter import (
     TimeSeries2Trace,
@@ -50,15 +59,6 @@ from helper import (
     get_live_timeseries_ensemble,
     get_live_seismogram_ensemble,
 )
-
-import boto3
-from moto import mock_s3
-import botocore.session
-from botocore.stub import Stubber
-from unittest.mock import patch
-import json
-import base64
-import io
 
 
 class TestDatabase:
@@ -263,13 +263,20 @@ class TestDatabase:
         self.db._save_data_to_gridfs(tmp_ts, gridfs_id)
         assert not gfsh.exists(gridfs_id)
 
+    def mock_urlopen(*args):
+        response = Mock()
+        with open("python/tests/data/read_data_from_url.pickle", "rb") as handle:
+            response.read.side_effect = [pickle.load(handle)]
+        return response
+
     def test_read_data_from_url(self):
-        url = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
-        tmp_ts = TimeSeries()
-        self.db._read_data_from_url(tmp_ts, url)
-        tmp_seis = Seismogram()
-        self.db._read_data_from_url(tmp_seis, url)
-        assert all(a == b for a, b in zip(tmp_ts.data, tmp_seis.data[0][:]))
+        with patch("urllib.request.urlopen", new=self.mock_urlopen):
+            url = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
+            tmp_ts = TimeSeries()
+            self.db._read_data_from_url(tmp_ts, url)
+            tmp_seis = Seismogram()
+            self.db._read_data_from_url(tmp_seis, url)
+            assert all(a == b for a, b in zip(tmp_ts.data, tmp_seis.data[0][:]))
 
         # test invalid url
         bad_url = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=DUMMY&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
@@ -1096,16 +1103,17 @@ class TestDatabase:
             )
 
         # url
-        res_url = dict(res)
-        res_url_id = ObjectId()
-        res_url["_id"] = res_url_id
-        res_url["storage_mode"] = "url"
-        res_url[
-            "url"
-        ] = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
-        self.db["wf_Seismogram"].insert_one(res_url)
-        url_seis = self.db.read_data(res_url_id, mode="promiscuous")
-        assert url_seis.data.columns() == 6000
+        with patch("urllib.request.urlopen", new=self.mock_urlopen):
+            res_url = dict(res)
+            res_url_id = ObjectId()
+            res_url["_id"] = res_url_id
+            res_url["storage_mode"] = "url"
+            res_url[
+                "url"
+            ] = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
+            self.db["wf_Seismogram"].insert_one(res_url)
+            url_seis = self.db.read_data(res_url_id, mode="promiscuous")
+            assert url_seis.data.columns() == 6000
 
         # save with a dead object
         promiscuous_seis.live = False
