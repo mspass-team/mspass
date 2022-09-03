@@ -78,6 +78,7 @@ slowness vector is 0.
         const SlownessVector operator-(const SlownessVector& other) const;
 private:
     double azimuth0;
+    friend class boost::serialization::access;
     template<class Archive>
        void serialize(Archive& ar,const unsigned int version)
     {
