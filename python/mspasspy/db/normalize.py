@@ -14,7 +14,6 @@ from bson import ObjectId
 
 from obspy import UTCDateTime
 import pymongo
-import inspect
 import copy
 import pandas as pd
 import dask
@@ -846,6 +845,7 @@ class DataFrameCacheMatcher(BasicMatcher):
         """
         self.prepend_collection_name = prepend_collection_name
         self.require_unique_match = require_unique_match
+        self.custom_null_values = custom_null_values
         # this is a necessary sanity check
         if collection is None:
             raise TypeError(
@@ -1041,7 +1041,10 @@ class DataFrameCacheMatcher(BasicMatcher):
         # This is a bit error prone.  It assumes the BasicMatcher
         # constructor initializes a None default to an empty list
         fulllist = self.attributes_to_load + self.load_if_defined
-        self.cache = df[fulllist]
+        self.cache = df.reindex(columns=fulllist)[fulllist]
+        if self.custom_null_values is not None:
+            for col, nul_val in self.custom_null_values.items():
+                self.cache[col] = self.cache[col].replace(nul_val, np.nan)
 
 
 class ObjectIdDBMatcher(DatabaseMatcher):
@@ -2061,6 +2064,7 @@ class EqualityMatcher(DataFrameCacheMatcher):
         aliases=None,
         require_unique_match=True,
         prepend_collection_name=False,
+        custom_null_values=None,
     ):
         super().__init__(
             db_or_df,
@@ -2070,6 +2074,7 @@ class EqualityMatcher(DataFrameCacheMatcher):
             aliases=aliases,
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
+            custom_null_values=custom_null_values,
         )
         if isinstance(match_keys, dict):
             self.match_keys = match_keys
@@ -2565,6 +2570,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         prepend_collection_name=True,
         data_time_key=None,
         source_time_key=None,
+        custom_null_values=None,
     ):
         super().__init__(
             db_or_df,
@@ -2574,6 +2580,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
             aliases=aliases,
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
+            custom_null_values=custom_null_values,
         )
         self.t0offset = t0offset
         self.tolerance = tolerance
@@ -2868,12 +2875,6 @@ class ArrivalMatcher(DataFrameCacheMatcher):
     :type query:  python dictionary or None.  None is equivalewnt to
       passing an empty dictionary.  A TypeError will be thrown if this
       argument is not None or a dict.
-
-    TODO:  db arg needs to be db_or_df and allow loading from
-    a database or datafram.  I also think it would be smart to
-    add a query argument to the database input as it would facilitate
-    the idea in the docstring above to prefilter the input into things
-    like year time blocks.
     """
 
     def __init__(
@@ -2888,6 +2889,7 @@ class ArrivalMatcher(DataFrameCacheMatcher):
         ensemble_starttime_key="starttime",
         ensemble_endtime_key="endtime",
         arrival_time_key=None,
+        custom_null_values=None,
     ):
         super().__init__(
             db_or_df,
@@ -2897,6 +2899,7 @@ class ArrivalMatcher(DataFrameCacheMatcher):
             aliases=aliases,
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
+            custom_null_values=custom_null_values,
         )
         # maybe a bit confusing to shorten the names here but the
         # argument names are a bit much

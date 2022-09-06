@@ -29,6 +29,7 @@ import numpy
 import copy
 from bson.objectid import ObjectId
 import pandas as pd
+import numpy as np
 
 
 def backup_db(db, backup_db_dir):
@@ -71,7 +72,9 @@ def Metadata_cmp(a, b):
         if key not in b:
             return False
         if a[key] != b[key]:
-            if type(a[key]) is float and numpy.isclose(a[key], b[key]):
+            if type(a[key]) in (float, np.float64) and numpy.isclose(a[key], b[key]):
+                continue
+            if numpy.isnan(a[key]) & numpy.isnan(b[key]):
                 continue
             return False
 
@@ -79,7 +82,9 @@ def Metadata_cmp(a, b):
         if key not in a:
             return False
         if a[key] != b[key]:
-            if type(a[key]) is float and numpy.isclose(a[key], b[key]):
+            if type(a[key]) in (float, np.float64) and numpy.isclose(a[key], b[key]):
+                continue
+            if numpy.isnan(a[key]) & numpy.isnan(b[key]):
                 continue
             return False
 
@@ -108,6 +113,44 @@ class TestNormalize:
         self.ts.tref = (
             TimeReferenceType.UTC
         )  #   Change the reference type to avoid issues in tests
+
+
+class TestDataFrameCacheMatcherUtil(TestNormalize):
+    def setup_method(self):
+        super().setup_method()
+        self.df = pd.DataFrame(list(self.db["channel"].find()))
+
+    def test_custom_null_values(self):
+        null_row = {
+            "lat": 0,
+            "lon": -100.00000000000000000000000001,
+            "depth": -99,
+            "time": np.nan,
+            "magnitude": np.nan,
+        }
+
+        self.df = self.df.append(null_row, ignore_index=True)
+        null_value_dict = {
+            "lat": 0.0,  #   Matching a float using a float
+            "lon": -100,  #   Matching a float using an int
+            "depth": 0,  #   This rule won't match row
+        }
+
+        matched_dict = {
+            "lat": np.nan,
+            "lon": np.nan,
+            "depth": np.float64(
+                -99.0
+            ),  #   The dataframe would convert the int to float
+            "time": np.nan,
+            "magnitude": np.nan,
+        }
+        originTimeMatcher = OriginTimeMatcher(
+            self.df, source_time_key="time", custom_null_values=null_value_dict
+        )
+        assert Metadata_cmp(
+            originTimeMatcher.cache.to_dict(orient="records")[-1], matched_dict
+        )
 
 
 class TestObjectIdMatcher(TestNormalize):
