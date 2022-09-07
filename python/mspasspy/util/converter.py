@@ -482,6 +482,27 @@ def TimeSeriesEnsemble2Stream(tse):
 TimeSeriesEnsemble.toStream = TimeSeriesEnsemble2Stream
 
 
+def list2SeismogramEnsemble(l, keys=None):
+    """
+    Convert a list of Seismograms to a SeismogramEnsemble.  
+    This function will make copies of all the data, to create a new Ensemble.
+
+    :param l: a list of Seismograms
+    :return: converted SeismogramEnsemble
+    """
+    res = SeismogramEnsemble()
+    for d in l:
+        res.member.append(d)
+    if len(keys) > 0:
+        md = Metadata()
+        for k in keys:
+            md[k] = res.member[0][k]
+        res.update_metadata(md)
+    else:
+        res.update_metadata(res.member[0])
+    return res
+
+
 def Pf2AttributeNameTbl(pf, tag="attributes"):
     """
     This function will parse a pf file to extract a tbl with a specific
