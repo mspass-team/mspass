@@ -409,7 +409,7 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
       throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
     }
     CoreSeismogram dtmp(WindowData(d,this->processing_window));
-    this->decondata=Seismogram(dtmp,"invalid");
+    this->decondata=Seismogram(dtmp,string("invalid"));
     if(FFTDeconOperator::nfft<(2*this->winlength))
     {
       cerr << "CNR3CDecon:  coding error in loaddata method"<<endl
@@ -457,7 +457,7 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
     this->pssignal=this->ThreeCPower(dtmp);
     if(nload)
     {
-      Seismogram ntmp(WindowData(d,this->noise_window),"Invalid");
+      Seismogram ntmp(WindowData(d,this->noise_window),string("Invalid"));
       this->loadnoise_data(ntmp);
     }
     signal_bwd=EstimateBandwidth(FFTDeconOperator::df(this->operator_dt),

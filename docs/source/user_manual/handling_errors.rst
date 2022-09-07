@@ -20,10 +20,12 @@ seismologists of that approach is the elog library used in
 system but is more problematic in a large cluster of distributed machines
 or (worse) a cloud system.  In a distributed system a centralized error
 logger would need to maintain a connection to every running process, which
-would to a challenge to implement.
+would to a challenge to implement from scratch.   We originally considered
+using python's logging mechanism, but recognized that would not solve the
+large log file issue.
 
 The above issues led us to a completely different solution for error logging.
-We include an ErrorLogger class as a base class to all supported data
+We include an ErrorLogger class a member of all supported data
 objects.  That model simplifies the error handling because the error
 handling model can be stated as two simple rules:
 
@@ -183,25 +185,29 @@ to handle such issues.
 Undertaker
 ~~~~~~~~~~~~~
 The class name is a programming joke, but the name is descriptive;  its jobs
-is to deal with dead data.  It has three basic methods that can be applied in
-a serial job:
+is to deal with dead data.  The class is an extension of Database and has
+three methods that are most useful for parallel jobs handling ensembles.
 
-1.  The :code:`bury_the_dead` is the recommended method for most workflows
-    to handle dead data.  It accepts TimeSeries, Seismogram, and ensembles of
-    either as input.  It saves error logs and metadata for killed data to a
-    special collection we call "graveyard".  (NOT YET IMPLEMENTED AND SUBJECT
-    TO CHANGE).   For ensembles the function returns an edited version of the
+1.  The :code:`bury_the_dead` method is the recommended method for many workflows
+    to clear dead data from ensembles.
+    It saves error logs and metadata for killed data
+    in the elog collection as a subdocument with the key "tombstone".
+    It returns an edited version of the
     ensemble with the dead data removed.
-2.  The :code:`cremate` method can only be applied to ensembles.  It
-    clears the dead data members from an ensemble and returns a clean
+2.  The :code:`cremate` method is a variant of :code:`bury_the_dead`  It
+    also clears the dead data members from an ensemble and returns a clean
     copy with he dead data removed.  We call it :code:`cremate` because
     all traces of the data vanish; neither the error log or any identifiers
     of the destroyed data will be retained.
 3.  The :code:`bring_out_your_dead` method, other than being the best python programming
-    joke ever, is more specialized.  It is only relevant for
-    ensembles.  It returns two ensembles:  one with all the live and one
+    joke ever, is more specialized.  It returns two ensembles:  one with all the live and one
     with all the dead data.  That approach can be used, for example, in
     testing automatic editing code.  An interactive job to evaluate
     how well the editing worked could use this method.
 
-For parallel workflows - NEEDS SOMETHING WHEN THAT IS FINISHED.
+The :code:`Undertaker` class only works on ensembles because clearing a
+dead datum in a serial job makes little sense.   In all cases we know
+the same functionality is achieved in a python script by conditionals to
+test if the datum is marked live.  Furthermore, the user should recognize that
+any call to the :code:`save_data` method will lead to a :code:`tombstone`
+subdocument being written for all data marked dead.

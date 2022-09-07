@@ -467,14 +467,26 @@ def test_TimeSeries():
     assert ts.data[103] == 8
     assert ts.time(100) == 0.1
     assert ts.sample_number(0.0998) == 100
+    # These metadata constructor used for cracking miniseed files
+    md = Metadata()
+    md["delta"] = 0.01
+    md["starttime"] = 0.0
+    ts = TimeSeries(md)
+    assert(ts.npts == 0)
+    md["npts"] = 100
+    ts = TimeSeries(md)
+    assert(ts.npts == 100)
 
 
 def test_CoreSeismogram():
     md = Metadata()
     md["delta"] = 0.01
     md["starttime"] = 0.0
-    md["npts"] = 100
     # test metadata constructor
+    # first make sure it handles case with npts not defined 
+    cseis = _CoreSeismogram(md, False)
+    assert (cseis.npts == 0)
+    md["npts"] = 100
     md["tmatrix"] = np.random.rand(3, 3)
     cseis = _CoreSeismogram(md, False)
     assert (cseis.tmatrix == md["tmatrix"]).all()
@@ -611,11 +623,11 @@ def test_Seismogram():
     seis.rotate(sc)
     assert all(np.isclose(seis.data[:, 3], [0, -0.707107, 0.707107]))
     seis.rotate_to_standard()
-    assert all(seis.data[:, 3] == [0, 0, 1])
+    assert all(np.isclose(seis.data[:, 3], [0, 0, 1]))
     sc.phi = -np.pi / 4
     seis.data[:, 3] = sc.unit_vector
     seis.rotate(sc)
-    assert all(seis.data[:, 3] == [0, 0, 1])
+    assert all(np.isclose(seis.data[:, 3], [0, 0, 1]))
     seis.rotate_to_standard()
     assert all(np.isclose(seis.data[:, 3], [0.5, -0.5, 0.707107]))
     seis.data[:, 3] = [0, 0, 1]

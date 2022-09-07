@@ -96,7 +96,7 @@ class Client:
         elif MSPASS_DB_ADDRESS:
             database_address = MSPASS_DB_ADDRESS
         else:
-            database_address = "localhost"
+            database_address = "127.0.0.1"
         # add port
         if not database_host_has_port and MONGODB_PORT:
             database_address += ":" + MONGODB_PORT

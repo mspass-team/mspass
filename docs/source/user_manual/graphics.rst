@@ -6,6 +6,8 @@ Graphics in MsPASS
 Overview
 ~~~~~~~~~~~
 
+THIS SECTION NEEDS FIGURES - THE GRAPHICS TUTORIAL CREATES ALL THE EXAMPLES NEEDED
+
 Data visualization in general and graphics to visualize seismic data
 in particular are critical elements to understand data and the
 result of a processing workflow.   On the other hand, because of the
@@ -16,7 +18,7 @@ unfeasible data sets and/or algorithms feasible.  Consequently, in our
 initial development we aimed to provide only basic support for graphics
 of native data types.  Users should understand that custom graphics beyond our
 basic support support is the user's responsibility.  Because of the
-large number of options in existence believe that is reasonable compromise
+large number of options in existence we believe that is reasonable compromise
 with finite resources.
 
 The current support for graphics has two component.
@@ -66,16 +68,16 @@ classes support the four most common methods:
     Traditional plots from past when paper records were the norm is black but
     other colors are common in published papers today.  Our plotting
     classes allow changing the fill to any color.
-3.  :code:`image plot (img)` graphics became the norm in plotting reflection data since
+3.  :code:`image plot (img)` graphics have been the norm in plotting reflection data since
     at least the 1990s.  An image plot uses a color map scaled by amplitude.
-    These plots are most appropriate that are like modern reflection data:
+    These plots are most appropriate for data that are like modern reflection data:
     the data density is high and there is a strong correlation between
     signals plotted side-by-side.
 4.  The most complicated plot is what we call a
     :code:`wiggle trace variable area with image overlay (wtvaimg)` plot.
     The best way to understand this plot, and in fact is exactly how it is
     produced, is first plot the data as an image plot and then overlay a
-    wiggle trace plot.
+    wiggle trace variable area plot.
 
 Below are examples of all four types of plots from our graphics tutorial.
 For details of the API and how to use our plotting capabilities is
@@ -100,9 +102,9 @@ we note are:
 1.  :code:`TimeSeries`  data generate one plot frame with a time axis and
     a y axis of amplitude.
 2.  :code:`Seismogram` data are displayed on one plot frame.  The three
-    components plotted at equal y intervals in SeismicPlotter
-    (equal x intervals in SectionPlotter) with the x1, x2, x3 components arranged in
-    from the bottum up (left to right for SectionPlotter).   There is an option
+    components are plotted at equal y intervals in SeismicPlotter
+    (equal x intervals in SectionPlotter) with the x1, x2, x3 components arranged
+    from the bottom up (left to right for SectionPlotter).   There is an option
     for both types of plots to reverse the order.
 3.  :code:`TimeSeriesEnsmble` data in a SeismicPlotter plot are plotted
     at equal intervals from the bottom up (i.e. member[0] is at the bottom)
@@ -120,8 +122,8 @@ we note are:
 
 A final point is that any plotting of earthquake data nearly always
 requires some form of scaling to prevent some data from clipping while others
-will look like flat lines even if they contain valid.  The technical reason
-is that the dynamic range of any graphics devices is tiny compared that
+will look like flat lines even if they contain valid data.  The technical reason
+is that the dynamic range of any graphics devices is tiny compared to that
 of modern digital data acquisition systems (about 8 bits for graphics compared
 to 24 bit acquisition that is now the norm for earthquake data).  There is
 an internal scaling parameter that can be used for all graphics, but the
@@ -132,11 +134,11 @@ Obspy Graphics
 ~~~~~~~~~~~~~~~~~~~~~~
 
 User's familiar with obspy may, in come cases, prefer to utilize obspy's
-buil in graphics.   Obspy's data objects
+built in graphics.   Obspy's data objects
 (:py:class:`Trace <obspy.core.trace.Trace>`
 and
 :py:class:`Stream <obspy.core.stream.Stream>`)
-have a plot method as a member of the data object.  Part of MsPASS are
+have a plot method as a member of the data object.  MsPASS has
 a suite of fast converters between obspy and MsPASS data objects.
 These converters can be used in plotting scrips like the following:
 

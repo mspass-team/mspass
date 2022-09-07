@@ -4,7 +4,7 @@ Header (Metadata) Math
 ==========================
 Concepts
 ------------
-Anyone familiar with seismic reflection data processing has seen the
+Anyone with experience in seismc reflection data processing is aware of the
 common need for what is sometimes called "header math".   That term in the
 seismic reflection world is inherited from the days of tape-based processing
 where the processing workflow was driven by "header" attributes that were
@@ -21,18 +21,17 @@ system knows exactly why "header math" is a frequent requirement in
 a workflow.   The general problem is that it is often necessary to
 compute other attributes using the contents of one or more other
 (Metadata) attributes.   A common example in reflection processing
-of simple surveys is geometry formulas that
-can be used to compute line geometry attributes from other attributes
-like survey flag numbers.  Another from passive array processing is
+of simple surveys is computing common midpoint coordinates from source
+and receiver coordinates.  An example from passive array processing is
 a need to compute some combined score of signal-to-noise ratio based on
 a linear combination of single metrics.
 
 The collection of edit operators covered in this section were implemented
-to cover the main arithmetic operations to do "header math".  They have the
+to cover the main arithmetic operations needed to do most "header math".  They have the
 advantage of being expressed through a standardized API that allows a chain
 of operation to be computed that can implement fairly elaborate
 calculations.  The user should recognize that the main advantage of using
-these operators over a custom-code python function
+these operators over a custom-coded python function
 (see the *Alternative* subsection at the end of this document) is robustness
 and integration of the steps into the history and error logging
 concepts of MsPASS.
@@ -41,19 +40,19 @@ Unary Operators
 ---------------------
 The first set of operations are "unary" because they implement
 all the standard unary arithmetic operations in python.
-By that we me operations like `a+=b` which adds the value of b to a.
+By that we me operations like ``a+=b`` which adds the value of b to a.
 The distinction is that the operators automatically (and robustly) fetch and update the
 Metadata attribute on the left hand side of that operation.
 
 It is likely clearest to show an example of how this is used.
-Suppose we wanted found the `calib` attribute in our entire data set
-was now off by a factor or 2 because some custom algorithm did that and
-made all the amplitudes wrong by a factor of 2.  We could define an
-operator to do that with this construct
+Suppose we found the ``calib`` attribute in our entire data set
+was off by a factor or 2 because some custom algorithm had a scaling error.
+We could define an
+operator to correct this problem with the following construct:
 
 .. code-block:: python
 
-  import mspasspy.algorithms.edit as mde 
+  import mspasspy.algorithms.edit as mde
   myop = mde.Multiply("calib", 2.0)
   # parallel example with dask - assumes data are in dask bag mydata
   mydata = mydata.map(myop.apply)
@@ -120,7 +119,7 @@ a common constructor signature:
 where ``op`` is the name for the operation (see table below), keyc is the
 key to set for the output of the operator, while keya and keyb are the keys used
 to fetch a and b in the formula ``c = a op b``.  keyc can be the same as either
-keya or keyb but be aware if it is that the contents of that key will be
+keya or keyb but be aware the contents of what appears as keyc will be
 overwritten.
 
 The names for the ``op`` variable above are illustrated in the table below.
@@ -228,13 +227,15 @@ the MsPASS framework:
 
 * All handle error consistently using the ErrorLogging mechanism of MsPASS
   data objects.
-* All behave identically on some standard error situations.  There are three
+* All behave identically on some common error situations.  There are three
+  common errors all handle that
   users need to be aware of.  (1) If a key-value that the operator needs to fetch from
   Metadata is not defined the operator will kill the datum missing and
   log a standard message.  (2) if
-  the value extracted fails on the arithmetic operation the datum will again
+  the value extracted fails for the defined `arithmetic operation the datum will again
   be killed with a standard message posted to the elog attribute of the
-  data object. (3) If the operator receives a datum that is not a MsPASS
+  data object. An example of this would be trying to do arithmetic on
+  an attribute with a string value.  (3) If the operator receives a datum that is not a MsPASS
   data object the operator will throw a MsPASSError object marked Fatal.
 * All operators handle Ensembles in a consistent manner.   Editing Metadata
   for an Ensemble object has an ambiguity because Ensemble objects often
@@ -254,8 +255,8 @@ Best Practices
 1. It is important to be aware of the consistency of the Metadata attributes
    for a data set before running these operators.  They will dogmatically kill
    data when required attributes are missing.   If your data set has a lot of
-   missing metadata you need to do the calculations these operators will
-   kill every datum that is lacking.
+   missing metadata required by the operator, the operators will
+   kill every datum that is lacking that metadata attribute.
 2. It is far to easy to kill every datum in your data set if you read
    data by ensembles and fail to use the `apply_to_members` switch correctly.
    With the default value of False if you mix up the names for fields you
