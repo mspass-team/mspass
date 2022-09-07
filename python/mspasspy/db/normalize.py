@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, ErrorLogger, Metadata
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, Metadata
+from mspasspy.util.error_logger import PyErrorLogger
 from mspasspy.ccore.seismic import (
     TimeSeries,
     Seismogram,
@@ -150,8 +151,8 @@ class BasicMatcher(ABC):
 
         All implementations should return a pair (2 component tuple).
         0 is expected to hold a list of Metadata containers and
-        1 is expected to contain either a None type or an ErrorLogger
-        object.   The ErrorLogger is a convenient way to pass error
+        1 is expected to contain either a None type or an PyErrorLogger
+        object.   The PyErrorLogger is a convenient way to pass error
         messages back to the caller in a manner that is easier to handle
         with the MsPASS error system than an exception mechanism.
         Callers should handle four cases that are possible for a return
@@ -194,8 +195,8 @@ class BasicMatcher(ABC):
         All implementations should return a pair (2 component tuple).
         0 is expected to hold a Metadata containers that was yielded by
         the match.  It should be returned as None if there is no match.
-        1 is expected to contain either a None type or an ErrorLogger
-        object.   The ErrorLogger is a convenient way to pass error
+        1 is expected to contain either a None type or an PyErrorLogger
+        object.   The PyErrorLogger is a convenient way to pass error
         messages back to the caller in a manner that is easier to handle
         with the MsPASS error system than an exception mechanism.
         Callers should handle four cases that are possible for a return:
@@ -300,34 +301,34 @@ class DatabaseMatcher(BasicMatcher):
         It also handles the common problem of dead data or accidentally
         receiving invalid data like a None.   The later may cause other
         algorithms to abort, but we handle it here return [None,None].
-        We don't return an ErrorLogger in that situation as the assumption
+        We don't return an PyErrorLogger in that situation as the assumption
         is there is no place to put it and something else has gone really
         wrong.
         """
         if not _input_is_valid(mspass_object):
-            elog = ErrorLogger()
+            elog = PyErrorLogger()
             message = "received invalid data.  Arg0 must be a valid MsPASS data object"
-            elog.log_error("DatabaseMatcher.find", message, ErrorSeverity.Invalid)
+            elog.log_error(message, ErrorSeverity.Invalid)
         if mspass_object.dead():
             return [None, None]
         query = self.query_generator(mspass_object)
         if query is None:
-            elog = ErrorLogger()
+            elog = PyErrorLogger()
             message = "query_generator method failed to generate a valid query - required attributes are probably missing"
-            elog.log_error("DatabaseMatcher.find", message, ErrorSeverity.Invalid)
+            elog.log_error(message, ErrorSeverity.Invalid)
             return [None, elog]
         number_hits = self.dbhandle.count_documents(query)
         if number_hits <= 0:
-            elog = ErrorLogger()
+            elog = PyErrorLogger()
             message = "query = " + str(query) + " yielded no documents"
-            elog.log_error("DatabaseMatcher.find:  ", message, ErrorSeverity.Complaint)
+            elog.log_error(message, ErrorSeverity.Complaint)
             return [None, elog]
         cursor = self.dbhandle.find(query)
-        elog = ErrorLogger()
+        elog = PyErrorLogger()
         metadata_list = []
         for doc in cursor:
             try:
-                md = extractData2Metadata(
+                md = _extractData2Metadata(
                     doc,
                     self.attributes_to_load,
                     self.aliases,
@@ -369,7 +370,7 @@ class DatabaseMatcher(BasicMatcher):
             # somewhat messy logic to handle differnt situations
             # we throw an exception if the constructor set require_unique_match
             # True.  Otherwise we need to handle the distinction on whether or
-            # not the return from find had an ErrorLogger defined with data.
+            # not the return from find had an PyErrorLogger defined with data.
             if self.require_unique_match:
                 message = "query of collection {col} did not yield a unique match.  Found {n} matching documents.  Aborting".format(
                     col=self.collection, n=mdlist_length
@@ -379,7 +380,7 @@ class DatabaseMatcher(BasicMatcher):
                 )
             else:
                 if find_output[1] is None:
-                    elog = ErrorLogger()
+                    elog = PyErrorLogger()
                 else:
                     elog = find_output[1]
                 message = "query of collection {col} did not yield a unique match.  Found {n} matching documents.  Using first one in list".format(
@@ -576,7 +577,7 @@ class DictionaryCacheMatcher(BasicMatcher):
             else:
                 message = "encountered a nonunique match calling find_one - returning contents of first matching document found"
                 if find_output[1] is None:
-                    elog = ErrorLogger()
+                    elog = PyErrorLogger()
                 else:
                     elog = find_output[1]
                 elog.log_error(
@@ -608,10 +609,10 @@ class DictionaryCacheMatcher(BasicMatcher):
           currently that means TimeSeries, Seismogram, TimeSeriesEnsemble,
           or SeismogramEnsemble.   If it is anything else (e.g. None)
           this method will return a tuple [None, elog] with elog being
-          a ErrorLogger with a posted message.
+          a PyErrorLogger with a posted message.
 
         :return: tuple with two elements.  0 is either a list of valid Metadata
-          container(s) or None and 1 is either None or an ErrorLogger object.
+          container(s) or None and 1 is either None or an PyErrorLogger object.
           There are only two possible returns from this method:
               [None, elog] - find failed.  See/save elog for why it failed.
               [ [md1, md2, ..., mdn], None] - success with 0 a list of Metadata
@@ -619,9 +620,8 @@ class DictionaryCacheMatcher(BasicMatcher):
                 (if appropriate) in each component.
         """
         if not _input_is_valid(mspass_object):
-            elog = ErrorLogger()
+            elog = PyErrorLogger()
             elog.log_error(
-                "DictionaryCacheMatcher.find",
                 "Received datum that was not a valid MsPASS data object",
                 ErrorSeverity.Invalid,
             )
@@ -634,10 +634,8 @@ class DictionaryCacheMatcher(BasicMatcher):
         # is accurate though
         if (thisid == None) or (thisid not in self.normcache):
             error_message = "cache_id method found no match for this datum"
-            elog = ErrorLogger()
-            elog.log_error(
-                "DictionaryCacheMatcher.find", error_message, ErrorSeverity.Invalid
-            )
+            elog = PyErrorLogger()
+            elog.log_error(error_message, ErrorSeverity.Invalid)
             return [None, elog]
         else:
             return [self.normcache[thisid], None]
@@ -704,7 +702,7 @@ class DictionaryCacheMatcher(BasicMatcher):
                     ErrorSeverity.Fatal,
                 )
             try:
-                md = extractData2Metadata(
+                md = _extractData2Metadata(
                     doc,
                     self.attributes_to_load,
                     self.aliases,
@@ -770,7 +768,7 @@ class DictionaryCacheMatcher(BasicMatcher):
                     ErrorSeverity.Fatal,
                 )
             try:
-                md = extractData2Metadata(
+                md = _extractData2Metadata(
                     doc,
                     self.attributes_to_load,
                     self.aliases,
@@ -899,7 +897,7 @@ class DataFrameCacheMatcher(BasicMatcher):
         row of the returned DataFrame.
         """
         if not _input_is_valid(mspass_object):
-            elog = ErrorLogger(
+            elog = PyErrorLogger(
                 "DataFrameCacheMatcher.find",
                 "Received datum that was not a valid MsPASS data object",
                 ErrorSeverity.Invalid,
@@ -911,10 +909,8 @@ class DataFrameCacheMatcher(BasicMatcher):
         # if the subset failed.
         if len(subset_df) <= 0:
             error_message = "subset method found no match for this datum"
-            elog = ErrorLogger()
-            elog.log_error(
-                "DataFrameCacheMatcher.find", error_message, ErrorSeverity.Invalid
-            )
+            elog = PyErrorLogger()
+            elog.log_error(error_message, ErrorSeverity.Invalid)
             return [None, elog]
         else:
             # This loop cautiously fills one or more Metadata
@@ -941,12 +937,11 @@ class DataFrameCacheMatcher(BasicMatcher):
                         md[mdkey] = row[key]
                     else:
                         if elog is None:
-                            elog = ErrorLogger()
+                            elog = PyErrorLogger()
                         error_message = "Encountered Null value for required attribute {key} - repairs of the input DataFrame are required".format(
                             key=k
                         )
                         elog.log_error(
-                            "DataFrameCacheMatcher.find",
                             error_message,
                             ErrorSeverity.Invalid,
                         )
@@ -976,10 +971,10 @@ class DataFrameCacheMatcher(BasicMatcher):
         It calls the find method and then does one of two thing s
         depending upon the value of self.require_unique_match.
         When that boolean is True if the match is not unique it
-        creates an ErrorLogger object, posts a message to the log,
+        creates an PyErrorLogger object, posts a message to the log,
         and then returns a [Null,elog] pair.  If self.require_unique_match
         is False and the match is not ambiguous, it again creates an
-        ErrorLogger and posts a message, but it also takes the first
+        PyErrorLogger and posts a message, but it also takes the first
         container in the list returned by find and returns in as
         component 0 of the pair.
         """
@@ -998,16 +993,14 @@ class DataFrameCacheMatcher(BasicMatcher):
                     ErrorSeverity.Fatal,
                 )
             if findreturn[1] is None:
-                elog = ErrorLogger()
+                elog = PyErrorLogger()
             else:
                 elog = findreturn[1]
             # This maybe should be only posted with a verbose option????
             error_message = "found {n} matches.  Returned first one found.  You should use find instead of find_one if the match is not unique".format(
                 n=len(mdlist)
             )
-            elog.log_error(
-                "DataFrameCacheMatcher.find_one", error_message, ErrorSeverity.Complaint
-            )
+            elog.log_error(error_message, ErrorSeverity.Complaint)
             return [mdlist[0], elog]
         else:
             # only land here if mdlist is something for which len returns 0
@@ -1505,11 +1498,9 @@ class MiniseedDBMatcher(DatabaseMatcher):
                 # trap this unlikely but possible condition as this
                 # condition could produce mysterious behavior
                 if mspass_object.time_is_relative():
-                    elog = ErrorLogger()
+                    elog = PyErrorLogger()
                     message = "Usage error:  input has a relative time standard but miniseed matching requires a UTC time stamp"
-                    elog.log_error(
-                        "MiniseedDBMatcher.find_one", message, ErrorSeverity.Invalid
-                    )
+                    elog.log_error(message, ErrorSeverity.Invalid)
                     return [None, elog]
                 find_output = self.find(mspass_object)
                 number_matches = len(find_output[0])
@@ -1519,24 +1510,21 @@ class MiniseedDBMatcher(DatabaseMatcher):
                     return [find_output[0][0], find_output[1]]
                 else:
                     if find_output[1] is None:
-                        elog = ErrorLogger()
+                        elog = PyErrorLogger()
                     else:
                         elog = find_output[1]
                     message = "{n} channel recorded match net:sta:chan:loc:time_interval query for this datume\n".format(
                         n=number_matches
                     )
                     message += "Using first document in list returned by find method"
-                    elog.log_error(
-                        "MiniseedDBMatcher.find_one", message, ErrorSeverity.Complaint
-                    )
+                    elog.log_error(message, ErrorSeverity.Complaint)
                     return [find_output[0][0], elog]
 
             else:
                 # logged as complaint because by definition if it was
                 # already killed it is Invalid
-                elog = ErrorLogger()
+                elog = PyErrorLogger()
                 elog.log_error(
-                    "MiniseedDBMatcher.find_one",
                     "Received a datum marked dead - will not attempt match",
                     ErrorSeverity.Complaint,
                 )
@@ -1826,9 +1814,9 @@ class MiniseedMatcher(DictionaryCacheMatcher):
                 # trap this unlikely but possible condition as this
                 # condition could produce mysterious behavior
                 if mspass_object.time_is_relative():
-                    elog = ErrorLogger()
+                    elog = PyErrorLogger()
                     message = "Usage error:  input has a relative time standard but miniseed matching requires a UTC time stamp"
-                    elog.log_error("MiniseedMatcher", message, ErrorSeverity.Invalid)
+                    elog.log_error(message, ErrorSeverity.Invalid)
                     return [None, elog]
                 find_output = self.find(mspass_object)
                 number_matches = len(find_output[0])
@@ -1859,7 +1847,7 @@ class MiniseedMatcher(DictionaryCacheMatcher):
                     # we land here if the linear search failed and no
                     # t0 is within the ranges defined
                     if find_output[1] is None:
-                        elog = ErrorLogger()
+                        elog = PyErrorLogger()
                     else:
                         elog = find_output[1]
                     message = (
@@ -1874,12 +1862,11 @@ class MiniseedMatcher(DictionaryCacheMatcher):
                         message += ", loc=" + mspass_object["loc"]
                     message += "time=" + str(UTCDateTime(mspass_object.t0))
                     message += "\nFound match for station codes but there is data start time is outside all channel time ranges "
-                    elog.log_error("MiniseedMatcher", message, ErrorSeverity.Invalid)
+                    elog.log_error(message, ErrorSeverity.Invalid)
                     return [None, elog]
             else:
-                elog = ErrorLogger()
+                elog = PyErrorLogger()
                 elog.log_error(
-                    "MiniseedMatcher.find_one",
                     "Received a datum marked dead - will not attempt match",
                     ErrorSeverity.Invalid,
                 )
@@ -3387,7 +3374,7 @@ def _load_as_df(db, collection, query, attributes_to_load, load_if_defined):
     return pd.DataFrame.from_dict(dict_tmp)
 
 
-def extractData2Metadata(
+def _extractData2Metadata(
     doc,
     attributes_to_load,
     aliases,
