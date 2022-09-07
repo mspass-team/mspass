@@ -161,7 +161,7 @@ def reduce_to_Ensemble(key, list_of_keys = None):
     pass
 
 
-def test_foldby():
+def test_foldby(spark_context):
     seis1 = get_live_seismogram_list(2, 200)
     seis2 = get_live_seismogram_list(4, 100)
     bag1 = db.from_sequence(seis1 + seis2)
@@ -172,6 +172,15 @@ def test_foldby():
     res = res.map(lambda x: list2SSeismogramEnsemble(x[1]))
     fin = res.compute()
     print(fin)
+
+    rdd1 = spark_context.parallelize(seis1 + seis2)
+    res = rdd1.reduceByKey( 
+                      lambda x, y: (x if isinstance(x, list) else [x]) + 
+                                   (y if isinstance(y, list) else [y]),
+                     
+                     )
+    res = res.map(lambda x: list2SSeismogramEnsemble(x[1]))
+    fin = res.collect()
 
 
 if __name__ == "__main__":
