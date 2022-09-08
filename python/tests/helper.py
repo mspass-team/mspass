@@ -14,9 +14,6 @@ from mspasspy.ccore.seismic import (
     TimeReferenceType,
 )
 
-ts_size = 255
-sampling_rate = 20.0
-
 
 def get_live_seismogram(ts_size=255, sampling_rate=20.0):
     seis = Seismogram()
@@ -40,7 +37,7 @@ def get_live_seismogram(ts_size=255, sampling_rate=20.0):
     return seis
 
 
-def get_live_timeseries():
+def get_live_timeseries(ts_size=255, sampling_rate=20.0):
     ts = TimeSeries()
     ts.set_live()
     ts.dt = 1 / sampling_rate
@@ -62,7 +59,7 @@ def get_live_timeseries():
 
 # the following sine wave generation is modified from obspy's test at:
 # https://github.com/obspy/obspy/blob/master/obspy/imaging/tests/test_waveform.py
-def get_sin_timeseries():
+def get_sin_timeseries(ts_size=255, sampling_rate=20.0):
     ts = TimeSeries()
     ts.set_live()
     ts.dt = 1 / sampling_rate
@@ -100,6 +97,14 @@ def get_live_timeseries_ensemble(n):
     return tse
 
 
+def get_live_timeseries_list(n, ts_size=255):
+    ts_e = []
+    for i in range(n):
+        ts = get_live_timeseries(ts_size)
+        ts_e.append(ts)
+    return ts_e
+
+
 def get_live_seismogram_list(n, ts_size=255):
     seis_e = []
     for i in range(n):
@@ -108,7 +113,7 @@ def get_live_seismogram_list(n, ts_size=255):
     return seis_e
 
 
-def get_trace():
+def get_trace(ts_size=255, sampling_rate=20.0):
     dict1 = {
         "network": "IU",
         "station": "ANMO",

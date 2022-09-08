@@ -151,36 +151,23 @@ def test_reduce_dask_spark(spark_context):
     assert len(res) == len(spark_res.data)
 
 
-def list2SSeismogramEnsemble(l):
-    res = SeismogramEnsemble()
-    for d in l:
-        res.member.append(d)
-    return res
-    
-def reduce_to_Ensemble(key, list_of_keys = None):
-    pass
-
-
 def test_foldby(spark_context):
     seis1 = get_live_seismogram_list(2, 200)
     seis2 = get_live_seismogram_list(4, 100)
     bag1 = db.from_sequence(seis1 + seis2)
-    res = bag1.foldby(lambda x: x["npts"], 
-                      lambda x, y: (x if isinstance(x, list) else [x]) + 
-                                   (y if isinstance(y, list) else [y])
-                     )
-    res = res.map(lambda x: list2SSeismogramEnsemble(x[1]))
-    fin = res.compute()
-    print(fin)
+    res = bag1.mspass_foldby(key="npts")
+    res_dask = res.compute()
+    for d in res_dask[0].member:
+        assert res_dask[0]["npts"] == d["npts"]
+    for d in res_dask[1].member:
+        assert res_dask[1]["npts"] == d["npts"]
 
     rdd1 = spark_context.parallelize(seis1 + seis2)
-    res = rdd1.reduceByKey( 
-                      lambda x, y: (x if isinstance(x, list) else [x]) + 
-                                   (y if isinstance(y, list) else [y]),
-                     
-                     )
-    res = res.map(lambda x: list2SSeismogramEnsemble(x[1]))
-    fin = res.collect()
+    res = rdd1.mspass_foldby(key="npts")
+    res_spark = res.collect()
+
+    assert len(res_dask[0].member) == len(res_spark[0].member)
+    assert len(res_dask[1].member) == len(res_spark[1].member) 
 
 
 if __name__ == "__main__":

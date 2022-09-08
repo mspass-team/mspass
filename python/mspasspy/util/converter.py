@@ -8,7 +8,7 @@ import collections
 import pandas as pd
 import dask.dataframe as daskdf
 
-from mspasspy.ccore.utility import Metadata, AntelopePf, MsPASSError
+from mspasspy.ccore.utility import Metadata, AntelopePf, MsPASSError, ErrorSeverity
 from mspasspy.ccore.seismic import (
     _CoreSeismogram,
     Seismogram,
@@ -482,21 +482,36 @@ def TimeSeriesEnsemble2Stream(tse):
 TimeSeriesEnsemble.toStream = TimeSeriesEnsemble2Stream
 
 
-def list2SeismogramEnsemble(l, keys=None):
+def list2Ensemble(l, keys=None):
     """
-    Convert a list of Seismograms to a SeismogramEnsemble.  
+    Convert a list of TimeSeries or Seismograms to a corresponding type of Ensemble.  
     This function will make copies of all the data, to create a new Ensemble.
+    Note that the Ensemble's Metadata will always be copied from the first member.
+    If the keys argument is specifid, it will only copy the keys specified.
+    If a key does not exist in the first member, it will be skipped and leave a complaint in the error log of the ensemble. 
 
-    :param l: a list of Seismograms
-    :return: converted SeismogramEnsemble
+    :param l: a list of TimeSeries or Seismograms
+    :param keys: a list of keys to be copied from the first object to the Ensemble's Metadata
+    :return: converted TimeSeriesEnsemble or SeismogramEnsemble
     """
-    res = SeismogramEnsemble()
+    if isinstance(l[0], TimeSeries):
+        res = TimeSeriesEnsemble()
+    elif isinstance(l[0], Seismogram):
+        res = SeismogramEnsemble()
+    else:
+        raise MsPASSError(
+            "list2Ensemble: The elements of the list needs to be TimeSeries or Seismogram but '{}' is given".format(type(l[0])),
+            "Fatal",
+        )
     for d in l:
         res.member.append(d)
-    if len(keys) > 0:
+    if keys:
         md = Metadata()
         for k in keys:
-            md[k] = res.member[0][k]
+            try:
+                md[k] = res.member[0][k]
+            except:
+                res.elog.log_error("list2SeismogramEnsemble", "key: '{}' not found in the first element".format(k), ErrorSeverity.Complaint)
         res.update_metadata(md)
     else:
         res.update_metadata(res.member[0])

@@ -1,4 +1,9 @@
+
+import pyspark
+import dask.bag as daskbag
+
 from mspasspy.util.decorators import mspass_reduce_func_wrapper
+from mspasspy.util.converter import list2Ensemble
 from mspasspy.ccore.seismic import (
     Seismogram,
     TimeSeries,
@@ -32,3 +37,22 @@ def stack(data1, data2, object_history=False, alg_id=None, alg_name=None, dryrun
         for i in range(len(data1.member)):
             data1.member[i] += data2.member[i]
     return data1
+
+
+def mspass_spark_foldby(self, key="site_id"):
+    return self.map(lambda x: (x[key], x)).foldByKey([],
+                      lambda x, y: (x if isinstance(x, list) else [x]) + 
+                                   (y if isinstance(y, list) else [y]),
+                     
+                     ).map(lambda x: list2Ensemble(x[1]))
+
+
+def mspass_dask_foldby(self, key="site_id"):
+    return self.foldby(lambda x: x[key], 
+                      lambda x, y: (x if isinstance(x, list) else [x]) + 
+                                   (y if isinstance(y, list) else [y])
+                     ).map(lambda x: list2Ensemble(x[1]))
+
+
+pyspark.RDD.mspass_foldby = mspass_spark_foldby
+daskbag.Bag.mspass_foldby = mspass_dask_foldby
