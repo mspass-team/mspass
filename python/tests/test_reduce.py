@@ -167,7 +167,7 @@ def test_foldby(spark_context):
     res_spark = res.collect()
 
     assert len(res_dask[0].member) == len(res_spark[0].member)
-    assert len(res_dask[1].member) == len(res_spark[1].member) 
+    assert len(res_dask[1].member) == len(res_spark[1].member)
 
 
 if __name__ == "__main__":

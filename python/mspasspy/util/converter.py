@@ -484,11 +484,11 @@ TimeSeriesEnsemble.toStream = TimeSeriesEnsemble2Stream
 
 def list2Ensemble(l, keys=None):
     """
-    Convert a list of TimeSeries or Seismograms to a corresponding type of Ensemble.  
+    Convert a list of TimeSeries or Seismograms to a corresponding type of Ensemble.
     This function will make copies of all the data, to create a new Ensemble.
     Note that the Ensemble's Metadata will always be copied from the first member.
     If the keys argument is specifid, it will only copy the keys specified.
-    If a key does not exist in the first member, it will be skipped and leave a complaint in the error log of the ensemble. 
+    If a key does not exist in the first member, it will be skipped and leave a complaint in the error log of the ensemble.
 
     :param l: a list of TimeSeries or Seismograms
     :param keys: a list of keys to be copied from the first object to the Ensemble's Metadata
@@ -500,7 +500,9 @@ def list2Ensemble(l, keys=None):
         res = SeismogramEnsemble()
     else:
         raise MsPASSError(
-            "list2Ensemble: The elements of the list needs to be TimeSeries or Seismogram but '{}' is given".format(type(l[0])),
+            "list2Ensemble: The elements of the list needs to be TimeSeries or Seismogram but '{}' is given".format(
+                type(l[0])
+            ),
             "Fatal",
         )
     for d in l:
@@ -511,7 +513,11 @@ def list2Ensemble(l, keys=None):
             try:
                 md[k] = res.member[0][k]
             except:
-                res.elog.log_error("list2SeismogramEnsemble", "key: '{}' not found in the first element".format(k), ErrorSeverity.Complaint)
+                res.elog.log_error(
+                    "list2SeismogramEnsemble",
+                    "key: '{}' not found in the first element".format(k),
+                    ErrorSeverity.Complaint,
+                )
         res.update_metadata(md)
     else:
         res.update_metadata(res.member[0])

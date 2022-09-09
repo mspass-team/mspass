@@ -5,7 +5,12 @@ import sys
 import pytest
 
 sys.path.append("python/tests")
-from helper import get_live_timeseries_ensemble, get_live_seismogram_ensemble, get_live_timeseries_list, get_live_seismogram_list
+from helper import (
+    get_live_timeseries_ensemble,
+    get_live_seismogram_ensemble,
+    get_live_timeseries_list,
+    get_live_seismogram_list,
+)
 
 from mspasspy.ccore.utility import dmatrix, Metadata, AntelopePf, MsPASSError
 from mspasspy.ccore.seismic import DoubleVector, Seismogram, TimeSeries
@@ -275,7 +280,7 @@ def test_list2Ensemble():
     int_l = [1, 2, 3, 4]
     with pytest.raises(MsPASSError, match="'<class 'int'>' is given"):
         int_e = list2Ensemble(int_l)
-    
+
     ts_e = list2Ensemble(ts_l, keys=["site_id", "npts", "sampling_rate", "dummy"])
     assert ts_e["site_id"] == ts_l[0]["site_id"]
     assert ts_e["npts"] == ts_l[0]["npts"]

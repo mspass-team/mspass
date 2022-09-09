@@ -1,4 +1,3 @@
-
 import pyspark
 import dask.bag as daskbag
 
@@ -40,18 +39,23 @@ def stack(data1, data2, object_history=False, alg_id=None, alg_name=None, dryrun
 
 
 def mspass_spark_foldby(self, key="site_id"):
-    return self.map(lambda x: (x[key], x)).foldByKey([],
-                      lambda x, y: (x if isinstance(x, list) else [x]) + 
-                                   (y if isinstance(y, list) else [y]),
-                     
-                     ).map(lambda x: list2Ensemble(x[1]))
+    return (
+        self.map(lambda x: (x[key], x))
+        .foldByKey(
+            [],
+            lambda x, y: (x if isinstance(x, list) else [x])
+            + (y if isinstance(y, list) else [y]),
+        )
+        .map(lambda x: list2Ensemble(x[1]))
+    )
 
 
 def mspass_dask_foldby(self, key="site_id"):
-    return self.foldby(lambda x: x[key], 
-                      lambda x, y: (x if isinstance(x, list) else [x]) + 
-                                   (y if isinstance(y, list) else [y])
-                     ).map(lambda x: list2Ensemble(x[1]))
+    return self.foldby(
+        lambda x: x[key],
+        lambda x, y: (x if isinstance(x, list) else [x])
+        + (y if isinstance(y, list) else [y]),
+    ).map(lambda x: list2Ensemble(x[1]))
 
 
 pyspark.RDD.mspass_foldby = mspass_spark_foldby
