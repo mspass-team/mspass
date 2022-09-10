@@ -39,6 +39,15 @@ def stack(data1, data2, object_history=False, alg_id=None, alg_name=None, dryrun
 
 
 def mspass_spark_foldby(self, key="site_id"):
+    """
+    This function implements a convenient foldby method for :class:`dask.bag.Bag`.
+    The concept is to compose gathers of TimeSeries or Seismograms with a common key from a list of TimeSeries or Seismograms.
+    So, the input needs to be a Bag of :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`,
+    and the output is a Bag of :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+
+    :param key: The key that defines the gather. By default, it will use "site_id" to produce a common station gather.
+    :return: :class:`dask.bag.Bag` of :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+    """
     return (
         self.map(lambda x: (x[key], x))
         .foldByKey(
@@ -51,6 +60,15 @@ def mspass_spark_foldby(self, key="site_id"):
 
 
 def mspass_dask_foldby(self, key="site_id"):
+    """
+    This function implements a convenient foldby method for :class:`pyspark.RDD`.
+    The concept is to compose gathers of TimeSeries or Seismograms with a common key from a list of TimeSeries or Seismograms.
+    So, the input needs to be an RDD of :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`,
+    and the output is an RDD of :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+
+    :param key: The key that defines the gather. By default, it will use "site_id" to produce a common station gather.
+    :return: :class:`pyspark.RDD` of :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+    """
     return self.foldby(
         lambda x: x[key],
         lambda x, y: (x if isinstance(x, list) else [x])
