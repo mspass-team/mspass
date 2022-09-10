@@ -509,6 +509,27 @@ that are used as headers in the C++ components of mspass.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.list2Ensemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">list2Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#list2Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.list2Ensemble" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a list of TimeSeries or Seismograms to a corresponding type of Ensemble.
+This function will make copies of all the data, to create a new Ensemble.
+Note that the Ensemble’s Metadata will always be copied from the first member.
+If the keys argument is specifid, it will only copy the keys specified.
+If a key does not exist in the first member, it will be skipped and leave a complaint in the error log of the ensemble.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>l</strong> – a list of TimeSeries or Seismograms</p></li>
+<li><p><strong>keys</strong> – a list of keys to be copied from the first object to the Ensemble’s Metadata</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>converted TimeSeriesEnsemble or SeismogramEnsemble</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.converter.post_ensemble_metadata">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">post_ensemble_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_all_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#post_ensemble_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.post_ensemble_metadata" title="Permalink to this definition"></a></dt>
 <dd><p>It may be necessary to call this function after conversion from
