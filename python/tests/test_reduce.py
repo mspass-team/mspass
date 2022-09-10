@@ -23,6 +23,7 @@ from helper import (
     get_live_timeseries,
     get_live_timeseries_ensemble,
     get_live_seismogram_ensemble,
+    get_live_seismogram_list,
     get_stream,
     get_trace,
 )
@@ -148,6 +149,25 @@ def test_reduce_dask_spark(spark_context):
     assert np.isclose(res, dask_res.data).all()
     assert np.isclose(res, spark_res.data).all()
     assert len(res) == len(spark_res.data)
+
+
+def test_foldby(spark_context):
+    seis1 = get_live_seismogram_list(2, 200)
+    seis2 = get_live_seismogram_list(4, 100)
+    bag1 = db.from_sequence(seis1 + seis2)
+    res = bag1.mspass_foldby(key="npts")
+    res_dask = res.compute()
+    for d in res_dask[0].member:
+        assert res_dask[0]["npts"] == d["npts"]
+    for d in res_dask[1].member:
+        assert res_dask[1]["npts"] == d["npts"]
+
+    rdd1 = spark_context.parallelize(seis1 + seis2)
+    res = rdd1.mspass_foldby(key="npts")
+    res_spark = res.collect()
+
+    assert len(res_dask[0].member) == len(res_spark[0].member)
+    assert len(res_dask[1].member) == len(res_spark[1].member)
 
 
 if __name__ == "__main__":

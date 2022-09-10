@@ -472,10 +472,10 @@ def test_TimeSeries():
     md["delta"] = 0.01
     md["starttime"] = 0.0
     ts = TimeSeries(md)
-    assert(ts.npts == 0)
+    assert ts.npts == 0
     md["npts"] = 100
     ts = TimeSeries(md)
-    assert(ts.npts == 100)
+    assert ts.npts == 100
 
 
 def test_CoreSeismogram():
@@ -483,9 +483,9 @@ def test_CoreSeismogram():
     md["delta"] = 0.01
     md["starttime"] = 0.0
     # test metadata constructor
-    # first make sure it handles case with npts not defined 
+    # first make sure it handles case with npts not defined
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.npts == 0)
+    assert cseis.npts == 0
     md["npts"] = 100
     md["tmatrix"] = np.random.rand(3, 3)
     cseis = _CoreSeismogram(md, False)

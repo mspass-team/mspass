@@ -2,11 +2,17 @@ import numpy as np
 import obspy
 import bson.objectid
 import sys
+import pytest
 
 sys.path.append("python/tests")
-from helper import get_live_timeseries_ensemble, get_live_seismogram_ensemble
+from helper import (
+    get_live_timeseries_ensemble,
+    get_live_seismogram_ensemble,
+    get_live_timeseries_list,
+    get_live_seismogram_list,
+)
 
-from mspasspy.ccore.utility import dmatrix, Metadata, AntelopePf
+from mspasspy.ccore.utility import dmatrix, Metadata, AntelopePf, MsPASSError
 from mspasspy.ccore.seismic import DoubleVector, Seismogram, TimeSeries
 from mspasspy.util.converter import (
     dict2Metadata,
@@ -15,6 +21,7 @@ from mspasspy.util.converter import (
     Seismogram2Stream,
     Trace2TimeSeries,
     Stream2Seismogram,
+    list2Ensemble,
     Pf2AttributeNameTbl,
     Textfile2Dataframe,
 )
@@ -260,6 +267,25 @@ def test_SeismogramEnsemble_as_Stream():
     assert seis_e_c["foo"] == "bar"
     assert seis_e_c["fake_lat"] == 22.4
     assert seis_e_c["fake_evid"] == 9999
+
+
+def test_list2Ensemble():
+    ts_l = get_live_timeseries_list(4, 200)
+    seis_l = get_live_seismogram_list(4, 200)
+    ts_e = list2Ensemble(ts_l)
+    seis_e = list2Ensemble(seis_l)
+    assert len(ts_e.member) == len(ts_l)
+    assert len(seis_e.member) == len(seis_l)
+
+    int_l = [1, 2, 3, 4]
+    with pytest.raises(MsPASSError, match="'<class 'int'>' is given"):
+        int_e = list2Ensemble(int_l)
+
+    ts_e = list2Ensemble(ts_l, keys=["site_id", "npts", "sampling_rate", "dummy"])
+    assert ts_e["site_id"] == ts_l[0]["site_id"]
+    assert ts_e["npts"] == ts_l[0]["npts"]
+    assert ts_e["sampling_rate"] == ts_l[0]["sampling_rate"]
+    assert ts_e.elog.size() == 1
 
 
 def test_Pf2AttributeNameTbl():
