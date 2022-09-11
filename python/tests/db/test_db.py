@@ -1,14 +1,26 @@
 import copy
+import io
 import os
+import pickle
 
 import dask.bag
 import gridfs
 import numpy as np
 import obspy
+import obspy.clients.fdsn.client
 import pytest
 import sys
 import re
 import collections
+
+import boto3
+from moto import mock_s3
+import botocore.session
+from botocore.stub import Stubber
+from unittest.mock import patch, Mock
+import json
+import base64
+
 
 from mspasspy.util.converter import (
     TimeSeries2Trace,
@@ -47,15 +59,6 @@ from helper import (
     get_live_timeseries_ensemble,
     get_live_seismogram_ensemble,
 )
-
-import boto3
-from moto import mock_s3
-import botocore.session
-from botocore.stub import Stubber
-from unittest.mock import patch
-import json
-import base64
-import io
 
 
 class TestDatabase:
@@ -260,13 +263,20 @@ class TestDatabase:
         self.db._save_data_to_gridfs(tmp_ts, gridfs_id)
         assert not gfsh.exists(gridfs_id)
 
+    def mock_urlopen(*args):
+        response = Mock()
+        with open("python/tests/data/read_data_from_url.pickle", "rb") as handle:
+            response.read.side_effect = [pickle.load(handle)]
+        return response
+
     def test_read_data_from_url(self):
-        url = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
-        tmp_ts = TimeSeries()
-        self.db._read_data_from_url(tmp_ts, url)
-        tmp_seis = Seismogram()
-        self.db._read_data_from_url(tmp_seis, url)
-        assert all(a == b for a, b in zip(tmp_ts.data, tmp_seis.data[0][:]))
+        with patch("urllib.request.urlopen", new=self.mock_urlopen):
+            url = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
+            tmp_ts = TimeSeries()
+            self.db._read_data_from_url(tmp_ts, url)
+            tmp_seis = Seismogram()
+            self.db._read_data_from_url(tmp_seis, url)
+            assert all(a == b for a, b in zip(tmp_ts.data, tmp_seis.data[0][:]))
 
         # test invalid url
         bad_url = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=DUMMY&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
@@ -1093,16 +1103,17 @@ class TestDatabase:
             )
 
         # url
-        res_url = dict(res)
-        res_url_id = ObjectId()
-        res_url["_id"] = res_url_id
-        res_url["storage_mode"] = "url"
-        res_url[
-            "url"
-        ] = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
-        self.db["wf_Seismogram"].insert_one(res_url)
-        url_seis = self.db.read_data(res_url_id, mode="promiscuous")
-        assert url_seis.data.columns() == 6000
+        with patch("urllib.request.urlopen", new=self.mock_urlopen):
+            res_url = dict(res)
+            res_url_id = ObjectId()
+            res_url["_id"] = res_url_id
+            res_url["storage_mode"] = "url"
+            res_url[
+                "url"
+            ] = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
+            self.db["wf_Seismogram"].insert_one(res_url)
+            url_seis = self.db.read_data(res_url_id, mode="promiscuous")
+            assert url_seis.data.columns() == 6000
 
         # save with a dead object
         promiscuous_seis.live = False
@@ -2682,22 +2693,29 @@ class TestDatabase:
         assert ts.data is not None
         assert ts.data == DoubleVector(mseed_st[0].data.astype("float64"))
 
-    def test_index_and_read_fdsn(self):
-        self.db.index_mseed_FDSN(
-            "SCEDC", 2017, 5, "CI", "CAC", "", "HNZ", collection="test_s3_fdsn"
-        )
-        assert self.db["test_s3_fdsn"].count_documents({}) == 1
-        fdsn_doc = self.db.test_s3_fdsn.find_one()
-        assert fdsn_doc["provider"] == "SCEDC"
-        assert fdsn_doc["year"] == "2017"
-        assert fdsn_doc["day_of_year"] == "005"
+    def mock_fdsn_get_waveform(*args, **kwargs):
+        with open("python/tests/data/index_and_read_fdsn.pickle", "rb") as handle:
+            return pickle.load(handle)
 
-        del fdsn_doc["_id"]
-        tmp_ts = TimeSeries(fdsn_doc, np.ndarray([0], dtype=np.float64))
-        self.db._read_data_from_fdsn(tmp_ts)
-        tmp_ts_2 = TimeSeries(fdsn_doc, np.ndarray([0], dtype=np.float64))
-        self.db._read_data_from_fdsn(tmp_ts_2)
-        assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
+    def test_index_and_read_fdsn(self):
+        with patch(
+            "obspy.clients.fdsn.client.Client.get_waveforms",
+            new=self.mock_fdsn_get_waveform,
+        ):
+            self.db.index_mseed_FDSN(
+                "IRIS", 2010, 58, "IU", "ANMO", "00", "BHZ", collection="test_s3_fdsn"
+            )
+            assert self.db["test_s3_fdsn"].count_documents({}) == 1
+            fdsn_doc = self.db.test_s3_fdsn.find_one()
+            assert fdsn_doc["provider"] == "IRIS"
+            assert fdsn_doc["year"] == "2010"
+            assert fdsn_doc["day_of_year"] == "058"
+
+            del fdsn_doc["_id"]
+            tmp_ts = TimeSeries(fdsn_doc, np.ndarray([0], dtype=np.float64))
+            self.db._read_data_from_fdsn(tmp_ts)
+            tmp_st = self.mock_fdsn_get_waveform()
+            assert all(a == b for a, b in zip(tmp_ts.data, tmp_st[0].data))
 
     def test_save_dataframe(self):
         dir = "python/tests/data/"
