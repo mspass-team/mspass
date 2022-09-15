@@ -211,6 +211,9 @@ class TestDatabase:
         self.db._read_data_from_dfile(tmp_ts_2, dir, dfile, foff)
         assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
 
+        with pytest.raises(MsPASSError, match="Error while read data from files."):
+            self.db._read_data_from_dfile(tmp_ts_2, dir, dfile + "dummy", foff)
+
         # miniseed format
         tmp_seis = get_live_seismogram()
         dir = "python/tests/data/"
