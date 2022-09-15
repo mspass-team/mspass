@@ -3470,9 +3470,10 @@ class Database(pymongo.database.Database):
                             "_read_data_from_dfile", message, ErrorSeverity.Complaint
                         )
                 except MsPASSError as merr:
-                    # Errors thrown must always cause a kill
-                    mspass_object.kill()
-                    mspass_object.elog.log_error(merr)
+                    # Errors thrown must always cause a failure
+                    raise MsPASSError(
+                        "Error while read data from files.", "Fatal"
+                    ) from merr
             else:
                 # We can only get here if this is a Seismogram
                 try:
@@ -3486,9 +3487,10 @@ class Database(pymongo.database.Database):
                             "_read_data_from_dfile", message, ErrorSeverity.Complaint
                         )
                 except MsPASSError as merr:
-                    # Errors thrown must always cause a kill
-                    mspass_object.kill()
-                    mspass_object.elog.log_error(merr)
+                    # Errors thrown must always cause a failure
+                    raise MsPASSError(
+                        "Error while read data from files.", "Fatal"
+                    ) from merr
 
         else:
             fname = os.path.join(dir, dfile)
