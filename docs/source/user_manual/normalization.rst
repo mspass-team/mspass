@@ -1,6 +1,6 @@
-.. _database_normalization:
+.. _normalization:
 
-Database Normalization
+Normalization
 =================================
 Concepts
 ----------------
