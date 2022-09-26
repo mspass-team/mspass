@@ -6,7 +6,7 @@ import mspasspy.ccore.algorithms.basic as bsc
 from mspasspy.ccore.seismic import (TimeSeries,
    TimeSeriesEnsemble,
    Seismogram,
-   SeismogramEnsemble)
+   SeismogramEnsemble) 
 
 
 @mspass_func_wrapper
