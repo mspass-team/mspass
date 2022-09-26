@@ -1,5 +1,45 @@
 from mspasspy.util.decorators import mspass_func_wrapper
 from mspasspy.ccore.algorithms.basic import LinearTaper, CosineTaper, VectorTaper
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
+from mspasspy.util import logging_helper
+import mspasspy.ccore.algorithms.basic as bsc
+from mspasspy.ccore.seismic import (TimeSeries,
+   TimeSeriesEnsemble,
+   Seismogram,
+   SeismogramEnsemble)
+
+
+@mspass_func_wrapper
+def ExtractComponent(
+   data,
+   component,
+    *args,
+    object_history=False,
+    alg_name=None,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=True,
+    function_return_key=None,
+    **kwargs
+):
+    if isinstance(data,Seismogram):
+        try:
+            d = bsc.ExtractComponent(data,component)
+            #return TimeSeries(d)
+            return d
+        except RuntimeError as err:
+            data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
+            return d
+    elif isinstance(data,SeismogramEnsemble):
+        try:
+            d = bsc.EnsembleComponent(data,component)
+            return TimeSeriesEnsemble(d)
+        except RuntimeError as err:
+            logging_helper.ensemble_error(data, alg_name, err, ErrorSeverity.Invalid)
+            return TimeSeriesEnsemble(d)
+    else:
+        raise TypeError("ExtractComponent:  received invalid data type")
+
 
 
 @mspass_func_wrapper
