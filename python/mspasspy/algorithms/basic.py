@@ -3,10 +3,12 @@ from mspasspy.ccore.algorithms.basic import LinearTaper, CosineTaper, VectorTape
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.util import logging_helper
 import mspasspy.ccore.algorithms.basic as bsc
-from mspasspy.ccore.seismic import (TimeSeries,
-   TimeSeriesEnsemble,
-   Seismogram,
-   SeismogramEnsemble) 
+from mspasspy.ccore.seismic import (
+    TimeSeries,
+    TimeSeriesEnsemble,
+    Seismogram,
+    SeismogramEnsemble,
+)
 
 
 @mspass_func_wrapper
