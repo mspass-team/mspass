@@ -39,13 +39,13 @@ def test_ExtractComponent():
     seisEnsemble0 = ExtractComponent(ensemble, 0)
     seisEnsemble1 = ExtractComponent(ensemble, 1)
     seisEnsemble2 = ExtractComponent(ensemble, 2)
-    assert(seisEnsemble0.member[0].data == DoubleVector([0]*10))
-    assert(seisEnsemble0.member[1].data == DoubleVector([0]*10))
-    assert(seisEnsemble1.member[0].data == DoubleVector([1]*10))
-    assert(seisEnsemble1.member[1].data == DoubleVector([1]*10))
-    assert(seisEnsemble2.member[0].data == DoubleVector([2]*10))
-    assert(seisEnsemble2.member[1].data == DoubleVector([2]*10))
-    assert(ExtractComponent(ensemble, 3).dead())
+    assert seisEnsemble0.member[0].data == DoubleVector([0] * 10)
+    assert seisEnsemble0.member[1].data == DoubleVector([0] * 10)
+    assert seisEnsemble1.member[0].data == DoubleVector([1] * 10)
+    assert seisEnsemble1.member[1].data == DoubleVector([1] * 10)
+    assert seisEnsemble2.member[0].data == DoubleVector([2] * 10)
+    assert seisEnsemble2.member[1].data == DoubleVector([2] * 10)
+    assert ExtractComponent(ensemble, 3).dead()
 
 
 def test_ator_rtoa():
