@@ -1,9 +1,15 @@
 import sys
 import numpy as np
 
-from mspasspy.ccore.seismic import Seismogram, SlownessVector
+from mspasspy.ccore.seismic import (
+    Seismogram,
+    SlownessVector,
+    SeismogramEnsemble,
+    DoubleVector,
+)
 from mspasspy.ccore.utility import SphericalCoordinate
 from mspasspy.algorithms.basic import (
+    ExtractComponent,
     ator,
     rtoa,
     rotate,
@@ -16,6 +22,36 @@ from mspasspy.algorithms.basic import (
 sys.path.append("python/tests")
 
 from helper import get_live_seismogram, get_live_timeseries, get_sin_timeseries
+
+
+def test_ExtractComponent():
+    seis = Seismogram(10)
+    seis.set_live()
+    for i in range(3):
+        for j in range(10):
+            seis.data[i, j] = i
+    t0 = ExtractComponent(seis, 0)
+    t1 = ExtractComponent(seis, 1)
+    t2 = ExtractComponent(seis, 2)
+    assert t0.data == DoubleVector([0] * 10)
+    assert t1.data == DoubleVector([1] * 10)
+    assert t2.data == DoubleVector([2] * 10)
+    assert ExtractComponent(seis, 3).data == DoubleVector([])
+    assert ExtractComponent(seis, 3).dead()
+    ensemble = SeismogramEnsemble()
+    ensemble.member.append(Seismogram(seis))
+    ensemble.member.append(Seismogram(seis))
+    ensemble.set_live()
+    seisEnsemble0 = ExtractComponent(ensemble, 0)
+    seisEnsemble1 = ExtractComponent(ensemble, 1)
+    seisEnsemble2 = ExtractComponent(ensemble, 2)
+    assert seisEnsemble0.member[0].data == DoubleVector([0] * 10)
+    assert seisEnsemble0.member[1].data == DoubleVector([0] * 10)
+    assert seisEnsemble1.member[0].data == DoubleVector([1] * 10)
+    assert seisEnsemble1.member[1].data == DoubleVector([1] * 10)
+    assert seisEnsemble2.member[0].data == DoubleVector([2] * 10)
+    assert seisEnsemble2.member[1].data == DoubleVector([2] * 10)
+    assert ExtractComponent(ensemble, 3).dead()
 
 
 def test_ator_rtoa():
