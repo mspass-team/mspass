@@ -44,7 +44,9 @@ def ExtractComponent(
             d = bsc.EnsembleComponent(data,component)
             return TimeSeriesEnsemble(d)
         except Exception as err:
-            logging_helper.ensemble_error(data, "ExtractComponent", err, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(
+                data, "ExtractComponent", err, ErrorSeverity.Invalid
+            )
             return empty
     else:
         raise TypeError("ExtractComponent:  received invalid data type")
