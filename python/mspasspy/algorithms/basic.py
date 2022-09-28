@@ -35,7 +35,7 @@ def ExtractComponent(
         except Exception as err:
             data.elog.log_error("ExtractComponent", str(err), ErrorSeverity.Invalid)
             return empty
-    elif isinstance(data,SeismogramEnsemble):
+    elif isinstance(data, SeismogramEnsemble):
         empty = TimeSeriesEnsemble()
         empty.kill()
         if data.dead():
