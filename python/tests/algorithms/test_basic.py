@@ -1,7 +1,12 @@
 import sys
 import numpy as np
 
-from mspasspy.ccore.seismic import Seismogram, SlownessVector, SeismogramEnsemble, DoubleVector
+from mspasspy.ccore.seismic import (
+    Seismogram,
+    SlownessVector,
+    SeismogramEnsemble,
+    DoubleVector,
+)
 from mspasspy.ccore.utility import SphericalCoordinate
 from mspasspy.algorithms.basic import (
     ExtractComponent,
