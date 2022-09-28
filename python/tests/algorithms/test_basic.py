@@ -24,6 +24,7 @@ sys.path.append("python/tests")
 from helper import get_live_seismogram, get_live_timeseries, get_sin_timeseries
 
 
+
 def test_ExtractComponent():
     seis = Seismogram(10)
     seis.set_live()
