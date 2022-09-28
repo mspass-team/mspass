@@ -13,8 +13,8 @@ from mspasspy.ccore.seismic import (
 
 @mspass_func_wrapper
 def ExtractComponent(
-   data,
-   component,
+    data,
+    component,
     *args,
     object_history=False,
     alg_name=None,
