@@ -30,7 +30,7 @@ def ExtractComponent(
         if data.dead():
             return empty
         try:
-            d = bsc.ExtractComponent(data,component)
+            d = bsc.ExtractComponent(data, component)
             return d
         except Exception as err:
             data.elog.log_error("ExtractComponent", str(err), ErrorSeverity.Invalid)
