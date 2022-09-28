@@ -47,7 +47,7 @@ def test_ExtractComponent():
     assert(seisEnsemble2.member[1].data == DoubleVector([2]*10))
     assert(ExtractComponent(ensemble, 3).dead())
 
-test_ExtractComponent()
+
 def test_ator_rtoa():
     ts = get_live_timeseries()
     original_t0 = ts.t0
