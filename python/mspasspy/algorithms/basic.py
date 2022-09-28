@@ -41,7 +41,7 @@ def ExtractComponent(
         if data.dead():
             return empty
         try:
-            d = bsc.EnsembleComponent(data,component)
+            d = bsc.EnsembleComponent(data, component)
             return TimeSeriesEnsemble(d)
         except Exception as err:
             logging_helper.ensemble_error(
