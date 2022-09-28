@@ -24,7 +24,7 @@ def ExtractComponent(
     function_return_key=None,
     **kwargs
 ):
-    if isinstance(data,Seismogram):
+    if isinstance(data, Seismogram):
         empty = TimeSeries()
         empty.kill()
         if data.dead():
