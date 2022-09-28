@@ -18,28 +18,34 @@ def ExtractComponent(
     alg_name=None,
     alg_id=None,
     dryrun=False,
-    inplace_return=True,
+    inplace_return=False,
     function_return_key=None,
     **kwargs
 ):
     if isinstance(data,Seismogram):
+        empty = TimeSeries()
+        empty.kill()
+        if data.dead():
+            return empty
         try:
             d = bsc.ExtractComponent(data,component)
-            #return TimeSeries(d)
             return d
-        except RuntimeError as err:
-            data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
-            return d
+        except Exception as err:
+            data.elog.log_error("ExtractComponent", str(err), ErrorSeverity.Invalid)
+            return empty
     elif isinstance(data,SeismogramEnsemble):
+        empty = TimeSeriesEnsemble()
+        empty.kill()
+        if data.dead():
+            return empty
         try:
             d = bsc.EnsembleComponent(data,component)
             return TimeSeriesEnsemble(d)
-        except RuntimeError as err:
-            logging_helper.ensemble_error(data, alg_name, err, ErrorSeverity.Invalid)
-            return TimeSeriesEnsemble(d)
+        except Exception as err:
+            logging_helper.ensemble_error(data, "ExtractComponent", err, ErrorSeverity.Invalid)
+            return empty
     else:
         raise TypeError("ExtractComponent:  received invalid data type")
-
 
 
 @mspass_func_wrapper
