@@ -25,28 +25,39 @@ def ExtractComponent(
     **kwargs
 ):
     if isinstance(data, Seismogram):
-        empty = TimeSeries()
-        empty.kill()
         if data.dead():
+            empty = TimeSeries()
+            empty.load_history(data)
+            empty.kill()
             return empty
         try:
             d = bsc.ExtractComponent(data, component)
+            d.load_history(data)
             return d
         except Exception as err:
             data.elog.log_error("ExtractComponent", str(err), ErrorSeverity.Invalid)
+            empty = TimeSeries()
+            empty.load_history(data)
+            empty.kill()
             return empty
     elif isinstance(data, SeismogramEnsemble):
-        empty = TimeSeriesEnsemble()
-        empty.kill()
         if data.dead():
+            empty = TimeSeriesEnsemble()
+            empty.elog = data.elog
+            empty.kill()
             return empty
         try:
-            d = bsc.EnsembleComponent(data, component)
-            return TimeSeriesEnsemble(d)
+            d = TimeSeriesEnsemble(bsc.EnsembleComponent(data, component))
+            for i in range(len(d.member)):
+                d[i].load_history(data[i])
+            return d
         except Exception as err:
             logging_helper.ensemble_error(
                 data, "ExtractComponent", err, ErrorSeverity.Invalid
             )
+            empty = TimeSeriesEnsemble()
+            empty.elog = data.elog
+            empty.kill()
             return empty
     else:
         raise TypeError("ExtractComponent:  received invalid data type")

@@ -38,6 +38,7 @@ def test_ExtractComponent():
     assert t2.data == DoubleVector([2] * 10)
     assert ExtractComponent(seis, 3).data == DoubleVector([])
     assert ExtractComponent(seis, 3).dead()
+
     ensemble = SeismogramEnsemble()
     ensemble.member.append(Seismogram(seis))
     ensemble.member.append(Seismogram(seis))
