@@ -56,7 +56,6 @@ def ExtractComponent(
             return empty
         try:
             d = bsc.ExtractComponent(data, component)
-            d.load_history(data)
             return d
         except Exception as err:
             data.elog.log_error("ExtractComponent", str(err), ErrorSeverity.Invalid)
@@ -72,8 +71,6 @@ def ExtractComponent(
             return empty
         try:
             d = TimeSeriesEnsemble(bsc.EnsembleComponent(data, component))
-            for i in range(len(d.member)):
-                d[i].load_history(data[i])
             return d
         except Exception as err:
             logging_helper.ensemble_error(

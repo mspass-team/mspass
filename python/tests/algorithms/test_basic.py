@@ -54,12 +54,18 @@ def test_ExtractComponent():
     assert seisEnsemble2.member[1].data == DoubleVector([2] * 10)
     assert ExtractComponent(ensemble, 3).dead()
     seis.kill()  # if input data is not alive
+    assert seis.dead()
     assert ExtractComponent(seis, 0).dead()
+    assert ExtractComponent(seis, 1).dead()
     assert ExtractComponent(seis, 3).dead()
     ensemble.kill()  # if input data is not alive
     assert ExtractComponent(ensemble, 0).dead()
     assert ExtractComponent(ensemble, 1).dead()
     assert ExtractComponent(ensemble, 3).dead()
+    try:
+        ExtractComponent(1, 1)
+    except Exception as e:
+        assert type(e) == TypeError
 
 
 def test_ator_rtoa():
