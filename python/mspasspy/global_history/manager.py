@@ -1,11 +1,9 @@
 import os
 import yaml
 import pymongo
-import pyspark
 import collections
-import dask.bag as daskbag
 import json
-
+from mspasspy import hasDask, hasSpark
 from bson.objectid import ObjectId
 from mspasspy.ccore.utility import MsPASSError, AntelopePf
 from mspasspy.util.converter import AntelopePf2dict
@@ -402,12 +400,17 @@ class GlobalHistoryManager:
         )
 
         # modify pyspark/dask map to our defined map
-        pyspark.RDD.mspass_map = mspass_spark_map
-        daskbag.Bag.mspass_map = mspass_dask_map
-
         # modify pyspark/dask reduce to our defined reduce
-        pyspark.RDD.mspass_reduce = mspass_spark_reduce
-        daskbag.Bag.mspass_reduce = mspass_dask_fold
+        if hasDask:
+            import dask.bag as daskbag
+
+            daskbag.Bag.mspass_map = mspass_dask_map
+            daskbag.Bag.mspass_reduce = mspass_dask_fold
+        if hasSpark:
+            import pyspark
+
+            pyspark.RDD.mspass_map = mspass_spark_map
+            pyspark.RDD.mspass_reduce = mspass_spark_reduce
 
     def logging(self, alg_id, alg_name, parameters):
         """

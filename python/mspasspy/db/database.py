@@ -10,8 +10,10 @@ import struct
 import urllib.request
 from array import array
 import pandas as pd
-import dask.bag as daskbag
-import dask.dataframe as daskdf
+from mspasspy import hasDask
+if hasDask:
+    import dask.bag as daskbag
+    import dask.dataframe as daskdf
 import gridfs
 import pymongo
 import numpy as np
