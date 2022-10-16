@@ -50,6 +50,15 @@ jobs:
         python -m pip install --upgrade --upgrade-strategy eager pyspark pytest-spark
     - name: Install
       run: python setup.py build --debug install
+    - name: Build Documentation
+      if: ${{ matrix.python-version == '3.8' }}
+      run: |
+        export MSPASS_HOME=$(pwd)
+        sudo apt-get update && sudo apt-get install -yq doxygen pandoc
+        pip install -r docs/requirements.txt
+        cd docs 
+        ls
+        make html
     - name: Test with pytest
       run: |
         export MSPASS_HOME=$(pwd)
@@ -61,15 +70,6 @@ jobs:
       with:
         env_vars: OS,PYTHON
         verbose: true
-    - name: Build Documentation
-      if: ${{ matrix.python-version == '3.8' }}
-      run: |
-        export MSPASS_HOME=$(pwd)
-        sudo apt-get update && sudo apt-get install -yq doxygen pandoc
-        pip install -r docs/requirements.txt
-        cd docs 
-        ls
-        make html
     - name: Deploy to GitHub Pages 
       if: ${{ github.ref == 'refs/heads/master' && matrix.python-version == '3.8' }}
       uses: JamesIves/github-pages-deploy-action@3.7.1
