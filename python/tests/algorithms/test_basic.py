@@ -38,6 +38,12 @@ def test_ExtractComponent():
     assert t2.data == DoubleVector([2] * 10)
     assert ExtractComponent(seis, 3).data == DoubleVector([])
     assert ExtractComponent(seis, 3).dead()
+    dead_seis = Seismogram(seis)
+    dead_seis.kill()  # if input data is not alive
+    assert dead_seis.dead()
+    assert ExtractComponent(dead_seis, 0).dead()
+    assert ExtractComponent(dead_seis, 1).dead()
+    assert ExtractComponent(dead_seis, 3).dead()
 
     ensemble = SeismogramEnsemble()
     ensemble.member.append(Seismogram(seis))
@@ -53,11 +59,6 @@ def test_ExtractComponent():
     assert seisEnsemble2.member[0].data == DoubleVector([2] * 10)
     assert seisEnsemble2.member[1].data == DoubleVector([2] * 10)
     assert ExtractComponent(ensemble, 3).dead()
-    seis.kill()  # if input data is not alive
-    assert seis.dead()
-    assert ExtractComponent(seis, 0).dead()
-    assert ExtractComponent(seis, 1).dead()
-    assert ExtractComponent(seis, 3).dead()
     ensemble.kill()  # if input data is not alive
     assert ExtractComponent(ensemble, 0).dead()
     assert ExtractComponent(ensemble, 1).dead()

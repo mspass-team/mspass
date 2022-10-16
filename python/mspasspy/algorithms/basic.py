@@ -49,11 +49,6 @@ def ExtractComponent(
      define the key used to set that field in the data that is returned.
     """
     if isinstance(data, Seismogram):
-        if data.dead():
-            empty = TimeSeries()
-            empty.load_history(data)
-            empty.kill()
-            return empty
         try:
             d = bsc.ExtractComponent(data, component)
             return d
@@ -80,8 +75,6 @@ def ExtractComponent(
             empty.elog = data.elog
             empty.kill()
             return empty
-    else:
-        raise TypeError("ExtractComponent:  received invalid data type")
 
 
 @mspass_func_wrapper
