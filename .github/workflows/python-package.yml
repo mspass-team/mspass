@@ -49,7 +49,7 @@ jobs:
         echo "/opt/spark-3.0.0-bin-hadoop2.7/bin" >> $GITHUB_PATH
         python -m pip install --upgrade --upgrade-strategy eager pyspark pytest-spark
     - name: Install
-      run: python setup.py build --debug install
+      run: python3 -m pip install . --debug
     - name: Test with pytest
       run: |
         export MSPASS_HOME=$(pwd)
