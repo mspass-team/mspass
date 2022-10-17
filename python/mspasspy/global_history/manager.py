@@ -3,15 +3,205 @@ import yaml
 import pymongo
 import collections
 import json
-from mspasspy import hasDask, hasSpark
+
+try:
+    import dask.bag as daskbag
+    import pyspark
+except:
+    pass
 from bson.objectid import ObjectId
 from mspasspy.ccore.utility import MsPASSError, AntelopePf
 from mspasspy.util.converter import AntelopePf2dict
 from datetime import datetime
 from dill.source import getsource
+import functools
 
 import mspasspy.algorithms.signals as signals
 from mspasspy.global_history.ParameterGTree import ParameterGTree, parameter_to_GTree
+
+
+def mspass_normal_map(
+    data,
+    func,
+    *args,
+    global_history=None,
+    object_history=False,
+    alg_id=None,
+    alg_name=None,
+    parameters=None,
+    **kwargs
+):
+    """
+     This decorator method performs map function in Python. Instead of performing the normal map function,
+     if user provides global history manager, alg_id(optional), alg_name(optional) and parameters(optional)
+     as input, the global history manager will log down the usage of the algorithm. Also, if user set
+     object_history to be True, then each mspass object in this map function will save the object level history.
+
+    :param func: target function
+    :param global_history: a user specified global history manager
+    :type global_history: :class:`GlobalHistoryManager`
+    :param object_history: save the each object's history in the map when True
+    :param alg_id: a user specified alg_id for the map operation
+    :type alg_id: :class:`str`/:class:`bson.objectid.ObjectId`
+    :param alg_name: a user specified alg_name for the map operation
+    :type alg_name: :class:`str`
+    :param parameters: a user specified parameters for the map operation
+    :type parameters: :class:`str`
+    :return: mapped objects.
+    """
+    if parameters:
+        parameterGTree = parameter_to_GTree(parameters_str=parameters)
+    else:
+        new_kwargs = kwargs.copy()
+        new_kwargs["object_history"] = object_history
+        if alg_name:
+            new_kwargs["alg_name"] = alg_name
+        if alg_id:
+            new_kwargs["alg_id"] = alg_id
+        parameterGTree = parameter_to_GTree(*args, **new_kwargs)
+
+    parameters_json = json.dumps(parameterGTree.asdict())
+
+    if not alg_name:
+        alg_name = func.__name__
+
+    # get the alg_id if exists, else create a new one
+    if not alg_id:
+        # get the alg_id if exists
+        alg_id = global_history.get_alg_id(alg_name, parameters_json)
+        # else create a new one
+        if not alg_id:
+            alg_id = ObjectId()
+
+    # save the global history
+    if global_history:
+        global_history.logging(alg_id, alg_name, parameters_json)
+
+    # read_data method
+    if alg_name.rfind("read_data") != -1 and alg_name.rfind("read_data") + 9 == len(
+        alg_name
+    ):
+        if global_history:
+            return map(
+                lambda wf: func(
+                    wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs
+                ),
+                data,
+            )
+        else:
+            return map(lambda wf: func(wf, *args, **kwargs), data)
+
+    # save_data method
+    if alg_name.rfind("save_data") != -1 and alg_name.rfind("save_data") + 9 == len(
+        alg_name
+    ):
+        # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
+        if global_history:
+            return map(
+                lambda wf: (
+                    func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs),
+                    wf,
+                ),
+                data,
+            )
+        else:
+            return map(lambda wf: (func(wf, *args, **kwargs), wf), data)
+
+    # save the object history
+    if object_history:
+        return map(
+            lambda wf: func(
+                wf,
+                *args,
+                object_history=object_history,
+                alg_name=alg_name,
+                alg_id=str(alg_id),
+                **kwargs
+            ),
+            data,
+        )
+
+    return map(
+        lambda wf: func(wf, *args, object_history=object_history, **kwargs), data
+    )
+
+
+def mspass_normal_reduce(
+    data,
+    func,
+    *args,
+    global_history=None,
+    object_history=False,
+    alg_id=None,
+    alg_name=None,
+    parameters=None,
+    **kwargs
+):
+    """
+     This method performs reduce function using functools. Instead of performing the normal reduce function,
+     if user provides global history manager, alg_id(optional), alg_name(optional) and parameters(optional)
+     as input, the global history manager will log down the usage of the algorithm. Also, if user set
+     object_history to be True, then each mspass object in this reduce function will save the object level history.
+
+    :param data: data to be processed
+    :param func: target function
+    :param global_history: a user specified global history manager
+    :type global_history: :class:`GlobalHistoryManager`
+    :param object_history: save the each object's history in the reduce when True
+    :param alg_id: a user specified alg_id for the reduce operation
+    :type alg_id: :class:`str`/:class:`bson.objectid.ObjectId`
+    :param alg_name: a user specified alg_name for the reduce operation
+    :type alg_name: :class:`str`
+    :param parameters: a user specified parameters for the reduce operation
+    :type parameters: :class:`str`
+    :return: reduced objects.
+    """
+    if parameters:
+        parameterGTree = parameter_to_GTree(parameters_str=parameters)
+    else:
+        new_kwargs = kwargs.copy()
+        new_kwargs["object_history"] = object_history
+        if alg_name:
+            new_kwargs["alg_name"] = alg_name
+        if alg_id:
+            new_kwargs["alg_id"] = alg_id
+        parameterGTree = parameter_to_GTree(*args, **new_kwargs)
+
+    parameters_json = json.dumps(parameterGTree.asdict())
+
+    if not alg_name:
+        alg_name = func.__name__
+
+    # get the alg_id if exists, else create a new one
+    if not alg_id:
+        # get the alg_id if exists
+        alg_id = global_history.get_alg_id(alg_name, parameters_json)
+        # else create a new one
+        if not alg_id:
+            alg_id = ObjectId()
+
+    # save the global history
+    if global_history:
+        global_history.logging(alg_id, alg_name, parameters_json)
+
+    # save the object history
+    if object_history:
+        return functools.reduce(
+            lambda a, b: func(
+                a,
+                b,
+                *args,
+                object_history=object_history,
+                alg_name=alg_name,
+                alg_id=str(alg_id),
+                **kwargs
+            ),
+            data,
+        )
+
+    return functools.reduce(
+        lambda a, b: func(a, b, *args, object_history=object_history, **kwargs), data
+    )
 
 
 def mspass_spark_map(
@@ -401,16 +591,13 @@ class GlobalHistoryManager:
 
         # modify pyspark/dask map to our defined map
         # modify pyspark/dask reduce to our defined reduce
-        if hasDask:
-            import dask.bag as daskbag
-
+        try:
             daskbag.Bag.mspass_map = mspass_dask_map
             daskbag.Bag.mspass_reduce = mspass_dask_fold
-        if hasSpark:
-            import pyspark
-
             pyspark.RDD.mspass_map = mspass_spark_map
             pyspark.RDD.mspass_reduce = mspass_spark_reduce
+        except:
+            pass
 
     def logging(self, alg_id, alg_name, parameters):
         """

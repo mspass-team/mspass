@@ -1,17 +1,26 @@
 import os
 import pymongo
-from mspasspy import hasDask, hasSpark
+
 from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
 from mspasspy.global_history.manager import GlobalHistoryManager
 
-if hasSpark:
+try:
     from pyspark import SparkConf, SparkContext
     from pyspark.sql import SparkSession
-from mspasspy.ccore.utility import MsPASSError
 
-if hasDask:
+    hasSpark = True
+except:
+    hasSpark = False
+
+try:
     from dask.distributed import Client as DaskClient
+
+    hasDask = True
+except:
+    hasDask = False
+
+from mspasspy.ccore.utility import MsPASSError
 
 
 class Client:
@@ -139,8 +148,10 @@ class Client:
         else:
             if hasDask:
                 self._scheduler = "dask"
-            else:
+            elif hasSpark:
                 self._scheduler = "spark"
+            else:
+                self._scheduler = None
 
         # scheduler configuration
         if self._scheduler == "spark":

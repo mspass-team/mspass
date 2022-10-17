@@ -1,5 +1,8 @@
-from mspasspy import hasDask, hasSpark
-
+try:
+    import dask.bag as daskbag
+    import pyspark
+except:
+    pass
 from mspasspy.util.decorators import mspass_reduce_func_wrapper
 from mspasspy.util.converter import list2Ensemble
 from mspasspy.ccore.seismic import (
@@ -75,11 +78,8 @@ def mspass_dask_foldby(self, key="site_id"):
     ).map(lambda x: list2Ensemble(x[1]))
 
 
-if hasDask:
-    import dask.bag as daskbag
-
+try:
     daskbag.Bag.mspass_foldby = mspass_dask_foldby
-if hasSpark:
-    import pyspark
-
     pyspark.RDD.mspass_foldby = mspass_spark_foldby
+except:
+    pass

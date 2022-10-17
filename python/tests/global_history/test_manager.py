@@ -26,7 +26,11 @@ from helper import (
     get_live_timeseries_ensemble,
     get_live_seismogram_ensemble,
 )
-from mspasspy.global_history.manager import GlobalHistoryManager
+from mspasspy.global_history.manager import (
+    GlobalHistoryManager,
+    mspass_normal_reduce,
+    mspass_normal_map,
+)
 import mspasspy.algorithms.signals as signals
 from mspasspy.ccore.seismic import (
     Seismogram,
@@ -113,6 +117,49 @@ class TestManager:
             db[col_name].delete_many({})
 
         self.manager = GlobalHistoryManager(db, "test_job", collection="history_global")
+
+    def add(
+        self,
+        data,
+        *args,
+        object_history=False,
+        alg_name="filter",
+        alg_id=None,
+        dryrun=False,
+        inplace_return=True,
+        **options
+    ):
+        return data + data
+
+    def test_normal_map(self):
+        t = [get_live_timeseries() for i in range(5)]
+        test_map_res = list(mspass_normal_map(t, self.add, global_history=self.manager))
+        for i in range(5):
+            assert test_map_res[i].data == t[i].data + t[i].data
+        # test user provided alg_name and parameter(exist)
+        alg_name = "filter"
+        alg_parameters = "bandpass,freqmin=1,freqmax=5,object_history=True"
+        mspass_normal_map(
+            t,
+            signals.filter,
+            "bandpass",
+            freqmin=1,
+            freqmax=5,
+            object_history=True,
+            global_history=self.manager,
+            alg_name=alg_name,
+            parameters=alg_parameters,
+        )
+
+    def test_normal_reduce(self):
+        t = [get_live_timeseries() for i in range(5)]
+        s = t[0]
+        for i in range(1, 5):
+            s += t[i]
+        test_reduce_res = mspass_normal_reduce(
+            t, stack, global_history=self.manager, object_history=True
+        )
+        assert test_reduce_res.data == s.data
 
     def test_init(self):
         assert self.manager.job_name == "test_job"

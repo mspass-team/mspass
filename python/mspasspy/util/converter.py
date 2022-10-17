@@ -6,10 +6,11 @@ import numpy as np
 import obspy.core
 import collections
 import pandas as pd
-from mspasspy import hasDask
 
-if hasDask:
+try:
     import dask.dataframe as daskdf
+except:
+    pass
 
 from mspasspy.ccore.utility import Metadata, AntelopePf, MsPASSError, ErrorSeverity
 from mspasspy.ccore.seismic import (

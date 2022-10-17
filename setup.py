@@ -86,10 +86,6 @@ ENTRY_POINTS = {
     ],
 }
 
-onlyDatabase = False
-if "--only-database" in sys.argv:
-    onlyDatabase = True
-    sys.argv.remove("--only-database")
 
 setup(
     name="mspasspy",
