@@ -559,6 +559,7 @@ class Database(pymongo.database.Database):
                 mspass_object.elog.log_error("read_data", msg, ErrorSeverity.Invalid)
         else:
             # 2.load data from different modes
+            mspass_object.live = True
             storage_mode = object_doc["storage_mode"]
             if storage_mode == "file":
                 if "format" in object_doc:
@@ -619,7 +620,6 @@ class Database(pymongo.database.Database):
                         retrieve_history_record,
                     )
 
-            mspass_object.live = True
             mspass_object.clear_modified()
 
             # 4.post complaint elog entries if any
@@ -3470,9 +3470,10 @@ class Database(pymongo.database.Database):
                             "_read_data_from_dfile", message, ErrorSeverity.Complaint
                         )
                 except MsPASSError as merr:
-                    # Errors thrown must always cause a kill
-                    mspass_object.kill()
-                    mspass_object.elog.log_error(merr)
+                    # Errors thrown must always cause a failure
+                    raise MsPASSError(
+                        "Error while read data from files.", "Fatal"
+                    ) from merr
             else:
                 # We can only get here if this is a Seismogram
                 try:
@@ -3486,9 +3487,10 @@ class Database(pymongo.database.Database):
                             "_read_data_from_dfile", message, ErrorSeverity.Complaint
                         )
                 except MsPASSError as merr:
-                    # Errors thrown must always cause a kill
-                    mspass_object.kill()
-                    mspass_object.elog.log_error(merr)
+                    # Errors thrown must always cause a failure
+                    raise MsPASSError(
+                        "Error while read data from files.", "Fatal"
+                    ) from merr
 
         else:
             fname = os.path.join(dir, dfile)
