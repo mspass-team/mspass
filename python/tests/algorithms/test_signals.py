@@ -198,17 +198,17 @@ def test_correlation_detector():
     # assert all(a==b for a, b in zip(sims, sims2))
 
 
-"""
 def test_templates_max_similarity():
     # fixme seed id problem
     tse1 = get_live_timeseries_ensemble(3)
     tse2 = get_live_timeseries_ensemble(3)
     st1 = tse1.toStream()
     st2 = tse2.toStream()
-    res = templates_max_similarity(tse1, 0, [tse2])
-    res2 = obspy.signal.cross_correlation.templates_max_similarity(st1, 0, [st2])
+    res = templates_max_similarity(tse1, UTCDateTime(0), [tse2])
+    res2 = obspy.signal.cross_correlation.templates_max_similarity(
+        st1, UTCDateTime(0), [st2]
+    )
     assert res == res2
-"""
 
 
 def test_xcorr_3c():
