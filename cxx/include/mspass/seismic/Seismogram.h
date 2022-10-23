@@ -10,7 +10,7 @@ namespace mspass::seismic{
 This is the working version of a three-component seismogram object used
 in the MsPASS framework.   It extends CoreSeismogram by adding
 ProcessingHistory.   */
-class Seismogram : virtual public mspass::seismic::CoreSeismogram,
+class Seismogram : public mspass::seismic::CoreSeismogram,
    public mspass::utility::ProcessingHistory
 {
 public:
@@ -171,6 +171,7 @@ with serialization.
   Seismogram(const Seismogram& parent)
     : mspass::seismic::CoreSeismogram(parent), mspass::utility::ProcessingHistory(parent)
   {};
+  virtual ~Seismogram(){};
   /*! Standard assignment operator. */
   Seismogram& operator=(const Seismogram& parent);
   /*! \brief Load just the ProcessingHistory data from another data source.
