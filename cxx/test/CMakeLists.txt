@@ -6,6 +6,7 @@ if(BUILD_TESTING)
   add_subdirectory(spectrum)
   add_subdirectory(taper)
   add_subdirectory(tcs)
+  add_subdirectory(tswgaps)
   add_subdirectory(history)
   add_subdirectory(bundle)
 

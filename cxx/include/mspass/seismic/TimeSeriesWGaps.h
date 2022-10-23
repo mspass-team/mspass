@@ -10,11 +10,19 @@ public:
 
   Will need a set of conastructors.   Requires some thought as how to
   set gap is an issue. */
-  TimeSeriesWGaps();
+  TimeSeriesWGaps():TimeSeries(),DataGap(){};
+  /*! Partial copy constructor from a plain TimeSeries.
+
+    Sometimes we need to build the skeleton of a gappy TimeSeries from
+    a regular TimeSeries.  This does that and builds makes a copy of the
+    TimeSeries and creates an empty container that defines the gaps. */
+  TimeSeriesWGaps(const TimeSeries& parent) : TimeSeries(parent),DataGap(){};
   /*! Copy constructor. */
-  TimeSeriesWGaps(const TimeSeriesWGaps& parent);
+  TimeSeriesWGaps(const TimeSeriesWGaps& parent)
+      : TimeSeries(dynamic_cast<const TimeSeries&>(parent)),
+              DataGap(dynamic_cast<const DataGap&>(parent)){};;
   TimeSeriesWGaps& operator=(const TimeSeriesWGaps& parent);
-  ~TimeSeriesWGaps();
+  virtual ~TimeSeriesWGaps(){};
   /*!
   Absolute to relative time conversion.
   Sometimes we want to convert data from absolute time (epoch times)
@@ -66,5 +74,5 @@ public:
   void zero_gaps();
 
 };
-} //end mspass::seismic namespace 
+} //end mspass::seismic namespace
 #endif //end guard
