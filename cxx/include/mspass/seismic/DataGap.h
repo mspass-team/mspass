@@ -1,7 +1,8 @@
 #ifndef _MSPASS_SEISMIC_DATAGAP_H_
 #define _MSPASS_SEISMIC_DATAGAP_H_
 #include <set>
-#include "mspass/seismic/TimeWindow.h"
+#include <list>
+#include "mspass/algorithms/TimeWindow.h"
 
 namespace mspass::seismic{
 /*! \brief Function object used for weak comparison to order TimeWindow objects.
@@ -15,20 +16,19 @@ namespace mspass::seismic{
 class TimeWindowCmp
 {
 public:
-        bool operator()(const TimeWindow ti1,const TimeWindow ti2) const
+        bool operator()(const mspass::algorithms::TimeWindow ti1,
+                const mspass::algorithms::TimeWindow ti2) const
         {return(ti1.end<ti2.start);};
 };
+
 class DataGap
 {
 public:
-/*!
-Checks if a sample defined by an integer offset value is a data gap.
-Calls like seis.is_gap(is) return true if sample is is a data gap.
-It also returns true if i is outside the range of the data.
-(i.e. less than 0 or >= ns).
-//\param is - sample number to test.
-**/
-      bool is_gap(const int is);  //query by sample number
+    /*! Default construtor.  Does nothing but create empty gap container. */
+    DataGap(){};
+    /*! Construct with an initial list of TimeWindows defining gaps. */
+    DataGap(const std::list<mspass::algorithms::TimeWindow>& twlist);
+    virtual ~DataGap(){};
 /*!
 Checks if data at time ttest is a gap or valid data.
 This function is like the overloaded version with an int argument except
@@ -45,7 +45,7 @@ requested time segment.
 \return true if time segment has any data gaps
 \param  twin time window of data to test defined by a TimeWindow object
 **/
-      bool is_gap(const TimeWindow twin);
+      bool has_gap(const mspass::algorithms::TimeWindow twin);
 /*!
 Global test to see if data has any gaps defined.
 Gap processing is expensive and we need this simple method to
@@ -59,7 +59,7 @@ Sometimes an algorithm detects or needs to create a gap (e.g. a mute,
 or a constructor).
 This function provides a common mechanism to define such a gap in the data.
 **/
-      void add_gap(const TimeWindow tw){gaps.insert(tw);};
+      void add_gap(const mspass::algorithms::TimeWindow tw){gaps.insert(tw);};
       /*! \brief Clear gaps.
 
 It is sometimes necessary to clear gap definitions.
@@ -77,7 +77,7 @@ protected:
   object derived from this base class.  The set is keyed by a TimeWindow
   which allows a simple, fast way to define a time range with invalid
   data. */
-  std::set<TimeWindow,TimeWindowCmp> gaps;
+  std::set<mspass::algorithms::TimeWindow,mspass::algorithms::TimeWindowCmp> gaps;
 };
 }  // End mspass::seismic namespace
 #endif //end guard

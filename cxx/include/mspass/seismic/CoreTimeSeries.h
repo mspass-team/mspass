@@ -41,6 +41,7 @@ so use this only if the size of the data to fill the object is
 already known.
 **/
 	CoreTimeSeries(const size_t nsin);
+  virtual ~CoreTimeSeries(){};
 /*! Partially construct from components.
 
 There are times one wants to use the Metadata area as a template to
