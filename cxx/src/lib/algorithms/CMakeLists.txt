@@ -4,6 +4,7 @@ FILE(GLOB sources_alg_basics
       seismogram_helpers.cc 
       slice_and_dice.cc 
       sparse_convolve.cc 
+      splicing.cc
       snr.cc
       tseries_helpers.cc
       Butterworth.cc
