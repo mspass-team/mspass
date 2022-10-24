@@ -137,19 +137,24 @@ class TestManager:
         for i in range(5):
             assert test_map_res[i].data == t[i].data + t[i].data
         # test user provided alg_name and parameter(exist)
-        alg_name = "filter"
-        alg_parameters = "bandpass,freqmin=1,freqmax=5,object_history=True"
-        mspass_normal_map(
-            t,
-            signals.filter,
-            "bandpass",
-            freqmin=1,
-            freqmax=5,
-            object_history=True,
-            global_history=self.manager,
-            alg_name=alg_name,
-            parameters=alg_parameters,
+        test_map_res = list(
+            mspass_normal_map(
+                t,
+                self.add,
+                global_history=self.manager,
+                object_history=True,
+                parameters="length=5",
+            )
         )
+        for i in range(5):
+            assert test_map_res[i].data == t[i].data + t[i].data
+        test_map_res = list(
+            mspass_normal_map(
+                t, self.add, global_history=self.manager, alg_id="7", alg_name="add"
+            )
+        )
+        for i in range(5):
+            assert test_map_res[i].data == t[i].data + t[i].data
 
     def test_normal_reduce(self):
         t = [get_live_timeseries() for i in range(5)]
@@ -158,6 +163,23 @@ class TestManager:
             s += t[i]
         test_reduce_res = mspass_normal_reduce(
             t, stack, global_history=self.manager, object_history=True
+        )
+        assert test_reduce_res.data == s.data
+        test_reduce_res = mspass_normal_reduce(
+            t,
+            stack,
+            global_history=self.manager,
+            object_history=False,
+            alg_id="5",
+            alg_name="stack",
+        )
+        assert test_reduce_res.data == s.data
+        test_reduce_res = mspass_normal_reduce(
+            t,
+            stack,
+            global_history=self.manager,
+            object_history=False,
+            parameters="length=5",
         )
         assert test_reduce_res.data == s.data
 

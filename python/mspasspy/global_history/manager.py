@@ -77,36 +77,6 @@ def mspass_normal_map(
     if global_history:
         global_history.logging(alg_id, alg_name, parameters_json)
 
-    # read_data method
-    if alg_name.rfind("read_data") != -1 and alg_name.rfind("read_data") + 9 == len(
-        alg_name
-    ):
-        if global_history:
-            return map(
-                lambda wf: func(
-                    wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs
-                ),
-                data,
-            )
-        else:
-            return map(lambda wf: func(wf, *args, **kwargs), data)
-
-    # save_data method
-    if alg_name.rfind("save_data") != -1 and alg_name.rfind("save_data") + 9 == len(
-        alg_name
-    ):
-        # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
-        if global_history:
-            return map(
-                lambda wf: (
-                    func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs),
-                    wf,
-                ),
-                data,
-            )
-        else:
-            return map(lambda wf: (func(wf, *args, **kwargs), wf), data)
-
     # save the object history
     if object_history:
         return map(
