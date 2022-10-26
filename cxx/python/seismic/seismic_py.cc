@@ -13,6 +13,10 @@
 #include <mspass/seismic/Seismogram.h>
 #include <mspass/seismic/Ensemble.h>
 #include <mspass/seismic/PowerSpectrum.h>
+#include <mspass/seismic/DataGap.h>
+#include <mspass/seismic/TimeSeriesWGaps.h>
+
+#include <mspass/algorithms/TimeWindow.h>
 
 #include "python/utility/Publicdmatrix_py.h"
 #include "python/utility/boost_any_converter_py.h"
@@ -35,6 +39,7 @@ namespace py=pybind11;
 using namespace std;
 using namespace mspass::utility;
 using namespace mspass::seismic;
+using mspass::algorithms::TimeWindow;
 
 /* Trampoline class for BasicTimeSeries */
 class PyBasicTimeSeries : public BasicTimeSeries
@@ -90,6 +95,23 @@ public:
       BasicTimeSeries,
       set_t0,
       d0in);
+  }
+};
+
+/* Trampoline class for DataGap */
+class PyDataGap : public DataGap
+{
+public:
+  /* BasicTimeSeries has virtual methods that are not pure because
+  forms that contain gap handlers need additional functionality.
+  We thus use a different qualifier to PYBIND11_OVERLOAD macro here.
+  i.e. omit the PURE part of the name*/
+  void zero_gaps()
+  {
+    PYBIND11_OVERLOAD_PURE(
+      void,
+      DataGap,
+      zero_gaps);
   }
 };
 
@@ -819,6 +841,34 @@ PYBIND11_MODULE(seismic, m) {
         }
       ))
     ;
+
+    py::class_<DataGap,PyDataGap>(m,"DataGap","Base class for lightweight definition of data gaps")
+      .def(py::init<>())
+      /* Cannot get bindings with the next line for this constructor to compile.
+      Disabled as the python interface only uses DataGap as a base class for TimeSeriesWGaps
+      and I see now reason a python code would need this constructor*/
+      //.def(py::init<const std::list<mspass::algorithms::TimeWindow>&>())
+      .def("is_gap",&DataGap::is_gap,"Return true if arg0 time is inside a data gap")
+      .def("has_gap",py::overload_cast<>(&DataGap::has_gap),"Test if datum has any gaps defined")
+      .def("has_gap",py::overload_cast<const mspass::algorithms::TimeWindow>(&DataGap::has_gap),
+                 "Test if there is a gap inside a specified time range (defined with TimeWindow object)")
+      .def("add_gap",&DataGap::add_gap,"Define a specified time range as a data gap")
+      .def("clear_gaps",&DataGap::add_gap,"Flush the entire gaps container")
+    ;
+
+    py::class_<TimeSeriesWGaps,TimeSeries,DataGap>(m,"TimeSeriesWGaps","TimeSeries object with gap handling methods")
+      .def(py::init<>())
+      .def(py::init<const TimeSeries&>())
+      .def(py::init<const TimeSeriesWGaps&>())
+      .def("ator",&TimeSeriesWGaps::ator,"Convert to relative time shifting gaps to match")
+      .def("rtoa",py::overload_cast<>(&TimeSeriesWGaps::rtoa),
+         "Return to UTC time using time shift defined in earlier ator call")
+      .def("rtoa",py::overload_cast<const double>(&TimeSeriesWGaps::rtoa),
+                 "Return to UTC time using a specified time shift")
+      .def("shift",&TimeSeriesWGaps::shift,"Shift the time reference by a specified constant")
+      .def("zero_gaps",&TimeSeriesWGaps::zero_gaps,"Zero the data vector for all sections defined as a gap")
+    ;
+
 }
 
 } // namespace mspasspy
