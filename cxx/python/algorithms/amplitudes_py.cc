@@ -138,6 +138,7 @@ PYBIND11_MODULE(amplitudes, m) {
     py::arg("bandwidth_data")
     )
   ;
+
 }
 
 } // namespace mspasspy
