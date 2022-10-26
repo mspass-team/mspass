@@ -8,6 +8,7 @@
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Ensemble.h"
+#include "mspass/seismic/TimeSeriesWGaps.h"
 namespace mspass::algorithms{
 /* \brief Apply agc operator to three component seismogram data.
 
@@ -343,5 +344,7 @@ Note this algorithm alters the ensemble it receives in place.
 \param d is the ensemble to be sorted.
 */
 void seed_ensemble_sort(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>& d);
+mspass::seismic::TimeSeriesWGaps splice_segments(std::vector<mspass::seismic::TimeSeries>& segments,bool save_history);
+std::vector<mspass::seismic::TimeSeries> repair_overlaps(std::vector<mspass::seismic::TimeSeries>& segments);
 }//End mspass::algorithms namespace encapsulation
 #endif

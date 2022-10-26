@@ -144,12 +144,16 @@ SegmentVectorProperties::SegmentVectorProperties(const std::vector<TimeSeries>& 
       }
       if(this_is_first)
       {
-        first_live = i;
+        this->dt_constant = true;
+        this->first_live = i;
         first_t0 = segments[i].t0();
         previous_t0 = first_t0;
         test_dt = segments[i].dt();
         previous_endtime = segments[i].endtime();
         this_is_first = false;
+        this->dt = test_dt;
+        this->t0 = first_t0;
+        this->number_live = 1;
       }
       else
       {
@@ -166,10 +170,12 @@ SegmentVectorProperties::SegmentVectorProperties(const std::vector<TimeSeries>& 
         if(dtfrac > dt_fraction_mismatch) dt_constant = false;
         previous_endtime = segments[i].endtime();
         previous_t0 = segments[i].t0();
+        ++this->number_live;
       }
     }
-    spliced_nsamp = lround((previous_endtime-t0)/dt);
-    ++spliced_nsamp;   //nsamp is always one sample longer than intervals
+    this->endtime = previous_endtime;
+    this->spliced_nsamp = lround((previous_endtime-this->t0)/this->dt);
+    ++this->spliced_nsamp;   //nsamp is always one sample longer than intervals
   }
 }
 /* Splice TimeSeries data stored in a std::vector container.   Assume segments
@@ -275,7 +281,7 @@ TimeSeriesWGaps splice_segments(std::vector<TimeSeries>& segments,
     }
     result.add_many_inputs(inputs);
   }
-  result.kill();
+
   const long int MAX_DATA_VECTOR_LENGTH(1000000000);  //generous size allowance
   if(issues.has_overlaps)
   {
@@ -285,6 +291,7 @@ TimeSeriesWGaps splice_segments(std::vector<TimeSeries>& segments,
        << "Preprocess your data to remove overlaps.   This algorithm assumes overlaps were repaired previously."
        <<endl;
     result.elog.log_error("splice_segments",ss.str(),ErrorSeverity::Invalid);
+    result.kill();
   }
   else if(issues.spliced_nsamp > MAX_DATA_VECTOR_LENGTH)
   {
@@ -295,6 +302,7 @@ TimeSeriesWGaps splice_segments(std::vector<TimeSeries>& segments,
        << "This datum will be killed"
        << std::endl;
     result.elog.log_error("splice_segments",ss.str(),ErrorSeverity::Invalid);
+    result.kill();
   }
   else
   {
@@ -338,6 +346,7 @@ TimeSeriesWGaps splice_segments(std::vector<TimeSeries>& segments,
       }
       previous_endtime = segments[i].endtime();
     }
+    result.set_live();
   }
   return result;
 }
@@ -425,7 +434,7 @@ std::vector<TimeSeries> repair_overlaps(std::vector<TimeSeries>& segments)
     std::vector<TimeSeries> repaired_segments;
     int i_previous;
     i_previous = issues.first_live;
-    for(size_t i=issues.first_live;i<segments.size();++i)
+    for(size_t i=issues.first_live+1;i<segments.size();++i)
     {
       /* Note this logic just ignores all dead data like if(dead) ->continue*/
       if(segments[i].live())
@@ -469,7 +478,10 @@ std::vector<TimeSeries> repair_overlaps(std::vector<TimeSeries>& segments)
             TimeSeries repaired_datum;
             TimeWindow repair_window;
             repair_window.start = segments[i_previous].t0();
-            repair_window.end = segments[i].t0();
+            repair_window.end = segments[i].t0() - issues.dt;
+            /* This condition occurs when the current is a pure duplicate
+            of the last or at least the start times match */
+            if(repair_window.end<repair_window.start) continue;
             repaired_datum = WindowData(segments[i_previous],repair_window);
             repaired_segments.push_back(repaired_datum);
           }
@@ -490,9 +502,12 @@ std::vector<TimeSeries> repair_overlaps(std::vector<TimeSeries>& segments)
                ErrorSeverity::Invalid);
             repaired_segments.push_back(bad_data);
           }
+          i_previous = i;
         }
       }
     }
+    /* Push the last live segment - defined by i_previous*/
+    repaired_segments.push_back(segments[i_previous]);
     return repaired_segments;
   }
   else
