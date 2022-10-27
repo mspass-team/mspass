@@ -60,6 +60,8 @@ or a constructor).
 This function provides a common mechanism to define such a gap in the data.
 **/
       void add_gap(const mspass::algorithms::TimeWindow tw){gaps.insert(tw);};
+/*! Getter returns a list of TimeWindows defining a set of gaps. */
+      std::list<mspass::algorithms::TimeWindow> get_gaps() const;
       /*! \brief Clear gaps.
 
 It is sometimes necessary to clear gap definitions.

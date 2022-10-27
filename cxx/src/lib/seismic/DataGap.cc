@@ -31,5 +31,12 @@ bool DataGap::has_gap(const TimeWindow twin)
   else
     return(true);
 }
+std::list<TimeWindow> DataGap::get_gaps() const
+{
+  std::list<TimeWindow> result;
+  for(auto sptr=this->gaps.begin(); sptr!=this->gaps.end(); ++sptr)
+    result.push_back(*sptr);
+  return result;
+}
 
 } // End namespace encapsulation

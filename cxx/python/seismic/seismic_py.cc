@@ -855,6 +855,7 @@ PYBIND11_MODULE(seismic, m) {
       .def("has_gap",py::overload_cast<const mspass::algorithms::TimeWindow>(&DataGap::has_gap),
                  "Test if there is a gap inside a specified time range (defined with TimeWindow object)")
       .def("add_gap",&DataGap::add_gap,"Define a specified time range as a data gap")
+      .def("get_gaps",&DataGap::get_gaps,"Return a list of TimeWindows marked as gaps")
       .def("clear_gaps",&DataGap::add_gap,"Flush the entire gaps container")
     ;
 
