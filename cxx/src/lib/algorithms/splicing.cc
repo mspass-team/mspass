@@ -282,7 +282,7 @@ TimeSeriesWGaps splice_segments(std::vector<TimeSeries>& segments,
     result.add_many_inputs(inputs);
   }
 
-  const long int MAX_DATA_VECTOR_LENGTH(1000000000);  //generous size allowance
+  const long int MAX_DATA_VECTOR_LENGTH(100000000);  //generous size allowance
   if(issues.has_overlaps)
   {
     std::stringstream ss;
