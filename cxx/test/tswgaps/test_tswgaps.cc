@@ -40,6 +40,10 @@ int main(int argc, char **argv)
   assert(d1g.has_gap(gt2));
   assert(!d1g.has_gap(gt3));
   assert(!d1g.has_gap(gt4));
+  cout << "Testing get_gaps method"<<endl;
+  std::list<TimeWindow> gaps;
+  gaps = d1g.get_gaps();
+  assert(gaps.size() == 1);
   cout << "Testing copy constructor"<<endl;
   TimeSeriesWGaps d2g(d1g);
   assert(d2g.has_gap());
