@@ -9,12 +9,15 @@ from mspasspy.ccore.seismic import (
     TimeSeries,
     TimeSeriesEnsemble,
     SeismogramEnsemble,
+    TimeSeriesVector
 )
 from mspasspy.ccore.algorithms.basic import (
     TimeWindow,
     _TopMute,
     _WindowData,
     _WindowData3C,
+    repair_overlaps,
+    splice_segments
 )
 from mspasspy.ccore.algorithms.amplitudes import (
     _scale,
@@ -428,8 +431,251 @@ def WindowData_with_duration(
         d.log_error("WindowData", str(err), ErrorSeverity.Invalid)
         d.kill()
         return d
-
-
+@mspass_func_wrapper
+def merge(
+    tsvector,
+    starttime=None,
+    endtime=None,
+    fix_overlaps=False,
+    zero_gaps=False,
+    object_history=False,
+    alg_name="merge",
+    alg_id=None,
+    dryrun=False,
+    )->TimeSeries:
+    """
+    Splices a vector of TimeSeries objects together and optionally carves 
+    out a specified time window.  It acts a bit like an obspy function 
+    with the same name, but has completely different options and works 
+    with native MsPASS TimeSeries objects.  
+    
+    This function is a workhorse for handling continuous data that are 
+    universally stored today as a series of files.   The input to this 
+    function is an array of TimeSeries objects that are assummed to be 
+    created from a set of data stored in such files.   The data are assumed 
+    to be from a common stream of a single channel and sorted so the 
+    array index defines a time order.  The algorithm attempts to glue the 
+    segments together into a single time series that is returned.   
+    The algorithm by default assumes the input is "clean" which means 
+    the endtime of each input TimeSeries is 1 sample ahead of the start time
+    of the next segment (i.e. (segment[i+1].t0()-segment[i].endtime()) == dt).
+    The actual test is that the time difference is less than dt/2.  
+    
+    This algorithm treats two conditions as a fatal error and will throw 
+    a MsPASSError when the condition occurs:
+        1.   It checks that the input array of TimeSeries data are in 
+             time order.  
+        2.   It checks that the inputs all have the same sample rate.  
+        3.   If fix_overlaps is False if an overlap is found it 
+             is considered an exception.  
+    Either of these conditions will cause the function to throw an 
+    exception.  The assumption is that either is a user error created 
+    by failing to reading the directions that emphasize this requirement 
+    for the input.  
+    
+    Other conditions can cause the output to be marked dead with an 
+    error message posted to the output's elog attribute.  These are:
+        1.  This algorithm aims to produce an output with data stored in 
+            a continuous vector with a length defined by the total time 
+            span of the input.  Naive use can create enormously long 
+            vectors that would mostly be empty.   (e.g. two random 
+            day files with a 5 year difference in start time)  The 
+            algorithm refuses to try to merge data when the span exceeds
+            an internal threshold of 10^8 samples.   
+        2.  If fix_overlaps is false any overlap of successive endtime to 
+            the next starttime of more than 0.5 samples will cause the 
+            output to be killed.   The assumption is such data have a 
+            serious timing problem retained even after any cleaning. 
+            
+    The above illustrates that this function behaves differently and makes
+    different assumption if the argument check_overlaps is True or False.
+    False is faster because it bypasses the algorithm used to fix overlaps, 
+    but is safer if your data is not perfectly clean in the sense of 
+    lacking any timing issues or problem with duplicates.   If the 
+    fix_overlaps boolean is set True, the mspass overlap handler is 
+    involked that is a C++ function with the name "repair_overlaps".
+    The function was designed only to handle the following common 
+    situations.  How they are handled is different for each situation. 
+        1.  Duplicate waveform segments spanning a common time interval 
+            can exist in raw data and accidentally by indexing two copies 
+            the same data.   If the samples in the overlapping section 
+            match the algorithm will attempt to remove the overlapping 
+            section.   The algorithm is known to work only for a pair of 
+            pure duplicates and a smaller segment with a start time after 
+            a more complete segment.   It may fail if there are more than 
+            three or more copies of the same waveform in the input or 
+            one of the waveforms spans a smaller time range than the other 
+            but has the same start time.   The first is a gross user error. 
+            The second should be rare an is conceivable only with raw 
+            data where a packet or two was randomly saved twice - something 
+            that shouldn't happen but could with flakey hardware. 
+        2.  If an overlap is detected AND the sample data in the overlap 
+            are different the algorithm assumes the data have a timing 
+            problem that created this situation.   Our experience is this
+            situation only happens when an instrument has a timing problem. 
+            All continuous data generating digitizers we know of use a 
+            timing system slaved to an external reference (usually GPS time).
+            If the external signal is lost the clock drifts.  When the 
+            signal is restored if the digitizer detects a large time 
+            jump it may reset (time jerk) to tag the next packet of data 
+            with the updated time based on the standard.  If that time 
+            jump is forward it will leave an apparent gap in the data, which 
+            we discuss below, but if the jump is backward it will leave an 
+            apparent overlap with inconsistent samples.   The 
+            repair_overlaps function assumes that is the cause of all overlaps 
+            it detects.  
+            
+    The final common situation this function needs to handle is gaps.  A 
+    gap is defined in this algorithm as any section where the endtime of 
+    one segment is followed by a start time of the next segment that is 
+    more than 1 sample in duration.  Specifically when
+       (segment[i+1].t0()-segment[i].endtime()) > 1.5*dt
+    The result depends on values of the (optional) windowing arguments 
+    starttime and endtime and the boolean "zero_gaps" argument.  
+    If windowing is enabled (done by changing 
+    default None values of starttime and endtime) any gap will be harmless 
+    unless it is present inside the specified time time range.  In all 
+    cases what happens to the output depends upon the boolean zero_gaps.  
+    When zero_gaps is False any gaps detected within the output range of 
+    the result (windowed range if specified but the full time of the input otherwise)
+    When set True gap sections will be zeroed in the output data vector.  
+    All outputs with gaps that have been zeroed will have the boolean 
+    Metadata attribute "has_gaps" set True and undefined otherwise.   
+    When the has_data attribute is set true the tap windows will be 
+    stored as a list of "TimeWindow" objects with the Metadata key "gaps". 
+    
+    :param tsvector:  array of TimeSeries data that are to be spliced 
+      together to create a single output.   The contents must all have
+      the same sample rate and be sorted by starttime.   
+    :type tsvector:  expected to be a TimeSeriesVector, which is the name 
+      we give in the pybind11 code to a C++ std:vector<TimeSeries> container.  
+      Any iterable container of TimeSeries data will be accepted, however, 
+      with a loss of efficiency.  e.g. it could be a list of TimeSeries 
+      data but if so another copy of the created internally and passed 
+      to the ccore function that does the work.  We recommend custom 
+      applications use the TimeSeriesVector container directly but 
+      many may find it more convenient to bundle data into a TimeSeriesEnsemble
+      and use the member attribute of the ensemble as the input.  
+      i.e. if ens is a TimeSeriesEnsemble use something like this:
+           outdata = merge(ens.member)
+    :param starttime: (optional) start time to apply for windowing the 
+      output.  Default is None which means the output will be created 
+      as the merge of all the inputs.  When set WindowData is applied 
+      with this start time.   Note if endtime is defined but starttime 
+      is None windowing is enabled with starttime = earliest segment start time.
+    :type starttime:  double - assumed to be a UTC time expressed as a unix 
+      epoch time. 
+    :param endtime: (optional) end time to apply for windowing the 
+      output.  Default is None which means the output will be created 
+      as the merge of all the inputs.  When set WindowData is applied 
+      with this end time.   Note if starttime is defined but endtime 
+      is None windowing is enabled with endtime = latest end time of 
+      all segments. 
+    :type endtime:  double - assumed to be a UTC time expressed as a unix 
+      epoch time. 
+    :param fix_overlaps:  when set True (default is False) if an overlap 
+      is detected the algorithm will attempt to repair the overlap 
+      to yield a continuous time series vectgor if it determined to have 
+      matching data.  See description above for more details. 
+    :type fix_overlaps:  boolean
+    :param zero_gaps:  When set False, which is the default, any gaps 
+      detected in the output window will cause the return to be marked 
+      dead.  When set True, gaps will be zeroed and with a record of 
+      gap positions posted to the Metadata of the output.  See above 
+      for details. 
+    :param zero_gaps:  boolean
+    :param object_history: boolean to enable or disable saving object
+      level history.  Default is False.  Note this functionality is
+      implemented via the mspass_func_wrapper decorator.
+    :param alg_name:   When history is enabled this is the algorithm name
+      assigned to the stamp for applying this algorithm.
+      Default ("WindowData") should normally be just used.
+      Note this functionality is implemented via the mspass_func_wrapper decorator.
+    :param ald_id:  algorithm id to assign to history record (used only if
+      object_history is set True.)
+      Note this functionality is implemented via the mspass_func_wrapper decorator.
+    :param dryrun:
+      Note this functionality is implemented via the mspass_func_wrapper decorator.
+    :param dryrun:
+      Note this functionality is implemented via the mspass_func_wrapper decorator.
+      
+    :return: TimeSeries in the range defined by the time span of the input 
+      vector of segments or if starttime or endtime are specified a reduced 
+      time range.  The result may be marked dead for a variety of reasons 
+      with error messages explaining why in the return elog attribute. 
+    """
+    if not isinstance(tsvector,TimeSeriesVector):
+        # We assume this will throw an exception if tsvector is not iterable
+        # or doesn't contain TimeSeries objects
+        dvector = TimeSeriesVector()
+        for d in tsvector:
+            dvector.append(d)
+    else:
+        dvector = tsvector
+    if fix_overlaps:
+        dvector = repair_overlaps(dvector)
+    spliced_data = splice_segments(dvector,object_history)
+    if spliced_data.dead():
+        # the contents of spliced_data could be huge so best to 
+        # do this to effectively clear the data vector
+        spliced_data.set_npts(0)
+        return(TimeSeries(spliced_data))
+    window_data = False
+    output_window = TimeWindow()
+    if starttime is None:
+        output_window.start = spliced_data.t0()
+    else:
+        output_window.start = starttime
+        window_data = True
+    if endtime is None:
+        output_window.end = spliced_data.endtime()
+    else:
+        output_window.end = endtime
+        window_data = True
+    if window_data:
+        if spliced_data.has_gap(output_window):
+            if zero_gaps:
+                spliced_data.zero_gaps()
+                spliced_data = _post_gap_data(spliced_data)
+            else:
+                spliced_data.kill()
+                spliced_data.elog.log_error("merge",
+                            "Data have gaps in output range; will be killed",
+                            ErrorSeverity.Invalid)
+        return WindowData(spliced_data,
+            output_window.start, output_window.end, object_history=object_history)
+    else:
+        if spliced_data.has_gaps():
+            if zero_gaps:
+                spliced_data.zero_gaps()
+                spliced_data = _post_gap_data(spliced_data)
+            else:
+                spliced_data.kill()
+                spliced_data.elog.log_error("merge",
+                            "merged data have gaps; output will be killed",
+                            ErrorSeverity.Invalid)
+        return TimeSeries(spliced_data)
+       
+def _post_gap_data(d):
+    """
+    Private function used by merge immediately above.   Takes an input 
+    d that is assumed (no testing is done here) to be a TimeSeriesWGaps 
+    object.  It pulls gap data from d and posts the gap data to d. 
+    It then returns d.  It silently does nothing if d has not gaps defined.
+    """
+    if d.has_gap():
+        d["has_gaps"] = True
+        twlist = d.get_gaps()
+        # to allow the result to more cleanly stored to MongoDB we 
+        # convert the window data to list of python dictionaries which 
+        # mongo will use to create subdocuments 
+        gaps = []
+        for tw in twlist:
+            g = {"starttime" : tw.start, "endtime" : tw.end}
+            gaps.append(g)
+        d["gaps"] = gaps
+    return d
+            
 class TopMute:
     """
     A top mute is a form of taper applied to the "front" of a signal.

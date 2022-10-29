@@ -1,9 +1,11 @@
 from abc import ABC,abstractmethod
 from mspasspy.ccore.utility import MsPASSError,ErrorSeverity,Metadata
-from mspasspy.ccore.seismic import TimeSeries,TimeSeriesEnsemble
+from mspasspy.ccore.seismic import (TimeSeries,
+                                    TimeSeriesEnsemble,
+                                    TimeSeriesVector)
 from mspasspy.db.normalize import BasicMatcher,ObjectIdDBMatcher
-from mspasspy.algorithms.window import WindowData
-from mspasspy.util.converter import Trace2TimeSeries,TimeSeries2Trace
+from mspasspy.algorithms.window import WindowData,merge
+from mspasspy.util.decorators import mspass_func_wrapper
 from obspy.core.stream  import Stream
 from copy import deepcopy
 
@@ -396,38 +398,135 @@ class CRGBySeedCode(BasicEnsembleReader) :
             query["chan"] = doc_or_md["channel"]
             if "loc" in doc_or_md:
                 query["loc"] = doc_or_md["loc"]
-        return query
-                
+        return query           
+
+@mspass_func_wrapper        
+def TimeIntervalReader(db,starttime,endtime,
+                           collection="wf_miniseed",
+                           base_query=None,
+                           fix_overlaps=False,
+                           zero_gaps=False,
+                           object_history=False,
+                           alg_name="TimeIntervalReader",
+                           alg_id=None,
+                           dryrun=False,               
+                       )->list:
+    """
+    A common form of gather when handling continous data with UTC timing 
+    is to carve out fixed time window.   Two common but different uses 
+    are (1) carving out an interval of time based on an event origin time, 
+    and (2) extracting a series of windows in a loop for block processing 
+    like noise correlation or spectorgrams.   The later demand a lot of 
+    efficiency in this process as that kind of process can repeat an 
+    algorithm like this thousands of times.   Reading continuous data 
+    always has to handle two properties of read data that this function 
+    hides behind the implementation.  (1) in all but trivially short 
+    experiments the length of recording for any given instrument is 
+    far too large to fit in memory.  Data are thus always broken into 
+    fixed chunks.  In most cases that has evolved to mean day-long 
+    chunks.  (2) A large fraction of data have recording gaps for a 
+    long list of reasons.  The second folds into the first in a less 
+    obvious way because of another practical data issue;  timing problems.
+    When an instrument's timing system fails the internal clock will 
+    drift away from the external reference time.  When the instrument 
+    again receives a timing signal the next packet written 
+    (note all modern data are collected in digital packets like miniseed)
+    may have a "time tear".  That means the time stamp is off by more than 
+    1/2 sample interval from the time computed from the last valid time 
+    stamp and the nominal sample interval.   When reading continuous 
+    data that kind of anomaly will appear like one of two things: (1) 
+    a data gap if the time tear is a forward jump in time, or (2) a data 
+    overlap if the time tear is a backward jump in time.   In MsPASS 
+    our miniseed indexer detects time tears and data gaps 
+    (The algorithm just checks for greater than 1/2 sample time mismatches.)
+    and writes a wf_miniseed document for each segment.  i.e. even a 
+    single channel, day file from a continuous data set may have multiple
+    segments defined because of gaps and time tears.  A huge complication of 
+    this reader is it attempts to handle all gap and overlap related issues 
+    and fix them when possible.   It cannot handle all situations, however, 
+    and takes the approach that if it cannot make a reasonable repair 
+    with some simple assumption it will kill the TimeSeries datum is is 
+    attempting to assemble and post an error message that can be used 
+    for post-mortum analysis of a workflow.  All the complexity of this 
+    processing is hidden under two layers of code this reader utilizes:
+        1.  The python function mspasspy.algorithms.window.merge 
+            is a wrapper that handles some translations from 
+        2.  The bottom layer, which, is a set of C++ code that does 99% of the 
+            work.  The base layer was done in C++ for efficiency because,
+            as noted above, use of this algorithm can be very time intensive
+            and requires efficiency.   The current implementation uses 
+            to C++ functions bound to python in the module 
+            mspasspy.ccore.algorithms.basic with symbols "splice_segments" 
+            and "repair_overlaps".  
+    
+    Users of this function will want to also read the docstring for 
+    mspasspy.algorithms.window.merge as it contains more implementation 
+    details on how the merge algorithm works and the assumptions it makes. 
+    
+    This reader is a high level reader to simplify reading time windows of 
+    data from a continuous data set.  The basic model is you specify a 
+    time window from which you want some subset or all the data 
+    with data recorded during that interval.  We further assume that
+    data has been indexed and is (by default and only thing sure to work) 
+    defined by set of wf_miniseed documents. You can specify a subset 
+    using the "base_query" argument (see below).  The algorithm then 
+    queries MongoDB to find all waveform segments that span all or part 
+    of the requested time interval.  It then reads and reorganizes the 
+    data into a list of TimeSeriesEnsemble objects.   There will be 
+    one such ensemble for each unique channel/location code found 
+    after applying the base query.   Hence, for example, if you used a 
+    query to only accept "B" channels with null location (loc attribute) 
+    codes you could expect to get a list of at least 3 ensembles:   BHZ,
+    BHE, and BHN (you might also get something like BH1 and BH2 - a detail).
+    All members of all ensembles will either have a complete vector within 
+    the specified range and be marked live or marked dead.  The default 
+    for gap handling is any gap or nonrepairable overlap will cause a dead
+    datum to be loaded with a elog entry defining the reason for the kill. 
+    If the boolean argument zero_gaps is set true (default is False) 
+    gaps will be zero filled and marked live.  The only evidence of that 
+    kind of problem in that mode is that a boolean Metadata attribute 
+    "has_gaps" will be set True (clean data will not have that attribute 
+    defined) and the gap time windows defined in a document with the 
+    key "gaps" with subdocuments defining the gap time intervals. 
+    
+    Note:  start times of all returned data will have a variation of + to - 
+      1 sample interval. If you need synchronous timing to a greater 
+      precision than one sample you will need to resample the outputs to 
+      a fixed time comb.
+    
+    :param db: MongoDB database handle 
+    :type db:  Usually a MsPASS Database class but could be the superclass 
+        MongoDB handle.
         
-def TimeIntervalReader(db,tw,collection="wf_miniseed",base_query=None,
-                       gap_handling_method="kill")->list:
+    :param starttime:   starting time of time window of data to be extracted.
+    :type starttime:  double epoch time
+    
+    :param endtime: end time of time window of data to be extracted.
+    :type starttime:  double epoch time
+    
+    :param base_query: A dictionary defining a higher level subset to 
+      limit what data are to be retrieved.  The most common would be 
+      limits on sample interval or channel naming.  Must be a valid 
+      pymongo find definition with a python dictionary.
+    :type base_query:  python dictionary defining a valid MongoDB query.
+        
+    :param collection:  waveform collection to be read.  Default is 
+      wf_miniseed.  If you use any other collection name be aware the 
+      documents retrieved must have the keys "net", "sta", and "chan".  
+      ("loc" is treated as optional as in all of mspass) in the seed way AND 
+      have the time range of each datum defined by the keys "starttime" and 
+      "endtime".  This function is know to work only with wf_miniseed
+      documents created one of the mspass index_miniseed_* methods of Database.
+    :type collection:  string
+    
+    :param fix_overlaps: see docstring for mspasspy.algorithms.window.merge 
+    :param zero_gaps: see docstring for mspasspy.algorithms.window.merge
+    
+    :return:  list of TimeSeriesEnsemble objects (see main description for
+        how the data in these containers are grouped)
     """
-    This is a prototype to hack out an idea.  We need a simple algorithm to
-    assemble data into time window frames from continuous data.   The 
-    model I'm following here builds on Danny Harvey's station-channel-time 
-    library and the seispp implementation for doing a similar function.   
-    
-    The simplest path to solution for this algortihm but far from the 
-    most efficient and fast algorithm is to utilize obspy's Stream.merge 
-    method.   That will require the reader to sort the data by net:sta:chan:loc 
-    and when multiple segmnts are present: convert to Stream, run merge, and 
-    convert back to a TimeSeriesEnsemble.   
-    
-    
-    I think this could be made parallel driven by a list of chanid codes 
-    with data in a specific interval.   
-    
-    
-    Will first do this with seed code and then think about how we might 
-    make it more generic with channel_id.   I think we should assumm 
-    continuous data always starts life as single channel data and 
-    bundling to 3c objects is to be done in a workflow. 
-    
-    Note while writing - DELETE ME - needs to return a list of ensembles 
-    to handle channel and loc codes.   
-    """
-    tstart = tw.start
-    tend = tw.end
+    tstart = starttime
+    tend = endtime
     query = dict(base_query)
     query["$or"] = [
                 {"starttime" : {"$gte" : tstart, "$lte" : tend},
@@ -451,7 +550,7 @@ def TimeIntervalReader(db,tw,collection="wf_miniseed",base_query=None,
             test_keys = seed_keys(doc)
             if test_keys == current_keys:
                 # If we land here it means we have multiple segments
-                segments = list()
+                segments = TimeSeriesVector()
                 segments.append(last_datum)
                 while( test_keys == current_keys):
                     datum = db.read_data(doc,collection=collection)
@@ -461,30 +560,38 @@ def TimeIntervalReader(db,tw,collection="wf_miniseed",base_query=None,
                     doc = cursor.next()
                     current_keys = deepcopy(test_keys)
                     test_keys = seed_keys((doc))
-                datum = _glue_segments(segments,gap_handling_method)
+                datum = merge(segments,
+                                  starttime=tstart,
+                                  endtime=tend,
+                                  fix_overlaps=fix_overlaps,
+                                  zero_gaps=zero_gaps,
+                                  object_history=object_history,
+                                  alg_name=alg_name,
+                                  alg_id=alg_id,
+                                  dryrun=dryrun
+                              )
+                # Merge can kill data for a variety of reasons
+                # When that happens clear any sample data before 
+                # pushing the result to the ensemble.  We want to save
+                # the elog for debugging data issues
+                if datum.dead():
+                    datum.set_npts(0)
+                    windowed_data = datum   # shallow copy make this appropriate
             else:
                 datum = db.read_data(doc,collection=collection)
-            windowed_data = WindowData(last_datum,tstart,tend)
+            if datum.live():
+                windowed_data = WindowData(datum,tstart,tend)
             last_datum=TimeSeries(datum)  # a deep copy using C API for speed
             if current_keys.same_channel(test_keys):
                 current.member.append(windowed_data)
             else:
                 ensemble_list.append(current)
                 current = _initialize_ensemble(doc, tstart, tend)
+                current.member.append(windowed_data)
                 
-    #cleanup - last_datum is always left hanging
-    windowed_data = WindowData(last_datum,tstart,tend)
-    current.member.append(windowed_data)
+    #cleanup - last emsemble need to be pushed to output list
     ensemble_list.append(current)
     return ensemble_list
-                
-                
-                    
-                
-        
-            
-        
-        
         
 def _initialize_ensemble(doc,tstart,tend)->TimeSeriesEnsemble:
     """
@@ -514,38 +621,3 @@ def _initialize_ensemble(doc,tstart,tend)->TimeSeriesEnsemble:
     ens.update_metadata(md)
     return ens   # Not returned ensemble is marked dead in construction in this context
     
-def _glue_segments(segments,gap_handling_method):
-    """
-    Uses obspy to glue list of TimeSeries objects together.  Internal use 
-    only assumes segments are derived from miniseed data with a common 
-    set of station codes (i.e. the combination net, sta, chan, and loc).
-    This implementation is a bit inefficient because it has to convert 
-    TimeSeries objects to Trace objects and then convert the result back.
-    Considered acceptable in this context of this module as the that 
-    problem will be invoked only if the data have gaps or the time interval 
-    requested spans a break in continuous data miniseed files.  
-    
-    TODO:  THIS FUNCTION IS UNLIKLY TO WORK WITHOUT SOME REPAIR.  OBSPY'S 
-    DOCUMENTATION OF MERGE IS TERRIBLY CONFUSING.   THIS NEEDS A MORE GENERAL 
-    SOLUTIONA S WELL TO SUPPORT OTHER WAYS OF HANDLING GAPS.   ONLY WAY TO 
-    SORT IT OUT IS TO EXPERIMENT WITH OBPY
-    """
-    strm = Stream()
-    for ts in segments:
-        d = TimeSeries2Trace(ts)
-        strm.append(d)
-    # This merges only contiguous traces with no gaps.  Obspy's documentation
-    # is very confusing on how merge behaves with different method options
-    strm.merge(method=-1)
-    result = Trace2TimeSeries(strm[0])
-    if strm.count() > 1:
-        result.kill()
-        result.elog.log_error("obspy merge failed - data probably have gaps")
-    return result
-    
-        
-            
-    
-    
-    
-        
