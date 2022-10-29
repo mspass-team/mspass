@@ -39,7 +39,6 @@ extensions = [
   'sphinx.ext.autodoc',
   'm2r2',
   'breathe',
-  'nbsphinx',
   'sphinx.ext.todo',
   'sphinx.ext.viewcode',
   'sphinx_copybutton',
