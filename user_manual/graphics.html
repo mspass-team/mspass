@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -111,34 +112,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="graphics-in-mspass">
-<span id="graphics"></span><h1>Graphics in MsPASS<a class="headerlink" href="#graphics-in-mspass" title="Permalink to this headline"></a></h1>
+  <section id="graphics-in-mspass">
+<span id="graphics"></span><h1>Graphics in MsPASS<a class="headerlink" href="#graphics-in-mspass" title="Permalink to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p>THIS SECTION NEEDS FIGURES - THE GRAPHICS TUTORIAL CREATES ALL THE EXAMPLES NEEDED</p>
 <p>Data visualization in general and graphics to visualize seismic data
 in particular are critical elements to understand data and the
@@ -164,7 +141,7 @@ matplotlib library.</p></li>
 </ol>
 </section>
 <section id="native-graphics">
-<h2>Native Graphics<a class="headerlink" href="#native-graphics" title="Permalink to this headline"></a></h2>
+<h2>Native Graphics<a class="headerlink" href="#native-graphics" title="Permalink to this heading"></a></h2>
 <p>Since our goal was simple methods to plot native data types, we first remind
 the user what is considered native data in MsPASS.  They are:
 (1) <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects are scalar, uniformly sampled seismic
@@ -256,12 +233,12 @@ internal scaling is inflexible.  If the default scaling proves inadequate
 use one of the functions for data scaling in <a class="reference internal" href="../python_api/mspasspy.ccore.html#module-mspasspy.ccore.algorithms.amplitudes" title="mspasspy.ccore.algorithms.amplitudes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.amplitudes</span></code></a>.</p>
 </section>
 <section id="obspy-graphics">
-<h2>Obspy Graphics<a class="headerlink" href="#obspy-graphics" title="Permalink to this headline"></a></h2>
+<h2>Obspy Graphics<a class="headerlink" href="#obspy-graphics" title="Permalink to this heading"></a></h2>
 <p>User’s familiar with obspy may, in come cases, prefer to utilize obspy’s
 built in graphics.   Obspy’s data objects
-(<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>
+(<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>
 and
-<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a>)
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a>)
 have a plot method as a member of the data object.  MsPASS has
 a suite of fast converters between obspy and MsPASS data objects.
 These converters can be used in plotting scrips like the following:</p>
@@ -272,7 +249,7 @@ These converters can be used in plotting scrips like the following:</p>
 </div>
 </section>
 <section id="extending-mspass-graphics">
-<h2>Extending MsPASS Graphics<a class="headerlink" href="#extending-mspass-graphics" title="Permalink to this headline"></a></h2>
+<h2>Extending MsPASS Graphics<a class="headerlink" href="#extending-mspass-graphics" title="Permalink to this heading"></a></h2>
 <p>As noted at the beginning of this section the graphics available in
 MsPASS are simple by design.   If you need different graphics capabilities
 you have two different choices:</p>

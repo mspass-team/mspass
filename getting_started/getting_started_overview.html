@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -132,34 +133,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="mspass-setup-in-depth-overview">
-<span id="getting-started-overview"></span><h1>MsPASS Setup In-Depth Overview<a class="headerlink" href="#mspass-setup-in-depth-overview" title="Permalink to this headline"></a></h1>
+  <section id="mspass-setup-in-depth-overview">
+<span id="getting-started-overview"></span><h1>MsPASS Setup In-Depth Overview<a class="headerlink" href="#mspass-setup-in-depth-overview" title="Permalink to this heading"></a></h1>
 <section id="audience">
-<h2>Audience<a class="headerlink" href="#audience" title="Permalink to this headline"></a></h2>
+<h2>Audience<a class="headerlink" href="#audience" title="Permalink to this heading"></a></h2>
 <p>This section is mainly for user’s new to MsPASS.  Those readers
 may find the general issue about HPC concepts helpful, but
 how helpful will be entirely dependent upon the background of the reader.
@@ -186,9 +163,9 @@ of the fundamentals that shaped the design of MsPASS.
 That background can help you understand this section.</p>
 </section>
 <section id="fundamental-concepts">
-<h2>Fundamental Concepts<a class="headerlink" href="#fundamental-concepts" title="Permalink to this headline"></a></h2>
+<h2>Fundamental Concepts<a class="headerlink" href="#fundamental-concepts" title="Permalink to this heading"></a></h2>
 <section id="range-of-hardware-to-run-mspass">
-<h3>Range of Hardware to run MsPASS<a class="headerlink" href="#range-of-hardware-to-run-mspass" title="Permalink to this headline"></a></h3>
+<h3>Range of Hardware to run MsPASS<a class="headerlink" href="#range-of-hardware-to-run-mspass" title="Permalink to this heading"></a></h3>
 <p>The most basic issue that created a need for a framework like MsPASS
 is a fundamental change in computing that began more than 20 years ago.
 That is, prior to that time a computer was synonymous with a single cpu
@@ -240,7 +217,7 @@ is that MsPASS can fill all these roles, but there is a configuration
 step to run each component in your local computing environment.</p>
 </section>
 <section id="containers">
-<h3>Containers<a class="headerlink" href="#containers" title="Permalink to this headline"></a></h3>
+<h3>Containers<a class="headerlink" href="#containers" title="Permalink to this heading"></a></h3>
 <p>The enabling technology that allows MsPASS to be readily run on a wide variety
 of platforms is relevant to the concept of <code class="code docutils literal notranslate"><span class="pre">virtual</span> <span class="pre">machine</span></code> or
 <code class="code docutils literal notranslate"><span class="pre">virtualization</span></code>.   If you are unfamiliar with this topic,
@@ -280,7 +257,7 @@ machines using Apple silicon chips.
 That may be available by the time you read this.</p>
 </section>
 <section id="foreman-worker-model">
-<h3>Foreman-worker Model<a class="headerlink" href="#foreman-worker-model" title="Permalink to this headline"></a></h3>
+<h3>Foreman-worker Model<a class="headerlink" href="#foreman-worker-model" title="Permalink to this heading"></a></h3>
 <p>A foundational concept of MsPASS is the foreman-worker model of
 parallel processing.  (Some sources will use the less politically correct
 term master-slave to describe the came concept.)
@@ -308,7 +285,7 @@ foreman-worker model possible.</p></li>
 </ol>
 </section>
 <section id="schedulers">
-<h3>Schedulers<a class="headerlink" href="#schedulers" title="Permalink to this headline"></a></h3>
+<h3>Schedulers<a class="headerlink" href="#schedulers" title="Permalink to this heading"></a></h3>
 <p>As noted a number of other places in this user’s manual MsPASS
 achieves parallelization in a cluster through one of two
 schedulers called <a class="reference external" href="https://dask.org/">dask</a>
@@ -360,7 +337,7 @@ manually.</p></li>
 </ol>
 </section>
 <section id="mongodb">
-<h3>MongoDB<a class="headerlink" href="#mongodb" title="Permalink to this headline"></a></h3>
+<h3>MongoDB<a class="headerlink" href="#mongodb" title="Permalink to this heading"></a></h3>
 <p>What MongoDB is, why is chosen for MsPASS, and how it is used in MsPASS are
 topics discussed throughout this User’s Manual.   Two key sections on this
 topic are <a class="reference internal" href="../user_manual/database_concepts.html#database-concepts"><span class="std std-ref">Database Concepts</span></a> and <a class="reference internal" href="../user_manual/CRUD_operations.html#crud-operations"><span class="std std-ref">CRUD Operations in MsPASS</span></a>.
@@ -399,7 +376,7 @@ sharding is a configuration option.</p></li>
 </ol>
 </section>
 <section id="frontend">
-<h3>Frontend<a class="headerlink" href="#frontend" title="Permalink to this headline"></a></h3>
+<h3>Frontend<a class="headerlink" href="#frontend" title="Permalink to this heading"></a></h3>
 <p>The standard MsPASS container assumes the use of a
 <a class="reference external" href="https://jupyter.org/">jupyter notebook</a>
 to assemble and test your workflow.  As noted elsewhere
@@ -432,9 +409,9 @@ as a near turnkey operation.</p>
 </section>
 </section>
 <section id="mspass-configuration">
-<h2>MsPASS Configuration<a class="headerlink" href="#mspass-configuration" title="Permalink to this headline"></a></h2>
+<h2>MsPASS Configuration<a class="headerlink" href="#mspass-configuration" title="Permalink to this heading"></a></h2>
 <section id="overview">
-<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h3>
+<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h3>
 <p>To understand how to configure MsPASS it is important to first
 understand some fundamental concepts that are treated as abstractions.
 You can think of the configuration as making the abstractions concrete.</p>
@@ -484,7 +461,7 @@ the examples we turn to the implementation detail of how we
 make an abstract model concrete.</p>
 </section>
 <section id="example-1-simple-four-node-virtual-cluster">
-<h3>Example 1:  Simple four node virtual cluster<a class="headerlink" href="#example-1-simple-four-node-virtual-cluster" title="Permalink to this headline"></a></h3>
+<h3>Example 1:  Simple four node virtual cluster<a class="headerlink" href="#example-1-simple-four-node-virtual-cluster" title="Permalink to this heading"></a></h3>
 <p><a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 1</span></a> is
 a block diagram of a virtual cluster that is largely useful
 only for it’s pedagogic value.   i.e. we show it
@@ -568,7 +545,7 @@ a waste of your time.  If you face a task with months of compute time, however,
 some fine-tuning may be justified.</p>
 </section>
 <section id="example-2-multiple-nodes-with-multiple-roles">
-<h3>Example 2:  Multiple nodes with multiple roles`<a class="headerlink" href="#example-2-multiple-nodes-with-multiple-roles" title="Permalink to this headline"></a></h3>
+<h3>Example 2:  Multiple nodes with multiple roles`<a class="headerlink" href="#example-2-multiple-nodes-with-multiple-roles" title="Permalink to this heading"></a></h3>
 <p><a class="reference internal" href="#configuration-figure2"><span class="std std-numref">Fig. 2</span></a> is
 a block diagram of a virtual cluster that is a minor variant of
 that in <a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 1</span></a>.   This configuration
@@ -607,7 +584,7 @@ for details on the meaning of different lines in the diagram.</span><a class="he
 </figure>
 </section>
 <section id="example-3-multiple-nodes-with-optional-sharding">
-<h3>Example 3:  Multiple nodes with optional Sharding<a class="headerlink" href="#example-3-multiple-nodes-with-optional-sharding" title="Permalink to this headline"></a></h3>
+<h3>Example 3:  Multiple nodes with optional Sharding<a class="headerlink" href="#example-3-multiple-nodes-with-optional-sharding" title="Permalink to this heading"></a></h3>
 <p><a class="reference internal" href="#configuration-figure3"><span class="std std-numref">Fig. 3</span></a> is the first example
 that is known to give reasonable load balancing on an HPC system.
 It is, in fact, a schematic diagram of our example configuration for
@@ -677,7 +654,7 @@ sharding easily found by a web search.</p></li>
 </ul>
 </section>
 <section id="example-4-all-in-one-desktop-setup">
-<h3>Example 4:  All-in-one desktop setup<a class="headerlink" href="#example-4-all-in-one-desktop-setup" title="Permalink to this headline"></a></h3>
+<h3>Example 4:  All-in-one desktop setup<a class="headerlink" href="#example-4-all-in-one-desktop-setup" title="Permalink to this heading"></a></h3>
 <p>We leave the special case we call “all-in-one” until now even
 though virtually all MsPASS users will likely first use it in that mode.
 The reason is that although
@@ -712,9 +689,9 @@ to not use all the cores on the system.   That process is described
 </section>
 </section>
 <section id="tacc-stampede2-example-implementation">
-<h2>TACC-Stampede2 Example Implementation<a class="headerlink" href="#tacc-stampede2-example-implementation" title="Permalink to this headline"></a></h2>
+<h2>TACC-Stampede2 Example Implementation<a class="headerlink" href="#tacc-stampede2-example-implementation" title="Permalink to this heading"></a></h2>
 <section id="id1">
-<h3>Overview<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<h3>Overview<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
 <p>In this section we show a concrete implementation of our abstract
 example 3.  This example will is known to run on the
 <a class="reference external" href="https://www.tacc.utexas.edu/use-tacc/getting-started">TACC</a>
@@ -758,7 +735,7 @@ The docker configuration file can be thought of as like the operating
 system code:  you only interact with it, you don’t change it.</p>
 </section>
 <section id="job-script">
-<h3>Job Script<a class="headerlink" href="#job-script" title="Permalink to this headline"></a></h3>
+<h3>Job Script<a class="headerlink" href="#job-script" title="Permalink to this heading"></a></h3>
 <p>Because the job script is effectively the main program for any workflow
 we begin with our example.  Note this script was derived from an
 ancestor of the current file found on github
@@ -1028,7 +1005,7 @@ file name, but this example provides a template for defining a generic
 configuration that could be used to run multiple notebooks.</p>
 </section>
 <section id="start-mspass-sh">
-<h3>start-mspass.sh<a class="headerlink" href="#start-mspass-sh" title="Permalink to this headline"></a></h3>
+<h3>start-mspass.sh<a class="headerlink" href="#start-mspass-sh" title="Permalink to this heading"></a></h3>
 <p>We reiterate that our current implementation of MsPASS uses a single
 master shell script called <code class="code docutils literal notranslate"><span class="pre">start-mspass.sh</span></code> to configure each
 running container.   i.e. the way this file is used is after
@@ -1381,7 +1358,7 @@ behavior (the shell script docker-entrypoint.sh) and should not be changed.</p><
 </ul>
 </section>
 <section id="docker-configuration-file">
-<h3>Docker Configuration File<a class="headerlink" href="#docker-configuration-file" title="Permalink to this headline"></a></h3>
+<h3>Docker Configuration File<a class="headerlink" href="#docker-configuration-file" title="Permalink to this heading"></a></h3>
 <p>The docker configuration file is not something any user should need to
 change.  The only exception is if you have a code suite you want to use
 to extend MsPASS as an independent package.   If that is you, will need to

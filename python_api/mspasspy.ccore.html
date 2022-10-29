@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -77,8 +78,49 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.ccore</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.ccore.utility">utility</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.ccore.seismic">seismic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.ccore.utility">utility</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.AntelopePf"><code class="docutils literal notranslate"><span class="pre">AntelopePf</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.AtomicType"><code class="docutils literal notranslate"><span class="pre">AtomicType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.BasicMetadata"><code class="docutils literal notranslate"><span class="pre">BasicMetadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.BasicProcessingHistory"><code class="docutils literal notranslate"><span class="pre">BasicProcessingHistory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.ErrorLogger"><code class="docutils literal notranslate"><span class="pre">ErrorLogger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.ErrorSeverity"><code class="docutils literal notranslate"><span class="pre">ErrorSeverity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.LogData"><code class="docutils literal notranslate"><span class="pre">LogData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.MDDefFormat"><code class="docutils literal notranslate"><span class="pre">MDDefFormat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.MDtype"><code class="docutils literal notranslate"><span class="pre">MDtype</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata"><code class="docutils literal notranslate"><span class="pre">Metadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.MetadataDefinitions"><code class="docutils literal notranslate"><span class="pre">MetadataDefinitions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata_typedef"><code class="docutils literal notranslate"><span class="pre">Metadata_typedef</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.MsPASSError"><code class="docutils literal notranslate"><span class="pre">MsPASSError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.NodeData"><code class="docutils literal notranslate"><span class="pre">NodeData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.ProcessingHistory"><code class="docutils literal notranslate"><span class="pre">ProcessingHistory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.ProcessingStatus"><code class="docutils literal notranslate"><span class="pre">ProcessingStatus</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.SphericalCoordinate"><code class="docutils literal notranslate"><span class="pre">SphericalCoordinate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.algorithm_history"><code class="docutils literal notranslate"><span class="pre">algorithm_history()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.algorithm_outputs"><code class="docutils literal notranslate"><span class="pre">algorithm_outputs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.dmatrix"><code class="docutils literal notranslate"><span class="pre">dmatrix</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.error_says_data_bad"><code class="docutils literal notranslate"><span class="pre">error_says_data_bad()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.error_severity"><code class="docutils literal notranslate"><span class="pre">error_severity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.error_severity_string"><code class="docutils literal notranslate"><span class="pre">error_severity_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.get_mdlist"><code class="docutils literal notranslate"><span class="pre">get_mdlist()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.utility.pfread"><code class="docutils literal notranslate"><span class="pre">pfread()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.ccore.seismic">seismic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.CoreSeismogramEnsemble"><code class="docutils literal notranslate"><span class="pre">CoreSeismogramEnsemble</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble"><code class="docutils literal notranslate"><span class="pre">CoreTimeSeriesEnsemble</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.DoubleVector"><code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum"><code class="docutils literal notranslate"><span class="pre">PowerSpectrum</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.Seismogram"><code class="docutils literal notranslate"><span class="pre">Seismogram</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.SeismogramEnsemble"><code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.SeismogramVector"><code class="docutils literal notranslate"><span class="pre">SeismogramVector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.SlownessVector"><code class="docutils literal notranslate"><span class="pre">SlownessVector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeReferenceType"><code class="docutils literal notranslate"><span class="pre">TimeReferenceType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries"><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesVector"><code class="docutils literal notranslate"><span class="pre">TimeSeriesVector</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#algorithms">algorithms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#module-mspasspy.ccore.algorithms.basic">basic</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-mspasspy.ccore.algorithms.amplitudes">amplitudes</a></li>
@@ -127,39 +169,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="mspasspy-ccore">
-<h1>mspasspy.ccore<a class="headerlink" href="#mspasspy-ccore" title="Permalink to this headline"></a></h1>
+  <section id="mspasspy-ccore">
+<h1>mspasspy.ccore<a class="headerlink" href="#mspasspy-ccore" title="Permalink to this heading"></a></h1>
 <section id="module-mspasspy.ccore.utility">
-<span id="utility"></span><h2>utility<a class="headerlink" href="#module-mspasspy.ccore.utility" title="Permalink to this headline"></a></h2>
+<span id="utility"></span><h2>utility<a class="headerlink" href="#module-mspasspy.ccore.utility" title="Permalink to this heading"></a></h2>
 <p>A submodule for utility namespace of ccore</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.AntelopePf">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">AntelopePf</span></span><a class="headerlink" href="#mspasspy.ccore.utility.AntelopePf" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.Metadata</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.AntelopePf.ConvertToMetadata">
 <span class="sig-name descname"><span class="pre">ConvertToMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.AntelopePf" title="mspasspy.ccore.utility.AntelopePf"><span class="pre">mspasspy.ccore.utility.AntelopePf</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.utility.AntelopePf.ConvertToMetadata" title="Permalink to this definition"></a></dt>
@@ -207,7 +225,7 @@ decoding the tbls.
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.AtomicType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">AtomicType</span></span><a class="headerlink" href="#mspasspy.ccore.utility.AtomicType" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Members:</p>
 <p>TIMESERIES</p>
 <p>SEISMOGRAM</p>
@@ -237,13 +255,13 @@ decoding the tbls.
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.BasicMetadata">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">BasicMetadata</span></span><a class="headerlink" href="#mspasspy.ccore.utility.BasicMetadata" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.BasicProcessingHistory">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">BasicProcessingHistory</span></span><a class="headerlink" href="#mspasspy.ccore.utility.BasicProcessingHistory" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Base class - hold job history data</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.BasicProcessingHistory.jobid">
@@ -274,7 +292,7 @@ decoding the tbls.
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.ErrorLogger">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">ErrorLogger</span></span><a class="headerlink" href="#mspasspy.ccore.utility.ErrorLogger" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Used to post any nonfatal errors without aborting a program of family of parallel programs</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.ErrorLogger.get_error_log">
@@ -329,7 +347,7 @@ decoding the tbls.
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.ErrorSeverity">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">ErrorSeverity</span></span><a class="headerlink" href="#mspasspy.ccore.utility.ErrorSeverity" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Members:</p>
 <p>Fatal</p>
 <p>Invalid</p>
@@ -377,7 +395,7 @@ decoding the tbls.
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.LogData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">LogData</span></span><a class="headerlink" href="#mspasspy.ccore.utility.LogData" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Many mspass create error and log messages with this structure</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.LogData.algorithm">
@@ -414,7 +432,7 @@ decoding the tbls.
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.MDDefFormat">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">MDDefFormat</span></span><a class="headerlink" href="#mspasspy.ccore.utility.MDDefFormat" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Members:</p>
 <p>PF</p>
 <p>YAML</p>
@@ -438,7 +456,7 @@ decoding the tbls.
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.MDtype">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">MDtype</span></span><a class="headerlink" href="#mspasspy.ccore.utility.MDtype" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Members:</p>
 <p>Real</p>
 <p>Real32</p>
@@ -522,11 +540,11 @@ decoding the tbls.
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.Metadata">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">Metadata</span></span><a class="headerlink" href="#mspasspy.ccore.utility.Metadata" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.BasicMetadata" title="mspasspy.ccore.utility.BasicMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.BasicMetadata</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.BasicMetadata" title="mspasspy.ccore.utility.BasicMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMetadata</span></code></a></p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.Metadata.Metadata_keyIterator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Metadata_keyIterator</span></span><a class="headerlink" href="#mspasspy.ccore.utility.Metadata.Metadata_keyIterator" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 </dd></dl>
 
 <dl class="py method">
@@ -671,7 +689,7 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.MetadataDefinitions">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">MetadataDefinitions</span></span><a class="headerlink" href="#mspasspy.ccore.utility.MetadataDefinitions" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Load a catalog of valid metadata names with types defined</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.MetadataDefinitions.add">
@@ -798,7 +816,7 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.Metadata_typedef">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">Metadata_typedef</span></span><a class="headerlink" href="#mspasspy.ccore.utility.Metadata_typedef" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.Metadata_typedef.mdt">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mdt</span></span><a class="headerlink" href="#mspasspy.ccore.utility.Metadata_typedef.mdt" title="Permalink to this definition"></a></dt>
@@ -832,7 +850,7 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.NodeData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">NodeData</span></span><a class="headerlink" href="#mspasspy.ccore.utility.NodeData" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Data structure used in ProcessingHistory to processing tree node data</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.NodeData.algid">
@@ -875,7 +893,7 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.ProcessingHistory">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">ProcessingHistory</span></span><a class="headerlink" href="#mspasspy.ccore.utility.ProcessingHistory" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.BasicProcessingHistory" title="mspasspy.ccore.utility.BasicProcessingHistory"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.BasicProcessingHistory</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.BasicProcessingHistory" title="mspasspy.ccore.utility.BasicProcessingHistory"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicProcessingHistory</span></code></a></p>
 <p>Used to save object level processing history.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.ProcessingHistory.accumulate">
@@ -1047,7 +1065,7 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.ProcessingStatus">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">ProcessingStatus</span></span><a class="headerlink" href="#mspasspy.ccore.utility.ProcessingStatus" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Members:</p>
 <p>RAW</p>
 <p>ORIGIN</p>
@@ -1089,7 +1107,7 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.SphericalCoordinate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">SphericalCoordinate</span></span><a class="headerlink" href="#mspasspy.ccore.utility.SphericalCoordinate" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Enscapsulates concept of spherical coordinates</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.SphericalCoordinate.phi">
@@ -1132,7 +1150,7 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.dmatrix">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.utility.</span></span><span class="sig-name descname"><span class="pre">dmatrix</span></span><a class="headerlink" href="#mspasspy.ccore.utility.dmatrix" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.dmatrix.columns">
 <span class="sig-name descname"><span class="pre">columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.dmatrix" title="mspasspy.ccore.utility.dmatrix"><span class="pre">mspasspy.ccore.utility.dmatrix</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#mspasspy.ccore.utility.dmatrix.columns" title="Permalink to this definition"></a></dt>
@@ -1203,12 +1221,12 @@ is usually not necessay.</p>
 
 </section>
 <section id="module-mspasspy.ccore.seismic">
-<span id="seismic"></span><h2>seismic<a class="headerlink" href="#module-mspasspy.ccore.seismic" title="Permalink to this headline"></a></h2>
+<span id="seismic"></span><h2>seismic<a class="headerlink" href="#module-mspasspy.ccore.seismic" title="Permalink to this heading"></a></h2>
 <p>A submodule for seismic namespace of ccore</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.CoreSeismogramEnsemble">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">CoreSeismogramEnsemble</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.CoreSeismogramEnsemble" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.Metadata</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code></a></p>
 <p>Gather of vector(3c) time series objects</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.CoreSeismogramEnsemble.member">
@@ -1241,7 +1259,7 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.CoreTimeSeriesEnsemble">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">CoreTimeSeriesEnsemble</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.Metadata</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code></a></p>
 <p>Gather of scalar time series objects</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.CoreTimeSeriesEnsemble.member">
@@ -1274,7 +1292,7 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.DoubleVector">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">DoubleVector</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DoubleVector" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.DoubleVector.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.DoubleVector" title="mspasspy.ccore.seismic.DoubleVector"><span class="pre">mspasspy.ccore.seismic.DoubleVector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DoubleVector.append" title="Permalink to this definition"></a></dt>
@@ -1338,7 +1356,7 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.PowerSpectrum">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">PowerSpectrum</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.Metadata</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code></a></p>
 <p>Container for power spectrum estimates</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.PowerSpectrum.Nyquist">
@@ -1399,7 +1417,7 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.Seismogram">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">Seismogram</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.Seismogram" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic._CoreSeismogram</span></code>, <a class="reference internal" href="#mspasspy.ccore.utility.ProcessingHistory" title="mspasspy.ccore.utility.ProcessingHistory"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.ProcessingHistory</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_CoreSeismogram</span></code>, <a class="reference internal" href="#mspasspy.ccore.utility.ProcessingHistory" title="mspasspy.ccore.utility.ProcessingHistory"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessingHistory</span></code></a></p>
 <p>mspass three-component seismogram data object</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.Seismogram.load_history">
@@ -1441,7 +1459,7 @@ mspass component order. Presently the data are ALWAYS returned to
 cardinal directions (see above). It will be empty if sg was marked dead</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">obspy.core.stream.Stream</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">obspy.core.stream.Stream</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1451,7 +1469,7 @@ cardinal directions (see above). It will be empty if sg was marked dead</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.SeismogramEnsemble">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">SeismogramEnsemble</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.seismic.CoreSeismogramEnsemble" title="mspasspy.ccore.seismic.CoreSeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.CoreSeismogramEnsemble</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.seismic.CoreSeismogramEnsemble" title="mspasspy.ccore.seismic.CoreSeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">CoreSeismogramEnsemble</span></code></a></p>
 <p>Gather of vector(3c) time series objects</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.SeismogramEnsemble.dead">
@@ -1502,7 +1520,7 @@ cardinal directions (see above). It will be empty if sg was marked dead</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.SeismogramVector">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">SeismogramVector</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramVector" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.SeismogramVector.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">mspasspy.ccore.seismic.SeismogramVector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x:</span> <span class="pre">mspass::seismic::Seismogram</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramVector.append" title="Permalink to this definition"></a></dt>
@@ -1554,7 +1572,7 @@ cardinal directions (see above). It will be empty if sg was marked dead</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.SlownessVector">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">SlownessVector</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.SlownessVector" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Encapsulate concept of slowness vector describing wave propagation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.SlownessVector.azimuth">
@@ -1591,7 +1609,7 @@ cardinal directions (see above). It will be empty if sg was marked dead</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeReferenceType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">TimeReferenceType</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeReferenceType" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Members:</p>
 <p>Relative</p>
 <p>UTC</p>
@@ -1615,7 +1633,7 @@ cardinal directions (see above). It will be empty if sg was marked dead</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeSeries">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">TimeSeries</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeries" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></code>, <a class="reference internal" href="#mspasspy.ccore.utility.ProcessingHistory" title="mspasspy.ccore.utility.ProcessingHistory"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.ProcessingHistory</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_CoreTimeSeries</span></code>, <a class="reference internal" href="#mspasspy.ccore.utility.ProcessingHistory" title="mspasspy.ccore.utility.ProcessingHistory"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessingHistory</span></code></a></p>
 <p>mspass scalar time series data object</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeSeries.load_history">
@@ -1660,7 +1678,7 @@ object will be returned if d was marked dead</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeSeriesEnsemble">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">TimeSeriesEnsemble</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble" title="mspasspy.ccore.seismic.CoreTimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.CoreTimeSeriesEnsemble</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble" title="mspasspy.ccore.seismic.CoreTimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">CoreTimeSeriesEnsemble</span></code></a></p>
 <p>Gather of scalar time series objects</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeSeriesEnsemble.dead">
@@ -1720,7 +1738,7 @@ stored in the ensemble’s metadata.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeSeriesVector">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">TimeSeriesVector</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesVector" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeSeriesVector.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">mspasspy.ccore.seismic.TimeSeriesVector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x:</span> <span class="pre">mspass::seismic::TimeSeries</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesVector.append" title="Permalink to this definition"></a></dt>
@@ -1771,9 +1789,9 @@ stored in the ensemble’s metadata.</p>
 
 </section>
 <section id="algorithms">
-<h2>algorithms<a class="headerlink" href="#algorithms" title="Permalink to this headline"></a></h2>
+<h2>algorithms<a class="headerlink" href="#algorithms" title="Permalink to this heading"></a></h2>
 <section id="module-mspasspy.ccore.algorithms.basic">
-<span id="basic"></span><h3>basic<a class="headerlink" href="#module-mspasspy.ccore.algorithms.basic" title="Permalink to this headline"></a></h3>
+<span id="basic"></span><h3>basic<a class="headerlink" href="#module-mspasspy.ccore.algorithms.basic" title="Permalink to this heading"></a></h3>
 <p>A submodule for algorithms namespace of ccore with common algorithms</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.ArrivalTimeReference">
@@ -1792,14 +1810,14 @@ stored in the ensemble’s metadata.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.BasicTaper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">BasicTaper</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.BasicTaper" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Base class for family of taper algorithms</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.Butterworth">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">Butterworth</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.Butterworth" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Butterworth filter operator processing object</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.Butterworth.apply">
@@ -1884,7 +1902,7 @@ stored in the ensemble’s metadata.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.CosineTaper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">CosineTaper</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.CosineTaper" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.basic.BasicTaper" title="mspasspy.ccore.algorithms.basic.BasicTaper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.basic.BasicTaper</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.basic.BasicTaper" title="mspasspy.ccore.algorithms.basic.BasicTaper"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicTaper</span></code></a></p>
 <p>Define a taper using a half period cosine function</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.CosineTaper.apply">
@@ -1941,7 +1959,7 @@ stored in the ensemble’s metadata.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.LinearTaper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">LinearTaper</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.LinearTaper" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.basic.BasicTaper" title="mspasspy.ccore.algorithms.basic.BasicTaper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.basic.BasicTaper</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.basic.BasicTaper" title="mspasspy.ccore.algorithms.basic.BasicTaper"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicTaper</span></code></a></p>
 <p>Define a ramp taper function</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.LinearTaper.apply">
@@ -1986,7 +2004,7 @@ stored in the ensemble’s metadata.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.TimeWindow">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">TimeWindow</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.TimeWindow" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Simple description of a time window</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.TimeWindow.end">
@@ -2017,7 +2035,7 @@ stored in the ensemble’s metadata.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.VectorTaper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">VectorTaper</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.VectorTaper" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.basic.BasicTaper" title="mspasspy.ccore.algorithms.basic.BasicTaper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.basic.BasicTaper</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.basic.BasicTaper" title="mspasspy.ccore.algorithms.basic.BasicTaper"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicTaper</span></code></a></p>
 <p>Define generic taper function with a parallel vector of weights</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.VectorTaper.apply">
@@ -2071,12 +2089,12 @@ those safeties the code would throw an error if net or loc were null.</p>
 
 </section>
 <section id="module-mspasspy.ccore.algorithms.amplitudes">
-<span id="amplitudes"></span><h3>amplitudes<a class="headerlink" href="#module-mspasspy.ccore.algorithms.amplitudes" title="Permalink to this headline"></a></h3>
+<span id="amplitudes"></span><h3>amplitudes<a class="headerlink" href="#module-mspasspy.ccore.algorithms.amplitudes" title="Permalink to this heading"></a></h3>
 <p>A submodule for amplitudes namespace of ccore.algorithms</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.amplitudes.BandwidthData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.amplitudes.</span></span><span class="sig-name descname"><span class="pre">BandwidthData</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.BandwidthData" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Defines the frequency domain bandwidth of data</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.amplitudes.BandwidthData.bandwidth">
@@ -2193,7 +2211,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.amplitudes.ScalingMethod">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.amplitudes.</span></span><span class="sig-name descname"><span class="pre">ScalingMethod</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.ScalingMethod" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Members:</p>
 <p>Peak</p>
 <p>RMS</p>
@@ -2228,12 +2246,12 @@ those safeties the code would throw an error if net or loc were null.</p>
 
 </section>
 <section id="module-mspasspy.ccore.algorithms.deconvolution">
-<span id="deconvolution"></span><h3>deconvolution<a class="headerlink" href="#module-mspasspy.ccore.algorithms.deconvolution" title="Permalink to this headline"></a></h3>
+<span id="deconvolution"></span><h3>deconvolution<a class="headerlink" href="#module-mspasspy.ccore.algorithms.deconvolution" title="Permalink to this heading"></a></h3>
 <p>A submodule for deconvolution namespace of ccore.algorithms</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.CNR3CDecon">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">CNR3CDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FFTDeconOperator" title="mspasspy.ccore.algorithms.deconvolution.FFTDeconOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FFTDeconOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FFTDeconOperator" title="mspasspy.ccore.algorithms.deconvolution.FFTDeconOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">FFTDeconOperator</span></code></a></p>
 <p>Colored noise regularized three component deconvolution</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.QCMetrics">
@@ -2348,7 +2366,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.DoubleVector">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">DoubleVector</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.DoubleVector" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.DoubleVector.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.DoubleVector" title="mspasspy.ccore.algorithms.deconvolution.DoubleVector"><span class="pre">mspasspy.ccore.algorithms.deconvolution.DoubleVector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.DoubleVector.append" title="Permalink to this definition"></a></dt>
@@ -2412,7 +2430,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FFTDeconOperator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">FFTDeconOperator</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FFTDeconOperator" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Base class used by frequency domain deconvolution methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FFTDeconOperator.change_shift">
@@ -2449,7 +2467,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">LeastSquareDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarDecon</span></code></a></p>
 <p>Water level frequency domain operator</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.QCMetrics">
@@ -2490,7 +2508,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">MTPowerSpectrumEngine</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Processing object used compute multitaper power spectrum estimates from time series data</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine.apply">
@@ -2541,7 +2559,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">MultiTaperSpecDivDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarDecon</span></code></a></p>
 <p>Water level frequency domain operator</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.QCMetrics">
@@ -2612,7 +2630,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">MultiTaperXcorDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarDecon</span></code></a></p>
 <p>Water level frequency domain operator</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.QCMetrics">
@@ -2683,7 +2701,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ScalarDecon">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">ScalarDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Base class for scalar TimeSeries data</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ScalarDecon.QCMetrics">
@@ -2757,7 +2775,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">WaterLevelDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarDecon</span></code></a></p>
 <p>Water level frequency domain operator</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon.QCMetrics">

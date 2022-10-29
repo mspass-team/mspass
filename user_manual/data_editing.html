@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -117,34 +118,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="data-editing">
-<span id="id1"></span><h1>Data Editing<a class="headerlink" href="#data-editing" title="Permalink to this headline"></a></h1>
+  <section id="data-editing">
+<span id="id1"></span><h1>Data Editing<a class="headerlink" href="#data-editing" title="Permalink to this heading"></a></h1>
 <section id="concepts">
-<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline"></a></h2>
+<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h2>
 <p>MsPASS uses an idea that was been a part of seismic reflection from the
 earliest days of digital processing of seismic signals commonly called
 trace editing.   Trace editing means removing “bad” data from subsequent
@@ -165,9 +142,9 @@ users can add custom metrics by either computing custom Metadata or
 running an inline computation on the sample data.</p>
 </section>
 <section id="mspass-trace-editing-algorithms">
-<h2>MsPASS Trace Editing Algorithms<a class="headerlink" href="#mspass-trace-editing-algorithms" title="Permalink to this headline"></a></h2>
+<h2>MsPASS Trace Editing Algorithms<a class="headerlink" href="#mspass-trace-editing-algorithms" title="Permalink to this heading"></a></h2>
 <section id="simple-comparison-operators-example-for-starters">
-<h3>Simple Comparison operators - example for starters<a class="headerlink" href="#simple-comparison-operators-example-for-starters" title="Permalink to this headline"></a></h3>
+<h3>Simple Comparison operators - example for starters<a class="headerlink" href="#simple-comparison-operators-example-for-starters" title="Permalink to this heading"></a></h3>
 <p>All the algorithms currently implemented in MsPASS use another model
 borrowed from seismic reflection processing.  That is, the editing is
 driven by tests of the values of one or more “header” (As noted
@@ -215,7 +192,7 @@ call to <code class="docutils literal notranslate"><span class="pre">seisbag.com
 most appropriate as a section inside a workflow.</p>
 </section>
 <section id="all-simple-comparison-operators">
-<h3>All Simple Comparison Operators<a class="headerlink" href="#all-simple-comparison-operators" title="Permalink to this headline"></a></h3>
+<h3>All Simple Comparison Operators<a class="headerlink" href="#all-simple-comparison-operators" title="Permalink to this heading"></a></h3>
 <p>All the simple comparison operators using tests against a Metadata single attribute
 Have the same, common API with the following elements:</p>
 <ol class="arabic simple">
@@ -306,7 +283,7 @@ When set true all kills will generate an <code class="docutils literal notransla
 a detailed message giving the details of why the datum was killed.</p>
 </section>
 <section id="existence-tests">
-<h3>Existence Tests<a class="headerlink" href="#existence-tests" title="Permalink to this headline"></a></h3>
+<h3>Existence Tests<a class="headerlink" href="#existence-tests" title="Permalink to this heading"></a></h3>
 <p>Unlike classical header implementations that have fixed slots that
 always have data in them, Metadata is open-ended.  That means data for a particular
 key may or may not exist.   We thus supply two existence classes.
@@ -325,7 +302,7 @@ one or more metadata attributes <code class="docutils literal notranslate"><span
 filter out all data that would cause that algorithm to fail anyway.</p>
 </section>
 <section id="interval-comparison">
-<h3>Interval Comparison<a class="headerlink" href="#interval-comparison" title="Permalink to this headline"></a></h3>
+<h3>Interval Comparison<a class="headerlink" href="#interval-comparison" title="Permalink to this heading"></a></h3>
 <p>Another common test for editing data is filtering data defined by
 a range of values.   A type example is P wave receiver functions that
 commonly only use data with epicentral distances between about 30 and 100 degrees.
@@ -412,7 +389,7 @@ True means if the test is true the datum will be marked dead.</p>
 </table>
 </section>
 <section id="defining-multiple-editors">
-<h3>Defining Multiple Editors<a class="headerlink" href="#defining-multiple-editors" title="Permalink to this headline"></a></h3>
+<h3>Defining Multiple Editors<a class="headerlink" href="#defining-multiple-editors" title="Permalink to this heading"></a></h3>
 <p>The final Metadata-based editor in MsPASS was given the name <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code>.
 Although the name is admittedly a bit tongue-in-cheek, the imagery the name
 provokes describes the function well:  a datum facing a firing squad
@@ -459,7 +436,7 @@ tests set in the <code class="docutils literal notranslate"><span class="pre">ex
 </section>
 </section>
 <section id="how-to-implement-an-extension">
-<h2>How to Implement an Extension<a class="headerlink" href="#how-to-implement-an-extension" title="Permalink to this headline"></a></h2>
+<h2>How to Implement an Extension<a class="headerlink" href="#how-to-implement-an-extension" title="Permalink to this heading"></a></h2>
 <p>Before considering developing an extension editor consider seriously if
 what you need can be accomplished with one of two alternatives:</p>
 <ol class="arabic simple">

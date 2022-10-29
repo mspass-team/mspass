@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -80,8 +81,22 @@
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.client.html">mspasspy.client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.global_history</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.global_history.manager">manager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.global_history.ParameterGTree">ParameterGTree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.global_history.manager">manager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager"><code class="docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.manager.mspass_dask_fold"><code class="docutils literal notranslate"><span class="pre">mspass_dask_fold()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.manager.mspass_dask_map"><code class="docutils literal notranslate"><span class="pre">mspass_dask_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.manager.mspass_spark_map"><code class="docutils literal notranslate"><span class="pre">mspass_spark_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.manager.mspass_spark_reduce"><code class="docutils literal notranslate"><span class="pre">mspass_spark_reduce()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.global_history.ParameterGTree">ParameterGTree</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.ParameterGTree.ParameterGTree"><code class="docutils literal notranslate"><span class="pre">ParameterGTree</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.ParameterGTree.parameter_to_GTree"><code class="docutils literal notranslate"><span class="pre">parameter_to_GTree()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.ParameterGTree.params_to_parameters_dict"><code class="docutils literal notranslate"><span class="pre">params_to_parameters_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.ParameterGTree.parse_filepath_in_parameters"><code class="docutils literal notranslate"><span class="pre">parse_filepath_in_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.ParameterGTree.str_to_parameters_dict"><code class="docutils literal notranslate"><span class="pre">str_to_parameters_dict()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
@@ -121,34 +136,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="mspasspy-global-history">
-<h1>mspasspy.global_history<a class="headerlink" href="#mspasspy-global-history" title="Permalink to this headline"></a></h1>
+  <section id="mspasspy-global-history">
+<h1>mspasspy.global_history<a class="headerlink" href="#mspasspy-global-history" title="Permalink to this heading"></a></h1>
 <section id="module-mspasspy.global_history.manager">
-<span id="manager"></span><h2>manager<a class="headerlink" href="#module-mspasspy.global_history.manager" title="Permalink to this headline"></a></h2>
+<span id="manager"></span><h2>manager<a class="headerlink" href="#module-mspasspy.global_history.manager" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.global_history.manager.GlobalHistoryManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.global_history.manager.</span></span><span class="sig-name descname"><span class="pre">GlobalHistoryManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/global_history/manager.html#GlobalHistoryManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="Permalink to this definition"></a></dt>
@@ -165,7 +156,7 @@ through mspass client’s methods.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the algorithm</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the parameters of the algorithm</p></li>
 </ul>
 </dd>
@@ -180,7 +171,7 @@ through mspass client’s methods.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>job_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the job</p></li>
-<li><p><strong>job_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the job</p></li>
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the job</p></li>
 </ul>
 </dd>
 </dl>
@@ -193,7 +184,7 @@ through mspass client’s methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the algorithm</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the parameters of the algorithm</p></li>
 </ul>
@@ -208,7 +199,7 @@ through mspass client’s methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters, used to find the records</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters, used to find the records</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the algorithm user would like to set</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the parameters of the algorithm user would like to set</p></li>
 </ul>
@@ -234,7 +225,7 @@ will save the object level history.</p>
 <li><p><strong>func</strong> – target function</p></li>
 <li><p><strong>global_history</strong> (<a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="mspasspy.global_history.manager.GlobalHistoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a>) – a user specified global history manager</p></li>
 <li><p><strong>object_history</strong> – save the each object’s history in the fold when True</p></li>
-<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the fold operation</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the fold operation</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified alg_name for the fold operation</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified parameters for the fold operation</p></li>
 </ul>
@@ -261,7 +252,7 @@ will save the object level history.</p>
 <li><p><strong>func</strong> – target function</p></li>
 <li><p><strong>global_history</strong> (<a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="mspasspy.global_history.manager.GlobalHistoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a>) – a user specified global history manager</p></li>
 <li><p><strong>object_history</strong> – save the each object’s history in the map when True</p></li>
-<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the map operation</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the map operation</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified alg_name for the map operation</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified parameters for the map operation</p></li>
 </ul>
@@ -288,7 +279,7 @@ will save the object level history.</p>
 <li><p><strong>func</strong> – target function</p></li>
 <li><p><strong>global_history</strong> (<a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="mspasspy.global_history.manager.GlobalHistoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a>) – a user specified global history manager</p></li>
 <li><p><strong>object_history</strong> – save the each object’s history in the map when True</p></li>
-<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the map operation</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the map operation</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified alg_name for the map operation</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified parameters for the map operation</p></li>
 </ul>
@@ -315,7 +306,7 @@ will save the object level history.</p>
 <li><p><strong>func</strong> – target function</p></li>
 <li><p><strong>global_history</strong> (<a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="mspasspy.global_history.manager.GlobalHistoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a>) – a user specified global history manager</p></li>
 <li><p><strong>object_history</strong> – save the each object’s history in the reduce when True</p></li>
-<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the reduce operation</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the reduce operation</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified alg_name for the reduce operation</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified parameters for the reduce operation</p></li>
 </ul>
@@ -328,11 +319,11 @@ will save the object level history.</p>
 
 </section>
 <section id="module-mspasspy.global_history.ParameterGTree">
-<span id="parametergtree"></span><h2>ParameterGTree<a class="headerlink" href="#module-mspasspy.global_history.ParameterGTree" title="Permalink to this headline"></a></h2>
+<span id="parametergtree"></span><h2>ParameterGTree<a class="headerlink" href="#module-mspasspy.global_history.ParameterGTree" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.global_history.ParameterGTree.ParameterGTree">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.global_history.ParameterGTree.</span></span><span class="sig-name descname"><span class="pre">ParameterGTree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/global_history/ParameterGTree.html#ParameterGTree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.global_history.ParameterGTree.ParameterGTree" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">OrderedDict</span></code></p>
 <p>Base class for family of objects used to hold an abstraction of a
 set of control parameters for a data processing function.   The
 base class abstracts the concept of storing such data in an g-tree

@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -110,34 +111,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="run-mspass-with-docker">
-<span id="id1"></span><h1>Run MsPASS with Docker<a class="headerlink" href="#run-mspass-with-docker" title="Permalink to this headline"></a></h1>
+  <section id="run-mspass-with-docker">
+<span id="id1"></span><h1>Run MsPASS with Docker<a class="headerlink" href="#run-mspass-with-docker" title="Permalink to this heading"></a></h1>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline"></a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading"></a></h2>
 <p>Docker is required for users to run MsPASS.
 It is a piece of software to create containers (lightweight virtual machine) that will run on your machine.
 To install Docker on machines that you have root access, please refer to the guide <a class="reference external" href="https://docs.docker.com/get-docker/">here</a> and follow the instructions for your specific platform.
@@ -145,7 +122,7 @@ Docker is well-supported on all popular operating systems.
 Please make sure Docker is correctly installed and the Docker Engine is running in the background before proceeding to the next step.</p>
 </section>
 <section id="download-mspass-container">
-<h2>Download MsPASS Container<a class="headerlink" href="#download-mspass-container" title="Permalink to this headline"></a></h2>
+<h2>Download MsPASS Container<a class="headerlink" href="#download-mspass-container" title="Permalink to this heading"></a></h2>
 <p>The MsPASS container image is built and hosted on <a class="reference external" href="https://hub.docker.com/r/mspass/mspass">Docker Hub</a>.
 It is also available in the <a class="reference external" href="https://github.com/mspass-team/mspass/pkgs/container/mspass">GitHub Container Registry</a>.
 Once you have docker setup properly, use the following command in a terminal to pull the MsPASS image from Docker Hub to your local machine:</p>
@@ -161,7 +138,7 @@ In the discussion below files or data we reference that reside in a container wi
 Local files/data will be referred to with normal font text.</p>
 </section>
 <section id="run-mspass-container-in-all-in-one-mode">
-<h2>Run MsPASS Container in All-in-one Mode<a class="headerlink" href="#run-mspass-container-in-all-in-one-mode" title="Permalink to this headline"></a></h2>
+<h2>Run MsPASS Container in All-in-one Mode<a class="headerlink" href="#run-mspass-container-in-all-in-one-mode" title="Permalink to this heading"></a></h2>
 <p>To run MsPASS in its default setting, use this command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8888</span><span class="p">:</span><span class="mi">8888</span> <span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>
 </pre></div>

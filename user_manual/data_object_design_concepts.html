@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -124,34 +125,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="data-object-design-concepts">
-<span id="id1"></span><h1>Data Object Design Concepts<a class="headerlink" href="#data-object-design-concepts" title="Permalink to this headline"></a></h1>
+  <section id="data-object-design-concepts">
+<span id="id1"></span><h1>Data Object Design Concepts<a class="headerlink" href="#data-object-design-concepts" title="Permalink to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <div class="line-block">
 <div class="line">The core data objects in MsPASS were designed to encapsulate the most
 atomic objects in seismology waveform processing:  scalar (i.e. single
@@ -194,7 +171,7 @@ because the wrappers make the data arrays look like numpy arrays.</div>
 </div>
 </section>
 <section id="history">
-<h2>History<a class="headerlink" href="#history" title="Permalink to this headline"></a></h2>
+<h2>History<a class="headerlink" href="#history" title="Permalink to this heading"></a></h2>
 <div class="line-block">
 <div class="line">It might be helpful for the user to recognize that the core data
 objects in MsPASS are the second generation of a set of data objects
@@ -270,9 +247,9 @@ data).  We further distinguish <code class="code docutils literal notranslate"><
 </ol>
 </section>
 <section id="core-concepts">
-<h2>Core Concepts<a class="headerlink" href="#core-concepts" title="Permalink to this headline"></a></h2>
+<h2>Core Concepts<a class="headerlink" href="#core-concepts" title="Permalink to this heading"></a></h2>
 <section id="overview-inheritance-relationships">
-<h3>Overview - Inheritance Relationships<a class="headerlink" href="#overview-inheritance-relationships" title="Permalink to this headline"></a></h3>
+<h3>Overview - Inheritance Relationships<a class="headerlink" href="#overview-inheritance-relationships" title="Permalink to this heading"></a></h3>
 <div class="line-block">
 <div class="line">The reader needs to first see the big picture of how TimeSeries and
 Seismogram objects are defined to understand the core concepts
@@ -322,7 +299,7 @@ the class hierarchy.</div>
 </div>
 </section>
 <section id="basictimeseries-base-class-of-common-data-characteristics">
-<h3>BasicTimeSeries - Base class of common data characteristics<a class="headerlink" href="#basictimeseries-base-class-of-common-data-characteristics" title="Permalink to this headline"></a></h3>
+<h3>BasicTimeSeries - Base class of common data characteristics<a class="headerlink" href="#basictimeseries-base-class-of-common-data-characteristics" title="Permalink to this heading"></a></h3>
 <p>This base class object can be best viewed as an answer to this
 questions:  What is a time series?   Our design answers this question by
 saying all time series data have the following elements:</p>
@@ -371,7 +348,7 @@ an algorithm attempts to process invalid data.</div>
 </div>
 </section>
 <section id="handling-time">
-<h3>Handling Time<a class="headerlink" href="#handling-time" title="Permalink to this headline"></a></h3>
+<h3>Handling Time<a class="headerlink" href="#handling-time" title="Permalink to this heading"></a></h3>
 <div class="line-block">
 <div class="line">MsPASS uses a generalization to handle time that is the same as a
 novel method used in the original SEISPP library.   The concept can be
@@ -435,7 +412,7 @@ constrained.</div>
 </div>
 </section>
 <section id="metadata-concepts">
-<h3>Metadata Concepts<a class="headerlink" href="#metadata-concepts" title="Permalink to this headline"></a></h3>
+<h3>Metadata Concepts<a class="headerlink" href="#metadata-concepts" title="Permalink to this heading"></a></h3>
 <div class="line-block">
 <div class="line">All data objects used by the MsPASS C++ library inherit a Metadata
 object.  A <code class="code docutils literal notranslate"><span class="pre">Metadata</span></code> object is best thought of through either of two
@@ -580,7 +557,7 @@ python dict in MongoDB’s python API.</div>
 </div>
 </section>
 <section id="managing-metadata-type-with-mspasspy-db-schema">
-<h3>Managing Metadata type with mspasspy.db.Schema<a class="headerlink" href="#managing-metadata-type-with-mspasspy-db-schema" title="Permalink to this headline"></a></h3>
+<h3>Managing Metadata type with mspasspy.db.Schema<a class="headerlink" href="#managing-metadata-type-with-mspasspy-db-schema" title="Permalink to this heading"></a></h3>
 <div class="line-block">
 <div class="line">Most type enforcement is imposed by data readers and writers where
 the <code class="code docutils literal notranslate"><span class="pre">Schema</span></code> class is automatically loaded with the <code class="code docutils literal notranslate"><span class="pre">Database</span></code> class
@@ -639,7 +616,7 @@ of understanding how to use this feature to planned tutorials.</div>
 </div>
 </section>
 <section id="scalar-versus-3c-data">
-<h3>Scalar versus 3C data<a class="headerlink" href="#scalar-versus-3c-data" title="Permalink to this headline"></a></h3>
+<h3>Scalar versus 3C data<a class="headerlink" href="#scalar-versus-3c-data" title="Permalink to this heading"></a></h3>
 <div class="line-block">
 <div class="line">MsPASS currently supports two different atomic data objects:   TimeSeries objects are
 used to store single channel data while Seismogram objects are used to store
@@ -804,9 +781,9 @@ block could also be written:</p>
 </div>
 </section>
 <section id="processinghistory-and-error-logging">
-<h3>ProcessingHistory and Error Logging<a class="headerlink" href="#processinghistory-and-error-logging" title="Permalink to this headline"></a></h3>
+<h3>ProcessingHistory and Error Logging<a class="headerlink" href="#processinghistory-and-error-logging" title="Permalink to this heading"></a></h3>
 <section id="core-versus-top-level-data-objects">
-<h4>Core versus Top-level Data Objects<a class="headerlink" href="#core-versus-top-level-data-objects" title="Permalink to this headline"></a></h4>
+<h4>Core versus Top-level Data Objects<a class="headerlink" href="#core-versus-top-level-data-objects" title="Permalink to this heading"></a></h4>
 <div class="line-block">
 <div class="line">The class hierarchy diagrams above illustrate the relationship of what
 we call CoreTimeSeries and CoreSeismogram objects to those we
@@ -866,7 +843,7 @@ the error logger component of <em>d</em>.)’’</p></li>
 </ol>
 </section>
 <section id="object-level-history-design-concepts">
-<h4>Object Level History Design Concepts<a class="headerlink" href="#object-level-history-design-concepts" title="Permalink to this headline"></a></h4>
+<h4>Object Level History Design Concepts<a class="headerlink" href="#object-level-history-design-concepts" title="Permalink to this heading"></a></h4>
 <p>As summarized above the concept we wanted to capture in the history mechanism
 was a means to preserve the chain of processing events that were applied to
 get a piece of data in a current state.  Our design assumes the
@@ -956,7 +933,7 @@ subject. <strong>Needs a link to a related document on ProcessingHistory API</st
 </div>
 </section>
 <section id="error-logging-concepts">
-<h4>Error Logging Concepts<a class="headerlink" href="#error-logging-concepts" title="Permalink to this headline"></a></h4>
+<h4>Error Logging Concepts<a class="headerlink" href="#error-logging-concepts" title="Permalink to this heading"></a></h4>
 <div class="line-block">
 <div class="line">When processing large volumes of data, errors are inevitable and
 handling them cleanly is an essential part of any processing

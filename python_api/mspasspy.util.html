@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -84,11 +85,54 @@
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.reduce.html">mspasspy.reduce</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.util</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.converter">converter</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.decorators">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.logging_helper">logging_helper</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.seispp">seispp</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.Undertaker">Undertaker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.converter">converter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.AntelopePf2dict"><code class="docutils literal notranslate"><span class="pre">AntelopePf2dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.Metadata2dict"><code class="docutils literal notranslate"><span class="pre">Metadata2dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.Pf2AttributeNameTbl"><code class="docutils literal notranslate"><span class="pre">Pf2AttributeNameTbl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.Seismogram2Stream"><code class="docutils literal notranslate"><span class="pre">Seismogram2Stream()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.SeismogramEnsemble2Stream"><code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble2Stream()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.Stream2Seismogram"><code class="docutils literal notranslate"><span class="pre">Stream2Seismogram()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.Stream2SeismogramEnsemble"><code class="docutils literal notranslate"><span class="pre">Stream2SeismogramEnsemble()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.Stream2TimeSeriesEnsemble"><code class="docutils literal notranslate"><span class="pre">Stream2TimeSeriesEnsemble()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.Textfile2Dataframe"><code class="docutils literal notranslate"><span class="pre">Textfile2Dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.TimeSeries2Trace"><code class="docutils literal notranslate"><span class="pre">TimeSeries2Trace()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.TimeSeriesEnsemble2Stream"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble2Stream()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.Trace2TimeSeries"><code class="docutils literal notranslate"><span class="pre">Trace2TimeSeries()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.dict2Metadata"><code class="docutils literal notranslate"><span class="pre">dict2Metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.list2Ensemble"><code class="docutils literal notranslate"><span class="pre">list2Ensemble()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.post_ensemble_metadata"><code class="docutils literal notranslate"><span class="pre">post_ensemble_metadata()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.decorators">decorators</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.is_input_dead"><code class="docutils literal notranslate"><span class="pre">is_input_dead()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.mspass_func_wrapper"><code class="docutils literal notranslate"><span class="pre">mspass_func_wrapper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.mspass_func_wrapper_multi"><code class="docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.mspass_method_wrapper"><code class="docutils literal notranslate"><span class="pre">mspass_method_wrapper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.mspass_reduce_func_wrapper"><code class="docutils literal notranslate"><span class="pre">mspass_reduce_func_wrapper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.seismogram_as_stream"><code class="docutils literal notranslate"><span class="pre">seismogram_as_stream()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.seismogram_copy_helper"><code class="docutils literal notranslate"><span class="pre">seismogram_copy_helper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.seismogram_ensemble_as_stream"><code class="docutils literal notranslate"><span class="pre">seismogram_ensemble_as_stream()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.seismogram_ensemble_copy_helper"><code class="docutils literal notranslate"><span class="pre">seismogram_ensemble_copy_helper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.timeseries_as_trace"><code class="docutils literal notranslate"><span class="pre">timeseries_as_trace()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.timeseries_copy_helper"><code class="docutils literal notranslate"><span class="pre">timeseries_copy_helper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.timeseries_ensemble_as_stream"><code class="docutils literal notranslate"><span class="pre">timeseries_ensemble_as_stream()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.timeseries_ensemble_copy_helper"><code class="docutils literal notranslate"><span class="pre">timeseries_ensemble_copy_helper()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.logging_helper">logging_helper</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.logging_helper.ensemble_error"><code class="docutils literal notranslate"><span class="pre">ensemble_error()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.logging_helper.info"><code class="docutils literal notranslate"><span class="pre">info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.logging_helper.reduce"><code class="docutils literal notranslate"><span class="pre">reduce()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.seispp">seispp</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seispp.index_data"><code class="docutils literal notranslate"><span class="pre">index_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.Undertaker">Undertaker</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.Undertaker.Undertaker"><code class="docutils literal notranslate"><span class="pre">Undertaker</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -124,34 +168,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="mspasspy-util">
-<h1>mspasspy.util<a class="headerlink" href="#mspasspy-util" title="Permalink to this headline"></a></h1>
+  <section id="mspasspy-util">
+<h1>mspasspy.util<a class="headerlink" href="#mspasspy-util" title="Permalink to this heading"></a></h1>
 <section id="module-mspasspy.util.converter">
-<span id="converter"></span><h2>converter<a class="headerlink" href="#module-mspasspy.util.converter" title="Permalink to this headline"></a></h2>
+<span id="converter"></span><h2>converter<a class="headerlink" href="#module-mspasspy.util.converter" title="Permalink to this heading"></a></h2>
 <p>Functions for converting to and from MsPASS data types.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.converter.AntelopePf2dict">
@@ -247,7 +267,7 @@ mspass component order. Presently the data are ALWAYS returned to
 cardinal directions (see above). It will be empty if sg was marked dead</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">obspy.core.stream.Stream</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">obspy.core.stream.Stream</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -475,7 +495,7 @@ no sanity checks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>trace</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>) – obspy trace object to convert</p></li>
+<li><p><strong>trace</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>) – obspy trace object to convert</p></li>
 <li><p><strong>history</strong> – mspass ProcessingHistory object to post to result.</p></li>
 </ul>
 </dd>
@@ -587,7 +607,7 @@ check_all_members is False.</p></li>
 
 </section>
 <section id="module-mspasspy.util.decorators">
-<span id="decorators"></span><h2>decorators<a class="headerlink" href="#module-mspasspy.util.decorators" title="Permalink to this headline"></a></h2>
+<span id="decorators"></span><h2>decorators<a class="headerlink" href="#module-mspasspy.util.decorators" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.decorators.is_input_dead">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">is_input_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#is_input_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.is_input_dead" title="Permalink to this definition"></a></dt>
@@ -630,7 +650,7 @@ Object level history is disabled by default for efficiency.  If object_history i
 as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
 save the history through a new_map operation.   If the history chain is empty this will silently generate
 an error posted to error log on each object.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
 This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
@@ -677,7 +697,7 @@ Object level history is disabled by default for efficiency.  If object_history i
 as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
 save the history through a new_map operation.   If the history chain is empty this will silently generate
 an error posted to error log on each object.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
 This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
@@ -714,7 +734,7 @@ Object level history is disabled by default for efficiency.  If object_history i
 as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
 save the history through a new_map operation.   If the history chain is empty this will silently generate
 an error posted to error log on each object.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
 This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
@@ -761,7 +781,7 @@ Object level history is disabled by default for efficiency.  If object_history i
 as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
 save the history through a new_reduce operation. If the history chain is empty this will silently generate
 an error posted to error log on each object.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
 This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
@@ -878,7 +898,7 @@ the stream objects will be converted back by overriding the data and metadata of
 
 </section>
 <section id="module-mspasspy.util.logging_helper">
-<span id="logging-helper"></span><h2>logging_helper<a class="headerlink" href="#module-mspasspy.util.logging_helper" title="Permalink to this headline"></a></h2>
+<span id="logging-helper"></span><h2>logging_helper<a class="headerlink" href="#module-mspasspy.util.logging_helper" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.logging_helper.ensemble_error">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.util.logging_helper.</span></span><span class="sig-name descname"><span class="pre">ensemble_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err_severity=&lt;ErrorSeverity.Invalid:</span> <span class="pre">1&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/logging_helper.html#ensemble_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.logging_helper.ensemble_error" title="Permalink to this definition"></a></dt>
@@ -948,7 +968,7 @@ the processing history will still be replicated.</p>
 
 </section>
 <section id="module-mspasspy.util.seispp">
-<span id="seispp"></span><h2>seispp<a class="headerlink" href="#module-mspasspy.util.seispp" title="Permalink to this headline"></a></h2>
+<span id="seispp"></span><h2>seispp<a class="headerlink" href="#module-mspasspy.util.seispp" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.seispp.index_data">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.util.seispp.</span></span><span class="sig-name descname"><span class="pre">index_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filebase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'d3C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/seispp.html#index_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seispp.index_data" title="Permalink to this definition"></a></dt>
@@ -979,11 +999,11 @@ filebase.ext (Arg 3 defaulting to d3C).</p></li>
 
 </section>
 <section id="module-mspasspy.util.Undertaker">
-<span id="undertaker"></span><h2>Undertaker<a class="headerlink" href="#module-mspasspy.util.Undertaker" title="Permalink to this headline"></a></h2>
+<span id="undertaker"></span><h2>Undertaker<a class="headerlink" href="#module-mspasspy.util.Undertaker" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.Undertaker.</span></span><span class="sig-name descname"><span class="pre">Undertaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a></p>
 <p>Class to handle dead data.  Many for ensembles, but has methods to
 save elog entries for Seismogram or TimeSeries objects marked dead.
 A concept of this class is any thing received that is live is not

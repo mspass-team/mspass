@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -80,7 +81,29 @@
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.client.html">mspasspy.client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.global_history.html">mspasspy.global_history</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.graphics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.graphics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.graphics.SectionPlotter"><code class="docutils literal notranslate"><span class="pre">SectionPlotter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.graphics.SectionPlotter.change_style"><code class="docutils literal notranslate"><span class="pre">SectionPlotter.change_style()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.graphics.SectionPlotter.plot"><code class="docutils literal notranslate"><span class="pre">SectionPlotter.plot()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.graphics.SeismicPlotter"><code class="docutils literal notranslate"><span class="pre">SeismicPlotter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.graphics.SeismicPlotter.bottomup"><code class="docutils literal notranslate"><span class="pre">SeismicPlotter.bottomup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.graphics.SeismicPlotter.change_style"><code class="docutils literal notranslate"><span class="pre">SeismicPlotter.change_style()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.graphics.SeismicPlotter.plot"><code class="docutils literal notranslate"><span class="pre">SeismicPlotter.plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.graphics.SeismicPlotter.set_topdown"><code class="docutils literal notranslate"><span class="pre">SeismicPlotter.set_topdown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.graphics.SeismicPlotter.topdown"><code class="docutils literal notranslate"><span class="pre">SeismicPlotter.topdown()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.graphics.image_raw"><code class="docutils literal notranslate"><span class="pre">image_raw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.graphics.imageplot"><code class="docutils literal notranslate"><span class="pre">imageplot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.graphics.seis2nparray"><code class="docutils literal notranslate"><span class="pre">seis2nparray()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.graphics.ts2nparray"><code class="docutils literal notranslate"><span class="pre">ts2nparray()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.graphics.tse2nparray"><code class="docutils literal notranslate"><span class="pre">tse2nparray()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.graphics.wtva_raw"><code class="docutils literal notranslate"><span class="pre">wtva_raw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.graphics.wtvaplot"><code class="docutils literal notranslate"><span class="pre">wtvaplot()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.reduce.html">mspasspy.reduce</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html">mspasspy.util</a></li>
@@ -117,32 +140,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="module-mspasspy.graphics">
-<span id="mspasspy-graphics"></span><h1>mspasspy.graphics<a class="headerlink" href="#module-mspasspy.graphics" title="Permalink to this headline"></a></h1>
+  <section id="module-mspasspy.graphics">
+<span id="mspasspy-graphics"></span><h1>mspasspy.graphics<a class="headerlink" href="#module-mspasspy.graphics" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.graphics.SectionPlotter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">SectionPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter" title="Permalink to this definition"></a></dt>

@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -81,7 +82,21 @@
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.global_history.html">mspasspy.global_history</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.history</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.history</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.history.HistoryLogger"><code class="docutils literal notranslate"><span class="pre">HistoryLogger</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.history.HistoryLogger.register"><code class="docutils literal notranslate"><span class="pre">HistoryLogger.register()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.history.HistoryLogger.save"><code class="docutils literal notranslate"><span class="pre">HistoryLogger.save()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.history.basic_history_data"><code class="docutils literal notranslate"><span class="pre">basic_history_data</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.history.basic_history_data.load_algorithm_args"><code class="docutils literal notranslate"><span class="pre">basic_history_data.load_algorithm_args()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.history.get_jobid"><code class="docutils literal notranslate"><span class="pre">get_jobid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.history.pf_history_data"><code class="docutils literal notranslate"><span class="pre">pf_history_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.history.pfbranch_to_dict"><code class="docutils literal notranslate"><span class="pre">pfbranch_to_dict()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.reduce.html">mspasspy.reduce</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html">mspasspy.util</a></li>
 </ul>
@@ -117,32 +132,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="module-mspasspy.history">
-<span id="mspasspy-history"></span><h1>mspasspy.history<a class="headerlink" href="#module-mspasspy.history" title="Permalink to this headline"></a></h1>
+  <section id="module-mspasspy.history">
+<span id="mspasspy-history"></span><h1>mspasspy.history<a class="headerlink" href="#module-mspasspy.history" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.history.HistoryLogger">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">HistoryLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#HistoryLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.HistoryLogger" title="Permalink to this definition"></a></dt>
@@ -245,7 +236,7 @@ illogical.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.history.pf_history_data">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">pf_history_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#pf_history_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.pf_history_data" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.history.basic_history_data" title="mspasspy.history.basic_history_data"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.history.basic_history_data</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.history.basic_history_data" title="mspasspy.history.basic_history_data"><code class="xref py py-class docutils literal notranslate"><span class="pre">basic_history_data</span></code></a></p>
 <p>Loads history data container with data from an AntelopePf object.</p>
 <p>mspasspy.ccore.utility defines the AntelopePf object that is an option for parameter
 inputs.  The file structure is identical to the

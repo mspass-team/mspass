@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -116,34 +117,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="importing-data">
-<span id="id1"></span><h1>Importing Data<a class="headerlink" href="#importing-data" title="Permalink to this headline"></a></h1>
+  <section id="importing-data">
+<span id="id1"></span><h1>Importing Data<a class="headerlink" href="#importing-data" title="Permalink to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p>MsPASS is a data processing system so the first step in using
 the package for anything is to assemble the data set that you
 want to process.   The focus of our initial development has been
@@ -178,23 +155,23 @@ issue you face in importing other formats is handling the metadata name
 mismatch that is inevitable in dealing with other formats.</p>
 </section>
 <section id="fdsn-data">
-<h2>FDSN data<a class="headerlink" href="#fdsn-data" title="Permalink to this headline"></a></h2>
+<h2>FDSN data<a class="headerlink" href="#fdsn-data" title="Permalink to this heading"></a></h2>
 <section id="importing-miniseed-data">
-<h3>Importing Miniseed Data<a class="headerlink" href="#importing-miniseed-data" title="Permalink to this headline"></a></h3>
+<h3>Importing Miniseed Data<a class="headerlink" href="#importing-miniseed-data" title="Permalink to this heading"></a></h3>
 <p>From the MsPASS perspective,
 at this point in time the best mechanism to obtain data from
 the FDSN confederation of data centers is to use obspy.
 Obspy has two different python functions that can be used to
 fetch miniseed data from one or more FDSN data centers.</p>
 <ol class="arabic simple">
-<li><p>The simplest tool obspy provides is their <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_waveforms.html#obspy.clients.fdsn.client.Client.get_waveforms" title="(in ObsPy v1.3.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_waveform</span></code></a>
+<li><p>The simplest tool obspy provides is their <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_waveforms.html#obspy.clients.fdsn.client.Client.get_waveforms" title="(in ObsPy v1.3.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_waveform</span></code></a>
 method of the fdsn web service client.
 <code class="code docutils literal notranslate"><span class="pre">get_waveform</span></code> retrieves a relatively small number of waveform
 at a time using station codes with wildcards and a time range.
 It is suitable only for small datasets or as a custom agent
 to run for weeks acquiring data driven by some large list.</p></li>
 <li><p>For most MsPASS users the obspy tool
-of choice is <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html#module-obspy.clients.fdsn.mass_downloader" title="(in ObsPy v1.3.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mass_downloader</span></code></a>.
+of choice is <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html#module-obspy.clients.fdsn.mass_downloader" title="(in ObsPy v1.3.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mass_downloader</span></code></a>.
 An overview of the concepts of <code class="code docutils literal notranslate"><span class="pre">mass_downloader</span></code> are given
 <a class="reference external" href="https://docs.obspy.org/tutorial/code_snippets/retrieving_data_from_datacenters.html">here</a>.</p></li>
 </ol>
@@ -246,7 +223,7 @@ is likely to change.  Check the docstring api for more recent changes if
 you are interested in this capability.</p>
 </section>
 <section id="assembling-receiver-metadata">
-<h3>Assembling Receiver Metadata<a class="headerlink" href="#assembling-receiver-metadata" title="Permalink to this headline"></a></h3>
+<h3>Assembling Receiver Metadata<a class="headerlink" href="#assembling-receiver-metadata" title="Permalink to this heading"></a></h3>
 <p>Receiver metadata from FDSN sources is easily obtained and assimilated
 into MsPASS using a combination of obspy functions and import functions
 that are part of the <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> class (MongoDB handle) of MsPASS.</p>
@@ -265,13 +242,13 @@ StationXML format.</p>
 data centers.   There are two different tools obspy provides.  We have found
 both are usually necessary to assemble a complete suite of receiver metadata.</p>
 <ol class="arabic simple">
-<li><p>The fdsn client has a method called <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_stations.html#obspy.clients.fdsn.client.Client.get_stations" title="(in ObsPy v1.3.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_stations</span></code></a> that is
+<li><p>The fdsn client has a method called <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_stations.html#obspy.clients.fdsn.client.Client.get_stations" title="(in ObsPy v1.3.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_stations</span></code></a> that is
 directly comparable to <code class="code docutils literal notranslate"><span class="pre">get_waveform</span></code>.   It uses web
 services to download metadata for one or more channels of data.  It has
 a set of search parameters used to define what is to be retrieved that
 is usually comprehensive enough to fetch what you need in no more than
 a few calls.   Be warned it retrieves the results into memory into a
-custom obspy data object they call an <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.Inventory.html#obspy.core.inventory.inventory.Inventory" title="(in ObsPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Inventory</span></code></a>.
+custom obspy data object they call an <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.Inventory.html#obspy.core.inventory.inventory.Inventory" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Inventory</span></code></a>.
 An <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> object can be viewed as more or less a
 StationXML format file translated into a python data structure with a
 few added decorations (e.g. plotting).   We return to this point
@@ -279,7 +256,7 @@ below when we discuss how these data are imported to MsPASS.</p></li>
 <li><p>When you use the <code class="code docutils literal notranslate"><span class="pre">mass_downloader</span></code> you have the option of
 having that function download the station metadata and save the
 actual StationXML data files retrieved from web services.  The resulting
-files can then be read with their <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.read_inventory.html#obspy.core.inventory.inventory.read_inventory" title="(in ObsPy v1.3.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_inventory</span></code></a> method.</p></li>
+files can then be read with their <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.read_inventory.html#obspy.core.inventory.inventory.read_inventory" title="(in ObsPy v1.3.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_inventory</span></code></a> method.</p></li>
 </ol>
 <p>Both of the approaches above can be used to create an obspy
 <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> object in python:  for (1) that is the return of the
@@ -319,7 +296,7 @@ completely cavalier about what is stored in any given document so
 adding additional key-value pairs will not break any MsPASS algorithms.</p>
 </section>
 <section id="source-metadata">
-<h3>Source Metadata<a class="headerlink" href="#source-metadata" title="Permalink to this headline"></a></h3>
+<h3>Source Metadata<a class="headerlink" href="#source-metadata" title="Permalink to this heading"></a></h3>
 <p>Source metadata is a vastly more complicated problem that receiver
 metadata.   The following is a litany of the complexity we needed to
 deal with in a generic framework like MsPASS that could support all
@@ -376,7 +353,7 @@ MongoDB source documents.</p>
 <p>Like the receiver problem, obspy has two comparable functions for
 retrieving source metadata.</p>
 <ol class="arabic simple">
-<li><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_events.html#obspy.clients.fdsn.client.Client.get_events" title="(in ObsPy v1.3.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_events</span></code></a> is an obspy function that is very similar to the
+<li><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_events.html#obspy.clients.fdsn.client.Client.get_events" title="(in ObsPy v1.3.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_events</span></code></a> is an obspy function that is very similar to the
 receiver equivalent <code class="code docutils literal notranslate"><span class="pre">get_stations</span></code> noted above.
 Like the receiver equivalent it has search criteria to yield a set of source data
 based on some spatial, time, magnitude, and/or other criteria.
@@ -389,7 +366,7 @@ it is too easy to create a collection of source data that is much
 larger than the number of events actually in the data set.</p></li>
 <li><p>If you use the obspy <code class="code docutils literal notranslate"><span class="pre">mass_downloader</span></code> driven by source
 queries (see example titled “Earthquake Data” on the
-<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html#module-obspy.clients.fdsn.mass_downloader" title="(in ObsPy v1.3.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mass_downloader</span></code></a> page)
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html#module-obspy.clients.fdsn.mass_downloader" title="(in ObsPy v1.3.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mass_downloader</span></code></a> page)
 that function will create QuakeML data files defining the unique source data for
 all the waveforms downloaded with each call to that function.</p></li>
 </ol>
@@ -424,7 +401,7 @@ as a pandas dataframe.</p>
 </section>
 </section>
 <section id="importing-other-data-formats">
-<h2>Importing Other Data Formats<a class="headerlink" href="#importing-other-data-formats" title="Permalink to this headline"></a></h2>
+<h2>Importing Other Data Formats<a class="headerlink" href="#importing-other-data-formats" title="Permalink to this heading"></a></h2>
 <p>Currently MsPASS depends completely on obspy for importing waveforms in
 a format other than miniseed.   The following is pseudocode with a
 pythonic flavor that illustrates how this would be done for a list of data file
@@ -442,7 +419,7 @@ to be processed:</p>
 </pre></div>
 </div>
 <p>where <code class="code docutils literal notranslate"><span class="pre">SOMEFORMAT</span></code> is a keyword from the list of obspy
-supported formats in <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#obspy.core.stream.read" title="(in ObsPy v1.3.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">read</span></code></a>
+supported formats in <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#obspy.core.stream.read" title="(in ObsPy v1.3.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">read</span></code></a>
 and <code class="code docutils literal notranslate"><span class="pre">converterfunction</span></code> is a format-specific python function you would need to
 write.  The function <code class="code docutils literal notranslate"><span class="pre">converterfunction</span></code> needs to handle
 the idiosyncrasies of how obspy handles that format and convert the stream
@@ -492,7 +469,7 @@ an implementation of one of the functions we gave the generic name
 your implemetation to the MsPASS repository.</p>
 </section>
 <section id="validating-an-imported-data-set">
-<h2>Validating an Imported Data Set<a class="headerlink" href="#validating-an-imported-data-set" title="Permalink to this headline"></a></h2>
+<h2>Validating an Imported Data Set<a class="headerlink" href="#validating-an-imported-data-set" title="Permalink to this heading"></a></h2>
 <p>After importing any data to MsPASS (miniseed included but especially any
 specialized import function output) you are advised strongly to run the
 MsPASS command line tool <code class="code docutils literal notranslate"><span class="pre">dbverify</span></code> on the imported collection.

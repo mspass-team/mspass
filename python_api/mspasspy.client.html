@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -77,7 +78,19 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.client</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.client</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.client.Client"><code class="docutils literal notranslate"><span class="pre">Client</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.client.Client.get_database"><code class="docutils literal notranslate"><span class="pre">Client.get_database()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.client.Client.get_database_client"><code class="docutils literal notranslate"><span class="pre">Client.get_database_client()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.client.Client.get_global_history_manager"><code class="docutils literal notranslate"><span class="pre">Client.get_global_history_manager()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.client.Client.get_scheduler"><code class="docutils literal notranslate"><span class="pre">Client.get_scheduler()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.client.Client.set_database_client"><code class="docutils literal notranslate"><span class="pre">Client.set_database_client()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.client.Client.set_global_history_manager"><code class="docutils literal notranslate"><span class="pre">Client.set_global_history_manager()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.client.Client.set_scheduler"><code class="docutils literal notranslate"><span class="pre">Client.set_scheduler()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.global_history.html">mspasspy.global_history</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
@@ -117,32 +130,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="module-mspasspy.client">
-<span id="mspasspy-client"></span><h1>mspasspy.client<a class="headerlink" href="#module-mspasspy.client" title="Permalink to this headline"></a></h1>
+  <section id="module-mspasspy.client">
+<span id="mspasspy-client"></span><h1>mspasspy.client<a class="headerlink" href="#module-mspasspy.client" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.client.Client">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.client.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler_host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mspass'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mspass'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.client.Client" title="Permalink to this definition"></a></dt>

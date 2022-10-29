@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -114,34 +115,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="header-metadata-math">
-<span id="header-math"></span><h1>Header (Metadata) Math<a class="headerlink" href="#header-metadata-math" title="Permalink to this headline"></a></h1>
+  <section id="header-metadata-math">
+<span id="header-math"></span><h1>Header (Metadata) Math<a class="headerlink" href="#header-metadata-math" title="Permalink to this heading"></a></h1>
 <section id="concepts">
-<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline"></a></h2>
+<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h2>
 <p>Anyone with experience in seismc reflection data processing is aware of the
 common need for what is sometimes called “header math”.   That term in the
 seismic reflection world is inherited from the days of tape-based processing
@@ -173,7 +150,7 @@ and integration of the steps into the history and error logging
 concepts of MsPASS.</p>
 </section>
 <section id="unary-operators">
-<h2>Unary Operators<a class="headerlink" href="#unary-operators" title="Permalink to this headline"></a></h2>
+<h2>Unary Operators<a class="headerlink" href="#unary-operators" title="Permalink to this heading"></a></h2>
 <p>The first set of operations are “unary” because they implement
 all the standard unary arithmetic operations in python.
 By that we me operations like <code class="docutils literal notranslate"><span class="pre">a+=b</span></code> which adds the value of b to a.
@@ -245,7 +222,7 @@ operator.  If you are not familiar with the python operator symbols
 meaning, see any book or online source on python fundamentals.</p>
 </section>
 <section id="binary-operators">
-<h2>Binary Operators<a class="headerlink" href="#binary-operators" title="Permalink to this headline"></a></h2>
+<h2>Binary Operators<a class="headerlink" href="#binary-operators" title="Permalink to this heading"></a></h2>
 <p>The binary operators are like the unary operators but they define all
 operations that are python binary operators.  By that we mean any
 operation that can be case as:  <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">a</span> <span class="pre">op</span> <span class="pre">b</span></code> where <code class="docutils literal notranslate"><span class="pre">op</span></code> is one of the
@@ -308,7 +285,7 @@ name.</p>
 </table>
 </section>
 <section id="non-arithmetic-operators">
-<h2>Non-arithmetic Operators<a class="headerlink" href="#non-arithmetic-operators" title="Permalink to this headline"></a></h2>
+<h2>Non-arithmetic Operators<a class="headerlink" href="#non-arithmetic-operators" title="Permalink to this heading"></a></h2>
 <p>There are currently two additional operators in the same family as the
 arithmetic operators discussed above.</p>
 <p>First, there is an operator to change the key assigned to a Metadata attribute.
@@ -331,7 +308,7 @@ this operation may or may not be an “arithmetic” operation.</p>
 name defined by <code class="docutils literal notranslate"><span class="pre">key</span></code> to the constant value set with <code class="docutils literal notranslate"><span class="pre">const</span></code>.</p>
 </section>
 <section id="combining-operators">
-<h2>Combining operators<a class="headerlink" href="#combining-operators" title="Permalink to this headline"></a></h2>
+<h2>Combining operators<a class="headerlink" href="#combining-operators" title="Permalink to this heading"></a></h2>
 <p>We define a final operator class with the name <code class="docutils literal notranslate"><span class="pre">MetadataOperatorChain</span></code>.
 As the name suggests it provides a mechanism to implement a (potentially complicated)
 formula from the lower level operators.  The class constructor has
@@ -360,7 +337,7 @@ the simpler example above.   This operator computes and sets the following:</p>
 </div>
 </section>
 <section id="common-properties">
-<h2>Common Properties<a class="headerlink" href="#common-properties" title="Permalink to this headline"></a></h2>
+<h2>Common Properties<a class="headerlink" href="#common-properties" title="Permalink to this heading"></a></h2>
 <p>All of the operations defined in this set of operator classes could be
 hand coded as needed.  The main thing they give you over a “roll you own”
 implementation is automatic handling of the following standard features of
@@ -391,7 +368,7 @@ history mechanism for each datum processed.</p></li>
 </ul>
 </section>
 <section id="best-practices">
-<h2>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this headline"></a></h2>
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p>It is important to be aware of the consistency of the Metadata attributes
 for a data set before running these operators.  They will dogmatically kill

@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -120,32 +121,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="mspass-schema">
-<span id="id1"></span><h1>MsPASS Schema<a class="headerlink" href="#mspass-schema" title="Permalink to this headline"></a></h1>
+  <section id="mspass-schema">
+<span id="id1"></span><h1>MsPASS Schema<a class="headerlink" href="#mspass-schema" title="Permalink to this heading"></a></h1>
 <p>May seismologists think of a database schema as the specification of a set of
 tables and attributes in a relational database schema.  The standard one in
 seismology is that defined decades ago by the Center for Seismic Studies
@@ -183,7 +160,7 @@ collection that links one-to-one with each waveform data object that defines
 your data set.  All normalized attributes are defined in separate tables below.</p>
 <p>Finish later here with a roadmap with links to tables below.</p>
 <section id="all-valid-attributes">
-<h2>All Valid Attributes<a class="headerlink" href="#all-valid-attributes" title="Permalink to this headline"></a></h2>
+<h2>All Valid Attributes<a class="headerlink" href="#all-valid-attributes" title="Permalink to this heading"></a></h2>
 <p>The table below defines all attributes MsPaSS should handle without special
 treatment.  They are arranged in alphabetical order. (Note all keys are
 case sensitive.  In UTF-8 alphabetical order capitals appear before lower case.)</p>
@@ -195,15 +172,15 @@ The table below defines all valid aliases for unique keys with the alias keys
 separated by colons:</p>
 </section>
 <section id="master-documents-for-normalized-attributes">
-<h2>Master Documents for Normalized Attributes<a class="headerlink" href="#master-documents-for-normalized-attributes" title="Permalink to this headline"></a></h2>
+<h2>Master Documents for Normalized Attributes<a class="headerlink" href="#master-documents-for-normalized-attributes" title="Permalink to this heading"></a></h2>
 <section id="site-collection-receiver-coordinates">
-<h3>Site Collection (Receiver coordinates)<a class="headerlink" href="#site-collection-receiver-coordinates" title="Permalink to this headline"></a></h3>
+<h3>Site Collection (Receiver coordinates)<a class="headerlink" href="#site-collection-receiver-coordinates" title="Permalink to this heading"></a></h3>
 <p>This set of attributes are used to define the physical location of a seismic sensor
 on the Earth.   Also listed are related attributes used for cross referencing
 with a collection with the special name ‘site’.</p>
 </section>
 <section id="source-collection-seismic-source-coordinates">
-<h3>Source Collection (Seismic Source coordinates)<a class="headerlink" href="#source-collection-seismic-source-coordinates" title="Permalink to this headline"></a></h3>
+<h3>Source Collection (Seismic Source coordinates)<a class="headerlink" href="#source-collection-seismic-source-coordinates" title="Permalink to this heading"></a></h3>
 <p>This set of attributes are used to define location estimates or measured
 locations of seismic sources.   MsPASS does not support the concept of
 multiple location estimates for the same seismic events that is a major
@@ -212,25 +189,25 @@ in Antelope.   Each source defined by the unique id:  source_id defined in the t
 </section>
 </section>
 <section id="attributes-with-conceptual-relationship">
-<h2>Attributes with Conceptual Relationship<a class="headerlink" href="#attributes-with-conceptual-relationship" title="Permalink to this headline"></a></h2>
+<h2>Attributes with Conceptual Relationship<a class="headerlink" href="#attributes-with-conceptual-relationship" title="Permalink to this heading"></a></h2>
 <section id="obspy-trace-object">
-<h3>ObsPy Trace Object<a class="headerlink" href="#obspy-trace-object" title="Permalink to this headline"></a></h3>
+<h3>ObsPy Trace Object<a class="headerlink" href="#obspy-trace-object" title="Permalink to this heading"></a></h3>
 <p>The obspy package on which MsPASS leans heavily defines a Trace object with
 a fixed set of required parameters.  The names can be aliased but the
 unique keys of all of the attributes below are identical to the name defined
 for the obspy Trace object.</p>
 </section>
 <section id="channel-sitechan-attributes">
-<h3>Channel (sitechan) Attributes<a class="headerlink" href="#channel-sitechan-attributes" title="Permalink to this headline"></a></h3>
+<h3>Channel (sitechan) Attributes<a class="headerlink" href="#channel-sitechan-attributes" title="Permalink to this heading"></a></h3>
 </section>
 <section id="seismic-phase-related-attributes">
-<h3>Seismic Phase Related Attributes<a class="headerlink" href="#seismic-phase-related-attributes" title="Permalink to this headline"></a></h3>
+<h3>Seismic Phase Related Attributes<a class="headerlink" href="#seismic-phase-related-attributes" title="Permalink to this heading"></a></h3>
 </section>
 <section id="external-file-attributes">
-<h3>External File Attributes<a class="headerlink" href="#external-file-attributes" title="Permalink to this headline"></a></h3>
+<h3>External File Attributes<a class="headerlink" href="#external-file-attributes" title="Permalink to this heading"></a></h3>
 </section>
 <section id="indexing-attributes-for-mongodb">
-<h3>Indexing Attributes for MongoDb<a class="headerlink" href="#indexing-attributes-for-mongodb" title="Permalink to this headline"></a></h3>
+<h3>Indexing Attributes for MongoDb<a class="headerlink" href="#indexing-attributes-for-mongodb" title="Permalink to this heading"></a></h3>
 </section>
 </section>
 </section>

@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -119,34 +120,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="crud-operations-in-mspass">
-<span id="crud-operations"></span><h1>CRUD Operations in MsPASS<a class="headerlink" href="#crud-operations-in-mspass" title="Permalink to this headline"></a></h1>
+  <section id="crud-operations-in-mspass">
+<span id="crud-operations"></span><h1>CRUD Operations in MsPASS<a class="headerlink" href="#crud-operations-in-mspass" title="Permalink to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p>The acronymn CRUD is often used as a mnemonic in books and online tutorials
 teaching database concepts.  CRUD stands for Create-Read-Update-Delete.
 It is a useful mnemonic because it summarizes the four main things any database system
@@ -192,7 +169,7 @@ would be to create two handles with one using the wf_TimeSeries
 and the other using the wf_Seismogram schema.</p>
 </section>
 <section id="create">
-<h2>Create<a class="headerlink" href="#create" title="Permalink to this headline"></a></h2>
+<h2>Create<a class="headerlink" href="#create" title="Permalink to this heading"></a></h2>
 <p>We tag all methods of the Database class that do “Create” operations with
 the synonymous word “save”.   Here we list all save methods with a brief
 description of each method.  Consult the docstring pages for detailed
@@ -324,7 +301,7 @@ behaviour or rebuild the collection as needed with web services.</p>
 </ol>
 </section>
 <section id="read">
-<h2>Read<a class="headerlink" href="#read" title="Permalink to this headline"></a></h2>
+<h2>Read<a class="headerlink" href="#read" title="Permalink to this heading"></a></h2>
 <p>The Read operation is the inverse of save (create).  The core readers were
 designed to simplify the process of reading the core data types of MsPASS:  TimeSeries
 and Seismogram.  There are also convenience functions for reading ensembles.
@@ -469,7 +446,7 @@ argument <code class="code docutils literal notranslate"><span class="pre">forma
 </ol>
 </section>
 <section id="update">
-<h2>Update<a class="headerlink" href="#update" title="Permalink to this headline"></a></h2>
+<h2>Update<a class="headerlink" href="#update" title="Permalink to this heading"></a></h2>
 <p>Because of the way we stored seismic data in MsPASS (see figure above)
 the concept of an update makes sense only for Metadata.
 The update concept makes no sense for ProcessingHistory and error log data.
@@ -505,7 +482,7 @@ common to all update and write methods described in more detail in a section
 below.</p>
 </section>
 <section id="delete">
-<h2>Delete<a class="headerlink" href="#delete" title="Permalink to this headline"></a></h2>
+<h2>Delete<a class="headerlink" href="#delete" title="Permalink to this heading"></a></h2>
 <p>A delete operation is much more complicated in MsPASS than what you would
 find as a type example in any textbook on database theory.  In a
 relational system delete normally means removing a single tuple.
@@ -579,9 +556,9 @@ we strongly advise you store all your data with the
 gridfs option.</p>
 </section>
 <section id="key-io-concepts">
-<h2>Key IO Concepts<a class="headerlink" href="#key-io-concepts" title="Permalink to this headline"></a></h2>
+<h2>Key IO Concepts<a class="headerlink" href="#key-io-concepts" title="Permalink to this heading"></a></h2>
 <section id="mspass-chemistry">
-<h3>MsPASS Chemistry<a class="headerlink" href="#mspass-chemistry" title="Permalink to this headline"></a></h3>
+<h3>MsPASS Chemistry<a class="headerlink" href="#mspass-chemistry" title="Permalink to this heading"></a></h3>
 <p>In this section we expand on some concepts the user needs to understand
 in interacting with the io system in MsPASS.  If we repeat things it means
 they are important, not that we were careless in writing this document.</p>
@@ -676,7 +653,7 @@ bad (dead) and the waveform data will not be saved.</p></li>
 </ol>
 </section>
 <section id="save-concepts">
-<h3>Save Concepts<a class="headerlink" href="#save-concepts" title="Permalink to this headline"></a></h3>
+<h3>Save Concepts<a class="headerlink" href="#save-concepts" title="Permalink to this heading"></a></h3>
 <p>Waveform save methods begin with this axiom:  a save operation should
 never abort for anything but a system error.   That means the definition of
 success is not black and white.  There are a range of known and probably
@@ -751,7 +728,7 @@ a concern that history data could, in some instances, potentially cause
 a memory bloat with iterative processing.</p>
 </section>
 <section id="read-concepts">
-<h3>Read concepts<a class="headerlink" href="#read-concepts" title="Permalink to this headline"></a></h3>
+<h3>Read concepts<a class="headerlink" href="#read-concepts" title="Permalink to this heading"></a></h3>
 <p>Reads have to construct a valid data object and are subject to different
 constraints.  We believe it is most instructive to describe these in the order
 they are handled during construction.</p>
@@ -790,7 +767,7 @@ link back to the data just read.</p></li>
 given above and in the sphynx documentation generated from docstrings.</p>
 </section>
 <section id="update-concepts">
-<h3>Update Concepts<a class="headerlink" href="#update-concepts" title="Permalink to this headline"></a></h3>
+<h3>Update Concepts<a class="headerlink" href="#update-concepts" title="Permalink to this heading"></a></h3>
 <p>As noted above an update is an operation that can be made only to
 Metadata.  In MsPASS Metadata map directly into MongoDB’s document concept
 of name-value pairs, while the waveform data are stored in some version of

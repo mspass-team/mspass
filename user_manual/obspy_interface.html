@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -111,34 +112,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="using-obspy-with-mspass">
-<span id="obspy-interface"></span><h1>Using ObsPy with MsPASS<a class="headerlink" href="#using-obspy-with-mspass" title="Permalink to this headline"></a></h1>
+  <section id="using-obspy-with-mspass">
+<span id="obspy-interface"></span><h1>Using ObsPy with MsPASS<a class="headerlink" href="#using-obspy-with-mspass" title="Permalink to this heading"></a></h1>
 <section id="role-of-obspy-in-mspass">
-<h2>Role of ObsPy in MsPASS<a class="headerlink" href="#role-of-obspy-in-mspass" title="Permalink to this headline"></a></h2>
+<h2>Role of ObsPy in MsPASS<a class="headerlink" href="#role-of-obspy-in-mspass" title="Permalink to this heading"></a></h2>
 <p>The home page for <a class="reference external" href="https://docs.obspy.org/">Obspy</a> defines the package as follows:</p>
 <blockquote>
 <div><p>ObsPy is an open-source project dedicated to provide a Python framework for processing seismological data.
@@ -153,23 +130,23 @@ We have implemented fast algorithms to do those operation, but the performance c
 We describe more details on converters below and how ObsPy processing algorithms can be used in parallel workflows.</p>
 </section>
 <section id="converters">
-<h2>Converters<a class="headerlink" href="#converters" title="Permalink to this headline"></a></h2>
+<h2>Converters<a class="headerlink" href="#converters" title="Permalink to this heading"></a></h2>
 <p>To understand converters and their limitations it is helpful to describe details of ObsPy and MsPASS data objects.
 They have similarities but some major differences that a software engineer might call “a collision in concept”.
 ObsPy defines two core data objects:</p>
 <ol class="arabic simple">
-<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> containers hold a single channel of seismic data.
+<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> containers hold a single channel of seismic data.
 An ObsPy <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> maps almost directly into the MsPASS atomic object we call a <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>.
 Both containers store sample data in a contiguous block of memory that implement the linear algebra concept of an N-component vector.
 Both store the sample data as Python float values that always map to 64 bit floating point numbers (double in C/C++).
 Both containers also put auxiliary data used to expand on the definition of what the data are in an indexed container that behaves like a Python dict.
-ObsPy calls that container a <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html#obspy.core.trace.Stats" title="(in ObsPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stats</span></code></a> attribute.
+ObsPy calls that container a <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html#obspy.core.trace.Stats" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stats</span></code></a> attribute.
 MsPASS defines a similar entity we call <code class="code docutils literal notranslate"><span class="pre">Metadata</span></code>.
 Some users may find it convenient to think of both as a generalized “header” that defines a fixed namespace like that in <a class="reference external" href="https://wiki.seismic-unix.org/doku.php">Seismic Unix</a>.
 From a user’s perspective the “headers” in ObsPy and MsPASS behave the same but the API is different.
 In ObsPy the header parameters are stored in an attribute with a different name (Stats) while in MsPASS the dict behavior is part of the TimeSeries object.
 (For those familiar with Object Oriented Programming generic concepts ObsPy views metadata using the concept that a Trace object “has a Stats” container while in MsPASS we say a TimeSeries “is a Metadata”.)</p></li>
-<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> containers are little more than a Python list of <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> objects.
+<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> containers are little more than a Python list of <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> objects.
 A <code class="code docutils literal notranslate"><span class="pre">Stream</span></code> is very similar in concept to the MsPASS data object we call a <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>.
 Both are containers holding a collection of single channel seismic data.
 In terms of the data they contain there is only one fundamental difference;
@@ -249,7 +226,7 @@ If the converters are used in isolation (e.g. one could easily run several ObsPy
 For this reason we recommend only running ObsPy algorithms through the decorators described in the next section.</p>
 </section>
 <section id="decorated-obspy-functions">
-<h2>Decorated ObsPy Functions<a class="headerlink" href="#decorated-obspy-functions" title="Permalink to this headline"></a></h2>
+<h2>Decorated ObsPy Functions<a class="headerlink" href="#decorated-obspy-functions" title="Permalink to this heading"></a></h2>
 <p>The decorated ObsPy functions can be thought of as a way to run ObsPy’s functions on mspass data objects.
 That means both atomic data and Ensembles.
 This should be clearer from an example.</p>
@@ -289,7 +266,7 @@ For example, the <code class="code docutils literal notranslate"><span class="pr
 See the <a class="reference internal" href="../python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.signals" title="mspasspy.algorithms.signals"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mspasspy.algorithms.signals</span></code></a> documentation for details.</p>
 </section>
 <section id="obspy-processing-in-parallel">
-<h2>ObsPy Processing in Parallel<a class="headerlink" href="#obspy-processing-in-parallel" title="Permalink to this headline"></a></h2>
+<h2>ObsPy Processing in Parallel<a class="headerlink" href="#obspy-processing-in-parallel" title="Permalink to this heading"></a></h2>
 <p>The ObsPy decorator allow ObsPy operators to be applied in parallel.
 For example, the following is a variant of filter algorithm but this example uses the Dask scheduler to process the entire data set:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume db is created as above</span>

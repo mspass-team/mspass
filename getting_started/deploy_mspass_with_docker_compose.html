@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -110,41 +111,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="deploy-mspass-with-docker-compose">
-<span id="id1"></span><h1>Deploy MsPASS with Docker Compose<a class="headerlink" href="#deploy-mspass-with-docker-compose" title="Permalink to this headline"></a></h1>
+  <section id="deploy-mspass-with-docker-compose">
+<span id="id1"></span><h1>Deploy MsPASS with Docker Compose<a class="headerlink" href="#deploy-mspass-with-docker-compose" title="Permalink to this heading"></a></h1>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline"></a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading"></a></h2>
 <p>Docker Compose is a tool to deploy and coordinate multiple Docker containers.
 To install Docker Compose on machines that you have root access, please refer to the guide <a class="reference external" href="https://docs.docker.com/compose/install/">here</a> and follow the instructions for your specific platform.
 Docker Compose uses YAML files to run multiple containers.
 Please refer to its <a class="reference external" href="https://docs.docker.com/compose/">documentation</a> for more details on using the tool.</p>
 </section>
 <section id="configure-mspass-containers">
-<h2>Configure MsPASS Containers<a class="headerlink" href="#configure-mspass-containers" title="Permalink to this headline"></a></h2>
+<h2>Configure MsPASS Containers<a class="headerlink" href="#configure-mspass-containers" title="Permalink to this heading"></a></h2>
 <p>The MsPASS runtime environment is composed of multiple components each serves a specific functionality.
 They are: <code class="docutils literal notranslate"><span class="pre">frontend</span></code>, <code class="docutils literal notranslate"><span class="pre">scheduler</span></code>, <code class="docutils literal notranslate"><span class="pre">worker</span></code>, <code class="docutils literal notranslate"><span class="pre">db</span></code>, <code class="docutils literal notranslate"><span class="pre">dbmanager</span></code>, and <code class="docutils literal notranslate"><span class="pre">shard</span></code>.
 The MsPASS container can be launched as one of these roles by specifying the <code class="docutils literal notranslate"><span class="pre">MSPASS_ROLE</span></code> environment variable.
@@ -184,7 +161,7 @@ If unset, the Jupyter Notebook will generate a random token and print to stdout,
 <p>These variables are for experienced users only. The deployment can break if mismatching ports are set.</p>
 </section>
 <section id="deploy-mspass-containers">
-<h2>Deploy MsPASS Containers<a class="headerlink" href="#deploy-mspass-containers" title="Permalink to this headline"></a></h2>
+<h2>Deploy MsPASS Containers<a class="headerlink" href="#deploy-mspass-containers" title="Permalink to this heading"></a></h2>
 <p>Docker Compose can deploy multiple MsPASS Containers of different roles, which simulates a distributed environment.
 Below, we provide two exemplary Docker Compose configurations that have distributed setup for both the computation (with Dask or Spark) and the database (with MongoDB).</p>
 <div class="literal-block-wrapper docutils container" id="id2">

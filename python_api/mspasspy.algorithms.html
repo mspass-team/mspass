@@ -15,10 +15,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -76,13 +77,89 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.algorithms</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.RFdeconProcessor">RFdeconProcessor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.basic">basic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.bundle">bundle</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.edit">edit</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.signals">signals</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.snr">snr</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.window">window</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.RFdeconProcessor">RFdeconProcessor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.RFdeconProcessor.RFdecon"><code class="docutils literal notranslate"><span class="pre">RFdecon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor"><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.basic">basic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.ExtractComponent"><code class="docutils literal notranslate"><span class="pre">ExtractComponent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.ator"><code class="docutils literal notranslate"><span class="pre">ator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.cosine_taper"><code class="docutils literal notranslate"><span class="pre">cosine_taper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.free_surface_transformation"><code class="docutils literal notranslate"><span class="pre">free_surface_transformation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.linear_taper"><code class="docutils literal notranslate"><span class="pre">linear_taper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.rotate"><code class="docutils literal notranslate"><span class="pre">rotate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.rotate_to_standard"><code class="docutils literal notranslate"><span class="pre">rotate_to_standard()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.rtoa"><code class="docutils literal notranslate"><span class="pre">rtoa()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.transform"><code class="docutils literal notranslate"><span class="pre">transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.vector_taper"><code class="docutils literal notranslate"><span class="pre">vector_taper()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.bundle">bundle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.bundle.BundleSEEDGroup"><code class="docutils literal notranslate"><span class="pre">BundleSEEDGroup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.bundle.bundle_seed_data"><code class="docutils literal notranslate"><span class="pre">bundle_seed_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.edit">edit</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Add"><code class="docutils literal notranslate"><span class="pre">Add</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Add2"><code class="docutils literal notranslate"><span class="pre">Add2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.ChangeKey"><code class="docutils literal notranslate"><span class="pre">ChangeKey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Divide"><code class="docutils literal notranslate"><span class="pre">Divide</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Divide2"><code class="docutils literal notranslate"><span class="pre">Divide2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Executioner"><code class="docutils literal notranslate"><span class="pre">Executioner</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.FiringSquad"><code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.IntegerDivide"><code class="docutils literal notranslate"><span class="pre">IntegerDivide</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.IntegerDivide2"><code class="docutils literal notranslate"><span class="pre">IntegerDivide2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.MetadataDefined"><code class="docutils literal notranslate"><span class="pre">MetadataDefined</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.MetadataEQ"><code class="docutils literal notranslate"><span class="pre">MetadataEQ</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.MetadataGE"><code class="docutils literal notranslate"><span class="pre">MetadataGE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.MetadataGT"><code class="docutils literal notranslate"><span class="pre">MetadataGT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.MetadataInterval"><code class="docutils literal notranslate"><span class="pre">MetadataInterval</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.MetadataLE"><code class="docutils literal notranslate"><span class="pre">MetadataLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.MetadataLT"><code class="docutils literal notranslate"><span class="pre">MetadataLT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.MetadataNE"><code class="docutils literal notranslate"><span class="pre">MetadataNE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator"><code class="docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperatorChain"><code class="docutils literal notranslate"><span class="pre">MetadataOperatorChain</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.MetadataUndefined"><code class="docutils literal notranslate"><span class="pre">MetadataUndefined</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Mod"><code class="docutils literal notranslate"><span class="pre">Mod</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Mod2"><code class="docutils literal notranslate"><span class="pre">Mod2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Multiply"><code class="docutils literal notranslate"><span class="pre">Multiply</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Multiply2"><code class="docutils literal notranslate"><span class="pre">Multiply2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.SetValue"><code class="docutils literal notranslate"><span class="pre">SetValue</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Subtract"><code class="docutils literal notranslate"><span class="pre">Subtract</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Subtract2"><code class="docutils literal notranslate"><span class="pre">Subtract2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.erase_metadata"><code class="docutils literal notranslate"><span class="pre">erase_metadata()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.signals">signals</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.signals.correlate"><code class="docutils literal notranslate"><span class="pre">correlate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.signals.correlate_stream_template"><code class="docutils literal notranslate"><span class="pre">correlate_stream_template()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.signals.correlate_template"><code class="docutils literal notranslate"><span class="pre">correlate_template()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.signals.correlation_detector"><code class="docutils literal notranslate"><span class="pre">correlation_detector()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.signals.detrend"><code class="docutils literal notranslate"><span class="pre">detrend()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.signals.filter"><code class="docutils literal notranslate"><span class="pre">filter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.signals.interpolate"><code class="docutils literal notranslate"><span class="pre">interpolate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.signals.templates_max_similarity"><code class="docutils literal notranslate"><span class="pre">templates_max_similarity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.signals.xcorr_3c"><code class="docutils literal notranslate"><span class="pre">xcorr_3c()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.signals.xcorr_max"><code class="docutils literal notranslate"><span class="pre">xcorr_max()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.signals.xcorr_pick_correction"><code class="docutils literal notranslate"><span class="pre">xcorr_pick_correction()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.snr">snr</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.snr.FD_snr_estimator"><code class="docutils literal notranslate"><span class="pre">FD_snr_estimator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.snr.arrival_snr"><code class="docutils literal notranslate"><span class="pre">arrival_snr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.snr.arrival_snr_QC"><code class="docutils literal notranslate"><span class="pre">arrival_snr_QC()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.snr.snr"><code class="docutils literal notranslate"><span class="pre">snr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.window">window</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.TopMute"><code class="docutils literal notranslate"><span class="pre">TopMute</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.WindowData"><code class="docutils literal notranslate"><span class="pre">WindowData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.WindowData_with_duration"><code class="docutils literal notranslate"><span class="pre">WindowData_with_duration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.ensemble_error_post"><code class="docutils literal notranslate"><span class="pre">ensemble_error_post()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.scale"><code class="docutils literal notranslate"><span class="pre">scale()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
@@ -126,34 +203,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="mspasspy-algorithms">
-<h1>mspasspy.algorithms<a class="headerlink" href="#mspasspy-algorithms" title="Permalink to this headline"></a></h1>
+  <section id="mspasspy-algorithms">
+<h1>mspasspy.algorithms<a class="headerlink" href="#mspasspy-algorithms" title="Permalink to this heading"></a></h1>
 <section id="module-mspasspy.algorithms.RFdeconProcessor">
-<span id="rfdeconprocessor"></span><h2>RFdeconProcessor<a class="headerlink" href="#module-mspasspy.algorithms.RFdeconProcessor" title="Permalink to this headline"></a></h2>
+<span id="rfdeconprocessor"></span><h2>RFdeconProcessor<a class="headerlink" href="#module-mspasspy.algorithms.RFdeconProcessor" title="Permalink to this heading"></a></h2>
 <p>This file contains a class definition for a wrapper for
 the suite of scalar deconvolution methods supported by mspass.
 It demonstrates the concept of a processing object created
@@ -439,7 +492,34 @@ defined windowing.  (see details above)</p></li>
 
 </section>
 <section id="module-mspasspy.algorithms.basic">
-<span id="basic"></span><h2>basic<a class="headerlink" href="#module-mspasspy.algorithms.basic" title="Permalink to this headline"></a></h2>
+<span id="basic"></span><h2>basic<a class="headerlink" href="#module-mspasspy.algorithms.basic" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.basic.ExtractComponent">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">ExtractComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/basic.html#ExtractComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.basic.ExtractComponent" title="Permalink to this definition"></a></dt>
+<dd><p>Extract single component from three-component data.</p>
+<p>The function creates a scalar TimeSeries object from a three component Seismogram object
+Or a TimeSeriesEnsemble object from a SeismogramEnsemble object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>
+or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code></a>) – data object to extract from.</p></li>
+<li><p><strong>component</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the index of component that will be extracted, it can only be 0, 1, or 2</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
+<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
+<li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is set false to
+handle exception directly in the function, without passing it to mspass_func_wrapper.</p></li>
+<li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
+return something that is appropriate to save as Metadata.  If so, use this argument to
+define the key used to set that field in the data that is returned.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.basic.ator">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">ator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tshift</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/basic.html#ator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.basic.ator" title="Permalink to this definition"></a></dt>
@@ -457,7 +537,7 @@ variable and alters t0 by tshift.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -489,7 +569,7 @@ only one sided.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -518,7 +598,7 @@ and x3 will be longitudinal.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -548,7 +628,7 @@ right. Setting t0 == t1 will disable the taper on the specified end (e.g., t0hea
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -579,7 +659,7 @@ related rotate with it.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -607,7 +687,7 @@ cardinal coordinates.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -640,7 +720,7 @@ internally stored time shift attribute.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -666,7 +746,7 @@ transformations to data.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -692,7 +772,7 @@ data of the same length as the taper defined in the operator.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -705,7 +785,7 @@ define the key used to set that field in the data that is returned.</p></li>
 
 </section>
 <section id="module-mspasspy.algorithms.bundle">
-<span id="bundle"></span><h2>bundle<a class="headerlink" href="#module-mspasspy.algorithms.bundle" title="Permalink to this headline"></a></h2>
+<span id="bundle"></span><h2>bundle<a class="headerlink" href="#module-mspasspy.algorithms.bundle" title="Permalink to this heading"></a></h2>
 <p>This is a set of thin wrappers for C++ code to do a process we call 
 “bundling”.   That is, a Seismogram object can be constructed from 
 3 TimeSeries objects spanning a common time period and having the 
@@ -859,11 +939,11 @@ rotate_to_standard method on each Seismogram before any use.</p>
 
 </section>
 <section id="module-mspasspy.algorithms.edit">
-<span id="edit"></span><h2>edit<a class="headerlink" href="#module-mspasspy.algorithms.edit" title="Permalink to this headline"></a></h2>
+<span id="edit"></span><h2>edit<a class="headerlink" href="#module-mspasspy.algorithms.edit" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Add">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_to_add</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Add" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement += operator on a specified Metadata key.
 Example:  to add 2 to data, d, with key=’icdp’ could use this</p>
 <blockquote>
@@ -927,7 +1007,7 @@ of testing for validity of the operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Add2">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Add2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Add2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Add2" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement + operator that adds two Metadata attributes
 together.  The attributes are feteched with two keys set when
 the operator is constructed.  Let a be the value in a datum
@@ -1003,7 +1083,7 @@ of testing for validity of the operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.ChangeKey">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">ChangeKey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oldkey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newkey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">erase_old</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#ChangeKey"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.ChangeKey" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.ChangeKey.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fast_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#ChangeKey.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.ChangeKey.apply" title="Permalink to this definition"></a></dt>
@@ -1059,7 +1139,7 @@ Because it is an abstract base we have to have this stub.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Divide">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Divide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_to_divide</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Divide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Divide" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement /= operator on a specified Metadata key.
 Example:  to divide metadata in, d, with key=’Pamp’ by 2.0
 you could use this</p>
@@ -1124,7 +1204,7 @@ of testing for validity of the operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Divide2">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Divide2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Divide2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Divide2" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement / operator that divides two Metadata attributes.
 The attributes are feteched with two keys set when
 the operator is constructed.  Let a be the value in a datum
@@ -1200,7 +1280,7 @@ of testing for validity of the operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Executioner">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Executioner</span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Executioner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Executioner" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Abstract base class for family of python classes used for killing
 mspass data objects failing to pass a particular metric.
 It is made abstract to define required methods a particular instance
@@ -1258,7 +1338,7 @@ to an internal generic message.
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.FiringSquad">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">FiringSquad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">executioner_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#FiringSquad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.FiringSquad" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.Executioner</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executioner</span></code></a></p>
 <p>Used to apply multiple Executioners in a single pass - hence the name
 FiringSquare image; facing more than one thing that could kill you.
 The implementation in kill_if_true iterates through a list of
@@ -1285,7 +1365,7 @@ with the += operator.
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.IntegerDivide">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">IntegerDivide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#IntegerDivide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.IntegerDivide" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement // operator on a specified Metadata key.
 The // operator is a bit obscure but it implements the common
 need to truncate a division result to an integer.  This will work
@@ -1356,7 +1436,7 @@ of testing for validity of the operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.IntegerDivide2">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">IntegerDivide2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#IntegerDivide2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.IntegerDivide2" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement // operator between two Metadata attributes.
 The attributes are feteched with two keys set when
 the operator is constructed.  Let a be the value in a datum
@@ -1432,7 +1512,7 @@ of testing for validity of the operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.MetadataDefined">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">MetadataDefined</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#MetadataDefined"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.MetadataDefined" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.Executioner</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executioner</span></code></a></p>
 <p>Implementation of Executioner using an existence test.  The
 constructor loads only a key string.   The test for the kill_if_true
 method is then simply for the existence of a value associated with
@@ -1452,7 +1532,7 @@ a parallel map operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.MetadataEQ">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">MetadataEQ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#MetadataEQ"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.MetadataEQ" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.Executioner</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executioner</span></code></a></p>
 <p>Implementation of Executioner using an equality test of a
 Metadata attribute.  Both the metadata key and the threshold
 for the kill test are set on creation.  This implementation should
@@ -1479,7 +1559,7 @@ a parallel map operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.MetadataGE">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">MetadataGE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#MetadataGE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.MetadataGE" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.Executioner</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executioner</span></code></a></p>
 <p>Implementation of Executioner using a greater than or equal test of a
 Metadata attribute.  Both the metadata key and the threshold
 for the kill test are set on creation.  This implementation should
@@ -1504,7 +1584,7 @@ a parallel map operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.MetadataGT">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">MetadataGT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#MetadataGT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.MetadataGT" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.Executioner</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executioner</span></code></a></p>
 <p>Implementation of Executioner using a greater than test of a
 Metadata attribute.  Both the metadata key and the threshold
 for the kill test are set on creation.  This implementation should
@@ -1529,7 +1609,7 @@ a parallel map operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.MetadataInterval">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">MetadataInterval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_lower_edge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_upper_edge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_if_outside</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#MetadataInterval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.MetadataInterval" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.Executioner</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executioner</span></code></a></p>
 <p>Implementation of Executioner based on a numeric range of values.
 i.e. it tests if a metadata value is in a range defined by
 an upper and lower value.   Ranges have a minor complication in
@@ -1560,7 +1640,7 @@ a parallel map operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.MetadataLE">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">MetadataLE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#MetadataLE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.MetadataLE" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.Executioner</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executioner</span></code></a></p>
 <p>Implementation of Executioner using a less than or equal test of a
 Metadata attribute.  Both the metadata key and the threshold
 for the kill test are set on creation.  This implementation should
@@ -1585,7 +1665,7 @@ a parallel map operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.MetadataLT">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">MetadataLT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#MetadataLT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.MetadataLT" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.Executioner</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executioner</span></code></a></p>
 <p>Implementation of Executioner using a lessthan test of a
 Metadata attribute.  Both the metadata key and the threshold
 for the kill test are set on creation.  This implementation should
@@ -1610,7 +1690,7 @@ a parallel map operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.MetadataNE">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">MetadataNE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#MetadataNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.MetadataNE" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.Executioner</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executioner</span></code></a></p>
 <p>Implementation of Executioner using an not equal (NE) test of a
 Metadata attribute.  Both the metadata key and the threshold
 for the kill test are set on creation.  This implementation should
@@ -1637,7 +1717,7 @@ a parallel map operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.MetadataOperator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">MetadataOperator</span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#MetadataOperator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.MetadataOperator" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Base class for a set of inline Metadata editors. That is, there
 are many instances where Metadata attributes need to be altered
 during a workflow where it is either unnecessary or inappropriate
@@ -1746,7 +1826,7 @@ to an internal generic message.
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.MetadataOperatorChain">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">MetadataOperatorChain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operator_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#MetadataOperatorChain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.MetadataOperatorChain" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to apply multiple a chain of arithmetic operators to derive
 computed metadata attributes.  Very elaborate calculations can be
 done through this class by chaining appropriate atomic operators
@@ -1797,7 +1877,7 @@ be implemented even if they do nothing.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.MetadataUndefined">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">MetadataUndefined</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#MetadataUndefined"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.MetadataUndefined" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.Executioner</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executioner</span></code></a></p>
 <p>Implementation of Executioner using an nonexistence test.  The
 constructor loads only a key string.   The test for the kill_if_true
 method is then simply for the existence of a value associated with
@@ -1820,7 +1900,7 @@ a parallel map operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Mod">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Mod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Mod" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement % operator on a specified Metadata key.
 The % operator is a bit obscure but it implements the common
 need return the remainder of a divide operation.   It is commonly
@@ -1892,7 +1972,7 @@ of testing for validity of the operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Mod2">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Mod2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Mod2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Mod2" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement % operator between two Metadata attributes.
 The attributes are feteched with two keys set when
 the operator is constructed.  Let a be the value in a datum
@@ -1968,7 +2048,7 @@ of testing for validity of the operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Multiply">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_to_multiply</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Multiply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Multiply" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement <a href="#id1"><span class="problematic" id="id2">*</span></a>= operator on a specified Metadata key.
 Example:  to multiple metadata in, d, with key=’Pamp’ by 2.5
 you could use this</p>
@@ -2033,7 +2113,7 @@ of testing for validity of the operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Multiply2">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Multiply2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Multiply2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Multiply2" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement * operator that multiplies two Metadata attributes
 together.  The attributes are feteched with two keys set when
 the operator is constructed.  Let a be the value in a datum
@@ -2109,7 +2189,7 @@ of testing for validity of the operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.SetValue">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">SetValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constant_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#SetValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.SetValue" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to set a specified metadata key to a constant value.  Note any
 existing value of Metadata associated with the key defined in the
 operator always be overwritten.</p>
@@ -2174,7 +2254,7 @@ be implemented even if they do nothing.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Subtract">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Subtract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_to_subtract</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Subtract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Subtract" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement -= operator on a specified Metadata key.
 Example:  to subtract 2 from metadata, d, with key=’icdp’ could use this</p>
 <blockquote>
@@ -2238,7 +2318,7 @@ of testing for validity of the operation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Subtract2">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Subtract2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Subtract2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Subtract2" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement - operator that computes the difference of two Metadata
 attributes.  The attributes are feteched with two keys set when
 the operator is constructed.  Let a be the value in a datum
@@ -2350,7 +2430,7 @@ is ignored if the input is an atomic data type.</p>
 
 </section>
 <section id="module-mspasspy.algorithms.signals">
-<span id="signals"></span><h2>signals<a class="headerlink" href="#module-mspasspy.algorithms.signals" title="Permalink to this headline"></a></h2>
+<span id="signals"></span><h2>signals<a class="headerlink" href="#module-mspasspy.algorithms.signals" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.signals.correlate">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.signals.</span></span><span class="sig-name descname"><span class="pre">correlate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'correlate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'naive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#correlate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.signals.correlate" title="Permalink to this definition"></a></dt>
@@ -2367,7 +2447,7 @@ is ignored if the input is an atomic data type.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper_multi" title="mspasspy.util.decorators.mspass_func_wrapper_multi"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>demean</strong> (<em>bool</em>) – Demean data beforehand.</p></li>
 <li><p><strong>normalize</strong> – Method for normalization of cross-correlation. One of ‘naive’ or None (True and False are
@@ -2414,7 +2494,7 @@ so the processing history and error logs can be preserved.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper.</p></li>
 <li><p><strong>options</strong> – extra kv options</p></li>
@@ -2442,7 +2522,7 @@ history and error logs can be preserved.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper.</p></li>
 <li><p><strong>options</strong> – extra kv options</p></li>
@@ -2468,13 +2548,13 @@ so the processing history and error logs can be preserved.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper.</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – One of “linear”, “nearest”, “zero”, “slinear”, “quadratic”, “cubic”, “lanczos”,
 or “weighted_average_slopes”. You can refer to
 <cite>Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.interpolate.html&gt;</cite> for details.</p></li>
-<li><p><strong>starttime</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a> or int) – The start time (or timestamp) for the new interpolated stream.
+<li><p><strong>starttime</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a> or int) – The start time (or timestamp) for the new interpolated stream.
 Will be set to current start time of the data if not given.</p></li>
 <li><p><strong>npts</strong> (<em>int</em>) – The new number of samples. Will be set to the best fitting number to retain the current end time
 of the trace if not given.</p></li>
@@ -2513,7 +2593,7 @@ by the parameters sampling_rate, starttime and npts.</p></li>
 
 </section>
 <section id="module-mspasspy.algorithms.snr">
-<span id="snr"></span><h2>snr<a class="headerlink" href="#module-mspasspy.algorithms.snr" title="Permalink to this headline"></a></h2>
+<span id="snr"></span><h2>snr<a class="headerlink" href="#module-mspasspy.algorithms.snr" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.snr.FD_snr_estimator">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">FD_snr_estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_spectrum_engine=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_spectrum_engine=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_cutoff_snr=2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tbp=2.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntapers=4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_frequency_search_start=5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poles=3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perc=95.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_metrics=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_spectra=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#FD_snr_estimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.FD_snr_estimator" title="Permalink to this definition"></a></dt>
@@ -2980,7 +3060,7 @@ amplitude is 0</p>
 
 </section>
 <section id="module-mspasspy.algorithms.window">
-<span id="window"></span><h2>window<a class="headerlink" href="#module-mspasspy.algorithms.window" title="Permalink to this headline"></a></h2>
+<span id="window"></span><h2>window<a class="headerlink" href="#module-mspasspy.algorithms.window" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.window.TopMute">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.window.</span></span><span class="sig-name descname"><span class="pre">TopMute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#TopMute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.window.TopMute" title="Permalink to this definition"></a></dt>
