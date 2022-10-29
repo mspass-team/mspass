@@ -4468,6 +4468,12 @@ class Database(pymongo.database.Database):
         (i.e. more than on document matches the keys).  Set verbose false to
         silence such warnings if you know they are harmless.
 
+        An all to common metadata problem is to have duplicate entries in
+        site for the same data.   The default behavior of this method is
+        to print a warning whenever a match is ambiguous
+        (i.e. more than on document matches the keys).  Set verbose false to
+        silence such warnings if you know they are harmless.
+
         The seed modifier in the name is to emphasize this method is
         for data originating as the SEED format that use net:sta:loc:chan
         as the primary index.

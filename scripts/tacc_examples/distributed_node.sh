@@ -4,7 +4,7 @@
 #SBATCH -J mspass           # Job name
 #SBATCH -o mspass.o%j       # Name of stdout output file
 #SBATCH -p skx-dev          # Queue (partition) name - system dependent
-#SBATCH -N 3                # Total # of nodes 
+#SBATCH -N 3                # Total # of nodes
 #SBATCH -n 3                # Total # of mpi tasks (normally the same as -N)
 #SBATCH -t 02:00:00         # Run time (hh:mm:ss)
 #SBATCH -A MsPASS           # Allocation name (req'd if you have more than 1)
@@ -131,9 +131,9 @@ if [ "$DB_SHARDING" = true ] ; then
         mpiexec.hydra -n 1 -ppn 1 -hosts ${WORKER_LIST_ARR[i]} $SING_COM &
     done
 
-    # Launch the jupyter notebook frontend in the primary node.  
+    # Launch the jupyter notebook frontend in the primary node.
     # Run in batch mode if the script was
-    # submitted with a "-b notebook.ipynb" 
+    # submitted with a "-b notebook.ipynb"
     if [ $# -eq 0 ]; then
         SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
         SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
@@ -160,6 +160,7 @@ if [ "$DB_SHARDING" = true ] ; then
         SINGULARITYENV_MSPASS_SHARD_LOGS_PATH=${SHARD_LOGS_PATH[@]} \
         SINGULARITYENV_MSPASS_DB_MODE="shard" \
         SINGULARITYENV_MSPASS_ROLE=frontend $SING_COM --batch $notebook_file
+    fi
 else
     echo "Using Single node MongoDB"
     # start a db container in the primary node
@@ -169,9 +170,9 @@ else
     # ensure enough time for db instance to finish
     sleep 10
 
-    # Launch the jupyter notebook frontend in the primary node.  
+    # Launch the jupyter notebook frontend in the primary node.
     # Run in batch mode if the script was
-    # submitted with a "-b notebook.ipynb" 
+    # submitted with a "-b notebook.ipynb"
     if [ $# -eq 0 ]; then
         SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
         SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
@@ -190,4 +191,5 @@ else
         SINGULARITYENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
         SINGULARITYENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
         SINGULARITYENV_MSPASS_ROLE=frontend $SING_COM --batch $notebook_file
+    fi
 fi
