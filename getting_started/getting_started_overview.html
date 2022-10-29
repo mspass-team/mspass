@@ -750,7 +750,7 @@ script:</p>
 <span class="linenos">  4</span><span class="c1">#SBATCH -J mspass           # Job name</span>
 <span class="linenos">  5</span><span class="c1">#SBATCH -o mspass.o%j       # Name of stdout output file</span>
 <span class="linenos">  6</span><span class="c1">#SBATCH -p skx-dev          # Queue (partition) name - system dependent</span>
-<span class="linenos">  7</span><span class="c1">#SBATCH -N 3                # Total # of nodes </span>
+<span class="linenos">  7</span><span class="c1">#SBATCH -N 3                # Total # of nodes</span>
 <span class="linenos">  8</span><span class="c1">#SBATCH -n 3                # Total # of mpi tasks (normally the same as -N)</span>
 <span class="linenos">  9</span><span class="c1">#SBATCH -t 02:00:00         # Run time (hh:mm:ss)</span>
 <span class="linenos"> 10</span><span class="c1">#SBATCH -A MsPASS           # Allocation name (req&#39;d if you have more than 1)</span>
@@ -877,9 +877,9 @@ script:</p>
 <span class="linenos">131</span>        mpiexec.hydra -n <span class="m">1</span> -ppn <span class="m">1</span> -hosts <span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[i]</span><span class="si">}</span> <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
 <span class="linenos">132</span>    <span class="k">done</span>
 <span class="linenos">133</span>
-<span class="linenos">134</span>    <span class="c1"># Launch the jupyter notebook frontend in the primary node.  </span>
+<span class="linenos">134</span>    <span class="c1"># Launch the jupyter notebook frontend in the primary node.</span>
 <span class="linenos">135</span>    <span class="c1"># Run in batch mode if the script was</span>
-<span class="linenos">136</span>    <span class="c1"># submitted with a &quot;-b notebook.ipynb&quot; </span>
+<span class="linenos">136</span>    <span class="c1"># submitted with a &quot;-b notebook.ipynb&quot;</span>
 <span class="linenos">137</span>    <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
 <span class="linenos">138</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
 <span class="linenos">139</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
@@ -906,37 +906,39 @@ script:</p>
 <span class="linenos">160</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_LOGS_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_LOGS_PATH</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
 <span class="linenos">161</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_MODE</span><span class="o">=</span><span class="s2">&quot;shard&quot;</span> <span class="se">\</span>
 <span class="linenos">162</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span> --batch <span class="nv">$notebook_file</span>
-<span class="linenos">163</span><span class="k">else</span>
-<span class="linenos">164</span>    <span class="nb">echo</span> <span class="s2">&quot;Using Single node MongoDB&quot;</span>
-<span class="linenos">165</span>    <span class="c1"># start a db container in the primary node</span>
-<span class="linenos">166</span>    <span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span> <span class="se">\</span>
-<span class="linenos">167</span>    <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
-<span class="linenos">168</span>    <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>db <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
-<span class="linenos">169</span>    <span class="c1"># ensure enough time for db instance to finish</span>
-<span class="linenos">170</span>    sleep <span class="m">10</span>
-<span class="linenos">171</span>
-<span class="linenos">172</span>    <span class="c1"># Launch the jupyter notebook frontend in the primary node.  </span>
-<span class="linenos">173</span>    <span class="c1"># Run in batch mode if the script was</span>
-<span class="linenos">174</span>    <span class="c1"># submitted with a &quot;-b notebook.ipynb&quot; </span>
-<span class="linenos">175</span>    <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">176</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
-<span class="linenos">177</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos">178</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos">179</span>        <span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span> <span class="se">\</span>
-<span class="linenos">180</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span>
-<span class="linenos">181</span>    <span class="k">else</span>
-<span class="linenos">182</span>        <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;b:&quot;</span> flag
-<span class="linenos">183</span>        <span class="k">do</span>
-<span class="linenos">184</span>            <span class="k">case</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">flag</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">in</span>
-<span class="linenos">185</span>                b<span class="o">)</span> <span class="nv">notebook_file</span><span class="o">=</span><span class="si">${</span><span class="nv">OPTARG</span><span class="si">}</span><span class="p">;</span>
-<span class="linenos">186</span>            <span class="k">esac</span>
-<span class="linenos">187</span>        <span class="k">done</span>
-<span class="linenos">188</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
-<span class="linenos">189</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos">190</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos">191</span>        <span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span> <span class="se">\</span>
-<span class="linenos">192</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span> --batch <span class="nv">$notebook_file</span>
-<span class="linenos">193</span><span class="k">fi</span>
+<span class="linenos">163</span>    <span class="k">fi</span>
+<span class="linenos">164</span><span class="k">else</span>
+<span class="linenos">165</span>    <span class="nb">echo</span> <span class="s2">&quot;Using Single node MongoDB&quot;</span>
+<span class="linenos">166</span>    <span class="c1"># start a db container in the primary node</span>
+<span class="linenos">167</span>    <span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span> <span class="se">\</span>
+<span class="linenos">168</span>    <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
+<span class="linenos">169</span>    <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>db <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
+<span class="linenos">170</span>    <span class="c1"># ensure enough time for db instance to finish</span>
+<span class="linenos">171</span>    sleep <span class="m">10</span>
+<span class="linenos">172</span>
+<span class="linenos">173</span>    <span class="c1"># Launch the jupyter notebook frontend in the primary node.</span>
+<span class="linenos">174</span>    <span class="c1"># Run in batch mode if the script was</span>
+<span class="linenos">175</span>    <span class="c1"># submitted with a &quot;-b notebook.ipynb&quot;</span>
+<span class="linenos">176</span>    <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos">177</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
+<span class="linenos">178</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos">179</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos">180</span>        <span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span> <span class="se">\</span>
+<span class="linenos">181</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span>
+<span class="linenos">182</span>    <span class="k">else</span>
+<span class="linenos">183</span>        <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;b:&quot;</span> flag
+<span class="linenos">184</span>        <span class="k">do</span>
+<span class="linenos">185</span>            <span class="k">case</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">flag</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">in</span>
+<span class="linenos">186</span>                b<span class="o">)</span> <span class="nv">notebook_file</span><span class="o">=</span><span class="si">${</span><span class="nv">OPTARG</span><span class="si">}</span><span class="p">;</span>
+<span class="linenos">187</span>            <span class="k">esac</span>
+<span class="linenos">188</span>        <span class="k">done</span>
+<span class="linenos">189</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
+<span class="linenos">190</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos">191</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
+<span class="linenos">192</span>        <span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span> <span class="se">\</span>
+<span class="linenos">193</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span> --batch <span class="nv">$notebook_file</span>
+<span class="linenos">194</span>    <span class="k">fi</span>
+<span class="linenos">195</span><span class="k">fi</span>
 </pre></div>
 </div>
 <p>There are lots of details you may need to consider to adapt this
