@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Normalization &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Adapting an Existing Algorithm to MsPASS" href="adapting_algorithms.html" />
+    <link rel="prev" title="Parallel Processing" href="parallel_processing.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Normalization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#concepts">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-reader-normalization-method">Data reader normalization method</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#defining-cross-referencing-ids">Defining Cross-referencing IDs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples-of-normalization-while-reading">Examples of normalization while reading</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#normalization-within-a-workflow">Normalization within a Workflow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Concepts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#matchers">Matchers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-1-objectid-matching">Example 1:  ObjectId matching</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example-2-miniseed-matching">Example 2:  miniseed matching</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example-3-source-normalization">Example 3:  source normalization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-normalization-functions">Custom Normalization Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Normalization</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/normalization.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="normalization">
+<span id="id1"></span><h1>Normalization<a class="headerlink" href="#normalization" title="Permalink to this heading"></a></h1>
+<section id="concepts">
+<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h2>
+<p>A universal property of any data amenable to storage in a database
+is that some attributes are highly redundant.  For instance,
+consider a typical seismic example.
+A data set of 1 million waveforms recorded on the order of
+1000 fixed seismic stations would have the same station coordinates repeated around
+1000 times if stored with each waveform.
+That redundancy problem was recognized decades ago as a fundamental
+weakness of the use of static “headers” in seismic processing of any kind.
+It was, in fact, one of the key motivations for the development of the
+CSS3.0 relational database schema in the 1980s.
+The standard CSS3.0
+relational database schema handles this issue by defining
+a set of tables that are linked to the waveform index (wfdisc)
+using a relational database “join”.  MongoDB is not relational
+but handles the same issue by what they call the <code class="code docutils literal notranslate"><span class="pre">normalized</span></code>
+versus the <code class="code docutils literal notranslate"><span class="pre">embedded</span></code> data model
+(MongoDB’s documentation on this topic can be found <a class="reference external" href="https://www.mongodb.com/docs/manual/core/data-model-design/">here</a>).</p>
+<p>Normalization is conceptually similar to a relational database join, but
+is implemented in a different way that has implications on performance.
+For small datasets these issues can be minor, but for very large
+data sets we have found poorly designed normalization algorithms
+can be serious bottleneck to performance.
+A key difference all users need to appreciate
+is that with a relational database a “join” is always a global operation done between all
+tuples in two relations (tables or table subsets).  In MongoDB
+normalization is an atomic operation made one document (recall a document
+is analogous to a tuple) at a time.  Because all database operations are
+expensive in time we have found that it is important to parallelize the normalization
+process and reduce database transactions where possible.
+We accomplish that in one of two ways described in the subsections
+below:  (1) as part of the reader, and (2) with parallel normalization
+functions that can be applied in a dask/spark map call.
+A novel feature of the MsPASS normalization we discuss later is that
+we have abstracted the process in a way that provides great flexibility
+in how normalizing data is loaded.   e.g. receiver location information can
+be loaded either through the MsPASS
+<code class="code docutils literal notranslate"><span class="pre">site</span></code> or <code class="code docutils literal notranslate"><span class="pre">channel</span></code> collections using MongoDB or by
+loading the data from a pandas Dataframe.
+An example of the utility of a Dataframe is that all Antelope CSS3.0
+tables are easily loaded into a Dataframe with one line of python code
+(<code class="code docutils literal notranslate"><span class="pre">read_csv</span></code>).  That abstraction is possible because a MongoDB “collection”
+is just an alternative way to represent a table (relation).</p>
+<p>Before proceeding it is important to give a pair of definitions we used repeatedly
+in the text below.   We define the <code class="code docutils literal notranslate"><span class="pre">normalizing</span></code> collection/table as the
+smaller collection/table holding the repetitious data we aim to cross-reference.
+In addition, when we use the term <code class="code docutils literal notranslate"><span class="pre">target</span> <span class="pre">of</span> <span class="pre">normalization</span></code>
+we mean the thing into which data in the normalizing collection are to be copied.
+The “target of the normalization” in all current examples is one of the
+waveform index collections (wf_miniseed, wf_TimeSeries, or wf_Seismogram)
+or, in the case of in-line normalization functions, the Metadata container of
+one of the MsPaSS data objects.</p>
+</section>
+<section id="data-reader-normalization-method">
+<h2>Data reader normalization method<a class="headerlink" href="#data-reader-normalization-method" title="Permalink to this heading"></a></h2>
+<section id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h3>
+<p>Almost all workflows begin with a set of initializations.   In a
+production workflow using MsPASS that is normally followed immediately by one of
+two MongoDB constructs:  (1) a query of one of the waveform collections
+that returns a MongoDB <code class="code docutils literal notranslate"><span class="pre">cursor</span></code> object, or (2) a function call that
+creates an RDD/bag of query strings.   The first is used if the processing
+is limited to atomic level operations like filtering while the second is
+the norm for ensemble processing.   In either case, <code class="code docutils literal notranslate"><span class="pre">normalization</span></code>
+is best done through the readers that particular workflow uses to create the
+working RDD/bag.  In both cases a key argument to the read functions is
+<code class="code docutils literal notranslate"><span class="pre">normalize</span></code>.   In all cases <code class="code docutils literal notranslate"><span class="pre">normalize</span></code> should contain a
+python list of strings defining mongodb collection names that should be
+used to “normalize” the data being read.</p>
+<p>Normalization during read operation has two important limitations
+users must recognize:</p>
+<ol class="arabic simple">
+<li><p>The cross-reference method to link waveform documents to normalizing
+data is fixed.   That is, in all cases the cross-reference is always
+based on the <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> of the normalizing collection with a
+frozen naming convention.   For example, if we want to normalize Seismogram data
+with the <code class="code docutils literal notranslate"><span class="pre">site</span></code> collection, all MsPASS readers expect to find the
+attribute <code class="code docutils literal notranslate"><span class="pre">site_id</span></code> in <code class="code docutils literal notranslate"><span class="pre">wf_Seismogram</span></code> documents that
+define the (unique) <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> of a document in the <code class="code docutils literal notranslate"><span class="pre">site</span></code>
+collection.  If a required id is not defined that datum is silently dropped.</p></li>
+<li><p>By default the readers load the entire contents of all documents in the normalizing
+collection.   That can waste memory.  For example, channel collection
+documents created from FDSN web service and saved with the
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_inventory" title="mspasspy.db.database.Database.save_inventory"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_inventory</span></code></a> method always
+contain serialized response data that may or may not be needed.  If that
+is a concern, the easiest solution is to use the <code class="code docutils literal notranslate"><span class="pre">exclude</span></code>
+argument to pass a list of keys of attributes that should not be
+loaded.   An alternative is to use the inline normalization
+functions described later in this section.   They can provide more
+control on what is loaded and should normally be used as an
+argument to a map operator.</p></li>
+</ol>
+</section>
+<section id="defining-cross-referencing-ids">
+<h3>Defining Cross-referencing IDs<a class="headerlink" href="#defining-cross-referencing-ids" title="Permalink to this heading"></a></h3>
+<p>Because the readers use ObjectIds to provide the standard cross-reference
+method for normalization, MsPASS has functions for the common matching
+schemes.   The simplest to use is <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize_mseed" title="mspasspy.db.normalize.normalize_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">normalize_mseed</span></code></a>.
+It is used for defining <code class="code docutils literal notranslate"><span class="pre">channel_id</span></code>
+(optionally <code class="code docutils literal notranslate"><span class="pre">site_id</span></code>) matches in the <code class="code docutils literal notranslate"><span class="pre">wf_miniseed</span></code> collection.
+Use this function when your workflow is based on a set of miniseed files.
+The actual matching is done by the using the complicated SEED standard of the
+station name keys commonly called net, sta, chan, and loc codes and
+a time stamp inside a defined time interval.  That complex match is, in fact,
+a case in point for why we use ObjectIds as the default cross-reference.  The
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize_mseed" title="mspasspy.db.normalize.normalize_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">normalize_mseed</span></code></a>
+function efficiently handles the lookup and
+database updates by caching the index in memory and using a bulk update
+method to speed update times.   We strongly recommend use of this function
+for miniseed data as a simpler implementation was found to be as much as two
+orders of magnitude slower than the current algorithm.  The data on that
+development is preserved
+<a class="reference external" href="https://github.com/mspass-team/mspass/discussions/307">here on github</a>.</p>
+<p>Normalizing source data is often a more complicated problem.   How difficult
+the problem is depends heavily upon how the data time segmentation is
+defined.   MsPASS currently has support for only two source association
+methods:  (1) one where the start time of each datum is a constant offset
+relative to an event origin time, and (2) a more complicated method based on
+arrival times that can be used to associate data with start times relative
+to a measured or predicted phase arrival time.  The later can easily violate
+the assumption of the normalizing collection being small compared to the
+waveform collection.  The number of arrivals can easily exceed the number of
+waveform segments.
+In both cases, normalization to set <code class="code docutils literal notranslate"><span class="pre">source_id</span></code> values are best
+done with the mspass function <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.bulk_normalize" title="mspasspy.db.normalize.bulk_normalize"><code class="xref py py-func docutils literal notranslate"><span class="pre">bulk_normalize</span></code></a>.
+How to actually accomplish that is best understood by consulting the examples
+below.</p>
+<p>Here is a simple example of running normalize_mseed as a precursor to
+reading and normalizing miniseed data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">mspasspy.database.normalize</span> <span class="kn">import</span> <span class="n">normalize_mseed</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="n">retcodes</span> <span class="o">=</span> <span class="n">normalize_mseed</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of wf_miniseed documents processed=&quot;</span><span class="p">,</span><span class="n">retcodes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of documents that normalize_mseed set channel_id=&quot;</span><span class="p">,</span><span class="n">retcode</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="examples-of-normalization-while-reading">
+<h3>Examples of normalization while reading<a class="headerlink" href="#examples-of-normalization-while-reading" title="Permalink to this heading"></a></h3>
+<p>This is an example serial job that would use the result
+from running normalize_mseed in the example above:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="c1"># loop over all wf_miniseed records</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">normalize</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">])</span>
+  <span class="c1"># processing functions here</span>
+  <span class="c1"># normally terminated with a save operation or a graphic display</span>
+</pre></div>
+</div>
+<p>Notice the use of the normalize argument that tells the reader to
+normalize with the channel collection.   A parallel version of the
+example above requires use of the function
+<code class="xref py py-func docutils literal notranslate"><span class="pre">read_distributed_data&lt;mspasspy.db.database.read_distributed_data()</span></code>.
+The following does the same operation as above in parallel with dask</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="c1"># loop over all wf_miniseed records</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">normalize</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">])</span>
+<span class="c1"># porocessing steps as map operators follow</span>
+<span class="c1"># normally terminate with a save</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Reading ensembles with normalization is similar.   The following is a
+serial job that reads ensembles and normalizes each ensemble with data from
+the source and channel collections.  It assumes not only
+normalize_mseed has been run on the data but some version of bulk_normalize
+was used to set the source_id values for all documents in wf_miniseed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="c1"># this assumes the returned list is not enormous</span>
+<span class="n">sourceid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">sourceid_list</span><span class="p">:</span>
+  <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;source_id&quot;</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">})</span>
+  <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_ensemble_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span><span class="n">normalize</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span><span class="s2">&quot;source&quot;</span><span class="p">])</span>
+  <span class="c1"># processing functions for ensembles to follow here</span>
+  <span class="c1"># normally would be followed by a save</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="normalization-within-a-workflow">
+<h2>Normalization within a Workflow<a class="headerlink" href="#normalization-within-a-workflow" title="Permalink to this heading"></a></h2>
+<section id="id2">
+<h3>Concepts<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<p>An alternative to normalization during a read operation is to match records
+in a normalizing collection/table on the fly and load desired attributes
+from that collection.  We abstract that process to two concepts
+that need to be implemented to make a concrete normalization procedure:</p>
+<ol class="arabic simple">
+<li><p>We need to define an algorithm that provides a match of records in
+the normalizing collection with the target of the normalization.
+A matching algorithm may return a unique match (one-to-one) or
+multiple matches (one-to-many).</p></li>
+<li><p>After a match is found we need to copy a set of attributes
+from the normalizing collection to the target.  By definition a
+standard normalization operation requires the match be one-to-one.</p></li>
+</ol>
+<p>We abstract both of these operations in a novel way in MsPASS
+described in the two sections below.</p>
+</section>
+<section id="matchers">
+<h3>Matchers<a class="headerlink" href="#matchers" title="Permalink to this heading"></a></h3>
+<p>A match can be defined by
+something as simple as a single key string match or it
+can be some arbitrarily complex algorithm. For example,
+the standard seismology problem of matching SEED waveform data
+to receiver metadata requires matching four
+different string keys (station-channel codes) and a time interval.
+Any matching operation, however, has a simple idea as the core concept:
+matching requires an algorithm that can be applied to a collection/table with a boolean
+outcome for each document/tuple/row.   That is, the algorithm returns
+True if there is a match and a False if the match fails.
+In MsPASS we define this abstraction in an object-oriented perspective
+using inheritance and an abstract base class that defines the
+core generic operation.  You can read the docstrings for this
+class <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher" title="mspasspy.db.normalize.BasicMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">here</span></code></a>
+for details.
+Note that the API requires a concrete instance of this base class to
+implement two core methods:  <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find" title="mspasspy.db.normalize.BasicMatcher.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find</span></code></a>
+is used for a one-to-many match
+algorithm while
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find_one" title="mspasspy.db.normalize.BasicMatcher.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one</span></code></a>
+is the primary method for one-to-one matches.
+Note we require even unique matchers to implement <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find" title="mspasspy.db.normalize.BasicMatcher.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find</span></code></a> since one is
+simply a special case of “many”.</p>
+<p>The choice of those two names (<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find" title="mspasspy.db.normalize.DatabaseMatcher.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find_one" title="mspasspy.db.normalize.DatabaseMatcher.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one</span></code></a>) was not
+arbitrary.  They are the names used to implement the same concepts in MongoDB
+as methods of their database handle object.  In fact, as a convenience the
+normalize module defines the intermediate class
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>
+that provides a layer to simply creating a matcher to work directly with
+MongoDB.   That class implements <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find" title="mspasspy.db.normalize.DatabaseMatcher.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find_one" title="mspasspy.db.normalize.DatabaseMatcher.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one</span></code></a> as
+generic wrapper code that translates MongoDB documents into the (different)
+structure required by the base class,
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher" title="mspasspy.db.normalize.BasicMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code></a>.
+To make the database matcher generic,
+concrete implementations of <code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>
+are required to implement the method <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.query_generator" title="mspasspy.db.normalize.DatabaseMatcher.query_generator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">query_generator</span></code></a>.
+That approach allows the implementation to have a generic algorithm for
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find" title="mspasspy.db.normalize.DatabaseMatcher.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find_one" title="mspasspy.db.normalize.DatabaseMatcher.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one</span></code></a> with a series of matching classes
+that are subclasses of <code class="code docutils literal notranslate"><span class="pre">DatabaseMatcher</span></code> with different implementations
+of <code class="code docutils literal notranslate"><span class="pre">query_generator</span></code>.   The following table is a summary of concrete
+matcher classes that are subclasses of <code class="code docutils literal notranslate"><span class="pre">DatabaseMatcher</span></code> with links
+to the docstring for each class:</p>
+<table class="colwidths-given docutils align-default" id="id5">
+<caption><span class="caption-number">Table 5 </span><span class="caption-text">Database Query-based Matchers</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class Name</p></th>
+<th class="head"><p>Use</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a href="#id3"><span class="problematic" id="id4">:py:clases:`ObjectIdDBMatcher &lt;mspasspy.db.normalize.ObjectIdDBMatcher&gt;`</span></a></p></td>
+<td><p>Match with MongoDB ObjectId</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedDBMatcher" title="mspasspy.db.normalize.MiniseedDBMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiniseedDBMatcher</span></code></a></p></td>
+<td><p>Miniseed match with net:sta:chan:loc and time</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.EqualityDBMatcher" title="mspasspy.db.normalize.EqualityDBMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">EqualityDBMatcher</span></code></a></p></td>
+<td><p>Generic equality match of one or more key-value pairs</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeDBMatcher" title="mspasspy.db.normalize.OriginTimeDBMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">OriginTimeDBMatcher</span></code></a></p></td>
+<td><p>match data with start time defined by event origin time</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.ArrivalDBMatcher" title="mspasspy.db.normalize.ArrivalDBMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArrivalDBMatcher</span></code></a></p></td>
+<td><p>match arrival times to waveforms</p></td>
+</tr>
+</tbody>
+</table>
+<p>As noted many times in this User’s Manual database transactions are expensive
+operations due to the inevitable lag from the time between issuing a query until
+the result is loaded into your program’s memory space.  The subclasses
+derived from <code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>
+are thus most useful for one of two situations:  (1) the normalizing
+collection is large and the matching algorithm can use an effective
+MongoDB index, or (2) the dataset is small enough that the cost of the queries
+is not overwhelming.</p>
+<p>When the normalizing collection is small we have found a much efficient way
+to implement normalization is via a cacheing algorithm.   That is, we
+load all or part of a collection/table into a data area
+(a python class <code class="code docutils literal notranslate"><span class="pre">self</span></code> attribute) “matcher” object
+(i.e. a concrete implementation of
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher" title="mspasspy.db.normalize.BasicMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code></a>.).
+The implementation then only requires an efficient search algorithm
+to implement the required
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find" title="mspasspy.db.normalize.BasicMatcher.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find</span></code></a>
+and
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find_one" title="mspasspy.db.normalize.BasicMatcher.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one</span></code></a>
+methods.   We supply two generic search algorithms as part of MsPASS
+implemented as two intermediate classes used similarly to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>:</p>
+<ol class="arabic simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DictionaryMatcher&lt;mspasspy.db.normalize.DictionaryCacheMatcher</span></code>
+uses a python dictionary as the internal cache.  It is most useful
+when the matching algorithm can be reduced to a single string key.
+The class implements a generic
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DictionaryCacheMatcher.find" title="mspasspy.db.normalize.DictionaryCacheMatcher.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find</span></code></a>
+method by using a python list to hold all documents/tuples
+that match the dictionary key.  Note the returned list is actually
+a list of Metadata containers as defined by the base class API.
+We do that for efficiency as Metadata containers are native to
+MsPASS data objects that are the target of the normalization.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataframeCacheMatcher</span></code>
+uses the more flexible
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/index.html">Pandas Dataframe API</a>.
+to store it’s internal cache.   The Pandas library is robust and
+has a complete set of logical constructs that can be used to construct
+any query possible with something like SQL and more.  Any custom,
+concrete implementations of <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher" title="mspasspy.db.normalize.BasicMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code></a>
+that match the small normalizing collection assumption would be
+best advised to utilize this API.</p></li>
+</ol>
+<p>These two intermediate-level classes have two features in common:</p>
+<ol class="arabic simple">
+<li><p>Both can load the normalizing collection in one of two forms: (a)
+via a MongoDB database handle combined with a <code class="code docutils literal notranslate"><span class="pre">collection</span></code>
+name argument, or (b) a Pandas dataframe object handle.  The former,
+for example, can be used to load <code class="code docutils literal notranslate"><span class="pre">site</span></code> collection metadata from
+MongoDB and the later can be used to load comparable data from an
+Antelope <code class="code docutils literal notranslate"><span class="pre">site</span></code> table via the
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html#pandas.read_csv">Pandas read_csv method</a>
+or similar methods for loading a Dataframe from an SQL relational database.</p></li>
+<li><p>Both provide generic implementations of the <code class="code docutils literal notranslate"><span class="pre">find</span></code> and
+<code class="code docutils literal notranslate"><span class="pre">find_one</span></code> methods required by
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher" title="mspasspy.db.normalize.BasicMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code></a>.</p></li>
+</ol>
+<p>These two classes differ mainly in what they require to make them
+concrete.   That is, both have abstract/virtual methods that are required
+to make a concrete implemntation.
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DictionaryMatcher&lt;mspasspy.db.normalize.DictionaryCacheMatcher</span></code>
+requires implementation of
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">cache_id&lt;mspasspy.db.normalize.DictionaryCacheMatcher.cache_id()</span></code>
+and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">db_make_cache_id&lt;mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id()</span></code>.
+That minor complication was implemented to allow an implementation to use
+different keys to access attributes stored in the database and
+the equivalent keys used to access the same data in a workflow.
+In addition, there is a type mismatch between a document/tuple/row
+abstraction in a MongoDB document and the internal use by the matcher
+class family.  That is, pymongo treats represents a “document” as a
+python dictionary while the matchers require posting the same data to
+the MsPASS Metadata container to work more efficiently with the C++
+code base that defines data objects.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataframeCacheMatcher</span></code>
+requires only the method
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">subset</span></code>
+used to select only the rows in the Dataframe that define a “match”
+for the complete, concrete class.   For more details see the docstrings that
+can be viewed by following the hyperlinks above.  We also discuss these
+issues further in the subsection on writing a custom matcher below.</p>
+<p>The following table is a summary of concrete
+matcher classes that utilize a cacheing method.  As above each name
+is a hyperlink to the docstring for the class:</p>
+<table class="colwidths-given docutils align-default" id="id6">
+<caption><span class="caption-number">Table 6 </span><span class="caption-text">Cache-based Matchers</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class Name</p></th>
+<th class="head"><p>Use</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdMatcher" title="mspasspy.db.normalize.ObjectIdMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectIdMatcher</span></code></a></p></td>
+<td><p>Match with MongoDB ObjectId as dictioary key for cache</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher" title="mspasspy.db.normalize.MiniseedMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiniseedMatcher</span></code></a></p></td>
+<td><p>Miniseed match with net:sta:chan:loc and time</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.EqualityMatcher" title="mspasspy.db.normalize.EqualityMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Equality</span> <span class="pre">Matcher</span></code></a></p></td>
+<td><p>Generic equality match of one or more key-value pairs</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher" title="mspasspy.db.normalize.OriginTimeMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">OriginTimeMatcher</span></code></a></p></td>
+<td><p>match data with start time defined by event origin time</p></td>
+</tr>
+</tbody>
+</table>
+<p>Noting currently all of these have database query versions that differ only
+by have “DB” embedded in the class name
+(e.g. the MongoDB version of <code class="code docutils literal notranslate"><span class="pre">EqualityMatcher</span></code> is <code class="code docutils literal notranslate"><span class="pre">EqualityDBMatcher</span></code>.)</p>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h3>
+<section id="example-1-objectid-matching">
+<h4>Example 1:  ObjectId matching<a class="headerlink" href="#example-1-objectid-matching" title="Permalink to this heading"></a></h4>
+<p>The abstraction of defining matching through a python class allows the
+process of loading normalizing data into a dataset through a single,
+generic function called <code class="xref py py-func docutils literal notranslate"><span class="pre">&lt;mspasspy.db.normalize.normalize&gt;()</span></code>.
+That function was designed exclusively for use in map operations.  The
+idea is most clearly seen by a simple example.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">ObjectIdMatcher</span><span class="p">,</span><span class="n">normalize</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="c1"># Here limit attributes to be loaded to coordinates</span>
+<span class="c1"># Note these are defined when the matcher class is instantiated</span>
+<span class="n">attribute_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">,</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;elev&#39;</span><span class="p">]</span>
+<span class="n">matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;site&quot;</span><span class="p">,</span><span class="n">attributes_to_load</span><span class="o">=</span><span class="n">attribute_list</span><span class="p">)</span>
+<span class="c1"># This says load the entire dataset presumed staged to MongoDB</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>   <span class="c1">#handle to entire data set</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>  <span class="c1"># dataset returned is a bag</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span><span class="n">matcher</span><span class="p">)</span>
+<span class="c1"># additional workflow elements and usually ending with a save would be here</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This example loads receiver coordinate information from data that was assumed
+previously loaded into MongoDB in the “site” collection.  It assumes
+matching can be done using the site collection ObjectId loaded with the
+waveform data at read time with the key “site_id”.   i.e. this is an
+inline version of what could also be accomplished (more slowly) by
+calling <code class="code docutils literal notranslate"><span class="pre">read_distribute_data</span></code> with “site” in the normalize list.</p>
+<p>Key things this example demonstrates in common to all in-line
+normalization workflows are:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">normalize</span></code> appears only as arg0 of a map operation (dask syntax -
+Spark would require a “lambda” function in the map call).</p></li>
+<li><p>The “matcher” is created as an initialization before loading data.
+It is then used by passing it as an argument to the normalize
+function in the map operation.</p></li>
+<li><p>Only the attributes defined in the constructor for the matcher are copied
+to the Metadata container of the data being processed.  In this example
+after running the normalize function the each datum for which a match
+was found will contain attributes with the following keys:
+<code class="code docutils literal notranslate"><span class="pre">site_id</span></code>, <code class="code docutils literal notranslate"><span class="pre">site_lat</span></code>, <code class="code docutils literal notranslate"><span class="pre">site_lon</span></code>, and <code class="code docutils literal notranslate"><span class="pre">site_elev</span></code>.
+Note these have the string “site_” automaticaly prepended by default.
+That renaming can be disable by setting the <code class="code docutils literal notranslate"><span class="pre">prepend_collection_name</span></code>
+to False.  By default failures in matching cause the associated
+waveform data to be marked dead with an informational error log posted
+to the result.</p></li>
+</ul>
+</section>
+<section id="example-2-miniseed-matching">
+<h4>Example 2:  miniseed matching<a class="headerlink" href="#example-2-miniseed-matching" title="Permalink to this heading"></a></h4>
+<p>This example illustrates the in-line equivalent of running the
+normalization function for miniseed data noted above called
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize_mseed" title="mspasspy.db.normalize.normalize_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">normalize_mseed</span></code></a>.
+This example would load and process an entire dataset defined in
+the wf_miniseed collection of a database with the name “mydatabase”.
+It shows how a list of keys are used to limit what
+attributes are extracted from the channel and site collections
+and loaded into each datum.  These are defined by the
+symbols <code class="code docutils literal notranslate"><span class="pre">channel_attribute_list</span></code> and <code class="code docutils literal notranslate"><span class="pre">site_atribute_list</span></code>.
+As in example 1 creation of the matcher classes to match the
+waveforms to site and channel collection documents is an initialization
+step.  That is, we “construct” two concrete matchers we assign the symbols
+<code class="code docutils literal notranslate"><span class="pre">channel_matcher</span></code> and <code class="code docutils literal notranslate"><span class="pre">site_matcher</span></code>.
+As above these matches are passed as an argument to the <code class="code docutils literal notranslate"><span class="pre">normalize</span></code>
+function in a map operator.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">MiniseedMatcher</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="c1"># Here limit attributes to be loaded to coordinates and orientations</span>
+<span class="n">channel_attribute_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">,</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;elev&#39;</span><span class="p">,</span><span class="s1">&#39;hang&#39;</span><span class="p">,</span><span class="s1">&#39;vang&#39;</span><span class="p">]</span>
+<span class="n">site_attribute_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">,</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;elev&#39;</span><span class="p">]</span>
+<span class="c1"># These construct the channel a site normalizers</span>
+<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">MiniseedMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span>
+   <span class="n">attributes_to_load</span><span class="o">=</span><span class="n">channel_attribute_list</span><span class="p">)</span>
+<span class="n">site_matcher</span> <span class="o">=</span> <span class="n">MiniseedMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;site&quot;</span><span class="p">,</span>
+   <span class="n">attributes_to_load</span><span class="o">=</span><span class="n">site_atribute_list</span><span class="p">)</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>   <span class="c1">#handle to entire data set</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>  <span class="c1"># dataset returned is a bag/rdd</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span><span class="n">channel_matcher</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span><span class="n">site_matcher</span><span class="p">)</span>
+<span class="c1"># additional processing steps normally would be inserted here</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-3-source-normalization">
+<h4>Example 3:  source normalization<a class="headerlink" href="#example-3-source-normalization" title="Permalink to this heading"></a></h4>
+<p>This example shows an example of how to insert source data into
+a parallel workflow.  As above use the dask syntax for a map operator.
+This example uses the matcher called <code class="code docutils literal notranslate"><span class="pre">OriginTimeMatcher</span></code>
+which works only for waveform segments where the start time of the
+signal is a constant offset from the event origin time.
+It illustrates another useful feature in the constructor
+argument <code class="code docutils literal notranslate"><span class="pre">load_if_defined</span></code>.   This example uses one key, “magnitude”,
+for that list.  The use is that if a value is associated with the key
+“magnitude” in the normalizing collection it will be loaded with the data.
+If it is no defined it will be silently ignored and left undefined.  Note
+that is in contrast to keys listed in “attributes_to_load” that are treated
+as required.  As noted above if any of the attributes_to_load keys are
+missing a datum will, by default, be killed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">OriginTimeMatcher</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="c1"># Here limit attributes to be loaded to source coordinates</span>
+<span class="n">attribute_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_id,&#39;&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+<span class="c1"># define source normalization instance assuming data start times</span>
+<span class="c1"># were defined as 20 s after the origin time of the event</span>
+<span class="c1"># origin time used to define the data time window</span>
+<span class="n">source_matcher</span> <span class="o">=</span> <span class="n">OriginTimeMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">t0offset</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>
+     <span class="n">attributes_to_load</span><span class="o">=</span><span class="n">attribute_list</span><span class="p">,</span><span class="n">load_if_defined</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;magnitude&quot;</span><span class="p">])</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>   <span class="c1">#handle to entire data set</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>  <span class="c1"># dataset returned is a bag/rdd</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span><span class="n">source_matcher</span><span class="p">)</span>
+<span class="c1"># additional processing steps normally would be inserted here</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Example 4: ensemble processing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+`
+This example is a variant of example 3 immediately above but
+implemented on ensembles.  That is, here the normalizing data
+attributes are loaded in the SeismogramEnsemble’s Metadata container
+and not copied to the members of the ensemble.  This workflow is
+a way to assemble what would be called “common-shot gathers”
+in seismic reflection processing.
+It uses a common
+trick for ensemble processing building a dask bag from distinct source_id
+values, constructing a ensemble-based query from the id, and then
+calling the <code class="xref py py-meth docutils literal notranslate"><span class="pre">read_ensemble_data</span></code>
+method within a parallel map call
+to create the ensembles.  The bag of ensembles are then normalized.
+Finally note that this example is a hybrid of database normalization and
+in-line normalization.  The example assumes that the user has previously
+run a function like <code class="code docutils literal notranslate"><span class="pre">bulk_normalize</span></code> to set the cross-referencing
+id for the source collection <code class="code docutils literal notranslate"><span class="pre">source_id</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">ObjectIdMatcher</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_ensemble_data</span>
+
+<span class="k">def</span> <span class="nf">read_common_source_gather</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="p">,</span><span class="n">srcid</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Function needed in map call to translate a single source id (srcid)</span>
+<span class="sd">  to a query, run the query, and load the data linked to that source_id</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
+  <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span> <span class="p">:</span> <span class="n">srcid</span> <span class="p">}</span>
+  <span class="c1"># note with logic of this use we don&#39;t need to test for</span>
+  <span class="c1"># no matches because distinct returns only not null source_id values dbcol</span>
+  <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+  <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_ensemble</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
+  <span class="n">ensemble</span><span class="p">[</span><span class="s2">&quot;source_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">srcid</span>
+  <span class="k">return</span> <span class="n">ensemble</span>
+
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="c1"># Here limit attributes to be loaded to source coordinates</span>
+<span class="n">attribute_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_id,&#39;&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+<span class="n">source_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+   <span class="n">attributes_to_load</span><span class="o">=</span><span class="n">attribute_list</span><span class="p">,</span><span class="n">load_if_defined</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;magnitude&quot;</span><span class="p">])</span>
+<span class="c1"># MongoDB incantation to find all unique source_id values</span>
+<span class="n">sourceid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">sourceid_list</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">srcid</span> <span class="p">:</span> <span class="n">read_common_source_gather</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">,</span> <span class="n">srcid</span><span class="p">))</span>
+<span class="c1"># dataset here is a bag of SeismogramEnsembles.  The next line applies</span>
+<span class="c1"># normalize to the ensemble and loading the attributes into the ensemble&#39;s</span>
+<span class="c1"># Metadata container.</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span><span class="n">source_matcher</span><span class="p">)</span>
+<span class="c1"># additional processing steps normally would be inserted here</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="custom-normalization-functions">
+<h2>Custom Normalization Functions<a class="headerlink" href="#custom-normalization-functions" title="Permalink to this heading"></a></h2>
+<p>If the current set of normalization algorithms are not sufficient for
+your data, you may need to develop a custom normalization algorithm.
+We know of three solutions to that problem:</p>
+<ol class="arabic simple">
+<li><p>Think about what you are trying to match and see if it is possible to
+use header math functions <a class="reference internal" href="header_math.html#header-math"><span class="std std-ref">Header (Metadata) Math</span></a>
+to construct a new Metadata attribute that can be
+used for a generic match like <code class="xref py py-class docutils literal notranslate"><span class="pre">EqualityMatcher</span></code>.
+Similarly for string manipulation you may be able to create a special
+character string to define your match with a custom python function
+you could use in a map operation prior to using one or the MsPASS
+generic matchers.</p></li>
+<li><p>Write a custom python function for matching keys in a wf collection
+and a normalizing correction.  The recommended approach is to
+have the function set the
+ObjectId of the normalizing collection in the wf collection using
+the MsPASS naming convention for such ids (e.g. “source_id” to
+normalize source).  With this approach you would use the standard
+update methods of pymongo easily found from numerous web tutorials.
+You will also find examples in the MsPASS tutorials found
+<a href="#id7"><span class="problematic" id="id8">`here https://github.com/mspass-team/mspass_tutorial&gt;`__</span></a>.  Then
+you can use the <code class="code docutils literal notranslate"><span class="pre">normalize</span></code> argument with the readers to
+load normalizing data at read time or use the inline version
+<code class="code docutils literal notranslate"><span class="pre">ObjectIdDBMatcher</span></code> or <code class="code docutils literal notranslate"><span class="pre">ObjectIdMatcher</span></code>.</p></li>
+<li><p>Write an extension class to the intermediate level, subclasses of the base class
+:py:<code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code>
+described above
+(<code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DictionaryCacheMatcher&lt;mspasspy.db.normalize.DictionaryMatcher</span></code>,
+and <code class="xref py py-class docutils literal notranslate"><span class="pre">DataframeCacheMatcher&lt;mspasspy.db.normalize.DataframeCacheMatcher</span></code>).
+One could also build directly on the base class, but we can think of no
+example where would be preferable to extending one of the intermediate
+classes.  The remainder of this section focuses only on some hints for
+extending one of the intermediate classes.</p></li>
+</ol>
+<p>We assume the reader has some familiarity with the general concept of inheritance
+in object-oriented programming.  If not, some supplementary web research
+may be needed to understand the concepts behind some of the terminology below
+before an extension is attempted.  If you have a sound understanding of inheritance
+in object oriented programming, you may want to just ignore the rest of this
+section and see how we implemented concrete matcher classes in the
+<code class="code docutils literal notranslate"><span class="pre">mspasspy.db.normalize</span></code> module and use one of them as a template
+to modify.  You might, however, still find the following useful to understand the
+concepts behind our design.</p>
+<p>The syntax for inheritance is a standard python construct best illustrated
+here by a simple example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">DataframeCacheMatcher</span>
+<span class="k">class</span> <span class="nc">MyCustomMatcher</span><span class="p">(</span><span class="n">DataframeCacheMatcher</span><span class="p">):</span>
+  <span class="c1"># class implementation code</span>
+</pre></div>
+</div>
+<p>Any class needs a constructor as part of the API.   Most will
+want to use the superclass constructor to simplify the setup.
+Here is an example of the how the class <code class="code docutils literal notranslate"><span class="pre">MyCustomMatcher</span></code> above
+could utilize the base class constructor to allow it to work
+cleanly with the base class <code class="code docutils literal notranslate"><span class="pre">find</span></code> and <code class="code docutils literal notranslate"><span class="pre">find_one</span></code> methods:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyCustomMatcher</span><span class="p">(</span><span class="n">DataframeCacheMatcher</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">db</span><span class="p">,</span>
+    <span class="c1"># additional required arguments with o default would be defined here</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;site&quot;</span><span class="p">,</span>
+    <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;elev&quot;</span><span class="p">],</span>
+    <span class="n">load_if_defined</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="c1"># additional optional arguments with defaults would added here</span>
+<span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="n">db</span><span class="p">,</span>
+        <span class="n">collection</span><span class="p">,</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="n">attributes_to_load</span><span class="p">,</span>
+        <span class="n">load_if_defined</span><span class="o">=</span><span class="n">load_if_defined</span><span class="p">,</span>
+        <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span>
+        <span class="n">require_unique_match</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">prepend_collection_name</span><span class="o">=</span><span class="n">prepend_collection_name</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># any additional argument would be parse to set self variables here</span>
+</pre></div>
+</div>
+<p>The point of that somewhat elaborate construct is to cleanly construct the
+base class, which here is <code class="code docutils literal notranslate"><span class="pre">DataframeCacheMatcher</span></code>, from the
+inputs to a constructor.   An instance of the above using all defaults
+could then be created with the following construct:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">matcher</span> <span class="o">=</span> <span class="n">MyMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As the comments note, however, a typical implementation would usually
+need to add one or more required or optional arguments to define constants
+that define properties of the matching algoithm you are implementing.</p>
+<p>Finally, as noted earlier each of the intermediate classes have one or more required
+methods that the intermediate class declares to be “abstract” via
+the <code class="code docutils literal notranslate"><span class="pre">&#64;abstractmethod</span></code> decorator defined in the <code class="code docutils literal notranslate"><span class="pre">ABC</span></code> module.
+The methods declared “abstract” are null in the intermediate class.
+For an implementation to work it must be made “concrete”, in the language used by the ABC
+documentation, by implementing the methods tagged with the
+<code class="code docutils literal notranslate"><span class="pre">&#64;abstractmethod</span></code> decorator.  Requirement for each of the
+intermediate classes you should use to build your custom matcher are:</p>
+<ul class="simple">
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>
+requires implementing only one method called
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher.query_generator()</span></code>.
+Tha method needs to create a python dictionary in pymongo syntax that is to
+be applied to the normalizing collection.  That query would normally be
+constructed from one or more Metadata attributes in a data object but
+time queries may also want to use the data start time and endtime available
+as methods in atomic data objects.  Consult the MongoDB documentation
+for guidance on the syntax of pymongo’s query language based on
+python dictionaries.</p></li>
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">DictionaryCacheMatcher&lt;mspasspy.db.normalize.DictionaryCacheMatcher</span></code>
+requires implementing two methods.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">cache_id&lt;mspasspy.db.normalize.DictionaryCacheMatcher.cache_id()</span></code>
+is a function that needs to return a unique string that defines the
+key to the python dictionary used as to implement a cache in this
+intermediate class.
+The other method,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">db_make_cache_id&lt;mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id()</span></code>,
+needs to do the same thing and create identical keys.
+The difference being that
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">db_make_cache_id&lt;mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id()</span></code>
+is used as the data loader to create the dictionary-based cache while
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">cache_id&lt;mspasspy.db.normalize.DictionaryCacheMatcher.cache_id()</span></code>
+is used to construct the comparable key from a MsPASS data object.</p></li>
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">DataframeCacheMatcher&lt;mspasspy.db.normalize.DataframeCacheMatcher</span></code>
+requires subclasses to implement only one method called
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">subset&lt;mspasspy.db.normalize.DataframeCacheMatcher.subset()</span></code>.
+The <code class="code docutils literal notranslate"><span class="pre">DataframeCacheMatcher</span></code> defines its cache internally with the
+symbol <code class="code docutils literal notranslate"><span class="pre">self.cache</span></code>.  That symbol defines a pandas container.
+The subset method you implement can use the rich API of pandas to
+define the matching operation you need to build.  Pandas are so widely used
+there is an overwhelming volume of material you can use for a reference.
+<a class="reference external" href="https://pandas.pydata.org/docs/user_guide/indexing.html">Here</a> is
+a reasonable starting point.  In any case, a key point is that the
+<code class="code docutils literal notranslate"><span class="pre">subset</span></code> method you implement needs to fetch attributes from
+the input data object’s Metadata (header) and/or the data objects
+internals (e.g. start time, end time, and orientation data) to construct
+a pandas query to select the rows of the cached dataframe that match
+that stored internally with the data.</p></li>
+</ul>
+<p>We close this section by emphasizing that the value of using class inheritance
+from the <code class="code docutils literal notranslate"><span class="pre">BasicMatcher</span></code> family is you can then utilize it in a
+map operator to load attributes from a normalizating collection within a
+workflow.  Here, for example, is a variant of example 1 using <code class="code docutils literal notranslate"><span class="pre">MyMatcher</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<span class="c1"># import for MyMatcher would appear here</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="n">matcher</span> <span class="o">=</span> <span class="n">MyMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>   <span class="c1">#handle to entire data set</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>  <span class="c1"># dataset returned is a bag</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span><span class="n">matcher</span><span class="p">)</span>
+<span class="c1"># additional workflow elements and usually ending with a save would be here</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If you compare this to example 1 you will see that the only difference is setting
+the symbol <code class="code docutils literal notranslate"><span class="pre">matcher</span></code> to an instance of <code class="code docutils literal notranslate"><span class="pre">MyMatcher</span></code> instead of
+an <code class="code docutils literal notranslate"><span class="pre">ObjectIdMatcher</span></code>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="parallel_processing.html" class="btn btn-neutral float-left" title="Parallel Processing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="adapting_algorithms.html" class="btn btn-neutral float-right" title="Adapting an Existing Algorithm to MsPASS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
