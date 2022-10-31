@@ -242,11 +242,11 @@ outcome for each document/tuple/row.   That is, the algorithm returns
 True if there is a match and a False if the match fails.
 In MsPASS we define this abstraction in an object-oriented perspective
 using inheritance and an abstract base class that defines the
-core generic operation.  You can read the docstrings for this
-class :py:class:`here <mspasspy.db.normalize.BasicMatcher>`
+core generic operation.  You can read the docstrings of   
+:py:class:`BasicMatcher <mspasspy.db.normalize.BasicMatcher>`
 for details.
 Note that the API requires a concrete instance of this base class to
-implement two core methods:  :py:meth:`find <mspasspy.db.normalize.BasicMatcher.find>`
+implement two core methods: :py:meth:`find <mspasspy.db.normalize.BasicMatcher.find>`
 is used for a one-to-many match
 algorithm while
 :py:meth:`find_one <mspasspy.db.normalize.BasicMatcher.find_one>`
@@ -315,7 +315,7 @@ methods.   We supply two generic search algorithms as part of MsPASS
 implemented as two intermediate classes used similarly to
 :py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher>`:
 
-#.  :py:class:`DictionaryMatcher <mspasspy.db.normalize.DictionaryCacheMatcher>`
+#.  :py:class:`DictionaryCacheMatcher <mspasspy.db.normalize.DictionaryCacheMatcher>`
     uses a python dictionary as the internal cache.  It is most useful
     when the matching algorithm can be reduced to a single string key.
     The class implements a generic
@@ -325,7 +325,7 @@ implemented as two intermediate classes used similarly to
     a list of Metadata containers as defined by the base class API.
     We do that for efficiency as Metadata containers are native to
     MsPASS data objects that are the target of the normalization.
-#.  :py:class:`DataframeCacheMatcher <mspasspy.db.normalize.DataFrameCacheMatcher>`
+#.  :py:class:`DataFrameCacheMatcher <mspasspy.db.normalize.DataFrameCacheMatcher>`
     uses the more flexible
     `Pandas Dataframe API <https://pandas.pydata.org/docs/reference/index.html>`__.
     to store it's internal cache.   The Pandas library is robust and
@@ -352,7 +352,7 @@ These two intermediate-level classes have two features in common:
 These two classes differ mainly in what they require to make them
 concrete.   That is, both have abstract/virtual methods that are required
 to make a concrete implemntation.
-:py:class:`DictionaryMatcher <mspasspy.db.normalize.DictionaryCacheMatcher>`
+:py:class:`DictionaryCacheMatcher <mspasspy.db.normalize.DictionaryCacheMatcher>`
 requires implementation of
 :py:meth:`cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.cache_id>`
 and
@@ -367,7 +367,7 @@ python dictionary while the matchers require posting the same data to
 the MsPASS Metadata container to work more efficiently with the C++
 code base that defines data objects.
 
-:py:class:`DataframeCacheMatcher <mspasspy.db.normalize.DataFrameCacheMatcher>`
+:py:class:`DataFrameCacheMatcher <mspasspy.db.normalize.DataFrameCacheMatcher>`
 requires only the method
 :py:meth:`subset <mspasspy.db.normalize.DataFrameCacheMatcher.subset>`
 used to select only the rows in the Dataframe that define a "match"
@@ -641,8 +641,8 @@ here by a simple example:
 
 .. code-block:: python
 
-  from mspasspy.db.normalize import DataframeCacheMatcher
-  class MyCustomMatcher(DataframeCacheMatcher):
+  from mspasspy.db.normalize import DataFrameCacheMatcher
+  class MyCustomMatcher(DataFrameCacheMatcher):
     # class implementation code
 
 Any class needs a constructor as part of the API.   Most will
@@ -653,7 +653,7 @@ cleanly with the base class :code:`find` and :code:`find_one` methods:
 
 .. code-block:: python
 
-  class MyCustomMatcher(DataframeCacheMatcher):
+  class MyCustomMatcher(DataFrameCacheMatcher):
     def __init__(
       self,
       db,
@@ -677,7 +677,7 @@ cleanly with the base class :code:`find` and :code:`find_one` methods:
       # any additional argument would be parse to set self variables here
 
 The point of that somewhat elaborate construct is to cleanly construct the
-base class, which here is :code:`DataframeCacheMatcher`, from the
+base class, which here is :code:`DataFrameCacheMatcher`, from the
 inputs to a constructor.   An instance of the above using all defaults
 could then be created with the following construct:
 
@@ -700,7 +700,7 @@ intermediate classes you should use to build your custom matcher are:
 
 -  The :py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher>`
    requires implementing only one method called
-   :py:meth:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher.query_generator>`.
+   :py:meth:`query_generator <mspasspy.db.normalize.DatabaseMatcher.query_generator>`.
    Tha method needs to create a python dictionary in pymongo syntax that is to
    be applied to the normalizing collection.  That query would normally be
    constructed from one or more Metadata attributes in a data object but
@@ -725,7 +725,7 @@ intermediate classes you should use to build your custom matcher are:
 -  The :py:class:`DataFrameCacheMatcher <mspasspy.db.normalize.DataFrameCacheMatcher>`
    requires subclasses to implement only one method called
    :py:meth:`subset <mspasspy.db.normalize.DataFrameCacheMatcher.subset>`.
-   The :code:`DataframeCacheMatcher` defines its cache internally with the
+   The :code:`DataFrameCacheMatcher` defines its cache internally with the
    symbol :code:`self.cache`.  That symbol defines a pandas container.
    The subset method you implement can use the rich API of pandas to
    define the matching operation you need to build.  Pandas are so widely used
