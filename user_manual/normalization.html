@@ -288,7 +288,7 @@ from running normalize_mseed in the example above:</p>
 <p>Notice the use of the normalize argument that tells the reader to
 normalize with the channel collection.   A parallel version of the
 example above requires use of the function
-<code class="xref py py-func docutils literal notranslate"><span class="pre">read_distributed_data&lt;mspasspy.db.database.read_distributed_data()</span></code>.
+<code class="xref py py-func docutils literal notranslate"><span class="pre">read_distributed_data</span> <span class="pre">&lt;mspasspy.db.database.read_distributed_data()</span></code>.
 The following does the same operation as above in parallel with dask</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
@@ -370,14 +370,14 @@ simply a special case of “many”.</p>
 arbitrary.  They are the names used to implement the same concepts in MongoDB
 as methods of their database handle object.  In fact, as a convenience the
 normalize module defines the intermediate class
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>
 that provides a layer to simply creating a matcher to work directly with
 MongoDB.   That class implements <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find" title="mspasspy.db.normalize.DatabaseMatcher.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find_one" title="mspasspy.db.normalize.DatabaseMatcher.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one</span></code></a> as
 generic wrapper code that translates MongoDB documents into the (different)
 structure required by the base class,
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher" title="mspasspy.db.normalize.BasicMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code></a>.
 To make the database matcher generic,
-concrete implementations of <code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>
+concrete implementations of <code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>
 are required to implement the method <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.query_generator" title="mspasspy.db.normalize.DatabaseMatcher.query_generator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">query_generator</span></code></a>.
 That approach allows the implementation to have a generic algorithm for
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find" title="mspasspy.db.normalize.DatabaseMatcher.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find_one" title="mspasspy.db.normalize.DatabaseMatcher.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one</span></code></a> with a series of matching classes
@@ -385,8 +385,8 @@ that are subclasses of <code class="code docutils literal notranslate"><span cla
 of <code class="code docutils literal notranslate"><span class="pre">query_generator</span></code>.   The following table is a summary of concrete
 matcher classes that are subclasses of <code class="code docutils literal notranslate"><span class="pre">DatabaseMatcher</span></code> with links
 to the docstring for each class:</p>
-<table class="colwidths-given docutils align-default" id="id5">
-<caption><span class="caption-number">Table 5 </span><span class="caption-text">Database Query-based Matchers</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<table class="colwidths-given docutils align-default" id="id3">
+<caption><span class="caption-number">Table 5 </span><span class="caption-text">Database Query-based Matchers</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 67%" />
@@ -397,7 +397,7 @@ to the docstring for each class:</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a href="#id3"><span class="problematic" id="id4">:py:clases:`ObjectIdDBMatcher &lt;mspasspy.db.normalize.ObjectIdDBMatcher&gt;`</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdDBMatcher" title="mspasspy.db.normalize.ObjectIdDBMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectIdDBMatcher</span></code></a></p></td>
 <td><p>Match with MongoDB ObjectId</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedDBMatcher" title="mspasspy.db.normalize.MiniseedDBMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiniseedDBMatcher</span></code></a></p></td>
@@ -417,7 +417,7 @@ to the docstring for each class:</p>
 <p>As noted many times in this User’s Manual database transactions are expensive
 operations due to the inevitable lag from the time between issuing a query until
 the result is loaded into your program’s memory space.  The subclasses
-derived from <code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>
+derived from <code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>
 are thus most useful for one of two situations:  (1) the normalizing
 collection is large and the matching algorithm can use an effective
 MongoDB index, or (2) the dataset is small enough that the cost of the queries
@@ -435,9 +435,9 @@ and
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find_one" title="mspasspy.db.normalize.BasicMatcher.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one</span></code></a>
 methods.   We supply two generic search algorithms as part of MsPASS
 implemented as two intermediate classes used similarly to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>:</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>:</p>
 <ol class="arabic simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DictionaryMatcher&lt;mspasspy.db.normalize.DictionaryCacheMatcher</span></code>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DictionaryMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DictionaryCacheMatcher</span></code>
 uses a python dictionary as the internal cache.  It is most useful
 when the matching algorithm can be reduced to a single string key.
 The class implements a generic
@@ -474,11 +474,11 @@ or similar methods for loading a Dataframe from an SQL relational database.</p><
 <p>These two classes differ mainly in what they require to make them
 concrete.   That is, both have abstract/virtual methods that are required
 to make a concrete implemntation.
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DictionaryMatcher&lt;mspasspy.db.normalize.DictionaryCacheMatcher</span></code>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DictionaryMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DictionaryCacheMatcher</span></code>
 requires implementation of
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">cache_id&lt;mspasspy.db.normalize.DictionaryCacheMatcher.cache_id()</span></code>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">cache_id</span> <span class="pre">&lt;mspasspy.db.normalize.DictionaryCacheMatcher.cache_id()</span></code>
 and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">db_make_cache_id&lt;mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id()</span></code>.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">db_make_cache_id</span> <span class="pre">&lt;mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id()</span></code>.
 That minor complication was implemented to allow an implementation to use
 different keys to access attributes stored in the database and
 the equivalent keys used to access the same data in a workflow.
@@ -498,8 +498,8 @@ issues further in the subsection on writing a custom matcher below.</p>
 <p>The following table is a summary of concrete
 matcher classes that utilize a cacheing method.  As above each name
 is a hyperlink to the docstring for the class:</p>
-<table class="colwidths-given docutils align-default" id="id6">
-<caption><span class="caption-number">Table 6 </span><span class="caption-text">Cache-based Matchers</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
+<table class="colwidths-given docutils align-default" id="id4">
+<caption><span class="caption-number">Table 6 </span><span class="caption-text">Cache-based Matchers</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 67%" />
@@ -534,7 +534,7 @@ by have “DB” embedded in the class name
 <h4>Example 1:  ObjectId matching<a class="headerlink" href="#example-1-objectid-matching" title="Permalink to this heading"></a></h4>
 <p>The abstraction of defining matching through a python class allows the
 process of loading normalizing data into a dataset through a single,
-generic function called <code class="xref py py-func docutils literal notranslate"><span class="pre">&lt;mspasspy.db.normalize.normalize&gt;()</span></code>.
+generic function called <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize" title="mspasspy.db.normalize.normalize"><code class="xref py py-func docutils literal notranslate"><span class="pre">normalize</span></code></a>.
 That function was designed exclusively for use in map operations.  The
 idea is most clearly seen by a simple example.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
@@ -733,16 +733,16 @@ the MsPASS naming convention for such ids (e.g. “source_id” to
 normalize source).  With this approach you would use the standard
 update methods of pymongo easily found from numerous web tutorials.
 You will also find examples in the MsPASS tutorials found
-<a href="#id7"><span class="problematic" id="id8">`here https://github.com/mspass-team/mspass_tutorial&gt;`__</span></a>.  Then
+<a class="reference external" href="https://github.com/mspass-team/mspass_tutorial">here</a>.  Then
 you can use the <code class="code docutils literal notranslate"><span class="pre">normalize</span></code> argument with the readers to
 load normalizing data at read time or use the inline version
 <code class="code docutils literal notranslate"><span class="pre">ObjectIdDBMatcher</span></code> or <code class="code docutils literal notranslate"><span class="pre">ObjectIdMatcher</span></code>.</p></li>
 <li><p>Write an extension class to the intermediate level, subclasses of the base class
-:py:<code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code>
+:py:<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher" title="mspasspy.db.normalize.BasicMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code></a>
 described above
-(<code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DictionaryCacheMatcher&lt;mspasspy.db.normalize.DictionaryMatcher</span></code>,
-and <code class="xref py py-class docutils literal notranslate"><span class="pre">DataframeCacheMatcher&lt;mspasspy.db.normalize.DataframeCacheMatcher</span></code>).
+(<code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DictionaryCacheMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DictionaryMatcher</span></code>,
+and <code class="xref py py-class docutils literal notranslate"><span class="pre">DataframeCacheMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DataframeCacheMatcher</span></code>).
 One could also build directly on the base class, but we can think of no
 example where would be preferable to extending one of the intermediate
 classes.  The remainder of this section focuses only on some hints for
@@ -812,9 +812,9 @@ documentation, by implementing the methods tagged with the
 <code class="code docutils literal notranslate"><span class="pre">&#64;abstractmethod</span></code> decorator.  Requirement for each of the
 intermediate classes you should use to build your custom matcher are:</p>
 <ul class="simple">
-<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DatabaseMatcher</span></code>
 requires implementing only one method called
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">DatabaseMatcher&lt;mspasspy.db.normalize.DatabaseMatcher.query_generator()</span></code>.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">DatabaseMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DatabaseMatcher.query_generator()</span></code>.
 Tha method needs to create a python dictionary in pymongo syntax that is to
 be applied to the normalizing collection.  That query would normally be
 constructed from one or more Metadata attributes in a data object but
@@ -822,23 +822,23 @@ time queries may also want to use the data start time and endtime available
 as methods in atomic data objects.  Consult the MongoDB documentation
 for guidance on the syntax of pymongo’s query language based on
 python dictionaries.</p></li>
-<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">DictionaryCacheMatcher&lt;mspasspy.db.normalize.DictionaryCacheMatcher</span></code>
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">DictionaryCacheMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DictionaryCacheMatcher</span></code>
 requires implementing two methods.
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">cache_id&lt;mspasspy.db.normalize.DictionaryCacheMatcher.cache_id()</span></code>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">cache_id</span> <span class="pre">&lt;mspasspy.db.normalize.DictionaryCacheMatcher.cache_id()</span></code>
 is a function that needs to return a unique string that defines the
 key to the python dictionary used as to implement a cache in this
 intermediate class.
 The other method,
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">db_make_cache_id&lt;mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">db_make_cache_id</span> <span class="pre">&lt;mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id()</span></code>,
 needs to do the same thing and create identical keys.
 The difference being that
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">db_make_cache_id&lt;mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id()</span></code>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">db_make_cache_id</span> <span class="pre">&lt;mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id()</span></code>
 is used as the data loader to create the dictionary-based cache while
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">cache_id&lt;mspasspy.db.normalize.DictionaryCacheMatcher.cache_id()</span></code>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">cache_id</span> <span class="pre">&lt;mspasspy.db.normalize.DictionaryCacheMatcher.cache_id()</span></code>
 is used to construct the comparable key from a MsPASS data object.</p></li>
-<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">DataframeCacheMatcher&lt;mspasspy.db.normalize.DataframeCacheMatcher</span></code>
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">DataframeCacheMatcher</span> <span class="pre">&lt;mspasspy.db.normalize.DataframeCacheMatcher</span></code>
 requires subclasses to implement only one method called
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">subset&lt;mspasspy.db.normalize.DataframeCacheMatcher.subset()</span></code>.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">subset</span> <span class="pre">&lt;mspasspy.db.normalize.DataframeCacheMatcher.subset()</span></code>.
 The <code class="code docutils literal notranslate"><span class="pre">DataframeCacheMatcher</span></code> defines its cache internally with the
 symbol <code class="code docutils literal notranslate"><span class="pre">self.cache</span></code>.  That symbol defines a pandas container.
 The subset method you implement can use the rich API of pandas to
