@@ -19,8 +19,8 @@ relational database schema handles this issue by defining
 a set of tables that are linked to the waveform index (wfdisc)
 using a relational database "join".  MongoDB is not relational
 but handles the same issue by what they call the :code:`normalized`
-versus the :code:`embedded` data model.
-(MongoDB's documentation on this topic can be found `here<https://www.mongodb.com/docs/manual/core/data-model-design/>`__.
+versus the :code:`embedded` data model
+(MongoDB's documentation on this topic can be found `here <https://www.mongodb.com/docs/manual/core/data-model-design/>`__).
 
 Normalization is conceptually similar to a relational database join, but
 is implemented in a different way that has implications on performance.
@@ -120,7 +120,7 @@ method to speed update times.   We strongly recommend use of this function
 for miniseed data as a simpler implementation was found to be as much as two
 orders of magnitude slower than the current algorithm.  The data on that
 development is preserved
-`here on github<https://github.com/mspass-team/mspass/discussions/307>`__.
+`here on github <https://github.com/mspass-team/mspass/discussions/307>`__.
 
 Normalizing source data is often a more complicated problem.   How difficult
 the problem is depends heavily upon how the data time segmentation is
@@ -280,15 +280,15 @@ to the docstring for each class:
 
    * - Class Name
      - Use
-   * - :py:clases:`ObjectIdDBMatcher<mspasspy.db.normalize.ObjectIdDBMatcher>`
+   * - :py:clases:`ObjectIdDBMatcher <mspasspy.db.normalize.ObjectIdDBMatcher>`
      - Match with MongoDB ObjectId
-   * - :py:class:`MiniseedDBMatcher<mspasspy.db.normalize.MiniseedDBMatcher>`
+   * - :py:class:`MiniseedDBMatcher <mspasspy.db.normalize.MiniseedDBMatcher>`
      - Miniseed match with net:sta:chan:loc and time
-   * - - :py:class:`Equality Matcher<mspasspy.db.normalize.EqualityDBMatcher>`
+   * - :py:class:`EqualityDBMatcher <mspasspy.db.normalize.EqualityDBMatcher>`
      - Generic equality match of one or more key-value pairs
-   * - :py:class:`OriginTimeDBMatcher<mspasspy.db.normalize.OriginTimeDBMatcher>`
+   * - :py:class:`OriginTimeDBMatcher <mspasspy.db.normalize.OriginTimeDBMatcher>`
      - match data with start time defined by event origin time
-   * - :py:class:`ArrivalDBMatcher<mspasspy.db.normalize.ArrivalDBMatcher>`
+   * - :py:class:`ArrivalDBMatcher <mspasspy.db.normalize.ArrivalDBMatcher>`
      - match arrival times to waveforms
 
 As noted many times in this User's Manual database transactions are expensive
@@ -327,7 +327,7 @@ implemented as two intermediate classes used similarly to
     MsPASS data objects that are the target of the normalization.
 #.  :py:class:`DataframeCacheMatcher<mspasspy.db.normalize.DataframeMatcher>`
     uses the more flexible
-    `Pandas Dataframe API<https://pandas.pydata.org/docs/reference/index.html>`__.
+    `Pandas Dataframe API <https://pandas.pydata.org/docs/reference/index.html>`__.
     to store it's internal cache.   The Pandas library is robust and
     has a complete set of logical constructs that can be used to construct
     any query possible with something like SQL and more.  Any custom,
@@ -343,7 +343,7 @@ These two intermediate-level classes have two features in common:
     for example, can be used to load :code:`site` collection metadata from
     MongoDB and the later can be used to load comparable data from an
     Antelope :code:`site` table via the
-    `Pandas read_csv method<https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html#pandas.read_csv>`__
+    `Pandas read_csv method <https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html#pandas.read_csv>`__
     or similar methods for loading a Dataframe from an SQL relational database.
 #.  Both provide generic implementations of the :code:`find` and
     :code:`find_one` methods required by
@@ -446,7 +446,7 @@ normalization workflows are:
    after running the normalize function the each datum for which a match
    was found will contain attributes with the following keys:
    :code:`site_id`, :code:`site_lat`, :code:`site_lon`, and :code:`site_elev`.
-   Note these have the string "site_" automaticaly prepended by default.
+   Note these have the string "site\_" automaticaly prepended by default.
    That renaming can be disable by setting the :code:`prepend_collection_name`
    to False.  By default failures in matching cause the associated
    waveform data to be marked dead with an informational error log posted
@@ -611,7 +611,7 @@ We know of three solutions to that problem:
     normalize source).  With this approach you would use the standard
     update methods of pymongo easily found from numerous web tutorials.
     You will also find examples in the MsPASS tutorials found
-    `here<https://github.com/mspass-team/mspass_tutorial>`__.  Then
+    `here https://github.com/mspass-team/mspass_tutorial>`__.  Then
     you can use the :code:`normalize` argument with the readers to
     load normalizing data at read time or use the inline version
     :code:`ObjectIdDBMatcher` or :code:`ObjectIdMatcher`.
@@ -730,7 +730,7 @@ intermediate classes you should use to build your custom matcher are:
    The subset method you implement can use the rich API of pandas to
    define the matching operation you need to build.  Pandas are so widely used
    there is an overwhelming volume of material you can use for a reference.
-   `Here<https://pandas.pydata.org/docs/user_guide/indexing.html>`__ is
+   `Here <https://pandas.pydata.org/docs/user_guide/indexing.html>`__ is
    a reasonable starting point.  In any case, a key point is that the
    :code:`subset` method you implement needs to fetch attributes from
    the input data object's Metadata (header) and/or the data objects
