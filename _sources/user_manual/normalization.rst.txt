@@ -171,7 +171,7 @@ from running normalize_mseed in the example above:
 Notice the use of the normalize argument that tells the reader to
 normalize with the channel collection.   A parallel version of the
 example above requires use of the function
-:py:func:`read_distributed_data <mspasspy.db.database.read_distributed_data`.
+:py:func:`read_distributed_data <mspasspy.db.database.read_distributed_data>`.
 The following does the same operation as above in parallel with dask
 
 .. code-block:: python
@@ -258,14 +258,14 @@ The choice of those two names (:py:meth:`find <mspasspy.db.normalize.DatabaseMat
 arbitrary.  They are the names used to implement the same concepts in MongoDB
 as methods of their database handle object.  In fact, as a convenience the
 normalize module defines the intermediate class
-:py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher`
+:py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher>`
 that provides a layer to simply creating a matcher to work directly with
 MongoDB.   That class implements :py:meth:`find <mspasspy.db.normalize.DatabaseMatcher.find>` and :py:meth:`find_one <mspasspy.db.normalize.DatabaseMatcher.find_one>` as
 generic wrapper code that translates MongoDB documents into the (different)
 structure required by the base class,
 :py:class:`BasicMatcher <mspasspy.db.normalize.BasicMatcher>`.
 To make the database matcher generic,
-concrete implementations of :py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher`
+concrete implementations of :py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher>`
 are required to implement the method :py:meth:`query_generator <mspasspy.db.normalize.DatabaseMatcher.query_generator>`.
 That approach allows the implementation to have a generic algorithm for
 :py:meth:`find <mspasspy.db.normalize.DatabaseMatcher.find>` and :py:meth:`find_one <mspasspy.db.normalize.DatabaseMatcher.find_one>` with a series of matching classes
@@ -294,7 +294,7 @@ to the docstring for each class:
 As noted many times in this User's Manual database transactions are expensive
 operations due to the inevitable lag from the time between issuing a query until
 the result is loaded into your program's memory space.  The subclasses
-derived from :py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher`
+derived from :py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher>`
 are thus most useful for one of two situations:  (1) the normalizing
 collection is large and the matching algorithm can use an effective
 MongoDB index, or (2) the dataset is small enough that the cost of the queries
@@ -313,9 +313,9 @@ and
 :py:meth:`find_one <mspasspy.db.normalize.BasicMatcher.find_one>`
 methods.   We supply two generic search algorithms as part of MsPASS
 implemented as two intermediate classes used similarly to
-:py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher`:
+:py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher>`:
 
-#.  :py:class:`DictionaryMatcher <mspasspy.db.normalize.DictionaryCacheMatcher`
+#.  :py:class:`DictionaryMatcher <mspasspy.db.normalize.DictionaryCacheMatcher>`
     uses a python dictionary as the internal cache.  It is most useful
     when the matching algorithm can be reduced to a single string key.
     The class implements a generic
@@ -325,7 +325,7 @@ implemented as two intermediate classes used similarly to
     a list of Metadata containers as defined by the base class API.
     We do that for efficiency as Metadata containers are native to
     MsPASS data objects that are the target of the normalization.
-#.  :py:class:`DataframeCacheMatcher <mspasspy.db.normalize.DataframeMatcher>`
+#.  :py:class:`DataframeCacheMatcher <mspasspy.db.normalize.DataFrameCacheMatcher>`
     uses the more flexible
     `Pandas Dataframe API <https://pandas.pydata.org/docs/reference/index.html>`__.
     to store it's internal cache.   The Pandas library is robust and
@@ -352,11 +352,11 @@ These two intermediate-level classes have two features in common:
 These two classes differ mainly in what they require to make them
 concrete.   That is, both have abstract/virtual methods that are required
 to make a concrete implemntation.
-:py:class:`DictionaryMatcher <mspasspy.db.normalize.DictionaryCacheMatcher`
+:py:class:`DictionaryMatcher <mspasspy.db.normalize.DictionaryCacheMatcher>`
 requires implementation of
-:py:meth:`cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.cache_id`
+:py:meth:`cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.cache_id>`
 and
-:py:meth:`db_make_cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id`.
+:py:meth:`db_make_cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id>`.
 That minor complication was implemented to allow an implementation to use
 different keys to access attributes stored in the database and
 the equivalent keys used to access the same data in a workflow.
@@ -367,9 +367,9 @@ python dictionary while the matchers require posting the same data to
 the MsPASS Metadata container to work more efficiently with the C++
 code base that defines data objects.
 
-:py:class:`DataframeCacheMatcher <mspasspy.db.normalize.DataframeMatcher>`
+:py:class:`DataframeCacheMatcher <mspasspy.db.normalize.DataFrameCacheMatcher>`
 requires only the method
-:py:meth:`subset <mspasspy.db.normalize.DataframeMatcher.subset>`
+:py:meth:`subset <mspasspy.db.normalize.DataFrameCacheMatcher.subset>`
 used to select only the rows in the Dataframe that define a "match"
 for the complete, concrete class.   For more details see the docstrings that
 can be viewed by following the hyperlinks above.  We also discuss these
@@ -389,7 +389,7 @@ is a hyperlink to the docstring for the class:
      - Match with MongoDB ObjectId as dictioary key for cache
    * - :py:class:`MiniseedMatcher <mspasspy.db.normalize.MiniseedMatcher>`
      - Miniseed match with net:sta:chan:loc and time
-   * - :py:class:`Equality Matcher <mspasspy.db.normalize.EqualityMatcher>`
+   * - :py:class:`EqualityMatcher <mspasspy.db.normalize.EqualityMatcher>`
      - Generic equality match of one or more key-value pairs
    * - :py:class:`OriginTimeMatcher <mspasspy.db.normalize.OriginTimeMatcher>`
      - match data with start time defined by event origin time
@@ -532,8 +532,8 @@ missing a datum will, by default, be killed.
   dataset.compute()
 
 Example 4: ensemble processing
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 This example is a variant of example 3 immediately above but
 implemented on ensembles.  That is, here the normalizing data
 attributes are loaded in the SeismogramEnsemble's Metadata container
@@ -543,7 +543,7 @@ in seismic reflection processing.
 It uses a common
 trick for ensemble processing building a dask bag from distinct source_id
 values, constructing a ensemble-based query from the id, and then
-calling the :py:meth:`read_ensemble_data <mspasspy.db.database.read_ensemble_data>`
+calling the :py:meth:`read_ensemble_data <mspasspy.db.database.Database.read_ensemble_data>`
 method within a parallel map call
 to create the ensembles.  The bag of ensembles are then normalized.
 Finally note that this example is a hybrid of database normalization and
@@ -598,7 +598,7 @@ We know of three solutions to that problem:
 #.  Think about what you are trying to match and see if it is possible to
     use header math functions :ref:`header_math`
     to construct a new Metadata attribute that can be
-    used for a generic match like :py:class:`EqualityMatcher`.
+    used for a generic match like :py:class:`EqualityMatcher <mspasspy.db.normalize.EqualityMatcher>`.
     Similarly for string manipulation you may be able to create a special
     character string to define your match with a custom python function
     you could use in a map operation prior to using one or the MsPASS
@@ -616,11 +616,11 @@ We know of three solutions to that problem:
     load normalizing data at read time or use the inline version
     :code:`ObjectIdDBMatcher` or :code:`ObjectIdMatcher`.
 #.  Write an extension class to the intermediate level, subclasses of the base class
-    :py::class:`BasicMatcher <mspasspy.db.normalize.BasicMatcher>`
+    :py:class:`BasicMatcher <mspasspy.db.normalize.BasicMatcher>`
     described above
-    (:py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher`,
-    :py:class:`DictionaryCacheMatcher <mspasspy.db.normalize.DictionaryMatcher`,
-    and :py:class:`DataframeCacheMatcher <mspasspy.db.normalize.DataframeCacheMatcher`).
+    (:py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher>`,
+    :py:class:`DictionaryCacheMatcher <mspasspy.db.normalize.DictionaryCacheMatcher>`,
+    and :py:class:`DataFrameCacheMatcher <mspasspy.db.normalize.DataFrameCacheMatcher>`).
     One could also build directly on the base class, but we can think of no
     example where would be preferable to extending one of the intermediate
     classes.  The remainder of this section focuses only on some hints for
@@ -698,9 +698,9 @@ documentation, by implementing the methods tagged with the
 :code:`@abstractmethod` decorator.  Requirement for each of the
 intermediate classes you should use to build your custom matcher are:
 
--  The :py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher`
+-  The :py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher>`
    requires implementing only one method called
-   :py:meth:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher.query_generator`.
+   :py:meth:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher.query_generator>`.
    Tha method needs to create a python dictionary in pymongo syntax that is to
    be applied to the normalizing collection.  That query would normally be
    constructed from one or more Metadata attributes in a data object but
@@ -708,23 +708,23 @@ intermediate classes you should use to build your custom matcher are:
    as methods in atomic data objects.  Consult the MongoDB documentation
    for guidance on the syntax of pymongo's query language based on
    python dictionaries.
--  The :py:class:`DictionaryCacheMatcher <mspasspy.db.normalize.DictionaryCacheMatcher`
+-  The :py:class:`DictionaryCacheMatcher <mspasspy.db.normalize.DictionaryCacheMatcher>`
    requires implementing two methods.
-   :py:meth:`cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.cache_id`
+   :py:meth:`cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.cache_id>`
    is a function that needs to return a unique string that defines the
    key to the python dictionary used as to implement a cache in this
    intermediate class.
    The other method,
-   :py:meth:`db_make_cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id`,
+   :py:meth:`db_make_cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id>`,
    needs to do the same thing and create identical keys.
    The difference being that
-   :py:meth:`db_make_cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id`
+   :py:meth:`db_make_cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id>`
    is used as the data loader to create the dictionary-based cache while
-   :py:meth:`cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.cache_id`
+   :py:meth:`cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.cache_id>`
    is used to construct the comparable key from a MsPASS data object.
--  The :py:class:`DataframeCacheMatcher <mspasspy.db.normalize.DataframeCacheMatcher`
+-  The :py:class:`DataFrameCacheMatcher <mspasspy.db.normalize.DataFrameCacheMatcher>`
    requires subclasses to implement only one method called
-   :py:meth:`subset <mspasspy.db.normalize.DataframeCacheMatcher.subset`.
+   :py:meth:`subset <mspasspy.db.normalize.DataFrameCacheMatcher.subset>`.
    The :code:`DataframeCacheMatcher` defines its cache internally with the
    symbol :code:`self.cache`.  That symbol defines a pandas container.
    The subset method you implement can use the rich API of pandas to
