@@ -26,11 +26,6 @@ from helper import (
     get_live_timeseries_ensemble,
     get_live_seismogram_ensemble,
 )
-from mspasspy.global_history.manager import (
-    GlobalHistoryManager,
-    mspass_normal_reduce,
-    mspass_normal_map,
-)
 import mspasspy.algorithms.signals as signals
 from mspasspy.ccore.seismic import (
     Seismogram,
@@ -48,7 +43,7 @@ from mspasspy.util.converter import AntelopePf2dict
 import json
 from mspasspy.global_history.ParameterGTree import ParameterGTree, parameter_to_GTree
 import collections
-
+from mspasspy.global_history.manager import mspass_normal_map, mspass_normal_reduce, GlobalHistoryManager
 
 def spark_map(input, manager, sc, alg_name=None, parameters=None):
     data = sc.parallelize(input)
@@ -121,13 +116,11 @@ class TestManager:
     def add(
         self,
         data,
-        *args,
         object_history=False,
         alg_name="filter",
         alg_id=None,
         dryrun=False,
         inplace_return=True,
-        **options
     ):
         return data + data
 

@@ -23,7 +23,6 @@ sys.path.append("python/tests")
 
 from mspasspy.util import logging_helper
 from mspasspy.client import Client
-from mspasspy.db.database import Database
 from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.ccore.utility import MsPASSError
 from mspasspy.ccore.seismic import (

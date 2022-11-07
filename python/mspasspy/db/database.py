@@ -14,8 +14,18 @@ import pandas as pd
 try:
     import dask.bag as daskbag
     import dask.dataframe as daskdf
+
+    __mspasspy_has_dask = True
 except:
-    pass
+    __mspasspy_has_dask = False
+
+try:
+    import pyspark
+
+    __mspasspy_has_pyspark = True
+except:
+    __mspasspy_has_pyspark = False
+
 import gridfs
 import pymongo
 import numpy as np
@@ -58,7 +68,7 @@ def read_distributed_data(
     normalize=None,
     load_history=False,
     exclude_keys=None,
-    format="dask",
+    format=None,
     npartitions=None,
     spark_context=None,
     data_tag=None,

@@ -9,16 +9,16 @@ try:
     from pyspark import SparkConf, SparkContext
     from pyspark.sql import SparkSession
 
-    hasSpark = True
+    _mspasspy_has_pyspark = True
 except:
-    hasSpark = False
+    _mspasspy_has_pyspark = False
 
 try:
     from dask.distributed import Client as DaskClient
 
-    hasDask = True
+    _mspasspy_has_dask_distributed = True
 except:
-    hasDask = False
+    _mspasspy_has_dask_distributed = False
 
 from mspasspy.ccore.utility import MsPASSError
 
@@ -146,9 +146,9 @@ class Client:
         elif MSPASS_SCHEDULER:
             self._scheduler = MSPASS_SCHEDULER
         else:
-            if hasDask:
+            if _mspasspy_has_dask_distributed:
                 self._scheduler = "dask"
-            elif hasSpark:
+            elif _mspasspy_has_pyspark:
                 self._scheduler = "spark"
             else:
                 self._scheduler = None
@@ -262,12 +262,14 @@ class Client:
         """
         Get the scheduler(spark/dask) with this client
 
-        :return: :class:`pyspark.SparkContext`/:class:`dask.distributed.Client`
+        :return: :class:`pyspark.SparkContext`/:class:`dask.distributed.Client`/None
         """
         if self._scheduler == "spark":
             return self._spark_context
-        else:
+        elif self._scheduler == "dask":
             return self._dask_client
+        else:
+            return None
 
     def set_database_client(self, database_host, database_port=None):
         """

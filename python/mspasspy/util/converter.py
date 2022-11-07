@@ -9,8 +9,10 @@ import pandas as pd
 
 try:
     import dask.dataframe as daskdf
+
+    __mspasspy_has_dask = True
 except:
-    pass
+    __mspasspy_has_dask = False
 
 from mspasspy.ccore.utility import Metadata, AntelopePf, MsPASSError, ErrorSeverity
 from mspasspy.ccore.seismic import (
@@ -678,12 +680,12 @@ def Textfile2Dataframe(
     if (
         header_line is None or header_line < 0
     ):  #   Header_line not given, using attribute_names
-        if parallel:
+        if parallel and __mspasspy_has_dask:
             df = daskdf.read_csv(filename, sep=separator, names=attribute_names)
         else:
             df = pd.read_csv(filename, sep=separator, names=attribute_names)
     else:  #   header_line is given and attribute_names is not given
-        if parallel:
+        if parallel and __mspasspy_has_dask:
             df = daskdf.read_csv(filename, sep=separator, header=header_line)
         else:
             df = pd.read_csv(filename, sep=separator, header=header_line)
@@ -710,7 +712,7 @@ def Textfile2Dataframe(
             df[key] = val
 
     #   Transfer dask dataframe back to pandas dataframe to keep the consistency in internal representation
-    if parallel:
+    if parallel and __mspasspy_has_dask:
         df = df.compute()
 
     return df

@@ -23,13 +23,11 @@ from mspasspy.global_history.ParameterGTree import ParameterGTree, parameter_to_
 def mspass_normal_map(
     data,
     func,
-    *args,
     global_history=None,
     object_history=False,
     alg_id=None,
     alg_name=None,
     parameters=None,
-    **kwargs
 ):
     """
      This decorator method performs map function in Python. Instead of performing the normal map function,
@@ -37,7 +35,8 @@ def mspass_normal_map(
      as input, the global history manager will log down the usage of the algorithm. Also, if user set
      object_history to be True, then each mspass object in this map function will save the object level history.
 
-    :param func: target function
+    :param data: a iterable which is to be mapped.
+    :param func: target function to which map passes each element of given iterable.
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
     :param object_history: save the each object's history in the map when True
@@ -52,13 +51,13 @@ def mspass_normal_map(
     if parameters:
         parameterGTree = parameter_to_GTree(parameters_str=parameters)
     else:
-        new_kwargs = kwargs.copy()
+        new_kwargs = {}
         new_kwargs["object_history"] = object_history
         if alg_name:
             new_kwargs["alg_name"] = alg_name
         if alg_id:
             new_kwargs["alg_id"] = alg_id
-        parameterGTree = parameter_to_GTree(*args, **new_kwargs)
+        parameterGTree = parameter_to_GTree(**new_kwargs)
 
     parameters_json = json.dumps(parameterGTree.asdict())
 
@@ -68,7 +67,8 @@ def mspass_normal_map(
     # get the alg_id if exists, else create a new one
     if not alg_id:
         # get the alg_id if exists
-        alg_id = global_history.get_alg_id(alg_name, parameters_json)
+        if global_history:
+            alg_id = global_history.get_alg_id(alg_name, parameters_json)
         # else create a new one
         if not alg_id:
             alg_id = ObjectId()
@@ -82,30 +82,24 @@ def mspass_normal_map(
         return map(
             lambda wf: func(
                 wf,
-                *args,
                 object_history=object_history,
                 alg_name=alg_name,
                 alg_id=str(alg_id),
-                **kwargs
             ),
             data,
         )
 
-    return map(
-        lambda wf: func(wf, *args, object_history=object_history, **kwargs), data
-    )
+    return map(lambda wf: func(wf, object_history=object_history), data)
 
 
 def mspass_normal_reduce(
     data,
     func,
-    *args,
     global_history=None,
     object_history=False,
     alg_id=None,
     alg_name=None,
     parameters=None,
-    **kwargs
 ):
     """
      This method performs reduce function using functools. Instead of performing the normal reduce function,
@@ -113,7 +107,8 @@ def mspass_normal_reduce(
      as input, the global history manager will log down the usage of the algorithm. Also, if user set
      object_history to be True, then each mspass object in this reduce function will save the object level history.
 
-    :param data: data to be processed
+    :param data: data to be processed, it needs to be a iterable. Apply func of two arguments cumulatively
+     to the items of iterable, from left to right, so as to reduce the iterable to a single value.
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
@@ -129,13 +124,13 @@ def mspass_normal_reduce(
     if parameters:
         parameterGTree = parameter_to_GTree(parameters_str=parameters)
     else:
-        new_kwargs = kwargs.copy()
+        new_kwargs = {}
         new_kwargs["object_history"] = object_history
         if alg_name:
             new_kwargs["alg_name"] = alg_name
         if alg_id:
             new_kwargs["alg_id"] = alg_id
-        parameterGTree = parameter_to_GTree(*args, **new_kwargs)
+        parameterGTree = parameter_to_GTree(**new_kwargs)
 
     parameters_json = json.dumps(parameterGTree.asdict())
 
@@ -145,7 +140,8 @@ def mspass_normal_reduce(
     # get the alg_id if exists, else create a new one
     if not alg_id:
         # get the alg_id if exists
-        alg_id = global_history.get_alg_id(alg_name, parameters_json)
+        if global_history:
+            alg_id = global_history.get_alg_id(alg_name, parameters_json)
         # else create a new one
         if not alg_id:
             alg_id = ObjectId()
@@ -160,17 +156,15 @@ def mspass_normal_reduce(
             lambda a, b: func(
                 a,
                 b,
-                *args,
                 object_history=object_history,
                 alg_name=alg_name,
                 alg_id=str(alg_id),
-                **kwargs
             ),
             data,
         )
 
     return functools.reduce(
-        lambda a, b: func(a, b, *args, object_history=object_history, **kwargs), data
+        lambda a, b: func(a, b, object_history=object_history), data
     )
 
 

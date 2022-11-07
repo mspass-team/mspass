@@ -11,6 +11,53 @@ from helper import (
     get_live_timeseries_list,
     get_live_seismogram_list,
 )
+from unittest import mock
+with mock.patch.dict(sys.modules, {'pyspark': None, 'dask': None, 'dask.dataframe': None}):
+    from mspasspy.util.converter import Textfile2Dataframe
+    def test_Textfile2Dataframe_no_parallel():
+        pf = AntelopePf("python/tests/data/test_import.pf")
+        attributes = Pf2AttributeNameTbl(pf, tag="wfprocess")
+        names = attributes[0]
+
+        textfile = "python/tests/data/testdb.wfprocess"
+
+        for p in [True, False]:
+            df = Textfile2Dataframe(textfile, attribute_names=names, parallel=p)
+            assert df.shape[0] == 652
+            assert df.shape[1] == 12
+            assert df.iloc[1]["pwfid"] == 3103
+            assert np.isclose(df.iloc[1]["starttime"], 1577912954.62975)
+            assert np.isclose(df.iloc[1]["endtime"], 1577913089.7297499)
+            assert df.iloc[1]["time_standard"] == "a"
+
+            #   Test setting null values
+            df = Textfile2Dataframe(textfile, attribute_names=names, parallel=p)
+            assert df.shape[0] == 652
+            assert df.shape[1] == 12
+            assert df.iloc[0]["pwfid"] == 3102
+            assert np.isclose(df.iloc[0]["starttime"], 1577912967.53105)
+            assert np.isclose(df.iloc[0]["endtime"], 1577913102.63105)
+            assert df.iloc[0]["time_standard"] == "a"
+            assert df.iloc[0]["foff"] == 0
+
+            #   Test turning off one_to_one
+            df = Textfile2Dataframe(
+                textfile, attribute_names=names, one_to_one=False, parallel=p
+            )
+            assert df.shape[0] == 651
+            assert df.shape[1] == 12
+
+            #   Test add column
+            df = Textfile2Dataframe(
+                textfile, attribute_names=names, parallel=p, insert_column={"test_col": 1}
+            )
+            assert df.shape[0] == 652
+            assert df.shape[1] == 13
+            assert df.at[0, "test_col"] == 1
+            df = Textfile2Dataframe(
+                textfile, header_line=0, parallel=p, insert_column={"test_col": 1}
+            )
+
 
 from mspasspy.ccore.utility import dmatrix, Metadata, AntelopePf, MsPASSError
 from mspasspy.ccore.seismic import DoubleVector, Seismogram, TimeSeries
@@ -23,7 +70,6 @@ from mspasspy.util.converter import (
     Stream2Seismogram,
     list2Ensemble,
     Pf2AttributeNameTbl,
-    Textfile2Dataframe,
 )
 
 
