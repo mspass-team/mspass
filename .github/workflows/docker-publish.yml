@@ -34,8 +34,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # Setup for Multi-platform image
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Cache Docker layers
         uses: actions/cache@v2
@@ -80,6 +84,7 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -92,6 +97,7 @@ jobs:
         with:
           context: .
           file: Dockerfile_dev
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             mspass/mspass:dev
