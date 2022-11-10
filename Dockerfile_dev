@@ -16,6 +16,8 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
+ARG TARGETARCH
+
 # Prepare the environment
 ARG SPARK_VERSION=3.0.0
 
@@ -25,10 +27,6 @@ ENV PYSPARK_PYTHON python3
 
 ARG APACHE_MIRROR=https://archive.apache.org/dist
 ARG SPARK_URL=${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz
-
-
-# Download & install Dockerize
-RUN wget -qO - ${DOCKERIZE_URL} | tar -xz -C /usr/local/bin 
 
 # Download & install Spark
 RUN wget -qO - ${SPARK_URL} | tar -xz -C /usr/local/ \
