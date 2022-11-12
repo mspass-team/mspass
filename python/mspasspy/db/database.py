@@ -5590,7 +5590,7 @@ class Database(pymongo.database.Database):
         dfile,
         dir=None,
         collection="wf_miniseed",
-        segment_time_tears=False,
+        segment_time_tears=True,
         elog_collection="elog",
         return_ids=False,
         normalize_channel=False,
@@ -5625,7 +5625,7 @@ class Database(pymongo.database.Database):
         ways: (1) dropped packets from telemetry issues, or (2) instrument
         timing jumps when a clock loses external lock to gps or some
         other standard and the rock is restored.  The behavior is this
-        function in gap handling is controlled by the input parameter
+        function is controlled by the input parameter
         segment_time_tears.  When true a new index entry is created
         any time the start time of a packet differs from that computed
         from the endtime of the last packet by more than one sample
@@ -5666,7 +5666,7 @@ class Database(pymongo.database.Database):
         :param segment_time_tears: boolean controlling handling of data gaps
           defined by constant net, sta, chan, and loc but a discontinuity
           in time tags for successive packets.  See above for a more extensive
-          discussion of how to use this parameter.  Default is False.
+          discussion of how to use this parameter.  Default is True.
         :param elog_collection:  name to write any error logs messages
           from the miniseed reader.  Default is "elog", which is the
           same as for TimeSeries and Seismogram data, but the cross reference
