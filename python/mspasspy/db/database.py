@@ -4613,7 +4613,7 @@ class Database(pymongo.database.Database):
                             + " and null loc is ambiguous\n"
                             + "Specify at least time but a loc code if is not truly null",
                             "Fatal",
-                          )
+                        )
                 else:
                     # we land here if a null match didn't work.
                     # Try one more recovery with setting loc to an emtpy
