@@ -3,6 +3,10 @@ from pathlib import Path
 from obspy import read, UTCDateTime
 import pandas as pd
 import numpy as np
+import xarray as xr
+import dask.array as da
+import dask
+import zarr
 from mspasspy.ccore.utility import (
     Metadata,
     MsPASSError,
@@ -909,3 +913,66 @@ def erase_seed_metadata(d, keys=["mseed", "_format"]):
     for mem in d.member:
         for k in keys:
             mem.erase(k)
+
+
+'''
+object_id: the MongoDB object id of the ensemble to be read from the disk. The object is unique
+        and provides a one-to-one mapping to the ensemble's metadata and member data.
+
+the schema for ensemble doc:
+    _id : unique id
+    metadata : a dict that stores the ensemble's metadata
+    member_metadata : a list of metadata for each member
+    store_type = 'zarr' : we might support other storage?
+    zarr_group_path : str, the path of the zarr group 
+    zarr_arr_name : str, the name of the zarr array
+'''
+def read_basic_array_ensemble(db, ensemble_object, object_id):
+    ensemble_col = db.ensemble
+    doc = ensemble_col.find_one({"_id": object_id})
+    df = pd.DataFrame(doc['member_metadata'])
+    ddf = dask.dataframe.from_pandas(df)
+    ensemble_object.member_metadata = ddf
+    if ensemble_object.impl == 'xarray':
+        ensemble_object.member.attrs = doc['metadata']  # we can store the metadata in .attrs
+        if doc['store_type'] == 'zarr':
+            store = zarr.DirectoryStore(doc['zarr_group_path'])
+            zarr_arr = zarr.group(store=store)[doc['zarr_arr_name']]
+            dask_arr = da.from_array(zarr_arr, chunks=zarr_arr.chunks)
+            ensemble_object.member.data = dask_arr
+    return ensemble_object
+
+def write_basic_array_ensemble(db, ensemble_object, object_id):
+    ensemble_col = db.ensemble
+    doc = ensemble_col.find_one({"_id": object_id})
+    df = ensemble_object.member_metadata.compute()
+    key = {'_id':object_id}
+    data = {'member_metadata':df.to_dict()};
+    if ensemble_object.impl == 'xarray':
+        data['metadata'] = ensemble_object.member.attrs
+        if doc['store_type'] == 'zarr':
+            store = zarr.DirectoryStore(doc['zarr_group_path'])
+            group = zarr.group(store=store)
+            zarr_arr = group.create_dataset(
+                [doc['zarr_arr_name']],
+                shape=ensemble_object.member.shape,
+                chunks = ensemble_object.member.data.chunks,
+                dtype =ensemble_object.member.dtype,
+                overwritebool = True,
+                )
+            dask.array.to_zarr(ensemble_object.member.data, zarr_arr, overwrite=True)
+    ensemble_col.update_one(filter=key, update=data, upsert=True)
+
+
+
+class BasicArrayEnsemble:
+    def __init__(self, npts, nmembers, dt, npartitions, coordinates=None, array_implementation='xarray'):
+        self.npts = npts
+        self.nmember = nmembers
+        self.dt = dt
+        self.coordinates = coordinates
+        self.impl = array_implementation
+        self.npartition = npartitions
+        if(array_implementation == 'xarray'):
+            self.member = xr.DataArray()
+    
