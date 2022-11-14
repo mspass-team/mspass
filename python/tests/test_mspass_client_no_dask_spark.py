@@ -1,3 +1,14 @@
+from unittest import mock
+from mspasspy.ccore.seismic import (
+    Seismogram,
+    TimeSeries,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+    DoubleVector,
+)
+from mspasspy.ccore.utility import MsPASSError
+from mspasspy.global_history.manager import GlobalHistoryManager
+from mspasspy.util import logging_helper
 from mspasspy.db.client import DBClient
 
 import gridfs
@@ -14,22 +25,14 @@ from datetime import datetime
 
 sys.path.append("python/tests")
 
-from mspasspy.util import logging_helper
-from mspasspy.global_history.manager import GlobalHistoryManager
-from mspasspy.ccore.utility import MsPASSError
-from mspasspy.ccore.seismic import (
-    Seismogram,
-    TimeSeries,
-    TimeSeriesEnsemble,
-    SeismogramEnsemble,
-    DoubleVector,
-)
 
-from unittest import mock
 def mock_excpt(*args, **kwargs):
     raise Exception("mocked exception")
 
-with mock.patch.dict(sys.modules, {'pyspark': None, 'dask.distributed': None, 'dask': None}):
+
+with mock.patch.dict(
+    sys.modules, {"pyspark": None, "dask.distributed": None, "dask": None}
+):
     from mspasspy.client import Client
 
     class TestMsPASSClient:
@@ -167,7 +170,9 @@ with mock.patch.dict(sys.modules, {'pyspark': None, 'dask.distributed': None, 'd
             with pytest.raises(
                 TypeError, match="job_name should be a string but <class 'list'> is found."
             ):
-                self.client.set_global_history_manager(self.client.get_database("test"), [])
+                self.client.set_global_history_manager(
+                    self.client.get_database("test"), []
+                )
             with pytest.raises(
                 TypeError,
                 match="collection should be a string but <class 'list'> is found.",

@@ -12,8 +12,12 @@ from helper import (
     get_live_seismogram_list,
 )
 from unittest import mock
-with mock.patch.dict(sys.modules, {'pyspark': None, 'dask': None, 'dask.dataframe': None}):
+
+with mock.patch.dict(
+    sys.modules, {"pyspark": None, "dask": None, "dask.dataframe": None}
+):
     from mspasspy.util.converter import Textfile2Dataframe
+
     def test_Textfile2Dataframe_no_parallel():
         pf = AntelopePf("python/tests/data/test_import.pf")
         attributes = Pf2AttributeNameTbl(pf, tag="wfprocess")
@@ -49,7 +53,10 @@ with mock.patch.dict(sys.modules, {'pyspark': None, 'dask': None, 'dask.datafram
 
             #   Test add column
             df = Textfile2Dataframe(
-                textfile, attribute_names=names, parallel=p, insert_column={"test_col": 1}
+                textfile,
+                attribute_names=names,
+                parallel=p,
+                insert_column={"test_col": 1},
             )
             assert df.shape[0] == 652
             assert df.shape[1] == 13

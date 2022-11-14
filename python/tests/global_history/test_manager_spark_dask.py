@@ -1,3 +1,5 @@
+import collections
+from mspasspy.global_history.manager import mspass_normal_map, mspass_normal_reduce, GlobalHistoryManager
 import copy
 import os
 
@@ -43,7 +45,12 @@ from mspasspy.util.converter import AntelopePf2dict
 import json
 from mspasspy.global_history.ParameterGTree import ParameterGTree, parameter_to_GTree
 import collections
-from mspasspy.global_history.manager import mspass_normal_map, mspass_normal_reduce, GlobalHistoryManager
+from mspasspy.global_history.manager import (
+    mspass_normal_map,
+    mspass_normal_reduce,
+    GlobalHistoryManager,
+)
+
 
 def spark_map(input, manager, sc, alg_name=None, parameters=None):
     data = sc.parallelize(input)
