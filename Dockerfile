@@ -83,7 +83,7 @@ RUN pip3 --no-cache-dir install jedi==0.17.2 notebook==6.2.0
 
 # Tini operates as a process subreaper for jupyter.
 ARG TINI_VERSION=v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/sbin/tini
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${TARGETARCH} /usr/sbin/tini
 RUN chmod +x /usr/sbin/tini
 
 # Add startup script
