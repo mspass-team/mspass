@@ -66,6 +66,7 @@ def ExtractComponent(
             return empty
         try:
             d = TimeSeriesEnsemble(bsc.EnsembleComponent(data, component))
+            # second copy to convert type from CoreTimeSeriesEnsemble to TimeSeriesEnsemble
             return d
         except Exception as err:
             logging_helper.ensemble_error(
