@@ -30,7 +30,7 @@ from mspasspy.ccore.utility import (
 )
 
 from mspasspy.util.error_logger import PyErrorLogger
-from mspasspy.ccore.algorithms.basic import ExtractComponent
+from mspasspy.ccore.algorithms.basic import ExtractComponentSeismogram
 from mspasspy.ccore.algorithms.deconvolution import MTPowerSpectrumEngine
 
 
@@ -1309,7 +1309,7 @@ def test_ExtractComponent():
     seis.npts = 6
     ts = []
     for i in range(3):
-        ts.append(ExtractComponent(seis, i))
+        ts.append(ExtractComponentSeismogram(seis, i))
     for i in range(3):
         assert (ts[i].data == seis.data[i]).all()
 

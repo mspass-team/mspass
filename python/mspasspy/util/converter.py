@@ -17,7 +17,7 @@ from mspasspy.ccore.seismic import (
     SeismogramEnsemble,
     Keywords,
 )
-from mspasspy.ccore.algorithms.basic import ExtractComponent
+from mspasspy.ccore.algorithms.basic import ExtractComponentSeismogram
 
 
 def dict2Metadata(dic):
@@ -229,7 +229,7 @@ def Seismogram2Stream(
         uuids = sg.id()
         logstuff = sg.elog
         for i in range(3):
-            ts = ExtractComponent(sg, i)
+            ts = ExtractComponentSeismogram(sg, i)
             ts.put_string(Keywords.chan, chanmap[i])
             ts.put_double(Keywords.channel_hang, hang[i])
             ts.put_double(Keywords.channel_vang, vang[i])
