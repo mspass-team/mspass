@@ -143,7 +143,7 @@ reading and normalizing miniseed data:
 .. code-block:: python
 
   from mspasspy.client import Client
-  from mspasspy.database.normalize import normalize_mseed
+  from mspasspy.db.normalize import normalize_mseed
   dbclient = Client()
   db = dbclient.get_database("mydatabase")
   retcodes = normalize_mseed(db)
