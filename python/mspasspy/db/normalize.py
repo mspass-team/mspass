@@ -1917,7 +1917,10 @@ class MiniseedMatcher(DictionaryCacheMatcher):
         testid = self.db_make_cache_id(doc)
         if testid is None:
             return None
-        matches = self.normcache[testid]
+        elif testid not in self.normcache:
+            return None
+        else:
+            matches = self.normcache[testid]
         if len(matches) <= 0:
             return None
 
