@@ -485,7 +485,7 @@ def FD_snr_estimator(
                         "Five snr_stats attributes were not computed",
                     )
                     my_logger.log_error(algname, newmessage, err.severity)
-            if metric == "filtered_envelope":
+            elif metric == "filtered_envelope":
                 try:
                     analytic_nfilt = hilbert(nfilt.data)
                     analytic_sfilt = hilbert(sfilt.data)
@@ -502,7 +502,7 @@ def FD_snr_estimator(
                         "Error computing filtered_envelope metrics:  snr_envelope_Linf_over_L1 not computed",
                         ErrorSeverity.Complaint,
                     )
-            if metric == "filtered_L2":
+            elif metric == "filtered_L2":
                 try:
                     namp = RMSAmplitude(nfilt)
                     samp = RMSAmplitude(sfilt)
@@ -516,7 +516,7 @@ def FD_snr_estimator(
                     )
                     my_logger.log_error(algname, newmessage, err.severity)
 
-            if metric == "filtered_MAD":
+            elif metric == "filtered_MAD":
                 try:
                     namp = MADAmplitude(nfilt)
                     samp = MADAmplitude(sfilt)
@@ -530,7 +530,7 @@ def FD_snr_estimator(
                     )
                     my_logger.log_error(algname, newmessage, err.severity)
 
-            if metric == "filtered_Linf":
+            elif metric == "filtered_Linf":
                 try:
                     # the C function expects a fraction - for users a percentage
                     # is clearer
@@ -547,7 +547,7 @@ def FD_snr_estimator(
                     )
                     my_logger.log_error(algname, newmessage, err.severity)
 
-            if metric == "filtered_perc":
+            elif metric == "filtered_perc":
                 try:
                     namp = MADAmplitude(nfilt)
                     samp = PercAmplitude(sfilt, perc / 100.0)
