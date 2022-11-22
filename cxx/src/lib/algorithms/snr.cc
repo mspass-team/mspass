@@ -13,7 +13,8 @@ It is used in snr python wrapper functions of mspass and in CNR3cDecon to
 estimate bandwidth from power spectrum estimates.   */
 BandwidthData EstimateBandwidth(const double signal_df,
   const PowerSpectrum& s, const PowerSpectrum& n,
-    const double snr_threshold, const double tbp,const double fhs)
+    const double snr_threshold, const double tbp,const double fhs,
+     bool fix_high_edge_to_fhs)
 {
   /* Set the starting search points at low (based on noise tbp) and high (80% fny)
   sides */
@@ -28,7 +29,7 @@ BandwidthData EstimateBandwidth(const double signal_df,
   else
     fhigh_start = fhs;
   double df_test_range=2.0*tbp*(n.df);
-  int s_range=s.nf();
+  int s_range = s.sample_number(fhigh_start);
   BandwidthData result;
   /* First search from flow_start in increments of signal_df to find low
   edge.*/
@@ -43,7 +44,10 @@ BandwidthData EstimateBandwidth(const double signal_df,
     /* We use amplitude snr not power snr*/
     sigamp=sqrt(s.spectrum[i]);
     namp=n.amplitude(f);
-    snrnow=sigamp/namp;
+    if(namp>0.0)
+      snrnow=sigamp/namp;
+    else
+      snrnow=999999.0;
     if(snrnow>snr_threshold)
     {
       if(searching)
@@ -82,47 +86,79 @@ BandwidthData EstimateBandwidth(const double signal_df,
     return result;
   }
   /* Now search from the high end to find upper band edge - same algorithm
-  reversed direction. */
-  searching=false;
-  istart=s.sample_number(fhigh_start);
-  for(i=istart;i>=0;--i)
+  reversed direction.  Note option to disable  */
+  if(fix_high_edge_to_fhs)
   {
-    f=s.frequency(i);
-    sigamp=sqrt(s.spectrum[i]);
-    namp=n.amplitude(f);
-    snrnow=sigamp/namp;
-    if(snrnow>snr_threshold)
+    result.high_edge_f = fhigh_start;
+    sigamp=s.amplitude(fhigh_start);
+    namp=n.amplitude(fhigh_start);
+    if(namp>0.0)
+      snrnow=sigamp/namp;
+    else
+      snrnow=999999.0;
+    result.high_edge_snr=snrnow;
+  }
+  else
+  {
+    searching=false;
+    istart=s.sample_number(fhigh_start);
+    for(i=istart;i>=0;--i)
     {
-      if(searching)
+      f=s.frequency(i);
+      sigamp=sqrt(s.spectrum[i]);
+      namp=n.amplitude(f);
+      if(namp>0.0)
+        snrnow=sigamp/namp;
+      else
+        snrnow=999999.0;
+      if(snrnow>snr_threshold)
       {
-        if((f_mark-f)>=df_test_range)
+        if(searching)
         {
-          result.high_edge_f=f_mark;
-          break;
+          if((f_mark-f)>=df_test_range)
+          {
+            result.high_edge_f=f_mark;
+            break;
+          }
+        }
+        else
+        {
+          f_mark=f;
+          result.high_edge_snr=snrnow;
+          searching=true;
         }
       }
       else
       {
-        f_mark=f;
-        result.high_edge_snr=snrnow;
-        searching=true;
-      }
-    }
-    else
-    {
-      if(searching)
-      {
-        searching=false;
-        f_mark=f;
+        if(searching)
+        {
+          searching=false;
+          f_mark=f;
+        }
       }
     }
   }
-  result.f_range = s.Nyquist() - s.f0;
+  result.f_range = fhigh_start - s.f0;
   return result;
 }
 Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
                                const BandwidthData& bwd)
 {
+  Metadata result;
+  /* We return a null result immediately if the contents of bwd
+  indicate zero bandwidth or some other problem that invalidates
+  the algorithm below. */
+  if( bwd.f_range <= 0.0 )
+  {
+    result.put_double("median_snr",0.0;
+    result.put_double("maximum_snr",0.0);
+    result.put_double("minimum_snr",0.0);
+    result.put_double("q1_4_snr",0.0);
+    result.put_double("q3_4_snr",0.0);
+    result.put_double("mean_snr",0.0);
+    result.put_bool("stats_are_valid",false);
+    return result;
+  }
   std::vector<double> bandsnr;
   double f;
   for(f=bwd.low_edge_f;f<bwd.high_edge_f && f<s.Nyquist();f+=s.df)
@@ -157,6 +193,7 @@ Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
   result.put_double("q1_4_snr",stats.q1_4());
   result.put_double("q3_4_snr",stats.q3_4());
   result.put_double("mean_snr",stats.mean());
+  result.put_bool("stats_are_valid",true);
   return result;
 }
 } // end namespace

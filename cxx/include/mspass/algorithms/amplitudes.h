@@ -355,12 +355,18 @@ thrown if that does not match the power spectrem s df.
   a default for this parameter of -1.0.  When this argument is negative OR
   if the frequency is over the Nyquist of the data it will be silently set to
   80% of the nyquist of s.
+\param fix_high_edge_to_fhs is a boolean that does what the verbose name
+  says.  That is, when set true the search for the upper bandwidth edge is
+  disable and the upper bandwidth frequency edge is set to fhs.   That
+  option can be useful for teleseismic data as high frequency colored noise
+  bursts at low thresholds can lead to poor estimates of the upper band edge.
 
 \return BandwidthData class describing the bandwidth determined by the algorithm.
 */
 BandwidthData EstimateBandwidth(const double signal_df,
   const mspass::seismic::PowerSpectrum& s, const mspass::seismic::PowerSpectrum& n,
-    const double snr_threshold, const double tbp,const double fhs=-1.0);
+    const double snr_threshold, const double tbp,const double fhs=-1.0,
+     const bool fix_high_edge_to_fhs=false);
 /*! \brief Create summary statistics of snr data based on signal and noise spectra.
 
 This function is a close companion to EstimateBandwidth.   EstimateBandwidth
@@ -375,6 +381,10 @@ with the following keys and the concepts they defines:
   "q1_4_snr" - lower quartile (25% point of the distribution) of snr values
   "q3_4_snr" - upper quartile (75% point of the distribution) of snr values
   "mean_snr" - arithmetic mean ofsnr values
+  "stats_are_valid" - booelan caller should used as the name suggests.  That is,
+     caller should first fetch this attribute and handle the resulting null
+     condition.  When this is false it means the data have not detectable
+     signal based on the computed spectra.
 
 Note the function does attempt to avoid Inf and NaN values that are possible
 if the noise value at some frequency is zero (negative is treated like 0).
