@@ -165,14 +165,14 @@ the FDSN confederation of data centers is to use obspy.
 Obspy has two different python functions that can be used to
 fetch miniseed data from one or more FDSN data centers.</p>
 <ol class="arabic simple">
-<li><p>The simplest tool obspy provides is their <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_waveforms.html#obspy.clients.fdsn.client.Client.get_waveforms" title="(in ObsPy v1.3.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_waveform</span></code></a>
+<li><p>The simplest tool obspy provides is their <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_waveforms.html#obspy.clients.fdsn.client.Client.get_waveforms" title="(in ObsPy v1.4.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_waveform</span></code></a>
 method of the fdsn web service client.
 <code class="code docutils literal notranslate"><span class="pre">get_waveform</span></code> retrieves a relatively small number of waveform
 at a time using station codes with wildcards and a time range.
 It is suitable only for small datasets or as a custom agent
 to run for weeks acquiring data driven by some large list.</p></li>
 <li><p>For most MsPASS users the obspy tool
-of choice is <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html#module-obspy.clients.fdsn.mass_downloader" title="(in ObsPy v1.3.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mass_downloader</span></code></a>.
+of choice is <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html#module-obspy.clients.fdsn.mass_downloader" title="(in ObsPy v1.4.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mass_downloader</span></code></a>.
 An overview of the concepts of <code class="code docutils literal notranslate"><span class="pre">mass_downloader</span></code> are given
 <a class="reference external" href="https://docs.obspy.org/tutorial/code_snippets/retrieving_data_from_datacenters.html">here</a>.</p></li>
 </ol>
@@ -243,13 +243,13 @@ StationXML format.</p>
 data centers.   There are two different tools obspy provides.  We have found
 both are usually necessary to assemble a complete suite of receiver metadata.</p>
 <ol class="arabic simple">
-<li><p>The fdsn client has a method called <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_stations.html#obspy.clients.fdsn.client.Client.get_stations" title="(in ObsPy v1.3.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_stations</span></code></a> that is
+<li><p>The fdsn client has a method called <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_stations.html#obspy.clients.fdsn.client.Client.get_stations" title="(in ObsPy v1.4.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_stations</span></code></a> that is
 directly comparable to <code class="code docutils literal notranslate"><span class="pre">get_waveform</span></code>.   It uses web
 services to download metadata for one or more channels of data.  It has
 a set of search parameters used to define what is to be retrieved that
 is usually comprehensive enough to fetch what you need in no more than
 a few calls.   Be warned it retrieves the results into memory into a
-custom obspy data object they call an <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.Inventory.html#obspy.core.inventory.inventory.Inventory" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Inventory</span></code></a>.
+custom obspy data object they call an <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.Inventory.html#obspy.core.inventory.inventory.Inventory" title="(in ObsPy v1.4.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Inventory</span></code></a>.
 An <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> object can be viewed as more or less a
 StationXML format file translated into a python data structure with a
 few added decorations (e.g. plotting).   We return to this point
@@ -257,7 +257,7 @@ below when we discuss how these data are imported to MsPASS.</p></li>
 <li><p>When you use the <code class="code docutils literal notranslate"><span class="pre">mass_downloader</span></code> you have the option of
 having that function download the station metadata and save the
 actual StationXML data files retrieved from web services.  The resulting
-files can then be read with their <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.read_inventory.html#obspy.core.inventory.inventory.read_inventory" title="(in ObsPy v1.3.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_inventory</span></code></a> method.</p></li>
+files can then be read with their <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.read_inventory.html#obspy.core.inventory.inventory.read_inventory" title="(in ObsPy v1.4.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_inventory</span></code></a> method.</p></li>
 </ol>
 <p>Both of the approaches above can be used to create an obspy
 <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> object in python:  for (1) that is the return of the
@@ -354,7 +354,7 @@ MongoDB source documents.</p>
 <p>Like the receiver problem, obspy has two comparable functions for
 retrieving source metadata.</p>
 <ol class="arabic simple">
-<li><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_events.html#obspy.clients.fdsn.client.Client.get_events" title="(in ObsPy v1.3.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_events</span></code></a> is an obspy function that is very similar to the
+<li><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_events.html#obspy.clients.fdsn.client.Client.get_events" title="(in ObsPy v1.4.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_events</span></code></a> is an obspy function that is very similar to the
 receiver equivalent <code class="code docutils literal notranslate"><span class="pre">get_stations</span></code> noted above.
 Like the receiver equivalent it has search criteria to yield a set of source data
 based on some spatial, time, magnitude, and/or other criteria.
@@ -367,7 +367,7 @@ it is too easy to create a collection of source data that is much
 larger than the number of events actually in the data set.</p></li>
 <li><p>If you use the obspy <code class="code docutils literal notranslate"><span class="pre">mass_downloader</span></code> driven by source
 queries (see example titled “Earthquake Data” on the
-<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html#module-obspy.clients.fdsn.mass_downloader" title="(in ObsPy v1.3.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mass_downloader</span></code></a> page)
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html#module-obspy.clients.fdsn.mass_downloader" title="(in ObsPy v1.4.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mass_downloader</span></code></a> page)
 that function will create QuakeML data files defining the unique source data for
 all the waveforms downloaded with each call to that function.</p></li>
 </ol>
@@ -420,7 +420,7 @@ to be processed:</p>
 </pre></div>
 </div>
 <p>where <code class="code docutils literal notranslate"><span class="pre">SOMEFORMAT</span></code> is a keyword from the list of obspy
-supported formats in <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#obspy.core.stream.read" title="(in ObsPy v1.3.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">read</span></code></a>
+supported formats in <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#obspy.core.stream.read" title="(in ObsPy v1.4.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">read</span></code></a>
 and <code class="code docutils literal notranslate"><span class="pre">converterfunction</span></code> is a format-specific python function you would need to
 write.  The function <code class="code docutils literal notranslate"><span class="pre">converterfunction</span></code> needs to handle
 the idiosyncrasies of how obspy handles that format and convert the stream

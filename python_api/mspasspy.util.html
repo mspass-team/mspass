@@ -268,7 +268,7 @@ mspass component order. Presently the data are ALWAYS returned to
 cardinal directions (see above). It will be empty if sg was marked dead</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">obspy.core.stream.Stream</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.4.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">obspy.core.stream.Stream</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -496,7 +496,7 @@ no sanity checks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>trace</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>) – obspy trace object to convert</p></li>
+<li><p><strong>trace</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.4.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>) – obspy trace object to convert</p></li>
 <li><p><strong>history</strong> – mspass ProcessingHistory object to post to result.</p></li>
 </ul>
 </dd>
@@ -651,7 +651,7 @@ Object level history is disabled by default for efficiency.  If object_history i
 as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
 save the history through a new_map operation.   If the history chain is empty this will silently generate
 an error posted to error log on each object.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
 This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
@@ -698,7 +698,7 @@ Object level history is disabled by default for efficiency.  If object_history i
 as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
 save the history through a new_map operation.   If the history chain is empty this will silently generate
 an error posted to error log on each object.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
 This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
@@ -735,7 +735,7 @@ Object level history is disabled by default for efficiency.  If object_history i
 as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
 save the history through a new_map operation.   If the history chain is empty this will silently generate
 an error posted to error log on each object.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
 This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
@@ -782,7 +782,7 @@ Object level history is disabled by default for efficiency.  If object_history i
 as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
 save the history through a new_reduce operation. If the history chain is empty this will silently generate
 an error posted to error log on each object.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
 This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions

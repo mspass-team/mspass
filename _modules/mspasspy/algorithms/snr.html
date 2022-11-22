@@ -592,7 +592,7 @@
                         <span class="s2">&quot;Five snr_stats attributes were not computed&quot;</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">my_logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">newmessage</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_envelope&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_envelope&quot;</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">analytic_nfilt</span> <span class="o">=</span> <span class="n">hilbert</span><span class="p">(</span><span class="n">nfilt</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
                     <span class="n">analytic_sfilt</span> <span class="o">=</span> <span class="n">hilbert</span><span class="p">(</span><span class="n">sfilt</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
@@ -609,7 +609,7 @@
                         <span class="s2">&quot;Error computing filtered_envelope metrics:  snr_envelope_Linf_over_L1 not computed&quot;</span><span class="p">,</span>
                         <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
                     <span class="p">)</span>
-            <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_L2&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_L2&quot;</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">namp</span> <span class="o">=</span> <span class="n">RMSAmplitude</span><span class="p">(</span><span class="n">nfilt</span><span class="p">)</span>
                     <span class="n">samp</span> <span class="o">=</span> <span class="n">RMSAmplitude</span><span class="p">(</span><span class="n">sfilt</span><span class="p">)</span>
@@ -623,7 +623,7 @@
                     <span class="p">)</span>
                     <span class="n">my_logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">newmessage</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_MAD&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_MAD&quot;</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">namp</span> <span class="o">=</span> <span class="n">MADAmplitude</span><span class="p">(</span><span class="n">nfilt</span><span class="p">)</span>
                     <span class="n">samp</span> <span class="o">=</span> <span class="n">MADAmplitude</span><span class="p">(</span><span class="n">sfilt</span><span class="p">)</span>
@@ -637,7 +637,7 @@
                     <span class="p">)</span>
                     <span class="n">my_logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">newmessage</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_Linf&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_Linf&quot;</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="c1"># the C function expects a fraction - for users a percentage</span>
                     <span class="c1"># is clearer</span>
@@ -654,7 +654,7 @@
                     <span class="p">)</span>
                     <span class="n">my_logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">newmessage</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_perc&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_perc&quot;</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">namp</span> <span class="o">=</span> <span class="n">MADAmplitude</span><span class="p">(</span><span class="n">nfilt</span><span class="p">)</span>
                     <span class="n">samp</span> <span class="o">=</span> <span class="n">PercAmplitude</span><span class="p">(</span><span class="n">sfilt</span><span class="p">,</span> <span class="n">perc</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">)</span>
