@@ -14,7 +14,7 @@ estimate bandwidth from power spectrum estimates.   */
 BandwidthData EstimateBandwidth(const double signal_df,
   const PowerSpectrum& s, const PowerSpectrum& n,
     const double snr_threshold, const double tbp,const double fhs,
-     bool fix_high_edge_to_fhs)
+     const bool fix_high_edge_to_fhs)
 {
   /* Set the starting search points at low (based on noise tbp) and high (80% fny)
   sides */
@@ -150,7 +150,7 @@ Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
   the algorithm below. */
   if( bwd.f_range <= 0.0 )
   {
-    result.put_double("median_snr",0.0;
+    result.put_double("median_snr",0.0);
     result.put_double("maximum_snr",0.0);
     result.put_double("minimum_snr",0.0);
     result.put_double("q1_4_snr",0.0);
@@ -184,7 +184,6 @@ Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
     bandsnr.push_back(snr);
   }
   VectorStatistics<double> stats(bandsnr);
-  Metadata result;
   /* stats contains multiple methods that return other metrics but we only
   return typical box plot values */
   result.put_double("median_snr",stats.median());
