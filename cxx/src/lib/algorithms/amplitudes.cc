@@ -46,7 +46,8 @@ double PeakAmplitude(const CoreSeismogram& d)
 double RMSAmplitude(const CoreTimeSeries& d)
 {
 	if(d.dead() || ((d.npts())<=0)) return(0.0);
-	return dnrm2(d.npts(),&(d.s[0]),1);
+	double l2nrm=dnrm2(d.npts(),&(d.s[0]),1);
+	return sqrt(l2nrm*l2nrm/d.npts());
 }
 double RMSAmplitude(const CoreSeismogram& d)
 {
