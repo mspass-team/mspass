@@ -16,6 +16,11 @@ BandwidthData EstimateBandwidth(const double signal_df,
     const double snr_threshold, const double tbp,const double fhs,
      const bool fix_high_edge_to_fhs)
 {
+  /* This number defines a scaling to correct for difference in window length
+  for signal and noise windows.   It assumes the noise process is stationary
+  which pretty is pretty much essential for this entire algorithm to make
+  sense anyway. */
+  double window_length_correction=static_cast<double>(s.nf())/static_cast<double>(n.nf());
   /* Set the starting search points at low (based on noise tbp) and high (80% fny)
   sides */
   double flow_start, fhigh_start;
@@ -45,7 +50,7 @@ BandwidthData EstimateBandwidth(const double signal_df,
     sigamp=sqrt(s.spectrum[i]);
     namp=n.amplitude(f);
     if(namp>0.0)
-      snrnow=sigamp/namp;
+      snrnow=window_length_correction*sigamp/namp;
     else
       snrnow=999999.0;
     if(snrnow>snr_threshold)
@@ -93,7 +98,7 @@ BandwidthData EstimateBandwidth(const double signal_df,
     sigamp=s.amplitude(fhigh_start);
     namp=n.amplitude(fhigh_start);
     if(namp>0.0)
-      snrnow=sigamp/namp;
+      snrnow=window_length_correction*sigamp/namp;
     else
       snrnow=999999.0;
     result.high_edge_snr=snrnow;
@@ -108,7 +113,7 @@ BandwidthData EstimateBandwidth(const double signal_df,
       sigamp=sqrt(s.spectrum[i]);
       namp=n.amplitude(f);
       if(namp>0.0)
-        snrnow=sigamp/namp;
+        snrnow=window_length_correction*sigamp/namp;
       else
         snrnow=999999.0;
       if(snrnow>snr_threshold)
@@ -144,6 +149,8 @@ BandwidthData EstimateBandwidth(const double signal_df,
 Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
                                const BandwidthData& bwd)
 {
+  /* As noted above this correction is needed for an irregular window size*/
+  double window_length_correction=static_cast<double>(s.nf())/static_cast<double>(n.nf());
   Metadata result;
   /* We return a null result immediately if the contents of bwd
   indicate zero bandwidth or some other problem that invalidates
@@ -179,7 +186,7 @@ Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
     }
     else
     {
-      snr = signal_amp/noise_amp;
+      snr = window_length_correction*signal_amp/noise_amp;
     }
     bandsnr.push_back(snr);
   }
