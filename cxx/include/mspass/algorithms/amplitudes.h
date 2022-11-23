@@ -335,6 +335,11 @@ To avoid issues with lines in noise spectra snr must exceed the threshold
 by more than 2*tbw frequency bins for an edge to be defined.  The edge back is
 defined as 2*tbw*df from the first point satisfying that constraint.
 
+Note this function handles the calculation correctly if the signal and
+noise windows have a drastically different length.  A subtle feature of
+psd estimates of stationary processes is that the psd level scales by
+1/length of the analysis window.   snr estimates correct for this effect.
+
 \param df is the expected signal frequency bin size.   An error will be
 thrown if that does not match the power spectrem s df.
 \param s is a (multitaper) power spectrum of the signal time window
@@ -385,6 +390,11 @@ with the following keys and the concepts they defines:
      caller should first fetch this attribute and handle the resulting null
      condition.  When this is false it means the data have not detectable
      signal based on the computed spectra.
+
+This function handles the calculation correctly if the signal and
+noise windows have a drastically different length.  A subtle feature of
+psd estimates of stationary processes is that the psd level scales by
+1/length of the analysis window.   snr estimates correct for this effect. 
 
 Note the function does attempt to avoid Inf and NaN values that are possible
 if the noise value at some frequency is zero (negative is treated like 0).
