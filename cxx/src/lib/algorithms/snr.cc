@@ -143,7 +143,7 @@ BandwidthData EstimateBandwidth(const double signal_df,
       }
     }
   }
-  result.f_range = fhigh_start - s.f0;
+  result.f_range = s.Nyquist() - s.f0;
   return result;
 }
 Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,

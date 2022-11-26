@@ -25,9 +25,9 @@ def _window_invalid(d, win):
     the name choice that make the code conditioals clearer.
     """
     if d.t0 < win.start and d.endtime() > win.end:
-        return True
-    else:
         return False
+    else:
+        return True
 
 
 def _safe_snr_calculation(s, n):
@@ -87,7 +87,9 @@ def snr(
         4.  peak - is the peak value which in linear algebra is the L infinity norm
 
     Note the user can specify a different norm for the signal and noise windows.
-    The perc metric requires specifying what percentage level to use.
+    The perc metric requires specifying what percentage level to use.  It is
+    important to recognize that ALL of these metrics are scaled to amplitude
+    not power (amplitude squared).
 
     This function will throw a MsPASSError exception if the window parameters
     do not define a time period inside the range of the data_object. You will
@@ -211,10 +213,10 @@ def FD_snr_estimator(
     signal_window=TimeWindow(-5.0, 120.0),
     signal_spectrum_engine=None,
     band_cutoff_snr=2.0,
-    # check these are reasonable - don't remember the formula when writing this
-    tbp=2.5,
-    ntapers=4,
-    high_frequency_search_start=5.0,
+    tbp=4,
+    ntapers=8,
+    high_frequency_search_start=2.0,
+    fix_high_edge=True,
     poles=3,
     perc=95.0,
     optional_metrics=None,
@@ -222,7 +224,7 @@ def FD_snr_estimator(
 ):
     # optional_metrics=['snr_stats','filtered_envelope','filtered_L2','filtered_Linf','filtered_MAD','filtered_perc']):
     """
-    Estimates one or more metrics of signal-to-noise from a TimeSeries object.
+    Estimates one or more amplitude metrics of signal-to-noise from a TimeSeries object.
     An implicit assumption is that the analysis is centered on a timeable "phase"
     like P, PP, etc.
 
@@ -271,6 +273,11 @@ def FD_snr_estimator(
     following (again in order) keys:  'snr_envelope','snr_L2', 'srn_Linf',
     and 'snr_MAD'.
 
+    It is important to note that all the metrics this function returns
+    are measures of amplitude NOT power.   You need to be particularly
+    aware of this if you unpickle the spectra created if you set
+    save_spectra true as those are power spectra.
+
     :param data_object:  TimeSeries object to be processed. For Seismogram
     objects the assumption is algorithm would be used for a single
     component (e.g longitudinal or vertical for a P phase)
@@ -305,22 +312,31 @@ def FD_snr_estimator(
     :param tbp:  time-bandwidth product to use for computing the set of
     Slepian functions used for the multitaper estimator.  This parameter is
     used only if the noise_spectrum_engine or signal_spectrum_engine
-    arguments are set as None.  The default is 2.5
+    arguments are set as None.  The default is 4.0
 
     :param ntapers:  is the number of Slepian functions (tapers) to compute
     for the multitaper estimators. Like tbp it is referenced only if
     noise_spectrum_engine or signal_spectrum_engine are set to None.
     Note the function will throw an exception if the ntaper parameter is
     not consistent with the time-bandwidth product.  That is, the
-    maximum number of tapers is round(2*tbp-1).   Default is 4 which is
-    consistent with default tbp=2.5
+    maximum number of tapers is round(2*tbp-1).   Default is 8 which is
+    consistent with default tbp=4.0
 
     :param high_frequency_search_start: Used to specify the upper frequency
       used to start the search for the upper end of the bandwidth by
-      the function EstimateBandwidth.  Default is 4.0 which reasonable for
+      the function EstimateBandwidth.  Default is 2.0 which reasonable for
       teleseismic P wave data.  Should be change for usage other than
       analysis of teleseimic P phases or you the bandwidth may be
       grossly underestimated.
+    :param fix_high_edge:   boolean controlling upper search behavior.
+      When set True the search from the upper frequency limit is disabled
+      and the upper band limit edge is set as the value passed as
+      high_frequency_search_start.  False enables the search.
+      True is most useful for teleseismic body waves as many stations have
+      a series of closely enough spaced lines (presumably from electronic
+      sources) that set the high edge incorrectly.   False would be
+      more appropriate for most local and regional earthquake data.
+      The default is True.
 
     :param npoles:   defines number of poles to us for the Butterworth
     bandpass applied for the "filtered" metrics (see above).  Default is 3.
@@ -411,12 +427,12 @@ def FD_snr_estimator(
         if signal_spectrum_engine:
             sengine = signal_spectrum_engine
         else:
-            sengine = MTPowerSpectrumEngine(n.npts, tbp, ntapers)
+            sengine = MTPowerSpectrumEngine(s.npts, tbp, ntapers)
         N = nengine.apply(n)
         S = sengine.apply(s)
         bwd = EstimateBandwidth(
-            S.df, S, N, band_cutoff_snr, tbp, high_frequency_search_start
-        )
+            S.df, S, N, band_cutoff_snr, tbp, high_frequency_search_start,
+            fix_high_edge)
         # These estimates are always computed and posted
         snrdata["low_f_band_edge"] = bwd.low_edge_f
         snrdata["high_f_band_edge"] = bwd.high_edge_f
@@ -447,7 +463,7 @@ def FD_snr_estimator(
     # desired that does not require filtering the data the logic
     # here will need to be changed to create a more exclusive test
 
-    if len(optional_metrics) > 0:
+    if optional_metrics:
         # use the mspass butterworth filter for speed - obspy
         # version requires a conversion to Trace objects
         BWfilt = Butterworth(
@@ -580,14 +596,16 @@ def arrival_snr(
     signal_spectrum_engine=None,
     band_cutoff_snr=2.0,
     # check these are reasonable - don't remember the formula when writing this
-    tbp=5.0,
-    ntapers=10,
-    high_frequency_search_start=5.0,
+    tbp=4.0,
+    ntapers=8,
+    high_frequency_search_start=2.0,
+    fix_high_edge=True,
     poles=3,
     perc=95.0,
     save_spectra=False,
     phase_name="P",
-    metadata_key="Parrival",
+    arrival_time_key="Ptime",
+    metadata_output_key="Parrival",
     optional_metrics=[
         "snr_stats",
         "filtered_envelope",
@@ -605,13 +623,28 @@ def arrival_snr(
     removes some of the options from the more generic function and
     has a frozen structure appropriate for measuring snr of a particular phase.
     In particular it always stores the results as a subdocument (python dict)
-    keyed by the name defined in the metadata_key argument.   The idea of
+    keyed by the name defined in the metadata_output_key argument.   The idea of
     that sturcture is the contents of the subdocument are readily extracted
     and saved to a MongoDB "arrival" collection with a normalization key.
     Arrival driven workflows can then use queries to reduce the number of
     data actually retrieved for final processing.  i.e. the arrival
     collection data should be viewed as a useful initial quality control
     feature.
+
+    To be more robust the function tries to handle a common error.  That is,
+    if the input data has a UTC time standard then the noise and signal
+    windows would need to be shifted to some reference time to make any sense.
+    Consequently, this algorithm silently handles that situation automatically
+    with a simple test.  If the data are relative time no test of the
+    time window range is made.  If the data are UTC, however, it tests if
+    the signal time window is inside the data range.  If not, it shifts the
+    time windows by a time it tries to pull from the input with the key
+    defined by "arrival_time_key".  If that attribute is not defined a
+    message is posted to elog of the input datum and it is returned with
+    no other change.   (i.e. the attribute normally output with the tag
+    defined by metadata_output_key will not exist in the output).
+
+    Dead inputs are handled the standard way - returned immediately with no change.
 
     Most parameters for this function are described in detail in the
     docstring for FD_snr_estimator.  The user is referred there to
@@ -621,7 +654,11 @@ def arrival_snr(
     This string is saved to the output subdocument with the key "phase".
     The default is "P"
 
-    :param metadata_key:  is a string used as a key under which the
+    :param arrival_time_key:  key (string) used to fetch an arrival time
+      if the data are in UTC and the time window received does not overlap
+      the data range (see above)
+
+    :param metadata_output_key:  is a string used as a key under which the
     subdocument (python dict) created internally is stored.  Default is
     "Parrival".   The idea is if multiple phases are being analyzed
     each phase should have a different key set by this argument
@@ -629,29 +666,54 @@ def arrival_snr(
      might use a key like "PParrival").
 
     :return:  a copy of data_object with the the results stored under
-    the key defined by the metadata_key argument.
+    the key defined by the metadata_output_key argument.
     """
+    if not isinstance(data_object,TimeSeries):
+        raise TypeError("arrival_snr:  input arg0 must be a TimeSeries")
     if data_object.dead():
         return data_object
+    # here we try to recover incorrect window usage
+    # Note we always make a deep copy for internal use
+    signal_window=TimeWindow(signal_window)
+    noise_window=TimeWindow(noise_window)
+    if data_object.time_is_UTC():
+        ttest = signal_window.start
+        # should work for anything but an absurd test near epoch 0 which should happen
+        if signal_window.end < data_object.t0:
+            if arrival_time_key in data_object:
+                atime = data_object[arrival_time_key]
+                signal_window = signal_window.shift(atime)
+                noise_window = noise_window.shift(atime)
+                # could test again here but we let FD_snr_estimator handle that error
+            else:
+                message = "Input has UTC time standard but windows appear to be relative time\n" \
+                   + "Tried to recover with time set with key="+arrival_time_key \
+                   + " but it was not defined in this datum\n" \
+                   + "Cannot compute snr metrics"
+
+                data_object.elog.log_error("arrival_snr",message,ErrorSeverity.Complaint)
+                return data_object
+
     [snrdata, elog] = FD_snr_estimator(
         data_object,
-        noise_window,
-        noise_spectrum_engine,
-        signal_window,
-        signal_spectrum_engine,
-        band_cutoff_snr,
-        tbp,
-        ntapers,
-        high_frequency_search_start,
-        poles,
-        perc,
-        optional_metrics,
+        noise_window=noise_window,
+        noise_spectrum_engine=noise_spectrum_engine,
+        signal_window=signal_window,
+        signal_spectrum_engine=signal_spectrum_engine,
+        band_cutoff_snr=band_cutoff_snr,
+        tbp=tbp,
+        ntapers=ntapers,
+        high_frequency_search_start=high_frequency_search_start,
+        fix_high_edge=fix_high_edge,
+        poles=poles,
+        perc=perc,
+        optional_metrics=optional_metrics,
         save_spectra=save_spectra,
     )
     if elog.size() > 0:
         data_object.elog += elog
     snrdata["phase"] = phase_name
-    data_object[metadata_key] = snrdata
+    data_object[metadata_output_key] = snrdata
     return data_object
 
 
@@ -662,14 +724,14 @@ def arrival_snr_QC(
     signal_window=TimeWindow(-5.0, 120.0),
     signal_spectrum_engine=None,
     band_cutoff_snr=2.0,
-    # check these are reasonable - don't remember the formula when writing this
-    tbp=5.0,
-    ntapers=10,
-    high_frequency_search_start=5.0,
+    tbp=4.0,
+    ntapers=8,
+    high_frequency_search_start=2.0,
+    fix_high_edge=True,
     poles=3,
     perc=95.0,
     phase_name="P",
-    metadata_key="Parrival",
+    metadata_output_key="Parrival",
     optional_metrics=[
         "snr_stats",
         "filtered_envelope",
@@ -716,7 +778,7 @@ def arrival_snr_QC(
     object and than component is used for processing.  That is necessary
     because all the algorithms used are single channel algorithms.  To
     use this function on all components use a loop over components BUT
-    make sure you use a unique value for the argument "metadata_key" for
+    make sure you use a unique value for the argument "metadata_output_key" for
     each component.  Note this will also produce multiple documents per
     input datum.
 
@@ -733,7 +795,7 @@ def arrival_snr_QC(
 
     The following args are passed directly to the function arrival_snr:
     noise_window, signal_window, band_cutoff_snr, tbp, ntapers, poles,
-    perc, phase_name, metadata_key, and optional_metrics.  See the docstring
+    perc, phase_name, metadata_output_key, and optional_metrics.  See the docstring
     for arrival_snr and FD_snr_estimator for descriptions of how these
     arguments should be used.  This top level function adds arguments
     decribed below.
@@ -742,7 +804,7 @@ def arrival_snr_QC(
     Default is None, which the function takes to mean you don't want to
     save the computed values to MongoDB.   In this mode the computed
     metrics will all be posted to a python dict that can be found under the
-    key defined by the "metadata_key" argument.   When db is defined the
+    key defined by the "metadata_output_key" argument.   When db is defined the
     contents of that same python dict will save to MongoDB is the
     collection defined by the "collection" argument.  If db is run as
     the default None the user is responsible for saving and managing the
@@ -878,17 +940,18 @@ def arrival_snr_QC(
         data_to_process.ator(arrival_time)
     [snrdata, elog] = FD_snr_estimator(
         data_to_process,
-        noise_window,
-        noise_spectrum_engine,
-        signal_window,
-        signal_spectrum_engine,
-        band_cutoff_snr,
-        tbp,
-        ntapers,
-        high_frequency_search_start,
-        poles,
-        perc,
-        optional_metrics,
+        noise_window=noise_window,
+        noise_spectrum_engine=noise_spectrum_engine,
+        signal_window=signal_window,
+        signal_spectrum_engine=signal_spectrum_engine,
+        band_cutoff_snr=band_cutoff_snr,
+        tbp=tbp,
+        ntapers=ntapers,
+        high_frequency_search_start=high_frequency_search_start,
+        fix_high_edge=fix_high_edge,
+        poles=poles,
+        perc=perc,
+        optional_metrics=optional_metrics,
         save_spectra=save_spectra,
     )
     if elog.size() > 0:
@@ -912,7 +975,7 @@ def arrival_snr_QC(
     # is not always the same thing - for a TimeSeries input it is a copy of
     # the original but it may have been altered while for a Seismogram it is
     # an extracted component
-    data_object[metadata_key] = snrdata
+    data_object[metadata_output_key] = snrdata
     if db:
         arrival_id_key = collection + "_id"
         dbcol = db[collection]
