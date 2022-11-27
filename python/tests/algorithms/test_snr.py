@@ -56,8 +56,8 @@ def verify_snr_outputs_match(so1,so2):
         "snr_L2",
         "snr_Linf",
         "snr_perc",
-        "snr_MAD"
-        ]
+        "snr_MAD",
+    ]
     for k in keylist:
         assert np.isclose(so1[k], so2[k])
 
