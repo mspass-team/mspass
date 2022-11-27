@@ -676,7 +676,6 @@ def arrival_snr(
     signal_window = TimeWindow(signal_window)
     noise_window = TimeWindow(noise_window)
     if data_object.time_is_UTC():
-        ttest = signal_window.start
         # should work for anything but an absurd test near epoch 0 which should happen
         if signal_window.end < data_object.t0:
             if arrival_time_key in data_object:
@@ -685,9 +684,9 @@ def arrival_snr(
                 noise_window = noise_window.shift(atime)
                 # could test again here but we let FD_snr_estimator handle that error
             else:
-                message = "Input has UTC time standard but windows appear to be relative time\n" 
-                   + "Tried to recover with time set with key="+arrival_time_key 
-                   + " but it was not defined in this datum\n" 
+                message = "Input has UTC time standard but windows appear to be relative time\n" \
+                   + "Tried to recover with time set with key="+arrival_time_key \
+                   + " but it was not defined in this datum\n" \
                    + "Cannot compute snr metrics"
 
                 data_object.elog.log_error(
