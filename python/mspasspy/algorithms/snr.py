@@ -431,8 +431,7 @@ def FD_snr_estimator(
         N = nengine.apply(n)
         S = sengine.apply(s)
         bwd = EstimateBandwidth(
-            S.df, S, N, band_cutoff_snr, tbp, high_frequency_search_start,
-            fix_high_edge)
+            S.df, S, N, band_cutoff_snr, tbp, high_frequency_search_start, fix_high_edge)
         # These estimates are always computed and posted
         snrdata["low_f_band_edge"] = bwd.low_edge_f
         snrdata["high_f_band_edge"] = bwd.high_edge_f
@@ -668,14 +667,14 @@ def arrival_snr(
     :return:  a copy of data_object with the the results stored under
     the key defined by the metadata_output_key argument.
     """
-    if not isinstance(data_object,TimeSeries):
+    if not isinstance(data_object, TimeSeries):
         raise TypeError("arrival_snr:  input arg0 must be a TimeSeries")
     if data_object.dead():
         return data_object
     # here we try to recover incorrect window usage
     # Note we always make a deep copy for internal use
-    signal_window=TimeWindow(signal_window)
-    noise_window=TimeWindow(noise_window)
+    signal_window = TimeWindow(signal_window)
+    noise_window = TimeWindow(noise_window)
     if data_object.time_is_UTC():
         ttest = signal_window.start
         # should work for anything but an absurd test near epoch 0 which should happen
@@ -686,12 +685,14 @@ def arrival_snr(
                 noise_window = noise_window.shift(atime)
                 # could test again here but we let FD_snr_estimator handle that error
             else:
-                message = "Input has UTC time standard but windows appear to be relative time\n" \
-                   + "Tried to recover with time set with key="+arrival_time_key \
-                   + " but it was not defined in this datum\n" \
+                message = "Input has UTC time standard but windows appear to be relative time\n" 
+                   + "Tried to recover with time set with key="+arrival_time_key 
+                   + " but it was not defined in this datum\n" 
                    + "Cannot compute snr metrics"
 
-                data_object.elog.log_error("arrival_snr",message,ErrorSeverity.Complaint)
+                data_object.elog.log_error(
+                    "arrival_snr",message,ErrorSeverity.Complaint
+                )
                 return data_object
 
     [snrdata, elog] = FD_snr_estimator(
