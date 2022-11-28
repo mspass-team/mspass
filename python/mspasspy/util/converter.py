@@ -683,11 +683,15 @@ def Textfile2Dataframe(
         if parallel and __mspasspy_has_dask:
             df = daskdf.read_csv(filename, sep=separator, names=attribute_names)
         else:
+            if parallel:
+                print("WARNING:  No dask detected. Running pandas dataframe")
             df = pd.read_csv(filename, sep=separator, names=attribute_names)
     else:  #   header_line is given and attribute_names is not given
         if parallel and __mspasspy_has_dask:
             df = daskdf.read_csv(filename, sep=separator, header=header_line)
         else:
+            if parallel:
+                print("WARNING:  No dask detected. Running pandas dataframe")
             df = pd.read_csv(filename, sep=separator, header=header_line)
 
     #   Convert data in each column to the type given in type_dict

@@ -1,5 +1,8 @@
 try:
     import dask.bag as daskbag
+except:
+    pass
+try:
     import pyspark
 except:
     pass
@@ -80,6 +83,9 @@ def mspass_dask_foldby(self, key="site_id"):
 
 try:
     daskbag.Bag.mspass_foldby = mspass_dask_foldby
+except:
+    pass
+try:
     pyspark.RDD.mspass_foldby = mspass_spark_foldby
 except:
     pass

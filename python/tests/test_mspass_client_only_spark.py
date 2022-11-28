@@ -30,10 +30,10 @@ def mock_excpt(*args, **kwargs):
     raise Exception("mocked exception")
 
 
-with mock.patch.dict(
-    sys.modules, {"pyspark": None, "dask.distributed": None, "dask": None}
-):
+with mock.patch.dict(sys.modules, {"dask.distributed": None, "dask": None}):
     from mspasspy.client import Client
+    from pyspark import SparkConf, SparkContext
+    from pyspark.sql import SparkSession
 
     class TestMsPASSClient:
         def setup_class(self):
@@ -141,7 +141,7 @@ with mock.patch.dict(
 
         def test_get_scheduler(self):
             client = Client()
-            assert client.get_scheduler() == None
+            assert isinstance(client.get_scheduler(), SparkContext)
 
         def test_set_database_client(self, monkeypatch):
             self.client.set_database_client("localhost", database_port="27017")

@@ -86,7 +86,6 @@ ENTRY_POINTS = {
     ],
 }
 
-
 setup(
     name="mspasspy",
     version="0.0.1",

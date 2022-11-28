@@ -30,10 +30,9 @@ def mock_excpt(*args, **kwargs):
     raise Exception("mocked exception")
 
 
-with mock.patch.dict(
-    sys.modules, {"pyspark": None, "dask.distributed": None, "dask": None}
-):
+with mock.patch.dict(sys.modules, {"pyspark": None}):
     from mspasspy.client import Client
+    from dask.distributed import Client as DaskClient
 
     class TestMsPASSClient:
         def setup_class(self):
@@ -140,8 +139,7 @@ with mock.patch.dict(
             assert isinstance(manager, GlobalHistoryManager)
 
         def test_get_scheduler(self):
-            client = Client()
-            assert client.get_scheduler() == None
+            assert isinstance(self.client.get_scheduler(), DaskClient)
 
         def test_set_database_client(self, monkeypatch):
             self.client.set_database_client("localhost", database_port="27017")

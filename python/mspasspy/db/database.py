@@ -68,7 +68,7 @@ def read_distributed_data(
     normalize=None,
     load_history=False,
     exclude_keys=None,
-    format=None,
+    format="dask",
     npartitions=None,
     spark_context=None,
     data_tag=None,

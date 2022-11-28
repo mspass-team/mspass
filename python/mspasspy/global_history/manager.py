@@ -6,6 +6,9 @@ import json
 
 try:
     import dask.bag as daskbag
+except:
+    pass
+try:
     import pyspark
 except:
     pass
@@ -20,7 +23,7 @@ import mspasspy.algorithms.signals as signals
 from mspasspy.global_history.ParameterGTree import ParameterGTree, parameter_to_GTree
 
 
-def mspass_normal_map(
+def mspass_map(
     data,
     func,
     global_history=None,
@@ -92,7 +95,7 @@ def mspass_normal_map(
     return map(lambda wf: func(wf, object_history=object_history), data)
 
 
-def mspass_normal_reduce(
+def mspass_reduce(
     data,
     func,
     global_history=None,
@@ -558,6 +561,10 @@ class GlobalHistoryManager:
         try:
             daskbag.Bag.mspass_map = mspass_dask_map
             daskbag.Bag.mspass_reduce = mspass_dask_fold
+        except:
+            pass
+
+        try:
             pyspark.RDD.mspass_map = mspass_spark_map
             pyspark.RDD.mspass_reduce = mspass_spark_reduce
         except:
