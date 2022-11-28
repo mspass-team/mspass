@@ -983,6 +983,9 @@ class Database(pymongo.database.Database):
                 if format:
                     insertion_dict["nbytes"] = nbytes
                     insertion_dict["format"] = format
+                else:
+                    insertion_dict.pop("format",None)
+                    insertion_dict.pop("nbytes",None)
             elif storage_mode == "gridfs":
                 if overwrite and "gridfs_id" in insertion_dict:
                     gridfs_id = self._save_data_to_gridfs(
