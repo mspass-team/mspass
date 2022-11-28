@@ -19,3 +19,7 @@ def backup_test_index_data():
     assert wfcol.count_documents({"sta": "BC3"}) == 1
     assert wfcol.count_documents({"sta": "BCC"}) == 1
     assert wfcol.find({"sta": "BCC"})[0]["foff"] == 1344048
+
+
+def test_seispp():
+    pass
