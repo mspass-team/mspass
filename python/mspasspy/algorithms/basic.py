@@ -50,7 +50,7 @@ def ExtractComponent(
     """
     if isinstance(data, Seismogram):
         try:
-            d = bsc.ExtractComponentSeismogram(data, component)
+            d = bsc._ExtractComponent(data, component)
             return d
         except Exception as err:
             data.elog.log_error("ExtractComponent", str(err), ErrorSeverity.Invalid)
@@ -65,7 +65,7 @@ def ExtractComponent(
             empty.kill()
             return empty
         try:
-            d = TimeSeriesEnsemble(bsc.ExtractComponentEnsemble(data, component))
+            d = TimeSeriesEnsemble(bsc._ExtractComponent(data, component))
             # second copy to convert type from CoreTimeSeriesEnsemble to TimeSeriesEnsemble
             return d
         except Exception as err:
