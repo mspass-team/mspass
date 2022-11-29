@@ -431,7 +431,8 @@ def FD_snr_estimator(
         N = nengine.apply(n)
         S = sengine.apply(s)
         bwd = EstimateBandwidth(
-            S.df, S, N, band_cutoff_snr, tbp, high_frequency_search_start, fix_high_edge)
+            S.df, S, N, band_cutoff_snr, tbp, high_frequency_search_start, fix_high_edge
+        )
         # These estimates are always computed and posted
         snrdata["low_f_band_edge"] = bwd.low_edge_f
         snrdata["high_f_band_edge"] = bwd.high_edge_f
@@ -684,13 +685,16 @@ def arrival_snr(
                 noise_window = noise_window.shift(atime)
                 # could test again here but we let FD_snr_estimator handle that error
             else:
-                message = "Input has UTC time standard but windows appear to be relative time\n" \
-                   + "Tried to recover with time set with key="+arrival_time_key \
-                   + " but it was not defined in this datum\n" \
-                   + "Cannot compute snr metrics"
+                message = (
+                    "Input has UTC time standard but windows appear to be relative time\n"
+                    + "Tried to recover with time set with key="
+                    + arrival_time_key
+                    + " but it was not defined in this datum\n"
+                    + "Cannot compute snr metrics"
+                )
 
                 data_object.elog.log_error(
-                    "arrival_snr",message,ErrorSeverity.Complaint
+                    "arrival_snr", message, ErrorSeverity.Complaint
                 )
                 return data_object
 
