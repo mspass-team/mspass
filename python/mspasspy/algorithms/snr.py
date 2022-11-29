@@ -268,10 +268,10 @@ def FD_snr_estimator(
     actually computed from functions in this same module that can be
     used independently and have their own docstring description. The
     functions called have the following names in order of the keyword
-    list above:  *snr_envelope*, *snr_L2*, *snr_Linv*, and *snr_MAD*.
+    list above:  *snr_envelope*, *snr_filtered_rms*, *snr_Linv*, and *snr_filtered_mad*.
     When the computed they are set in the output dictionary with the
-    following (again in order) keys:  'snr_envelope','snr_L2', 'srn_Linf',
-    and 'snr_MAD'.
+    following (again in order) keys:  'snr_envelope','snr_filtered_rms', 'srn_Linf',
+    and 'snr_filtered_mad'.
 
     It is important to note that all the metrics this function returns
     are measures of amplitude NOT power.   You need to be particularly
@@ -509,13 +509,13 @@ def FD_snr_estimator(
                     sampvector = np.abs(analytic_sfilt)
                     namp = np.median(nampvector)
                     samp = np.max(sampvector)
-                    snrdata["snr_envelope_Linf_over_L1"] = _safe_snr_calculation(
+                    snrdata["snr_filtered_envelope_peak"] = _safe_snr_calculation(
                         samp, namp
                     )
                 except:
                     my_logger.log_erro(
                         algname,
-                        "Error computing filtered_envelope metrics:  snr_envelope_Linf_over_L1 not computed",
+                        "Error computing filtered_envelope metrics:  snr_filtered_envelope_peak not computed",
                         ErrorSeverity.Complaint,
                     )
             elif metric == "filtered_L2":
@@ -523,12 +523,12 @@ def FD_snr_estimator(
                     namp = RMSAmplitude(nfilt)
                     samp = RMSAmplitude(sfilt)
                     snrvalue = _safe_snr_calculation(samp, namp)
-                    snrdata["snr_L2"] = snrvalue
+                    snrdata["snr_filtered_rms"] = snrvalue
                 except MsPASSError as err:
                     newmessage = _reformat_mspass_error(
                         err,
                         "Error computing filtered_L2 metric",
-                        "snr_L2 attribute was not compouted",
+                        "snr_filtered_rms attribute was not compouted",
                     )
                     my_logger.log_error(algname, newmessage, err.severity)
 
@@ -537,12 +537,12 @@ def FD_snr_estimator(
                     namp = MADAmplitude(nfilt)
                     samp = MADAmplitude(sfilt)
                     snrvalue = _safe_snr_calculation(samp, namp)
-                    snrdata["snr_MAD"] = snrvalue
+                    snrdata["snr_filtered_mad"] = snrvalue
                 except MsPASSError as err:
                     newmessage = _reformat_mspass_error(
                         err,
                         "Error computing filtered_MAD metric",
-                        "snr_MAD attribute was not computed",
+                        "snr_filtered_mad attribute was not computed",
                     )
                     my_logger.log_error(algname, newmessage, err.severity)
 
@@ -553,13 +553,12 @@ def FD_snr_estimator(
                     namp = PercAmplitude(nfilt, perc / 100.0)
                     samp = PeakAmplitude(sfilt)
                     snrvalue = _safe_snr_calculation(samp, namp)
-                    snrdata["snr_Linf"] = snrvalue
-                    snrdata["snr_perc"] = perc
+                    snrdata["snr_filtered_peak"] = snrvalue
                 except MsPASSError as err:
                     newmessage = _reformat_mspass_error(
                         err,
                         "Error computing filtered_Linf metric",
-                        "snr_Linf attribute was not computed",
+                        "snr_filtered_peak attribute was not computed",
                     )
                     my_logger.log_error(algname, newmessage, err.severity)
 
@@ -568,10 +567,8 @@ def FD_snr_estimator(
                     namp = MADAmplitude(nfilt)
                     samp = PercAmplitude(sfilt, perc / 100.0)
                     snrvalue = _safe_snr_calculation(samp, namp)
-                    snrdata["snr_perc"] = snrvalue
-                    snrdata[
-                        "snr_perc"
-                    ] = perc  # redundant if filter_Linf is also run but tiny cost
+                    snrdata["snr_filtered_perc"] = snrvalue
+                    snrdata["snr_perc"] = perc
                 except MsPASSError as err:
                     newmessage = _reformat_mspass_error(
                         err,
