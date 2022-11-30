@@ -419,7 +419,7 @@ def TimeIntervalReader(db,starttime,endtime,
     like noise correlation or spectorgrams.   The later demand a lot of 
     efficiency in this process as that kind of process can repeat an 
     algorithm like this thousands of times.   Reading continuous data 
-    always has to handle two properties of read data that this function 
+    always has to handle two properties of real data that this function 
     hides behind the implementation.  (1) in all but trivially short 
     experiments the length of recording for any given instrument is 
     far too large to fit in memory.  Data are thus always broken into 
