@@ -1,4 +1,5 @@
 #include <algorithm>
+#include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 #include "misc/blas.h"
@@ -7,6 +8,8 @@ namespace mspass::algorithms::amplitudes
 {
 using namespace std;
 using namespace mspass::seismic;
+using mspass::utility::MsPASSError;
+using mspass::utility::ErrorSeverity;
 
 /* Series of overloaded functions to measure peak amplitudes for
 different types of seismic data objects.  These are used in
@@ -46,7 +49,8 @@ double PeakAmplitude(const CoreSeismogram& d)
 double RMSAmplitude(const CoreTimeSeries& d)
 {
 	if(d.dead() || ((d.npts())<=0)) return(0.0);
-	return dnrm2(d.npts(),&(d.s[0]),1);
+	double l2nrm=dnrm2(d.npts(),&(d.s[0]),1);
+	return sqrt(l2nrm*l2nrm/d.npts());
 }
 double RMSAmplitude(const CoreSeismogram& d)
 {
@@ -65,13 +69,30 @@ double RMSAmplitude(const CoreSeismogram& d)
 }
 double PercAmplitude(const CoreTimeSeries& d, const double perc)
 {
+	double percfrac;
+	if(perc>100.0 || perc<=0.0)
+	{
+		stringstream ss;
+		ss<<"PercAmplitude:  received perc value="<<perc<<endl
+		   <<"Must be a nonzero percentage from 1 to 100 or a fraction value less than 1"<<endl;
+		throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
+	}
+	else if(perc<=1.0)
+	{
+		percfrac=perc;
+	}
+	else
+	{
+		// Land her for actual percentage values
+		percfrac=perc/100.0;
+	}
 	vector<double> amps;
 	amps=d.s;
 	vector<double>::iterator ptr;
 	for(ptr=amps.begin();ptr!=amps.end();++ptr) *ptr = fabs(*ptr);
 	sort(amps.begin(),amps.end());
 	size_t n=amps.size();
-	size_t iperc=static_cast<size_t>(perc*static_cast<double>(n));
+	size_t iperc=static_cast<size_t>(percfrac*static_cast<double>(n));
 	return amps[iperc];
 }
 double PercAmplitude(const CoreSeismogram& d,const double perc)
