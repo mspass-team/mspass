@@ -2597,8 +2597,8 @@ by the parameters sampling_rate, starttime and npts.</p></li>
 <span id="snr"></span><h2>snr<a class="headerlink" href="#module-mspasspy.algorithms.snr" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.snr.FD_snr_estimator">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">FD_snr_estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_spectrum_engine=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_spectrum_engine=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_cutoff_snr=2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tbp=2.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntapers=4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_frequency_search_start=5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poles=3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perc=95.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_metrics=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_spectra=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#FD_snr_estimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.FD_snr_estimator" title="Permalink to this definition"></a></dt>
-<dd><p>Estimates one or more metrics of signal-to-noise from a TimeSeries object.
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">FD_snr_estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_spectrum_engine=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_spectrum_engine=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_cutoff_snr=2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tbp=4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntapers=8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_frequency_search_start=2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fix_high_edge=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poles=3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perc=95.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_metrics=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_spectra=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#FD_snr_estimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.FD_snr_estimator" title="Permalink to this definition"></a></dt>
+<dd><p>Estimates one or more amplitude metrics of signal-to-noise from a TimeSeries object.
 An implicit assumption is that the analysis is centered on a timeable “phase”
 like P, PP, etc.</p>
 <p>This is a python function that can be used to compute one or several
@@ -2638,10 +2638,14 @@ are time domain snr estimates computed with he filtered data.  They are
 actually computed from functions in this same module that can be
 used independently and have their own docstring description. The
 functions called have the following names in order of the keyword
-list above:  <em>snr_envelope</em>, <em>snr_L2</em>, <em>snr_Linv</em>, and <em>snr_MAD</em>.
+list above:  <em>snr_envelope</em>, <em>snr_filtered_rms</em>, <em>snr_Linv</em>, and <em>snr_filtered_mad</em>.
 When the computed they are set in the output dictionary with the
-following (again in order) keys:  ‘snr_envelope’,’snr_L2’, ‘srn_Linf’,
-and ‘snr_MAD’.</p>
+following (again in order) keys:  ‘snr_envelope’,’snr_filtered_rms’, ‘srn_Linf’,
+and ‘snr_filtered_mad’.</p>
+<p>It is important to note that all the metrics this function returns
+are measures of amplitude NOT power.   You need to be particularly
+aware of this if you unpickle the spectra created if you set
+save_spectra true as those are power spectra.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>data_object</strong> – TimeSeries object to be processed. For Seismogram</p>
@@ -2695,7 +2699,7 @@ same caveat as above for the noise_spectrum_engine.</p>
 </dl>
 <p>Slepian functions used for the multitaper estimator.  This parameter is
 used only if the noise_spectrum_engine or signal_spectrum_engine
-arguments are set as None.  The default is 2.5</p>
+arguments are set as None.  The default is 4.0</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>ntapers</strong> – is the number of Slepian functions (tapers) to compute</p>
@@ -2705,17 +2709,26 @@ arguments are set as None.  The default is 2.5</p>
 noise_spectrum_engine or signal_spectrum_engine are set to None.
 Note the function will throw an exception if the ntaper parameter is
 not consistent with the time-bandwidth product.  That is, the
-maximum number of tapers is round(2*tbp-1).   Default is 4 which is
-consistent with default tbp=2.5</p>
+maximum number of tapers is round(2*tbp-1).   Default is 8 which is
+consistent with default tbp=4.0</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>high_frequency_search_start</strong> – Used to specify the upper frequency
 used to start the search for the upper end of the bandwidth by
-the function EstimateBandwidth.  Default is 4.0 which reasonable for
+the function EstimateBandwidth.  Default is 2.0 which reasonable for
 teleseismic P wave data.  Should be change for usage other than
 analysis of teleseimic P phases or you the bandwidth may be
 grossly underestimated.</p></li>
+<li><p><strong>fix_high_edge</strong> – boolean controlling upper search behavior.
+When set True the search from the upper frequency limit is disabled
+and the upper band limit edge is set as the value passed as
+high_frequency_search_start.  False enables the search.
+True is most useful for teleseismic body waves as many stations have
+a series of closely enough spaced lines (presumably from electronic
+sources) that set the high edge incorrectly.   False would be
+more appropriate for most local and regional earthquake data.
+The default is True.</p></li>
 <li><p><strong>npoles</strong> – defines number of poles to us for the Butterworth</p></li>
 </ul>
 </dd>
@@ -2785,20 +2798,33 @@ error log.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.snr.arrival_snr">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">arrival_snr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data_object,</span> <span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">noise_spectrum_engine=None,</span> <span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">signal_spectrum_engine=None,</span> <span class="pre">band_cutoff_snr=2.0,</span> <span class="pre">tbp=5.0,</span> <span class="pre">ntapers=10,</span> <span class="pre">high_frequency_search_start=5.0,</span> <span class="pre">poles=3,</span> <span class="pre">perc=95.0,</span> <span class="pre">save_spectra=False,</span> <span class="pre">phase_name='P',</span> <span class="pre">metadata_key='Parrival',</span> <span class="pre">optional_metrics=['snr_stats',</span> <span class="pre">'filtered_envelope',</span> <span class="pre">'filtered_L2',</span> <span class="pre">'filtered_Linf',</span> <span class="pre">'filtered_MAD',</span> <span class="pre">'filtered_perc']</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#arrival_snr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.arrival_snr" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">arrival_snr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data_object,</span> <span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">noise_spectrum_engine=None,</span> <span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">signal_spectrum_engine=None,</span> <span class="pre">band_cutoff_snr=2.0,</span> <span class="pre">tbp=4.0,</span> <span class="pre">ntapers=8,</span> <span class="pre">high_frequency_search_start=2.0,</span> <span class="pre">fix_high_edge=True,</span> <span class="pre">poles=3,</span> <span class="pre">perc=95.0,</span> <span class="pre">save_spectra=False,</span> <span class="pre">phase_name='P',</span> <span class="pre">arrival_time_key='Ptime',</span> <span class="pre">metadata_output_key='Parrival',</span> <span class="pre">optional_metrics=['snr_stats',</span> <span class="pre">'filtered_envelope',</span> <span class="pre">'filtered_L2',</span> <span class="pre">'filtered_Linf',</span> <span class="pre">'filtered_MAD',</span> <span class="pre">'filtered_perc']</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#arrival_snr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.arrival_snr" title="Permalink to this definition"></a></dt>
 <dd><p>Specialization of FD_snr_estimator.   A common situation where snr
 data is a critical thing to estimate is data windowed around a given
 seismic phase.   FD_snr_estimator is a bit more generic.  This function
 removes some of the options from the more generic function and
 has a frozen structure appropriate for measuring snr of a particular phase.
 In particular it always stores the results as a subdocument (python dict)
-keyed by the name defined in the metadata_key argument.   The idea of
+keyed by the name defined in the metadata_output_key argument.   The idea of
 that sturcture is the contents of the subdocument are readily extracted
 and saved to a MongoDB “arrival” collection with a normalization key.
 Arrival driven workflows can then use queries to reduce the number of
 data actually retrieved for final processing.  i.e. the arrival
 collection data should be viewed as a useful initial quality control
 feature.</p>
+<p>To be more robust the function tries to handle a common error.  That is,
+if the input data has a UTC time standard then the noise and signal
+windows would need to be shifted to some reference time to make any sense.
+Consequently, this algorithm silently handles that situation automatically
+with a simple test.  If the data are relative time no test of the
+time window range is made.  If the data are UTC, however, it tests if
+the signal time window is inside the data range.  If not, it shifts the
+time windows by a time it tries to pull from the input with the key
+defined by “arrival_time_key”.  If that attribute is not defined a
+message is posted to elog of the input datum and it is returned with
+no other change.   (i.e. the attribute normally output with the tag
+defined by metadata_output_key will not exist in the output).</p>
+<p>Dead inputs are handled the standard way - returned immediately with no change.</p>
 <p>Most parameters for this function are described in detail in the
 docstring for FD_snr_estimator.  The user is referred there to
 see the usage.   The following are added for this specialization:</p>
@@ -2811,7 +2837,12 @@ see the usage.   The following are added for this specialization:</p>
 The default is “P”</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>metadata_key</strong> – is a string used as a key under which the</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arrival_time_key</strong> – key (string) used to fetch an arrival time
+if the data are in UTC and the time window received does not overlap
+the data range (see above)</p></li>
+<li><p><strong>metadata_output_key</strong> – is a string used as a key under which the</p></li>
+</ul>
 </dd>
 </dl>
 <p>subdocument (python dict) created internally is stored.  Default is
@@ -2826,12 +2857,12 @@ each phase should have a different key set by this argument
 <dd class="field-odd"><p>a copy of data_object with the the results stored under</p>
 </dd>
 </dl>
-<p>the key defined by the metadata_key argument.</p>
+<p>the key defined by the metadata_output_key argument.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.snr.arrival_snr_QC">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">arrival_snr_QC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data_object,</span> <span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">noise_spectrum_engine=None,</span> <span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">signal_spectrum_engine=None,</span> <span class="pre">band_cutoff_snr=2.0,</span> <span class="pre">tbp=5.0,</span> <span class="pre">ntapers=10,</span> <span class="pre">high_frequency_search_start=5.0,</span> <span class="pre">poles=3,</span> <span class="pre">perc=95.0,</span> <span class="pre">phase_name='P',</span> <span class="pre">metadata_key='Parrival',</span> <span class="pre">optional_metrics=['snr_stats',</span> <span class="pre">'filtered_envelope',</span> <span class="pre">'filtered_L2',</span> <span class="pre">'filtered_Linf',</span> <span class="pre">'filtered_MAD',</span> <span class="pre">'filtered_perc'],</span> <span class="pre">save_spectra=False,</span> <span class="pre">db=None,</span> <span class="pre">collection='arrival',</span> <span class="pre">use_measured_arrival_time=False,</span> <span class="pre">measured_arrival_time_key='Ptime',</span> <span class="pre">taup_model=None,</span> <span class="pre">update_mode=False,</span> <span class="pre">component=2,</span> <span class="pre">source_collection='source',</span> <span class="pre">receiver_collection=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#arrival_snr_QC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.arrival_snr_QC" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">arrival_snr_QC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data_object,</span> <span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">noise_spectrum_engine=None,</span> <span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">signal_spectrum_engine=None,</span> <span class="pre">band_cutoff_snr=2.0,</span> <span class="pre">tbp=4.0,</span> <span class="pre">ntapers=8,</span> <span class="pre">high_frequency_search_start=2.0,</span> <span class="pre">fix_high_edge=True,</span> <span class="pre">poles=3,</span> <span class="pre">perc=95.0,</span> <span class="pre">phase_name='P',</span> <span class="pre">metadata_output_key='Parrival',</span> <span class="pre">optional_metrics=['snr_stats',</span> <span class="pre">'filtered_envelope',</span> <span class="pre">'filtered_L2',</span> <span class="pre">'filtered_Linf',</span> <span class="pre">'filtered_MAD',</span> <span class="pre">'filtered_perc'],</span> <span class="pre">save_spectra=False,</span> <span class="pre">db=None,</span> <span class="pre">collection='arrival',</span> <span class="pre">use_measured_arrival_time=False,</span> <span class="pre">measured_arrival_time_key='Ptime',</span> <span class="pre">taup_model=None,</span> <span class="pre">update_mode=False,</span> <span class="pre">component=2,</span> <span class="pre">source_collection='source',</span> <span class="pre">receiver_collection=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#arrival_snr_QC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.arrival_snr_QC" title="Permalink to this definition"></a></dt>
 <dd><p>Compute a series of metrics that can be used for quality control
 filtering of seismic phase data.</p>
 <p>This is the highest level function in this module for computing
@@ -2863,7 +2894,7 @@ argument is used to extract the specified single channel from the Seismogram
 object and than component is used for processing.  That is necessary
 because all the algorithms used are single channel algorithms.  To
 use this function on all components use a loop over components BUT
-make sure you use a unique value for the argument “metadata_key” for
+make sure you use a unique value for the argument “metadata_output_key” for
 each component.  Note this will also produce multiple documents per
 input datum.</p>
 <p>The type of the data_object also has a more subtle implication the
@@ -2878,7 +2909,7 @@ is a Seismogram it tries to fetch site_lat.   That is true of all coordinate
 data loaded by normalization from a source and receiver collection.</p>
 <p>The following args are passed directly to the function arrival_snr:
 noise_window, signal_window, band_cutoff_snr, tbp, ntapers, poles,
-perc, phase_name, metadata_key, and optional_metrics.  See the docstring
+perc, phase_name, metadata_output_key, and optional_metrics.  See the docstring
 for arrival_snr and FD_snr_estimator for descriptions of how these
 arguments should be used.  This top level function adds arguments
 decribed below.</p>
@@ -2890,7 +2921,7 @@ decribed below.</p>
 <p>Default is None, which the function takes to mean you don’t want to
 save the computed values to MongoDB.   In this mode the computed
 metrics will all be posted to a python dict that can be found under the
-key defined by the “metadata_key” argument.   When db is defined the
+key defined by the “metadata_output_key” argument.   When db is defined the
 contents of that same python dict will save to MongoDB is the
 collection defined by the “collection” argument.  If db is run as
 the default None the user is responsible for saving and managing the
@@ -3012,7 +3043,9 @@ to that position in the ranked data.</p></li>
 </ol>
 </div></blockquote>
 <p>Note the user can specify a different norm for the signal and noise windows.
-The perc metric requires specifying what percentage level to use.</p>
+The perc metric requires specifying what percentage level to use.  It is
+important to recognize that ALL of these metrics are scaled to amplitude
+not power (amplitude squared).</p>
 <p>This function will throw a MsPASSError exception if the window parameters
 do not define a time period inside the range of the data_object. You will
 need a custom function if the model of windows insider a larger waveform
