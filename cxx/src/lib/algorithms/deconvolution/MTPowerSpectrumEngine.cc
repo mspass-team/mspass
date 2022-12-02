@@ -118,6 +118,10 @@ PowerSpectrum MTPowerSpectrumEngine::apply(const TimeSeries& d)
     /* intentionally omit try catch here because the above logic assures Sizes
     must match here. This overloaded method will throw an exception in that case.*/
     vector<double> spec(this->apply(work));
+    /* This scaling is necessary to turn the result into power spectral density
+    in units of 1/Hz. Multiply by dt, of course,  is division by the sampling
+    frequency that many sources use. */
+    for(auto sptr=spec.begin();sptr!=spec.end();++sptr) *sptr *= d.dt();
     result=PowerSpectrum(dynamic_cast<const Metadata&>(d),spec,deltaf,string("Multitaper"));
     /* We post these to metadata for the generic PowerSpectrum object. */
     result.put<double>("time_bandwidth_product",tbp);
@@ -163,36 +167,27 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
   {
       gsl_fft_complex_forward(tdata[i].ptr(),1,taperlen,wavetable,workspace);
   }
-  /* could bundle this into the previous loop, but clearer here.  We
-  accumulate power spectra here - created by A.conj * A . */
-  i=0;
-  ComplexArray power;
-  do{
-    ComplexArray work(tdata[i]);
-    work.conj();
-    if(i==0)
-    {
-      power=work*tdata[i];
-    }
-    else
-    {
-      power+=work*tdata[i];
-    }
-    ++i;
-  }while(i<ntapers);
+  /* New version - delete this comment if it works*/
   vector<double> result;
-  /* Documentation for gsl_complex_forward indicates if taperlen is odd
-  integer truncated divide by 2 like this (i.e. taperlen/2 below) will
-  correctly extract the nyquist frequency sample at the end of the array*/
   result.reserve(taperlen/2);
-  double scale=1.0/static_cast<double>(ntapers);
-  for(j=0;j<taperlen/2;++j)
+  for(j=0;j<taperlen/2;++j) result.push_back(0.0);
+  for(i=0;i<ntapers;++i)
   {
-    double pval;
-    pval=abs(power[j]);
-    pval*=scale;
-    result.push_back(pval);
+    for(j=0;j<taperlen/2;++j)
+    {
+      mspass::algorithms::deconvolution::Complex64 z;
+      double rp,ip;
+      z = tdata[i][j];
+      rp = z.real();
+      ip = z.imag();
+      result[j] += rp*rp + ip*ip;
+    }
   }
+  /* This scaling makes the result power spectral density for nondimensional
+  sampling frequence (i.e. samprate=1).   Note above for time series data
+  we further scale this by dt.  */
+  double scale=1.0/static_cast<double>(ntapers*taperlen);
+  for(j=0;j<taperlen/2;++j) result[j] *= scale;
   return result;
 }
 vector<double> MTPowerSpectrumEngine::frequencies()

@@ -15,19 +15,39 @@ namespace mspass::algorithms::deconvolution{
 The multitaper method uses averages of spectra windowed by Slepian functions.
 This class can be used to compute power spectra.  For efficiency the design
 has constructors that build the Slepian functions and cache them in a
-private area.  Use of the pply method that returns vector of
-power spectral estimates.  Get methods can be called to get frequency
-properties of the data returned.  This could have been done with a class, but
-that was judged better left to a python wrapper using this class.
+private area.  We use this model because computing spectra on a large data
+set in parallel will usually be done with a fixed time window.  The expected
+use is that normally the engine is created once and passed as an argument to
+functions using it in a map operator.
+
+This class uses the apply model for processing.  It accepts raw vector or
+TimeSeries data.  The former assumes the sample interval is 1 while the second
+scales the spectrum to have units of 1/Hz.
 */
 class MTPowerSpectrumEngine
 {
 public:
+  /*! Default constructor.  Do not use as it produces a null object that is no functional.*/
   MTPowerSpectrumEngine();
+  /*! \brief construct with full definition.
+
+  This should be the normal constructor used to create this object.  It creates
+  and caches the Slepian tapers that are used on calls the apply method.
+
+  \param winsize is the length of time windows in samples the operator will
+    be designed to compute.
+  \param tbp is the time bandwidth product to use for the operator.
+  \param ntapers is the number of tapers to actually use for the operator.
+    Note the maximum ntapers is always int(tbp*2).  If ntapers is more than
+    2*tbp a mesage will be posted to cerr and ntapers set to tbp*2.
+    */
   MTPowerSpectrumEngine(const int winsize, const double tbp, const int ntapers);
+  /*! Standard copy constructor*/
   MTPowerSpectrumEngine(const MTPowerSpectrumEngine& parent);
+  /*! Destructor.  Not trivial as it has to delete the fft workspace and
+  cached tapers. */
   ~MTPowerSpectrumEngine();
-  //~MTPowerSpectrumEngine();
+  /*! Standard assignment operator. */
   MTPowerSpectrumEngine& operator=(const MTPowerSpectrumEngine& parent);
   /*! \process a TimeSeries.
 
@@ -38,6 +58,7 @@ public:
   be considered suspect unless the sizes differ by only a tiny fraction
   (e.g. and off by one error from rounding).  Long data will be truncated
   on the right (i.e. sample 0 will be the start of the window used).
+  The data return will be scaled to psd in units if 1/Hz.
 
   \param parent is the data to process
   \return vector containing estimated power spwecrum
@@ -49,7 +70,9 @@ public:
   it does not know the sample interval it cannot compute the rayleigh bin
   size so if callers need that feature they must do that (simple) calculation
   themselves.   Unlike the TimeSeries method this one will throw an
-  exception if the input data size does not match the operator size.
+  exception if the input data size does not match the operator size.  It
+  returns power spectral density assuming a sample rate of 1.  i.e. it
+  scales to correct for the gsl fft scaling by of the forward transform by N. 
 
   \param d is the vector of data to process.  d.size() must this->taperlen() value.
   \return vector containing estimated power spectrum (usual convention with
