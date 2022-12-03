@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="_time_window_8h" kind="file" language="C++">
     <compoundname>TimeWindow.h</compoundname>
     <includedby refid="algorithms_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</includedby>
@@ -91,7 +91,7 @@
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_TIMEWINDOW_H_</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms</highlight></codeline>
 <codeline lineno="4"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="13" refid="classmspass_1_1algorithms_1_1_time_window" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref></highlight></codeline>
+<codeline lineno="13" refid="classmspass_1_1algorithms_1_1_time_window" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref></highlight></codeline>
 <codeline lineno="14"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="19" refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>;</highlight></codeline>
@@ -133,8 +133,8 @@
 <codeline lineno="72"><highlight class="comment">//<sp/>Be<sp/>aware,<sp/>however,<sp/>that<sp/>for<sp/>the<sp/>same<sp/>reason<sp/>as<sp/>datascope<sp/>overlapping<sp/></highlight></codeline>
 <codeline lineno="73"><highlight class="comment">//<sp/>time<sp/>windows<sp/>will<sp/>cause<sp/>ambiguity<sp/>in<sp/>indexing<sp/>times<sp/>by<sp/>this</highlight></codeline>
 <codeline lineno="74"><highlight class="comment">//<sp/>method.</highlight></codeline>
-<codeline lineno="75"><highlight class="comment">*/</highlight></codeline>
-<codeline lineno="84" refid="classmspass_1_1algorithms_1_1_time_window_cmp" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_time_window_cmp" kindref="compound">TimeWindowCmp</ref></highlight></codeline>
+<codeline lineno="75"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84" refid="classmspass_1_1algorithms_1_1_time_window_cmp" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_time_window_cmp" kindref="compound">TimeWindowCmp</ref></highlight></codeline>
 <codeline lineno="85"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="86"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="87"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator()(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>ti1,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>ti2)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>

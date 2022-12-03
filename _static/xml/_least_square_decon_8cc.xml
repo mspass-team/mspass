@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="_least_square_decon_8cc" kind="file" language="C++">
     <compoundname>LeastSquareDecon.cc</compoundname>
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
@@ -373,7 +373,7 @@
 <codeline lineno="103"><highlight class="normal"></highlight></codeline>
 <codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//apply<sp/>shaping<sp/>wavelet<sp/>but<sp/>only<sp/>to<sp/>rf<sp/>estimate<sp/>-<sp/>actual<sp/>output<sp/>and</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//inverse_wavelet<sp/>methods<sp/>apply<sp/>it<sp/>to<sp/>when<sp/>needed<sp/>there<sp/>for<sp/>efficiency</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>rf_fft=(*shapingwavelet.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1aaec6f802d7aba4a36484ba50c9f9c9bf" kindref="member">wavelet</ref>())*rf_fft;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>rf_fft=(*shapingwavelet.wavelet())*rf_fft;</highlight></codeline>
 <codeline lineno="107"><highlight class="normal"></highlight></codeline>
 <codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//ifft<sp/>gets<sp/>result</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>gsl_fft_complex_inverse(rf_fft.ptr(),<sp/>1,<sp/>nfft,<sp/>wavetable,<sp/>workspace);</highlight></codeline>
@@ -396,7 +396,7 @@
 <codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Fatal);</highlight></codeline>
 <codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="128"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="129" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1ab455f00f32185381de65f1e399d185ea" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1ab455f00f32185381de65f1e399d185ea" kindref="member">LeastSquareDecon::actual_output</ref>()</highlight></codeline>
+<codeline lineno="129" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1ab455f00f32185381de65f1e399d185ea" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/>LeastSquareDecon::actual_output()</highlight></codeline>
 <codeline lineno="130"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>W(nfft,&amp;(wavelet[0]));</highlight></codeline>
@@ -405,7 +405,7 @@
 <codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ao_fft=winv*W;</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>always<sp/>apply<sp/>the<sp/>shaping<sp/>wavelet<sp/>-<sp/>this<sp/>perhaps<sp/>should<sp/>be<sp/>optional</highlight></codeline>
 <codeline lineno="137"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>but<sp/>probably<sp/>better<sp/>done<sp/>with<sp/>a<sp/>none<sp/>option<sp/>for<sp/>the<sp/>shaping<sp/>wavelet<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ao_fft=(*shapingwavelet.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1aaec6f802d7aba4a36484ba50c9f9c9bf" kindref="member">wavelet</ref>())*ao_fft;</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ao_fft=(*shapingwavelet.wavelet())*ao_fft;</highlight></codeline>
 <codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gsl_fft_complex_inverse(ao_fft.ptr(),1,nfft,wavetable,workspace);</highlight></codeline>
 <codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector&lt;double&gt;<sp/>ao;</highlight></codeline>
 <codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ao.reserve(nfft);</highlight></codeline>
@@ -439,26 +439,26 @@
 <codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="170"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="171"><highlight class="normal"></highlight></codeline>
-<codeline lineno="172" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1aff1ef8576f2d5890f0a7fd50797971e9" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a307bb228bc11508e730f10be2f07ee24" kindref="member">LeastSquareDecon::inverse_wavelet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0parent)</highlight></codeline>
+<codeline lineno="172" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1aff1ef8576f2d5890f0a7fd50797971e9" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/>LeastSquareDecon::inverse_wavelet(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0parent)</highlight></codeline>
 <codeline lineno="173"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Getting<sp/>dt<sp/>from<sp/>here<sp/>is<sp/>unquestionably<sp/>a<sp/>flaw<sp/>in<sp/>the<sp/>api,<sp/>but<sp/>will</highlight></codeline>
 <codeline lineno="176"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>retain<sp/>for<sp/>now.<sp/><sp/><sp/>Perhaps<sp/>should<sp/>a<sp/>copy<sp/>of<sp/>dt<sp/>in<sp/>the<sp/>ScalarDecon<sp/>object.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dt=this-&gt;shapingwavelet.sample_interval();</highlight></codeline>
-<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3473dc7f359332dbf5a685efe30a684b" kindref="member">FourierInverse</ref>(this-&gt;winv,</highlight></codeline>
-<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*shapingwavelet.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1aaec6f802d7aba4a36484ba50c9f9c9bf" kindref="member">wavelet</ref>(),dt,t0parent));</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(this-&gt;FourierInverse(this-&gt;winv,</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*shapingwavelet.wavelet(),dt,t0parent));</highlight></codeline>
 <codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...)<sp/>{</highlight></codeline>
 <codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="183"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="184"><highlight class="normal"></highlight></codeline>
-<codeline lineno="185" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a307bb228bc11508e730f10be2f07ee24" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a307bb228bc11508e730f10be2f07ee24" kindref="member">LeastSquareDecon::inverse_wavelet</ref>()</highlight></codeline>
+<codeline lineno="185" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a307bb228bc11508e730f10be2f07ee24" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/>LeastSquareDecon::inverse_wavelet()</highlight></codeline>
 <codeline lineno="186"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="187"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a307bb228bc11508e730f10be2f07ee24" kindref="member">inverse_wavelet</ref>(0.0);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>this-&gt;inverse_wavelet(0.0);</highlight></codeline>
 <codeline lineno="189"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
 <codeline lineno="190"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="191" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a9546ad7acceb273efbfff836d4e804b9" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a9546ad7acceb273efbfff836d4e804b9" kindref="member">LeastSquareDecon::QCMetrics</ref>()</highlight></codeline>
+<codeline lineno="191" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a9546ad7acceb273efbfff836d4e804b9" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>LeastSquareDecon::QCMetrics()</highlight></codeline>
 <codeline lineno="192"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/>cerr<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;LeastSquareDecon::QCMetrics<sp/>not<sp/>yet<sp/>implemented&quot;</highlight><highlight class="normal">&lt;&lt;endl;</highlight></codeline>
 <codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>();</highlight></codeline>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_log_data" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::LogData</compoundname>
       <sectiondef kind="public-attrib">
@@ -204,7 +204,7 @@
       </sectiondef>
       <sectiondef kind="friend">
       <memberdef kind="friend" id="classmspass_1_1utility_1_1_log_data_1a5dd42ce5ba18a84c251894ba81877184" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>friend std::ostream &amp;</type>
+        <type>std::ostream &amp;</type>
         <definition>std::ostream&amp; operator&lt;&lt;</definition>
         <argsstring>(std::ostream &amp;, LogData &amp;)</argsstring>
         <name>operator&lt;&lt;</name>
@@ -267,7 +267,7 @@
         <label>ErrorSeverity</label>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="16" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="15" bodyend="51"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="15" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="16" bodyend="51"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_log_data_1a5c5ea0cf75d3d15d0152139d47dfeaa3" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>algorithm</name></member>
       <member refid="classmspass_1_1utility_1_1_log_data_1a3a1eb58388113c866f28dc76df22e154" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>badness</name></member>

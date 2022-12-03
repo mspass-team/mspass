@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="namespacemspass_1_1algorithms" kind="namespace" language="C++">
     <compoundname>mspass::algorithms</compoundname>
-    <innerclass refid="classmspass_1_1algorithms_1_1_basic_taper" prot="public">mspass::algorithms::BasicTaper</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1_butterworth" prot="public">mspass::algorithms::Butterworth</innerclass>
-    <innerclass refid="classmspass_1_1algorithms_1_1_cosine_taper" prot="public">mspass::algorithms::CosineTaper</innerclass>
-    <innerclass refid="structmspass_1_1algorithms_1_1greater__seedorder" prot="public">mspass::algorithms::greater_seedorder</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_basic_taper" prot="public">mspass::algorithms::BasicTaper</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1_linear_taper" prot="public">mspass::algorithms::LinearTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_cosine_taper" prot="public">mspass::algorithms::CosineTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_vector_taper" prot="public">mspass::algorithms::VectorTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_top_mute" prot="public">mspass::algorithms::TopMute</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1_time_window" prot="public">mspass::algorithms::TimeWindow</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1_time_window_cmp" prot="public">mspass::algorithms::TimeWindowCmp</innerclass>
-    <innerclass refid="classmspass_1_1algorithms_1_1_top_mute" prot="public">mspass::algorithms::TopMute</innerclass>
-    <innerclass refid="classmspass_1_1algorithms_1_1_vector_taper" prot="public">mspass::algorithms::VectorTaper</innerclass>
+    <innerclass refid="structmspass_1_1algorithms_1_1greater__seedorder" prot="public">mspass::algorithms::greater_seedorder</innerclass>
     <innernamespace refid="namespacemspass_1_1algorithms_1_1amplitudes">mspass::algorithms::amplitudes</innernamespace>
     <innernamespace refid="namespacemspass_1_1algorithms_1_1deconvolution">mspass::algorithms::deconvolution</innernamespace>
       <sectiondef kind="func">
@@ -1042,6 +1042,6 @@ It is common to need to extract a smaller segment of data from a larger time win
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="11" column="28"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="11" column="1"/>
   </compounddef>
 </doxygen>

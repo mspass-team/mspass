@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</compoundname>
     <includes refid="_m_t_power_spectrum_engine_8h" local="no">MTPowerSpectrumEngine.h</includes>
@@ -397,7 +397,7 @@
 <para>The multitaper method uses averages of spectra windowed by Slepian functions. This class can be used to compute power spectra. For efficiency the design has constructors that build the Slepian functions and cache them in a private area. We use this model because computing spectra on a large data set in parallel will usually be done with a fixed time window. The expected use is that normally the engine is created once and passed as an argument to functions using it in a map operator.</para>
 <para>This class uses the apply model for processing. It accepts raw vector or TimeSeries data. The former assumes the sample interval is 1 while the second scales the spectrum to have units of 1/Hz. </para>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="28" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="27" bodyend="128"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="27" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="28" bodyend="128"/>
     <listofallmembers>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa3c10c25ea2c6b82cf8bbe2991f16bfe" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>apply</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a3b7b9b8e20cd59a00ed0f4fbeab7829b" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>apply</name></member>

@@ -157,7 +157,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">bsc</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">bsc</span><span class="o">.</span><span class="n">_ExtractComponent</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;ExtractComponent&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
@@ -172,7 +172,8 @@
             <span class="n">empty</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">empty</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">bsc</span><span class="o">.</span><span class="n">EnsembleComponent</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">component</span><span class="p">))</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">bsc</span><span class="o">.</span><span class="n">_ExtractComponent</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">component</span><span class="p">))</span>
+            <span class="c1"># second copy to convert type from CoreTimeSeriesEnsemble to TimeSeriesEnsemble</span>
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span>

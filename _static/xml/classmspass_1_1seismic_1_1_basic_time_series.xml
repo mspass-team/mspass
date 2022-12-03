@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1seismic_1_1_basic_time_series" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::BasicTimeSeries</compoundname>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_core_seismogram" prot="public" virt="non-virtual">mspass::seismic::CoreSeismogram</derivedcompoundref>
@@ -526,8 +526,8 @@
         <definition>virtual void mspass::seismic::BasicTimeSeries::set_dt</definition>
         <argsstring>(const double sample_interval)</argsstring>
         <name>set_dt</name>
-        <reimplementedby refid="classmspass_1_1seismic_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841">set_dt</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_core_seismogram_1a5e51c2c6d3a1aa02281ba242a1d15bf2">set_dt</reimplementedby>
+        <reimplementedby refid="classmspass_1_1seismic_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841">set_dt</reimplementedby>
         <param>
           <type>const double</type>
           <declname>sample_interval</declname>
@@ -558,8 +558,8 @@
         <definition>virtual void mspass::seismic::BasicTimeSeries::set_npts</definition>
         <argsstring>(const size_t npts)</argsstring>
         <name>set_npts</name>
-        <reimplementedby refid="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8">set_npts</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79">set_npts</reimplementedby>
+        <reimplementedby refid="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8">set_npts</reimplementedby>
         <param>
           <type>const size_t</type>
           <declname>npts</declname>
@@ -591,8 +591,8 @@
         <definition>virtual void mspass::seismic::BasicTimeSeries::set_t0</definition>
         <argsstring>(const double t0in)</argsstring>
         <name>set_t0</name>
-        <reimplementedby refid="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0">set_t0</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e">set_t0</reimplementedby>
+        <reimplementedby refid="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0">set_t0</reimplementedby>
         <param>
           <type>const double</type>
           <declname>t0in</declname>
@@ -752,7 +752,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="35" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="34" bodyend="299"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="34" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="35" bodyend="299"/>
     <listofallmembers>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adfb9a7a1162b72d5d33e7e3430117611" prot="public" virt="virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>ator</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>BasicTimeSeries</name></member>

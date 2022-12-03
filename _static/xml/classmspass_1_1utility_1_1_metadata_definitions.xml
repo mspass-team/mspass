@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_metadata_definitions" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::MetadataDefinitions</compoundname>
     <includes refid="_metadata_definitions_8h" local="no">MetadataDefinitions.h</includes>
@@ -725,7 +725,9 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MetadataDefinitions.h" line="240" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/MetadataDefinitions.cc" bodystart="520" bodyend="544"/>
         <references refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" compoundref="_metadata_8cc" startline="324" endline="334">mspass::utility::Metadata::change_key</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_definitions_1a63d73a129374c69d01c9cf23bf4157ed" compoundref="_metadata_definitions_8cc" startline="168" endline="176">is_alias</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" compoundref="_metadata_8cc" startline="73" endline="85">mspass::utility::Metadata::is_defined</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_definitions_1a7f6f48e89b074e16112475d7d620e747" compoundref="_metadata_definitions_8cc" startline="179" endline="202">unique_name</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_definitions_1a4f0cfa4c13b688f301e261c0c404632e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -845,7 +847,7 @@
 <para>The metadata system in mspass was designed to be infinitely flexible. However, to be maintainable and provide some stability we need a method to define the full properties of the keys that define attributes known to the system. This object does that through wwhat I hope is a simple interface. The expectation is the main use of this class is in python code that will read and write to mongo. Mongo is type sensitive but python tries hard to by loosy goosy about types. The main use is then expected that all gets and puts to <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> will be preceded by calls to the type method here. Based on the return the right get or put method can be called.</para>
 <para>The overhead of creating this thing is not small. It will likely be recommended as an initialization step for most mspass processing scripts. Ultimately it perhaps should have a database constructor, but initially we will build it only from data file. </para>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MetadataDefinitions.h" line="31" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MetadataDefinitions.h" bodystart="30" bodyend="293"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MetadataDefinitions.h" line="30" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MetadataDefinitions.h" bodystart="31" bodyend="293"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_metadata_definitions_1a555a85e15897c780964a7e4f7018dca6" prot="public" virt="non-virtual"><scope>mspass::utility::MetadataDefinitions</scope><name>add</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_definitions_1a07447e104a6d689730d53c68a4c1f07a" prot="public" virt="non-virtual"><scope>mspass::utility::MetadataDefinitions</scope><name>add_alias</name></member>

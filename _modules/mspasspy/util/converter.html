@@ -124,7 +124,7 @@
     <span class="n">SeismogramEnsemble</span><span class="p">,</span>
     <span class="n">Keywords</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">ExtractComponent</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">_ExtractComponent</span>
 
 
 <div class="viewcode-block" id="dict2Metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.dict2Metadata">[docs]</a><span class="k">def</span> <span class="nf">dict2Metadata</span><span class="p">(</span><span class="n">dic</span><span class="p">):</span>
@@ -336,7 +336,7 @@
         <span class="n">uuids</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">id</span><span class="p">()</span>
         <span class="n">logstuff</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">elog</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-            <span class="n">ts</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">sg</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">_ExtractComponent</span><span class="p">(</span><span class="n">sg</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">put_string</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">chan</span><span class="p">,</span> <span class="n">chanmap</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_hang</span><span class="p">,</span> <span class="n">hang</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_vang</span><span class="p">,</span> <span class="n">vang</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>

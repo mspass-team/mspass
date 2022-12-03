@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_metadata" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::Metadata</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1_basic_metadata" prot="public" virt="non-virtual">mspass::utility::BasicMetadata</basecompoundref>
@@ -1075,7 +1075,7 @@ on the string key version of this same generic function.
       </sectiondef>
       <sectiondef kind="friend">
       <memberdef kind="friend" id="classmspass_1_1utility_1_1_metadata_1a492ba774f3adb7d1f45bdf41eaa4639b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>friend pybind11::object</type>
+        <type>pybind11::object</type>
         <definition>pybind11::object serialize_metadata_py</definition>
         <argsstring>(const Metadata &amp;md)</argsstring>
         <name>serialize_metadata_py</name>
@@ -1104,7 +1104,7 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="455" column="27" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="288" bodyend="300"/>
       </memberdef>
       <memberdef kind="friend" id="classmspass_1_1utility_1_1_metadata_1a542596be1a0a6bae256936fc0828eeec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>friend <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref></type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref></type>
         <definition>Metadata restore_serialized_metadata_py</definition>
         <argsstring>(const pybind11::object &amp;sd)</argsstring>
         <name>restore_serialized_metadata_py</name>
@@ -1135,7 +1135,7 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="463" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="302" bodyend="322"/>
       </memberdef>
       <memberdef kind="friend" id="classmspass_1_1utility_1_1_metadata_1a9aefda8821c48b62ef52d8e9f90ef7a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>friend std::ostringstream &amp;</type>
+        <type>std::ostringstream &amp;</type>
         <definition>std::ostringstream&amp; operator&lt;&lt;</definition>
         <argsstring>(std::ostringstream &amp;, const mspass::utility::Metadata &amp;)</argsstring>
         <name>operator&lt;&lt;</name>
@@ -1249,7 +1249,7 @@ on the string key version of this same generic function.
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="76" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="75" bodyend="471"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="75" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="76" bodyend="471"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>append_chain</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>begin</name></member>

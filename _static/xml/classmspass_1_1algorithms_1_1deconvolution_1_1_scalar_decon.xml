@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>mspass::algorithms::deconvolution::ScalarDecon</compoundname>
     <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::BasicDeconOperator</basecompoundref>
@@ -199,11 +199,11 @@
         <definition>virtual void mspass::algorithms::deconvolution::ScalarDecon::process</definition>
         <argsstring>()=0</argsstring>
         <name>process</name>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1aa6cdbf9610fb2d618fa14dc555dcd9e9">process</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1ab08a199316c4a5a977da9852def49fc4">process</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1aac6fc172d69975b1afe4be16658fbff6">process</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1a99e2e07d1c536ea0b26e90d400ea120e">process</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ad4eb398a16d8584d6515beaef8e97487">process</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1ab08a199316c4a5a977da9852def49fc4">process</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1a99e2e07d1c536ea0b26e90d400ea120e">process</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1aac6fc172d69975b1afe4be16658fbff6">process</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1aa6cdbf9610fb2d618fa14dc555dcd9e9">process</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -311,11 +311,11 @@
         <definition>virtual mspass::seismic::CoreTimeSeries mspass::algorithms::deconvolution::ScalarDecon::actual_output</definition>
         <argsstring>()=0</argsstring>
         <name>actual_output</name>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a4eca007bc2d8ab0236e9deebeb1a1f8c">actual_output</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1ab455f00f32185381de65f1e399d185ea">actual_output</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a9eb03c46506f2a8960a16d74d3068a5e">actual_output</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1a435c55ed82fb753b3a6d6874c90e7a59">actual_output</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a42ff385ce109add3972d5a8f6186878e">actual_output</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1ab455f00f32185381de65f1e399d185ea">actual_output</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1a435c55ed82fb753b3a6d6874c90e7a59">actual_output</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a9eb03c46506f2a8960a16d74d3068a5e">actual_output</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a4eca007bc2d8ab0236e9deebeb1a1f8c">actual_output</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -331,11 +331,11 @@
         <definition>virtual mspass::seismic::CoreTimeSeries mspass::algorithms::deconvolution::ScalarDecon::inverse_wavelet</definition>
         <argsstring>()=0</argsstring>
         <name>inverse_wavelet</name>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a307bb228bc11508e730f10be2f07ee24">inverse_wavelet</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a2e88549ab105200fc6eabe9071cff913">inverse_wavelet</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a7457a141f5eb2ba694989ee248dc29cd">inverse_wavelet</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1a737a908e543303d994adf292d5552dce">inverse_wavelet</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a0aa34a6a8703f3bc9d069538103e910c">inverse_wavelet</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a307bb228bc11508e730f10be2f07ee24">inverse_wavelet</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1a737a908e543303d994adf292d5552dce">inverse_wavelet</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a7457a141f5eb2ba694989ee248dc29cd">inverse_wavelet</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a2e88549ab105200fc6eabe9071cff913">inverse_wavelet</reimplementedby>
         <briefdescription>
 <para>Return a FIR represention of the inverse filter. </para>
         </briefdescription>
@@ -353,9 +353,9 @@
         <argsstring>(double)=0</argsstring>
         <name>inverse_wavelet</name>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1aff1ef8576f2d5890f0a7fd50797971e9">inverse_wavelet</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a844d4d2ff34a59beb63def0751c75929">inverse_wavelet</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a9b75632d27ed2db87a108d11f68f9d44">inverse_wavelet</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1a7d12e4f7a3c5cc21e7caad79eb4b6a60">inverse_wavelet</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a9b75632d27ed2db87a108d11f68f9d44">inverse_wavelet</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a844d4d2ff34a59beb63def0751c75929">inverse_wavelet</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ab953df1fd684513a45ba76473632ab93">inverse_wavelet</reimplementedby>
         <param>
           <type>double</type>
@@ -373,11 +373,11 @@
         <definition>virtual mspass::utility::Metadata mspass::algorithms::deconvolution::ScalarDecon::QCMetrics</definition>
         <argsstring>()=0</argsstring>
         <name>QCMetrics</name>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a9546ad7acceb273efbfff836d4e804b9">QCMetrics</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a4065e7b200435241ac2e80da7ba59e0a">QCMetrics</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1ab7793863452d91d3864bff9a247d6699">QCMetrics</reimplementedby>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1abe73bf7bdbd568b1d2066942886aebbc">QCMetrics</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a788a9a7f1f0e7a9fcdedfb4625b98474">QCMetrics</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a9546ad7acceb273efbfff836d4e804b9">QCMetrics</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1abe73bf7bdbd568b1d2066942886aebbc">QCMetrics</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1ab7793863452d91d3864bff9a247d6699">QCMetrics</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a4065e7b200435241ac2e80da7ba59e0a">QCMetrics</reimplementedby>
         <briefdescription>
 <para>Return appropriate quality measures. </para>
         </briefdescription>
@@ -457,7 +457,7 @@
         <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="24" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="23" bodyend="94"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="23" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="24" bodyend="94"/>
     <listofallmembers>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a84f320ad48e8bfc9c292f8dde33c0593" prot="public" virt="pure-virtual"><scope>mspass::algorithms::deconvolution::ScalarDecon</scope><name>actual_output</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a94a28202041cf426f01ef1e10032c744" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ScalarDecon</scope><name>change_shaping_wavelet</name></member>

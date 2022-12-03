@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::ShapingWavelet</compoundname>
     <includes refid="_shaping_wavelet_8h" local="no">ShapingWavelet.h</includes>
@@ -360,7 +360,7 @@
 <para>Frequency domain based deconvolution methods all use a shaping wavelet for output to avoid ringing. Frequency domain deconvolution methods in this Library contain an instance of this object. In all cases it is hidden behind the interface. A complexity, however, is that all frequency domain methods will call the Metadata driven constructor.</para>
 <para>This version currently allows three shaping wavelets: Gaussin, Ricker, and Slepian0. The first two are standard. The last is novel and theoretically can produce an actual output with the smalle posible sidebands </para>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" line="19" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" bodystart="18" bodyend="95"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" line="18" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" bodystart="19" bodyend="95"/>
     <listofallmembers>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1a22e5cbd984cb7f761286393898ba7e94" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ShapingWavelet</scope><name>df</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1acdb22b4c8de05ba62629da54d67f752e" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ShapingWavelet</scope><name>dt</name></member>

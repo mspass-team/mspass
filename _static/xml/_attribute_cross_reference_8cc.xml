@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="_attribute_cross_reference_8cc" kind="file" language="C++">
     <compoundname>AttributeCrossReference.cc</compoundname>
     <includes local="no">sstream</includes>
@@ -224,15 +224,15 @@
 <codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(iptr=itoe.begin();iptr!=itoe.end();++iptr)</highlight></codeline>
 <codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>etoi.insert(pair&lt;string,string&gt;(iptr-&gt;second,iptr-&gt;first));</highlight></codeline>
 <codeline lineno="94"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="95"><highlight class="normal">AttributeCrossReference::AttributeCrossReference</highlight></codeline>
-<codeline lineno="96" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a6560b0c41600bafbefa6a91c10ce4057" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>parent)</highlight></codeline>
+<codeline lineno="95" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a6560b0c41600bafbefa6a91c10ce4057" refkind="member"><highlight class="normal">AttributeCrossReference::AttributeCrossReference</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>parent)</highlight></codeline>
 <codeline lineno="97"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/>itoe=parent.itoe;</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/>etoi=parent.etoi;</highlight></codeline>
 <codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/>imdtypemap=parent.imdtypemap;</highlight></codeline>
 <codeline lineno="101"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>AttributeCrossReference::operator=</highlight></codeline>
-<codeline lineno="103" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a619f37e593d5d259ec6cafed2eed1aea" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>parent)</highlight></codeline>
+<codeline lineno="102" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a619f37e593d5d259ec6cafed2eed1aea" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>AttributeCrossReference::operator=</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>parent)</highlight></codeline>
 <codeline lineno="104"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=&amp;parent)</highlight></codeline>
 <codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>

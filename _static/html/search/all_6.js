@@ -1,7 +1,7 @@
 var searchData=
 [
   ['gaps_100',['gaps',['../classmspass_1_1seismic_1_1_data_gap.html#ab83ccd2842b4d16b437cae78f41a1502',1,'mspass::seismic::DataGap']]],
-  ['generaliterdecon_101',['GeneralIterDecon',['../classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon.html',1,'mspass::algorithms::deconvolution::GeneralIterDecon'],['../classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon.html#a716eeb950de422de7aceb5514accd9f5',1,'mspass::algorithms::deconvolution::GeneralIterDecon::GeneralIterDecon()']]],
+  ['generaliterdecon_101',['GeneralIterDecon',['../classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon.html#a716eeb950de422de7aceb5514accd9f5',1,'mspass::algorithms::deconvolution::GeneralIterDecon::GeneralIterDecon()'],['../classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon.html',1,'mspass::algorithms::deconvolution::GeneralIterDecon']]],
   ['get_102',['get',['../classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539',1,'mspass::utility::Metadata::get(const std::string key) const'],['../classmspass_1_1utility_1_1_metadata.html#a5d6876ed25c3f5d93052239ec828a3c5',1,'mspass::utility::Metadata::get(const char *key) const']]],
   ['get_5fany_103',['get_any',['../classmspass_1_1utility_1_1_metadata.html#a991516933477580b6b59dd578819df06',1,'mspass::utility::Metadata']]],
   ['get_5fbool_104',['get_bool',['../classmspass_1_1utility_1_1_metadata.html#a2631da9d437572ee0781ed9bd96a3ed3',1,'mspass::utility::Metadata']]],

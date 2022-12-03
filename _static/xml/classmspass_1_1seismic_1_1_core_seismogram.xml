@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1seismic_1_1_core_seismogram" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::CoreSeismogram</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_basic_time_series" prot="public" virt="non-virtual">mspass::seismic::BasicTimeSeries</basecompoundref>
@@ -421,8 +421,8 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="212" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="892" bodyend="910"/>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="511">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="489">components_are_orthogonal</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" compoundref="_metadata_8cc" startline="108" endline="116">mspass::utility::Metadata::operator=</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf05bc1fe471e194bec093906c1a607c" compoundref="_basic_time_series_8cc" startline="62" endline="75">mspass::seismic::BasicTimeSeries::operator=</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" compoundref="_metadata_8cc" startline="108" endline="116">mspass::utility::Metadata::operator=</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="519">tmatrix</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="53">u</references>
       </memberdef>
@@ -1213,7 +1213,7 @@ rotation in rotational angle grid searches.
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="40" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="39" bodyend="524"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="39" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="40" bodyend="524"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>append_chain</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adfb9a7a1162b72d5d33e7e3430117611" prot="public" virt="virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>ator</name></member>

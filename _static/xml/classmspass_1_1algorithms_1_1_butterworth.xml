@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1_butterworth" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::Butterworth</compoundname>
     <includes refid="_butterworth_8h" local="no">Butterworth.h</includes>
@@ -1027,7 +1027,7 @@
 <para>This C++ class can be viewed as a wrapper for Seismic Unix functions that implement <ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref> filters. The parent functions were found in the cwp lib and were called bfdesign, bfhighpass, and bflowpass. Those three functions are the central tools used to implement this class. All the rest is really just a wrapper to provide an object oriented api to the su functions.</para>
 <para>This class implements a processing object concept. That is, it is intended to be constructed and then used for processing multiple data objects with fixed parameters. For Butterwoth filtering the parameters are relatively simple (mainly two corner frequencies and number of poles defining the filter rolloff). A complexity, however, is that the class was designed to allow automatic handling of multiple sample rate data. That is handled internally by caching the sample interval of the data and automatically adjusting the coefficients when the sample interval changes. Note that feature only works for MsPASS data objects CoreTimeSeries and Seismogram where the sample interval is embedded in the object. The raw interface with a simple vector cannot know that. The method to change the expected sample interval has some sanity checks to reduce, but not eliminate the possibility of mistakes that will create unstable filters. </para>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="36" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" bodystart="35" bodyend="383"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="35" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" bodystart="36" bodyend="383"/>
     <listofallmembers>
       <member refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" prot="public" virt="non-virtual"><scope>mspass::algorithms::Butterworth</scope><name>apply</name></member>
       <member refid="classmspass_1_1algorithms_1_1_butterworth_1a10c30a560e4dce8a3bc9fe80409cee80" prot="public" virt="non-virtual"><scope>mspass::algorithms::Butterworth</scope><name>apply</name></member>

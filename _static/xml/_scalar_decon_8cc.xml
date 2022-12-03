@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="_scalar_decon_8cc" kind="file" language="C++">
     <compoundname>ScalarDecon.cc</compoundname>
     <includes refid="_scalar_decon_8h" local="yes">mspass/algorithms/deconvolution/ScalarDecon.h</includes>
@@ -215,7 +215,7 @@
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="38"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="39" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9478e366652c54b4331e14b5a0eb85ea" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9478e366652c54b4331e14b5a0eb85ea" kindref="member">ScalarDecon::load</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>vector&lt;double&gt;<sp/>&amp;w,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>vector&lt;double&gt;<sp/>&amp;d)</highlight></codeline>
+<codeline lineno="39" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9478e366652c54b4331e14b5a0eb85ea" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ScalarDecon::load(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>vector&lt;double&gt;<sp/>&amp;w,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>vector&lt;double&gt;<sp/>&amp;d)</highlight></codeline>
 <codeline lineno="40"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>wavelet=w;</highlight></codeline>
 <codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>data=d;</highlight></codeline>
@@ -226,13 +226,13 @@
 <codeline lineno="47"><highlight class="comment">stability<sp/>we<sp/>must<sp/>have<sp/>both<sp/>call<sp/>the<sp/>clear<sp/>method<sp/>for<sp/>result.<sp/><sp/><sp/>Could</highlight></codeline>
 <codeline lineno="48"><highlight class="comment">do<sp/>that<sp/>in<sp/>only<sp/>loadwavelet,<sp/>but<sp/>that<sp/>could<sp/>produce<sp/>funny<sp/>bugs<sp/>downsteam</highlight></codeline>
 <codeline lineno="49"><highlight class="comment">so<sp/>we<sp/>always<sp/>clear<sp/>for<sp/>stability<sp/>at<sp/>a<sp/>small<sp/>cost<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="50" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ac358e4143a01c4f979f3f09e401b8e7c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ac358e4143a01c4f979f3f09e401b8e7c" kindref="member">ScalarDecon::loaddata</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>vector&lt;double&gt;<sp/>&amp;d)</highlight></codeline>
+<codeline lineno="50" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ac358e4143a01c4f979f3f09e401b8e7c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ScalarDecon::loaddata(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>vector&lt;double&gt;<sp/>&amp;d)</highlight></codeline>
 <codeline lineno="51"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/>data=d;</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><sp/><sp/>result.clear();</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
 <codeline lineno="55"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="56" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1abfb57cb76746708723cac9a860221f2e" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1abfb57cb76746708723cac9a860221f2e" kindref="member">ScalarDecon::loadwavelet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>vector&lt;double&gt;<sp/>&amp;w)</highlight></codeline>
+<codeline lineno="56" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1abfb57cb76746708723cac9a860221f2e" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ScalarDecon::loadwavelet(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>vector&lt;double&gt;<sp/>&amp;w)</highlight></codeline>
 <codeline lineno="57"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="58"><highlight class="normal"><sp/><sp/>wavelet=w;</highlight></codeline>
 <codeline lineno="59"><highlight class="normal"><sp/><sp/>result.clear();</highlight></codeline>
@@ -242,7 +242,7 @@
 <codeline lineno="63"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>shapingwavelet=<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref>(md);</highlight></codeline>
 <codeline lineno="65"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="66" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a94a28202041cf426f01ef1e10032c744" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a94a28202041cf426f01ef1e10032c744" kindref="member">ScalarDecon::change_shaping_wavelet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref>&amp;<sp/>nsw)</highlight></codeline>
+<codeline lineno="66" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a94a28202041cf426f01ef1e10032c744" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>ScalarDecon::change_shaping_wavelet(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref>&amp;<sp/>nsw)</highlight></codeline>
 <codeline lineno="67"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>shapingwavelet=nsw;</highlight></codeline>
 <codeline lineno="69"><highlight class="normal">}</highlight></codeline>

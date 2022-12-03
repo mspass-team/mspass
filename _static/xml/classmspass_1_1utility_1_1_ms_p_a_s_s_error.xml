@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::MsPASSError</compoundname>
-    <basecompoundref prot="public" virt="non-virtual">exception</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">std::exception</basecompoundref>
     <derivedcompoundref refid="classmspass_1_1utility_1_1_antelope_pf_error" prot="public" virt="non-virtual">mspass::utility::AntelopePfError</derivedcompoundref>
+    <derivedcompoundref refid="classmspass_1_1utility_1_1_metadata_get_error" prot="public" virt="non-virtual">mspass::utility::MetadataGetError</derivedcompoundref>
     <derivedcompoundref refid="classmspass_1_1utility_1_1dmatrix__index__error" prot="public" virt="non-virtual">mspass::utility::dmatrix_index_error</derivedcompoundref>
     <derivedcompoundref refid="classmspass_1_1utility_1_1dmatrix__size__error" prot="public" virt="non-virtual">mspass::utility::dmatrix_size_error</derivedcompoundref>
-    <derivedcompoundref refid="classmspass_1_1utility_1_1_metadata_get_error" prot="public" virt="non-virtual">mspass::utility::MetadataGetError</derivedcompoundref>
     <includes refid="_ms_p_a_s_s_error_8h" local="no">MsPASSError.h</includes>
       <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" prot="protected" static="no" mutable="no">
@@ -248,7 +248,7 @@
       <node id="2">
         <label>std::exception</label>
       </node>
-      <node id="4">
+      <node id="5">
         <label>mspass::utility::dmatrix_index_error</label>
         <link refid="classmspass_1_1utility_1_1dmatrix__index__error"/>
         <childnode refid="1" relation="public-inheritance">
@@ -260,13 +260,13 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="4">
         <label>mspass::utility::MetadataGetError</label>
         <link refid="classmspass_1_1utility_1_1_metadata_get_error"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>mspass::utility::dmatrix_size_error</label>
         <link refid="classmspass_1_1utility_1_1dmatrix__size__error"/>
         <childnode refid="1" relation="public-inheritance">
@@ -284,7 +284,7 @@
         <label>std::exception</label>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="40" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="39" bodyend="117"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="39" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="40" bodyend="117"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" prot="protected" virt="non-virtual"><scope>mspass::utility::MsPASSError</scope><name>badness</name></member>
       <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ab66bb8b76a50addea48e18663744ca94" prot="public" virt="non-virtual"><scope>mspass::utility::MsPASSError</scope><name>log_error</name></member>

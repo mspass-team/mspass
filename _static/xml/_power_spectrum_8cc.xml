@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="_power_spectrum_8cc" kind="file" language="C++">
     <compoundname>PowerSpectrum.cc</compoundname>
     <includes local="no">sstream</includes>
@@ -181,16 +181,16 @@
 <codeline lineno="26"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=(&amp;parent))</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" kindref="member">Metadata::operator=</ref>(parent);</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum_1af4023fd0eee89576ca87ce0df394a672" kindref="member">df</ref>=parent.df;</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum_1a53bb92009189c7d297b20656cdf820a4" kindref="member">f0</ref>=parent.f0;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;Metadata::operator=(parent);</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/>df=parent.df;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>f0=parent.f0;</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>spectrum_type=parent.spectrum_type;</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>spectrum=parent.spectrum;</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/>elog=parent.elog;</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="37"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="38" refid="classmspass_1_1seismic_1_1_power_spectrum_1a8306434c52e142797c227fed6f91fd82" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref>&amp;<sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum_1a8306434c52e142797c227fed6f91fd82" kindref="member">PowerSpectrum::operator+=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref>&amp;<sp/>other)</highlight></codeline>
+<codeline lineno="38" refid="classmspass_1_1seismic_1_1_power_spectrum_1a8306434c52e142797c227fed6f91fd82" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref>&amp;<sp/>PowerSpectrum::operator+=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref>&amp;<sp/>other)</highlight></codeline>
 <codeline lineno="39"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Allow<sp/>self<sp/>accumulation<sp/>-<sp/>double<sp/>values<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">==(&amp;other))</highlight></codeline>
@@ -203,7 +203,7 @@
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>stringstream<sp/>ss;</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;operator+=(accumulation)<sp/>size<sp/>mismatch<sp/>of<sp/>spectrum<sp/>arrays&quot;</highlight><highlight class="normal">&lt;&lt;endl</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;right<sp/>hade<sp/>side<sp/>spectrum<sp/>size=&quot;</highlight><highlight class="normal">&lt;&lt;spectrum.size()&lt;&lt;endl</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;right<sp/>hade<sp/>side<sp/>spectrum<sp/>size=&quot;</highlight><highlight class="normal">&lt;&lt;spectrum.<ref refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" kindref="member">size</ref>()&lt;&lt;endl</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;left<sp/>had<sp/>side<sp/>spectrum<sp/>size=&quot;</highlight><highlight class="normal">&lt;&lt;other.spectrum.size()&lt;&lt;endl;</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(ss.str(),ErrorSeverity::Invalid);</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -212,7 +212,7 @@
 <codeline lineno="57"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="58"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="59"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="60" refid="classmspass_1_1seismic_1_1_power_spectrum_1abbfb81f3ad4a3f0a1488b869a60148a2" refkind="member"><highlight class="normal">vector&lt;double&gt;<sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum_1abbfb81f3ad4a3f0a1488b869a60148a2" kindref="member">PowerSpectrum::amplitude</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="60" refid="classmspass_1_1seismic_1_1_power_spectrum_1abbfb81f3ad4a3f0a1488b869a60148a2" refkind="member"><highlight class="normal">vector&lt;double&gt;<sp/>PowerSpectrum::amplitude()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="61"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>result;</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"><sp/><sp/>result.reserve(spectrum.size());</highlight></codeline>
@@ -220,19 +220,19 @@
 <codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>result.push_back(sqrt(spectrum[k]));</highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
 <codeline lineno="67"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="68" refid="classmspass_1_1seismic_1_1_power_spectrum_1a8cdc3c59b4e204b1b04d0c1951e73076" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum_1abbfb81f3ad4a3f0a1488b869a60148a2" kindref="member">PowerSpectrum::amplitude</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>f)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="68" refid="classmspass_1_1seismic_1_1_power_spectrum_1a8cdc3c59b4e204b1b04d0c1951e73076" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>PowerSpectrum::amplitude(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>f)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="69"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(f&lt;0.0)<sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight><highlight class="stringliteral">&quot;PowerSpectrum::amplitude:<sp/><sp/>requested<sp/>amplitude<sp/>for<sp/>a<sp/>negative<sp/>frequency<sp/>which<sp/>is<sp/>assumed<sp/>to<sp/>be<sp/>an<sp/>erorr&quot;</highlight><highlight class="normal">,</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>filow;</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/>filow=</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">((f-<ref refid="classmspass_1_1seismic_1_1_power_spectrum_1a53bb92009189c7d297b20656cdf820a4" kindref="member">f0</ref>)/<ref refid="classmspass_1_1seismic_1_1_power_spectrum_1af4023fd0eee89576ca87ce0df394a672" kindref="member">df</ref>);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/>filow=</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">((f-f0)/df);</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Force<sp/>0<sp/>at<sp/>Nyquist<sp/>and<sp/>above<sp/>-<sp/>this<sp/>allows<sp/>simple<sp/>interpolation<sp/>in<sp/>else<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(filow&gt;=(spectrum.size()-1))</highlight></codeline>
 <codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.0;</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="78"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>slope=(spectrum[filow+1]-spectrum[filow])/<ref refid="classmspass_1_1seismic_1_1_power_spectrum_1af4023fd0eee89576ca87ce0df394a672" kindref="member">df</ref>;</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>flow=<ref refid="classmspass_1_1seismic_1_1_power_spectrum_1a53bb92009189c7d297b20656cdf820a4" kindref="member">f0</ref>+((double)filow)*<ref refid="classmspass_1_1seismic_1_1_power_spectrum_1af4023fd0eee89576ca87ce0df394a672" kindref="member">df</ref>;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>slope=(spectrum[filow+1]-spectrum[filow])/df;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>flow=f0+((double)filow)*df;</highlight></codeline>
 <codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>sqrt(spectrum[filow]+slope*(f-flow));</highlight></codeline>
 <codeline lineno="82"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="83"><highlight class="normal">}</highlight></codeline>

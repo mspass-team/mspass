@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1_linear_taper" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::LinearTaper</compoundname>
     <basecompoundref refid="classmspass_1_1algorithms_1_1_basic_taper" prot="public" virt="non-virtual">mspass::algorithms::BasicTaper</basecompoundref>
@@ -60,10 +60,13 @@
       </sectiondef>
       <sectiondef kind="friend">
       <memberdef kind="friend" id="classmspass_1_1algorithms_1_1_linear_taper_1ac98d07dd8f7b70e16ccb9a01abf56b9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>friend class</type>
+        <type>class</type>
         <definition>friend class boost::serialization::access</definition>
         <argsstring></argsstring>
         <name>boost::serialization::access</name>
+        <param>
+          <type>boost::serialization::access</type>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -267,7 +270,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="79" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="78" bodyend="109"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="78" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="79" bodyend="109"/>
     <listofallmembers>
       <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" prot="protected" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>all</name></member>
       <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a1d1f9b13b7b5d052d98771c8ac8cfafb" prot="public" virt="virtual"><scope>mspass::algorithms::LinearTaper</scope><name>apply</name></member>

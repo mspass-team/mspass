@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1dvector" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::dvector</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1dmatrix" prot="public" virt="non-virtual">mspass::utility::dmatrix</basecompoundref>
@@ -94,7 +94,7 @@
       </sectiondef>
       <sectiondef kind="friend">
       <memberdef kind="friend" id="classmspass_1_1utility_1_1dvector_1ac66d1dfe674fe885c028c57135366acc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>friend <ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref></type>
+        <type><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref></type>
         <definition>dvector operator*</definition>
         <argsstring>(const dmatrix &amp;A, const dvector &amp;x)</argsstring>
         <name>operator*</name>
@@ -177,7 +177,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="267" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="266" bodyend="290"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="266" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="267" bodyend="290"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" prot="protected" virt="non-virtual"><scope>mspass::utility::dvector</scope><name>ary</name></member>
       <member refid="classmspass_1_1utility_1_1dmatrix_1ac32006f0dff7ca1b59fa8f3889deb9e5" prot="public" virt="non-virtual"><scope>mspass::utility::dvector</scope><name>columns</name></member>

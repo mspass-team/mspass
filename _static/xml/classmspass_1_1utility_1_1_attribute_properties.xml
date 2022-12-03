@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_attribute_properties" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::AttributeProperties</compoundname>
     <includes refid="_attribute_map_8h" local="no">AttributeMap.h</includes>
@@ -144,8 +144,8 @@
         <references refid="classmspass_1_1utility_1_1_attribute_properties_1a12f02918df43099193132f8ac213926c" compoundref="_attribute_map_8h" startline="27">db_attribute_name</references>
         <references refid="classmspass_1_1utility_1_1_attribute_properties_1a1484220177f25b1c735b9fe5ff4f5211" compoundref="_attribute_map_8h" startline="37">db_table_name</references>
         <references refid="classmspass_1_1utility_1_1_attribute_properties_1a7fb564de0eb17ef42d3affee8b6bed52" compoundref="_attribute_map_8h" startline="39">internal_name</references>
-        <references refid="classmspass_1_1utility_1_1_attribute_properties_1afb7d089e6e87cb43f714aabfa68134c1" compoundref="_attribute_map_8h" startline="41">mdt</references>
         <references refid="classmspass_1_1utility_1_1_attribute_properties_1aa15f63627f9fc558154cb6ecb6e829a4" compoundref="_attribute_map_8h" startline="46">is_key</references>
+        <references refid="classmspass_1_1utility_1_1_attribute_properties_1afb7d089e6e87cb43f714aabfa68134c1" compoundref="_attribute_map_8h" startline="41">mdt</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_attribute_properties_1aae97b6a0258d3d30037dc380b200c4f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_attribute_properties" kindref="compound">AttributeProperties</ref> &amp;</type>
@@ -167,8 +167,8 @@
         <references refid="classmspass_1_1utility_1_1_attribute_properties_1a12f02918df43099193132f8ac213926c" compoundref="_attribute_map_8h" startline="27">db_attribute_name</references>
         <references refid="classmspass_1_1utility_1_1_attribute_properties_1a1484220177f25b1c735b9fe5ff4f5211" compoundref="_attribute_map_8h" startline="37">db_table_name</references>
         <references refid="classmspass_1_1utility_1_1_attribute_properties_1a7fb564de0eb17ef42d3affee8b6bed52" compoundref="_attribute_map_8h" startline="39">internal_name</references>
-        <references refid="classmspass_1_1utility_1_1_attribute_properties_1afb7d089e6e87cb43f714aabfa68134c1" compoundref="_attribute_map_8h" startline="41">mdt</references>
         <references refid="classmspass_1_1utility_1_1_attribute_properties_1aa15f63627f9fc558154cb6ecb6e829a4" compoundref="_attribute_map_8h" startline="46">is_key</references>
+        <references refid="classmspass_1_1utility_1_1_attribute_properties_1afb7d089e6e87cb43f714aabfa68134c1" compoundref="_attribute_map_8h" startline="41">mdt</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_attribute_properties_1a2b95f3e68ff097960cbc5b1aa25f275e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -188,7 +188,7 @@
       </sectiondef>
       <sectiondef kind="friend">
       <memberdef kind="friend" id="classmspass_1_1utility_1_1_attribute_properties_1a831a46f77fe6c6f7e6d005e730fbfc99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>friend std::ostream &amp;</type>
+        <type>std::ostream &amp;</type>
         <definition>std::ostream&amp; operator&lt;&lt;</definition>
         <argsstring>(std::ostream &amp;ofs, const AttributeProperties &amp;d)</argsstring>
         <name>operator&lt;&lt;</name>
@@ -215,7 +215,7 @@
     <detaileddescription>
 <para>This object is used to define the relationship between a parameter stored externally (originally conceived as a database attribute general enough for any externally imposed naming convention) with a particular name with some internal naming convention. This object defines the relationship for one internal parameter and it&apos;s external properties. Arrays of these objects or (as used in the <ref refid="classmspass_1_1utility_1_1_attribute_map" kindref="compound">AttributeMap</ref> object in MsPASS) associate arrays can be used to define relationships for a complete set of parameter names. Note this could have been called a struct since all the attributes are public. </para>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeMap.h" line="24" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeMap.h" bodystart="23" bodyend="79"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeMap.h" line="23" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeMap.h" bodystart="24" bodyend="79"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_attribute_properties_1a8ef6b79ad0c3275e4cc01a41e7e9a3e9" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>AttributeProperties</name></member>
       <member refid="classmspass_1_1utility_1_1_attribute_properties_1a0e69bc8b50b01c8e060674dde29e13fa" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>AttributeProperties</name></member>

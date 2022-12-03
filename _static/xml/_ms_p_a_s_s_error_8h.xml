@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="_ms_p_a_s_s_error_8h" kind="file" language="C++">
     <compoundname>MsPASSError.h</compoundname>
     <includes local="no">iostream</includes>
@@ -438,7 +438,7 @@
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass<sp/>{</highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">utility{</highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>ErrorSeverity</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>ErrorSeverity</highlight></codeline>
 <codeline lineno="15"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/>Fatal,</highlight></codeline>
 <codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/>Invalid,</highlight></codeline>
@@ -452,7 +452,7 @@
 <codeline lineno="26"><highlight class="normal">mspass::utility::ErrorSeverity<sp/>string2severity(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>howbad);</highlight></codeline>
 <codeline lineno="28"><highlight class="normal">std::string<sp/>severity2string(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>mspass::utility::ErrorSeverity<sp/>es);</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight></codeline>
-<codeline lineno="39" refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>std::exception</highlight></codeline>
+<codeline lineno="39" refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>std::exception</highlight></codeline>
 <codeline lineno="40"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="42"><highlight class="normal"></highlight></codeline>
@@ -476,17 +476,17 @@
 <codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" kindref="member">message</ref>=std::string(mess);</highlight></codeline>
 <codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" kindref="member">badness</ref>=s;</highlight></codeline>
 <codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
-<codeline lineno="89" refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ab66bb8b76a50addea48e18663744ca94" refkind="member"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ab66bb8b76a50addea48e18663744ca94" kindref="member">log_error</ref>(){</highlight></codeline>
+<codeline lineno="89" refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ab66bb8b76a50addea48e18663744ca94" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ab66bb8b76a50addea48e18663744ca94" kindref="member">log_error</ref>(){</highlight></codeline>
 <codeline lineno="90"><highlight class="normal"><sp/><sp/>std::cerr<sp/>&lt;&lt;<sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" kindref="member">message</ref><sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
 <codeline lineno="91"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="93" refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a9c44cc909971a1c5f8d443f12b5d45ed" refkind="member"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a9c44cc909971a1c5f8d443f12b5d45ed" kindref="member">log_error</ref>(std::ostream&amp;<sp/>ofs)</highlight></codeline>
+<codeline lineno="93" refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a9c44cc909971a1c5f8d443f12b5d45ed" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a9c44cc909971a1c5f8d443f12b5d45ed" kindref="member">log_error</ref>(std::ostream&amp;<sp/>ofs)</highlight></codeline>
 <codeline lineno="94"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/>ofs<sp/>&lt;&lt;<sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" kindref="member">message</ref><sp/>&lt;&lt;std::endl;</highlight></codeline>
 <codeline lineno="96"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="107" refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ae47776d160eafa42f854be5bf47e00a8" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ae47776d160eafa42f854be5bf47e00a8" kindref="member">what</ref>()<sp/>const<sp/>noexcept{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" kindref="member">message</ref>.c_str();};</highlight></codeline>
 <codeline lineno="109" refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>ErrorSeverity<sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" kindref="member">severity</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" kindref="member">badness</ref>;};</highlight></codeline>
 <codeline lineno="110"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" kindref="member">message</ref>;</highlight></codeline>
+<codeline lineno="114" refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" kindref="member">message</ref>;</highlight></codeline>
 <codeline lineno="116" refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity<sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" kindref="member">badness</ref>;</highlight></codeline>
 <codeline lineno="117"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Helper<sp/>function<sp/>prototypes.<sp/><sp/>The<sp/>following<sp/>set<sp/>of<sp/>functions<sp/>proved<sp/>necessary</highlight></codeline>
@@ -497,8 +497,8 @@
 <codeline lineno="123"><highlight class="comment">method<sp/>writes<sp/>a<sp/>string<sp/>representation<sp/>of<sp/>badness<sp/>to<sp/>the<sp/>message.<sp/><sp/><sp/>Bound<sp/>versions</highlight></codeline>
 <codeline lineno="124"><highlight class="comment">of<sp/>the<sp/>functions<sp/>below<sp/>can<sp/>be<sp/>used<sp/>in<sp/>python<sp/>programs<sp/>to<sp/>test<sp/>severity<sp/>of</highlight></codeline>
 <codeline lineno="125"><highlight class="comment">a<sp/>thrown<sp/>MsPASSError.</highlight></codeline>
-<codeline lineno="126"><highlight class="comment">*/</highlight></codeline>
-<codeline lineno="132"><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>error_says_data_bad(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>&amp;<sp/>err);</highlight></codeline>
+<codeline lineno="126"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>error_says_data_bad(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>&amp;<sp/>err);</highlight></codeline>
 <codeline lineno="133"><highlight class="normal"></highlight></codeline>
 <codeline lineno="143"><highlight class="normal">std::string<sp/>parse_message_error_severity(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>&amp;<sp/>err);</highlight></codeline>
 <codeline lineno="153"><highlight class="normal">mspass::utility::ErrorSeverity<sp/>message_error_severity(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>&amp;<sp/>err);</highlight></codeline>

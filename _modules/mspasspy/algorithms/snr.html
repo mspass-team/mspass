@@ -120,7 +120,7 @@
     <span class="n">EstimateBandwidth</span><span class="p">,</span>
     <span class="n">BandwidthStatistics</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">TimeWindow</span><span class="p">,</span> <span class="n">Butterworth</span><span class="p">,</span> <span class="n">ExtractComponent</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">TimeWindow</span><span class="p">,</span> <span class="n">Butterworth</span><span class="p">,</span> <span class="n">_ExtractComponent</span>
 <span class="kn">from</span> <span class="nn">mspasspy.algorithms.window</span> <span class="kn">import</span> <span class="n">WindowData</span>
 
 
@@ -996,7 +996,7 @@
                 <span class="o">+</span> <span class="s2">&quot;Must be 0, 1, or 2&quot;</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="n">data_to_process</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">data_object</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+        <span class="n">data_to_process</span> <span class="o">=</span> <span class="n">_ExtractComponent</span><span class="p">(</span><span class="n">data_object</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">receiver_collection</span><span class="p">:</span>
             <span class="n">rcol</span> <span class="o">=</span> <span class="n">receiver_collection</span>
         <span class="k">else</span><span class="p">:</span>

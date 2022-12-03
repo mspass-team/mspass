@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="_ensemble_8h" kind="file" language="C++">
     <compoundname>Ensemble.h</compoundname>
     <includes local="no">vector</includes>
@@ -409,7 +409,7 @@
 <codeline lineno="115"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="116"><highlight class="normal"></highlight></codeline>
 <codeline lineno="117"><highlight class="normal"></highlight></codeline>
-<codeline lineno="137" refid="classmspass_1_1seismic_1_1_logging_ensemble" refkind="compound"><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">LoggingEnsemble</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt;T&gt;</highlight></codeline>
+<codeline lineno="137" refid="classmspass_1_1seismic_1_1_logging_ensemble" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">LoggingEnsemble</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt;T&gt;</highlight></codeline>
 <codeline lineno="138"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="139"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="141" refid="classmspass_1_1seismic_1_1_logging_ensemble_1a805180a6091e44e3ccb1e53c8576ea5a" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref><sp/><ref refid="classmspass_1_1seismic_1_1_logging_ensemble_1a805180a6091e44e3ccb1e53c8576ea5a" kindref="member">elog</ref>;</highlight></codeline>
@@ -420,7 +420,7 @@
 <codeline lineno="148"><highlight class="normal"></highlight></codeline>
 <codeline lineno="149"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>The<sp/>next<sp/>two<sp/>constructors<sp/>are<sp/>used<sp/>to<sp/>provide<sp/>a<sp/>parallel<sp/>qpi<sp/>to</highlight></codeline>
 <codeline lineno="150"><highlight class="comment"><sp/><sp/>CoreEnsemble<sp/>-<sp/>there<sp/>might<sp/>be<sp/>another<sp/>way<sp/>to<sp/>do<sp/>this<sp/>in<sp/>the<sp/>C++<sp/>code<sp/>or</highlight></codeline>
-<codeline lineno="151"><highlight class="comment"><sp/><sp/>in<sp/>pybind11<sp/>wrappers<sp/>but<sp/>this<sp/>works*/</highlight></codeline>
+<codeline lineno="151"><highlight class="comment"><sp/><sp/>in<sp/>pybind11<sp/>wrappers<sp/>but<sp/>this<sp/>works*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="160" refid="classmspass_1_1seismic_1_1_logging_ensemble_1ab587f8981a828a4fbfefb2a7f6c61f8d" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_logging_ensemble_1ab587f8981a828a4fbfefb2a7f6c61f8d" kindref="member">LoggingEnsemble</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n)<sp/>:<sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt;T&gt;(n),<ref refid="classmspass_1_1seismic_1_1_logging_ensemble_1a805180a6091e44e3ccb1e53c8576ea5a" kindref="member">elog</ref>()</highlight></codeline>
 <codeline lineno="161"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
 <codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/>ensemble_is_live=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
@@ -485,9 +485,9 @@
 <codeline lineno="253"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="254"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="255"><highlight class="normal"></highlight></codeline>
-<codeline lineno="257" refid="namespacemspass_1_1seismic_1a9bdfc71411e6ef751bb5daa7e97987d0" refkind="member"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;TimeSeries&gt;</ref><sp/><ref refid="namespacemspass_1_1seismic_1a9bdfc71411e6ef751bb5daa7e97987d0" kindref="member">TimeSeriesEnsemble</ref>;</highlight></codeline>
-<codeline lineno="259" refid="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" refkind="member"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;Seismogram&gt;</ref><sp/><ref refid="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" kindref="member">ThreeComponentEnsemble</ref>;</highlight></codeline>
-<codeline lineno="280"><highlight class="comment">/*<sp/>Disable<sp/>temporarily<sp/>-<sp/>needs<sp/>a<sp/>revision<sp/>to<sp/>match<sp/>new<sp/>history<sp/>approach</highlight></codeline>
+<codeline lineno="257" refid="namespacemspass_1_1seismic_1a9bdfc71411e6ef751bb5daa7e97987d0" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;TimeSeries&gt;</ref><sp/><ref refid="namespacemspass_1_1seismic_1a9bdfc71411e6ef751bb5daa7e97987d0" kindref="member">TimeSeriesEnsemble</ref>;</highlight></codeline>
+<codeline lineno="259" refid="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;Seismogram&gt;</ref><sp/><ref refid="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" kindref="member">ThreeComponentEnsemble</ref>;</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Disable<sp/>temporarily<sp/>-<sp/>needs<sp/>a<sp/>revision<sp/>to<sp/>match<sp/>new<sp/>history<sp/>approach</highlight></codeline>
 <codeline lineno="281"><highlight class="comment">template<sp/>&lt;typename<sp/>Tdata&gt;</highlight></codeline>
 <codeline lineno="282"><highlight class="comment"><sp/><sp/>size_t<sp/>set_inputs(ProcessingHistoryRecord&amp;<sp/>rec,<sp/>const<sp/>mspass::seismic::Ensemble&lt;Tdata&gt;&amp;<sp/>d)</highlight></codeline>
 <codeline lineno="283"><highlight class="comment">{</highlight></codeline>
@@ -507,7 +507,7 @@
 <codeline lineno="297"><highlight class="comment">};</highlight></codeline>
 <codeline lineno="298"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="299"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>End<sp/>mspass::seismic<sp/>namespace<sp/>encapsulation</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="300"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/>//<sp/><sp/>End<sp/>guard</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">//<sp/><sp/>End<sp/>guard</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h"/>
   </compounddef>

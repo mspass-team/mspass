@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1io_1_1mseed__index" kind="class" language="C++" prot="public">
     <compoundname>mspass::io::mseed_index</compoundname>
       <sectiondef kind="public-attrib">
@@ -198,7 +198,7 @@
       </sectiondef>
       <sectiondef kind="friend">
       <memberdef kind="friend" id="classmspass_1_1io_1_1mseed__index_1ae6d7ee340b7009c88346cfc6b7589f15" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>friend std::ostringstream &amp;</type>
+        <type>std::ostringstream &amp;</type>
         <definition>std::ostringstream&amp; operator&lt;&lt;</definition>
         <argsstring>(std::ostringstream &amp;ss, const mseed_index &amp;ind)</argsstring>
         <name>operator&lt;&lt;</name>
@@ -223,7 +223,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="10" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" bodystart="9" bodyend="69"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="9" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" bodystart="10" bodyend="69"/>
     <listofallmembers>
       <member refid="classmspass_1_1io_1_1mseed__index_1a056427385ac5dfbdd271d6cacbfbabb7" prot="public" virt="non-virtual"><scope>mspass::io::mseed_index</scope><name>chan</name></member>
       <member refid="classmspass_1_1io_1_1mseed__index_1a0b33fceb0d51997d0b1b06736ee07b95" prot="public" virt="non-virtual"><scope>mspass::io::mseed_index</scope><name>endtime</name></member>

@@ -114,7 +114,7 @@
     <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
     <span class="n">SeismogramEnsemble</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">ExtractComponent</span><span class="p">,</span> <span class="n">EnsembleComponent</span>
+<span class="kn">from</span> <span class="nn">mspasspy.algorithms.basic</span> <span class="kn">import</span> <span class="n">ExtractComponent</span>
 <span class="kn">from</span> <span class="nn">mspasspy.algorithms.window</span> <span class="kn">import</span> <span class="n">scale</span> <span class="k">as</span> <span class="n">alg_scale</span>
 
 
@@ -348,7 +348,7 @@
         <span class="n">title3c</span> <span class="o">=</span> <span class="n">title</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
             <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="n">dcomp</span> <span class="o">=</span> <span class="n">EnsembleComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">dcomp</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">title</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">title3c</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
@@ -409,7 +409,7 @@
         <span class="n">title3c</span> <span class="o">=</span> <span class="n">title</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
             <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="n">dcomp</span> <span class="o">=</span> <span class="n">EnsembleComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">dcomp</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">title</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">title3c</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
@@ -1067,11 +1067,11 @@
         <span class="k">return</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_wtva_SeismogramEnsemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">fill</span><span class="p">):</span>
-        <span class="c1"># implement by call to EnsembleComponent and calling TimeSeriesEnsemble method 3 times</span>
+        <span class="c1"># implement by call to ExtractComponent and calling TimeSeriesEnsemble method 3 times</span>
         <span class="c1"># should return a list of 3 gcf handles</span>
         <span class="n">figure_handles</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-            <span class="n">dcomp</span> <span class="o">=</span> <span class="n">EnsembleComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+            <span class="n">dcomp</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
             <span class="c1"># figure_title=&#39;Component %d&#39; % k</span>
             <span class="c1"># pyplot.figure(figure_title)</span>
             <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
@@ -1155,11 +1155,11 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_imageplot_SeismogramEnsemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="c1"># implement by call to EnsembleComponent and calling TimeSeriesEnsemble method 3 times</span>
+        <span class="c1"># implement by call to ExtractComponent and calling TimeSeriesEnsemble method 3 times</span>
         <span class="c1"># should return a list of 3 gcf handles</span>
         <span class="n">figure_handles</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-            <span class="n">dcomp</span> <span class="o">=</span> <span class="n">EnsembleComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+            <span class="n">dcomp</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
             <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
             <span class="n">figure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imageplot</span><span class="p">(</span><span class="n">dcomp</span><span class="p">)</span>
             <span class="n">figure_handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">figure</span><span class="p">)</span>

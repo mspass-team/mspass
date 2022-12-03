@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_attribute_map" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::AttributeMap</compoundname>
     <includes refid="_attribute_map_8h" local="no">AttributeMap.h</includes>
@@ -389,7 +389,7 @@
     <detaileddescription>
 <para>This object is used to link a set of internally defined parameters tagged with a name to an external name convention. The working model for external names is attribute names defined in a relational database schema, but the concept involved is more general. That is, the intent of this interface is a general way to between one set of parameter names and another. This could be used, for example, to map between header variable names in SEGY or SAC and some internal name convention. The relation of the map defined by this object is implicitly assumed to be one-to-one because of the use of the STL map to define the relationship. Because the map is keyed by the internal name lookup is also intended only for finding the external names associated with a particular internal parameter. The primary use of this object in the MsPASS library is to define a global mapping operator for a particular database schema. That is, the most common construct is to build this object early on using a call like: <ref refid="classmspass_1_1utility_1_1_attribute_map" kindref="compound">AttributeMap</ref>(&quot;css3.0&quot;). </para>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeMap.h" line="99" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeMap.h" bodystart="98" bodyend="230"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeMap.h" line="98" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeMap.h" bodystart="99" bodyend="230"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_attribute_map_1aeb1df686651e0e3d138f1a3d73bdda77" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeMap</scope><name>aliases</name></member>
       <member refid="classmspass_1_1utility_1_1_attribute_map_1a317f95eb543fb740c3a4f72fcb8513b9" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeMap</scope><name>aliases</name></member>
