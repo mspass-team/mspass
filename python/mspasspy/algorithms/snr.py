@@ -13,7 +13,7 @@ from mspasspy.ccore.algorithms.amplitudes import (
     EstimateBandwidth,
     BandwidthStatistics,
 )
-from mspasspy.ccore.algorithms.basic import TimeWindow, Butterworth, ExtractComponent
+from mspasspy.ccore.algorithms.basic import TimeWindow, Butterworth, _ExtractComponent
 from mspasspy.algorithms.window import WindowData
 
 
@@ -889,7 +889,7 @@ def arrival_snr_QC(
                 + "Must be 0, 1, or 2",
                 ErrorSeverity.Fatal,
             )
-        data_to_process = ExtractComponent(data_object, component)
+        data_to_process = _ExtractComponent(data_object, component)
         if receiver_collection:
             rcol = receiver_collection
         else:
