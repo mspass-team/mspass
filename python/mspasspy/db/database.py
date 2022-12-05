@@ -973,6 +973,8 @@ class Database(pymongo.database.Database):
             gridfs_id = None
 
             if storage_mode == "file":
+                if not format:
+                    format = "binary"
                 # TODO:  be sure this can't throw an exception
                 foff, nbytes = self._save_data_to_dfile(
                     mspass_object, dir, dfile, format=format
@@ -983,9 +985,6 @@ class Database(pymongo.database.Database):
                 if format:
                     insertion_dict["nbytes"] = nbytes
                     insertion_dict["format"] = format
-                else:
-                    insertion_dict.pop("format",None)
-                    insertion_dict.pop("nbytes",None)
             elif storage_mode == "gridfs":
                 if overwrite and "gridfs_id" in insertion_dict:
                     gridfs_id = self._save_data_to_gridfs(
@@ -3590,14 +3589,18 @@ class Database(pymongo.database.Database):
         if mspass_object.dead():
             return -1, 0
 
-        if not format:
+        if not format or format == "binary":
             try:
+                # create directory if not exists
+                if not os.path.exists(dir):
+                    os.makedirs(dir)
                 # This function has overloading.  this might not work
                 foff = _fwrite_to_file(mspass_object, dir, dfile)
             except MsPASSError as merr:
                 mspass_object.elog.log_error(merr)
                 if kill_on_failure:
                     mspass_object.kill()
+                return 0, 0
             # we can compute the number of bytes written for this case
             if isinstance(mspass_object, TimeSeries):
                 nbytes_written = 8 * mspass_object.npts
