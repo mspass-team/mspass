@@ -6,6 +6,7 @@
 #include "mspass/seismic/keywords.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
+#include "mspass/seismic/Ensemble.h"
 #include "mspass/io/fileio.h"
 namespace mspass::io
 {
@@ -83,6 +84,86 @@ long int fwrite_to_file(Seismogram& d, const string dir,const string dfile)
 
 	return(foff);
 }
+long int fwrite_to_file(Ensemble<TimeSeries>& de, const string dir,const string dfile)
+{
+	try{
+		FILE *fp;
+		long int foff;
+		string fname;
+		if(dir.length()>0)
+		  /* for expected context for use in python we will assume dir does not
+			have a trailing path separator so we always insert / */
+			fname = dir + "/" + dfile;
+		else
+		  /* Null as always in unix means use current directory*/
+			fname=dfile;
+		if((fp=fopen(fname.c_str(),"a")) == NULL)
+		  /* use the name of the overloaded parent instead of the actual function - intentional*/
+			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
+	  /* Both fseek and ftell can fail in weird circumstances, but I intentionally
+		do not trap that condition as if either have issues I am quite sure
+		the fwrite will fail */
+		fseek(fp,0L,2);
+		foff = ftell(fp);
+		for (int i = 0; i < de.member.size(); ++i) {
+			TimeSeries& t = de.member[i];
+			if (fwrite((void *)t.s.data(), sizeof(double), t.npts(), fp) != t.npts())
+			{
+				fclose(fp);
+				throw MsPASSError("fwrite_to_file:  fwrite error to file " + fname, ErrorSeverity::Invalid);
+			}
+			/* We always set these 3 attributes in Metadata so they can be properly
+			saved to the database after a successful write.  Repetitious with Seismogram
+			but a function to do this would be more confusing that helpful */
+			t.put_string(SEISMICMD_dir, dir);
+			t.put_string(SEISMICMD_dfile, dfile);
+			t.put_long(SEISMICMD_foff, foff);
+		}	
+		fclose(fp);
+
+		return foff;
+	}catch(...){throw;};
+}
+long int fwrite_to_file(Ensemble<Seismogram>& de, const string dir,const string dfile)
+{
+	try{
+		FILE *fp;
+		long int foff;
+		string fname;
+		if(dir.length()>0)
+		  /* for expected context for use in python we will assume dir does not
+			have a trailing path separator so we always insert / */
+			fname = dir + "/" + dfile;
+		else
+		  /* Null as always in unix means use current directory*/
+			fname=dfile;
+		if((fp=fopen(fname.c_str(),"a")) == NULL)
+		  /* use the name of the overloaded parent instead of the actual function - intentional*/
+			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
+	  /* Both fseek and ftell can fail in weird circumstances, but I intentionally
+		do not trap that condition as if either have issues I am quite sure
+		the fwrite will fail */
+		fseek(fp,0L,2);
+		foff = ftell(fp);
+		for (int i = 0; i < de.member.size(); ++i) {
+			Seismogram& t = de.member[i];
+			if (fwrite((void *)t.u.get_address(0,0), sizeof(double), 3*t.npts(), fp) != 3*t.npts())
+			{
+				fclose(fp);
+				throw MsPASSError("fwrite_to_file:  fwrite error to file " + fname, ErrorSeverity::Invalid);
+			}
+			/* We always set these 3 attributes in Metadata so they can be properly
+			saved to the database after a successful write.  Repetitious with Seismogram
+			but a function to do this would be more confusing that helpful */
+			t.put_string(SEISMICMD_dir, dir);
+			t.put_string(SEISMICMD_dfile, dfile);
+			t.put_long(SEISMICMD_foff, foff);
+		}	
+		fclose(fp);
+
+		return foff;
+	}catch(...){throw;};
+}
 
 size_t fread_sample_data(double *buffer,const string dir, const string dfile,
      const long int foff,const int nsamples)
@@ -128,5 +209,35 @@ size_t fread_from_file(TimeSeries& d,const string dir, const string dfile,
 		ns_read = fread_sample_data(&(d.s[0]),dir,dfile,foff,d.npts());
 		return ns_read;
 	}catch(...){throw;};
+}
+size_t fread_from_file(Ensemble<Seismogram> &de, vector<string> dirs, vector<string> dfiles, 
+	 vector<long int> foffs)
+{
+	size_t ns_read_sum;
+	int n = dirs.size();
+	de.member.resize(n);
+	for (int i = 0; i < n; ++i) {
+		size_t ns_read;
+		try{
+			ns_read = fread_sample_data(de.member[i].u.get_address(0, 0), dirs[i], dfiles[i], foffs[i], 3 * de.member[i].npts());
+			ns_read_sum += ns_read;
+		}catch(...){throw;};
+	}
+	return ns_read_sum;
+}
+size_t fread_from_file(Ensemble<TimeSeries> &de, vector<string> dirs, vector<string> dfiles, 
+	 vector<long int> foffs)
+{
+	size_t ns_read_sum;
+	int n = dirs.size();
+	de.member.resize(n);
+	for (int i = 0; i < n; ++i) {
+		size_t ns_read;
+		try{
+			ns_read = fread_sample_data(&(de.member[i].s[0]), dirs[i], dfiles[i], foffs[i], de.member[i].npts());
+			ns_read_sum += ns_read;
+		}catch(...){throw;};
+	}
+	return ns_read_sum;
 }
 } // Termination of namespace definitions
