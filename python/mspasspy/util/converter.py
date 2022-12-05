@@ -11,7 +11,7 @@ try:
     import dask.dataframe as daskdf
 
     __mspasspy_has_dask = True
-except:
+except ImportError:
     __mspasspy_has_dask = False
 
 from mspasspy.ccore.utility import Metadata, AntelopePf, MsPASSError, ErrorSeverity

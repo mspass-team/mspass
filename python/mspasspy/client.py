@@ -7,17 +7,21 @@ from mspasspy.global_history.manager import GlobalHistoryManager
 
 try:
     from pyspark import SparkConf, SparkContext
-    from pyspark.sql import SparkSession
 
     _mspasspy_has_pyspark = True
-except:
+except ImportError:
+    _mspasspy_has_pyspark = False
+
+try:
+    from pyspark.sql import SparkSession
+except ImportError:
     _mspasspy_has_pyspark = False
 
 try:
     from dask.distributed import Client as DaskClient
 
     _mspasspy_has_dask_distributed = True
-except:
+except ImportError:
     _mspasspy_has_dask_distributed = False
 
 from mspasspy.ccore.utility import MsPASSError
@@ -269,6 +273,9 @@ class Client:
         elif self._scheduler == "dask":
             return self._dask_client
         else:
+            print(
+                "There is no spark or dask installed, this client has no scheduler, returned None"
+            )
             return None
 
     def set_database_client(self, database_host, database_port=None):

@@ -50,7 +50,7 @@ def read_data(d):
         d.data = DoubleVector(float_array)
 
 
-def test_find_channel():
+if __name__ == "__main__":
     s = TimeSeries()
     s.data = DoubleVector(np.random.rand(255))
     s["dir"] = "./"

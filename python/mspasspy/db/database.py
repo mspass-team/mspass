@@ -13,18 +13,18 @@ import pandas as pd
 
 try:
     import dask.bag as daskbag
-    import dask.dataframe as daskdf
+except ImportError:
+    pass
 
-    __mspasspy_has_dask = True
-except:
-    __mspasspy_has_dask = False
+try:
+    import dask.dataframe as daskdf
+except ImportError:
+    pass
 
 try:
     import pyspark
-
-    __mspasspy_has_pyspark = True
-except:
-    __mspasspy_has_pyspark = False
+except ImportError:
+    pass
 
 import gridfs
 import pymongo

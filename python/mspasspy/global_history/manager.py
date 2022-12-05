@@ -6,11 +6,11 @@ import json
 
 try:
     import dask.bag as daskbag
-except:
+except ImportError:
     pass
 try:
     import pyspark
-except:
+except ImportError:
     pass
 from bson.objectid import ObjectId
 from mspasspy.ccore.utility import MsPASSError, AntelopePf
@@ -557,17 +557,25 @@ class GlobalHistoryManager:
         )
 
         # modify pyspark/dask map to our defined map
-        # modify pyspark/dask reduce to our defined reduce
         try:
             daskbag.Bag.mspass_map = mspass_dask_map
-            daskbag.Bag.mspass_reduce = mspass_dask_fold
-        except:
+        except NameError:
             pass
 
         try:
             pyspark.RDD.mspass_map = mspass_spark_map
+        except NameError:
+            pass
+
+        # modify pyspark/dask reduce to our defined reduce
+        try:
+            daskbag.Bag.mspass_reduce = mspass_dask_fold
+        except NameError:
+            pass
+
+        try:
             pyspark.RDD.mspass_reduce = mspass_spark_reduce
-        except:
+        except NameError:
             pass
 
     def logging(self, alg_id, alg_name, parameters):
