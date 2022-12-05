@@ -104,8 +104,8 @@ long int fwrite_to_file(Ensemble<TimeSeries>& de, const string dir,const string 
 		do not trap that condition as if either have issues I am quite sure
 		the fwrite will fail */
 		fseek(fp,0L,2);
-		foff = ftell(fp);
 		for (int i = 0; i < de.member.size(); ++i) {
+			foff = ftell(fp);
 			TimeSeries& t = de.member[i];
 			if (fwrite((void *)t.s.data(), sizeof(double), t.npts(), fp) != t.npts())
 			{
