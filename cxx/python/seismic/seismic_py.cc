@@ -646,8 +646,9 @@ PYBIND11_MODULE(seismic, m) {
           pybind11::object dumps = pickle.attr("dumps");
           pybind11::object dbuf = dumps(py::list(pybind11::cast(self.member)));
           bool is_live=self.live();
+          pybind11::tuple r_tuple = py::make_tuple(sbuf, sselog.str(), is_live, dbuf);
           pybind11::gil_scoped_release release;
-          return py::make_tuple(sbuf, sselog.str(), is_live, dbuf);
+          return r_tuple;
         }catch(...){pybind11::gil_scoped_release release;throw;};
       },
       [](py::tuple t) {
@@ -719,8 +720,9 @@ PYBIND11_MODULE(seismic, m) {
           pybind11::object dumps = pickle.attr("dumps");
           pybind11::object dbuf = dumps(py::list(pybind11::cast(self.member)));
           bool is_live = self.live();
+          pybind11::tuple r_tuple = py::make_tuple(sbuf, sselog.str(), is_live, dbuf);
           pybind11::gil_scoped_release release;
-          return py::make_tuple(sbuf, sselog.str(), is_live, dbuf);
+          return r_tuple;
         }catch(...){pybind11::gil_scoped_release release;throw;};
       },
       [](py::tuple t) {

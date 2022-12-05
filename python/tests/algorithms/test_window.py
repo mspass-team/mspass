@@ -70,7 +70,7 @@ def test_scale():
     assert ampmad == 3.0
     amprms = RMSAmplitude(dts)
     print("RMS amplitude estimate=", amprms)
-    assert round(amprms, 2) == 100.46
+    assert round(amprms, 2) == 33.49
     amppeak = PeakAmplitude(dts)
     ampperf80 = PercAmplitude(dts, 0.8)
     print("Peak amplitude=", amppeak)

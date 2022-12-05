@@ -7,7 +7,7 @@ from mspasspy.ccore.seismic import (
     TimeSeriesEnsemble,
     SeismogramEnsemble,
 )
-from mspasspy.ccore.algorithms.basic import ExtractComponent, EnsembleComponent
+from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.algorithms.window import scale as alg_scale
 
 
@@ -241,7 +241,7 @@ def wtvaplot(
         title3c = title
         for i in range(3):
             pyplot.figure(i)
-            dcomp = EnsembleComponent(d, i)
+            dcomp = ExtractComponent(d, i)
             if title != None:
                 title3c = "%s:%d" % (title, i)
             try:
@@ -302,7 +302,7 @@ def imageplot(
         title3c = title
         for i in range(3):
             pyplot.figure(i)
-            dcomp = EnsembleComponent(d, i)
+            dcomp = ExtractComponent(d, i)
             if title != None:
                 title3c = "%s:%d" % (title, i)
             try:
@@ -960,11 +960,11 @@ class SeismicPlotter:
         return pyplot.gcf()
 
     def _wtva_SeismogramEnsemble(self, d, fill):
-        # implement by call to EnsembleComponent and calling TimeSeriesEnsemble method 3 times
+        # implement by call to ExtractComponent and calling TimeSeriesEnsemble method 3 times
         # should return a list of 3 gcf handles
         figure_handles = []
         for k in range(3):
-            dcomp = EnsembleComponent(d, k)
+            dcomp = ExtractComponent(d, k)
             # figure_title='Component %d' % k
             # pyplot.figure(figure_title)
             pyplot.figure(k)
@@ -1048,11 +1048,11 @@ class SeismicPlotter:
         )
 
     def _imageplot_SeismogramEnsemble(self, d):
-        # implement by call to EnsembleComponent and calling TimeSeriesEnsemble method 3 times
+        # implement by call to ExtractComponent and calling TimeSeriesEnsemble method 3 times
         # should return a list of 3 gcf handles
         figure_handles = []
         for k in range(3):
-            dcomp = EnsembleComponent(d, k)
+            dcomp = ExtractComponent(d, k)
             pyplot.figure(k)
             figure = self._imageplot(dcomp)
             figure_handles.append(figure)
