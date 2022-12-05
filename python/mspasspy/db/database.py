@@ -973,8 +973,6 @@ class Database(pymongo.database.Database):
             gridfs_id = None
 
             if storage_mode == "file":
-                if not format:
-                    format = "binary"
                 # TODO:  be sure this can't throw an exception
                 foff, nbytes = self._save_data_to_dfile(
                     mspass_object, dir, dfile, format=format
@@ -982,9 +980,12 @@ class Database(pymongo.database.Database):
                 insertion_dict["dir"] = dir
                 insertion_dict["dfile"] = dfile
                 insertion_dict["foff"] = foff
-                if format:
+                if format and format != "binary":
                     insertion_dict["nbytes"] = nbytes
                     insertion_dict["format"] = format
+                else:
+                    insertion_dict.pop("format",None)
+                    insertion_dict.pop("nbytes",None)
             elif storage_mode == "gridfs":
                 if overwrite and "gridfs_id" in insertion_dict:
                     gridfs_id = self._save_data_to_gridfs(
