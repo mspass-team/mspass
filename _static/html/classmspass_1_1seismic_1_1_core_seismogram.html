@@ -1677,8 +1677,8 @@ rotation in rotational angle grid searches.
 <div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;        {</div>
 <div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;            <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) <span class="keyword">delete</span> [] work[i];</div>
 <div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;            <span class="keywordflow">throw</span>(<a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(</div>
-<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;                      <span class="keywordtype">string</span>(<span class="stringliteral">&quot;rotate_to_standard:  LU factorization of transformation matrix failed&quot;</span>)),</div>
-<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;                  ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;                      <span class="keywordtype">string</span>(<span class="stringliteral">&quot;rotate_to_standard:  LU factorization of transformation matrix failed&quot;</span>),</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;                  ErrorSeverity::Invalid));</div>
 <div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;        }</div>
 <div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;        <span class="comment">// inversion routine after factorization from lapack FORT$RAN interface</span></div>
 <div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;        <span class="keywordtype">double</span> awork[10];  <span class="comment">//Larger than required but safety value small cost</span></div>
@@ -1690,8 +1690,8 @@ rotation in rotational angle grid searches.
 <div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;        {</div>
 <div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;            <span class="keywordflow">for</span>(i=0; i&lt;3; ++i) <span class="keyword">delete</span> [] work[i];</div>
 <div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;            <span class="keywordflow">throw</span>(<a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(</div>
-<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;                      <span class="keywordtype">string</span>(<span class="stringliteral">&quot;rotate_to_standard:  LU factorization inversion of transformation matrix failed&quot;</span>)),</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;                  ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;                      <span class="keywordtype">string</span>(<span class="stringliteral">&quot;rotate_to_standard:  LU factorization inversion of transformation matrix failed&quot;</span>),</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;                  ErrorSeverity::Invalid));</div>
 <div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;        }</div>
 <div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160; </div>
 <div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">tmatrix</a>[0][0] = a[0];</div>
