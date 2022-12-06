@@ -451,8 +451,8 @@ void CoreSeismogram::rotate_to_standard()
         {
             for(i=0; i<3; ++i) delete [] work[i];
             throw(MsPASSError(
-                      string("rotate_to_standard:  LU factorization of transformation matrix failed")),
-                  ErrorSeverity::Invalid);
+                      string("rotate_to_standard:  LU factorization of transformation matrix failed"),
+                  ErrorSeverity::Invalid));
         }
         // inversion routine after factorization from lapack FORT$RAN interface
         double awork[10];  //Larger than required but safety value small cost
@@ -464,8 +464,8 @@ void CoreSeismogram::rotate_to_standard()
         {
             for(i=0; i<3; ++i) delete [] work[i];
             throw(MsPASSError(
-                      string("rotate_to_standard:  LU factorization inversion of transformation matrix failed")),
-                  ErrorSeverity::Invalid);
+                      string("rotate_to_standard:  LU factorization inversion of transformation matrix failed"),
+                  ErrorSeverity::Invalid));
         }
 
         tmatrix[0][0] = a[0];
