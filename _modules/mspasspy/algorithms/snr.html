@@ -107,6 +107,7 @@
   <h1>Source code for mspasspy.algorithms.snr</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">hilbert</span>
 <span class="kn">from</span> <span class="nn">obspy.geodetics</span> <span class="kn">import</span> <span class="n">locations2degrees</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="p">,</span> <span class="n">ErrorLogger</span>
@@ -320,8 +321,9 @@
     <span class="n">signal_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">),</span>
     <span class="n">signal_spectrum_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">band_cutoff_snr</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">signal_detection_minimum_bandwidth</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
     <span class="n">tbp</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-    <span class="n">ntapers</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">ntapers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
     <span class="n">high_frequency_search_start</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
     <span class="n">fix_high_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">poles</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
@@ -416,6 +418,28 @@
 <span class="sd">    to use to compute the signal power spectrum.   Default is None with the</span>
 <span class="sd">    same caveat as above for the noise_spectrum_engine.</span>
 
+<span class="sd">    :param band_cutoff_snr:   defines the signal-to-noise ratio floor</span>
+<span class="sd">    used in the search for band edges.  See description of the algorithm</span>
+<span class="sd">    above and in the user&#39;s manual.  Default is 2.0</span>
+
+<span class="sd">    :param signal_detection_minimum_bandwidth:  As noted above this</span>
+<span class="sd">    algorithm first tries to estimate the bandwidth of data where the</span>
+<span class="sd">    signal level exceeds the noise level defined by the parameter</span>
+<span class="sd">    band_cutoff_snr.  It then computes the bandwidth of the data in</span>
+<span class="sd">    dB computed as log10(f_high/f_low).  For almost any application</span>
+<span class="sd">    if the working bandwidth falls below some threshold the data is</span>
+<span class="sd">    junk to all intends and purpose.  A factor more relevant to this</span>
+<span class="sd">    algorithm is that the &quot;optional parameters&quot;  will all be meaningless</span>
+<span class="sd">    and a waste of computational effort if the bandwidth is too small.</span>
+<span class="sd">    A particular extreme example is zero bandwidth that happens all the</span>
+<span class="sd">    time if no frequency band exceeds the band_cutoff_snr for a range</span>
+<span class="sd">    over that minimum defined by the time-bandwidth product.  The</span>
+<span class="sd">    default is 6.0. (One octave which is roughly the width of the traditional</span>
+<span class="sd">    short-period band) which allows optional metrics to be computed</span>
+<span class="sd">    but may be too small for some applications.  If your application</span>
+<span class="sd">    requires higher snr and wider bandwidth adjust this parameter</span>
+<span class="sd">    and/or band_cutoff_snr.</span>
+
 <span class="sd">    :param tbp:  time-bandwidth product to use for computing the set of</span>
 <span class="sd">    Slepian functions used for the multitaper estimator.  This parameter is</span>
 <span class="sd">    used only if the noise_spectrum_engine or signal_spectrum_engine</span>
@@ -426,8 +450,8 @@
 <span class="sd">    noise_spectrum_engine or signal_spectrum_engine are set to None.</span>
 <span class="sd">    Note the function will throw an exception if the ntaper parameter is</span>
 <span class="sd">    not consistent with the time-bandwidth product.  That is, the</span>
-<span class="sd">    maximum number of tapers is round(2*tbp-1).   Default is 8 which is</span>
-<span class="sd">    consistent with default tbp=4.0</span>
+<span class="sd">    maximum number of tapers is round(2*tbp-1).   Default is 6 which is</span>
+<span class="sd">    consistent with default tbp=4.0 where the maximum recommended is 8</span>
 
 <span class="sd">    :param high_frequency_search_start: Used to specify the upper frequency</span>
 <span class="sd">      used to start the search for the upper end of the bandwidth by</span>
@@ -488,7 +512,9 @@
 <span class="sd">    object using it&#39;s size() method and if it the log is not empty (size &gt;0)</span>
 <span class="sd">    the caller should handle that condition.   For normal use that means</span>
 <span class="sd">    pushing any messages the log contains to the original data object&#39;s</span>
-<span class="sd">    error log.</span>
+<span class="sd">    error log.  Component 0 will also be empty with no log entry if</span>
+<span class="sd">    the estimated bandwidth falls below the threshold defined by the</span>
+<span class="sd">    parameter signal_detection_minimum_bandwidth.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">algname</span> <span class="o">=</span> <span class="s2">&quot;FN_snr_estimator&quot;</span>
     <span class="n">my_logger</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
@@ -527,6 +553,18 @@
         <span class="c1"># First extract the required windows and compute the power spectra</span>
         <span class="n">n</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">data_object</span><span class="p">,</span> <span class="n">noise_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">noise_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">data_object</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+        <span class="c1"># WARNING:  this handler depends upon an implementation details</span>
+        <span class="c1"># that could be a maintenance issue.  The python code has a catch</span>
+        <span class="c1"># that kills a datum where windowing fails.   The C++ code throws</span>
+        <span class="c1"># an exception when that happens.  The python code posts that error</span>
+        <span class="c1"># message to the output which we extract here</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">dead</span><span class="p">()</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">my_logger</span> <span class="o">+=</span> <span class="n">n</span><span class="o">.</span><span class="n">elog</span>
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">my_logger</span> <span class="o">+=</span> <span class="n">s</span><span class="o">.</span><span class="n">elog</span>
         <span class="k">if</span> <span class="n">noise_spectrum_engine</span><span class="p">:</span>
             <span class="n">nengine</span> <span class="o">=</span> <span class="n">noise_spectrum_engine</span>
         <span class="k">else</span><span class="p">:</span>
@@ -540,7 +578,11 @@
         <span class="n">bwd</span> <span class="o">=</span> <span class="n">EstimateBandwidth</span><span class="p">(</span>
             <span class="n">S</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">band_cutoff_snr</span><span class="p">,</span> <span class="n">tbp</span><span class="p">,</span> <span class="n">high_frequency_search_start</span><span class="p">,</span> <span class="n">fix_high_edge</span>
         <span class="p">)</span>
-        <span class="c1"># These estimates are always computed and posted</span>
+
+        <span class="c1"># here we return empty result if the bandwidth is too low</span>
+        <span class="k">if</span> <span class="n">bwd</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">signal_detection_minimum_bandwidth</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(),</span> <span class="n">my_logger</span><span class="p">]</span>
+        <span class="c1"># These estimates are always computed and posted once we pass the above test for validity</span>
         <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;low_f_band_edge&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwd</span><span class="o">.</span><span class="n">low_edge_f</span>
         <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;high_f_band_edge&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwd</span><span class="o">.</span><span class="n">high_edge_f</span>
         <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;low_f_band_edge_snr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwd</span><span class="o">.</span><span class="n">low_edge_snr</span>
@@ -563,7 +605,7 @@
             <span class="s2">&quot;No SNR metrics can be computed for this datum&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">my_logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">newmessage</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">snrdata</span><span class="p">,</span> <span class="n">my_logger</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(),</span> <span class="n">my_logger</span><span class="p">]</span>
 
     <span class="c1"># For current implementation all the optional metrics require</span>
     <span class="c1"># computed a filtered version of the data.  If a new option is</span>
@@ -599,9 +641,20 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">stats</span> <span class="o">=</span> <span class="n">BandwidthStatistics</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">bwd</span><span class="p">)</span>
                     <span class="c1"># stats is a Metadata container - copy to snrdata</span>
-                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">stats</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                        <span class="n">snrdata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                    <span class="c1"># but do so only if the results are marked valid</span>
+                    <span class="k">if</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;stats_are_valid&quot;</span><span class="p">]:</span>
+                        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">stats</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="n">snrdata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">my_logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="n">algname</span><span class="p">,</span>
+                            <span class="s2">&quot;BandwidthStatistics marked snr_stats data invalid&quot;</span><span class="p">,</span>
+                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+                        <span class="p">)</span>
                 <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="c1"># This handler currently would never be entered but</span>
+                    <span class="c1"># left in place to keep code more robust in the event</span>
+                    <span class="c1"># of a change</span>
                     <span class="n">newmessage</span> <span class="o">=</span> <span class="n">_reformat_mspass_error</span><span class="p">(</span>
                         <span class="n">err</span><span class="p">,</span>
                         <span class="s2">&quot;BandwithStatistics throw the following error</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -699,9 +752,9 @@
     <span class="n">signal_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">),</span>
     <span class="n">signal_spectrum_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">band_cutoff_snr</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="c1"># check these are reasonable - don&#39;t remember the formula when writing this</span>
+    <span class="n">signal_detection_minimum_bandwidth</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
     <span class="n">tbp</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
-    <span class="n">ntapers</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">ntapers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
     <span class="n">high_frequency_search_start</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
     <span class="n">fix_high_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">poles</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
@@ -710,6 +763,7 @@
     <span class="n">phase_name</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span>
     <span class="n">arrival_time_key</span><span class="o">=</span><span class="s2">&quot;Ptime&quot;</span><span class="p">,</span>
     <span class="n">metadata_output_key</span><span class="o">=</span><span class="s2">&quot;Parrival&quot;</span><span class="p">,</span>
+    <span class="n">kill_null_signals</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">optional_metrics</span><span class="o">=</span><span class="p">[</span>
         <span class="s2">&quot;snr_stats&quot;</span><span class="p">,</span>
         <span class="s2">&quot;filtered_envelope&quot;</span><span class="p">,</span>
@@ -727,13 +781,21 @@
 <span class="sd">    removes some of the options from the more generic function and</span>
 <span class="sd">    has a frozen structure appropriate for measuring snr of a particular phase.</span>
 <span class="sd">    In particular it always stores the results as a subdocument (python dict)</span>
-<span class="sd">    keyed by the name defined in the metadata_output_key argument.   The idea of</span>
-<span class="sd">    that sturcture is the contents of the subdocument are readily extracted</span>
-<span class="sd">    and saved to a MongoDB &quot;arrival&quot; collection with a normalization key.</span>
-<span class="sd">    Arrival driven workflows can then use queries to reduce the number of</span>
-<span class="sd">    data actually retrieved for final processing.  i.e. the arrival</span>
-<span class="sd">    collection data should be viewed as a useful initial quality control</span>
-<span class="sd">    feature.</span>
+<span class="sd">    keyed by the name defined in the metadata_output_key argument.</span>
+<span class="sd">    This function has a close sibling called &quot;broadband_snr_QC&quot; that</span>
+<span class="sd">    has similar behavior but add some additional functionality.   The</span>
+<span class="sd">    most significant limitation of this function relative to broadband_snr_QC</span>
+<span class="sd">    is that this function ONLY accepts TimeSeries data as input.</span>
+
+<span class="sd">    This function is most appropriate</span>
+<span class="sd">    for QC done within a workflow where the model is to process a large</span>
+<span class="sd">    data set and winnow it down to separate the wheat from the chaff, to</span>
+<span class="sd">    use a cliche consistent with &quot;winnow&quot;.   In that situation the normal</span>
+<span class="sd">    use would be to run this function with a map operator on atomic data</span>
+<span class="sd">    and follow it with a call to filter to remove dead data and/or filter</span>
+<span class="sd">    with tests on the computed metrics.  See User&#39;s Manual for guidance on</span>
+<span class="sd">    this topic.  Because that is the expected normal use of this function</span>
+<span class="sd">    the kill_null_signals boolean defaults to True.</span>
 
 <span class="sd">    To be more robust the function tries to handle a common error.  That is,</span>
 <span class="sd">    if the input data has a UTC time standard then the noise and signal</span>
@@ -747,6 +809,7 @@
 <span class="sd">    message is posted to elog of the input datum and it is returned with</span>
 <span class="sd">    no other change.   (i.e. the attribute normally output with the tag</span>
 <span class="sd">    defined by metadata_output_key will not exist in the output).</span>
+<span class="sd">    Large data workflows need to handle this condition,.</span>
 
 <span class="sd">    Dead inputs are handled the standard way - returned immediately with no change.</span>
 
@@ -761,6 +824,15 @@
 <span class="sd">    :param arrival_time_key:  key (string) used to fetch an arrival time</span>
 <span class="sd">      if the data are in UTC and the time window received does not overlap</span>
 <span class="sd">      the data range (see above)</span>
+
+<span class="sd">    :param kill_null_signals:  boolean controlling how null snr estimator</span>
+<span class="sd">    returns are handled.  When True (default) if FD_snr_estimator returns a null</span>
+<span class="sd">    result (no apparent signal) that input datum is killed before being</span>
+<span class="sd">    returned.  In that situation no snr metrics will be in the output because</span>
+<span class="sd">    null means FD_snr_estimator couldn&#39;t detect a signal and the algorithm</span>
+<span class="sd">    failed.   When False the datum is returned silently but</span>
+<span class="sd">    will have no snr data defined in a dict stored with the key</span>
+<span class="sd">    metadata_output_key (i.e. that attribute will be undefined in output)</span>
 
 <span class="sd">    :param metadata_output_key:  is a string used as a key under which the</span>
 <span class="sd">    subdocument (python dict) created internally is stored.  Default is</span>
@@ -809,6 +881,7 @@
         <span class="n">signal_window</span><span class="o">=</span><span class="n">signal_window</span><span class="p">,</span>
         <span class="n">signal_spectrum_engine</span><span class="o">=</span><span class="n">signal_spectrum_engine</span><span class="p">,</span>
         <span class="n">band_cutoff_snr</span><span class="o">=</span><span class="n">band_cutoff_snr</span><span class="p">,</span>
+        <span class="n">signal_detection_minimum_bandwidth</span><span class="o">=</span><span class="n">signal_detection_minimum_bandwidth</span><span class="p">,</span>
         <span class="n">tbp</span><span class="o">=</span><span class="n">tbp</span><span class="p">,</span>
         <span class="n">ntapers</span><span class="o">=</span><span class="n">ntapers</span><span class="p">,</span>
         <span class="n">high_frequency_search_start</span><span class="o">=</span><span class="n">high_frequency_search_start</span><span class="p">,</span>
@@ -820,22 +893,36 @@
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">data_object</span><span class="o">.</span><span class="n">elog</span> <span class="o">+=</span> <span class="n">elog</span>
-    <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;phase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase_name</span>
-    <span class="n">data_object</span><span class="p">[</span><span class="n">metadata_output_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">snrdata</span>
+    <span class="c1"># FD_snr_estimator returns an empty dictionary if the snr</span>
+    <span class="c1"># calculation fails or indicates no signal is present.  This</span>
+    <span class="c1"># block combines that with the kill_null_signals in this logic</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;phase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase_name</span>
+        <span class="n">data_object</span><span class="p">[</span><span class="n">metadata_output_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">snrdata</span>
+    <span class="k">elif</span> <span class="n">kill_null_signals</span><span class="p">:</span>
+        <span class="n">data_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+            <span class="s2">&quot;arrival_snr&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;FD_snr_estimator flagged this datum as having no detectable signal&quot;</span><span class="p">,</span>
+            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">data_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">data_object</span></div>
 
 
-<div class="viewcode-block" id="arrival_snr_QC"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.arrival_snr_QC">[docs]</a><span class="k">def</span> <span class="nf">arrival_snr_QC</span><span class="p">(</span>
+<div class="viewcode-block" id="broadband_snr_QC"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.broadband_snr_QC">[docs]</a><span class="k">def</span> <span class="nf">broadband_snr_QC</span><span class="p">(</span>
     <span class="n">data_object</span><span class="p">,</span>
+    <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">noise_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">130.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span>
     <span class="n">noise_spectrum_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">signal_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">),</span>
     <span class="n">signal_spectrum_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">band_cutoff_snr</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">signal_detection_minimum_bandwidth</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
     <span class="n">tbp</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
-    <span class="n">ntapers</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">ntapers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
     <span class="n">high_frequency_search_start</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
     <span class="n">fix_high_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">kill_null_signals</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">poles</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
     <span class="n">perc</span><span class="o">=</span><span class="mf">95.0</span><span class="p">,</span>
     <span class="n">phase_name</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span>
@@ -849,13 +936,9 @@
         <span class="s2">&quot;filtered_perc&quot;</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">save_spectra</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;arrival&quot;</span><span class="p">,</span>
     <span class="n">use_measured_arrival_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">measured_arrival_time_key</span><span class="o">=</span><span class="s2">&quot;Ptime&quot;</span><span class="p">,</span>
     <span class="n">taup_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">update_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">source_collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
     <span class="n">receiver_collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
@@ -863,27 +946,34 @@
 <span class="sd">    Compute a series of metrics that can be used for quality control</span>
 <span class="sd">    filtering of seismic phase data.</span>
 
-<span class="sd">    This is the highest level function in this module for computing</span>
-<span class="sd">    signal-to-noise ratio metrics for processing signals that can be</span>
-<span class="sd">    defined by a computable or measurable &quot;phase&quot;.  Features this</span>
-<span class="sd">    function adds over lower level functions in this module are:</span>
-<span class="sd">        1.  An option to save computed metrics to a MongoDB collection</span>
-<span class="sd">            (defaults as &quot;arrival&quot;).  If the update_mode argument is</span>
-<span class="sd">            set True (default is False) the function expects the data_object</span>
-<span class="sd">            to contain the attribute &quot;arrival_id&quot; that references the</span>
-<span class="sd">            ObjectID of an existing entry in the the collection where the</span>
-<span class="sd">            data this function computes is to be saved (default is&quot;arrival&quot;).</span>
-<span class="sd">        2.  Adds an option to use a computed or measured arrival as the</span>
-<span class="sd">            time reference for all windowing.   The lower level snr</span>
-<span class="sd">            functions in this module require the user do what this</span>
-<span class="sd">            function does prior to calling the function.  Note one or the other is required</span>
-<span class="sd">            (i.e. either computed or measured time will be define t0 of the</span>
-<span class="sd">             processing)</span>
+<span class="sd">    This function is intended as a workhorse to be used for low-level,</span>
+<span class="sd">    automated QC of broadband data when the the data set is defined</span>
+<span class="sd">    by signals linked to a timeable seismic phase.   It can be</span>
+<span class="sd">    thought of as a version of a related function called</span>
+<span class="sd">    &quot;arrival_snr&quot; with some additional features.  See the docstring</span>
+<span class="sd">    for that function for what those base features are.   Features this</span>
+<span class="sd">    function adds not found in arrival_snr are:</span>
+<span class="sd">        1.   This function allows Seismogram inputs.  Only TimeSeries</span>
+<span class="sd">             data are handled by arrival_snr.</span>
+<span class="sd">        2.   This function provides an option to compute arrival times</span>
+<span class="sd">             from source coordinates, receiver coordinates, and a handle</span>
+<span class="sd">             to an obspy tau-p calculator.</span>
+
+<span class="sd">    Otherwise it behaves the same.  Note both functions may or may not</span>
+<span class="sd">    choose to interact with the function save_snr_arrival.   If you want to</span>
+<span class="sd">    save the computed metrics into a form more easily fetched</span>
+<span class="sd">    your workflow should extract the contents of the python dictionary</span>
+<span class="sd">    stored under the metadata_output_key tag and save the result to</span>
+<span class="sd">    MongoDB with the save_snr_arrival function.  That option is most</span>
+<span class="sd">    useful for test runs on a more limited data set to sort out</span>
+<span class="sd">    values of the computed metrics that are appropriate for a secondary</span>
+<span class="sd">    winnowing of the your data.   See User&#39;s Manual for more on</span>
+<span class="sd">    this concept.</span>
 
 <span class="sd">    The input of arg 0 (data_object) can be either a TimeSeries or</span>
 <span class="sd">    a Seismogram object.  If a Seismogram object is passed the &quot;component&quot;</span>
 <span class="sd">    argument is used to extract the specified single channel from the Seismogram</span>
-<span class="sd">    object and than component is used for processing.  That is necessary</span>
+<span class="sd">    object and that component is used for processing.  That is necessary</span>
 <span class="sd">    because all the algorithms used are single channel algorithms.  To</span>
 <span class="sd">    use this function on all components use a loop over components BUT</span>
 <span class="sd">    make sure you use a unique value for the argument &quot;metadata_output_key&quot; for</span>
@@ -901,28 +991,38 @@
 <span class="sd">    is a Seismogram it tries to fetch site_lat.   That is true of all coordinate</span>
 <span class="sd">    data loaded by normalization from a source and receiver collection.</span>
 
-<span class="sd">    The following args are passed directly to the function arrival_snr:</span>
-<span class="sd">    noise_window, signal_window, band_cutoff_snr, tbp, ntapers, poles,</span>
-<span class="sd">    perc, phase_name, metadata_output_key, and optional_metrics.  See the docstring</span>
-<span class="sd">    for arrival_snr and FD_snr_estimator for descriptions of how these</span>
-<span class="sd">    arguments should be used.  This top level function adds arguments</span>
-<span class="sd">    decribed below.</span>
+<span class="sd">    The following args are passed directly to the function FD_snr_estimator:</span>
+<span class="sd">    noise_window, noise_spectrum_engine, signal_window, signal_spectrum_engine,</span>
+<span class="sd">    band_cutoff_snr, signal_detection_minimum_bandwidth, tbp, ntapers,</span>
+<span class="sd">    high_frequency_search_start, fix_high_edge, npoles, perc, optional_metrics,</span>
+<span class="sd">    and save_spectrum.  Below we only describe arguments added by this</span>
+<span class="sd">    function:</span>
 
-<span class="sd">    :param db:  mspass Database object that is used as a handle for to MongoDB.</span>
-<span class="sd">    Default is None, which the function takes to mean you don&#39;t want to</span>
-<span class="sd">    save the computed values to MongoDB.   In this mode the computed</span>
-<span class="sd">    metrics will all be posted to a python dict that can be found under the</span>
-<span class="sd">    key defined by the &quot;metadata_output_key&quot; argument.   When db is defined the</span>
-<span class="sd">    contents of that same python dict will save to MongoDB is the</span>
-<span class="sd">    collection defined by the &quot;collection&quot; argument.  If db is run as</span>
-<span class="sd">    the default None the user is responsible for saving and managing the</span>
-<span class="sd">    computed snr data.   Be aware a simple later call to db.save_data</span>
-<span class="sd">    will not produce the same normalized data with the (default) arrival</span>
-<span class="sd">    collection.</span>
+<span class="sd">    data_object,</span>
+<span class="sd">    phase_name=&quot;P&quot;,</span>
+<span class="sd">    metadata_output_key=&quot;Parrival&quot;,</span>
+<span class="sd">    use_measured_arrival_time=False,</span>
+<span class="sd">    measured_arrival_time_key=&quot;Ptime&quot;,</span>
+<span class="sd">    taup_model=None,</span>
+<span class="sd">    component=2,</span>
+<span class="sd">    source_collection=&quot;source&quot;,</span>
+<span class="sd">    receiver_collection=None,</span>
 
-<span class="sd">    :param collection:  MongoDB collection name where the results of this</span>
-<span class="sd">    function will be saved.  If the &quot;update_mode&quot; argument is also set</span>
-<span class="sd">    True the update section will reference this collection. Default is &quot;arrival&quot;.</span>
+<span class="sd">    :param data_object:  An atomic MsPASS data object to which the</span>
+<span class="sd">    algorithms requested should be applied.   Currently that means a</span>
+<span class="sd">    TimeSeries or Seismogram object.   Any other input will result</span>
+<span class="sd">    in a TypeError exception.  As noted above for Seismogram input the</span>
+<span class="sd">    component argument defines which data component is to be used for the</span>
+<span class="sd">    snr computations.</span>
+
+<span class="sd">    :param component: integer (0, 1, or 2) defining which component of a</span>
+<span class="sd">    Seismogram object to use to compute the requested snr metrics.   This</span>
+<span class="sd">    parameter is ignored if the input is a TimeSeries.</span>
+
+<span class="sd">    :param metadata_output_key:  string defining the key where the results</span>
+<span class="sd">    are to be posted to the returned data_object.   The results are always</span>
+<span class="sd">    posted to a python dictionary and then posted to the returned</span>
+<span class="sd">    data_object with this key.   Default is &quot;Parrival&quot;</span>
 
 <span class="sd">    :param use_measured_arrival_time:  boolean defining the method used to</span>
 <span class="sd">    define the time reference for windowing used for snr calculations.</span>
@@ -941,7 +1041,7 @@
 <span class="sd">    is False.</span>
 
 <span class="sd">    :param taup_model: when use_measured_arrival_time is False this argument</span>
-<span class="sd">    is required.  It defaults as None because there is now way the author</span>
+<span class="sd">    is required.  It defaults as None because there is no way the author</span>
 <span class="sd">    knows to initialize it to anything valid.  If set it MUST be an instance</span>
 <span class="sd">    of the obspy class TauPyModel (https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html#obspy.taup.tau.TauPyModel)</span>
 <span class="sd">    Mistakes in use of this argument can cause a MsPASSError exception to</span>
@@ -949,23 +1049,12 @@
 <span class="sd">    (1)  If use_measured_arrival_time is False this argument must be defined,</span>
 <span class="sd">    and (2) if it is defined it MUST be an instance of TauPyModel.</span>
 
-<span class="sd">    :param update_mode:   When True the function will attempt to extract</span>
-<span class="sd">    a MongoDB ObjectID from data_object&#39;s Metadata using the (currently fixed)</span>
-<span class="sd">    key &quot;arrival_id&quot;.   If found it will add the computed data to an existing</span>
-<span class="sd">    document in the collection defined by the collection argument.  Otherwise</span>
-<span class="sd">    it will simply add a new entry and post the ObjectID of the new document</span>
-<span class="sd">    with the (same fixed) key arrival_id.  When False no attempt to fetch</span>
-<span class="sd">    the arrival id is made and we simply add a record.  This parameter is</span>
-<span class="sd">    completely ignored unless the db argument defines a valid Database class.</span>
-
-<span class="sd">    :param component: integer (0, 1, or 2) defining which component of a</span>
-<span class="sd">    Seismogram object to use to compute the requested snr metrics.   This</span>
-<span class="sd">    parameter is ignored if the input is a TimeSeries.</span>
-
 <span class="sd">    :param source_collection:  normalization collection for source data.</span>
 <span class="sd">    The default is the MsPASS name &quot;source&quot; which means the function will</span>
 <span class="sd">    try to load the source hypocenter coordinates (when required) as</span>
-<span class="sd">    source_lat, source_lon, source_depth, and source_time.</span>
+<span class="sd">    source_lat, source_lon, source_depth, and source_time from the input</span>
+<span class="sd">    data_object.  The id of that document is posted to the output dictionary</span>
+<span class="sd">    stored under metadata_output_key.</span>
 
 <span class="sd">    :param receiver_collection:  when set this name will override the</span>
 <span class="sd">    automatic setting of the expected normalization collection naming</span>
@@ -974,7 +1063,7 @@
 <span class="sd">    the automatic naming will be overridden.</span>
 
 <span class="sd">    :return:  the data_object modified by insertion of the snr QC data</span>
-<span class="sd">    in the object&#39;s Metadata</span>
+<span class="sd">    in the object&#39;s Metadata under the key defined by metadata_output_key.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">data_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">data_object</span>
@@ -1053,6 +1142,7 @@
         <span class="n">signal_window</span><span class="o">=</span><span class="n">signal_window</span><span class="p">,</span>
         <span class="n">signal_spectrum_engine</span><span class="o">=</span><span class="n">signal_spectrum_engine</span><span class="p">,</span>
         <span class="n">band_cutoff_snr</span><span class="o">=</span><span class="n">band_cutoff_snr</span><span class="p">,</span>
+        <span class="n">signal_detection_minimum_bandwidth</span><span class="o">=</span><span class="n">signal_detection_minimum_bandwidth</span><span class="p">,</span>
         <span class="n">tbp</span><span class="o">=</span><span class="n">tbp</span><span class="p">,</span>
         <span class="n">ntapers</span><span class="o">=</span><span class="n">ntapers</span><span class="p">,</span>
         <span class="n">high_frequency_search_start</span><span class="o">=</span><span class="n">high_frequency_search_start</span><span class="p">,</span>
@@ -1064,6 +1154,18 @@
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">data_object</span><span class="o">.</span><span class="n">elog</span> <span class="o">+=</span> <span class="n">elog</span>
+    <span class="c1"># FD_snr_estimator returns an empty dictionary if the snr</span>
+    <span class="c1"># calculation fails or indicates no signal is present.  This</span>
+    <span class="c1"># block combines that with the kill_null_signals in this logic</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">data_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+            <span class="s2">&quot;broadband_snr_QC&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;FD_snr_estimator flagged this datum as having no detectable signal&quot;</span><span class="p">,</span>
+            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">kill_null_signals</span><span class="p">:</span>
+            <span class="n">data_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data_object</span>
     <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;phase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase_name</span>
     <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;snr_arrival_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arrival_time</span>
     <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;snr_signal_window_start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arrival_time</span> <span class="o">+</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">start</span>
@@ -1084,31 +1186,143 @@
     <span class="c1"># the original but it may have been altered while for a Seismogram it is</span>
     <span class="c1"># an extracted component</span>
     <span class="n">data_object</span><span class="p">[</span><span class="n">metadata_output_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">snrdata</span>
-    <span class="k">if</span> <span class="n">db</span><span class="p">:</span>
-        <span class="n">arrival_id_key</span> <span class="o">=</span> <span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span>
-        <span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">update_mode</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">data_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">arrival_id_key</span><span class="p">):</span>
-                <span class="n">arrival_id</span> <span class="o">=</span> <span class="n">data_object</span><span class="p">[</span><span class="n">arrival_id_key</span><span class="p">]</span>
-                <span class="n">filt</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">arrival_id</span><span class="p">}</span>
-                <span class="n">update_clause</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">snrdata</span><span class="p">}</span>
-                <span class="n">dbcol</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">update_clause</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">data_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                    <span class="s2">&quot;arrival_snr_QC&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;Running in update mode but arrival id key=&quot;</span>
-                    <span class="o">+</span> <span class="n">arrival_id_key</span>
-                    <span class="o">+</span> <span class="s2">&quot; is not defined</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="o">+</span> <span class="s2">&quot;Inserting computed snr data as a new document in collection=&quot;</span>
-                    <span class="o">+</span> <span class="n">collection</span><span class="p">,</span>
-                    <span class="s2">&quot;Complaint&quot;</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">arrival_id</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
-                <span class="n">data_object</span><span class="p">[</span><span class="n">arrival_id_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">arrival_id</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">arrival_id</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
-            <span class="n">data_object</span><span class="p">[</span><span class="n">arrival_id_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">arrival_id</span>
     <span class="k">return</span> <span class="n">data_object</span></div>
+
+
+<div class="viewcode-block" id="save_snr_arrival"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.save_snr_arrival">[docs]</a><span class="k">def</span> <span class="nf">save_snr_arrival</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">,</span>
+    <span class="n">doc_to_save</span><span class="p">,</span>
+    <span class="n">wfid</span><span class="p">,</span>
+    <span class="n">wf_collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">,</span>
+    <span class="n">save_collection</span><span class="o">=</span><span class="s2">&quot;arrival&quot;</span><span class="p">,</span>
+    <span class="n">subdocument_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">update_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">validate_wfid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is a companion to broadband_snr_QC.   It handles the</span>
+<span class="sd">    situation where the workflow aims to post calculated snr metrics to</span>
+<span class="sd">    an output database (normally in the &quot;arrival&quot; collection but optionally</span>
+<span class="sd">    to a parent waveform collection.  ).   The alternative models as</span>
+<span class="sd">    noted in the User&#39;s Manual is to use the kill option to broadband_snr_QC</span>
+<span class="sd">    followed by a call to the filter method of bag/rdd to remove the</span>
+<span class="sd">    deadwood and reduce the size of data passed downstream in large</span>
+<span class="sd">    parallel workflow.   That case is better handled by using</span>
+<span class="sd">    broadband_snr_QC directly.</span>
+
+<span class="sd">    How the data are saved is controlled by four parameters:   save_collection,</span>
+<span class="sd">    use_update, update_id and subdocument_key.   They interact in a way</span>
+<span class="sd">    that is best summarized as a set of cases that procuce behavior</span>
+<span class="sd">    you may want:</span>
+<span class="sd">        1.  If save_collection is not the parent waveform collection,</span>
+<span class="sd">            behavior is driven by use_update combined with subdocument_key.</span>
+<span class="sd">            When use_update is False (default) the contents of doc_to_save</span>
+<span class="sd">            will be used to define a new document in save_collection</span>
+<span class="sd">            with the MongoDB insert_one method.</span>
+<span class="sd">        2.  When use_update is True the update_id will be assumed to be</span>
+<span class="sd">            defined and point be the ObjectId of an existing document</span>
+<span class="sd">            in save_collection.   Specifically that id will be used as</span>
+<span class="sd">            the query clause for a call the insert_one method.   This</span>
+<span class="sd">            combination is useful if a workflow is being driven by</span>
+<span class="sd">            arrival data stored in save_collection created, for example,</span>
+<span class="sd">            for a css3.0 a event-&gt;origin-&gt;assoc-&gt;arrival catalog of</span>
+<span class="sd">            arrival picks.   A variant of this mode will occur if the</span>
+<span class="sd">            argument subdocument_key is defined (default is None).  If</span>
+<span class="sd">            you define subgdocument_key the contents of doc_to_save will</span>
+<span class="sd">            be stored as a subdocument in save_collection accessible</span>
+<span class="sd">            with the key defined by subdocument_key.</span>
+<span class="sd">        3.  If save_collection is the same as the parent waveform collection</span>
+<span class="sd">            (defined via the input parameter wf_collection) the</span>
+<span class="sd">            value of use_update will be ignored and only an update will</span>
+<span class="sd">            be attempted.  The reason is that if one tried to save the</span>
+<span class="sd">            contents of doc_to_save to a waveform collection would corrupt</span>
+<span class="sd">            the database by have a bunch of documents that that could not</span>
+<span class="sd">            be used to construct a valid data object (the normal use for</span>
+<span class="sd">            one of the wf collections).</span>
+
+<span class="sd">    :param db:  MongoDB database handle to use for transactions that</span>
+<span class="sd">    are the focus of this algorithm.</span>
+
+<span class="sd">    :param doc_to_save:  python dictionary containing data to be saved.</span>
+<span class="sd">    Where and now this is saved is controlled by save_collection,</span>
+<span class="sd">    use_update, and subdocument_key as described above.</span>
+
+<span class="sd">    :param wfid:   waveform document id of the parent datum.   It is</span>
+<span class="sd">    assumed to be an ObjectId of linking the data in doc_to_save to</span>
+<span class="sd">    the parent.   It is ALWAYS saved in the output with the key &quot;wfid&quot;.</span>
+
+<span class="sd">    :param wf_collection:  string defining the collection from which the</span>
+<span class="sd">    datum from which the data stored in doc_to_save are associated.   wfid</span>
+<span class="sd">    is assumed define a valid document in wf_collection.   Default is</span>
+<span class="sd">    &quot;wf_Seismogram&quot;.</span>
+
+<span class="sd">    :param save_collection:  string defining the collection name to which</span>
+<span class="sd">    doc_to_save should be pushed.   See above for how this name interacts</span>
+<span class="sd">    with other parameters.</span>
+
+<span class="sd">    :param subdocument_key:   Optional key for saving doc_to_save as a</span>
+<span class="sd">    a subdocument in the save_collection.   Default is None which means</span>
+<span class="sd">    the contents of doc_to_save will be saved (or update) as is.</span>
+<span class="sd">    For saves to (default) arrival collection this parameter should</span>
+<span class="sd">    normally be left None, but is allowed.   If save_collection is the</span>
+<span class="sd">    parent waveform collection setting this to some sensible key is</span>
+<span class="sd">    recommended to avoid possible name collisions with waveform</span>
+<span class="sd">    Metadata key-value pairs.    Default is None which means no</span>
+<span class="sd">    subdocuments are created.</span>
+
+<span class="sd">    :param use_update:  boolean controlling whether or not to use</span>
+<span class="sd">    updates or inserts for the contents of doc_to_save.  See above for</span>
+<span class="sd">    a description of how this interacts with other arguments to this</span>
+<span class="sd">    function.  Default is False.</span>
+
+<span class="sd">    :param update_id:   ObjectId of target document when running in update</span>
+<span class="sd">    mode.  When save_collection is the same as wf_collection this parameter</span>
+<span class="sd">    is ignored and the required id passed as wfid will be used for the</span>
+<span class="sd">    update key matching.   Also ignored with the default behavior if</span>
+<span class="sd">    inserting doc_to_save as a new document.  Required only if running</span>
+<span class="sd">    with a different collection and updating is desired.  The type example</span>
+<span class="sd">    noted above would be updates to existing arrival informations</span>
+<span class="sd">    created from a css3.0 database.</span>
+
+<span class="sd">    :param validate_wfid:   When set True the id defined by the</span>
+<span class="sd">    required argument wfid will be validated by querying wf_collection.</span>
+<span class="sd">    In this mode if wfid is not found the function will silently return None.</span>
+<span class="sd">    Callers using this mode should handle that condition.</span>
+
+<span class="sd">    :return:  ObjectId of saved record.  None if something went wrong</span>
+<span class="sd">    and nothing was saved.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dbwfcol</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">wf_collection</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">validate_wfid</span><span class="p">:</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">wfid</span><span class="p">}</span>
+        <span class="n">ndocs</span> <span class="o">=</span> <span class="n">dbwfcol</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ndocs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">save_collection</span><span class="p">]</span>
+    <span class="n">update_mode</span> <span class="o">=</span> <span class="n">use_update</span>
+    <span class="c1"># silently enforce update mode if saving back to waveform collection</span>
+    <span class="k">if</span> <span class="n">wf_collection</span> <span class="o">==</span> <span class="n">save_collection</span><span class="p">:</span>
+        <span class="n">update_mode</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">upd_id</span> <span class="o">=</span> <span class="n">wfid</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">upd_id</span> <span class="o">=</span> <span class="n">update_id</span>
+    <span class="c1"># this block sets doc for save with or without subdoc option</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">doc_to_save</span><span class="p">)</span>  <span class="c1"># this acts like a deep copy</span>
+    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;wfid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wfid</span>
+    <span class="k">if</span> <span class="n">subdocument_key</span><span class="p">:</span>
+        <span class="c1"># The constructor for a dict is necesary to assure a deepcopy here</span>
+        <span class="n">doc</span><span class="p">[</span><span class="n">subdocument_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">update_mode</span><span class="p">:</span>
+        <span class="c1"># note update is only allowed on the parent wf collection</span>
+        <span class="n">filt</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">upd_id</span><span class="p">}</span>
+        <span class="n">update_clause</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">doc</span><span class="p">}</span>
+        <span class="n">dbcol</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">update_clause</span><span class="p">)</span>
+        <span class="n">save_id</span> <span class="o">=</span> <span class="n">upd_id</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">save_id</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
+
+    <span class="k">return</span> <span class="n">save_id</span></div>
 </pre></div>
 
            </div>

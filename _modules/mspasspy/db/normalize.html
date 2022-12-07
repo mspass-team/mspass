@@ -2024,8 +2024,9 @@
         <span class="n">testid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_make_cache_id</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">testid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normcache</span><span class="p">[</span><span class="n">testid</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">testid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">normcache</span><span class="p">:</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normcache</span><span class="p">[</span><span class="n">testid</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="c1"># linear search similar to that in find_one above</span>
