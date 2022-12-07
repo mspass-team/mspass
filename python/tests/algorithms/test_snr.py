@@ -7,9 +7,11 @@ from mspasspy.algorithms.snr import (snr,
                                      broadband_snr_QC, 
                                      save_snr_arrival,
                                      )
+from mspasspy.db.client import DBClient
+from mspasspy.db.database import Database
 import numpy as np
 from scipy import signal
-from bson import json_util
+from bson import json_util, ObjectId
 import pickle
 
 
@@ -238,14 +240,34 @@ def test_snr():
     print(json_util.dumps(asnr_out2["Parrival"], indent=2))
     verify_snr_outputs_match(asnr_out["Parrival"], asnr_out2["Parrival"])
 
-    print("Testing arrival_snr_QC variant")
+    print("Testing broadband_snr_QC variant")
     asnr_out3 = broadband_snr_QC(
         ts2, noise_window=nwin, signal_window=swin, use_measured_arrival_time=True
     )
     print(json_util.dumps(asnr_out3["Parrival"], indent=2))
     verify_snr_outputs_match(asnr_out["Parrival"], asnr_out3["Parrival"])
-    # We need to add a test a database write but I do not want to do that
-    # until we finalize a design for an arrival collection initiated on
-    # github 11/29/2022.  Remove this comment when that is done and that
-    # test has been created and verified.
-
+    # Finally test the database function to save results of previous 
+    # function to an arrival collection.
+    dbclient = DBClient("localhost")
+    db = dbclient.get_database("test_snrQC")
+    doc_to_save = asnr_out3["Parrival"]
+    # Fake the id as if these data had been read from db.  The 
+    # id is required to create a cross-reference to the wf collection
+    # when saving arrival document.  We actually save the test data 
+    # and read it back to get that id.  We need that to test the 
+    # validate_wfid option that is orthogonal to the rest of the 
+    # save_snr_arrival function
+    db.save_data(ts,collection="wf_TimeSeries")
+    wfdoc = db.wf_TimeSeries.find_one()
+    wfid = wfdoc["_id"]
+    idout = save_snr_arrival(db, doc_to_save, wfid,
+                             wf_collection="wf_TimeSeries",
+                             validate_wfid=True)
+    print("Saved snr data to arrival with id=",idout)
+    arrival_doc = db.arrival.find_one()
+    verify_snr_outputs_match(doc_to_save,arrival_doc)
+    # This tests update mode on arrival collection
+    print("Testing update mode to arrival")
+    idout2 = save_snr_arrival(db,doc_to_save,wfid,wf_collection="wf_TimeSeries",
+                              use_update=True,update_id=idout)
+    assert idout2==idout
