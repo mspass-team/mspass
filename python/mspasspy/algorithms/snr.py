@@ -216,7 +216,7 @@ def FD_snr_estimator(
     band_cutoff_snr=2.0,
     signal_detection_minimum_bandwidth=6.0,
     tbp=4,
-    ntapers=8,
+    ntapers=6,
     high_frequency_search_start=2.0,
     fix_high_edge=True,
     poles=3,
@@ -343,8 +343,8 @@ def FD_snr_estimator(
     noise_spectrum_engine or signal_spectrum_engine are set to None.
     Note the function will throw an exception if the ntaper parameter is
     not consistent with the time-bandwidth product.  That is, the
-    maximum number of tapers is round(2*tbp-1).   Default is 8 which is
-    consistent with default tbp=4.0
+    maximum number of tapers is round(2*tbp-1).   Default is 6 which is
+    consistent with default tbp=4.0 where the maximum recommended is 8
 
     :param high_frequency_search_start: Used to specify the upper frequency
       used to start the search for the upper end of the bandwidth by
@@ -647,7 +647,7 @@ def arrival_snr(
     band_cutoff_snr=2.0,
     signal_detection_minimum_bandwidth=6.0,
     tbp=4.0,
-    ntapers=8,
+    ntapers=6,
     high_frequency_search_start=2.0,
     fix_high_edge=True,
     poles=3,
@@ -656,7 +656,7 @@ def arrival_snr(
     phase_name="P",
     arrival_time_key="Ptime",
     metadata_output_key="Parrival",
-    kill_null_signals=False,
+    kill_null_signals=True,
     optional_metrics=[
         "snr_stats",
         "filtered_envelope",
@@ -674,22 +674,21 @@ def arrival_snr(
     removes some of the options from the more generic function and
     has a frozen structure appropriate for measuring snr of a particular phase.
     In particular it always stores the results as a subdocument (python dict)
-    keyed by the name defined in the metadata_output_key argument.   The idea of
-    that structure is that the contents of the subdocument are readily extracted
-    and saved to a MongoDB "arrival" collection with a normalization key.
-    Arrival driven workflows can then use queries to reduce the number of
-    data actually retrieved for final processing.  i.e. the arrival
-    collection data should be viewed as a useful initial quality control
-    feature.
+    keyed by the name defined in the metadata_output_key argument. 
+    This function has a close sibling called "broadband_snr_QC" that 
+    has similar behavior but add some additional functionality.   The 
+    most significant limitation of this function relative to broadband_snr_QC
+    is that this function ONLY accepts TimeSeries data as input.  
     
-    An alternative to storing results in an arrival is possible with the 
-    option supplied by the "kill_null_signals" boolean.   When that option 
-    is enabled (i.e. set True - default is False) the return of this function 
-    will be killed if the FD_snr_estimator returns a null result that 
-    we take as an indicator of no useful signal.  That option is most 
-    useful in a parallel workflow for QC editing if the map call to this 
-    function is followed soon afterward by a call to the filter method 
-    of dask.bag or spark.rdd to remove deadwood.   
+    This function is most appropriate 
+    for QC done within a workflow where the model is to process a large 
+    data set and winnow it down to separate the wheat from the chaff, to 
+    use a cliche consistent with "winnow".   In that situation the normal 
+    use would be to run this function with a map operator on atomic data 
+    and follow it with a call to filter to remove dead data and/or filter 
+    with tests on the computed metrics.  See User's Manual for guidance on 
+    this topic.  Because that is the expected normal use of this function 
+    the kill_null_signals boolean defaults to True.
 
     To be more robust the function tries to handle a common error.  That is,
     if the input data has a UTC time standard then the noise and signal
@@ -703,6 +702,7 @@ def arrival_snr(
     message is posted to elog of the input datum and it is returned with
     no other change.   (i.e. the attribute normally output with the tag
     defined by metadata_output_key will not exist in the output).
+    Large data workflows need to handle this condition,.
 
     Dead inputs are handled the standard way - returned immediately with no change.
 
@@ -719,11 +719,11 @@ def arrival_snr(
       the data range (see above)
       
     :param kill_null_signals:  boolean controlling how null snr estimator 
-    returns are handled.  When True if FD_snr_estimator returns a null 
+    returns are handled.  When True (default) if FD_snr_estimator returns a null 
     result (no apparent signal) that input datum is killed before being 
-    return.  In that situation no snr metrics will be in the output because 
+    returned.  In that situation no snr metrics will be in the output because 
     null means FD_snr_estimator couldn't detect a signal and the algorithm 
-    failed.   When False (default) the datum is returned silently but 
+    failed.   When False the datum is returned silently but 
     will have no snr data defined in a dict stored with the key 
     metadata_output_key (i.e. that attribute will be undefined in output)
 
@@ -804,6 +804,7 @@ def arrival_snr(
 
 def broadband_snr_QC(
     data_object,
+    component=2,
     noise_window=TimeWindow(-130.0, -5.0),
     noise_spectrum_engine=None,
     signal_window=TimeWindow(-5.0, 120.0),
@@ -811,7 +812,7 @@ def broadband_snr_QC(
     band_cutoff_snr=2.0,
     signal_detection_minimum_bandwidth=6.0,
     tbp=4.0,
-    ntapers=8,
+    ntapers=6,
     high_frequency_search_start=2.0,
     fix_high_edge=True,
     kill_null_signals=False,
@@ -828,41 +829,44 @@ def broadband_snr_QC(
         "filtered_perc",
     ],
     save_spectra=False,
-    db=None,
-    collection="arrival",
     use_measured_arrival_time=False,
     measured_arrival_time_key="Ptime",
     taup_model=None,
-    update_mode=False,
-    component=2,
     source_collection="source",
     receiver_collection=None,
 ):
     """
     Compute a series of metrics that can be used for quality control
     filtering of seismic phase data.
-
-    This is the highest level function in this module for computing
-    signal-to-noise ratio metrics for processing signals that can be
-    defined by a computable or measurable "phase".  Features this
-    function adds over lower level functions in this module are:
-        1.  An option to save computed metrics to a MongoDB collection
-            (defaults as "arrival").  If the update_mode argument is
-            set True (default is False) the function expects the data_object
-            to contain the attribute "arrival_id" that references the
-            ObjectID of an existing entry in the the collection where the
-            data this function computes is to be saved (default is"arrival").
-        2.  Adds an option to use a computed or measured arrival as the
-            time reference for all windowing.   The lower level snr
-            functions in this module require the user do what this
-            function does prior to calling the function.  Note one or the other is required
-            (i.e. either computed or measured time will be define t0 of the
-             processing)
+    
+    This function is intended as a workhorse to be used for low-level, 
+    automated QC of broadband data when the the data set is defined 
+    by signals linked to a timeable seismic phase.   It can be 
+    thought of as a version of a related function called 
+    "arrival_snr" with some additional features.  See the docstring 
+    for that function for what those base features are.   Features this 
+    function adds not found in arrival_snr are:
+        1.   This function allows Seismogram inputs.  Only TimeSeries 
+             data are handled by arrival_snr. 
+        2.   This function provides an option to compute arrival times 
+             from source coordinates, receiver coordinates, and a handle 
+             to an obspy tau-p calculator.   
+             
+    Otherwise it behaves the same.  Note both functions may or may not 
+    choose to interact with the function save_snr_arrival.   If you want to 
+    save the computed metrics into a form more easily fetched 
+    your workflow should extract the contents of the python dictionary 
+    stored under the metadata_output_key tag and save the result to 
+    MongoDB with the save_snr_arrival function.  That option is most 
+    useful for test runs on a more limited data set to sort out 
+    values of the computed metrics that are appropriate for a secondary 
+    winnowing of the your data.   See User's Manual for more on 
+    this concept. 
 
     The input of arg 0 (data_object) can be either a TimeSeries or
     a Seismogram object.  If a Seismogram object is passed the "component"
     argument is used to extract the specified single channel from the Seismogram
-    object and than component is used for processing.  That is necessary
+    object and that component is used for processing.  That is necessary
     because all the algorithms used are single channel algorithms.  To
     use this function on all components use a loop over components BUT
     make sure you use a unique value for the argument "metadata_output_key" for
@@ -880,28 +884,38 @@ def broadband_snr_QC(
     is a Seismogram it tries to fetch site_lat.   That is true of all coordinate
     data loaded by normalization from a source and receiver collection.
 
-    The following args are passed directly to the function arrival_snr:
-    noise_window, signal_window, band_cutoff_snr, tbp, ntapers, poles,
-    perc, phase_name, metadata_output_key, and optional_metrics.  See the docstring
-    for arrival_snr and FD_snr_estimator for descriptions of how these
-    arguments should be used.  This top level function adds arguments
-    decribed below.
+    The following args are passed directly to the function FD_snr_estimator:
+    noise_window, noise_spectrum_engine, signal_window, signal_spectrum_engine,
+    band_cutoff_snr, signal_detection_minimum_bandwidth, tbp, ntapers, 
+    high_frequency_search_start, fix_high_edge, npoles, perc, optional_metrics,
+    and save_spectrum.  Below we only describe arguments added by this 
+    function:
+    
+    data_object,
+    phase_name="P",
+    metadata_output_key="Parrival",
+    use_measured_arrival_time=False,
+    measured_arrival_time_key="Ptime",
+    taup_model=None,
+    component=2,
+    source_collection="source",
+    receiver_collection=None,
+    
+    :param data_object:  An atomic MsPASS data object to which the 
+    algorithms requested should be applied.   Currently that means a
+    TimeSeries or Seismogram object.   Any other input will result 
+    in a TypeError exception.  As noted above for Seismogram input the 
+    component argument defines which data component is to be used for the 
+    snr computations.  
+    
+    :param component: integer (0, 1, or 2) defining which component of a
+    Seismogram object to use to compute the requested snr metrics.   This
+    parameter is ignored if the input is a TimeSeries.
 
-    :param db:  mspass Database object that is used as a handle for to MongoDB.
-    Default is None, which the function takes to mean you don't want to
-    save the computed values to MongoDB.   In this mode the computed
-    metrics will all be posted to a python dict that can be found under the
-    key defined by the "metadata_output_key" argument.   When db is defined the
-    contents of that same python dict will save to MongoDB is the
-    collection defined by the "collection" argument.  If db is run as
-    the default None the user is responsible for saving and managing the
-    computed snr data.   Be aware a simple later call to db.save_data
-    will not produce the same normalized data with the (default) arrival
-    collection.
-
-    :param collection:  MongoDB collection name where the results of this
-    function will be saved.  If the "update_mode" argument is also set
-    True the update section will reference this collection. Default is "arrival".
+    :param metadata_output_key:  string defining the key where the results 
+    are to be posted to the returned data_object.   The results are always 
+    posted to a python dictionary and then posted to the returned 
+    data_object with this key.   Default is "Parrival"
 
     :param use_measured_arrival_time:  boolean defining the method used to
     define the time reference for windowing used for snr calculations.
@@ -920,7 +934,7 @@ def broadband_snr_QC(
     is False.
 
     :param taup_model: when use_measured_arrival_time is False this argument
-    is required.  It defaults as None because there is now way the author
+    is required.  It defaults as None because there is no way the author
     knows to initialize it to anything valid.  If set it MUST be an instance
     of the obspy class TauPyModel (https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html#obspy.taup.tau.TauPyModel)
     Mistakes in use of this argument can cause a MsPASSError exception to
@@ -928,23 +942,12 @@ def broadband_snr_QC(
     (1)  If use_measured_arrival_time is False this argument must be defined,
     and (2) if it is defined it MUST be an instance of TauPyModel.
 
-    :param update_mode:   When True the function will attempt to extract
-    a MongoDB ObjectID from data_object's Metadata using the (currently fixed)
-    key "arrival_id".   If found it will add the computed data to an existing
-    document in the collection defined by the collection argument.  Otherwise
-    it will simply add a new entry and post the ObjectID of the new document
-    with the (same fixed) key arrival_id.  When False no attempt to fetch
-    the arrival id is made and we simply add a record.  This parameter is
-    completely ignored unless the db argument defines a valid Database class.
-
-    :param component: integer (0, 1, or 2) defining which component of a
-    Seismogram object to use to compute the requested snr metrics.   This
-    parameter is ignored if the input is a TimeSeries.
-
     :param source_collection:  normalization collection for source data.
     The default is the MsPASS name "source" which means the function will
     try to load the source hypocenter coordinates (when required) as
-    source_lat, source_lon, source_depth, and source_time.
+    source_lat, source_lon, source_depth, and source_time from the input 
+    data_object.  The id of that document is posted to the output dictionary 
+    stored under metadata_output_key.
 
     :param receiver_collection:  when set this name will override the
     automatic setting of the expected normalization collection naming
@@ -953,7 +956,7 @@ def broadband_snr_QC(
     the automatic naming will be overridden.
 
     :return:  the data_object modified by insertion of the snr QC data
-    in the object's Metadata
+    in the object's Metadata under the key defined by metadata_output_key.
     """
     if data_object.dead():
         return data_object
