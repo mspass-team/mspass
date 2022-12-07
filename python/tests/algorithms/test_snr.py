@@ -1,7 +1,12 @@
 from mspasspy.ccore.algorithms.deconvolution import MTPowerSpectrumEngine
 from mspasspy.ccore.seismic import TimeSeries, TimeReferenceType
 from mspasspy.ccore.algorithms.basic import TimeWindow
-from mspasspy.algorithms.snr import snr, FD_snr_estimator, arrival_snr, arrival_snr_QC
+from mspasspy.algorithms.snr import (snr, 
+                                     FD_snr_estimator, 
+                                     arrival_snr, 
+                                     broadband_snr_QC, 
+                                     save_snr_arrival,
+                                     )
 import numpy as np
 from scipy import signal
 from bson import json_util
@@ -234,7 +239,7 @@ def test_snr():
     verify_snr_outputs_match(asnr_out["Parrival"], asnr_out2["Parrival"])
 
     print("Testing arrival_snr_QC variant")
-    asnr_out3 = arrival_snr_QC(
+    asnr_out3 = broadband_snr_QC(
         ts2, noise_window=nwin, signal_window=swin, use_measured_arrival_time=True
     )
     print(json_util.dumps(asnr_out3["Parrival"], indent=2))
@@ -243,3 +248,4 @@ def test_snr():
     # until we finalize a design for an arrival collection initiated on
     # github 11/29/2022.  Remove this comment when that is done and that
     # test has been created and verified.
+
