@@ -674,20 +674,20 @@ def arrival_snr(
     removes some of the options from the more generic function and
     has a frozen structure appropriate for measuring snr of a particular phase.
     In particular it always stores the results as a subdocument (python dict)
-    keyed by the name defined in the metadata_output_key argument. 
-    This function has a close sibling called "broadband_snr_QC" that 
-    has similar behavior but add some additional functionality.   The 
+    keyed by the name defined in the metadata_output_key argument.
+    This function has a close sibling called "broadband_snr_QC" that
+    has similar behavior but add some additional functionality.   The
     most significant limitation of this function relative to broadband_snr_QC
-    is that this function ONLY accepts TimeSeries data as input.  
-    
-    This function is most appropriate 
-    for QC done within a workflow where the model is to process a large 
-    data set and winnow it down to separate the wheat from the chaff, to 
-    use a cliche consistent with "winnow".   In that situation the normal 
-    use would be to run this function with a map operator on atomic data 
-    and follow it with a call to filter to remove dead data and/or filter 
-    with tests on the computed metrics.  See User's Manual for guidance on 
-    this topic.  Because that is the expected normal use of this function 
+    is that this function ONLY accepts TimeSeries data as input.
+
+    This function is most appropriate
+    for QC done within a workflow where the model is to process a large
+    data set and winnow it down to separate the wheat from the chaff, to
+    use a cliche consistent with "winnow".   In that situation the normal
+    use would be to run this function with a map operator on atomic data
+    and follow it with a call to filter to remove dead data and/or filter
+    with tests on the computed metrics.  See User's Manual for guidance on
+    this topic.  Because that is the expected normal use of this function
     the kill_null_signals boolean defaults to True.
 
     To be more robust the function tries to handle a common error.  That is,
@@ -717,14 +717,14 @@ def arrival_snr(
     :param arrival_time_key:  key (string) used to fetch an arrival time
       if the data are in UTC and the time window received does not overlap
       the data range (see above)
-      
-    :param kill_null_signals:  boolean controlling how null snr estimator 
-    returns are handled.  When True (default) if FD_snr_estimator returns a null 
-    result (no apparent signal) that input datum is killed before being 
-    returned.  In that situation no snr metrics will be in the output because 
-    null means FD_snr_estimator couldn't detect a signal and the algorithm 
-    failed.   When False the datum is returned silently but 
-    will have no snr data defined in a dict stored with the key 
+
+    :param kill_null_signals:  boolean controlling how null snr estimator
+    returns are handled.  When True (default) if FD_snr_estimator returns a null
+    result (no apparent signal) that input datum is killed before being
+    returned.  In that situation no snr metrics will be in the output because
+    null means FD_snr_estimator couldn't detect a signal and the algorithm
+    failed.   When False the datum is returned silently but
+    will have no snr data defined in a dict stored with the key
     metadata_output_key (i.e. that attribute will be undefined in output)
 
     :param metadata_output_key:  is a string used as a key under which the
@@ -838,30 +838,30 @@ def broadband_snr_QC(
     """
     Compute a series of metrics that can be used for quality control
     filtering of seismic phase data.
-    
-    This function is intended as a workhorse to be used for low-level, 
-    automated QC of broadband data when the the data set is defined 
-    by signals linked to a timeable seismic phase.   It can be 
-    thought of as a version of a related function called 
-    "arrival_snr" with some additional features.  See the docstring 
-    for that function for what those base features are.   Features this 
+
+    This function is intended as a workhorse to be used for low-level,
+    automated QC of broadband data when the the data set is defined
+    by signals linked to a timeable seismic phase.   It can be
+    thought of as a version of a related function called
+    "arrival_snr" with some additional features.  See the docstring
+    for that function for what those base features are.   Features this
     function adds not found in arrival_snr are:
-        1.   This function allows Seismogram inputs.  Only TimeSeries 
-             data are handled by arrival_snr. 
-        2.   This function provides an option to compute arrival times 
-             from source coordinates, receiver coordinates, and a handle 
-             to an obspy tau-p calculator.   
-             
-    Otherwise it behaves the same.  Note both functions may or may not 
-    choose to interact with the function save_snr_arrival.   If you want to 
-    save the computed metrics into a form more easily fetched 
-    your workflow should extract the contents of the python dictionary 
-    stored under the metadata_output_key tag and save the result to 
-    MongoDB with the save_snr_arrival function.  That option is most 
-    useful for test runs on a more limited data set to sort out 
-    values of the computed metrics that are appropriate for a secondary 
-    winnowing of the your data.   See User's Manual for more on 
-    this concept. 
+        1.   This function allows Seismogram inputs.  Only TimeSeries
+             data are handled by arrival_snr.
+        2.   This function provides an option to compute arrival times
+             from source coordinates, receiver coordinates, and a handle
+             to an obspy tau-p calculator.
+
+    Otherwise it behaves the same.  Note both functions may or may not
+    choose to interact with the function save_snr_arrival.   If you want to
+    save the computed metrics into a form more easily fetched
+    your workflow should extract the contents of the python dictionary
+    stored under the metadata_output_key tag and save the result to
+    MongoDB with the save_snr_arrival function.  That option is most
+    useful for test runs on a more limited data set to sort out
+    values of the computed metrics that are appropriate for a secondary
+    winnowing of the your data.   See User's Manual for more on
+    this concept.
 
     The input of arg 0 (data_object) can be either a TimeSeries or
     a Seismogram object.  If a Seismogram object is passed the "component"
@@ -886,11 +886,11 @@ def broadband_snr_QC(
 
     The following args are passed directly to the function FD_snr_estimator:
     noise_window, noise_spectrum_engine, signal_window, signal_spectrum_engine,
-    band_cutoff_snr, signal_detection_minimum_bandwidth, tbp, ntapers, 
+    band_cutoff_snr, signal_detection_minimum_bandwidth, tbp, ntapers,
     high_frequency_search_start, fix_high_edge, npoles, perc, optional_metrics,
-    and save_spectrum.  Below we only describe arguments added by this 
+    and save_spectrum.  Below we only describe arguments added by this
     function:
-    
+
     data_object,
     phase_name="P",
     metadata_output_key="Parrival",
@@ -900,21 +900,21 @@ def broadband_snr_QC(
     component=2,
     source_collection="source",
     receiver_collection=None,
-    
-    :param data_object:  An atomic MsPASS data object to which the 
+
+    :param data_object:  An atomic MsPASS data object to which the
     algorithms requested should be applied.   Currently that means a
-    TimeSeries or Seismogram object.   Any other input will result 
-    in a TypeError exception.  As noted above for Seismogram input the 
-    component argument defines which data component is to be used for the 
-    snr computations.  
-    
+    TimeSeries or Seismogram object.   Any other input will result
+    in a TypeError exception.  As noted above for Seismogram input the
+    component argument defines which data component is to be used for the
+    snr computations.
+
     :param component: integer (0, 1, or 2) defining which component of a
     Seismogram object to use to compute the requested snr metrics.   This
     parameter is ignored if the input is a TimeSeries.
 
-    :param metadata_output_key:  string defining the key where the results 
-    are to be posted to the returned data_object.   The results are always 
-    posted to a python dictionary and then posted to the returned 
+    :param metadata_output_key:  string defining the key where the results
+    are to be posted to the returned data_object.   The results are always
+    posted to a python dictionary and then posted to the returned
     data_object with this key.   Default is "Parrival"
 
     :param use_measured_arrival_time:  boolean defining the method used to
@@ -945,8 +945,8 @@ def broadband_snr_QC(
     :param source_collection:  normalization collection for source data.
     The default is the MsPASS name "source" which means the function will
     try to load the source hypocenter coordinates (when required) as
-    source_lat, source_lon, source_depth, and source_time from the input 
-    data_object.  The id of that document is posted to the output dictionary 
+    source_lat, source_lon, source_depth, and source_time from the input
+    data_object.  The id of that document is posted to the output dictionary
     stored under metadata_output_key.
 
     :param receiver_collection:  when set this name will override the
@@ -1094,96 +1094,96 @@ def save_snr_arrival(
     validate_wfid=False,
 ) -> ObjectId:
     """
-    This function is a companion to broadband_snr_QC.   It handles the 
-    situation where the workflow aims to post calculated snr metrics to 
+    This function is a companion to broadband_snr_QC.   It handles the
+    situation where the workflow aims to post calculated snr metrics to
     an output database (normally in the "arrival" collection but optionally
-    to a parent waveform collection.  ).   The alternative models as 
-    noted in the User's Manual is to use the kill option to broadband_snr_QC 
-    followed by a call to the filter method of bag/rdd to remove the 
-    deadwood and reduce the size of data passed downstream in large 
-    parallel workflow.   That case is better handled by using 
-    broadband_snr_QC directly.   
-    
-    How the data are saved is controlled by four parameters:   save_collection, 
-    use_update, update_id and subdocument_key.   They interact in a way 
+    to a parent waveform collection.  ).   The alternative models as
+    noted in the User's Manual is to use the kill option to broadband_snr_QC
+    followed by a call to the filter method of bag/rdd to remove the
+    deadwood and reduce the size of data passed downstream in large
+    parallel workflow.   That case is better handled by using
+    broadband_snr_QC directly.
+
+    How the data are saved is controlled by four parameters:   save_collection,
+    use_update, update_id and subdocument_key.   They interact in a way
     that is best summarized as a set of cases that procuce behavior
     you may want:
-        1.  If save_collection is not the parent waveform collection, 
+        1.  If save_collection is not the parent waveform collection,
             behavior is driven by use_update combined with subdocument_key.
             When use_update is False (default) the contents of doc_to_save
-            will be used to define a new document in save_collection 
-            with the MongoDB insert_one method.   
-        2.  When use_update is True the update_id will be assumed to be 
-            defined and point be the ObjectId of an existing document 
-            in save_collection.   Specifically that id will be used as 
-            the query clause for a call the insert_one method.   This 
-            combination is useful if a workflow is being driven by 
-            arrival data stored in save_collection created, for example, 
-            for a css3.0 a event->origin->assoc->arrival catalog of 
-            arrival picks.   A variant of this mode will occur if the 
-            argument subdocument_key is defined (default is None).  If 
-            you define subgdocument_key the contents of doc_to_save will 
-            be stored as a subdocument in save_collection accessible 
-            with the key defined by subdocument_key.  
+            will be used to define a new document in save_collection
+            with the MongoDB insert_one method.
+        2.  When use_update is True the update_id will be assumed to be
+            defined and point be the ObjectId of an existing document
+            in save_collection.   Specifically that id will be used as
+            the query clause for a call the insert_one method.   This
+            combination is useful if a workflow is being driven by
+            arrival data stored in save_collection created, for example,
+            for a css3.0 a event->origin->assoc->arrival catalog of
+            arrival picks.   A variant of this mode will occur if the
+            argument subdocument_key is defined (default is None).  If
+            you define subgdocument_key the contents of doc_to_save will
+            be stored as a subdocument in save_collection accessible
+            with the key defined by subdocument_key.
         3.  If save_collection is the same as the parent waveform collection
-            (defined via the input parameter wf_collection) the 
-            value of use_update will be ignored and only an update will 
-            be attempted.  The reason is that if one tried to save the 
-            contents of doc_to_save to a waveform collection would corrupt 
-            the database by have a bunch of documents that that could not 
+            (defined via the input parameter wf_collection) the
+            value of use_update will be ignored and only an update will
+            be attempted.  The reason is that if one tried to save the
+            contents of doc_to_save to a waveform collection would corrupt
+            the database by have a bunch of documents that that could not
             be used to construct a valid data object (the normal use for
-            one of the wf collections). 
-    
-    :param db:  MongoDB database handle to use for transactions that 
+            one of the wf collections).
+
+    :param db:  MongoDB database handle to use for transactions that
     are the focus of this algorithm.
-    
-    :param doc_to_save:  python dictionary containing data to be saved. 
-    Where and now this is saved is controlled by save_collection, 
-    use_update, and subdocument_key as described above. 
-    
-    :param wfid:   waveform document id of the parent datum.   It is 
-    assumed to be an ObjectId of linking the data in doc_to_save to 
+
+    :param doc_to_save:  python dictionary containing data to be saved.
+    Where and now this is saved is controlled by save_collection,
+    use_update, and subdocument_key as described above.
+
+    :param wfid:   waveform document id of the parent datum.   It is
+    assumed to be an ObjectId of linking the data in doc_to_save to
     the parent.   It is ALWAYS saved in the output with the key "wfid".
-    
-    :param wf_collection:  string defining the collection from which the 
-    datum from which the data stored in doc_to_save are associated.   wfid 
-    is assumed define a valid document in wf_collection.   Default is 
+
+    :param wf_collection:  string defining the collection from which the
+    datum from which the data stored in doc_to_save are associated.   wfid
+    is assumed define a valid document in wf_collection.   Default is
     "wf_Seismogram".
-    
-    :param save_collection:  string defining the collection name to which 
+
+    :param save_collection:  string defining the collection name to which
     doc_to_save should be pushed.   See above for how this name interacts
-    with other parameters. 
-    
+    with other parameters.
+
     :param subdocument_key:   Optional key for saving doc_to_save as a
-    a subdocument in the save_collection.   Default is None which means 
-    the contents of doc_to_save will be saved (or update) as is.  
-    For saves to (default) arrival collection this parameter should 
-    normally be left None, but is allowed.   If save_collection is the 
-    parent waveform collection setting this to some sensible key is 
-    recommended to avoid possible name collisions with waveform 
-    Metadata key-value pairs.    Default is None which means no 
+    a subdocument in the save_collection.   Default is None which means
+    the contents of doc_to_save will be saved (or update) as is.
+    For saves to (default) arrival collection this parameter should
+    normally be left None, but is allowed.   If save_collection is the
+    parent waveform collection setting this to some sensible key is
+    recommended to avoid possible name collisions with waveform
+    Metadata key-value pairs.    Default is None which means no
     subdocuments are created.
-    
-    :param use_update:  boolean controlling whether or not to use 
-    updates or inserts for the contents of doc_to_save.  See above for 
-    a description of how this interacts with other arguments to this 
+
+    :param use_update:  boolean controlling whether or not to use
+    updates or inserts for the contents of doc_to_save.  See above for
+    a description of how this interacts with other arguments to this
     function.  Default is False.
-    
-    :param update_id:   ObjectId of target document when running in update 
-    mode.  When save_collection is the same as wf_collection this parameter 
-    is ignored and the required id passed as wfid will be used for the 
-    update key matching.   Also ignored with the default behavior if 
-    inserting doc_to_save as a new document.  Required only if running 
-    with a different collection and updating is desired.  The type example 
-    noted above would be updates to existing arrival informations 
-    created from a css3.0 database. 
-    
-    :param validate_wfid:   When set True the id defined by the 
-    required argument wfid will be validated by querying wf_collection.   
+
+    :param update_id:   ObjectId of target document when running in update
+    mode.  When save_collection is the same as wf_collection this parameter
+    is ignored and the required id passed as wfid will be used for the
+    update key matching.   Also ignored with the default behavior if
+    inserting doc_to_save as a new document.  Required only if running
+    with a different collection and updating is desired.  The type example
+    noted above would be updates to existing arrival informations
+    created from a css3.0 database.
+
+    :param validate_wfid:   When set True the id defined by the
+    required argument wfid will be validated by querying wf_collection.
     In this mode if wfid is not found the function will silently return None.
-    Callers using this mode should handle that condition.   
-                     
-    :return:  ObjectId of saved record.  None if something went wrong 
+    Callers using this mode should handle that condition.
+
+    :return:  ObjectId of saved record.  None if something went wrong
     and nothing was saved.
     """
     dbwfcol = db[wf_collection]
