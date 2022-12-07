@@ -124,15 +124,15 @@ def test_snr():
     tval = fd_snr_output[0]["low_f_band_edge"]
     assert np.isclose(tval, 0.03332777870354941)
     tval = fd_snr_output[0]["high_f_band_edge"]
-    assert np.isclose(tval, 15.364105982336277)
+    assert np.isclose(tval, 16.563906015664056)
     tval = fd_snr_output[0]["low_f_band_edge_snr"]
-    assert np.isclose(tval, 14.452106992292247)
+    assert np.isclose(tval, 11.458212683258578)
     tval = fd_snr_output[0]["high_f_band_edge_snr"]
-    assert np.isclose(tval, 2.0387483301356752)
+    assert np.isclose(tval, 2.0289812704609314)
     tval = fd_snr_output[0]["bandwidth_fraction"]
-    assert np.isclose(tval, 0.30666666666666664)
+    assert np.isclose(tval, 0.3306666666666667)
     tval = fd_snr_output[0]["bandwidth"]
-    assert np.isclose(tval, 53.27401850779296)
+    assert np.isclose(tval, 53.927127774666644)
     # Note this is not 50 because the signal window npts is an odd number
     # In that sitaution ffts have last frequecy Nyqust - df/2
     tval = fd_snr_output[0]["spectrum_frequency_range"]
@@ -161,9 +161,9 @@ def test_snr():
     tval = fd_snr_output[0]["high_f_band_edge"]
     assert np.isclose(tval, 2.0)
     tval = fd_snr_output[0]["low_f_band_edge_snr"]
-    assert np.isclose(tval, 14.452106992292247)
+    assert np.isclose(tval, 11.458212683258578)
     tval = fd_snr_output[0]["high_f_band_edge_snr"]
-    assert np.isclose(tval, 61.37973288189221)
+    assert np.isclose(tval, 66.0799403744919)
     tval = fd_snr_output[0]["bandwidth_fraction"]
     assert np.isclose(tval, 0.03934)
     tval = fd_snr_output[0]["bandwidth"]
@@ -175,17 +175,17 @@ def test_snr():
 
     # optional metric validation
     tval = fd_snr_output[0]["mean_snr"]
-    assert np.isclose(tval, 69.53423294512893)
+    assert np.isclose(tval, 75.88331422185868)
     tval = fd_snr_output[0]["maximum_snr"]
-    assert np.isclose(tval, 108.87572942017883)
+    assert np.isclose(tval, 197.29008426129326)
     tval = fd_snr_output[0]["median_snr"]
-    assert np.isclose(tval, 69.93575550602118)
+    assert np.isclose(tval, 76.17635106932579)
     tval = fd_snr_output[0]["minimum_snr"]
-    assert np.isclose(tval, 14.452106992292247)
+    assert np.isclose(tval, 11.458212683258578)
     tval = fd_snr_output[0]["q3_4_snr"]
-    assert np.isclose(tval, 80.01427281740997)
+    assert np.isclose(tval, 86.59300028360848)
     tval = fd_snr_output[0]["q1_4_snr"]
-    assert np.isclose(tval, 60.583163703711946)
+    assert np.isclose(tval, 66.16303805496165)
     tval = fd_snr_output[0]["stats_are_valid"]
     assert tval
     tval = fd_snr_output[0]["snr_filtered_envelope_peak"]
