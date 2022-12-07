@@ -7,10 +7,13 @@ namespace mspass::algorithms::amplitudes{
 using mspass::seismic::PowerSpectrum;
 using mspass::utility::Metadata;
 using mspass::utility::VectorStatistics;
+/* These are used to flag 0/0 and x/0 respectively */
+const double INDETERMINATE(-1.0),NOISE_FREE(9999999.9);
 /* This function once was a part of the CNR3CDecon.cc file, but it was moved
 here as it was found to have a more generic purpose - bandwidth estimation.
 It is used in snr python wrapper functions of mspass and in CNR3cDecon to
 estimate bandwidth from power spectrum estimates.   */
+
 BandwidthData EstimateBandwidth(const double signal_df,
   const PowerSpectrum& s, const PowerSpectrum& n,
     const double snr_threshold, const double tbp,const double fhs,
@@ -52,7 +55,12 @@ BandwidthData EstimateBandwidth(const double signal_df,
     if(namp>0.0)
       snrnow=window_length_correction*sigamp/namp;
     else
-      snrnow=999999.0;
+    {
+      if(sigamp>0.0)
+        snrnow=NOISE_FREE;
+      else
+        snrnow = INDETERMINATE;
+    }
     if(snrnow>snr_threshold)
     {
       if(searching)
@@ -100,7 +108,12 @@ BandwidthData EstimateBandwidth(const double signal_df,
     if(namp>0.0)
       snrnow=window_length_correction*sigamp/namp;
     else
-      snrnow=999999.0;
+    {
+      if(sigamp>0.0)
+        snrnow=NOISE_FREE;
+      else
+        snrnow = INDETERMINATE;
+    }
     result.high_edge_snr=snrnow;
   }
   else
@@ -115,7 +128,12 @@ BandwidthData EstimateBandwidth(const double signal_df,
       if(namp>0.0)
         snrnow=window_length_correction*sigamp/namp;
       else
-        snrnow=999999.0;
+      {
+        if(sigamp>0.0)
+          snrnow=NOISE_FREE;
+        else
+          snrnow = INDETERMINATE;
+      }
       if(snrnow>snr_threshold)
       {
         if(searching)
@@ -152,10 +170,10 @@ Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
   /* As noted above this correction is needed for an irregular window size*/
   double window_length_correction=static_cast<double>(s.nf())/static_cast<double>(n.nf());
   Metadata result;
-  /* We return a null result immediately if the contents of bwd
-  indicate zero bandwidth or some other problem that invalidates
-  the algorithm below. */
-  if( bwd.f_range <= 0.0 )
+  /* the algorithm below will fail if either of these conditions is true so
+  we trap that and return a null result.   Caller must handle the null
+  return correctly*/
+  if( ( bwd.f_range <= 0.0 ) || ( (bwd.high_edge_f-bwd.low_edge_f)<s.df) )
   {
     result.put_double("median_snr",0.0);
     result.put_double("maximum_snr",0.0);
@@ -173,16 +191,12 @@ Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
     double signal_amp,noise_amp,snr;
     signal_amp = s.amplitude(f);
     noise_amp = n.amplitude(f);
-    if(signal_amp<=0.0)
+    if(noise_amp <= 0.0)
     {
-      snr=0.0;
-    }
-    else if(noise_amp<=0)
-    {
-      /*Set to a large number in this condition because we can't get past
-      the previous if for the (worse) case of 0/0.   We only get here if
-      signal_amp is nonzero but noise is zero.*/
-      snr = 999999.0;
+      if(signal_amp>0.0)
+        snr = NOISE_FREE;
+      else
+        snr = INDETERMINATE;
     }
     else
     {
