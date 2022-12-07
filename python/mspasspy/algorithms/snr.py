@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+from bson import ObjectId
 from scipy.signal import hilbert
 from obspy.geodetics import locations2degrees
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, ErrorLogger
@@ -213,6 +214,7 @@ def FD_snr_estimator(
     signal_window=TimeWindow(-5.0, 120.0),
     signal_spectrum_engine=None,
     band_cutoff_snr=2.0,
+    signal_detection_minimum_bandwidth=6.0,
     tbp=4,
     ntapers=8,
     high_frequency_search_start=2.0,
@@ -309,6 +311,28 @@ def FD_snr_estimator(
     to use to compute the signal power spectrum.   Default is None with the
     same caveat as above for the noise_spectrum_engine.
 
+    :param band_cutoff_snr:   defines the signal-to-noise ratio floor
+    used in the search for band edges.  See description of the algorithm
+    above and in the user's manual.  Default is 2.0
+
+    :param signal_detection_minimum_bandwidth:  As noted above this
+    algorithm first tries to estimate the bandwidth of data where the
+    signal level exceeds the noise level defined by the parameter
+    band_cutoff_snr.  It then computes the bandwidth of the data in
+    dB computed as log10(f_high/f_low).  For almost any application
+    if the working bandwidth falls below some threshold the data is
+    junk to all intends and purpose.  A factor more relevant to this
+    algorithm is that the "optional parameters"  will all be meaningless
+    and a waste of computational effort if the bandwidth is too small.
+    A particular extreme example is zero bandwidth that happens all the
+    time if no frequency band exceeds the band_cutoff_snr for a range
+    over that minimum defined by the time-bandwidth product.  The
+    default is 6.0. (One octave which is roughly the width of the traditional
+    short-period band) which allows optional metrics to be computed
+    but may be too small for some applications.  If your application
+    requires higher snr and wider bandwidth adjust this parameter
+    and/or band_cutoff_snr.
+
     :param tbp:  time-bandwidth product to use for computing the set of
     Slepian functions used for the multitaper estimator.  This parameter is
     used only if the noise_spectrum_engine or signal_spectrum_engine
@@ -381,7 +405,9 @@ def FD_snr_estimator(
     object using it's size() method and if it the log is not empty (size >0)
     the caller should handle that condition.   For normal use that means
     pushing any messages the log contains to the original data object's
-    error log.
+    error log.  Component 0 will also be empty with no log entry if
+    the estimated bandwidth falls below the threshold defined by the
+    parameter signal_detection_minimum_bandwidth.
     """
     algname = "FN_snr_estimator"
     my_logger = ErrorLogger()
@@ -420,6 +446,18 @@ def FD_snr_estimator(
         # First extract the required windows and compute the power spectra
         n = WindowData(data_object, noise_window.start, noise_window.end)
         s = WindowData(data_object, signal_window.start, signal_window.end)
+        # WARNING:  this handler depends upon an implementation details 
+        # that could be a maintenance issue.  The python code has a catch 
+        # that kills a datum where windowing fails.   The C++ code throws 
+        # an exception when that happens.  The python code posts that error 
+        # message to the output which we extract here
+        if n.dead() or s.dead():
+            if n.dead():
+                if n.elog.size()>0:
+                    my_logger += n.elog
+            if s.dead():
+                if s.elog.size()>0:
+                    my_logger += s.elog
         if noise_spectrum_engine:
             nengine = noise_spectrum_engine
         else:
@@ -433,7 +471,11 @@ def FD_snr_estimator(
         bwd = EstimateBandwidth(
             S.df, S, N, band_cutoff_snr, tbp, high_frequency_search_start, fix_high_edge
         )
-        # These estimates are always computed and posted
+
+        # here we return empty result if the bandwidth is too low
+        if bwd.bandwidth() < signal_detection_minimum_bandwidth:
+            return [dict(), my_logger]
+        # These estimates are always computed and posted once we pass the above test for validity
         snrdata["low_f_band_edge"] = bwd.low_edge_f
         snrdata["high_f_band_edge"] = bwd.high_edge_f
         snrdata["low_f_band_edge_snr"] = bwd.low_edge_snr
@@ -456,7 +498,7 @@ def FD_snr_estimator(
             "No SNR metrics can be computed for this datum",
         )
         my_logger.log_error(algname, newmessage, ErrorSeverity.Invalid)
-        return [snrdata, my_logger]
+        return [dict(), my_logger]
 
     # For current implementation all the optional metrics require
     # computed a filtered version of the data.  If a new option is
@@ -492,9 +534,18 @@ def FD_snr_estimator(
                 try:
                     stats = BandwidthStatistics(S, N, bwd)
                     # stats is a Metadata container - copy to snrdata
-                    for k in stats.keys():
-                        snrdata[k] = stats[k]
+                    # but do so only if the results are marked valid
+                    if stats["stats_are_valid"]:
+                        for k in stats.keys():
+                            snrdata[k] = stats[k]
+                    else:
+                        my_logger.log_error(algname,
+                            "BandwidthStatistics marked snr_stats data invalid",
+                            ErrorSeverity.Complaint)
                 except MsPASSError as err:
+                    # This handler currently would never be entered but 
+                    # left in place to keep code more robust in the event 
+                    # of a change
                     newmessage = _reformat_mspass_error(
                         err,
                         "BandwithStatistics throw the following error\n",
@@ -592,7 +643,7 @@ def arrival_snr(
     signal_window=TimeWindow(-5.0, 120.0),
     signal_spectrum_engine=None,
     band_cutoff_snr=2.0,
-    # check these are reasonable - don't remember the formula when writing this
+    signal_detection_minimum_bandwidth=6.0,
     tbp=4.0,
     ntapers=8,
     high_frequency_search_start=2.0,
@@ -603,6 +654,7 @@ def arrival_snr(
     phase_name="P",
     arrival_time_key="Ptime",
     metadata_output_key="Parrival",
+    kill_null_signals=False,
     optional_metrics=[
         "snr_stats",
         "filtered_envelope",
@@ -621,12 +673,21 @@ def arrival_snr(
     has a frozen structure appropriate for measuring snr of a particular phase.
     In particular it always stores the results as a subdocument (python dict)
     keyed by the name defined in the metadata_output_key argument.   The idea of
-    that sturcture is the contents of the subdocument are readily extracted
+    that structure is that the contents of the subdocument are readily extracted
     and saved to a MongoDB "arrival" collection with a normalization key.
     Arrival driven workflows can then use queries to reduce the number of
     data actually retrieved for final processing.  i.e. the arrival
     collection data should be viewed as a useful initial quality control
     feature.
+    
+    An alternative to storing results in an arrival is possible with the 
+    option supplied by the "kill_null_signals" boolean.   When that option 
+    is enabled (i.e. set True - default is False) the return of this function 
+    will be killed if the FD_snr_estimator returns a null result that 
+    we take as an indicator of no useful signal.  That option is most 
+    useful in a parallel workflow for QC editing if the map call to this 
+    function is followed soon afterward by a call to the filter method 
+    of dask.bag or spark.rdd to remove deadwood.   
 
     To be more robust the function tries to handle a common error.  That is,
     if the input data has a UTC time standard then the noise and signal
@@ -654,6 +715,15 @@ def arrival_snr(
     :param arrival_time_key:  key (string) used to fetch an arrival time
       if the data are in UTC and the time window received does not overlap
       the data range (see above)
+      
+    :param kill_null_signals:  boolean controlling how null snr estimator 
+    returns are handled.  When True if FD_snr_estimator returns a null 
+    result (no apparent signal) that input datum is killed before being 
+    return.  In that situation no snr metrics will be in the output because 
+    null means FD_snr_estimator couldn't detect a signal and the algorithm 
+    failed.   When False (default) the datum is returned silently but 
+    will have no snr data defined in a dict stored with the key 
+    metadata_output_key (i.e. that attribute will be undefined in output)
 
     :param metadata_output_key:  is a string used as a key under which the
     subdocument (python dict) created internally is stored.  Default is
@@ -702,6 +772,7 @@ def arrival_snr(
         signal_window=signal_window,
         signal_spectrum_engine=signal_spectrum_engine,
         band_cutoff_snr=band_cutoff_snr,
+        signal_detection_minimum_bandwidth=signal_detection_minimum_bandwidth,
         tbp=tbp,
         ntapers=ntapers,
         high_frequency_search_start=high_frequency_search_start,
@@ -713,22 +784,33 @@ def arrival_snr(
     )
     if elog.size() > 0:
         data_object.elog += elog
-    snrdata["phase"] = phase_name
-    data_object[metadata_output_key] = snrdata
+    # FD_snr_estimator returns an empty dictionary if the snr 
+    # calculation fails or indicates no signal is present.  This 
+    # block combines that with the kill_null_signals in this logic
+    if len(snrdata) > 0:
+        snrdata["phase"] = phase_name
+        data_object[metadata_output_key] = snrdata
+    elif kill_null_signals:
+        data_object.elog.log_error("arrival_snr",
+            "FD_snr_estimator flagged this datum as having no detectable signal",
+            ErrorSeverity.Invalid)
+        data_object.kill()
     return data_object
 
 
-def arrival_snr_QC(
+def broadband_snr_QC(
     data_object,
     noise_window=TimeWindow(-130.0, -5.0),
     noise_spectrum_engine=None,
     signal_window=TimeWindow(-5.0, 120.0),
     signal_spectrum_engine=None,
     band_cutoff_snr=2.0,
+    signal_detection_minimum_bandwidth=6.0,
     tbp=4.0,
     ntapers=8,
     high_frequency_search_start=2.0,
     fix_high_edge=True,
+    kill_null_signals=False,
     poles=3,
     perc=95.0,
     phase_name="P",
@@ -946,6 +1028,7 @@ def arrival_snr_QC(
         signal_window=signal_window,
         signal_spectrum_engine=signal_spectrum_engine,
         band_cutoff_snr=band_cutoff_snr,
+        signal_detection_minimum_bandwidth=signal_detection_minimum_bandwidth,
         tbp=tbp,
         ntapers=ntapers,
         high_frequency_search_start=high_frequency_search_start,
@@ -957,6 +1040,16 @@ def arrival_snr_QC(
     )
     if elog.size() > 0:
         data_object.elog += elog
+    # FD_snr_estimator returns an empty dictionary if the snr 
+    # calculation fails or indicates no signal is present.  This 
+    # block combines that with the kill_null_signals in this logic
+    if len(snrdata) == 0:
+        data_object.elog.log_error("broadband_snr_QC",
+            "FD_snr_estimator flagged this datum as having no detectable signal",
+            ErrorSeverity.Invalid)
+        if kill_null_signals:
+            data_object.kill()
+        return data_object
     snrdata["phase"] = phase_name
     snrdata["snr_arrival_time"] = arrival_time
     snrdata["snr_signal_window_start"] = arrival_time + signal_window.start
@@ -977,28 +1070,141 @@ def arrival_snr_QC(
     # the original but it may have been altered while for a Seismogram it is
     # an extracted component
     data_object[metadata_output_key] = snrdata
-    if db:
-        arrival_id_key = collection + "_id"
-        dbcol = db[collection]
-        if update_mode:
-            if data_object.is_defined(arrival_id_key):
-                arrival_id = data_object[arrival_id_key]
-                filt = {"_id": arrival_id}
-                update_clause = {"$set": snrdata}
-                dbcol.update_one(filt, update_clause)
-            else:
-                data_object.elog.log_error(
-                    "arrival_snr_QC",
-                    "Running in update mode but arrival id key="
-                    + arrival_id_key
-                    + " is not defined\n"
-                    + "Inserting computed snr data as a new document in collection="
-                    + collection,
-                    "Complaint",
-                )
-                arrival_id = dbcol.insert_one(snrdata).inserted_id
-                data_object[arrival_id_key] = arrival_id
-        else:
-            arrival_id = dbcol.insert_one(snrdata).inserted_id
-            data_object[arrival_id_key] = arrival_id
     return data_object
+
+def save_snr_arrival(db,
+                     doc_to_save,
+                     wfid,
+                     wf_collection="wf_Seismogram",
+                     save_collection="arrival",
+                     subdocument_key=None,
+                     use_update=False,
+                     update_id=None,
+                     validate_wfid=False,
+                     )->ObjectId:
+    """
+    This function is a companion to broadband_snr_QC.   It handles the 
+    situation where the workflow aims to post calculated snr metrics to 
+    an output database (normally in the "arrival" collection but optionally
+    to a parent waveform collection.  ).   The alternative models as 
+    noted in the User's Manual is to use the kill option to broadband_snr_QC 
+    followed by a call to the filter method of bag/rdd to remove the 
+    deadwood and reduce the size of data passed downstream in large 
+    parallel workflow.   That case is better handled by using 
+    broadband_snr_QC directly.   
+    
+    How the data are saved is controlled by four parameters:   save_collection, 
+    use_update, update_id and subdocument_key.   They interact in a way 
+    that is best summarized as a set of cases that procuce behavior
+    you may want:
+        1.  If save_collection is not the parent waveform collection, 
+            behavior is driven by use_update combined with subdocument_key.
+            When use_update is False (default) the contents of doc_to_save
+            will be used to define a new document in save_collection 
+            with the MongoDB insert_one method.   
+        2.  When use_update is True the update_id will be assumed to be 
+            defined and point be the ObjectId of an existing document 
+            in save_collection.   Specifically that id will be used as 
+            the query clause for a call the insert_one method.   This 
+            combination is useful if a workflow is being driven by 
+            arrival data stored in save_collection created, for example, 
+            for a css3.0 a event->origin->assoc->arrival catalog of 
+            arrival picks.   A variant of this mode will occur if the 
+            argument subdocument_key is defined (default is None).  If 
+            you define subgdocument_key the contents of doc_to_save will 
+            be stored as a subdocument in save_collection accessible 
+            with the key defined by subdocument_key.  
+        3.  If save_collection is the same as the parent waveform collection
+            (defined via the input parameter wf_collection) the 
+            value of use_update will be ignored and only an update will 
+            be attempted.  The reason is that if one tried to save the 
+            contents of doc_to_save to a waveform collection would corrupt 
+            the database by have a bunch of documents that that could not 
+            be used to construct a valid data object (the normal use for
+            one of the wf collections). 
+    
+    :param db:  MongoDB database handle to use for transactions that 
+    are the focus of this algorithm.
+    
+    :param doc_to_save:  python dictionary containing data to be saved. 
+    Where and now this is saved is controlled by save_collection, 
+    use_update, and subdocument_key as described above. 
+    
+    :param wfid:   waveform document id of the parent datum.   It is 
+    assumed to be an ObjectId of linking the data in doc_to_save to 
+    the parent.   It is ALWAYS saved in the output with the key "wfid".
+    
+    :param wf_collection:  string defining the collection from which the 
+    datum from which the data stored in doc_to_save are associated.   wfid 
+    is assumed define a valid document in wf_collection.   Default is 
+    "wf_Seismogram".
+    
+    :param save_collection:  string defining the collection name to which 
+    doc_to_save should be pushed.   See above for how this name interacts
+    with other parameters. 
+    
+    :param subdocument_key:   Optional key for saving doc_to_save as a
+    a subdocument in the save_collection.   Default is None which means 
+    the contents of doc_to_save will be saved (or update) as is.  
+    For saves to (default) arrival collection this parameter should 
+    normally be left None, but is allowed.   If save_collection is the 
+    parent waveform collection setting this to some sensible key is 
+    recommended to avoid possible name collisions with waveform 
+    Metadata key-value pairs.    Default is None which means no 
+    subdocuments are created.
+    
+    :param use_update:  boolean controlling whether or not to use 
+    updates or inserts for the contents of doc_to_save.  See above for 
+    a description of how this interacts with other arguments to this 
+    function.  Default is False.
+    
+    :param update_id:   ObjectId of target document when running in update 
+    mode.  When save_collection is the same as wf_collection this parameter 
+    is ignored and the required id passed as wfid will be used for the 
+    update key matching.   Also ignored with the default behavior if 
+    inserting doc_to_save as a new document.  Required only if running 
+    with a different collection and updating is desired.  The type example 
+    noted above would be updates to existing arrival informations 
+    created from a css3.0 database. 
+    
+    :param validate_wfid:   When set True the id defined by the 
+    required argument wfid will be validated by querying wf_collection.   
+    In this mode if wfid is not found the function will silently return None.
+    Callers using this mode should handle that condition.   
+                     
+    :return:  ObjectId of saved record.  None if something went wrong 
+    and nothing was saved.
+    """
+    dbwfcol = db[wf_collection]
+    if validate_wfid:      
+        query = {"_id" : wfid}
+        ndocs = dbwfcol.count_documents(query)
+        if ndocs == 0:
+            return None
+    dbcol = db[save_collection]
+    update_mode = use_update
+    # silently enforce update mode if saving back to waveform collection
+    if wf_collection == save_collection:
+        update_mode = True
+        upd_id = wfid
+    else:
+        upd_id = update_id
+    # this block sets doc for save with or without subdoc option
+    doc=dict(doc_to_save)  # this acts like a deep copy
+    doc["wfid"]=wfid
+    if subdocument_key:
+        # The constructor for a dict is necesary to assure a deepcopy here
+        doc[subdocument_key] = dict(doc)
+    if update_mode:
+        # note update is only allowed on the parent wf collection
+        filt = {"_id": upd_id}
+        update_clause = {"$set": doc}
+        dbwfcol.update_one(filt, update_clause)
+        save_id = wfid
+    else:
+        save_id =dbcol.insert_one(doc).inserted_id
+        
+    return save_id
+        
+    
+    
