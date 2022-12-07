@@ -1199,8 +1199,8 @@ def save_snr_arrival(db,
         # note update is only allowed on the parent wf collection
         filt = {"_id": upd_id}
         update_clause = {"$set": doc}
-        dbwfcol.update_one(filt, update_clause)
-        save_id = wfid
+        dbcol.update_one(filt, update_clause)
+        save_id = upd_id
     else:
         save_id =dbcol.insert_one(doc).inserted_id
         
