@@ -446,17 +446,17 @@ def FD_snr_estimator(
         # First extract the required windows and compute the power spectra
         n = WindowData(data_object, noise_window.start, noise_window.end)
         s = WindowData(data_object, signal_window.start, signal_window.end)
-        # WARNING:  this handler depends upon an implementation details 
-        # that could be a maintenance issue.  The python code has a catch 
-        # that kills a datum where windowing fails.   The C++ code throws 
-        # an exception when that happens.  The python code posts that error 
+        # WARNING:  this handler depends upon an implementation details
+        # that could be a maintenance issue.  The python code has a catch
+        # that kills a datum where windowing fails.   The C++ code throws
+        # an exception when that happens.  The python code posts that error
         # message to the output which we extract here
         if n.dead() or s.dead():
             if n.dead():
-                if n.elog.size()>0:
+                if n.elog.size() > 0:
                     my_logger += n.elog
             if s.dead():
-                if s.elog.size()>0:
+                if s.elog.size() > 0:
                     my_logger += s.elog
         if noise_spectrum_engine:
             nengine = noise_spectrum_engine
@@ -539,12 +539,14 @@ def FD_snr_estimator(
                         for k in stats.keys():
                             snrdata[k] = stats[k]
                     else:
-                        my_logger.log_error(algname,
+                        my_logger.log_error(
+                            algname,
                             "BandwidthStatistics marked snr_stats data invalid",
-                            ErrorSeverity.Complaint)
+                            ErrorSeverity.Complaint,
+                        )
                 except MsPASSError as err:
-                    # This handler currently would never be entered but 
-                    # left in place to keep code more robust in the event 
+                    # This handler currently would never be entered but
+                    # left in place to keep code more robust in the event
                     # of a change
                     newmessage = _reformat_mspass_error(
                         err,
@@ -784,16 +786,18 @@ def arrival_snr(
     )
     if elog.size() > 0:
         data_object.elog += elog
-    # FD_snr_estimator returns an empty dictionary if the snr 
-    # calculation fails or indicates no signal is present.  This 
+    # FD_snr_estimator returns an empty dictionary if the snr
+    # calculation fails or indicates no signal is present.  This
     # block combines that with the kill_null_signals in this logic
     if len(snrdata) > 0:
         snrdata["phase"] = phase_name
         data_object[metadata_output_key] = snrdata
     elif kill_null_signals:
-        data_object.elog.log_error("arrival_snr",
+        data_object.elog.log_error(
+            "arrival_snr",
             "FD_snr_estimator flagged this datum as having no detectable signal",
-            ErrorSeverity.Invalid)
+            ErrorSeverity.Invalid,
+        )
         data_object.kill()
     return data_object
 
@@ -1040,13 +1044,15 @@ def broadband_snr_QC(
     )
     if elog.size() > 0:
         data_object.elog += elog
-    # FD_snr_estimator returns an empty dictionary if the snr 
-    # calculation fails or indicates no signal is present.  This 
+    # FD_snr_estimator returns an empty dictionary if the snr
+    # calculation fails or indicates no signal is present.  This
     # block combines that with the kill_null_signals in this logic
     if len(snrdata) == 0:
-        data_object.elog.log_error("broadband_snr_QC",
+        data_object.elog.log_error(
+            "broadband_snr_QC",
             "FD_snr_estimator flagged this datum as having no detectable signal",
-            ErrorSeverity.Invalid)
+            ErrorSeverity.Invalid,
+        )
         if kill_null_signals:
             data_object.kill()
         return data_object
@@ -1072,16 +1078,18 @@ def broadband_snr_QC(
     data_object[metadata_output_key] = snrdata
     return data_object
 
-def save_snr_arrival(db,
-                     doc_to_save,
-                     wfid,
-                     wf_collection="wf_Seismogram",
-                     save_collection="arrival",
-                     subdocument_key=None,
-                     use_update=False,
-                     update_id=None,
-                     validate_wfid=False,
-                     )->ObjectId:
+
+def save_snr_arrival(
+    db,
+    doc_to_save,
+    wfid,
+    wf_collection="wf_Seismogram",
+    save_collection="arrival",
+    subdocument_key=None,
+    use_update=False,
+    update_id=None,
+    validate_wfid=False,
+) -> ObjectId:
     """
     This function is a companion to broadband_snr_QC.   It handles the 
     situation where the workflow aims to post calculated snr metrics to 
@@ -1176,8 +1184,8 @@ def save_snr_arrival(db,
     and nothing was saved.
     """
     dbwfcol = db[wf_collection]
-    if validate_wfid:      
-        query = {"_id" : wfid}
+    if validate_wfid:
+        query = {"_id": wfid}
         ndocs = dbwfcol.count_documents(query)
         if ndocs == 0:
             return None
@@ -1190,8 +1198,8 @@ def save_snr_arrival(db,
     else:
         upd_id = update_id
     # this block sets doc for save with or without subdoc option
-    doc=dict(doc_to_save)  # this acts like a deep copy
-    doc["wfid"]=wfid
+    doc = dict(doc_to_save)  # this acts like a deep copy
+    doc["wfid"] = wfid
     if subdocument_key:
         # The constructor for a dict is necesary to assure a deepcopy here
         doc[subdocument_key] = dict(doc)
@@ -1202,9 +1210,6 @@ def save_snr_arrival(db,
         dbcol.update_one(filt, update_clause)
         save_id = upd_id
     else:
-        save_id =dbcol.insert_one(doc).inserted_id
-        
+        save_id = dbcol.insert_one(doc).inserted_id
+
     return save_id
-        
-    
-    
