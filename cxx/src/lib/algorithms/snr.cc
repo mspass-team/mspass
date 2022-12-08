@@ -7,14 +7,23 @@ namespace mspass::algorithms::amplitudes{
 using mspass::seismic::PowerSpectrum;
 using mspass::utility::Metadata;
 using mspass::utility::VectorStatistics;
+/* These are used to flag 0/0 and x/0 respectively */
+const double INDETERMINATE(-1.0),NOISE_FREE(9999999.9);
 /* This function once was a part of the CNR3CDecon.cc file, but it was moved
 here as it was found to have a more generic purpose - bandwidth estimation.
 It is used in snr python wrapper functions of mspass and in CNR3cDecon to
 estimate bandwidth from power spectrum estimates.   */
+
 BandwidthData EstimateBandwidth(const double signal_df,
   const PowerSpectrum& s, const PowerSpectrum& n,
-    const double snr_threshold, const double tbp,const double fhs)
+    const double snr_threshold, const double tbp,const double fhs,
+     const bool fix_high_edge_to_fhs)
 {
+  /* This number defines a scaling to correct for difference in window length
+  for signal and noise windows.   It assumes the noise process is stationary
+  which pretty is pretty much essential for this entire algorithm to make
+  sense anyway. */
+  double window_length_correction=static_cast<double>(s.nf())/static_cast<double>(n.nf());
   /* Set the starting search points at low (based on noise tbp) and high (80% fny)
   sides */
   double flow_start, fhigh_start;
@@ -28,7 +37,7 @@ BandwidthData EstimateBandwidth(const double signal_df,
   else
     fhigh_start = fhs;
   double df_test_range=2.0*tbp*(n.df);
-  int s_range=s.nf();
+  int s_range = s.sample_number(fhigh_start);
   BandwidthData result;
   /* First search from flow_start in increments of signal_df to find low
   edge.*/
@@ -43,7 +52,15 @@ BandwidthData EstimateBandwidth(const double signal_df,
     /* We use amplitude snr not power snr*/
     sigamp=sqrt(s.spectrum[i]);
     namp=n.amplitude(f);
-    snrnow=sigamp/namp;
+    if(namp>0.0)
+      snrnow=window_length_correction*sigamp/namp;
+    else
+    {
+      if(sigamp>0.0)
+        snrnow=NOISE_FREE;
+      else
+        snrnow = INDETERMINATE;
+    }
     if(snrnow>snr_threshold)
     {
       if(searching)
@@ -82,38 +99,65 @@ BandwidthData EstimateBandwidth(const double signal_df,
     return result;
   }
   /* Now search from the high end to find upper band edge - same algorithm
-  reversed direction. */
-  searching=false;
-  istart=s.sample_number(fhigh_start);
-  for(i=istart;i>=0;--i)
+  reversed direction.  Note option to disable  */
+  if(fix_high_edge_to_fhs)
   {
-    f=s.frequency(i);
-    sigamp=sqrt(s.spectrum[i]);
-    namp=n.amplitude(f);
-    snrnow=sigamp/namp;
-    if(snrnow>snr_threshold)
+    result.high_edge_f = fhigh_start;
+    sigamp=s.amplitude(fhigh_start);
+    namp=n.amplitude(fhigh_start);
+    if(namp>0.0)
+      snrnow=window_length_correction*sigamp/namp;
+    else
     {
-      if(searching)
+      if(sigamp>0.0)
+        snrnow=NOISE_FREE;
+      else
+        snrnow = INDETERMINATE;
+    }
+    result.high_edge_snr=snrnow;
+  }
+  else
+  {
+    searching=false;
+    istart=s.sample_number(fhigh_start);
+    for(i=istart;i>=0;--i)
+    {
+      f=s.frequency(i);
+      sigamp=sqrt(s.spectrum[i]);
+      namp=n.amplitude(f);
+      if(namp>0.0)
+        snrnow=window_length_correction*sigamp/namp;
+      else
       {
-        if((f_mark-f)>=df_test_range)
+        if(sigamp>0.0)
+          snrnow=NOISE_FREE;
+        else
+          snrnow = INDETERMINATE;
+      }
+      if(snrnow>snr_threshold)
+      {
+        if(searching)
         {
-          result.high_edge_f=f_mark;
-          break;
+          if((f_mark-f)>=df_test_range)
+          {
+            result.high_edge_f=f_mark;
+            break;
+          }
+        }
+        else
+        {
+          f_mark=f;
+          result.high_edge_snr=snrnow;
+          searching=true;
         }
       }
       else
       {
-        f_mark=f;
-        result.high_edge_snr=snrnow;
-        searching=true;
-      }
-    }
-    else
-    {
-      if(searching)
-      {
-        searching=false;
-        f_mark=f;
+        if(searching)
+        {
+          searching=false;
+          f_mark=f;
+        }
       }
     }
   }
@@ -123,6 +167,23 @@ BandwidthData EstimateBandwidth(const double signal_df,
 Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
                                const BandwidthData& bwd)
 {
+  /* As noted above this correction is needed for an irregular window size*/
+  double window_length_correction=static_cast<double>(s.nf())/static_cast<double>(n.nf());
+  Metadata result;
+  /* the algorithm below will fail if either of these conditions is true so
+  we trap that and return a null result.   Caller must handle the null
+  return correctly*/
+  if( ( bwd.f_range <= 0.0 ) || ( (bwd.high_edge_f-bwd.low_edge_f)<s.df) )
+  {
+    result.put_double("median_snr",0.0);
+    result.put_double("maximum_snr",0.0);
+    result.put_double("minimum_snr",0.0);
+    result.put_double("q1_4_snr",0.0);
+    result.put_double("q3_4_snr",0.0);
+    result.put_double("mean_snr",0.0);
+    result.put_bool("stats_are_valid",false);
+    return result;
+  }
   std::vector<double> bandsnr;
   double f;
   for(f=bwd.low_edge_f;f<bwd.high_edge_f && f<s.Nyquist();f+=s.df)
@@ -130,25 +191,20 @@ Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
     double signal_amp,noise_amp,snr;
     signal_amp = s.amplitude(f);
     noise_amp = n.amplitude(f);
-    if(signal_amp<=0.0)
+    if(noise_amp <= 0.0)
     {
-      snr=0.0;
-    }
-    else if(noise_amp<=0)
-    {
-      /*Set to a large number in this condition because we can't get past
-      the previous if for the (worse) case of 0/0.   We only get here if
-      signal_amp is nonzero but noise is zero.*/
-      snr = 999999.0;
+      if(signal_amp>0.0)
+        snr = NOISE_FREE;
+      else
+        snr = INDETERMINATE;
     }
     else
     {
-      snr = signal_amp/noise_amp;
+      snr = window_length_correction*signal_amp/noise_amp;
     }
     bandsnr.push_back(snr);
   }
   VectorStatistics<double> stats(bandsnr);
-  Metadata result;
   /* stats contains multiple methods that return other metrics but we only
   return typical box plot values */
   result.put_double("median_snr",stats.median());
@@ -157,6 +213,7 @@ Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
   result.put_double("q1_4_snr",stats.q1_4());
   result.put_double("q3_4_snr",stats.q3_4());
   result.put_double("mean_snr",stats.mean());
+  result.put_bool("stats_are_valid",true);
   return result;
 }
 } // end namespace

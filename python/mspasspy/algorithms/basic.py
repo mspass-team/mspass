@@ -1,5 +1,81 @@
 from mspasspy.util.decorators import mspass_func_wrapper
 from mspasspy.ccore.algorithms.basic import LinearTaper, CosineTaper, VectorTaper
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
+from mspasspy.util import logging_helper
+import mspasspy.ccore.algorithms.basic as bsc
+from mspasspy.ccore.seismic import (
+    TimeSeries,
+    TimeSeriesEnsemble,
+    Seismogram,
+    SeismogramEnsemble,
+)
+
+
+@mspass_func_wrapper
+def ExtractComponent(
+    data,
+    component,
+    *args,
+    object_history=False,
+    alg_name=None,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=False,
+    function_return_key=None,
+    **kwargs
+):
+    """
+    Extract single component from three-component data.
+
+    The function creates a scalar TimeSeries object from a three component Seismogram object
+    Or a TimeSeriesEnsemble object from a SeismogramEnsemble object
+
+    :param data: data object to extract from.
+    :type data: either :class:`~mspasspy.ccore.seismic.Seismogram`
+     or :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`
+    :param component: the index of component that will be extracted, it can only be 0, 1, or 2
+    :type component: :class:`int`
+    :param object_history: True to preserve the processing history. For details, refer to
+     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+    :type alg_name: :class:`str`
+    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+    :type alg_id: :class:`bson.objectid.ObjectId`
+    :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
+    :param inplace_return: True to return data in mspass_func_wrapper. This is set false to
+     handle exception directly in the function, without passing it to mspass_func_wrapper.
+    :param function_return_key:  Some functions one might want to wrap with this decorator
+     return something that is appropriate to save as Metadata.  If so, use this argument to
+     define the key used to set that field in the data that is returned.
+    """
+    if isinstance(data, Seismogram):
+        try:
+            d = bsc._ExtractComponent(data, component)
+            return d
+        except Exception as err:
+            data.elog.log_error("ExtractComponent", str(err), ErrorSeverity.Invalid)
+            empty = TimeSeries()
+            empty.load_history(data)
+            empty.kill()
+            return empty
+    elif isinstance(data, SeismogramEnsemble):
+        if data.dead():
+            empty = TimeSeriesEnsemble()
+            empty.elog = data.elog
+            empty.kill()
+            return empty
+        try:
+            d = TimeSeriesEnsemble(bsc._ExtractComponent(data, component))
+            # second copy to convert type from CoreTimeSeriesEnsemble to TimeSeriesEnsemble
+            return d
+        except Exception as err:
+            logging_helper.ensemble_error(
+                data, "ExtractComponent", err, ErrorSeverity.Invalid
+            )
+            empty = TimeSeriesEnsemble()
+            empty.elog = data.elog
+            empty.kill()
+            return empty
 
 
 @mspass_func_wrapper

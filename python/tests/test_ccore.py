@@ -29,7 +29,8 @@ from mspasspy.ccore.utility import (
     SphericalCoordinate,
 )
 
-from mspasspy.ccore.algorithms.basic import ExtractComponent
+from mspasspy.util.error_logger import PyErrorLogger
+from mspasspy.ccore.algorithms.basic import _ExtractComponent
 from mspasspy.ccore.algorithms.deconvolution import MTPowerSpectrumEngine
 
 
@@ -240,6 +241,43 @@ def test_ErrorLogger():
     assert errlog[1].message == "foo"
     assert errlog[1].badness == ErrorSeverity.Fatal
     assert errlog[1].job_id == errlog.get_job_id()
+    with pytest.raises(TypeError, match="'int' is given"):
+        errlog.log_error(123)
+
+
+def test_PyErrorLogger():
+    errlog = PyErrorLogger()
+    assert errlog.log_error("1", ErrorSeverity(3)) == 1
+    assert errlog[0].algorithm == "test_PyErrorLogger"
+    assert errlog[0].message == "1"
+    assert errlog[0].badness == ErrorSeverity.Complaint
+    assert errlog[0].job_id == errlog.get_job_id()
+
+    class dummy:
+        def __init__(self):
+            pass
+
+        def func(self, errlog):
+            return errlog.log_error("1", ErrorSeverity(3))
+
+    assert dummy().func(errlog) == 2
+    assert errlog[1].algorithm == "dummy.func"
+    assert errlog[1].message == "1"
+    assert errlog[1].badness == ErrorSeverity.Complaint
+    assert errlog[1].job_id == errlog.get_job_id()
+
+    assert errlog.log_error("func", "2", ErrorSeverity(3)) == 3
+    assert errlog[2].algorithm == "func"
+    assert errlog[2].message == "2"
+    assert errlog[2].badness == ErrorSeverity.Complaint
+    assert errlog[2].job_id == errlog.get_job_id()
+
+    err = MsPASSError("foo", ErrorSeverity.Fatal)
+    errlog.log_error(err)
+    assert errlog[3].algorithm == "MsPASSError"
+    assert errlog[3].message == "foo"
+    assert errlog[3].badness == ErrorSeverity.Fatal
+    assert errlog[3].job_id == errlog.get_job_id()
     with pytest.raises(TypeError, match="'int' is given"):
         errlog.log_error(123)
 
@@ -1271,7 +1309,7 @@ def test_ExtractComponent():
     seis.npts = 6
     ts = []
     for i in range(3):
-        ts.append(ExtractComponent(seis, i))
+        ts.append(_ExtractComponent(seis, i))
     for i in range(3):
         assert (ts[i].data == seis.data[i]).all()
 
@@ -1378,6 +1416,20 @@ def test_MsPASSError():
     except MsPASSError as err:
         assert err.message == "test error4"
         assert err.severity == ErrorSeverity.Fatal
+
+    # Add a more realistic example below
+    with pytest.raises(MsPASSError, match="LU factorization"):
+        d = Seismogram(50)
+        d.set_live()
+        d.dt = 1.0
+        d.t0 = 0.0
+        tm = dmatrix(3, 3)
+        tm[0, 0] = 1.0
+        tm[1, 0] = 1.0
+        tm[1, 1] = 0.0
+        tm[2, 2] = 1.0
+        d.transform(tm)
+        d.rotate_to_standard()
 
 
 def test_PowerSpectrum():

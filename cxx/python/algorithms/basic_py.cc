@@ -122,14 +122,14 @@ PYBIND11_MODULE(basic, m) {
 
   /* overload_cast would not work on this name because of a strange limitation with templated functions
    * used for the Ensemble definition.   */
-  m.def("ExtractComponent",static_cast<TimeSeries(*)(const Seismogram&,const unsigned int)>(&ExtractComponent),
+  m.def("_ExtractComponent",static_cast<TimeSeries(*)(const Seismogram&,const unsigned int)>(&ExtractComponent),
   	"Extract component as a TimeSeries object",
       py::return_value_policy::copy,
       py::arg("tcs"),
       py::arg("component")
   );
 
-  m.def("EnsembleComponent",static_cast<Ensemble<TimeSeries>(*)(const Ensemble<Seismogram>&,const unsigned int)>(&ExtractComponent),
+  m.def("_ExtractComponent",static_cast<Ensemble<TimeSeries>(*)(const Ensemble<Seismogram>&,const unsigned int)>(&ExtractComponent),
   	"Extract one component from a 3C ensemble",
       py::return_value_policy::copy,
       py::arg("d"),

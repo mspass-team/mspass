@@ -16,22 +16,17 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
-# Prepare the environment
-ENV SPARK_VERSION 3.0.0
+ARG TARGETARCH
 
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+# Prepare the environment
+ARG SPARK_VERSION=3.0.0
+
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-${TARGETARCH}
 ENV SPARK_HOME /usr/local/spark
 ENV PYSPARK_PYTHON python3
 
-ENV DOCKERIZE_VERSION v0.6.1
-ENV DOCKERIZE_URL https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-linux-amd64-${DOCKERIZE_VERSION}.tar.gz
-
-ENV APACHE_MIRROR https://archive.apache.org/dist
-ENV SPARK_URL ${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz
-
-
-# Download & install Dockerize
-RUN wget -qO - ${DOCKERIZE_URL} | tar -xz -C /usr/local/bin 
+ARG APACHE_MIRROR=https://archive.apache.org/dist
+ARG SPARK_URL=${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz
 
 # Download & install Spark
 RUN wget -qO - ${SPARK_URL} | tar -xz -C /usr/local/ \
@@ -55,8 +50,8 @@ RUN pip3 --no-cache-dir install numpy \
     && rm -f requirements.txt
 
 # Download & install pybind11
-ENV PYBIND11_VERSION 2.6.0
-ENV PYBIND11_URL https://github.com/pybind/pybind11/archive/v${PYBIND11_VERSION}.tar.gz
+ARG PYBIND11_VERSION=2.6.0
+ARG PYBIND11_URL=https://github.com/pybind/pybind11/archive/v${PYBIND11_VERSION}.tar.gz
 RUN wget -qO - ${PYBIND11_URL} | tar -xz -C /usr/local/ \
     && cd /usr/local/pybind11-${PYBIND11_VERSION} \
     && mkdir build && cd build && cmake .. -DPYBIND11_TEST=OFF && make install
@@ -87,8 +82,8 @@ RUN pip3 install /mspass -v
 RUN pip3 --no-cache-dir install jedi==0.17.2 notebook==6.2.0
 
 # Tini operates as a process subreaper for jupyter.
-ENV TINI_VERSION v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/sbin/tini
+ARG TINI_VERSION=v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${TARGETARCH} /usr/sbin/tini
 RUN chmod +x /usr/sbin/tini
 
 # Add startup script
