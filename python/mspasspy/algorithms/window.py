@@ -431,7 +431,7 @@ def WindowData_with_duration(
         d.log_error("WindowData", str(err), ErrorSeverity.Invalid)
         d.kill()
         return d
-@mspass_func_wrapper
+#@mspass_func_wrapper
 def merge(
     tsvector,
     starttime=None,
