@@ -533,7 +533,10 @@ def TimeIntervalReader(db,starttime,endtime,
     """
     tstart = starttime
     tend = endtime
-    query = dict(base_query)
+    if base_query:
+        query = dict(base_query)
+    else:
+        query = dict()
     #query["$or"] = [
      #           {"starttime" : {"$gte" : tstart, "$lte" : tend},
       #          "endtime" : {"$gte" : tstart, "$lte" : tend} }   
@@ -541,9 +544,9 @@ def TimeIntervalReader(db,starttime,endtime,
     query["$and"] = [ {"starttime" : {"$lte":tend}}, {"endtime" : {"$gte" : tstart} }  ] 
     sortlist = [ ("chan",pymongo.ASCENDING),
                  ("loc",pymongo.ASCENDING),
-                 ("starttime", pymongo.ASCENDING),
                  ("net",pymongo.ASCENDING),
-                 ("sta",pymongo.ASCENDING)
+                 ("sta",pymongo.ASCENDING),
+                 ("starttime", pymongo.ASCENDING),
                  ]
     cursor = db[collection].find(query).sort(sortlist)
     
@@ -608,10 +611,19 @@ def TimeIntervalReader(db,starttime,endtime,
                             ensemble_list.append(current)
                             current = _initialize_ensemble(doc, tstart, tend)
                             current.member.append(datum)
-                            
+                               
                 # All cases for this cleanup have to push the latest 
                 # ensemble to the output that is returned after exiting 
                 # the loop
+                if len(current.member) > 0:
+                    # if all the contents of current are zombies this 
+                    # method will refuse to set current as live
+                    current.set_live()
+                else:
+                    # due to a feature of the C++ ensemble templates
+                    # this is not currently required but better to 
+                        # be explicit in this kill
+                    current.kill() 
                 ensemble_list.append(current)
             
             elif test_keys != current_keys:
@@ -644,10 +656,15 @@ def TimeIntervalReader(db,starttime,endtime,
                         segments.append(datum)
                 else:
                     if len(current.member) > 0:
-                        ensemble_list.append(current)
+                        current.set_live()
                     else:
-                        # for debug print a warning here but production can do this silently
-                        print("Received an empty ensemble ")
+                        # due to a feature of the C++ ensemble templates
+                        # this is not currently required but better to 
+                        # be explicit in this kill
+                        current.kill()
+                    # We always post current even if dead and empty
+                    # caller needs to handle null returns.
+                    ensemble_list.append(current)
                     if count < ndocs-1:
                         current = _initialize_ensemble(doc, tstart, tend)
                         current_keys = test_keys
