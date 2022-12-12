@@ -216,9 +216,8 @@ def test_ensembles():
     assert enslist[0]["chan"] == "BH1"
     assert enslist[1]["chan"] == "BHZ"
     assert len(enslist[0].member) == 1
-    
-     
-    # Repeat with longer time interval to cover two overlaps 
+
+    # Repeat with longer time interval to cover two overlaps
     # This wil have all output null
     starttime -= 20.0
     endtime = t0 + 2.0*trange +30.0
