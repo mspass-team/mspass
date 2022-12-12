@@ -24,7 +24,12 @@ import json
 import base64
 import uuid
 
-from mspasspy.ccore.io import _mseed_file_indexer, _fwrite_to_file, _fread_from_file, _fread_from_files
+from mspasspy.ccore.io import (
+    _mseed_file_indexer,
+    _fwrite_to_file,
+    _fread_from_file,
+    _fread_from_files,
+)
 from mspasspy.util.converter import Trace2TimeSeries, Stream2Seismogram
 
 from mspasspy.ccore.seismic import (
@@ -984,8 +989,8 @@ class Database(pymongo.database.Database):
                     insertion_dict["nbytes"] = nbytes
                     insertion_dict["format"] = format
                 else:
-                    insertion_dict.pop("format",None)
-                    insertion_dict.pop("nbytes",None)
+                    insertion_dict.pop("format", None)
+                    insertion_dict.pop("nbytes", None)
             elif storage_mode == "gridfs":
                 if overwrite and "gridfs_id" in insertion_dict:
                     gridfs_id = self._save_data_to_gridfs(
@@ -2842,18 +2847,16 @@ class Database(pymongo.database.Database):
 
         cur_collection = self[wf_collection]
         res = cur_collection.aggregate(
-            [{
-                "$match": {
-                    "$expr": {
-                        "$in": ["$_id", objectid_list]
+            [
+                {"$match": {"$expr": {"$in": ["$_id", objectid_list]}}},
+                {
+                    "$group": {
+                        "_id": {"dir": "$dir", "dfile": "dfile"},
+                        "foffs": {"$push": "$foff"},
+                        "ids": {"$push": "$_id"},
                     }
-                }
-            },
-            {
-                "$group": {
-                    "_id": {"dir":"$dir", "dfile":"dfile"}, "foffs":{"$push": "$foff"}, "ids": {"$push": "$_id"}
-                }
-            }]
+                },
+            ]
         )
 
         files = list(res)
@@ -2861,20 +2864,22 @@ class Database(pymongo.database.Database):
             cur_dir = f["_id"]["dir"]
             cur_dfile = f["_id"]["dfile"]
             foofs = list(map(int, f["foffs"]))  # string list -> int list
-            indexes = list(map(objectid_list.index, f["ids"])) # get original index
+            indexes = list(map(objectid_list.index, f["ids"]))  # get original index
 
             try:
-                cnt = _fread_from_files(ensemble, cur_dir, cur_dfile, foofs, indexes, len(objectid_list))
+                cnt = _fread_from_files(
+                    ensemble, cur_dir, cur_dfile, foofs, indexes, len(objectid_list)
+                )
                 if cnt <= 0:
                     message = "fread returned a count of {count}".format(count=cnt)
                     ensemble.elog.log_error(
-                            "_fread_from_files", message, ErrorSeverity.Informational
-                        )
+                        "_fread_from_files", message, ErrorSeverity.Informational
+                    )
             except MsPASSError as merr:
-                    # Errors thrown must always cause a failure
-                    raise MsPASSError(
-                        "Error while reading ensemble in files.", "Fatal"
-                    ) from merr
+                # Errors thrown must always cause a failure
+                raise MsPASSError(
+                    "Error while reading ensemble in files.", "Fatal"
+                ) from merr
 
         # explicitly mark empty ensembles dead.  Otherwise assume if
         # we got this far we can mark it live

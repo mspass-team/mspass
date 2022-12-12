@@ -144,8 +144,8 @@ long int fwrite_to_file(Ensemble<Seismogram>& de, const string dir,const string 
 		do not trap that condition as if either have issues I am quite sure
 		the fwrite will fail */
 		fseek(fp,0L,2);
-		foff = ftell(fp);
 		for (int i = 0; i < de.member.size(); ++i) {
+			foff = ftell(fp);
 			Seismogram& t = de.member[i];
 			if (fwrite((void *)t.u.get_address(0,0), sizeof(double), 3*t.npts(), fp) != 3*t.npts())
 			{
