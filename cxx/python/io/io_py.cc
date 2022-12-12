@@ -4,7 +4,7 @@
 #include <pybind11/stl_bind.h>
 #include <pybind11/operators.h>
 #include <pybind11/embed.h>
-
+#include "mspass/seismic/Ensemble.h"
 #include "mspass/io/mseed_index.h"
 #include "mspass/io/fileio.h"
 #include "mspass/seismic/TimeSeries.h"
@@ -20,6 +20,10 @@ size_t fread_from_file(mspass::seismic::Seismogram& d,const std::string dir, con
     const long int foff);
 size_t fread_from_file(mspass::seismic::TimeSeries& d,const std::string dir, const std::string dfile,
     const long int foff);
+size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::TimeSeries> &d, const std::string dir, 
+    const std::string dfile, std::vector<long int> foffs, std::vector<long int> indexes, const long int length);
+size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::Seismogram> &d, const std::string dir, 
+    const std::string dfile, std::vector<long int> foffs, std::vector<long int> indexes, const long int length);
 }
 
 PYBIND11_MAKE_OPAQUE(std::vector<mspass::io::mseed_index>);
@@ -99,6 +103,30 @@ PYBIND11_MODULE(io,m){
      py::arg("dir"),
      py::arg("dfile"),
      py::arg("foff")
+   );
+   m.def("_fread_from_files",
+      py::overload_cast<mspass::seismic::Ensemble<mspass::seismic::TimeSeries>&,
+        const std::string,const std::string,std::vector<long int>,std::vector<long int>,const long int>(&fread_from_files),
+      "Read the sample data for a TimeSeriesEnsemble object from files as native doubles",
+      py::return_value_policy::copy,
+     py::arg("de"),
+     py::arg("dir"),
+     py::arg("dfile"),
+     py::arg("foffs"),
+     py::arg('indexes'),
+     py::arg('length')
+   );
+   m.def("_fread_from_files",
+      py::overload_cast<mspass::seismic::Ensemble<mspass::seismic::Seismogram>&,
+         const std::string,const std::string,std::vector<long int>,std::vector<long int>,const long int>(&fread_from_files),
+      "Read the sample data for a SeismogramEnsemble object from files as native doubles",
+      py::return_value_policy::copy,
+     py::arg("de"),
+     py::arg("dir"),
+     py::arg("dfile"),
+     py::arg("foffs"),
+     py::arg('indexes'),
+     py::arg('length') 
    );
 }
 }   // namespace mspasspy

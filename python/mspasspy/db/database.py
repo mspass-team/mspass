@@ -24,7 +24,7 @@ import json
 import base64
 import uuid
 
-from mspasspy.ccore.io import _mseed_file_indexer, _fwrite_to_file, _fread_from_file
+from mspasspy.ccore.io import _mseed_file_indexer, _fwrite_to_file, _fread_from_file, _fread_from_files
 from mspasspy.util.converter import Trace2TimeSeries, Stream2Seismogram
 
 from mspasspy.ccore.seismic import (
@@ -2755,6 +2755,126 @@ class Database(pymongo.database.Database):
             )
             if data:
                 ensemble.member.append(data)
+
+        # explicitly mark empty ensembles dead.  Otherwise assume if
+        # we got this far we can mark it live
+        if len(ensemble.member) > 0:
+            ensemble.set_live()
+        else:
+            ensemble.kill()
+        return ensemble
+
+    def read_ensemble_data_2(
+        self,
+        objectid_list,
+        ensemble_metadata={},
+        mode="promiscuous",
+        normalize=None,
+        load_history=False,
+        exclude_keys=None,
+        collection="wf",
+        data_tag=None,
+        alg_name="read_ensemble_data",
+        alg_id="0",
+    ):
+        """
+        Reads an subset of a dataset with some logical grouping into an Ensemble container.
+
+        Ensembles are a core concept in MsPASS that are a generalization of
+        fixed "gather" types frozen into every seismic reflection processing
+        system we know of.  This reader is driven by a python list of
+        MongoDB object ids.  The method calls the atomic read_data
+        method for object_id to assemble the members of the ensemble.
+        All arguments except the objectid_list and ensemble_metadata are
+        passed directly to the read_data method in that loop.  The read_data
+        method and the User's manual have more information about how those
+        common arguments are used.
+
+        :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`,
+          of the ids defining the ensemble members or a :class:`pymongo.cursor.Cursor`
+        :param ensemble_metadata:  is a dict or dict like container containing
+          metadata to be stored in the ensemble's Metadata (common to the group)
+          container.  A common choice would be to post the query used to
+          define this ensemble, but there are not restictions.  The contents are
+          simply copied verbatim to the ensemble metadata container. The default
+          is an empty dict which translates to an empty ensemble metadata container.
+        :type ensemble_metadata: python dict or any container that is iterable
+          and supports the [key] key associative array syntax will work.
+          (Note this means both Metadata containers or mongodb docs both can
+          be used) The type of this arg is not tested so you may get a
+          mysterious exception if the data the arg defines does no meet the
+          two rules.
+        :param mode: reading mode regarding schema checks, should be one of ['promiscuous','cautious','pedantic']
+        :type mode: :class:`str`
+        :param normalize: normalized collection you want to read into a mspass object
+        :type normalize: a :class:`list` of :class:`str`
+        :param load_history: ``True`` to load object-level history into the mspasspy object.
+        :param exclude_keys: the metadata attributes you want to exclude from being read.
+        :type exclude_keys: a :class:`list` of :class:`str`
+        :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.
+        :param data_tag: a user specified "data_tag" key to filter the read. If not match, the record will be skipped.
+        :type data_tag: :class:`str`
+        :return: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
+            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+        """
+        wf_collection = self.database_schema.default_name(collection)
+        object_type = self.database_schema[wf_collection].data_type()
+
+        if object_type not in [TimeSeries, Seismogram]:
+            raise MsPASSError(
+                "only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.".format(
+                    object_type, wf_collection
+                ),
+                "Fatal",
+            )
+
+        # if objectid_list is a cursor, convert the cursor to a list
+        if isinstance(objectid_list, pymongo.cursor.Cursor):
+            objectid_list = list(objectid_list)
+
+        if object_type is TimeSeries:
+            ensemble = TimeSeriesEnsemble(len(objectid_list))
+        else:
+            ensemble = SeismogramEnsemble(len(objectid_list))
+        # Here we post the ensemble metdata - see docstring notes on this feature
+        for k in ensemble_metadata:
+            ensemble[k] = ensemble_metadata[k]
+
+        cur_collection = self[wf_collection]
+        res = cur_collection.aggregate(
+            [{
+                "$match": {
+                    "$expr": {
+                        "$in": ["$_id", objectid_list]
+                    }
+                }
+            },
+            {
+                "$group": {
+                    "_id": {"dir":"$dir", "dfile":"dfile"}, "foffs":{"$push": "$foff"}, "ids": {"$push": "$_id"}
+                }
+            }]
+        )
+
+        files = list(res)
+        for f in files:
+            cur_dir = f["_id"]["dir"]
+            cur_dfile = f["_id"]["dfile"]
+            foofs = list(map(int, f["foffs"]))  # string list -> int list
+            indexes = list(map(objectid_list.index, f["ids"])) # get original index
+
+            try:
+                cnt = _fread_from_files(ensemble, cur_dir, cur_dfile, foofs, indexes, len(objectid_list))
+                if cnt <= 0:
+                    message = "fread returned a count of {count}".format(count=cnt)
+                    ensemble.elog.log_error(
+                            "_fread_from_files", message, ErrorSeverity.Informational
+                        )
+            except MsPASSError as merr:
+                    # Errors thrown must always cause a failure
+                    raise MsPASSError(
+                        "Error while reading ensemble in files.", "Fatal"
+                    ) from merr
 
         # explicitly mark empty ensembles dead.  Otherwise assume if
         # we got this far we can mark it live

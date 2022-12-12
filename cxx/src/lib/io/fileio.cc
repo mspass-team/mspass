@@ -210,34 +210,80 @@ size_t fread_from_file(TimeSeries& d,const string dir, const string dfile,
 		return ns_read;
 	}catch(...){throw;};
 }
-size_t fread_from_file(Ensemble<Seismogram> &de, vector<string> dirs, vector<string> dfiles, 
-	 vector<long int> foffs)
+size_t fread_from_files(Ensemble<Seismogram> &de, const string dir, const string dfile, 
+	 vector<long int> foffs, vector<int> indexes, const long int length)
 {
 	size_t ns_read_sum;
-	int n = dirs.size();
-	de.member.resize(n);
+	int n = foffs.size();
+	de.member.resize(length);
+	FILE *fp;
+	string fname;
+	if(dir.length()>0)
+	  /* for expected context for use in python we will assume dir does not
+		have a trailing path separator so we always insert / */
+		fname = dir + "/" + dfile;
+	else
+	  /* Null as always in unix means use current directory*/
+		fname=dfile;
+	if((fp=fopen(fname.c_str(),"r")) == NULL)
+		throw MsPASSError("fread_data_from_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
+	
 	for (int i = 0; i < n; ++i) {
 		size_t ns_read;
+		long int foff = foffs[i];
+		int index = indexes[i];
 		try{
-			ns_read = fread_sample_data(de.member[i].u.get_address(0, 0), dirs[i], dfiles[i], foffs[i], 3 * de.member[i].npts());
+			if(foff>0)
+			{
+				if(fseek(fp,foff,SEEK_SET))
+				{
+					fclose(fp);
+				throw MsPASSError("fread_data_from_file:  fseek failure on file="+fname,ErrorSeverity::Invalid);
+				}
+			}
+			ns_read = fread((void*)de.member[index].u.get_address(0, 0), sizeof(double), 3 * de.member[index].npts(), fp);
 			ns_read_sum += ns_read;
 		}catch(...){throw;};
 	}
+	fclose(fp);
 	return ns_read_sum;
 }
-size_t fread_from_file(Ensemble<TimeSeries> &de, vector<string> dirs, vector<string> dfiles, 
-	 vector<long int> foffs)
+size_t fread_from_files(Ensemble<TimeSeries> &de, const string dir, const string dfile, 
+	 vector<long int> foffs, vector<int> indexes, const long int length)
 {
 	size_t ns_read_sum;
-	int n = dirs.size();
-	de.member.resize(n);
+	int n = foffs.size();
+	de.member.resize(length);
+	FILE *fp;
+	string fname;
+	if(dir.length()>0)
+	  /* for expected context for use in python we will assume dir does not
+		have a trailing path separator so we always insert / */
+		fname = dir + "/" + dfile;
+	else
+	  /* Null as always in unix means use current directory*/
+		fname=dfile;
+	if((fp=fopen(fname.c_str(),"r")) == NULL)
+		throw MsPASSError("fread_data_from_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
+	
 	for (int i = 0; i < n; ++i) {
 		size_t ns_read;
+		long int foff = foffs[i];
+		int index = indexes[i];
 		try{
-			ns_read = fread_sample_data(&(de.member[i].s[0]), dirs[i], dfiles[i], foffs[i], de.member[i].npts());
+			if(foff>0)
+			{
+				if(fseek(fp,foff,SEEK_SET))
+				{
+					fclose(fp);
+				throw MsPASSError("fread_data_from_file:  fseek failure on file="+fname,ErrorSeverity::Invalid);
+				}
+			}
+			ns_read = fread((void*)(&(de.member[index].s[0])), sizeof(double), de.member[index].npts(), fp);
 			ns_read_sum += ns_read;
 		}catch(...){throw;};
 	}
+	fclose(fp);
 	return ns_read_sum;
 }
 } // Termination of namespace definitions

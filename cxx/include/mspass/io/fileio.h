@@ -134,5 +134,11 @@ guaranteed to be invalid.
 size_t fread_from_file(mspass::seismic::TimeSeries& d,const std::string dir, const std::string dfile,
      const long int foff);
 
+size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::TimeSeries> &d, const std::string dir, 
+    const std::string dfile, std::vector<long int> foffs, std::vector<long int> indexes, const long int length);
+
+size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::Seismogram> &d, const std::string dir, 
+    const std::string dfile, std::vector<long int> foffs, std::vector<long int> indexes, const long int length);
+
 }
 #endif
