@@ -220,11 +220,15 @@ def test_ensembles():
     # Repeat with longer time interval to cover two overlaps
     # This wil have all output null
     starttime -= 20.0
-    endtime = t0 + 2.0*trange +30.0
-    enslist = TimeIntervalReader(db,starttime,endtime,
-                           collection="wf_TimeSeries",
-                           fix_overlaps=True,
-                           base_query=base_query)
+    endtime = t0 + 2.0 * trange + 30.0
+    enslist = TimeIntervalReader(
+        db,
+        starttime,
+        endtime,
+        collection="wf_TimeSeries",
+        fix_overlaps=True,
+        base_query=base_query,
+    )
     assert len(enslist) == 2
     for i in range(2):
         assert enslist[i].dead()
