@@ -74,8 +74,8 @@ def test_ensembles():
         ts["channel_id"] = channel_id_h
         db.save_data(ts, collection="wf_TimeSeries")
         t += trange
-    
-    # This group is the same but will have a gap of 10 samples between 
+
+    # This group is the same but will have a gap of 10 samples between
     # each TimeSeries saved
     sta = "GAP10"
     t=t0
