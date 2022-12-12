@@ -10,60 +10,50 @@ import obspy.clients.fdsn.client
 import pytest
 import sys
 import re
-import collections
 
 import boto3
 from moto import mock_s3
 import botocore.session
-from botocore.stub import Stubber
 from unittest.mock import patch, Mock
 import json
 import base64
 from unittest import mock
 
 
-from mspasspy.util.converter import (
-    TimeSeries2Trace,
-    Pf2AttributeNameTbl,
-    Textfile2Dataframe,
-)
-from mspasspy.ccore.seismic import (
-    Seismogram,
-    TimeSeries,
-    TimeSeriesEnsemble,
-    SeismogramEnsemble,
-    DoubleVector,
-)
-from mspasspy.ccore.utility import (
-    dmatrix,
-    ErrorSeverity,
-    Metadata,
-    MsPASSError,
-    ProcessingHistory,
-    AtomicType,
-    AntelopePf,
-)
-
-from mspasspy.db.schema import DatabaseSchema, MetadataSchema
-from mspasspy.util import logging_helper
-from bson.objectid import ObjectId
-from datetime import datetime
-
 sys.path.append("python/tests")
 
-from mspasspy.db.database import Database, read_distributed_data
-from mspasspy.db.client import DBClient
 from helper import (
     get_live_seismogram,
     get_live_timeseries,
-    get_live_timeseries_ensemble,
-    get_live_seismogram_ensemble,
 )
 
 with mock.patch.dict(
-    sys.modules, {"pyspark": None, "dask": None, "dask.dataframe": None}
+    sys.modules,
+    {"pyspark": None, "dask": None, "dask.dataframe": None, "dask.bag": None},
 ):
-    from mspasspy.db.database import Database, read_distributed_data
+    from mspasspy.util.converter import (
+        Pf2AttributeNameTbl,
+        Textfile2Dataframe,
+    )
+    from mspasspy.ccore.seismic import (
+        Seismogram,
+        TimeSeries,
+        TimeSeriesEnsemble,
+        SeismogramEnsemble,
+        DoubleVector,
+    )
+    from mspasspy.ccore.utility import (
+        ErrorSeverity,
+        Metadata,
+        MsPASSError,
+        AntelopePf,
+    )
+
+    from mspasspy.db.schema import DatabaseSchema, MetadataSchema
+    from mspasspy.util import logging_helper
+    from bson.objectid import ObjectId
+    from datetime import datetime
+    from mspasspy.db.database import Database
     from mspasspy.db.client import DBClient
 
     class TestDatabase:
@@ -2863,7 +2853,7 @@ with mock.patch.dict(
             save_num = self.db.save_dataframe(
                 df,
                 "testdataframe",
-                parallel=True,
+                parallel=False,
                 one_to_one=True,
                 null_values=attributes[2],
             )

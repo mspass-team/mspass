@@ -1,16 +1,11 @@
-from mspasspy.reduce import stack
 from unittest import mock
 import sys
 
 sys.path.append("python/tests")
-from helper import (
-    get_live_seismogram,
-    get_live_timeseries,
-    get_live_timeseries_ensemble,
-    get_live_seismogram_ensemble,
-)
+from helper import get_live_timeseries
 
 with mock.patch.dict(sys.modules, {"pyspark": None, "dask": None}):
+    from mspasspy.reduce import stack
     from mspasspy.global_history.manager import mspass_map, mspass_reduce
 
     def add(
