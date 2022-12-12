@@ -235,9 +235,9 @@ def test_ensembles():
     assert enslist[0]["chan"] == "BH1"
     assert enslist[1]["chan"] == "BHZ"
     assert len(enslist[0].member) == 0
-    
-    # Run all the data with this expanded interval to verify the 
-    # algorithm works with multiple stations in each call 
+
+    # Run all the data with this expanded interval to verify the
+    # algorithm works with multiple stations in each call
     # Simple way to do that is to just not use base_query
     enslist = TimeIntervalReader(db,starttime,endtime,
                            collection="wf_TimeSeries",
