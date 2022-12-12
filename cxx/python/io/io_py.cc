@@ -113,8 +113,8 @@ PYBIND11_MODULE(io,m){
      py::arg("dir"),
      py::arg("dfile"),
      py::arg("foffs"),
-     py::arg('indexes'),
-     py::arg('length')
+     py::arg("indexes"),
+     py::arg("length")
    );
    m.def("_fread_from_files",
       py::overload_cast<mspass::seismic::Ensemble<mspass::seismic::Seismogram>&,
@@ -125,8 +125,8 @@ PYBIND11_MODULE(io,m){
      py::arg("dir"),
      py::arg("dfile"),
      py::arg("foffs"),
-     py::arg('indexes'),
-     py::arg('length') 
+     py::arg("indexes"),
+     py::arg("length") 
    );
 }
 }   // namespace mspasspy
