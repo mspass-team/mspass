@@ -15,10 +15,10 @@ from mspasspy.ccore.algorithms.basic import (
     _TopMute,
 )
 
-from helper import get_live_seismogram, get_live_timeseries, get_sin_timeseries
-
 # module to test
 sys.path.append("python/tests")
+
+from helper import get_live_seismogram, get_live_timeseries, get_sin_timeseries
 
 
 def test_linearTaper():

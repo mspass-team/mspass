@@ -665,6 +665,13 @@ class TestManager:
         assert res["parameters"] == '{"object_history": "True", "alg_id": "3"}'
 
     def test_mspass_map_with_filePath(self, spark_context):
+        # this test replies on the result of the tests above, using pytest --forked command
+        # will run tests individually, so we need to add the excution of the four tests above
+        self.test_init()
+        self.test_logging()
+        self.test_mspass_map(spark_context)
+        self.test_mspass_reduce(spark_context)
+
         # test mapass_map for spark (file input)
         # data input of RFdecon, needed for parallelization
         d = [get_live_seismogram(71, 2.0) for i in range(5)]
@@ -875,7 +882,14 @@ class TestManager:
             == 1
         )
 
-    def test_get_alg_id(self):
+    def test_get_alg_id(self, spark_context):
+        # this test replies on the result of the tests above, using pytest --forked command
+        # will run tests individually, so we need to add the excution of the four tests above
+        self.test_init()
+        self.test_logging()
+        self.test_mspass_map(spark_context)
+        self.test_mspass_reduce(spark_context)
+
         manager_db = Database(self.client, "test_manager")
         assert not self.manager.get_alg_id("aaa", "bbb")
         res = manager_db["history_global"].find_one(
@@ -891,17 +905,31 @@ class TestManager:
             == res["alg_id"]
         )
 
-    def test_get_alg_list(self):
+    def test_get_alg_list(self, spark_context):
+        # this test replies on the result of the tests above, using pytest --forked command
+        # will run tests individually, so we need to add the excution of the four tests above
+        self.test_init()
+        self.test_logging()
+        self.test_mspass_map(spark_context)
+        self.test_mspass_reduce(spark_context)
+
         assert (
             len(
                 self.manager.get_alg_list(
                     self.manager.job_name, job_id=self.manager.job_id
                 )
             )
-            == 14
+            == 7
         )
 
-    def test_set_alg_name_and_parameters(self):
+    def test_set_alg_name_and_parameters(self, spark_context):
+        # this test replies on the result of the tests above, using pytest --forked command
+        # will run tests individually, so we need to add the excution of the four tests above
+        self.test_init()
+        self.test_logging()
+        self.test_mspass_map(spark_context)
+        self.test_mspass_reduce(spark_context)
+
         manager_db = Database(self.client, "test_manager")
         assert (
             manager_db["history_global"].count_documents(
