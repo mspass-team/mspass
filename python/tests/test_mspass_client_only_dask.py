@@ -1,4 +1,5 @@
 from unittest import mock
+from dask.distributed import Client as DaskClient
 
 import sys
 
@@ -8,9 +9,8 @@ sys.path.append("python/tests")
 
 with mock.patch.dict(sys.modules, {"pyspark": None}):
     from mspasspy.client import Client
-    from dask.distributed import Client as DaskClient
 
-    class TestMsPASSClient:
+    class TestMsPASSClient2:
         def setup_class(self):
             self.client = Client()
 
