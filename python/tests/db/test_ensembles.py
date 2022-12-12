@@ -254,11 +254,14 @@ def test_ensembles():
     assert len(enslist[0].member) == 2
     assert len(enslist[1].member) == 2
     # Repeat with zero_gaps set true - adds one more to count of recovered
-    enslist = TimeIntervalReader(db,starttime,endtime,
-                           collection="wf_TimeSeries",
-                           fix_overlaps=True,
-                           zero_gaps=True
-                           )
+    enslist = TimeIntervalReader(
+        db,
+        starttime,
+        endtime,
+        collection="wf_TimeSeries",
+        fix_overlaps=True,
+        zero_gaps=True,
+    )
     assert len(enslist) == 2
     for i in range(2):
         assert enslist[i].live()
