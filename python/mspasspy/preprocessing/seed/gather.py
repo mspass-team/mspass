@@ -1,4 +1,11 @@
 from abc import ABC, abstractmethod
+import xarray as xr
+import dask.array as da
+import dask
+import zarr
+import numpy as np
+from mspasspy.ccore.seismic import TimeSeriesEnsemble, SeismogramEnsemble
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, ErrorLogger
 
 
 class BasicGather(ABC):
@@ -29,11 +36,6 @@ class BasicGather(ABC):
     the base class constructor only defines stubs for the data used to
     hold member and ensemble metadata
 
-    A new design feature suggested here not in our earlier documents is the
-    idea of dynamic, periodic resizes for the append method.  The append
-    method and the description of resize_blocksize in the constructor.
-
-
     A design issue for discussionis is whether not a gather should implement
     the ator and rota functionality of BasicTimeSeries.   The cost is
     tiny up front and retrofitting after that fact might cause a lot of
@@ -41,100 +43,268 @@ class BasicGather(ABC):
 
     """
 
-    def __init__(
+    def __default_constructor__(
         self,
-        number_members,
+        capacity,
         npts,
-        number_components=1,
-        dt=None,
-        array_type="numpy",
-        resize_blocksize=10,
+        number_components,
+        array_type,
+        is_compact,
+        num_partition,
     ):
         """
-            This base class constructor should take the view that the base
-            class is the fraework with no data.  That is in line with
-            BasicTimeSeries and an appropriate launching for subclasses that
-            define scalar and 3C data as conrete implementations.
-            A difference here, however, is that constuctor will create the
-            work array but just not populate it.
-        .
-
-            :param number_members: Expected number of signals in the ensemble
-              to be loaded.  That is, the number of columns in the array
-              container.   The idea is that we standardize creation of the
-              work array in this base class.   Concrete implementations are
-              expected to estimte the size of array needed and then call
-              this constuctor before filling the array with data based on
-              the input to the subclass constructor.  e.g. for MsPASS
-              ensembles that would be set by len(ensemble.member).
-              The array implementtion is set by the related parameter
-              array_size.  This parameter is required and there is no
-              default due to the expected use only by subclasses
-            :type number_members:  integer
-
-            :param npts:  length in samples of all members.  This parameter
-              is required and there is no default due to the expected use only
-              by subclasses
-            :type npts:  integer
-
-            :param dt:  sample interval of all data in ensemble.  Default is
-              None which taken to mean it should be derived from the data.
-            :type dt:  float
-
-            :param array_type:  sets the way large arrays are implemented.
-              Default should by "numpy" which means the sample array will
-              be defined as a nptsXnumber_members FORTRAN order numpy array.
-              Other obvious choices are "dask" or "zarr"  List of acceptable
-              options to be determined
-             :type array_type:  string that must match keywords TBD
-
-            :param resize_blocksize:  Resizing a container like ths is always
-              going to be an expensive operation.  The container needs to behave
-              like C++ stdlib containers where there is a hidden blocksize
-              that triggers periodic reallocs when the data buffer fills.
-              This parameter is a proposed way to implement the same concept.
-              It would mainly be used for the append method.   Whenever append
-              hits the array wall it would resize the array adding resize_blocksize
-              columns (signal slots), copy the current data, append the new,
-              and destroy the old.  Obviously a potentially very expenseive
-              operation but a very useful feature. This name sucks but the
-              concept is what is important
-            :type resize_blocksize:  integer
-
+        This constructor is used to create an empty object with the given
+        capacity and size, the main idea of this constructor is to intialize
+        the fields in the object, including the member data and the metadata
+        All the argument can't be empty
         """
-        # these need additional code to handle autosetting but for now
-        # define them like this to ake below clearer
-
+        self.capacity = capacity
         self.npts = npts
-        self.dt = dt
-        self.array_type == array_type
-        # we need an error log
+        self.size = 0
+        self.dt = None
+        self.array_type = array_type
+        self.number_components = number_components
+        self.ensemble_metadata = None
+        self.member_metadata = None
+        self.member_data = None
+        self.is_compact = is_compact
+        self.num_partition = num_partition
         self.elog = ErrorLogger()
-        # this a global boolean used to mark the entire ensemble invalid
-        # when false.
-        self.ensemble_is_marked_live = False
-        self.live = []  # boolean array for members
-        self.t0 = []  # starttime array (maybe should be an ndarray)
-        # This illustrates the idea of how number_members should be used
-        # Not complete but illustrtes the idea
-        if input_data is None:
-            if number_members is None:
-                raise RuntimeError("usage message")
-            self.number_members = 0
-            self.array_member_size = number_members
-            self.data = _private_create_function(self.npts, self.array_member_size)
-        elif isinstance(input_data, TimeSeriesEnsmeble):
-            self.number_members = len(input_data.member)
-            self.array_member_size = self.number_members
-            self.data = _private_create_function(elf.npts, self.array_member_size)
-        elif isinstance(input_data, SeismogramEnsemble):
-            elf.number_members = len(input_data.member)
-            self.array_member_size = self.number_members
-            self.data = _private_create_function_for_3C(
-                elf.npts, self.array_member_size
+
+        supported_array_types = [
+            "numpy",
+            "xarray",
+        ]
+
+        if self.array_type not in supported_array_types:
+            raise TypeError(
+                "The array type should be one of the follows: {}".format(
+                    supported_array_types
+                )
+            )
+
+        shape = (
+            [capacity, number_components, npts]
+            if is_compact
+            else [capacity, npts, number_components]
+        )
+
+        if array_type == "xarray":
+            self.member_data = xr.DataArray()
+            chunksize = [shape[0] // num_partition, shape[1], shape[2]]
+            self.member_data.data = da.empty(shape=shape, chunks=chunksize)
+        elif array_type == "numpy":
+            self.member_data = np.empty(shape)
+
+    def __constructor_from_input_data(
+        self,
+        input_data,
+        array_type,
+        is_compact,
+        num_partition,
+    ):
+        """
+        This constructor is used for converting raw data into the new array based
+        ensemble, we want to support the following types:
+        dask array, numpy array
+        the input data should have the same compact type as this new object
+        """
+        self.capacity = 0
+        self.npts = 0
+        self.size = 0
+        self.dt = None
+        self.array_type = array_type
+        self.number_components = 0
+        self.ensemble_metadata = None
+        self.member_metadata = None
+        self.member_data = None
+        self.is_compact = is_compact
+        self.num_partition = num_partition
+        self.elog = ErrorLogger()
+
+        supported_types = (da.Array, np.array)
+        if not isinstance(input_data, supported_types):
+            raise TypeError(
+                "The array type should be one of the follows: {}".format(
+                    supported_types
+                )
+            )
+
+        supported_array_types = [
+            "numpy",
+            "xarray",
+        ]
+
+        if self.array_type not in supported_array_types:
+            raise TypeError(
+                "The array type should be one of the follows: {}".format(
+                    supported_array_types
+                )
+            )
+
+        if array_type == "numpy":
+            if isinstance(input_data, da.Array):
+                self.member_data = input_data.compute()
+            elif isinstance(input_data, np.array):
+                self.member_data = input_data
+        elif array_type == "xarray":
+            self.member_data = xr.DataArray()
+            if isinstance(input_data, da.Array):
+                chunksize = [
+                    input_data.shape[0] // self.num_partition,
+                    input_data.shape[1],
+                    input_data.shape[2],
+                ]
+                self.member_data.data = input_data.rechunk(chunks=chunksize)
+            elif isinstance(input_data, np.array):
+                self.member_data.data = da.from_array(input_data, chunks=chunksize)
+        if self.is_compact:
+            self.size, self.number_components, self.npts = (
+                self.member_data.shape[0],
+                self.member_data.shape[1],
+                self.member_data.shape[2],
             )
         else:
-            raise TypeError("Input is not a vaid type")
+            self.size, self.number_components, self.npts = (
+                self.member_data.shape[0],
+                self.member_data.shape[2],
+                self.member_data.shape[1],
+            )
+
+        self.capacity = self.size
+
+    def __constructor_from_ensemble_obj__(
+        self,
+        input_obj,
+        array_type,
+        is_compact,
+        num_partition,
+    ):
+        """
+        This constructor is used for converting an old ensemble object to the new
+        array based ensemble
+        """
+        supported_ensemble_types = (TimeSeriesEnsemble, SeismogramEnsemble)
+        if not isinstance(input_obj, supported_ensemble_types):
+            raise TypeError(
+                "The array type should be one of the follows: {}".format(
+                    supported_ensemble_types
+                )
+            )
+
+        if isinstance(input_obj, TimeSeriesEnsemble):
+            self.__constructor_from_input_data(
+                np.array(input_obj.member),
+                array_type,
+                is_compact,
+                num_partition,
+            )
+            # Copy the data from TimeSeriesEnsemble to the new object
+
+        elif isinstance(input_obj, SeismogramEnsemble):
+            self.__constructor_from_input_data(
+                np.array(input_obj.member),
+                array_type,
+                is_compact,
+                num_partition,
+            )
+
+    def __init__(
+        self,
+        capacity,
+        size,
+        npts,
+        number_components,
+        num_partition,
+        input_data=None,
+        input_obj=None,
+        member_metadata=None,
+        ensemble_metadata=None,
+        dt=None,
+        array_type="xarray",
+        is_compact=True,
+    ):
+        """
+        This base class constructor should take the view that the base
+        class is the fraework with no data.  That is in line with
+        BasicTimeSeries and an appropriate launching for subclasses that
+        define scalar and 3C data as conrete implementations.
+        A difference here, however, is that constuctor will create the
+        work array but just not populate it.
+
+        :param capacity: Expected number of signals in the ensemble
+          to be loaded.  That is, the number of columns in the array
+          container.   The idea is that we standardize creation of the
+          work array in this base class.   Concrete implementations are
+          expected to estimte the size of array needed and then call
+          this constuctor before filling the array with data based on
+          the input to the subclass constructor.  e.g. for MsPASS
+          ensembles that would be set by len(ensemble.member).
+          The array implementtion is set by the related parameter
+          array_size.  This parameter is required and there is no
+          default due to the expected use only by subclasses
+        :type capacity:  integer
+
+        :param npts:  length in samples of all members.  This parameter
+          is required and there is no default due to the expected use only
+          by subclasses
+        :type npts:  integer
+
+        :param dt:  sample interval of all data in ensemble.  Default is
+          None which taken to mean it should be derived from the data.
+        :type dt:  float
+
+        :param array_type:  sets the way large arrays are implemented.
+          Default should by "numpy" which means the sample array will
+          be defined as a nptsXnumber_members FORTRAN order numpy array.
+          Other obvious choices are "dask" or "zarr"  List of acceptable
+          options to be determined
+         :type array_type:  string that must match keywords TBD
+
+        """
+        self.capacity = capacity
+        self.npts = npts
+        self.dt = dt
+        self.array_type = array_type
+        self.number_components = number_components
+        self.ensemble_metadata = ensemble_metadata
+        self.member_metadata = member_metadata
+        self.is_parallel = is_parallel
+        self.is_compact = is_compact
+        self.num_partition = num_partition
+        self.elog = ErrorLogger()
+
+        if self.ensemble_metadata is None:  # default setting for the metadata
+            self.ensemble_metadata = {
+                "is_live": False,
+            }
+
+        if input_obj is not None:
+            self.__constructor_from_ensemble_obj__(
+                input_obj=input_obj,
+                array_type=array_type,
+                is_compact=is_compact,
+                num_partition=num_partition,
+            )
+            return
+
+        if input_data is not None:
+            self.__constructor_from_input_data(
+                input_data=input_data,
+                array_type=array_type,
+                is_compact=is_compact,
+                num_partition=num_partition,
+            )
+            return
+
+        self.__default_constructor__(
+            capacity=capacity,
+            npts=npts,
+            number_components=number_components,
+            array_type=array_type,
+            is_compact=is_compact,
+            num_partition=num_partition,
+        )
 
     def append(self, mspass_object, otherargs):
         """
@@ -142,9 +312,6 @@ class BasicGather(ABC):
         Needs to handle sizing similar to std containers in C++
         where allocs (in this case a resize) is triggered by filling.
         Constructors need to also handle this concept - see above.
-        The resize increment is resize_blocksize.  When append filsl the
-        current space (self.number_members == self.array_member_size)
-        a resize will be triggered.
         """
         pass
 
@@ -326,11 +493,10 @@ class Gather(BasciEnsembleArray):
     def __init__(
         self,
         mspass_object,
-        number_members=None,
+        capacity=None,
         npts=None,
         dt=None,
         array_type="numpy",
-        resize_blocksize=10,
     ):
         """
         Because in this design the base class only sets up the workspace
@@ -344,7 +510,7 @@ class Gather(BasciEnsembleArray):
           of a speciied size and assume the gather will be build by
           many calls to append.
 
-        :param number_members:  expected number of signals the gather
+        :param capacity :  expected number of signals the gather
           will eventually contain.  If None (default) the size is
           determined by the input ensemble.  If nonzero it should be
           a positive integer larger than the size of the ensemble passed
@@ -354,33 +520,32 @@ class Gather(BasciEnsembleArray):
         :param npts:  expected number of samples for all data in the gather
           If None, which is the default, it should be estimated from the
           input data.  Note mspass_object beng set None and this parameter
-          or number_members set None should cause an exception to be
+          or capacity set None should cause an exception to be
           raised.  Either that or it should be ignored and a warning
           message posted - probably a better idea.
 
-        dt, array_type, and resize_blocksize are as defined in the
+        dt, array_type are as defined in the
         base clsss.  They are passed directly to the base class
         construtor
         """
         # this is a rough prototype showing how the base clsss constructor
         # should be used.
         if mspass_object is None:
-            if number_members is None or npts is None:
+            if capacity is None or npts is None:
                 raise RuntimeError("illegal input ")
             super().__init__(
-                number_members,
+                capacity,
                 npts,
                 number_components=1,
                 dt=dt,
                 array_type=array_type,
-                resize_blocksize=resize_blocksize,
             )
         elif isinstance(mspass_object, TimeSeriesEnsemble):
             enssize = len(mspass_object.member)
-            if number_members is None:
+            if capacity is None:
                 nmem_to_use = enssize
             else:
-                if number_members < enssize:
+                if capacity < enssize:
                     nmem_to_use = enssize
                 else:
                     nmem_to_use = enssize
@@ -394,7 +559,6 @@ class Gather(BasciEnsembleArray):
                 number_components=1,
                 dt=dt,
                 array_type=array_type,
-                resize_blocksize=resize_blocksize,
             )
             # elo is assumed created in base clsss consructor
             self.elog.log_error("npts and input disageement", ErrorSeverity.Warning)
@@ -405,12 +569,11 @@ class Gather(BasciEnsembleArray):
             # this maybe could do with deepcopy but suspect the disk
             # arrays might not work
             super().__init__(
-                mspass_object.number_members,
+                mspass_object.capacity,
                 mspass_object.npts,
                 number_components=1,
                 dt=mspass_object.dt,
                 array_type=mspass_object.array_type,
-                resize_blocksize=mspass_object.resize_blocksize,
             )
             # additional code here to load other attributes to copy
         else:

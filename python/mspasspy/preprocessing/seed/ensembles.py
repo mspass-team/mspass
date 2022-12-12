@@ -15,8 +15,6 @@ from mspasspy.ccore.utility import (
     ProcessingHistory,
 )
 from mspasspy.ccore.seismic import TimeSeriesEnsemble
-
-# from mspasspy.io.converter import Trace2TimeSeries
 from mspasspy.util.converter import Trace2TimeSeries
 
 
@@ -924,7 +922,7 @@ the schema for ensemble doc:
     metadata : a dict that stores the ensemble's metadata
     member_metadata : a list of metadata for each member
     store_type = 'zarr' : we might support other storage?
-    zarr_group_path : str, the path of the zarr group 
+    zarr_group_path : str, the path of the zarr group
     zarr_arr_name : str, the name of the zarr array
 '''
 def read_basic_array_ensemble(db, ensemble_object, object_id):
@@ -975,4 +973,4 @@ class BasicArrayEnsemble:
         self.npartition = npartitions
         if(array_implementation == 'xarray'):
             self.member = xr.DataArray()
-    
+
