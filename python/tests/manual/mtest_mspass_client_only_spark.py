@@ -7,7 +7,13 @@ import sys
 sys.path.append("python/tests")
 
 
-with mock.patch.dict(sys.modules, {"dask": None, "dask.distributed": None,}):
+with mock.patch.dict(
+    sys.modules,
+    {
+        "dask": None,
+        "dask.distributed": None,
+    },
+):
     from mspasspy.client import Client
 
     class TestMsPASSClient2:
