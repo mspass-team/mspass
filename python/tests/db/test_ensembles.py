@@ -239,10 +239,13 @@ def test_ensembles():
     # Run all the data with this expanded interval to verify the
     # algorithm works with multiple stations in each call
     # Simple way to do that is to just not use base_query
-    enslist = TimeIntervalReader(db,starttime,endtime,
-                           collection="wf_TimeSeries",
-                           fix_overlaps=True,
-                           )
+    enslist = TimeIntervalReader(
+        db,
+        starttime,
+        endtime,
+        collection="wf_TimeSeries",
+        fix_overlaps=True,
+    )
     assert len(enslist) == 2
     for i in range(2):
         assert enslist[i].live()
