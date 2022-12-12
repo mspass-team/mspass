@@ -1,14 +1,11 @@
 import pymongo
 from mspasspy.ccore.utility import Metadata
-from mspasspy.ccore.seismic import (
-                                    TimeSeriesEnsemble,
-                                    TimeSeriesVector)
-from mspasspy.algorithms.window import WindowData,merge
-
+from mspasspy.ccore.seismic import TimeSeriesEnsemble, TimeSeriesVector
+from mspasspy.algorithms.window import WindowData, merge
 
 
 class seed_keys:
-    def __init__(self,doc):
+    def __init__(self, doc):
         if "net" in doc:
             self.net = doc["net"]
         else:
@@ -19,32 +16,39 @@ class seed_keys:
             self.loc = doc["loc"]
         else:
             self.loc = None
-    def __eq__(self,other):
-        if (other.net == self.net) and (other.sta == self.sta) \
-                    and (other.chan == self.chan) and (other.loc == self.loc):
+
+    def __eq__(self, other):
+        if (
+            (other.net == self.net)
+            and (other.sta == self.sta)
+            and (other.chan == self.chan)
+            and (other.loc == self.loc)
+        ):
             return True
         else:
             return False
-    def same_channel(self,other):
+
+    def same_channel(self, other):
         if (other.chan == self.chan) and (other.loc == self.loc):
             return True
         else:
             return False
-        
-          
 
-       
-def TimeIntervalReader(db,starttime,endtime,
-                           collection="wf_miniseed",
-                           base_query=None,
-                           fix_overlaps=False,
-                           zero_gaps=False,
-                           save_zombies=False,
-                           object_history=False,
-                           alg_name="TimeIntervalReader",
-                           alg_id=None,
-                           dryrun=False,               
-                       )->list:
+
+def TimeIntervalReader(
+    db,
+    starttime,
+    endtime,
+    collection="wf_miniseed",
+    base_query=None,
+    fix_overlaps=False,
+    zero_gaps=False,
+    save_zombies=False,
+    object_history=False,
+    alg_name="TimeIntervalReader",
+    alg_id=None,
+    dryrun=False,
+) -> list:
     """
     A common form of gather when handling continous data with UTC timing 
     is to carve out fixed time window.   Two common but different uses 
@@ -169,31 +173,32 @@ def TimeIntervalReader(db,starttime,endtime,
         query = dict(base_query)
     else:
         query = dict()
-    #query["$or"] = [
-     #           {"starttime" : {"$gte" : tstart, "$lte" : tend},
-      #          "endtime" : {"$gte" : tstart, "$lte" : tend} }   
-       #     ]
-    query["$and"] = [ {"starttime" : {"$lte":tend}}, {"endtime" : {"$gte" : tstart} }  ] 
-    sortlist = [ ("chan",pymongo.ASCENDING),
-                 ("loc",pymongo.ASCENDING),
-                 ("net",pymongo.ASCENDING),
-                 ("sta",pymongo.ASCENDING),
-                 ("starttime", pymongo.ASCENDING),
-                 ]
+    # query["$or"] = [
+    #           {"starttime" : {"$gte" : tstart, "$lte" : tend},
+    #          "endtime" : {"$gte" : tstart, "$lte" : tend} }
+    #     ]
+    query["$and"] = [{"starttime": {"$lte": tend}}, {"endtime": {"$gte": tstart}}]
+    sortlist = [
+        ("chan", pymongo.ASCENDING),
+        ("loc", pymongo.ASCENDING),
+        ("net", pymongo.ASCENDING),
+        ("sta", pymongo.ASCENDING),
+        ("starttime", pymongo.ASCENDING),
+    ]
     cursor = db[collection].find(query).sort(sortlist)
-    
-    ndocs=cursor.count()
-    
-    # We create an array of ensembles - one for each unique combination of 
+
+    ndocs = cursor.count()
+
+    # We create an array of ensembles - one for each unique combination of
     # chan and loc.
     count = 0
     ensemble_list = list()
     for doc in cursor:
-        if count==0:
+        if count == 0:
             current_keys = seed_keys(doc)
             current = _initialize_ensemble(doc, tstart, tend)
             segments = TimeSeriesVector()
-            datum = db.read_data(doc,collection=collection)
+            datum = db.read_data(doc, collection=collection)
             if datum.dead():
                 count += 1
                 continue
@@ -201,89 +206,91 @@ def TimeIntervalReader(db,starttime,endtime,
                 segments.append(datum)
         else:
             test_keys = seed_keys(doc)
-            # Handle the last item specially.  
-            if count >= ndocs-1:
-                datum = db.read_data(doc,collection=collection)
-                if test_keys == current_keys:       
-                    segments.append(datum)   
-                    if len(segments)==1:
-                        # I don't think this will ever be executed but 
+            # Handle the last item specially.
+            if count >= ndocs - 1:
+                datum = db.read_data(doc, collection=collection)
+                if test_keys == current_keys:
+                    segments.append(datum)
+                    if len(segments) == 1:
+                        # I don't think this will ever be executed but
                         # it makes the logic more robust
-                        datum = WindowData(segments[0],tstart,tend)
+                        datum = WindowData(segments[0], tstart, tend)
                     else:
-                        datum = merge(segments,
-                                  starttime=tstart,
-                                  endtime=tend,
-                                  fix_overlaps=fix_overlaps,
-                                  zero_gaps=zero_gaps,
-                                  object_history=object_history,
-                                  alg_name=alg_name,
-                                  alg_id=alg_id,
-                                  dryrun=dryrun
-                              )
+                        datum = merge(
+                            segments,
+                            starttime=tstart,
+                            endtime=tend,
+                            fix_overlaps=fix_overlaps,
+                            zero_gaps=zero_gaps,
+                            object_history=object_history,
+                            alg_name=alg_name,
+                            alg_id=alg_id,
+                            dryrun=dryrun,
+                        )
 
                     if datum.live or save_zombies:
                         current.member.append(datum)
                 else:
-                    # This is special cleanup code to handle 
+                    # This is special cleanup code to handle
                     # the case when the last doc defines a new segment
-                    # May be confusing because here we break the 
-                    # loop while if we are gluing segments we 
-                    # continue through the next block.   Because of 
-                    # the ordering of the data this block will only 
-                    # be entered if the last doc is a new net:sta:chan:loc 
-                    # that would otherwise initiate creation and appending 
+                    # May be confusing because here we break the
+                    # loop while if we are gluing segments we
+                    # continue through the next block.   Because of
+                    # the ordering of the data this block will only
+                    # be entered if the last doc is a new net:sta:chan:loc
+                    # that would otherwise initiate creation and appending
                     # of a new segments vector.
-                    datum = db.read_data(doc,collection=collection)
-                    datum = WindowData(datum,tstart,tend)
-                    if datum.live:    # do nothing further if dead
+                    datum = db.read_data(doc, collection=collection)
+                    datum = WindowData(datum, tstart, tend)
+                    if datum.live:  # do nothing further if dead
                         if current_keys.same_channel(test_keys):
                             current.member.append(datum)
-                        else: 
+                        else:
                             ensemble_list.append(current)
                             current = _initialize_ensemble(doc, tstart, tend)
                             current.member.append(datum)
-                               
-                # All cases for this cleanup have to push the latest 
-                # ensemble to the output that is returned after exiting 
+
+                # All cases for this cleanup have to push the latest
+                # ensemble to the output that is returned after exiting
                 # the loop
                 if len(current.member) > 0:
-                    # if all the contents of current are zombies this 
+                    # if all the contents of current are zombies this
                     # method will refuse to set current as live
                     current.set_live()
                 else:
                     # due to a feature of the C++ ensemble templates
-                    # this is not currently required but better to 
-                        # be explicit in this kill
-                    current.kill() 
+                    # this is not currently required but better to
+                    # be explicit in this kill
+                    current.kill()
                 ensemble_list.append(current)
-            
+
             elif test_keys != current_keys:
-                if len(segments)==1:
-                    datum = WindowData(segments[0],tstart,tend)
+                if len(segments) == 1:
+                    datum = WindowData(segments[0], tstart, tend)
                 else:
-                    datum = merge(segments,
-                                  starttime=tstart,
-                                  endtime=tend,
-                                  fix_overlaps=fix_overlaps,
-                                  zero_gaps=zero_gaps,
-                                  object_history=object_history,
-                                  alg_name=alg_name,
-                                  alg_id=alg_id,
-                                  dryrun=dryrun
-                              )
+                    datum = merge(
+                        segments,
+                        starttime=tstart,
+                        endtime=tend,
+                        fix_overlaps=fix_overlaps,
+                        zero_gaps=zero_gaps,
+                        object_history=object_history,
+                        alg_name=alg_name,
+                        alg_id=alg_id,
+                        dryrun=dryrun,
+                    )
                 # Merge can kill data for a variety of reasons
                 # The cutsy boolean name controls if the dead are retained
                 if datum.live or save_zombies:
                     current.member.append(datum)
-                # Decide if we need to start a new ensemble.  That 
+                # Decide if we need to start a new ensemble.  That
                 # happens here when the channel names do not match
-                # If they match we assume one of the other codes changed 
+                # If they match we assume one of the other codes changed
                 # so we initialize the segments vector
                 if current_keys.same_channel(test_keys):
                     current_keys = test_keys
                     segments = TimeSeriesVector()
-                    datum = db.read_data(doc,collection=collection)
+                    datum = db.read_data(doc, collection=collection)
                     if datum.live:
                         segments.append(datum)
                 else:
@@ -291,30 +298,31 @@ def TimeIntervalReader(db,starttime,endtime,
                         current.set_live()
                     else:
                         # due to a feature of the C++ ensemble templates
-                        # this is not currently required but better to 
+                        # this is not currently required but better to
                         # be explicit in this kill
                         current.kill()
                     # We always post current even if dead and empty
                     # caller needs to handle null returns.
                     ensemble_list.append(current)
-                    if count < ndocs-1:
+                    if count < ndocs - 1:
                         current = _initialize_ensemble(doc, tstart, tend)
                         current_keys = test_keys
                         segments = TimeSeriesVector()
-                        datum = db.read_data(doc,collection=collection)
+                        datum = db.read_data(doc, collection=collection)
                         if datum.live:
                             segments.append(datum)
 
             else:
-                datum = db.read_data(doc,collection=collection)
+                datum = db.read_data(doc, collection=collection)
                 segments.append(datum)
                 current_keys = test_keys
 
         count += 1
 
     return ensemble_list
-        
-def _initialize_ensemble(doc,tstart,tend)->TimeSeriesEnsemble:
+
+
+def _initialize_ensemble(doc, tstart, tend) -> TimeSeriesEnsemble:
     """
     Helper for above to do the repititious task of creating a skeleton 
     ensemble to be filled by atomic reads.  Creates a basic ensemble 
@@ -340,5 +348,4 @@ def _initialize_ensemble(doc,tstart,tend)->TimeSeriesEnsemble:
     else:
         md["loc"] = "Undefined"
     ens.update_metadata(md)
-    return ens   # Not returned ensemble is marked dead in construction in this context
-    
+    return ens  # Not returned ensemble is marked dead in construction in this context
