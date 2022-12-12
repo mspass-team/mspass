@@ -9,7 +9,7 @@ from mspasspy.ccore.seismic import (
     TimeSeries,
     TimeSeriesEnsemble,
     SeismogramEnsemble,
-    TimeSeriesVector
+    TimeSeriesVector,
 )
 from mspasspy.ccore.algorithms.basic import (
     TimeWindow,
@@ -17,7 +17,7 @@ from mspasspy.ccore.algorithms.basic import (
     _WindowData,
     _WindowData3C,
     repair_overlaps,
-    splice_segments
+    splice_segments,
 )
 from mspasspy.ccore.algorithms.amplitudes import (
     _scale,
@@ -431,7 +431,9 @@ def WindowData_with_duration(
         d.log_error("WindowData", str(err), ErrorSeverity.Invalid)
         d.kill()
         return d
-#@mspass_func_wrapper
+
+
+# @mspass_func_wrapper
 def merge(
     tsvector,
     starttime=None,
@@ -442,7 +444,7 @@ def merge(
     alg_name="merge",
     alg_id=None,
     dryrun=False,
-    )->TimeSeries:
+) -> TimeSeries:
     """
     Splices a vector of TimeSeries objects together and optionally carves 
     out a specified time window.  It acts a bit like an obspy function 
@@ -604,7 +606,7 @@ def merge(
       time range.  The result may be marked dead for a variety of reasons 
       with error messages explaining why in the return elog attribute. 
     """
-    if not isinstance(tsvector,TimeSeriesVector):
+    if not isinstance(tsvector, TimeSeriesVector):
         # We assume this will throw an exception if tsvector is not iterable
         # or doesn't contain TimeSeries objects
         dvector = TimeSeriesVector()
@@ -614,12 +616,12 @@ def merge(
         dvector = tsvector
     if fix_overlaps:
         dvector = repair_overlaps(dvector)
-    spliced_data = splice_segments(dvector,object_history)
+    spliced_data = splice_segments(dvector, object_history)
     if spliced_data.dead():
-        # the contents of spliced_data could be huge so best to 
+        # the contents of spliced_data could be huge so best to
         # do this to effectively clear the data vector
         spliced_data.set_npts(0)
-        return(TimeSeries(spliced_data))
+        return TimeSeries(spliced_data)
     window_data = False
     output_window = TimeWindow()
     if starttime is None:
@@ -639,11 +641,17 @@ def merge(
                 spliced_data = _post_gap_data(spliced_data)
             else:
                 spliced_data.kill()
-                spliced_data.elog.log_error("merge",
-                            "Data have gaps in output range; will be killed",
-                            ErrorSeverity.Invalid)
-        return WindowData(spliced_data,
-            output_window.start, output_window.end, object_history=object_history)
+                spliced_data.elog.log_error(
+                    "merge",
+                    "Data have gaps in output range; will be killed",
+                    ErrorSeverity.Invalid,
+                )
+        return WindowData(
+            spliced_data,
+            output_window.start,
+            output_window.end,
+            object_history=object_history,
+        )
     else:
         if spliced_data.has_gaps():
             if zero_gaps:
@@ -651,11 +659,14 @@ def merge(
                 spliced_data = _post_gap_data(spliced_data)
             else:
                 spliced_data.kill()
-                spliced_data.elog.log_error("merge",
-                            "merged data have gaps; output will be killed",
-                            ErrorSeverity.Invalid)
+                spliced_data.elog.log_error(
+                    "merge",
+                    "merged data have gaps; output will be killed",
+                    ErrorSeverity.Invalid,
+                )
         return TimeSeries(spliced_data)
-       
+
+
 def _post_gap_data(d):
     """
     Private function used by merge immediately above.   Takes an input 
@@ -666,16 +677,17 @@ def _post_gap_data(d):
     if d.has_gap():
         d["has_gaps"] = True
         twlist = d.get_gaps()
-        # to allow the result to more cleanly stored to MongoDB we 
-        # convert the window data to list of python dictionaries which 
-        # mongo will use to create subdocuments 
+        # to allow the result to more cleanly stored to MongoDB we
+        # convert the window data to list of python dictionaries which
+        # mongo will use to create subdocuments
         gaps = []
         for tw in twlist:
-            g = {"starttime" : tw.start, "endtime" : tw.end}
+            g = {"starttime": tw.start, "endtime": tw.end}
             gaps.append(g)
         d["gaps"] = gaps
     return d
-            
+
+
 class TopMute:
     """
     A top mute is a form of taper applied to the "front" of a signal.
