@@ -201,11 +201,15 @@ def test_ensembles():
     
     # this will work because the time interval matches start time of 
     # overlapping section
-    base_query = {"sta" : "Overlap10Bad"}
-    enslist = TimeIntervalReader(db,starttime,endtime,
-                           collection="wf_TimeSeries",
-                           fix_overlaps=True,
-                           base_query=base_query)
+    base_query = {"sta": "Overlap10Bad"}
+    enslist = TimeIntervalReader(
+        db,
+        starttime,
+        endtime,
+        collection="wf_TimeSeries",
+        fix_overlaps=True,
+        base_query=base_query,
+    )
     assert len(enslist) == 2
     for i in range(2):
         assert enslist[i].live()
