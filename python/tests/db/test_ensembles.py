@@ -65,7 +65,7 @@ def test_ensembles():
     number_segs = 3
     t=t0
     for i in range(number_segs):
-        ts = make_one_ts(t,t+trange,sta=sta,chan="BHZ")
+        ts = make_one_ts(t, t + trange, sta=sta, chan="BHZ")
         ts["source_id"] = source_id
         ts["channel_id"] = channel_id_z
         db.save_data(ts,collection="wf_TimeSeries")
