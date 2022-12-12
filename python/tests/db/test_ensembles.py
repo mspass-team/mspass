@@ -78,7 +78,7 @@ def test_ensembles():
     # This group is the same but will have a gap of 10 samples between
     # each TimeSeries saved
     sta = "GAP10"
-    t=t0
+    t = t0
     doc["rlon"] = rlon + 10.0
     doc["chan"] = "BHZ"
     channel_id_z = db.channel.insert_one(doc).inserted_id
