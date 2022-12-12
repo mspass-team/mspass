@@ -72,7 +72,7 @@ def test_ensembles():
         ts = make_one_ts(t, t + trange, sta=sta, chan="BH1")
         ts["source_id"] = source_id
         ts["channel_id"] = channel_id_h
-        db.save_data(ts,collection="wf_TimeSeries")
+        db.save_data(ts, collection="wf_TimeSeries")
         t += trange
     
     # This group is the same but will have a gap of 10 samples between 
