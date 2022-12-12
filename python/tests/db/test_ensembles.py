@@ -269,4 +269,3 @@ def test_ensembles():
     assert enslist[1]["chan"] == "BHZ"
     assert len(enslist[0].member) == 3
     assert len(enslist[1].member) == 3
-    
