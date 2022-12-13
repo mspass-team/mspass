@@ -5,7 +5,7 @@ from mspasspy.ccore.seismic import (
     Seismogram,
     TimeSeriesEnsemble,
     SeismogramEnsemble)
-from mspaspy.util.converter import (
+from mspasspy.util.converter import (
     Trace2TimeSeries,
     TimeSeries2Trace,
     Seismogram2Stream,
@@ -110,7 +110,7 @@ class ObspyResampler(BasicResampler):
         """
         """
         super().__init__(sampling_rate=sampling_rate)
-        self.window=window,
+        self.window=window
         self.no_filter=no_filter
         self.strict_length=strict_length
         
@@ -134,22 +134,14 @@ class ObspyResampler(BasicResampler):
         elif isinstance(mspass_object,TimeSeriesEnsemble):
             for i in len(mspass_object.member):
                 d = mspass_object.member[i]
-                decfac = self.dec_factor(d)
-                if decfac<=0:
-                    message = self.make_illegal_decimator_message(d.dt)
-                    mspass_object.member[i].elog.log_error(
-                        "ObspyDecimator.resample",
-                        message,
-                        ErrorSeverity.Invalid
+                tr = TimeSeries2Trace(d)
+                tr.resample(self.samprate,
+                        window=self.window,
+                        no_filter=self.no_filter,
+                        strict_length=self.strict_length,
                         )
-                    mspass_object.member[i].kill()
-                else:
-                    tr = TimeSeries2Trace(d)
-                    tr.decimate(decfac,
-                                    no_filter=self.no_filter,
-                                    strict_length=self.strict_length,
-                                )
-                    mspass_object.member[i] = Trace2TimeSeries(tr)
+                mspass_object.member[i] = Trace2TimeSeries(tr)
+            return mspass_object
         elif isinstance(mspass_object,SeismogramEnsemble):
             strm = SeismogramEnsemble2Stream(mspass_object)
             strm.resample(self.samprate,
@@ -223,7 +215,7 @@ class ObspyDecimator(BasicResampler):
         # internal use guarantees this can only be TimeSeries or Seismogram
         # so this resolves
         d_dt = d.dt
-        float_dfac=d_dt/self.dt
+        float_dfac=self.dt/d_dt
         int_dfac=int(float_dfac)
         # This perhaps should use a softer constraint than default
         if np.isclose(float_dfac,float(int_dfac)):
@@ -257,14 +249,14 @@ class ObspyDecimator(BasicResampler):
         if isinstance(mspass_object,(TimeSeries,Seismogram,TimeSeriesEnsemble,SeismogramEnsemble)):
             if mspass_object.dead():
                 return mspass_object
-            else:
-                message = "ObspyDecimator.resample: received unsupported data type="+str(type(mspass_object))
-                raise TypeError(message)
+        else:
+            message = "ObspyDecimator.resample: received unsupported data type="+str(type(mspass_object))
+            raise TypeError(message)
         if isinstance(mspass_object,TimeSeries):
-            decfac=self.dec_factor(mspass_object)
+            decfac=self._dec_factor(mspass_object)
             if decfac<=0:
                 mspass_object.kill()
-                message = self.make_illegal_decimator_message(decfac,mspass_object.dt)
+                message = self._make_illegal_decimator_message(decfac,mspass_object.dt)
                 mspass_object.elog.log_error(
                         "ObspyDecimator.resample",
                         message,
@@ -278,10 +270,10 @@ class ObspyDecimator(BasicResampler):
                         )
                 mspass_object = Trace2TimeSeries(tr)
         elif isinstance(mspass_object,Seismogram):
-            decfac=self.dec_factor(mspass_object)
+            decfac=self._dec_factor(mspass_object)
             if decfac<=0:
                 mspass_object.kill()
-                message = self.make_illegal_decimator_message(decfac,mspass_object.dt)
+                message = self._make_illegal_decimator_message(decfac,mspass_object.dt)
                 mspass_object.elog.log_error(
                         "ObspyDecimator.resample",
                         message,
@@ -298,9 +290,9 @@ class ObspyDecimator(BasicResampler):
         elif isinstance(mspass_object,TimeSeriesEnsemble):
             for i in len(mspass_object.member):
                 d = mspass_object.member[i]
-                decfac = self.dec_factor(d)
+                decfac = self._dec_factor(d)
                 if decfac<=0:
-                    message = self.make_illegal_decimator_message(decfac,d.dt)
+                    message = self._make_illegal_decimator_message(decfac,d.dt)
                     mspass_object.member[i].elog.log_error(
                         "ObspyDecimator.resample",
                         message,
@@ -321,9 +313,9 @@ class ObspyDecimator(BasicResampler):
         # list of data types changes
             for i in len(mspass_object.member):
                 d = mspass_object.member[i]
-                decfac = self.dec_factor(d)
+                decfac = self._dec_factor(d)
                 if decfac<=0:
-                    message = self.make_illegal_decimator_message(decfac,d.dt)
+                    message = self._make_illegal_decimator_message(decfac,d.dt)
                     mspass_object.member[i].elog.log_error(
                         "ObspyDecimator.resample",
                         message,
@@ -333,7 +325,7 @@ class ObspyDecimator(BasicResampler):
                 else:
                     strm = Seismogram2Stream(mspass_object)
                     for tr in strm:
-                        decfac = self.dec_factor(tr)
+                        decfac = self._dec_factor(tr)
                         tr.decimate(decfac,
                                     no_filter=self.no_filter,
                                     strict_length=self.strict_length,
