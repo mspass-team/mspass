@@ -260,9 +260,9 @@ class ScipyDecimator(BasicResampler):
         Returns decimation factor to use for atomic data d.  
         d can be a mspass atomic type or an obspy Trace. 
         Uses np.isclose to establish if the sample interval is feasible.
-        If so it returns the decimation factor as an integer that should be 
-        used on d.   Returns -1 if the sample rate is irregular and 
-        is not close enough to be an integer multiple.  Return 0 if 
+        If so it returns the decimation factor as an integer that should be
+        used on d.   Returns -1 if the sample rate is irregular and
+        is not close enough to be an integer multiple.  Return 0 if
         the data dt would require upsampling
         """
         # internal use guarantees this can only be TimeSeries or Seismogram
