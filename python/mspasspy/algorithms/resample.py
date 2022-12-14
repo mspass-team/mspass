@@ -289,8 +289,10 @@ class ScipyDecimator(BasicResampler):
                 ddt=data_dt, sdt=self.dt
             )
         else:
-            message = "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
-                ddt=data_dt, sdt=self.dt
+            message = (
+                "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
+                    ddt=data_dt, sdt=self.dt
+                )
             )
         return message
 
