@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
-from mspasspy.ccore.utility import MsPASSError,ErrorSeverity
+from mspasspy.ccore.utility import MsPASSError,ErrorSeverity,dmatrix
 from mspasspy.ccore.seismic import (
     TimeSeries,
     Seismogram,
     TimeSeriesEnsemble,
-    SeismogramEnsemble)
+    SeismogramEnsemble,
+    DoubleVector)
 from mspasspy.util.converter import (
     Trace2TimeSeries,
     TimeSeries2Trace,
@@ -15,6 +16,7 @@ from mspasspy.util.converter import (
     )
 
 import numpy as np
+from scipy import signal
 
 class BasicResampler(ABC):
     """
@@ -102,11 +104,20 @@ class ObspyResampler(BasicResampler):
     to the resample methods of Trace/Stream.  See the obspy documentation 
     for detailed description and limitations.  
     
+    TODO:  Assimilate this text somewhere when above is rewritten
+    
+    The "window" argument has some complexity.   Most users likely will 
+    want to use the default, but a number of options are available within 
+    the scipy resample function including custom windows passed through 
+    a special interface using a python function to generate the window.  
+    Details on this advanced topic can be found in the documentation for 
+    scipy resample and the link found there to scipy.signal.get_window.  
+    
     The primary method of this class is a concrete implementation of the 
     resample method.  
     
     """
-    def __init__(self,sampling_rate, window="hann",no_filter=True, strict_length=False):
+    def __init__(self,sampling_rate, window="hanning",no_filter=True, strict_length=False):
         """
         """
         super().__init__(sampling_rate=sampling_rate)
@@ -115,44 +126,45 @@ class ObspyResampler(BasicResampler):
         self.strict_length=strict_length
         
     def resample(self,mspass_object):
-        if isinstance(mspass_object,TimeSeries):
-            tr = TimeSeries2Trace(mspass_object)
-            tr.resample(self.samprate,
-                        window=self.window,
-                        no_filter=self.no_filter,
-                        strict_length=self.strict_length,
-                        )
-            return Trace2TimeSeries(tr)
-        elif isinstance(mspass_object,Seismogram):
-            strm = Seismogram2Stream(mspass_object)
-            strm.resample(self.samprate,
-                        window=self.window,
-                        no_filter=self.no_filter,
-                        strict_length=self.strict_length,
-                        )
-            return Stream2Seismogram(strm)
-        elif isinstance(mspass_object,TimeSeriesEnsemble):
-            for i in len(mspass_object.member):
-                d = mspass_object.member[i]
-                tr = TimeSeries2Trace(d)
-                tr.resample(self.samprate,
-                        window=self.window,
-                        no_filter=self.no_filter,
-                        strict_length=self.strict_length,
-                        )
-                mspass_object.member[i] = Trace2TimeSeries(tr)
-            return mspass_object
-        elif isinstance(mspass_object,SeismogramEnsemble):
-            strm = SeismogramEnsemble2Stream(mspass_object)
-            strm.resample(self.samprate,
-                        window=self.window,
-                        no_filter=self.no_filter,
-                        strict_length=self.strict_length,
-                        )
-            return Stream2SeismogramEnsemble(strm)
+        # We do this test at the top to avoid having returns testing for 
+        # a dead datum in each of the if conditional blocks below
+        if isinstance(mspass_object,(TimeSeries,Seismogram,TimeSeriesEnsemble,SeismogramEnsemble)):
+            if mspass_object.dead():
+                return mspass_object
         else:
             message = "ObspyResampler.resample: received unsupported data type="+str(type(mspass_object))
             raise TypeError(message)
+            
+        if isinstance(mspass_object,TimeSeries):
+            data_time_span = mspass_object.endtime()-mspass_object.t0+mspass_object.dt
+            n_resampled = int(data_time_span*self.samprate)
+            rsdata = signal.resample(mspass_object.data,n_resampled,
+                                     window=self.window)
+            mspass_object.set_npts(n_resampled)
+            mspass_object.dt = self.dt
+            # We have to go through this conversion to avoid TypeError exceptions 
+            # i.e we can't just copy the entire vector rsdata to the data vector
+            dv = DoubleVector(rsdata)
+            mspass_object.data=dv
+        elif isinstance(mspass_object,Seismogram):
+            data_time_span = mspass_object.endtime()-mspass_object.t0+mspass_object.dt
+            n_resampled = int(data_time_span*self.samprate)
+            rsdata = signal.resample(mspass_object.data,n_resampled,
+                                     window=self.window,axis=1)
+            mspass_object.set_npts(n_resampled)
+            mspass_object.dt = self.dt
+            # We have to go through this conversion to avoid TypeError exceptions 
+            # i.e we can't just copy the entire vector rsdata to the data vector
+            dm = dmatrix(rsdata)
+            mspass_object.data=dm
+        else:
+        # The else above is equivalent to the following:
+        # elif isinstance(mspass_object,(TimeSeriesEnsemble,SeismogramEnsemble)):
+        # Change if additional data object support is added 
+            for d in mspass_object.member:
+                self.resample(d)
+
+        return mspass_object
             
 class ObspyDecimator(BasicResampler):
     """
@@ -196,12 +208,12 @@ class ObspyDecimator(BasicResampler):
         https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.decimate.html
     for Stream.  The docstring for Trace is nearly identical.
     """
-    def __init__(self,sampling_rate,no_filter=True, strict_length=False):
+    def __init__(self,sampling_rate,ftype="iir",zero_phase=True):
         """
         """
         super().__init__(sampling_rate=sampling_rate)
-        self.no_filter=no_filter
-        self.strict_length=strict_length
+        self.ftype=ftype
+        self.zero_phase=zero_phase
     def _dec_factor(self,d):
         """
         Returns decimation factor to use for atomic data d.  
@@ -252,6 +264,8 @@ class ObspyDecimator(BasicResampler):
         else:
             message = "ObspyDecimator.resample: received unsupported data type="+str(type(mspass_object))
             raise TypeError(message)
+            
+            
         if isinstance(mspass_object,TimeSeries):
             decfac=self._dec_factor(mspass_object)
             if decfac<=0:
@@ -262,13 +276,20 @@ class ObspyDecimator(BasicResampler):
                         message,
                         ErrorSeverity.Invalid
                         )
-            else:    
-                tr = TimeSeries2Trace(mspass_object)
-                tr.decimate(decfac,
-                        no_filter=self.no_filter,
-                        strict_length=self.strict_length,
-                        )
-                mspass_object = Trace2TimeSeries(tr)
+            else:
+                dsdata = signal.decimate(mspass_object.data,
+                                         decfac,
+                                         ftype=self.ftype,
+                                         zero_phase=self.zero_phase,
+                                         )
+                dsdata_npts = len(dsdata)
+                mspass_object.set_npts(dsdata_npts)
+                mspass_object.dt = self.dt
+                # We have to go through this conversion to avoid TypeError exceptions 
+                # i.e we can't just copy the entire vector rsdata to the data vector
+                mspass_object.data=DoubleVector(dsdata)
+                
+                
         elif isinstance(mspass_object,Seismogram):
             decfac=self._dec_factor(mspass_object)
             if decfac<=0:
@@ -280,57 +301,28 @@ class ObspyDecimator(BasicResampler):
                         ErrorSeverity.Invalid
                         )
             else:
-                strm = Seismogram2Stream(mspass_object)
-                for tr in strm:
-                    tr.decimate(decfac,
-                        no_filter=self.no_filter,
-                        strict_length=self.strict_length,
-                     )
-                mspass_object = Stream2Seismogram(strm)
-        elif isinstance(mspass_object,TimeSeriesEnsemble):
-            for i in len(mspass_object.member):
-                d = mspass_object.member[i]
-                decfac = self._dec_factor(d)
-                if decfac<=0:
-                    message = self._make_illegal_decimator_message(decfac,d.dt)
-                    mspass_object.member[i].elog.log_error(
-                        "ObspyDecimator.resample",
-                        message,
-                        ErrorSeverity.Invalid
-                        )
-                    mspass_object.member[i].kill()
-                else:
-                    tr = TimeSeries2Trace(mspass_object)
-                    tr.decimate(decfac,
-                                    no_filter=self.no_filter,
-                                    strict_length=self.strict_length,
-                                )
-                    mspass_object.member[i] = Trace2TimeSeries(tr)
+                dsdata = signal.decimate(mspass_object.data,
+                                         decfac,
+                                         axis=1,
+                                         ftype=self.ftype,
+                                         zero_phase=self.zero_phase,
+                                         )
+                # Seismogram stores data as a 3xnpts matrix.  numpy 
+                # uses the shape attribute to hold rowsxcolumns
+                msize = dsdata.shape
+                dsdata_npts = msize[1]
+                mspass_object.set_npts(dsdata_npts)
+                mspass_object.dt = self.dt
+                # We have to go through this conversion to avoid TypeError exceptions 
+                # i.e we can't just copy the entire vector rsdata to the data vector
+                mspass_object.data=dmatrix(dsdata)
+        
         else:
-        # This block is assumed equivalent to 
-        # elif isinstance(mspass_object,SeismogramEnsemble):
-        # because of isinstance test at the top.  Careful if the supported 
-        # list of data types changes
-            for i in len(mspass_object.member):
-                d = mspass_object.member[i]
-                decfac = self._dec_factor(d)
-                if decfac<=0:
-                    message = self._make_illegal_decimator_message(decfac,d.dt)
-                    mspass_object.member[i].elog.log_error(
-                        "ObspyDecimator.resample",
-                        message,
-                        ErrorSeverity.Invalid
-                        )
-                    mspass_object.member[i].kill()
-                else:
-                    strm = Seismogram2Stream(mspass_object)
-                    for tr in strm:
-                        decfac = self._dec_factor(tr)
-                        tr.decimate(decfac,
-                                    no_filter=self.no_filter,
-                                    strict_length=self.strict_length,
-                                )
-                    d = Stream2Seismogram(strm)
-                    mspass_object.member[i] = d
-
+        # else here is equivalent to this:
+        # elif isinstance(mspass_object,(TimeSeriesEnsemble,SeismogramEnsemble)):
+        # Change if we add support for additional data objects like gather 
+        # version of ensemble currently under construction
+            for d in mspass_object.member:
+                self.resample(d)
+        
         return mspass_object
