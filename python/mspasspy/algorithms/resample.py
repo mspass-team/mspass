@@ -22,13 +22,13 @@ from scipy import signal
 
 class BasicResampler(ABC):
     """
-    Base class for family of resampling operators.   All this class really does is 
-    define the interface and standardize the target of the operator.  
-    A key concept of this family of operator is they are intended to 
-    be used in a map operator to regularize the sample rate to a 
-    constant.   Hence, the base class defines that constant output 
-    sample rate (alternatively the sample interval, dt).  
-    
+    Base class for family of resampling operators.   All this class really does is
+    define the interface and standardize the target of the operator.
+    A key concept of this family of operator is they are intended to
+    be used in a map operator to regularize the sample rate to a
+    constant.   Hence, the base class defines that constant output
+    sample rate (alternatively the sample interval, dt).
+
     ALL implementations must recognize a couple fundamental concepts:
         1.  This is intended to ONLY be used on waveform segments.   
             The problem of resampling continuous data requires different 
