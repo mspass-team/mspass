@@ -43,7 +43,6 @@ class BasicResampler(ABC):
     This is a sketch of an algorithm is pseudopython code showing how
     a typical instance of this class (in the example ScipyResampler)
     would be used in  parallel workflow sketch:
-        
     .. rubric:: Example
     
     resamp_op = ScipyResampler(10.0)   # target sample rate of 10 sps
