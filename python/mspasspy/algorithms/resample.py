@@ -281,7 +281,7 @@ class ScipyDecimator(BasicResampler):
     def _make_illegal_decimator_message(self, error_code, data_dt):
         """
         Private method to format a common message if the data's sample
-        interval, data_dt, is not feasible to produce by decimation. 
+        interval, data_dt, is not feasible to produce by decimation.
         The error message is the return
         """
         if error_code == 0:
