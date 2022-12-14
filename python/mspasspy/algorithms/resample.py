@@ -58,7 +58,7 @@ class BasicResampler(ABC):
     with a uniform sample rate.   All implementations should also
     follow the MsPASS rule for parallel algorithms to kill data that
     cannot be handled and not throw exceptions unless the whole usage is
-    wrong.  
+    wrong.
     """
 
     def __init__(self, dt=None, sampling_rate=None):
