@@ -44,7 +44,7 @@ class BasicResampler(ABC):
         
     .. rubric:: Example
     
-    ro = ObspyResampler(10.0)   # target sample rate of 10 sps
+    ro = ScipyResampler(10.0)   # target sample rate of 10 sps
     cursor = db.TimeSeries.find({})
     bag = read_distributed_data(cursor,collection="wf_TimeSeries")
     bag = bag.map(ro.resample)
@@ -75,7 +75,7 @@ class BasicResampler(ABC):
         """
         pass
     
-class ObspyResampler(BasicResampler):
+class ScipyResampler(BasicResampler):
     """
     This class is a wrapper for obspy's resample algorithm they implement 
     as a method of their Trace and Stream objects.  Note the obpsy methods are 
@@ -97,7 +97,7 @@ class ObspyResampler(BasicResampler):
     oddball data like that from Scripps OBS instruments.  Most data 
     are probably best downsampled to a common sample rate with a 
     decimate algorithm whenever possible.   We have implemented a 
-    compable wrapper to this one for decimate called ObspyDecimator. 
+    compable wrapper to this one for decimate called ScipyDecimator. 
     
     
     All the arguments to the constructor are identical (in name an concept)
@@ -132,7 +132,7 @@ class ObspyResampler(BasicResampler):
             if mspass_object.dead():
                 return mspass_object
         else:
-            message = "ObspyResampler.resample: received unsupported data type="+str(type(mspass_object))
+            message = "ScipyResampler.resample: received unsupported data type="+str(type(mspass_object))
             raise TypeError(message)
             
         if isinstance(mspass_object,TimeSeries):
@@ -166,7 +166,7 @@ class ObspyResampler(BasicResampler):
 
         return mspass_object
             
-class ObspyDecimator(BasicResampler):
+class ScipyDecimator(BasicResampler):
     """
     Wrapper to utilize obspy's decimate operator (actually scipy's decimate)
     to automatically resample a set set through a map operator following 
@@ -262,7 +262,7 @@ class ObspyDecimator(BasicResampler):
             if mspass_object.dead():
                 return mspass_object
         else:
-            message = "ObspyDecimator.resample: received unsupported data type="+str(type(mspass_object))
+            message = "ScipyDecimator.resample: received unsupported data type="+str(type(mspass_object))
             raise TypeError(message)
             
             
@@ -272,7 +272,7 @@ class ObspyDecimator(BasicResampler):
                 mspass_object.kill()
                 message = self._make_illegal_decimator_message(decfac,mspass_object.dt)
                 mspass_object.elog.log_error(
-                        "ObspyDecimator.resample",
+                        "ScipyDecimator.resample",
                         message,
                         ErrorSeverity.Invalid
                         )
@@ -296,7 +296,7 @@ class ObspyDecimator(BasicResampler):
                 mspass_object.kill()
                 message = self._make_illegal_decimator_message(decfac,mspass_object.dt)
                 mspass_object.elog.log_error(
-                        "ObspyDecimator.resample",
+                        "ScipyDecimator.resample",
                         message,
                         ErrorSeverity.Invalid
                         )
