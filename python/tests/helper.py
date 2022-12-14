@@ -82,10 +82,11 @@ def get_sin_timeseries(ts_size=255, sampling_rate=20.0):
 
 
 def get_live_seismogram_ensemble(n):
-    seis_e = SeismogramEnsemble()
+    seis_e = SeismogramEnsemble() 
     for i in range(n):
         seis = get_live_seismogram()
         seis_e.member.append(seis)
+    seis_e.set_live()
     return seis_e
 
 
@@ -94,6 +95,7 @@ def get_live_timeseries_ensemble(n):
     for i in range(n):
         ts = get_live_timeseries()
         tse.member.append(ts)
+    tse.set_live()
     return tse
 
 
