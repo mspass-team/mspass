@@ -298,15 +298,15 @@ class ScipyDecimator(BasicResampler):
 
     def resample(self, mspass_object):
         """
-        Implementation of required abstract method for this operator.   
-        The only argument is mspass_object.   The operator will downsample 
-        the contents of the sample data container for any valid input.  
-        If the input is not a mspass data object (i.e. atomic TimeSeries 
-        or Seismogram) or one of the enemble objects it will throw a 
-        TypeError exception.   
-        
-        Returns an edited clone of the input with revised sample data but 
-        no changes to any Metadata.  
+        Implementation of required abstract method for this operator.
+        The only argument is mspass_object.   The operator will downsample
+        the contents of the sample data container for any valid input.
+        If the input is not a mspass data object (i.e. atomic TimeSeries
+        or Seismogram) or one of the enemble objects it will throw a
+        TypeError exception.
+
+        Returns an edited clone of the input with revised sample data but
+        no changes to any Metadata.
         """
         # We do this test at the top to avoid having returns testing for
         # a dead datum in each of the if conditional blocks below
