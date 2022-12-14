@@ -30,18 +30,18 @@ class BasicResampler(ABC):
     sample rate (alternatively the sample interval, dt).
 
     ALL implementations must recognize a couple fundamental concepts:
-        1.  This is intended to ONLY be used on waveform segments.   
-            The problem of resampling continuous data requires different 
-            algorithms.  The reason is boundary effects.  All 
-            implementations are subject to edge transients.  How the 
-            implementation does or does not handle that issue is 
-            viewed as an implementation detail, 
-        2.  Downsampling ALWAYS requires some method to avoid aliasing of 
-            the output.  How that is done is considered an implementation 
-            detail. 
-            
-    This is a sketch of an algorithm is pseudopython code showing how 
-    a typical instance of this class (in the example ScipyResampler) 
+        1.  This is intended to ONLY be used on waveform segments.
+            The problem of resampling continuous data requires different
+            algorithms.  The reason is boundary effects.  All
+            implementations are subject to edge transients.  How the
+            implementation does or does not handle that issue is
+            viewed as an implementation detail,
+        2.  Downsampling ALWAYS requires some method to avoid aliasing of
+            the output.  How that is done is considered an implementation
+            detail.
+
+    This is a sketch of an algorithm is pseudopython code showing how
+    a typical instance of this class (in the example ScipyResampler)
     would be used in  parallel workflow sketch:
         
     .. rubric:: Example
