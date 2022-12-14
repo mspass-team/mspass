@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
-from mspasspy.ccore.utility import MsPASSError,ErrorSeverity,dmatrix
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, dmatrix
 from mspasspy.ccore.seismic import (
     TimeSeries,
     Seismogram,
     TimeSeriesEnsemble,
     SeismogramEnsemble,
-    DoubleVector)
+    DoubleVector,
+)
 from mspasspy.util.converter import (
     Trace2TimeSeries,
     TimeSeries2Trace,
@@ -13,14 +14,15 @@ from mspasspy.util.converter import (
     Stream2Seismogram,
     SeismogramEnsemble2Stream,
     Stream2SeismogramEnsemble,
-    )
+)
 
 import numpy as np
 from scipy import signal
 
+
 class BasicResampler(ABC):
     """
-    Base class for family of resampling operators.   All it really does is 
+    Base class for family of resampling operators.   All this class really does is 
     define the interface and standardize the target of the operator.  
     A key concept of this family of operator is they are intended to 
     be used in a map operator to regularize the sample rate to a 
@@ -39,34 +41,43 @@ class BasicResampler(ABC):
             detail. 
             
     This is a sketch of an algorithm is pseudopython code showing how 
-    a typical instance of this class (in the sample ObspyResampler) 
-    would be used in  parallel workflow:
+    a typical instance of this class (in the example ScipyResampler) 
+    would be used in  parallel workflow sketch:
         
     .. rubric:: Example
     
-    ro = ScipyResampler(10.0)   # target sample rate of 10 sps
+    resamp_op = ScipyResampler(10.0)   # target sample rate of 10 sps
     cursor = db.TimeSeries.find({})
     bag = read_distributed_data(cursor,collection="wf_TimeSeries")
-    bag = bag.map(ro.resample)
+    bag = bag.map(resamp_op.resample)
     bag.map(db.save_data())
     bag.compute()
     
-    
+    A point to emphasize is the model is to generate the operator 
+    through a constructor (ScipResampler in the example) that defines 
+    the target sample rate.  All data passed through that operator 
+    through the map operator call will be returned to create a bag/rdd 
+    with a uniform sample rate.   All implementations should also 
+    follow the MsPASS rule for parallel algorithms to kill data that 
+    cannot be handled and not throw exceptions unless the whole usage is
+    wrong.  
     """
-    def __init__(self,dt=None,sampling_rate=None):
+
+    def __init__(self, dt=None, sampling_rate=None):
         if dt and sampling_rate:
             raise MsPASSError(
-                  "BasicResample:  usage error.  Specify either dt or sampling_rate.  You defined both",
-                  ErrorSeverity.Fatal
-                )
+                "BasicResample:  usage error.  Specify either dt or sampling_rate.  You defined both",
+                ErrorSeverity.Fatal,
+            )
         if dt:
             self.dt = dt
             self.samprate = sampling_rate
         elif sampling_rate:
-            self.dt = 1.0/sampling_rate
+            self.dt = 1.0 / sampling_rate
             self.samprate = sampling_rate
+
     @abstractmethod
-    def resample(self,mspass_object):
+    def resample(self, mspass_object):
         """
         Main operator a concrete class must implement.  It should accept 
         any mspass data object and return a clone that has been resampled 
@@ -74,147 +85,179 @@ class BasicResampler(ABC):
         
         """
         pass
-    
+
+
 class ScipyResampler(BasicResampler):
     """
-    This class is a wrapper for obspy's resample algorithm they implement 
-    as a method of their Trace and Stream objects.  Note the obpsy methods are 
-    themselves only a wrapper for ascipy function with the same name. 
-    The algorithm and its limitations are described in the obpsy and scipy 
+    This class is a wrapper for the scipy resample algorithm.  Obspy users 
+    should note that the Trace and Stream method called "resample" 
+    is only a light wrapper to apply the scipy resample function.   
+     
+    The algorithm and its limitations are described in the scipy 
     documentation you can easily find with a web search.   A key point 
     about this algorithm is that unlike decimate it allows resampling to 
-    something not an integer multiple or division from the input.  
+    something not an integer multiple or division from the input OR
+    if you need to upsample data to match the rest of the data set 
+    (Note that is not usually a good idea unless the upsampling is followed 
+     by a decimator to get all data to a lower, uniform sample rate.)
     A type example where that is essential is some old OBS data from 
     Scripps instruments that had a sample rate that was a multiple of 
-    one of the more standard rates like 20 or 100.   Anti-aiasing is handled 
-    automatically by default, but can be imposed externally and overriden 
-    using the no_filter option.  
+    one of the more standard rates like 20 or 100.  Such data can be 
+    downsampled immediately too something like 10 sps with this operator 
+    or upsampled to something like 50 and then downsampled to something 
+    like 10 with a factor of 5 decimator.   
     
-    I (glp) have no practical experience with this implementation in obspy.
-    There are hints that it is subject to a somewhat universal tradeoff 
-    between flexibility and reliability.  From all I've read I would 
-    suggest you use this algorithm only for upsampling and to resample 
-    oddball data like that from Scripps OBS instruments.  Most data 
-    are probably best downsampled to a common sample rate with a 
-    decimate algorithm whenever possible.   We have implemented a 
-    compable wrapper to this one for decimate called ScipyDecimator. 
+    We emphasize a nice feature of the scipy implementation is that 
+    it automatically applies a rational antialiasing filter when downsampling, 
+    If, however, you need to do something like regularize a data set with 
+    irregular sample rates but preserve a common upper frequency response 
+    controlled at the high frequency end by digizer antialias filters 
+    (e.g. LH channels from Q330 data) you will need to crack the
+    scipy documentation on setting up a custom antialias filter using 
+    FIR filters defined through the window argument.  All common digitizer
+    FIR filter coefficients can be found in appropriate response files.  
+    That should, in principle, be feasible but mspass developers have 
+    not tested that hypothesis.  
     
-    
-    All the arguments to the constructor are identical (in name an concept)
-    to the resample methods of Trace/Stream.  See the obspy documentation 
-    for detailed description and limitations.  
-    
-    TODO:  Assimilate this text somewhere when above is rewritten
-    
-    The "window" argument has some complexity.   Most users likely will 
-    want to use the default, but a number of options are available within 
-    the scipy resample function including custom windows passed through 
-    a special interface using a python function to generate the window.  
-    Details on this advanced topic can be found in the documentation for 
-    scipy resample and the link found there to scipy.signal.get_window.  
+    The concept of the window argument in this constructor is idential 
+    to that described in the documentation for scipy.signal.resample. 
+    The value passed, in fact, is used as the argument whenever the scipy 
+    function is called.   Note the other optional arguments to scipy
+    resample are always defaulted because the current default apply to 
+    all cases we handle.  Be careful if resample changes.    
     
     The primary method of this class is a concrete implementation of the 
     resample method.  
     
     """
-    def __init__(self,sampling_rate, window="hanning",no_filter=True, strict_length=False):
+
+    def __init__(self, sampling_rate, window="hanning"):
         """
         """
         super().__init__(sampling_rate=sampling_rate)
-        self.window=window
-        self.no_filter=no_filter
-        self.strict_length=strict_length
+        self.window = window
+
+    def resample(self, mspass_object):
+        """
+        Applies the scipy.signal.resample function to all data held in 
+        a mspass container passed through arg0 (mspass_object).   
+        This method will accept all supported MsPASS datat objects:
+        TimeSeries, Seismogram, TimeSeriesEnsemble, and SeismogramEnsemble. 
+        For Ensembles the method is called recursively on each of the 
+        members.   
         
-    def resample(self,mspass_object):
-        # We do this test at the top to avoid having returns testing for 
+        The method returns mspass_object with the sample data altered 
+        by the operator defined by a particular instance, which is defined 
+        exclusively by the target sample rate for the output.  All metadata 
+        will be clone without checking.  If the metadata have attributes 
+        linked to the sample interval the metadata of the result may not 
+        match the data.  
+        
+        If the input is marked dead it will be returned immediately with 
+        no change.    
+        """
+        # We do this test at the top to avoid having returns testing for
         # a dead datum in each of the if conditional blocks below
-        if isinstance(mspass_object,(TimeSeries,Seismogram,TimeSeriesEnsemble,SeismogramEnsemble)):
+        if isinstance(
+            mspass_object,
+            (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble),
+        ):
             if mspass_object.dead():
                 return mspass_object
         else:
-            message = "ScipyResampler.resample: received unsupported data type="+str(type(mspass_object))
+            message = "ScipyResampler.resample: received unsupported data type=" + str(
+                type(mspass_object)
+            )
             raise TypeError(message)
-            
-        if isinstance(mspass_object,TimeSeries):
-            data_time_span = mspass_object.endtime()-mspass_object.t0+mspass_object.dt
-            n_resampled = int(data_time_span*self.samprate)
-            rsdata = signal.resample(mspass_object.data,n_resampled,
-                                     window=self.window)
+
+        if isinstance(mspass_object, TimeSeries):
+            data_time_span = (
+                mspass_object.endtime() - mspass_object.t0 + mspass_object.dt
+            )
+            n_resampled = int(data_time_span * self.samprate)
+            rsdata = signal.resample(
+                mspass_object.data, n_resampled, window=self.window
+            )
             mspass_object.set_npts(n_resampled)
             mspass_object.dt = self.dt
-            # We have to go through this conversion to avoid TypeError exceptions 
+            # We have to go through this conversion to avoid TypeError exceptions
             # i.e we can't just copy the entire vector rsdata to the data vector
             dv = DoubleVector(rsdata)
-            mspass_object.data=dv
-        elif isinstance(mspass_object,Seismogram):
-            data_time_span = mspass_object.endtime()-mspass_object.t0+mspass_object.dt
-            n_resampled = int(data_time_span*self.samprate)
-            rsdata = signal.resample(mspass_object.data,n_resampled,
-                                     window=self.window,axis=1)
+            mspass_object.data = dv
+        elif isinstance(mspass_object, Seismogram):
+            data_time_span = (
+                mspass_object.endtime() - mspass_object.t0 + mspass_object.dt
+            )
+            n_resampled = int(data_time_span * self.samprate)
+            rsdata = signal.resample(
+                mspass_object.data, n_resampled, window=self.window, axis=1
+            )
             mspass_object.set_npts(n_resampled)
             mspass_object.dt = self.dt
-            # We have to go through this conversion to avoid TypeError exceptions 
+            # We have to go through this conversion to avoid TypeError exceptions
             # i.e we can't just copy the entire vector rsdata to the data vector
             dm = dmatrix(rsdata)
-            mspass_object.data=dm
+            mspass_object.data = dm
         else:
-        # The else above is equivalent to the following:
-        # elif isinstance(mspass_object,(TimeSeriesEnsemble,SeismogramEnsemble)):
-        # Change if additional data object support is added 
+            # The else above is equivalent to the following:
+            # elif isinstance(mspass_object,(TimeSeriesEnsemble,SeismogramEnsemble)):
+            # Change if additional data object support is added
             for d in mspass_object.member:
                 self.resample(d)
 
         return mspass_object
-            
+
+
 class ScipyDecimator(BasicResampler):
     """
-    Wrapper to utilize obspy's decimate operator (actually scipy's decimate)
-    to automatically resample a set set through a map operator following 
-    the api concepts of BasicResampler.  The algorithm works only on 
-    a data set with sample intervals that work by the decimation concept.  
-    That means the data are only downsampled (or left alone) and the 
-    target sample interval is an integer multiple of the input data's 
-    sample interval.
+    This class defines a generic operator where a decimator can be used 
+    to downsample any input data to a common sample rate.  A decimator 
+    requires the ratio of the input to output sample rate to be an 
+    integer (equivalently the ratio of the output sample interval to the 
+    input sample interval).  The operator will fail on any data it 
+    receives that are irregular in that sense.   For example, 10 sps 
+    data can be created by downsampling 40 sps data by a factor of 4.  
+    In constract, 10 sps can not be created by decimation of 25 sps 
+    data because the ratio is 2.5 (not an integer).  
     
-    Most seismology data today are defined by a finite set of common sample 
-    rates that differ by integer division.   The fundamental reason is that 
-    all modern digitizers use internal downsampling with DSP chips from a
-    base sample rate orders of magnitude larger than the output. The intrinsic
-    smoothing in the FIR filters used for antialiasing reduces amplitude 
-    errors by roughly the square root of the number of samples averaged.  
-    The result is that the most common digitizers for the past 30 years 
-    have had these, most common selectable sample rates:  1 sps, 5 sps, 
-    10 sps, 20 sps, 40 sps, 50 sps, 100 sps, and 250 sps.   These all have 
-    integer relationships.   e.g. 20 sps is 100 sps divided by 5 and 
-    50 sps is 100 divided by 2.  The algorithm for this implementation
-    will ONLY WORK if the target sample rate is ALWAYS constructable from 
-    a simple integer division = integer multiple of sample interval.  
-    e.g. to decimate 100 sps data (dt=0.01) we divide the sample rate by 
-    5 or multiple the sample interval by 5 (0.05 s in this case).  
-    If any datum cannot be resampled that way it will be killed.   
-    For example, it is not possible to construct 20 sps data from 50 sps
-    data with this algorithm.  
+    This operator satisfies the concept defined in BasicResampler.   
+    That is, a particular concrete instance once constructed will 
+    define an operator that will resample any input data to a common sample 
+    rate/interval.  Because of the requirement of this algorithm that 
+    the sample intervals/rates are related by integers the operator 
+    has to be able to handle irregular sample rate data.  The algorithm 
+    is brutal and will kill any datum for which the integer test fails
+    and post an elog message.  
     
-    Be aware decimators also have intrinsic edge effects.   The anitialias
+    This operator is really little more than a wrapper around a 
+    scipy function with a similar same name (scipy.signal.decimate). 
+    The resample method handles any supported MsPASS data object type 
+    but will fail with a TypeError if it receives any other data type. 
+    
+    Be aware decimators all have unavoidable edge effects.   The anitialias
     filter that has to be applied (you can get garbage otherwise) will always
     produce an edge transient.  A key to success with any downsampling 
     operator is to always have a pad zone if possible.  That is, you start 
     with a longer time window than you will need for final processing and 
     discard the pad zone when you enter the final stage.   Note that is 
-    true of ALL filtering actually.   
+    actually true of ALL filtering.   
     
-    The constructor has exactly the same argument signature as obspy's 
-    decimate function described in the docstring currently found here:
-        https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.decimate.html
-    for Stream.  The docstring for Trace is nearly identical.
+    The constructor are a subset of those defined on the documentation 
+    page for scipy.signal.decimate.   The only exception is the axis 
+    argument.  We do that because it is frozen internally.  For scalar 
+    data we pass 0 while for three component data we sent it 1 which is 
+    means the decimator is applied per channel.  
     """
-    def __init__(self,sampling_rate,ftype="iir",zero_phase=True):
+
+    def __init__(self, sampling_rate, n=None, ftype="iir", zero_phase=True):
         """
         """
         super().__init__(sampling_rate=sampling_rate)
-        self.ftype=ftype
-        self.zero_phase=zero_phase
-    def _dec_factor(self,d):
+        self.ftype = ftype
+        self.zero_phase = zero_phase
+        self.order = n
+
+    def _dec_factor(self, d):
         """
         Returns decimation factor to use for atomic data d.  
         d can be a mspass atomic type or an obspy Trace. 
@@ -227,27 +270,33 @@ class ScipyDecimator(BasicResampler):
         # internal use guarantees this can only be TimeSeries or Seismogram
         # so this resolves
         d_dt = d.dt
-        float_dfac=self.dt/d_dt
-        int_dfac=int(float_dfac)
+        float_dfac = self.dt / d_dt
+        int_dfac = int(float_dfac)
         # This perhaps should use a softer constraint than default
-        if np.isclose(float_dfac,float(int_dfac)):
+        if np.isclose(float_dfac, float(int_dfac)):
             return int_dfac
-        elif int_dfac==0:
+        elif int_dfac == 0:
             return 0
         else:
             return -1
-    def _make_illegal_decimator_message(self,error_code,data_dt):
+
+    def _make_illegal_decimator_message(self, error_code, data_dt):
         """
         Private method to format a common message if the data's sample
         interval, data_dt, is not feasible to produce by decimation. 
         The error message is the return
         """
         if error_code == 0:
-            message = "Data sample interval={ddt} is smaller than target dt={sdt}.  This operator can only downsample".format(ddt=data_dt,sdt=self.dt)
+            message = "Data sample interval={ddt} is smaller than target dt={sdt}.  This operator can only downsample".format(
+                ddt=data_dt, sdt=self.dt
+            )
         else:
-            message = "Data sample interval={ddt} is not an integer multiple of {sdt}".format(ddt=data_dt,sdt=self.dt)
+            message = "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
+                ddt=data_dt, sdt=self.dt
+            )
         return message
-    def resample(self,mspass_object):
+
+    def resample(self, mspass_object):
         """
         Implementation of required abstract method for this operator.   
         The only argument is mspass_object.   The operator will downsample 
@@ -255,74 +304,82 @@ class ScipyDecimator(BasicResampler):
         If the input is not a mspass data object (i.e. atomic TimeSeries 
         or Seismogram) or one of the enemble objects it will throw a 
         TypeError exception.   
+        
+        Returns an edited clone of the input with revised sample data but 
+        no changes to any Metadata.  
         """
-        # We do this test at the top to avoid having returns testing for 
+        # We do this test at the top to avoid having returns testing for
         # a dead datum in each of the if conditional blocks below
-        if isinstance(mspass_object,(TimeSeries,Seismogram,TimeSeriesEnsemble,SeismogramEnsemble)):
+        if isinstance(
+            mspass_object,
+            (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble),
+        ):
             if mspass_object.dead():
                 return mspass_object
         else:
-            message = "ScipyDecimator.resample: received unsupported data type="+str(type(mspass_object))
+            message = "ScipyDecimator.resample: received unsupported data type=" + str(
+                type(mspass_object)
+            )
             raise TypeError(message)
-            
-            
-        if isinstance(mspass_object,TimeSeries):
-            decfac=self._dec_factor(mspass_object)
-            if decfac<=0:
+
+        if isinstance(mspass_object, TimeSeries):
+            decfac = self._dec_factor(mspass_object)
+            if decfac <= 0:
                 mspass_object.kill()
-                message = self._make_illegal_decimator_message(decfac,mspass_object.dt)
+                message = self._make_illegal_decimator_message(decfac, mspass_object.dt)
                 mspass_object.elog.log_error(
-                        "ScipyDecimator.resample",
-                        message,
-                        ErrorSeverity.Invalid
-                        )
+                    "ScipyDecimator.resample", message, ErrorSeverity.Invalid
+                )
             else:
-                dsdata = signal.decimate(mspass_object.data,
-                                         decfac,
-                                         ftype=self.ftype,
-                                         zero_phase=self.zero_phase,
-                                         )
+                dsdata = signal.decimate(
+                    mspass_object.data,
+                    decfac,
+                    n=self.order,
+                    ftype=self.ftype,
+                    zero_phase=self.zero_phase,
+                )
                 dsdata_npts = len(dsdata)
                 mspass_object.set_npts(dsdata_npts)
                 mspass_object.dt = self.dt
-                # We have to go through this conversion to avoid TypeError exceptions 
+                # We have to go through this conversion to avoid TypeError exceptions
                 # i.e we can't just copy the entire vector rsdata to the data vector
-                mspass_object.data=DoubleVector(dsdata)
-                
-                
-        elif isinstance(mspass_object,Seismogram):
-            decfac=self._dec_factor(mspass_object)
-            if decfac<=0:
+                mspass_object.data = DoubleVector(dsdata)
+
+        elif isinstance(mspass_object, Seismogram):
+            decfac = self._dec_factor(mspass_object)
+            if decfac <= 0:
                 mspass_object.kill()
-                message = self._make_illegal_decimator_message(decfac,mspass_object.dt)
+                message = self._make_illegal_decimator_message(decfac, mspass_object.dt)
                 mspass_object.elog.log_error(
-                        "ScipyDecimator.resample",
-                        message,
-                        ErrorSeverity.Invalid
-                        )
+                    "ScipyDecimator.resample", message, ErrorSeverity.Invalid
+                )
             else:
-                dsdata = signal.decimate(mspass_object.data,
-                                         decfac,
-                                         axis=1,
-                                         ftype=self.ftype,
-                                         zero_phase=self.zero_phase,
-                                         )
-                # Seismogram stores data as a 3xnpts matrix.  numpy 
+                # note axis=1 means apply the decimator along the column
+                # index - that means by channel.
+                dsdata = signal.decimate(
+                    mspass_object.data,
+                    decfac,
+                    axis=1,
+                    n=self.order,
+                    ftype=self.ftype,
+                    zero_phase=self.zero_phase,
+                )
+                # Seismogram stores data as a 3xnpts matrix.  numpy
                 # uses the shape attribute to hold rowsxcolumns
                 msize = dsdata.shape
                 dsdata_npts = msize[1]
                 mspass_object.set_npts(dsdata_npts)
                 mspass_object.dt = self.dt
-                # We have to go through this conversion to avoid TypeError exceptions 
+                # We have to go through this conversion to avoid TypeError exceptions
                 # i.e we can't just copy the entire vector rsdata to the data vector
-                mspass_object.data=dmatrix(dsdata)
-        
+                mspass_object.data = dmatrix(dsdata)
+
         else:
-        # else here is equivalent to this:
-        # elif isinstance(mspass_object,(TimeSeriesEnsemble,SeismogramEnsemble)):
-        # Change if we add support for additional data objects like gather 
-        # version of ensemble currently under construction
+            # else here is equivalent to this:
+            # elif isinstance(mspass_object,(TimeSeriesEnsemble,SeismogramEnsemble)):
+            # Change if we add support for additional data objects like gather
+            # version of ensemble currently under construction
             for d in mspass_object.member:
                 self.resample(d)
-        
+
         return mspass_object
