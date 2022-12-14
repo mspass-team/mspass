@@ -14,7 +14,7 @@ from mspasspy.ccore.seismic import (
 )
 import matplotlib.pyplot as plt
 
-from mspasspy.algorithms.resample import ObspyDecimator, ObspyResampler
+from mspasspy.algorithms.resample import ScipyDecimator, ScipyResampler
 
 
 def test_resample():
@@ -23,7 +23,7 @@ def test_resample():
     ts0 = TimeSeries(ts)
     ts_npts = ts.npts
     # upsample test for resampler
-    upsampler = ObspyResampler(250.0)
+    upsampler = ScipyResampler(250.0)
     tsup = upsampler.resample(ts)
     assert np.isclose(tsup.dt, 0.004)
     # This computed npts is more robust.  Otherwise changes in helper
@@ -32,7 +32,7 @@ def test_resample():
     assert tsup.npts == npup  # weird number = int(255*250/100)
     # now repeat for downsampling with resample algorithm
     ts = TimeSeries(ts0)
-    ds_resampler = ObspyResampler(5.0)
+    ds_resampler = ScipyResampler(5.0)
     tsds = ds_resampler.resample(ts)
     # Note plots of this output show the auto antialiasing works as
     # advertised in scipy
@@ -40,7 +40,7 @@ def test_resample():
     assert tsds.npts == int(ts_npts * 5.0 / 100.0)
     # Repeat same downsampling with decimate
     ts = TimeSeries(ts0)
-    decimator = ObspyDecimator(5.0)
+    decimator = ScipyDecimator(5.0)
     tsds = decimator.resample(ts)
     assert np.isclose(tsds.dt, 0.2)
     # the documentation doesn't tell me why by the scipy decimate
