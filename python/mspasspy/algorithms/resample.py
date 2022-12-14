@@ -50,13 +50,13 @@ class BasicResampler(ABC):
     bag = bag.map(resamp_op.resample)
     bag.map(db.save_data())
     bag.compute()
-    
-    A point to emphasize is the model is to generate the operator 
-    through a constructor (ScipResampler in the example) that defines 
-    the target sample rate.  All data passed through that operator 
-    through the map operator call will be returned to create a bag/rdd 
-    with a uniform sample rate.   All implementations should also 
-    follow the MsPASS rule for parallel algorithms to kill data that 
+
+    A point to emphasize is the model is to generate the operator
+    through a constructor (ScipResampler in the example) that defines
+    the target sample rate.  All data passed through that operator
+    through the map operator call will be returned to create a bag/rdd
+    with a uniform sample rate.   All implementations should also
+    follow the MsPASS rule for parallel algorithms to kill data that
     cannot be handled and not throw exceptions unless the whole usage is
     wrong.  
     """
