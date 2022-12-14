@@ -44,7 +44,6 @@ class BasicResampler(ABC):
     a typical instance of this class (in the example ScipyResampler)
     would be used in  parallel workflow sketch:
     .. rubric:: Example
-    
     resamp_op = ScipyResampler(10.0)   # target sample rate of 10 sps
     cursor = db.TimeSeries.find({})
     bag = read_distributed_data(cursor,collection="wf_TimeSeries")
