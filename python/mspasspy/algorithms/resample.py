@@ -131,7 +131,7 @@ class ScipyResampler(BasicResampler):
 
     """
 
-    def __init__(self, sampling_rate, window="hanning"):
+    def __init__(self, sampling_rate, window="hann"):
         """ """
         super().__init__(sampling_rate=sampling_rate)
         self.window = window
