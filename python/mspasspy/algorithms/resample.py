@@ -43,7 +43,9 @@ class BasicResampler(ABC):
     This is a sketch of an algorithm is pseudopython code showing how
     a typical instance of this class (in the example ScipyResampler)
     would be used in  parallel workflow sketch:
+
     .. rubric:: Example
+
     resamp_op = ScipyResampler(10.0)   # target sample rate of 10 sps
     cursor = db.TimeSeries.find({})
     bag = read_distributed_data(cursor,collection="wf_TimeSeries")
@@ -58,7 +60,7 @@ class BasicResampler(ABC):
     with a uniform sample rate.   All implementations should also
     follow the MsPASS rule for parallel algorithms to kill data that
     cannot be handled and not throw exceptions unless the whole usage is
-    wrong.  
+    wrong.
     """
 
     def __init__(self, dt=None, sampling_rate=None):
@@ -77,82 +79,81 @@ class BasicResampler(ABC):
     @abstractmethod
     def resample(self, mspass_object):
         """
-        Main operator a concrete class must implement.  It should accept 
-        any mspass data object and return a clone that has been resampled 
-        to the sample interface defined by this base class. 
-        
+        Main operator a concrete class must implement.  It should accept
+        any mspass data object and return a clone that has been resampled
+        to the sample interface defined by this base class.
+
         """
         pass
 
 
 class ScipyResampler(BasicResampler):
     """
-    This class is a wrapper for the scipy resample algorithm.  Obspy users 
-    should note that the Trace and Stream method called "resample" 
-    is only a light wrapper to apply the scipy resample function.   
-     
-    The algorithm and its limitations are described in the scipy 
-    documentation you can easily find with a web search.   A key point 
-    about this algorithm is that unlike decimate it allows resampling to 
+    This class is a wrapper for the scipy resample algorithm.  Obspy users
+    should note that the Trace and Stream method called "resample"
+    is only a light wrapper to apply the scipy resample function.
+
+    The algorithm and its limitations are described in the scipy
+    documentation you can easily find with a web search.   A key point
+    about this algorithm is that unlike decimate it allows resampling to
     something not an integer multiple or division from the input OR
-    if you need to upsample data to match the rest of the data set 
-    (Note that is not usually a good idea unless the upsampling is followed 
+    if you need to upsample data to match the rest of the data set
+    (Note that is not usually a good idea unless the upsampling is followed
      by a decimator to get all data to a lower, uniform sample rate.)
-    A type example where that is essential is some old OBS data from 
-    Scripps instruments that had a sample rate that was a multiple of 
-    one of the more standard rates like 20 or 100.  Such data can be 
-    downsampled immediately too something like 10 sps with this operator 
-    or upsampled to something like 50 and then downsampled to something 
-    like 10 with a factor of 5 decimator.   
-    
-    We emphasize a nice feature of the scipy implementation is that 
-    it automatically applies a rational antialiasing filter when downsampling, 
-    If, however, you need to do something like regularize a data set with 
-    irregular sample rates but preserve a common upper frequency response 
-    controlled at the high frequency end by digizer antialias filters 
+    A type example where that is essential is some old OBS data from
+    Scripps instruments that had a sample rate that was a multiple of
+    one of the more standard rates like 20 or 100.  Such data can be
+    downsampled immediately too something like 10 sps with this operator
+    or upsampled to something like 50 and then downsampled to something
+    like 10 with a factor of 5 decimator.
+
+    We emphasize a nice feature of the scipy implementation is that
+    it automatically applies a rational antialiasing filter when downsampling,
+    If, however, you need to do something like regularize a data set with
+    irregular sample rates but preserve a common upper frequency response
+    controlled at the high frequency end by digizer antialias filters
     (e.g. LH channels from Q330 data) you will need to crack the
-    scipy documentation on setting up a custom antialias filter using 
+    scipy documentation on setting up a custom antialias filter using
     FIR filters defined through the window argument.  All common digitizer
-    FIR filter coefficients can be found in appropriate response files.  
-    That should, in principle, be feasible but mspass developers have 
-    not tested that hypothesis.  
-    
-    The concept of the window argument in this constructor is idential 
-    to that described in the documentation for scipy.signal.resample. 
-    The value passed, in fact, is used as the argument whenever the scipy 
+    FIR filter coefficients can be found in appropriate response files.
+    That should, in principle, be feasible but mspass developers have
+    not tested that hypothesis.
+
+    The concept of the window argument in this constructor is idential
+    to that described in the documentation for scipy.signal.resample.
+    The value passed, in fact, is used as the argument whenever the scipy
     function is called.   Note the other optional arguments to scipy
-    resample are always defaulted because the current default apply to 
-    all cases we handle.  Be careful if resample changes.    
-    
-    The primary method of this class is a concrete implementation of the 
-    resample method.  
-    
+    resample are always defaulted because the current default apply to
+    all cases we handle.  Be careful if resample changes.
+
+    The primary method of this class is a concrete implementation of the
+    resample method.
+
     """
 
     def __init__(self, sampling_rate, window="hanning"):
-        """
-        """
+        """ """
         super().__init__(sampling_rate=sampling_rate)
         self.window = window
 
     def resample(self, mspass_object):
         """
-        Applies the scipy.signal.resample function to all data held in 
-        a mspass container passed through arg0 (mspass_object).   
+        Applies the scipy.signal.resample function to all data held in
+        a mspass container passed through arg0 (mspass_object).
         This method will accept all supported MsPASS datat objects:
-        TimeSeries, Seismogram, TimeSeriesEnsemble, and SeismogramEnsemble. 
-        For Ensembles the method is called recursively on each of the 
-        members.   
-        
-        The method returns mspass_object with the sample data altered 
-        by the operator defined by a particular instance, which is defined 
-        exclusively by the target sample rate for the output.  All metadata 
-        will be clone without checking.  If the metadata have attributes 
-        linked to the sample interval the metadata of the result may not 
-        match the data.  
-        
-        If the input is marked dead it will be returned immediately with 
-        no change.    
+        TimeSeries, Seismogram, TimeSeriesEnsemble, and SeismogramEnsemble.
+        For Ensembles the method is called recursively on each of the
+        members.
+
+        The method returns mspass_object with the sample data altered
+        by the operator defined by a particular instance, which is defined
+        exclusively by the target sample rate for the output.  All metadata
+        will be clone without checking.  If the metadata have attributes
+        linked to the sample interval the metadata of the result may not
+        match the data.
+
+        If the input is marked dead it will be returned immediately with
+        no change.
         """
         # We do this test at the top to avoid having returns testing for
         # a dead datum in each of the if conditional blocks below
@@ -208,48 +209,47 @@ class ScipyResampler(BasicResampler):
 
 class ScipyDecimator(BasicResampler):
     """
-    This class defines a generic operator where a decimator can be used 
-    to downsample any input data to a common sample rate.  A decimator 
-    requires the ratio of the input to output sample rate to be an 
-    integer (equivalently the ratio of the output sample interval to the 
-    input sample interval).  The operator will fail on any data it 
-    receives that are irregular in that sense.   For example, 10 sps 
-    data can be created by downsampling 40 sps data by a factor of 4.  
-    In constract, 10 sps can not be created by decimation of 25 sps 
-    data because the ratio is 2.5 (not an integer).  
-    
-    This operator satisfies the concept defined in BasicResampler.   
-    That is, a particular concrete instance once constructed will 
-    define an operator that will resample any input data to a common sample 
-    rate/interval.  Because of the requirement of this algorithm that 
-    the sample intervals/rates are related by integers the operator 
-    has to be able to handle irregular sample rate data.  The algorithm 
+    This class defines a generic operator where a decimator can be used
+    to downsample any input data to a common sample rate.  A decimator
+    requires the ratio of the input to output sample rate to be an
+    integer (equivalently the ratio of the output sample interval to the
+    input sample interval).  The operator will fail on any data it
+    receives that are irregular in that sense.   For example, 10 sps
+    data can be created by downsampling 40 sps data by a factor of 4.
+    In constract, 10 sps can not be created by decimation of 25 sps
+    data because the ratio is 2.5 (not an integer).
+
+    This operator satisfies the concept defined in BasicResampler.
+    That is, a particular concrete instance once constructed will
+    define an operator that will resample any input data to a common sample
+    rate/interval.  Because of the requirement of this algorithm that
+    the sample intervals/rates are related by integers the operator
+    has to be able to handle irregular sample rate data.  The algorithm
     is brutal and will kill any datum for which the integer test fails
-    and post an elog message.  
-    
-    This operator is really little more than a wrapper around a 
-    scipy function with a similar same name (scipy.signal.decimate). 
-    The resample method handles any supported MsPASS data object type 
-    but will fail with a TypeError if it receives any other data type. 
-    
+    and post an elog message.
+
+    This operator is really little more than a wrapper around a
+    scipy function with a similar same name (scipy.signal.decimate).
+    The resample method handles any supported MsPASS data object type
+    but will fail with a TypeError if it receives any other data type.
+
     Be aware decimators all have unavoidable edge effects.   The anitialias
     filter that has to be applied (you can get garbage otherwise) will always
-    produce an edge transient.  A key to success with any downsampling 
-    operator is to always have a pad zone if possible.  That is, you start 
-    with a longer time window than you will need for final processing and 
-    discard the pad zone when you enter the final stage.   Note that is 
-    actually true of ALL filtering.   
-    
-    The constructor are a subset of those defined on the documentation 
-    page for scipy.signal.decimate.   The only exception is the axis 
-    argument.  We do that because it is frozen internally.  For scalar 
-    data we pass 0 while for three component data we sent it 1 which is 
-    means the decimator is applied per channel.  
+    produce an edge transient.  A key to success with any downsampling
+    operator is to always have a pad zone if possible.  That is, you start
+    with a longer time window than you will need for final processing and
+    discard the pad zone when you enter the final stage.   Note that is
+    actually true of ALL filtering.
+
+    The constructor are a subset of those defined on the documentation
+    page for scipy.signal.decimate.   The only exception is the axis
+    argument.  We do that because it is frozen internally.  For scalar
+    data we pass 0 while for three component data we sent it 1 which is
+    means the decimator is applied per channel.
     """
 
     def __init__(self, sampling_rate, n=None, ftype="iir", zero_phase=True):
-        """
-        """
+        """ """
         super().__init__(sampling_rate=sampling_rate)
         self.ftype = ftype
         self.zero_phase = zero_phase
@@ -257,8 +257,8 @@ class ScipyDecimator(BasicResampler):
 
     def _dec_factor(self, d):
         """
-        Returns decimation factor to use for atomic data d.  
-        d can be a mspass atomic type or an obspy Trace. 
+        Returns decimation factor to use for atomic data d.
+        d can be a mspass atomic type or an obspy Trace.
         Uses np.isclose to establish if the sample interval is feasible.
         If so it returns the decimation factor as an integer that should be
         used on d.   Returns -1 if the sample rate is irregular and
@@ -289,22 +289,24 @@ class ScipyDecimator(BasicResampler):
                 ddt=data_dt, sdt=self.dt
             )
         else:
-            message = "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
-                ddt=data_dt, sdt=self.dt
+            message = (
+                "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
+                    ddt=data_dt, sdt=self.dt
+                )
             )
         return message
 
     def resample(self, mspass_object):
         """
-        Implementation of required abstract method for this operator.   
-        The only argument is mspass_object.   The operator will downsample 
-        the contents of the sample data container for any valid input.  
-        If the input is not a mspass data object (i.e. atomic TimeSeries 
-        or Seismogram) or one of the enemble objects it will throw a 
-        TypeError exception.   
-        
-        Returns an edited clone of the input with revised sample data but 
-        no changes to any Metadata.  
+        Implementation of required abstract method for this operator.
+        The only argument is mspass_object.   The operator will downsample
+        the contents of the sample data container for any valid input.
+        If the input is not a mspass data object (i.e. atomic TimeSeries
+        or Seismogram) or one of the enemble objects it will throw a
+        TypeError exception.
+
+        Returns an edited clone of the input with revised sample data but
+        no changes to any Metadata.
         """
         # We do this test at the top to avoid having returns testing for
         # a dead datum in each of the if conditional blocks below
