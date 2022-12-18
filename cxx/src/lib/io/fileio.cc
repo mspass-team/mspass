@@ -84,7 +84,7 @@ long int fwrite_to_file(Seismogram& d, const string dir,const string dfile)
 
 	return(foff);
 }
-long int fwrite_to_file(Ensemble<TimeSeries>& de, const string dir,const string dfile)
+long int fwrite_to_file(Ensemble<TimeSeries>& d, const string dir,const string dfile)
 {
 	try{
 		FILE *fp;
@@ -104,9 +104,9 @@ long int fwrite_to_file(Ensemble<TimeSeries>& de, const string dir,const string 
 		do not trap that condition as if either have issues I am quite sure
 		the fwrite will fail */
 		fseek(fp,0L,2);
-		for (int i = 0; i < de.member.size(); ++i) {
+		for (int i = 0; i < d.member.size(); ++i) {
 			foff = ftell(fp);
-			TimeSeries& t = de.member[i];
+			TimeSeries& t = d.member[i];
 			if (fwrite((void *)t.s.data(), sizeof(double), t.npts(), fp) != t.npts())
 			{
 				fclose(fp);
@@ -124,7 +124,7 @@ long int fwrite_to_file(Ensemble<TimeSeries>& de, const string dir,const string 
 		return foff;
 	}catch(...){throw;};
 }
-long int fwrite_to_file(Ensemble<Seismogram>& de, const string dir,const string dfile)
+long int fwrite_to_file(Ensemble<Seismogram>& d, const string dir,const string dfile)
 {
 	try{
 		FILE *fp;
@@ -144,9 +144,9 @@ long int fwrite_to_file(Ensemble<Seismogram>& de, const string dir,const string 
 		do not trap that condition as if either have issues I am quite sure
 		the fwrite will fail */
 		fseek(fp,0L,2);
-		for (int i = 0; i < de.member.size(); ++i) {
+		for (int i = 0; i < d.member.size(); ++i) {
 			foff = ftell(fp);
-			Seismogram& t = de.member[i];
+			Seismogram& t = d.member[i];
 			if (fwrite((void *)t.u.get_address(0,0), sizeof(double), 3*t.npts(), fp) != 3*t.npts())
 			{
 				fclose(fp);
@@ -210,8 +210,8 @@ size_t fread_from_file(TimeSeries& d,const string dir, const string dfile,
 		return ns_read;
 	}catch(...){throw;};
 }
-size_t fread_from_files(Ensemble<Seismogram> &de, const string dir, const string dfile, 
-	 vector<long int> foffs, vector<int> indexes, const long int length)
+size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::Seismogram> &de, const std::string dir, 
+    const std::string dfile, std::vector<long int> foffs, std::vector<long int> indexes, const long int length)
 {
 	size_t ns_read_sum;
 	int n = foffs.size();
@@ -248,8 +248,8 @@ size_t fread_from_files(Ensemble<Seismogram> &de, const string dir, const string
 	fclose(fp);
 	return ns_read_sum;
 }
-size_t fread_from_files(Ensemble<TimeSeries> &de, const string dir, const string dfile, 
-	 vector<long int> foffs, vector<int> indexes, const long int length)
+size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::TimeSeries> &de, const std::string dir, 
+    const std::string dfile, std::vector<long int> foffs, std::vector<long int> indexes, const long int length)
 {
 	size_t ns_read_sum;
 	int n = foffs.size();
