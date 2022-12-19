@@ -30,7 +30,7 @@ from mspasspy.ccore.utility import (
 )
 
 from mspasspy.util.error_logger import PyErrorLogger
-from mspasspy.ccore.algorithms.basic import ExtractComponent
+from mspasspy.ccore.algorithms.basic import _ExtractComponent
 from mspasspy.ccore.algorithms.deconvolution import MTPowerSpectrumEngine
 
 
@@ -1309,7 +1309,7 @@ def test_ExtractComponent():
     seis.npts = 6
     ts = []
     for i in range(3):
-        ts.append(ExtractComponent(seis, i))
+        ts.append(_ExtractComponent(seis, i))
     for i in range(3):
         assert (ts[i].data == seis.data[i]).all()
 
@@ -1416,6 +1416,20 @@ def test_MsPASSError():
     except MsPASSError as err:
         assert err.message == "test error4"
         assert err.severity == ErrorSeverity.Fatal
+
+    # Add a more realistic example below
+    with pytest.raises(MsPASSError, match="LU factorization"):
+        d = Seismogram(50)
+        d.set_live()
+        d.dt = 1.0
+        d.t0 = 0.0
+        tm = dmatrix(3, 3)
+        tm[0, 0] = 1.0
+        tm[1, 0] = 1.0
+        tm[1, 1] = 0.0
+        tm[2, 2] = 1.0
+        d.transform(tm)
+        d.rotate_to_standard()
 
 
 def test_PowerSpectrum():

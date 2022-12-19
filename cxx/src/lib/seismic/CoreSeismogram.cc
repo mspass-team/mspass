@@ -166,9 +166,9 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
           components_are_orthogonal = true;
           components_are_cardinal = true;
         }
-        /* We have to handle nsamp specially in the case when load_data 
-        is false.  To be consistent with TimeSeries we use a feature that 
-        if the Metadata container does not define npts we default it.  
+        /* We have to handle nsamp specially in the case when load_data
+        is false.  To be consistent with TimeSeries we use a feature that
+        if the Metadata container does not define npts we default it.
         In this case that means the default constructor for u and set
         nsamp to 0 (via set_npts). */
         if(md.is_defined(SEISMICMD_npts))
@@ -180,8 +180,8 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
         {
           this->set_npts(0);
         }
-        /* Note previous code had an else clause to to with the 
-        following conditional.  It used to zero the u matrix.  
+        /* Note previous code had an else clause to to with the
+        following conditional.  It used to zero the u matrix.
         The call to set_npts above will always do that so that would
         have been redundant and was removed June 2022*/
         if(load_data)
@@ -451,8 +451,8 @@ void CoreSeismogram::rotate_to_standard()
         {
             for(i=0; i<3; ++i) delete [] work[i];
             throw(MsPASSError(
-                      string("rotate_to_standard:  LU factorization of transformation matrix failed")),
-                  ErrorSeverity::Invalid);
+                      string("rotate_to_standard:  LU factorization of transformation matrix failed"),
+                  ErrorSeverity::Invalid));
         }
         // inversion routine after factorization from lapack FORT$RAN interface
         double awork[10];  //Larger than required but safety value small cost
@@ -464,8 +464,8 @@ void CoreSeismogram::rotate_to_standard()
         {
             for(i=0; i<3; ++i) delete [] work[i];
             throw(MsPASSError(
-                      string("rotate_to_standard:  LU factorization inversion of transformation matrix failed")),
-                  ErrorSeverity::Invalid);
+                      string("rotate_to_standard:  LU factorization inversion of transformation matrix failed"),
+                  ErrorSeverity::Invalid));
         }
 
         tmatrix[0][0] = a[0];

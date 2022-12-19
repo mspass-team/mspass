@@ -1,10 +1,18 @@
 from mspasspy.ccore.algorithms.deconvolution import MTPowerSpectrumEngine
 from mspasspy.ccore.seismic import TimeSeries, TimeReferenceType
 from mspasspy.ccore.algorithms.basic import TimeWindow
-from mspasspy.algorithms.snr import snr, FD_snr_estimator, arrival_snr, arrival_snr_QC
+from mspasspy.algorithms.snr import (
+    snr,
+    FD_snr_estimator,
+    arrival_snr,
+    broadband_snr_QC,
+    save_snr_arrival,
+)
+from mspasspy.db.client import DBClient
+from mspasspy.db.database import Database
 import numpy as np
 from scipy import signal
-from bson import json_util
+from bson import json_util, ObjectId
 import pickle
 
 
@@ -116,15 +124,15 @@ def test_snr():
     tval = fd_snr_output[0]["low_f_band_edge"]
     assert np.isclose(tval, 0.03332777870354941)
     tval = fd_snr_output[0]["high_f_band_edge"]
-    assert np.isclose(tval, 15.364105982336277)
+    assert np.isclose(tval, 16.563906015664056)
     tval = fd_snr_output[0]["low_f_band_edge_snr"]
-    assert np.isclose(tval, 14.452106992292247)
+    assert np.isclose(tval, 11.458212683258578)
     tval = fd_snr_output[0]["high_f_band_edge_snr"]
-    assert np.isclose(tval, 2.0387483301356752)
+    assert np.isclose(tval, 2.0289812704609314)
     tval = fd_snr_output[0]["bandwidth_fraction"]
-    assert np.isclose(tval, 0.30666666666666664)
+    assert np.isclose(tval, 0.3306666666666667)
     tval = fd_snr_output[0]["bandwidth"]
-    assert np.isclose(tval, 53.27401850779296)
+    assert np.isclose(tval, 53.927127774666644)
     # Note this is not 50 because the signal window npts is an odd number
     # In that sitaution ffts have last frequecy Nyqust - df/2
     tval = fd_snr_output[0]["spectrum_frequency_range"]
@@ -153,9 +161,9 @@ def test_snr():
     tval = fd_snr_output[0]["high_f_band_edge"]
     assert np.isclose(tval, 2.0)
     tval = fd_snr_output[0]["low_f_band_edge_snr"]
-    assert np.isclose(tval, 14.452106992292247)
+    assert np.isclose(tval, 11.458212683258578)
     tval = fd_snr_output[0]["high_f_band_edge_snr"]
-    assert np.isclose(tval, 61.37973288189221)
+    assert np.isclose(tval, 66.0799403744919)
     tval = fd_snr_output[0]["bandwidth_fraction"]
     assert np.isclose(tval, 0.03934)
     tval = fd_snr_output[0]["bandwidth"]
@@ -167,17 +175,17 @@ def test_snr():
 
     # optional metric validation
     tval = fd_snr_output[0]["mean_snr"]
-    assert np.isclose(tval, 69.53423294512893)
+    assert np.isclose(tval, 75.88331422185868)
     tval = fd_snr_output[0]["maximum_snr"]
-    assert np.isclose(tval, 108.87572942017883)
+    assert np.isclose(tval, 197.29008426129326)
     tval = fd_snr_output[0]["median_snr"]
-    assert np.isclose(tval, 69.93575550602118)
+    assert np.isclose(tval, 76.17635106932579)
     tval = fd_snr_output[0]["minimum_snr"]
-    assert np.isclose(tval, 14.452106992292247)
+    assert np.isclose(tval, 11.458212683258578)
     tval = fd_snr_output[0]["q3_4_snr"]
-    assert np.isclose(tval, 80.01427281740997)
+    assert np.isclose(tval, 86.59300028360848)
     tval = fd_snr_output[0]["q1_4_snr"]
-    assert np.isclose(tval, 60.583163703711946)
+    assert np.isclose(tval, 66.16303805496165)
     tval = fd_snr_output[0]["stats_are_valid"]
     assert tval
     tval = fd_snr_output[0]["snr_filtered_envelope_peak"]
@@ -233,13 +241,40 @@ def test_snr():
     print(json_util.dumps(asnr_out2["Parrival"], indent=2))
     verify_snr_outputs_match(asnr_out["Parrival"], asnr_out2["Parrival"])
 
-    print("Testing arrival_snr_QC variant")
-    asnr_out3 = arrival_snr_QC(
+    print("Testing broadband_snr_QC variant")
+    asnr_out3 = broadband_snr_QC(
         ts2, noise_window=nwin, signal_window=swin, use_measured_arrival_time=True
     )
     print(json_util.dumps(asnr_out3["Parrival"], indent=2))
     verify_snr_outputs_match(asnr_out["Parrival"], asnr_out3["Parrival"])
-    # We need to add a test a database write but I do not want to do that
-    # until we finalize a design for an arrival collection initiated on
-    # github 11/29/2022.  Remove this comment when that is done and that
-    # test has been created and verified.
+    # Finally test the database function to save results of previous
+    # function to an arrival collection.
+    dbclient = DBClient("localhost")
+    db = dbclient.get_database("test_snrQC")
+    doc_to_save = asnr_out3["Parrival"]
+    # Fake the id as if these data had been read from db.  The
+    # id is required to create a cross-reference to the wf collection
+    # when saving arrival document.  We actually save the test data
+    # and read it back to get that id.  We need that to test the
+    # validate_wfid option that is orthogonal to the rest of the
+    # save_snr_arrival function
+    db.save_data(ts, collection="wf_TimeSeries")
+    wfdoc = db.wf_TimeSeries.find_one()
+    wfid = wfdoc["_id"]
+    idout = save_snr_arrival(
+        db, doc_to_save, wfid, wf_collection="wf_TimeSeries", validate_wfid=True
+    )
+    print("Saved snr data to arrival with id=", idout)
+    arrival_doc = db.arrival.find_one()
+    verify_snr_outputs_match(doc_to_save, arrival_doc)
+    # This tests update mode on arrival collection
+    print("Testing update mode to arrival")
+    idout2 = save_snr_arrival(
+        db,
+        doc_to_save,
+        wfid,
+        wf_collection="wf_TimeSeries",
+        use_update=True,
+        update_id=idout,
+    )
+    assert idout2 == idout
