@@ -4,8 +4,61 @@ import dask.array as da
 import dask
 import zarr
 import numpy as np
-from mspasspy.ccore.seismic import TimeSeriesEnsemble, SeismogramEnsemble
+from mspasspy.ccore.seismic import (
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+    TimeSeries,
+    Seismogram,
+)
+
+from mspasspy.ccore.utility import (
+    Metadata,
+    MsPASSError,
+    AtomicType,
+    ErrorSeverity,
+    dmatrix,
+    ProcessingHistory,
+)
+
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, ErrorLogger
+from mspasspy.algorithms.baisc import rtoa
+
+
+def isOldEnsembleObject(obj):
+    old_ensemble_types = (TimeSeriesEnsemble, SeismogramEnsemble)
+    return isinstance(obj, supported_ensemble_types)
+
+
+def isMsPassObject(obj):
+    return isinstance(obj, (TimeSeries, Seismogram))
+
+
+def extractDataFromMsPassObject(mspass_object):
+    """
+    mspass_object is either a seismogram or a timeseries, mspass_object.data
+    is a DoubleVector, we want to convert it extract the data from it and
+    convert it into a numpy array
+    The return type is np.ndarray
+    """
+    if not isMsPassObject(mspass_object):
+        raise TypeError("Can't extract data from the object, not a mspass object")
+    return np.array(mspass_object.data)
+
+
+def extractDataFromOldEnsemble(ensemble_object):
+    if not isOldEnsembleObject(ensemble_object):
+        raise TypeError(
+            "Can't extract data from the object, not an old ensemble object"
+        )
+    if len(ensemble_object.member) <= 0:
+        raise TypeError("The input object doesn't have any member data")
+    num_components = 3 if isinstance(ensemble_object, SeismogramEnsemble) else 1
+
+    shape = [len(ensemble_object.member), ensemble_object[0].npts]
+    ret = np.empty(shape)
+    for i in range(len(ensemble_object.member)):
+        ret[i] = extractDataFromMsPassObject(ensemble_object[i])
+    return ret
 
 
 class BasicGather(ABC):
@@ -145,7 +198,7 @@ class BasicGather(ABC):
         if array_type == "numpy":
             if isinstance(input_data, da.Array):
                 self.member_data = input_data.compute()
-            elif isinstance(input_data, np.array):
+            elif isinstance(input_data, np.ndarray):
                 self.member_data = input_data
         elif array_type == "xarray":
             self.member_data = xr.DataArray()
@@ -194,7 +247,7 @@ class BasicGather(ABC):
 
         if isinstance(input_obj, TimeSeriesEnsemble):
             self.__constructor_from_input_data(
-                np.array(input_obj.member),
+                extractDataFromOldEnsemble(input_obj),
                 array_type,
                 is_compact,
                 num_partition,
@@ -203,7 +256,7 @@ class BasicGather(ABC):
 
         elif isinstance(input_obj, SeismogramEnsemble):
             self.__constructor_from_input_data(
-                np.array(input_obj.member),
+                extractDataFromOldEnsemble(input_obj),
                 array_type,
                 is_compact,
                 num_partition,
@@ -277,6 +330,7 @@ class BasicGather(ABC):
         if self.ensemble_metadata is None:  # default setting for the metadata
             self.ensemble_metadata = {
                 "is_live": False,
+                "is_utc": False,
             }
 
         if input_obj is not None:
@@ -306,21 +360,26 @@ class BasicGather(ABC):
             num_partition=num_partition,
         )
 
-    def append(self, mspass_object, otherargs):
+    def append(self, mspass_object):
         """
         Appends data in mspass_object to internal array object.
-        Needs to handle sizing similar to std containers in C++
+        For now, we don't handle resizing similar to std containers in C++
         where allocs (in this case a resize) is triggered by filling.
-        Constructors need to also handle this concept - see above.
+        Instead, we would just rely on the xarray/numpy's append.
         """
-        pass
+        if not isinstance(mspass_object, (TimeSeries, Seismogram)):
+            raise TypeError("only TimeSeries and Seismogram are supported")
+        if (isinstance(mspass_object, TimeSeries) and self.number_components != 1) or (
+            isinstance(mspass_object, Seismogram) and self.number_components != 3
+        ):
+            raise TypeError("The components number doesn't match the input object")
 
     def starttime(self) -> list:
         """
-        Return a list (pythona array) of starttimes.  We should assume
+        Return a list (python array) of starttimes.  We should assume
         times are always stored as doubles.
         """
-        pass
+        return self.member_metadata["starttime"].tolist()
 
     def column_values(self) -> list:
         """
@@ -345,7 +404,7 @@ class BasicGather(ABC):
         Return time of array position i,j (Note works the same for 3c and
         scalar data)
         """
-        pass
+        return self.member_metadata["time"][i][j]
 
     def sample_number(self, time, x) -> tuple:
         """
@@ -360,34 +419,54 @@ class BasicGather(ABC):
         Returns True if the time standard for the data is set as
         UTC
         """
-        pass
+        return self.ensemble_metadata["is_utc"]
 
     def time_is_relative(self):
         """
         Returns True if the time standard for the data is set as
         relative
         """
-        pass
+        return not self.time_is_UTC()
 
     def live(self, j) -> bool:
         """
         Return true if jth member is set live.
         """
+        return self.member_metadata["is_live"][j]
 
     def dead(self, j) -> bool:
         """
         Return true if jth member is marked dead (opposite of live).
         """
+        return not self.dead()
 
     # This next set are s in BasicTimeSeries but all
     def samprate(self):
         return 1.0 / self.dt
 
     def rtoa(self):
-        pass
+        if not self.time_is_relative():
+            return
+
+        def rtoa_single(time):
+            """
+            TODO: Implement to converter
+            """
+            pass
+
+        self.member_metadata["time"].applymap(rtoa_single)
 
     def ator(self, shift):
-        pass
+        if not self.time_is_UTC():
+            return
+
+        def ator_single(time):
+            """
+            TODO: Implement to converter
+            """
+            pass
+
+        self.member_metadata["time"].applymap(ator_single)
 
     def shift(self, timeshift):
         pass
@@ -406,14 +485,31 @@ class BasicGather(ABC):
         allow optional return as dict or Metadata.  Not clear which should
         be default.
         """
-        pass
+        supported_return_types = ["dict", "metadata"]
+        if return_type not in supported_return_types:
+            raise TypeError(
+                "The return type should be one of the follows: {}".format(
+                    supported_return_types
+                )
+            )
+        ret_metadata = self.member_metadata.loc[j]
+        ret_dict = ret_metadata.to_dict()
+        if return_type == "dict":
+            return ret_dict
+        elif return_type == "metadata":
+            return Metadata(ret_dict)
 
     def set_metadata(self, j, md):
         """
         Setter for metadata of member j.   md is the new continer that would
         replace current conent.  Most useful for constructors.
         """
-        pass
+        if not isinstance(md, (dict, Metadata)):
+            raise TypeError("The metadata should be a dict-like object")
+        if isinstance(md, Metadata):
+            md = md.to_dict()
+        md_df = pd.Dataframe.from_dict(md)
+        self.member_metadata.loc[j] = md_df
 
     def edit_metadata(self, j, md):
         """
@@ -421,7 +517,17 @@ class BasicGather(ABC):
         the current and do not fully repalce them.   Needed for updating
         metadata after costruction
         """
-        pass
+        if not isinstance(md, (dict, Metadata)):
+            raise TypeError("The metadata should be a dict-like object")
+        if isinstance(md, Metadata):
+            md = md.to_dict()
+        for key, val in md:
+            # We assume that user shouldn't add new metadata
+            if key not in self.member_metadata.columns:
+                raise TypeError(
+                    "key {} is not presented in the member metadata".format(key)
+                )
+            self.member_metadata[key][j] = val
 
     @abstractmethod
     def member(self, j, data_only=False):
@@ -450,7 +556,7 @@ class BasicGather(ABC):
         """
         Like metadata method but returns the ensemble metadata.
         """
-        pass
+        return self.ensemble_metadata
 
     def sync_metadata(self):
         """
@@ -458,7 +564,8 @@ class BasicGather(ABC):
         ensemble key-value pairs to the members.  It is debatable that
         this would be needed but would be trivial to implement.
         """
-        pass
+        for key, val in self.ensemble_metadata:
+            self.member_metadata = self.member_metadata.assign(key=val)
 
     # not sure if we can make this member abstract.  It needs to
     # be in this design to allow different signatures for scalar and 3c data
