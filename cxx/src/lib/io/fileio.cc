@@ -84,11 +84,11 @@ long int fwrite_to_file(Seismogram& d, const string dir,const string dfile)
 
 	return(foff);
 }
-long int fwrite_to_file(Ensemble<TimeSeries>& d, const string dir,const string dfile)
+std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::TimeSeries>& d, const std::string dir,const std::string dfile)
 {
 	try{
 		FILE *fp;
-		long int foff;
+		vector<long int> foffs;
 		string fname;
 		if(dir.length()>0)
 		  /* for expected context for use in python we will assume dir does not
@@ -105,7 +105,8 @@ long int fwrite_to_file(Ensemble<TimeSeries>& d, const string dir,const string d
 		the fwrite will fail */
 		fseek(fp,0L,2);
 		for (int i = 0; i < d.member.size(); ++i) {
-			foff = ftell(fp);
+			long int foff = ftell(fp);
+			foffs.push_back(foff);
 			TimeSeries& t = d.member[i];
 			if (fwrite((void *)t.s.data(), sizeof(double), t.npts(), fp) != t.npts())
 			{
@@ -121,14 +122,14 @@ long int fwrite_to_file(Ensemble<TimeSeries>& d, const string dir,const string d
 		}	
 		fclose(fp);
 
-		return foff;
+		return foffs;
 	}catch(...){throw;};
 }
-long int fwrite_to_file(Ensemble<Seismogram>& d, const string dir,const string dfile)
+std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::Seismogram>& d, const std::string dir,const std::string dfile)
 {
 	try{
 		FILE *fp;
-		long int foff;
+		vector<long int> foffs;
 		string fname;
 		if(dir.length()>0)
 		  /* for expected context for use in python we will assume dir does not
@@ -145,7 +146,8 @@ long int fwrite_to_file(Ensemble<Seismogram>& d, const string dir,const string d
 		the fwrite will fail */
 		fseek(fp,0L,2);
 		for (int i = 0; i < d.member.size(); ++i) {
-			foff = ftell(fp);
+			long int foff = ftell(fp);
+			foffs.push_back(foff);
 			Seismogram& t = d.member[i];
 			if (fwrite((void *)t.u.get_address(0,0), sizeof(double), 3*t.npts(), fp) != 3*t.npts())
 			{
@@ -161,7 +163,7 @@ long int fwrite_to_file(Ensemble<Seismogram>& d, const string dir,const string d
 		}	
 		fclose(fp);
 
-		return foff;
+		return foffs;
 	}catch(...){throw;};
 }
 
@@ -265,7 +267,7 @@ size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::TimeSeries> &
 		fname=dfile;
 	if((fp=fopen(fname.c_str(),"r")) == NULL)
 		throw MsPASSError("fread_data_from_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
-	
+
 	for (int i = 0; i < n; ++i) {
 		size_t ns_read;
 		long int foff = foffs[i];

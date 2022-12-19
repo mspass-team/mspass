@@ -16,9 +16,9 @@ long int fwrite_to_file(mspass::seismic::TimeSeries& d,
   const std::string dir,const std::string dfile);
 long int fwrite_to_file(mspass::seismic::Seismogram& d,
     const std::string dir,const std::string dfile);
-long int fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::TimeSeries>& d,
+std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::TimeSeries>& d,
   const std::string dir,const std::string dfile);
-long int fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::Seismogram>& d,
+std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::Seismogram>& d,
   const std::string dir,const std::string dfile);
 size_t fread_from_file(mspass::seismic::Seismogram& d,const std::string dir, const std::string dfile,
     const long int foff);

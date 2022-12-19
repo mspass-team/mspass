@@ -103,7 +103,7 @@ common io related issues. Caller should always include the call to this
 function in a try block.
 
 */
-long int fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::TimeSeries>& d,
+std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::TimeSeries>& d,
   const std::string dir,const std::string dfile);
 
 /*! \brief Fast file writer for native Ensemble<Seismogram> save to a file.
@@ -139,7 +139,7 @@ common io related issues. Caller should always include the call to this
 function in a try block.
 
 */
-long int fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::Seismogram>& d,
+std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::Seismogram>& d,
   const std::string dir,const std::string dfile);
 
 /*! \brief Use C fread to read sample data from a file.
