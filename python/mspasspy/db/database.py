@@ -2852,6 +2852,7 @@ class Database(pymongo.database.Database):
 
         cur_collection = self[wf_collection]
 
+        # firstly adding metadata for each object, then read local files
         for object_id in objectid_list:
             # This assumes the name of a metadata schema matches the data type it defines.
             read_metadata_schema = self.metadata_schema[object_type.__name__]
