@@ -1,17 +1,38 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
   <title>Deploy MsPASS with Docker Compose &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
@@ -20,7 +41,10 @@
         <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-    <script src="../_static/js/theme.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Deploy MsPASS on HPC" href="deploy_mspass_on_HPC.html" />
@@ -33,13 +57,29 @@
   
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+
+   
   <div class="wy-grid-for-nav">
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
+          
+
+          
             <a href="../index.html" class="icon icon-home"> MsPASS
+          
+
+          
           </a>
+
+          
+            
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -47,8 +87,19 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
     
+            
+            
+              
+            
+            
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
@@ -86,43 +137,86 @@
 <li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
 
+            
+          
     <a href= "../genindex.html">Index</a>
   
         </div>
+        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">MsPASS</a>
+        
       </nav>
 
+
       <div class="wy-nav-content">
+        
         <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
-      <li class="breadcrumb-item active">Deploy MsPASS with Docker Compose</li>
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Deploy MsPASS with Docker Compose</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+        
+          
+            
               <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/getting_started/deploy_mspass_with_docker_compose.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+            
   <section id="deploy-mspass-with-docker-compose">
-<span id="id1"></span><h1>Deploy MsPASS with Docker Compose<a class="headerlink" href="#deploy-mspass-with-docker-compose" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Deploy MsPASS with Docker Compose<a class="headerlink" href="#deploy-mspass-with-docker-compose" title="Permalink to this heading">¶</a></h1>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading"></a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">¶</a></h2>
 <p>Docker Compose is a tool to deploy and coordinate multiple Docker containers.
 To install Docker Compose on machines that you have root access, please refer to the guide <a class="reference external" href="https://docs.docker.com/compose/install/">here</a> and follow the instructions for your specific platform.
 Docker Compose uses YAML files to run multiple containers.
 Please refer to its <a class="reference external" href="https://docs.docker.com/compose/">documentation</a> for more details on using the tool.</p>
 </section>
 <section id="configure-mspass-containers">
-<h2>Configure MsPASS Containers<a class="headerlink" href="#configure-mspass-containers" title="Permalink to this heading"></a></h2>
+<h2>Configure MsPASS Containers<a class="headerlink" href="#configure-mspass-containers" title="Permalink to this heading">¶</a></h2>
 <p>The MsPASS runtime environment is composed of multiple components each serves a specific functionality.
 They are: <code class="docutils literal notranslate"><span class="pre">frontend</span></code>, <code class="docutils literal notranslate"><span class="pre">scheduler</span></code>, <code class="docutils literal notranslate"><span class="pre">worker</span></code>, <code class="docutils literal notranslate"><span class="pre">db</span></code>, <code class="docutils literal notranslate"><span class="pre">dbmanager</span></code>, and <code class="docutils literal notranslate"><span class="pre">shard</span></code>.
 The MsPASS container can be launched as one of these roles by specifying the <code class="docutils literal notranslate"><span class="pre">MSPASS_ROLE</span></code> environment variable.
@@ -162,11 +256,11 @@ If unset, the Jupyter Notebook will generate a random token and print to stdout,
 <p>These variables are for experienced users only. The deployment can break if mismatching ports are set.</p>
 </section>
 <section id="deploy-mspass-containers">
-<h2>Deploy MsPASS Containers<a class="headerlink" href="#deploy-mspass-containers" title="Permalink to this heading"></a></h2>
+<h2>Deploy MsPASS Containers<a class="headerlink" href="#deploy-mspass-containers" title="Permalink to this heading">¶</a></h2>
 <p>Docker Compose can deploy multiple MsPASS Containers of different roles, which simulates a distributed environment.
 Below, we provide two exemplary Docker Compose configurations that have distributed setup for both the computation (with Dask or Spark) and the database (with MongoDB).</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-number">Listing 1 </span><span class="caption-text">Docker Compose example that configures a MongoDB cluster of two shards and a Dask cluster of one worker.</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
+<div class="code-block-caption"><span class="caption-number">Listing 1 </span><span class="caption-text">Docker Compose example that configures a MongoDB cluster of two shards and a Dask cluster of one worker.</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3&#39;</span><span class="w"></span>
 <span class="linenos">  2</span>
 <span class="linenos">  3</span><span class="nt">services</span><span class="p">:</span><span class="w"></span>
@@ -278,7 +372,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-number">Listing 2 </span><span class="caption-text">Docker Compose example that configures a MongoDB cluster of two shards and a Spark cluster of one worker.</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
+<div class="code-block-caption"><span class="caption-number">Listing 2 </span><span class="caption-text">Docker Compose example that configures a MongoDB cluster of two shards and a Spark cluster of one worker.</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3&#39;</span><span class="w"></span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="nt">services</span><span class="p">:</span><span class="w"></span>
@@ -411,30 +505,42 @@ You can check the status of the frontend with this command:</p>
 
 
            </div>
+           
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="run_mspass_with_docker.html" class="btn btn-neutral float-left" title="Run MsPASS with Docker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="deploy_mspass_on_HPC.html" class="btn btn-neutral float-right" title="Deploy MsPASS on HPC" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="run_mspass_with_docker.html" class="btn btn-neutral float-left" title="Run MsPASS with Docker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
-  </div>
+    <p>
+        &#169; Copyright 2020-2021, Ian Wang.
 
-   
+    </p>
+  </div> 
 
 </footer>
         </div>
       </div>
+
     </section>
+
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
