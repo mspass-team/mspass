@@ -2951,7 +2951,11 @@ def test_read_distributed_data_dask():
     cursors = db["wf_TimeSeries"].find({})
 
     dask_list = read_distributed_data(
-        db, cursors, mode="cautious", normalize=["source", "site", "channel"]
+        db,
+        cursors,
+        mode="cautious",
+        normalize=["source", "site", "channel"],
+        format="dask",
     )
     list = dask_list.compute()
     assert len(list) == 3

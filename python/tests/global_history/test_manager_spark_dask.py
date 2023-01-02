@@ -1,3 +1,9 @@
+import collections
+from mspasspy.global_history.manager import (
+    mspass_map,
+    mspass_reduce,
+    GlobalHistoryManager,
+)
 import copy
 import os
 
@@ -26,7 +32,6 @@ from helper import (
     get_live_timeseries_ensemble,
     get_live_seismogram_ensemble,
 )
-from mspasspy.global_history.manager import GlobalHistoryManager
 import mspasspy.algorithms.signals as signals
 from mspasspy.ccore.seismic import (
     Seismogram,
@@ -44,6 +49,11 @@ from mspasspy.util.converter import AntelopePf2dict
 import json
 from mspasspy.global_history.ParameterGTree import ParameterGTree, parameter_to_GTree
 import collections
+from mspasspy.global_history.manager import (
+    mspass_map,
+    mspass_reduce,
+    GlobalHistoryManager,
+)
 
 
 def spark_map(input, manager, sc, alg_name=None, parameters=None):
@@ -113,6 +123,69 @@ class TestManager:
             db[col_name].delete_many({})
 
         self.manager = GlobalHistoryManager(db, "test_job", collection="history_global")
+
+    def add(
+        self,
+        data,
+        object_history=False,
+        alg_name="filter",
+        alg_id=None,
+        dryrun=False,
+        inplace_return=True,
+    ):
+        return data + data
+
+    def test_normal_map(self):
+        t = [get_live_timeseries() for i in range(5)]
+        test_map_res = list(mspass_map(t, self.add, global_history=self.manager))
+        for i in range(5):
+            assert test_map_res[i].data == t[i].data + t[i].data
+        # test user provided alg_name and parameter(exist)
+        test_map_res = list(
+            mspass_map(
+                t,
+                self.add,
+                global_history=self.manager,
+                object_history=True,
+                parameters="length=5",
+            )
+        )
+        for i in range(5):
+            assert test_map_res[i].data == t[i].data + t[i].data
+        test_map_res = list(
+            mspass_map(
+                t, self.add, global_history=self.manager, alg_id="7", alg_name="add"
+            )
+        )
+        for i in range(5):
+            assert test_map_res[i].data == t[i].data + t[i].data
+
+    def test_normal_reduce(self):
+        t = [get_live_timeseries() for i in range(5)]
+        s = t[0]
+        for i in range(1, 5):
+            s += t[i]
+        test_reduce_res = mspass_reduce(
+            t, stack, global_history=self.manager, object_history=True
+        )
+        assert test_reduce_res.data == s.data
+        test_reduce_res = mspass_reduce(
+            t,
+            stack,
+            global_history=self.manager,
+            object_history=False,
+            alg_id="5",
+            alg_name="stack",
+        )
+        assert test_reduce_res.data == s.data
+        test_reduce_res = mspass_reduce(
+            t,
+            stack,
+            global_history=self.manager,
+            object_history=False,
+            parameters="length=5",
+        )
+        assert test_reduce_res.data == s.data
 
     def test_init(self):
         assert self.manager.job_name == "test_job"
