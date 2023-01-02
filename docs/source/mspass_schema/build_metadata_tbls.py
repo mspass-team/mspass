@@ -2,7 +2,8 @@ from mspasspy.ccore.utility import MetadataDefinitions
 from mspasspy.ccore.utility import MDtype
 from mspasspy.ccore.utility import AntelopePf
 
-def write_group(pf, tag,mdef):
+
+def write_group(pf, tag, mdef):
     """
     This function is implements the repetitious task of creating a
     csv file of attributes that have some kind of logical or required
@@ -25,83 +26,84 @@ def write_group(pf, tag,mdef):
     :param mdef: is the MetadataDefinitions object created by the main
        program here.  We pass it for efficiency.
     """
-    tbl=pf.get_tbl(tag)
-    filename=tag+".csv"
-    fh=open(filename,"w+")
-    fh.write('\"%s\",\"%s\",\"%s\",\"%s\"\n' % ("Key","Type","Mutable","Concept"))
+    tbl = pf.get_tbl(tag)
+    filename = tag + ".csv"
+    fh = open(filename, "w+")
+    fh.write('"%s","%s","%s","%s"\n' % ("Key", "Type", "Mutable", "Concept"))
     for k in tbl:
-        t=mdef.type(k)
-        tstr="undefined"
-        if(t==MDtype.Int64):
-            tstr="int"
-        elif(t==MDtype.Double):
-            tstr="double"
-        elif(t==MDtype.String):
-            tstr="string"
-        elif(t==MDtype.Boolean):
-            tstr="boolean"
-        writeable=mdef.writeable(k)
-        wstr="undefined"
-        if(writeable):
-            wstr="Yes"
+        t = mdef.type(k)
+        tstr = "undefined"
+        if t == MDtype.Int64:
+            tstr = "int"
+        elif t == MDtype.Double:
+            tstr = "double"
+        elif t == MDtype.String:
+            tstr = "string"
+        elif t == MDtype.Boolean:
+            tstr = "boolean"
+        writeable = mdef.writeable(k)
+        wstr = "undefined"
+        if writeable:
+            wstr = "Yes"
         else:
-            wstr="No"
-        fh.write('\"%s\",\"%s\",\"%s\",\"%s\"\n' % (k,tstr,wstr,mdef.concept(k)))
+            wstr = "No"
+        fh.write('"%s","%s","%s","%s"\n' % (k, tstr, wstr, mdef.concept(k)))
     fh.close()
+
 
 # These are file names for outputs
 # this is all entris in natrual sort order (keys alphabetical)
-allfile="all.csv"
-allrst="all.rst"
+allfile = "all.csv"
+allrst = "all.rst"
 # This contains all aliases
-aliasfile="aliases.csv"
+aliasfile = "aliases.csv"
 
-mdef=MetadataDefinitions()
-fh=open(allfile,"w+")
-fh.write('\"%s\",\"%s\",\"%s\",\"%s\"\n' % ("Key","Type","Mutable","Concept"))
-mdk=mdef.keys()
+mdef = MetadataDefinitions()
+fh = open(allfile, "w+")
+fh.write('"%s","%s","%s","%s"\n' % ("Key", "Type", "Mutable", "Concept"))
+mdk = mdef.keys()
 for k in mdk:
-    t=mdef.type(k)
-    tstr="undefined"
-    if(t==MDtype.Int64):
-        tstr="int"
-    elif(t==MDtype.Double):
-        tstr="double"
-    elif(t==MDtype.String):
-        tstr="string"
-    elif(t==MDtype.Boolean):
-        tstr="boolean"
-    writeable=mdef.writeable(k)
-    wstr="undefined"
-    if(writeable):
-        wstr="Yes"
+    t = mdef.type(k)
+    tstr = "undefined"
+    if t == MDtype.Int64:
+        tstr = "int"
+    elif t == MDtype.Double:
+        tstr = "double"
+    elif t == MDtype.String:
+        tstr = "string"
+    elif t == MDtype.Boolean:
+        tstr = "boolean"
+    writeable = mdef.writeable(k)
+    wstr = "undefined"
+    if writeable:
+        wstr = "Yes"
     else:
-        wstr="No"
-    fh.write('\"%s\",\"%s\",\"%s\",\"%s\"\n' % (k,tstr,wstr,mdef.concept(k)))
+        wstr = "No"
+    fh.write('"%s","%s","%s","%s"\n' % (k, tstr, wstr, mdef.concept(k)))
 fh.close()
-fh=open(aliasfile,"w+")
-fh.write('\"%s\",\"%s\"\n' % ("Unique Key","Valid Aliases"))
+fh = open(aliasfile, "w+")
+fh.write('"%s","%s"\n' % ("Unique Key", "Valid Aliases"))
 for k in mdk:
-    aliaslist=mdef.aliases(k)
-    if(len(aliaslist)>0):
-        if(len(aliaslist)==1):
-            fh.write('\"%s\",\"%s\"' % (k,aliaslist[0]))
+    aliaslist = mdef.aliases(k)
+    if len(aliaslist) > 0:
+        if len(aliaslist) == 1:
+            fh.write('"%s","%s"' % (k, aliaslist[0]))
         else:
-            fh.write('\"%s\",\"' % k )
-            for i in range(len(aliaslist)-1):
-                fh.write('%s : ' % aliaslist[i])
-            val=aliaslist[len(aliaslist)-1]
-            fh.write('%s\"' % val)
-        fh.write('\n')
+            fh.write('"%s","' % k)
+            for i in range(len(aliaslist) - 1):
+                fh.write("%s : " % aliaslist[i])
+            val = aliaslist[len(aliaslist) - 1]
+            fh.write('%s"' % val)
+        fh.write("\n")
 
 # Now build the group tables using the function above.  Need the pf first
-pf=AntelopePf('build_metadata_tbls.pf')
-write_group(pf,'site',mdef)
-write_group(pf,'source',mdef)
-write_group(pf,'obspy_trace',mdef)
-write_group(pf,'sitechan',mdef)
-write_group(pf,'3Cdata',mdef)
-write_group(pf,'sitechan',mdef)
-write_group(pf,'phase',mdef)
-write_group(pf,'MongoDB',mdef)
-write_group(pf,'files',mdef)
+pf = AntelopePf("build_metadata_tbls.pf")
+write_group(pf, "site", mdef)
+write_group(pf, "source", mdef)
+write_group(pf, "obspy_trace", mdef)
+write_group(pf, "sitechan", mdef)
+write_group(pf, "3Cdata", mdef)
+write_group(pf, "sitechan", mdef)
+write_group(pf, "phase", mdef)
+write_group(pf, "MongoDB", mdef)
+write_group(pf, "files", mdef)
