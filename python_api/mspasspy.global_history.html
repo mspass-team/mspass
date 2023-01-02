@@ -137,6 +137,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager"><code class="docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.manager.mspass_dask_fold"><code class="docutils literal notranslate"><span class="pre">mspass_dask_fold()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.manager.mspass_dask_map"><code class="docutils literal notranslate"><span class="pre">mspass_dask_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.manager.mspass_map"><code class="docutils literal notranslate"><span class="pre">mspass_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.manager.mspass_reduce"><code class="docutils literal notranslate"><span class="pre">mspass_reduce()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.manager.mspass_spark_map"><code class="docutils literal notranslate"><span class="pre">mspass_spark_map()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.global_history.manager.mspass_spark_reduce"><code class="docutils literal notranslate"><span class="pre">mspass_spark_reduce()</span></code></a></li>
 </ul>
@@ -355,6 +357,61 @@ will save the object level history.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a dask <cite>bag</cite> format of objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.global_history.manager.mspass_map">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.global_history.manager.</span></span><span class="sig-name descname"><span class="pre">mspass_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/global_history/manager.html#mspass_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.global_history.manager.mspass_map" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>This decorator method performs map function in Python. Instead of performing the normal map function,
+if user provides global history manager, alg_id(optional), alg_name(optional) and parameters(optional)
+as input, the global history manager will log down the usage of the algorithm. Also, if user set
+object_history to be True, then each mspass object in this map function will save the object level history.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – a iterable which is to be mapped.</p></li>
+<li><p><strong>func</strong> – target function to which map passes each element of given iterable.</p></li>
+<li><p><strong>global_history</strong> (<a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="mspasspy.global_history.manager.GlobalHistoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a>) – a user specified global history manager</p></li>
+<li><p><strong>object_history</strong> – save the each object’s history in the map when True</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the map operation</p></li>
+<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified alg_name for the map operation</p></li>
+<li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified parameters for the map operation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mapped objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.global_history.manager.mspass_reduce">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.global_history.manager.</span></span><span class="sig-name descname"><span class="pre">mspass_reduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/global_history/manager.html#mspass_reduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.global_history.manager.mspass_reduce" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>This method performs reduce function using functools. Instead of performing the normal reduce function,
+if user provides global history manager, alg_id(optional), alg_name(optional) and parameters(optional)
+as input, the global history manager will log down the usage of the algorithm. Also, if user set
+object_history to be True, then each mspass object in this reduce function will save the object level history.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – data to be processed, it needs to be a iterable. Apply func of two arguments cumulatively
+to the items of iterable, from left to right, so as to reduce the iterable to a single value.</p></li>
+<li><p><strong>func</strong> – target function</p></li>
+<li><p><strong>global_history</strong> (<a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="mspasspy.global_history.manager.GlobalHistoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a>) – a user specified global history manager</p></li>
+<li><p><strong>object_history</strong> – save the each object’s history in the reduce when True</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the reduce operation</p></li>
+<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified alg_name for the reduce operation</p></li>
+<li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified parameters for the reduce operation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>reduced objects.</p>
 </dd>
 </dl>
 </dd></dl>

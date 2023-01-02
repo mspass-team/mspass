@@ -195,9 +195,14 @@
            <div itemprop="articleBody">
             
   <h1>Source code for mspasspy.reduce</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pyspark</span>
-<span class="kn">import</span> <span class="nn">dask.bag</span> <span class="k">as</span> <span class="nn">daskbag</span>
-
+<span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">dask.bag</span> <span class="k">as</span> <span class="nn">daskbag</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pyspark</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
 <span class="kn">from</span> <span class="nn">mspasspy.util.decorators</span> <span class="kn">import</span> <span class="n">mspass_reduce_func_wrapper</span>
 <span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="n">list2Ensemble</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span>
@@ -273,8 +278,14 @@
     <span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">list2Ensemble</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
 
 
-<span class="n">pyspark</span><span class="o">.</span><span class="n">RDD</span><span class="o">.</span><span class="n">mspass_foldby</span> <span class="o">=</span> <span class="n">mspass_spark_foldby</span>
-<span class="n">daskbag</span><span class="o">.</span><span class="n">Bag</span><span class="o">.</span><span class="n">mspass_foldby</span> <span class="o">=</span> <span class="n">mspass_dask_foldby</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">daskbag</span><span class="o">.</span><span class="n">Bag</span><span class="o">.</span><span class="n">mspass_foldby</span> <span class="o">=</span> <span class="n">mspass_dask_foldby</span>
+<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">pyspark</span><span class="o">.</span><span class="n">RDD</span><span class="o">.</span><span class="n">mspass_foldby</span> <span class="o">=</span> <span class="n">mspass_spark_foldby</span>
+<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+    <span class="k">pass</span>
 </pre></div>
 
            </div>

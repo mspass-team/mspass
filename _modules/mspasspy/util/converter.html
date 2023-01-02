@@ -203,7 +203,13 @@
 <span class="kn">import</span> <span class="nn">obspy.core</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">dask.dataframe</span> <span class="k">as</span> <span class="nn">daskdf</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">dask.dataframe</span> <span class="k">as</span> <span class="nn">daskdf</span>
+
+    <span class="n">__mspasspy_has_dask</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">__mspasspy_has_dask</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">AntelopePf</span><span class="p">,</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span>
@@ -871,14 +877,18 @@
     <span class="k">if</span> <span class="p">(</span>
         <span class="n">header_line</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">header_line</span> <span class="o">&lt;</span> <span class="mi">0</span>
     <span class="p">):</span>  <span class="c1">#   Header_line not given, using attribute_names</span>
-        <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">parallel</span> <span class="ow">and</span> <span class="n">__mspasspy_has_dask</span><span class="p">:</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">daskdf</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">separator</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">attribute_names</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING:  No dask detected. Running pandas dataframe&quot;</span><span class="p">)</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">separator</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">attribute_names</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1">#   header_line is given and attribute_names is not given</span>
-        <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">parallel</span> <span class="ow">and</span> <span class="n">__mspasspy_has_dask</span><span class="p">:</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">daskdf</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">separator</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header_line</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING:  No dask detected. Running pandas dataframe&quot;</span><span class="p">)</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">separator</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header_line</span><span class="p">)</span>
 
     <span class="c1">#   Convert data in each column to the type given in type_dict</span>
@@ -903,7 +913,7 @@
             <span class="n">df</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
 
     <span class="c1">#   Transfer dask dataframe back to pandas dataframe to keep the consistency in internal representation</span>
-    <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">parallel</span> <span class="ow">and</span> <span class="n">__mspasspy_has_dask</span><span class="p">:</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">df</span></div>

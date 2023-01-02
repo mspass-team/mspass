@@ -198,19 +198,174 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">import</span> <span class="nn">pymongo</span>
-<span class="kn">import</span> <span class="nn">pyspark</span>
 <span class="kn">import</span> <span class="nn">collections</span>
-<span class="kn">import</span> <span class="nn">dask.bag</span> <span class="k">as</span> <span class="nn">daskbag</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">dask.bag</span> <span class="k">as</span> <span class="nn">daskbag</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pyspark</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
 <span class="kn">from</span> <span class="nn">bson.objectid</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">AntelopePf</span>
 <span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="n">AntelopePf2dict</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">dill.source</span> <span class="kn">import</span> <span class="n">getsource</span>
+<span class="kn">import</span> <span class="nn">functools</span>
 
 <span class="kn">import</span> <span class="nn">mspasspy.algorithms.signals</span> <span class="k">as</span> <span class="nn">signals</span>
 <span class="kn">from</span> <span class="nn">mspasspy.global_history.ParameterGTree</span> <span class="kn">import</span> <span class="n">ParameterGTree</span><span class="p">,</span> <span class="n">parameter_to_GTree</span>
+
+
+<div class="viewcode-block" id="mspass_map"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_map">[docs]</a><span class="k">def</span> <span class="nf">mspass_map</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">func</span><span class="p">,</span>
+    <span class="n">global_history</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     This decorator method performs map function in Python. Instead of performing the normal map function,</span>
+<span class="sd">     if user provides global history manager, alg_id(optional), alg_name(optional) and parameters(optional)</span>
+<span class="sd">     as input, the global history manager will log down the usage of the algorithm. Also, if user set</span>
+<span class="sd">     object_history to be True, then each mspass object in this map function will save the object level history.</span>
+
+<span class="sd">    :param data: a iterable which is to be mapped.</span>
+<span class="sd">    :param func: target function to which map passes each element of given iterable.</span>
+<span class="sd">    :param global_history: a user specified global history manager</span>
+<span class="sd">    :type global_history: :class:`GlobalHistoryManager`</span>
+<span class="sd">    :param object_history: save the each object&#39;s history in the map when True</span>
+<span class="sd">    :param alg_id: a user specified alg_id for the map operation</span>
+<span class="sd">    :type alg_id: :class:`str`/:class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param alg_name: a user specified alg_name for the map operation</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param parameters: a user specified parameters for the map operation</span>
+<span class="sd">    :type parameters: :class:`str`</span>
+<span class="sd">    :return: mapped objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
+        <span class="n">parameterGTree</span> <span class="o">=</span> <span class="n">parameter_to_GTree</span><span class="p">(</span><span class="n">parameters_str</span><span class="o">=</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">new_kwargs</span><span class="p">[</span><span class="s2">&quot;object_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">object_history</span>
+        <span class="k">if</span> <span class="n">alg_name</span><span class="p">:</span>
+            <span class="n">new_kwargs</span><span class="p">[</span><span class="s2">&quot;alg_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">alg_name</span>
+        <span class="k">if</span> <span class="n">alg_id</span><span class="p">:</span>
+            <span class="n">new_kwargs</span><span class="p">[</span><span class="s2">&quot;alg_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">alg_id</span>
+        <span class="n">parameterGTree</span> <span class="o">=</span> <span class="n">parameter_to_GTree</span><span class="p">(</span><span class="o">**</span><span class="n">new_kwargs</span><span class="p">)</span>
+
+    <span class="n">parameters_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">parameterGTree</span><span class="o">.</span><span class="n">asdict</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_name</span><span class="p">:</span>
+        <span class="n">alg_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="c1"># get the alg_id if exists, else create a new one</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_id</span><span class="p">:</span>
+        <span class="c1"># get the alg_id if exists</span>
+        <span class="k">if</span> <span class="n">global_history</span><span class="p">:</span>
+            <span class="n">alg_id</span> <span class="o">=</span> <span class="n">global_history</span><span class="o">.</span><span class="n">get_alg_id</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters_json</span><span class="p">)</span>
+        <span class="c1"># else create a new one</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_id</span><span class="p">:</span>
+            <span class="n">alg_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span>
+
+    <span class="c1"># save the global history</span>
+    <span class="k">if</span> <span class="n">global_history</span><span class="p">:</span>
+        <span class="n">global_history</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters_json</span><span class="p">)</span>
+
+    <span class="c1"># save the object history</span>
+    <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">map</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">wf</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span>
+                <span class="n">wf</span><span class="p">,</span>
+                <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
+                <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
+                <span class="n">alg_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">alg_id</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">data</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">wf</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="n">wf</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">),</span> <span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mspass_reduce"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_reduce">[docs]</a><span class="k">def</span> <span class="nf">mspass_reduce</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">func</span><span class="p">,</span>
+    <span class="n">global_history</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     This method performs reduce function using functools. Instead of performing the normal reduce function,</span>
+<span class="sd">     if user provides global history manager, alg_id(optional), alg_name(optional) and parameters(optional)</span>
+<span class="sd">     as input, the global history manager will log down the usage of the algorithm. Also, if user set</span>
+<span class="sd">     object_history to be True, then each mspass object in this reduce function will save the object level history.</span>
+
+<span class="sd">    :param data: data to be processed, it needs to be a iterable. Apply func of two arguments cumulatively</span>
+<span class="sd">     to the items of iterable, from left to right, so as to reduce the iterable to a single value.</span>
+<span class="sd">    :param func: target function</span>
+<span class="sd">    :param global_history: a user specified global history manager</span>
+<span class="sd">    :type global_history: :class:`GlobalHistoryManager`</span>
+<span class="sd">    :param object_history: save the each object&#39;s history in the reduce when True</span>
+<span class="sd">    :param alg_id: a user specified alg_id for the reduce operation</span>
+<span class="sd">    :type alg_id: :class:`str`/:class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param alg_name: a user specified alg_name for the reduce operation</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param parameters: a user specified parameters for the reduce operation</span>
+<span class="sd">    :type parameters: :class:`str`</span>
+<span class="sd">    :return: reduced objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
+        <span class="n">parameterGTree</span> <span class="o">=</span> <span class="n">parameter_to_GTree</span><span class="p">(</span><span class="n">parameters_str</span><span class="o">=</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">new_kwargs</span><span class="p">[</span><span class="s2">&quot;object_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">object_history</span>
+        <span class="k">if</span> <span class="n">alg_name</span><span class="p">:</span>
+            <span class="n">new_kwargs</span><span class="p">[</span><span class="s2">&quot;alg_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">alg_name</span>
+        <span class="k">if</span> <span class="n">alg_id</span><span class="p">:</span>
+            <span class="n">new_kwargs</span><span class="p">[</span><span class="s2">&quot;alg_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">alg_id</span>
+        <span class="n">parameterGTree</span> <span class="o">=</span> <span class="n">parameter_to_GTree</span><span class="p">(</span><span class="o">**</span><span class="n">new_kwargs</span><span class="p">)</span>
+
+    <span class="n">parameters_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">parameterGTree</span><span class="o">.</span><span class="n">asdict</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_name</span><span class="p">:</span>
+        <span class="n">alg_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="c1"># get the alg_id if exists, else create a new one</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_id</span><span class="p">:</span>
+        <span class="c1"># get the alg_id if exists</span>
+        <span class="k">if</span> <span class="n">global_history</span><span class="p">:</span>
+            <span class="n">alg_id</span> <span class="o">=</span> <span class="n">global_history</span><span class="o">.</span><span class="n">get_alg_id</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters_json</span><span class="p">)</span>
+        <span class="c1"># else create a new one</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_id</span><span class="p">:</span>
+            <span class="n">alg_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span>
+
+    <span class="c1"># save the global history</span>
+    <span class="k">if</span> <span class="n">global_history</span><span class="p">:</span>
+        <span class="n">global_history</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters_json</span><span class="p">)</span>
+
+    <span class="c1"># save the object history</span>
+    <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span>
+                <span class="n">a</span><span class="p">,</span>
+                <span class="n">b</span><span class="p">,</span>
+                <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
+                <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
+                <span class="n">alg_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">alg_id</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">data</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">),</span> <span class="n">data</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="mspass_spark_map"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_spark_map">[docs]</a><span class="k">def</span> <span class="nf">mspass_spark_map</span><span class="p">(</span>
@@ -599,12 +754,26 @@
         <span class="p">)</span>
 
         <span class="c1"># modify pyspark/dask map to our defined map</span>
-        <span class="n">pyspark</span><span class="o">.</span><span class="n">RDD</span><span class="o">.</span><span class="n">mspass_map</span> <span class="o">=</span> <span class="n">mspass_spark_map</span>
-        <span class="n">daskbag</span><span class="o">.</span><span class="n">Bag</span><span class="o">.</span><span class="n">mspass_map</span> <span class="o">=</span> <span class="n">mspass_dask_map</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">daskbag</span><span class="o">.</span><span class="n">Bag</span><span class="o">.</span><span class="n">mspass_map</span> <span class="o">=</span> <span class="n">mspass_dask_map</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pyspark</span><span class="o">.</span><span class="n">RDD</span><span class="o">.</span><span class="n">mspass_map</span> <span class="o">=</span> <span class="n">mspass_spark_map</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+            <span class="k">pass</span>
 
         <span class="c1"># modify pyspark/dask reduce to our defined reduce</span>
-        <span class="n">pyspark</span><span class="o">.</span><span class="n">RDD</span><span class="o">.</span><span class="n">mspass_reduce</span> <span class="o">=</span> <span class="n">mspass_spark_reduce</span>
-        <span class="n">daskbag</span><span class="o">.</span><span class="n">Bag</span><span class="o">.</span><span class="n">mspass_reduce</span> <span class="o">=</span> <span class="n">mspass_dask_fold</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">daskbag</span><span class="o">.</span><span class="n">Bag</span><span class="o">.</span><span class="n">mspass_reduce</span> <span class="o">=</span> <span class="n">mspass_dask_fold</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pyspark</span><span class="o">.</span><span class="n">RDD</span><span class="o">.</span><span class="n">mspass_reduce</span> <span class="o">=</span> <span class="n">mspass_spark_reduce</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+            <span class="k">pass</span>
 
 <div class="viewcode-block" id="GlobalHistoryManager.logging"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.logging">[docs]</a>    <span class="k">def</span> <span class="nf">logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
