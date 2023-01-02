@@ -10,8 +10,26 @@ import struct
 import urllib.request
 from array import array
 import pandas as pd
-import dask.bag as daskbag
-import dask.dataframe as daskdf
+
+try:
+    import dask.bag as daskbag
+
+    _mspasspy_has_dask = True
+except ImportError:
+    _mspasspy_has_dask = False
+
+try:
+    import dask.dataframe as daskdf
+except ImportError:
+    _mspasspy_has_dask = False
+
+try:
+    import pyspark
+
+    _mspasspy_has_pyspark = True
+except ImportError:
+    _mspasspy_has_pyspark = False
+
 import gridfs
 import pymongo
 import numpy as np
@@ -128,7 +146,7 @@ def read_distributed_data(
       is "Spark" and a dask 'bag' if format is "dask"
     """
     collection = cursor.collection.name
-    if format == "spark":
+    if format == "spark" or (format == None and _mspasspy_has_pyspark):
         list_ = spark_context.parallelize(cursor, numSlices=npartitions)
         return list_.map(
             lambda cur: db.read_data(
@@ -143,7 +161,7 @@ def read_distributed_data(
                 aws_secret_access_key=aws_secret_access_key,
             )
         )
-    elif format == "dask":
+    elif format == "dask" or (format == None and _mspasspy_has_dask):
         list_ = daskbag.from_sequence(cursor, npartitions=npartitions)
         return list_.map(
             lambda cur: db.read_data(

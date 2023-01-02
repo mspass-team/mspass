@@ -6,7 +6,13 @@ import numpy as np
 import obspy.core
 import collections
 import pandas as pd
-import dask.dataframe as daskdf
+
+try:
+    import dask.dataframe as daskdf
+
+    __mspasspy_has_dask = True
+except ImportError:
+    __mspasspy_has_dask = False
 
 from mspasspy.ccore.utility import Metadata, AntelopePf, MsPASSError, ErrorSeverity
 from mspasspy.ccore.seismic import (
@@ -674,14 +680,18 @@ def Textfile2Dataframe(
     if (
         header_line is None or header_line < 0
     ):  #   Header_line not given, using attribute_names
-        if parallel:
+        if parallel and __mspasspy_has_dask:
             df = daskdf.read_csv(filename, sep=separator, names=attribute_names)
         else:
+            if parallel:
+                print("WARNING:  No dask detected. Running pandas dataframe")
             df = pd.read_csv(filename, sep=separator, names=attribute_names)
     else:  #   header_line is given and attribute_names is not given
-        if parallel:
+        if parallel and __mspasspy_has_dask:
             df = daskdf.read_csv(filename, sep=separator, header=header_line)
         else:
+            if parallel:
+                print("WARNING:  No dask detected. Running pandas dataframe")
             df = pd.read_csv(filename, sep=separator, header=header_line)
 
     #   Convert data in each column to the type given in type_dict
@@ -706,7 +716,7 @@ def Textfile2Dataframe(
             df[key] = val
 
     #   Transfer dask dataframe back to pandas dataframe to keep the consistency in internal representation
-    if parallel:
+    if parallel and __mspasspy_has_dask:
         df = df.compute()
 
     return df
