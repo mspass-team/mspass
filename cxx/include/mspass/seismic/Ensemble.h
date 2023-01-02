@@ -203,6 +203,14 @@ public:
   bool live() const {return ensemble_is_live;};
   /*! Complement to live method - returns true if there are no valid data members. */
   bool dead() const {return !ensemble_is_live;};
+  /*! Check to see if ensemble has any live data.
+
+  In processing one can occasionally (not rare but not common either)
+  end up with enemble full of data marked dead.  This is a convenience
+  method to check all members.  If it finds any live member it will immediately
+  return true (ok).  If after a search of the entire ensemble no live members
+  are found it will return false AND then mark the entire ensemble bad. */
+  bool validate();
   /*! Force, with care, the ensemble to be marked live.
 
   This extension of CoreEnsemble adds a boolean that is used to test if
@@ -219,14 +227,7 @@ public:
     else
       return false;
   };
-  /*! Check to see if ensemble has any live data.
 
-  In processing once can occasionally (not rare but not common either)
-  end up with enemble full of data marked dead.  This is a convenience
-  method to check all members.  If it finds any live member it will immediately
-  return true (ok).  If after a search of the entire ensemble no live members
-  are found it will return false AND then mark the entire ensemble bad. */
-  bool validate();
   /*! Standard assignment operator. */
   LoggingEnsemble<T>& operator=(const LoggingEnsemble<T>& parent)
   {
@@ -241,6 +242,7 @@ public:
     return *this;
   };
 private:
+
   bool ensemble_is_live;
 };
 
