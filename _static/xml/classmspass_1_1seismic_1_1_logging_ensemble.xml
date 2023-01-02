@@ -37,7 +37,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="244" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="242" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="246" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="243" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -203,6 +203,21 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="205" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="205" bodyend="205"/>
       </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1a7de59947da7bc5e8e4a4be2fbe01b93b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::seismic::LoggingEnsemble&lt; T &gt;::validate</definition>
+        <argsstring>()</argsstring>
+        <name>validate</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Check to see if ensemble has any live data.</para>
+<para>In processing one can occasionally (not rare but not common either) end up with enemble full of data marked dead. This is a convenience method to check all members. If it finds any live member it will immediately return true (ok). If after a search of the entire ensemble no live members are found it will return false AND then mark the entire ensemble bad. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="213" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="249" bodyend="256"/>
+      </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1a77c6b189bfb9914583e66d8b0f98d3b8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
         <definition>bool mspass::seismic::LoggingEnsemble&lt; T &gt;::set_live</definition>
@@ -216,23 +231,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="213" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="213" bodyend="221"/>
-        <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a7de59947da7bc5e8e4a4be2fbe01b93b" compoundref="_ensemble_8h" startline="247" endline="254">mspass::seismic::LoggingEnsemble&lt; T &gt;::validate</references>
-      </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1a7de59947da7bc5e8e4a4be2fbe01b93b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>bool</type>
-        <definition>bool mspass::seismic::LoggingEnsemble&lt; T &gt;::validate</definition>
-        <argsstring>()</argsstring>
-        <name>validate</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Check to see if ensemble has any live data.</para>
-<para>In processing once can occasionally (not rare but not common either) end up with enemble full of data marked dead. This is a convenience method to check all members. If it finds any live member it will immediately return true (ok). If after a search of the entire ensemble no live members are found it will return false AND then mark the entire ensemble bad. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="229" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="247" bodyend="254"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="221" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="221" bodyend="229"/>
+        <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a7de59947da7bc5e8e4a4be2fbe01b93b" compoundref="_ensemble_8h" startline="249" endline="256">mspass::seismic::LoggingEnsemble&lt; T &gt;::validate</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1aef481afd8b831f780707b4b11302dc90" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">LoggingEnsemble</ref>&lt; T &gt; &amp;</type>
@@ -250,7 +250,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="231" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="231" bodyend="242"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="232" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="232" bodyend="243"/>
         <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a805180a6091e44e3ccb1e53c8576ea5a" compoundref="_ensemble_8h" startline="141">mspass::seismic::LoggingEnsemble&lt; T &gt;::elog</references>
         <references refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" compoundref="_ensemble_8h" startline="19">mspass::seismic::Ensemble&lt; Tdata &gt;::member</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" compoundref="_metadata_8cc" startline="108" endline="116">mspass::utility::Metadata::operator=</references>
@@ -318,7 +318,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="137" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="138" bodyend="245"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="137" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="138" bodyend="247"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>append_chain</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>begin</name></member>
