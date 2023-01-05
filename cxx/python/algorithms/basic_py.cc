@@ -82,8 +82,6 @@ PYBIND11_MODULE(basic, m) {
     They do not handle errors as gracefully */
     .def("apply",py::overload_cast<mspass::seismic::TimeSeries&>
          (&Butterworth::apply),"Apply the predefined filter to a TimeSeries object")
-    .def("apply",py::overload_cast<std::vector<double>&>(&Butterworth::apply),
-    	"Apply the predefined filter to a vector of data")
     .def("apply",py::overload_cast<mspass::seismic::Seismogram&>
          (&Butterworth::apply),
          "Apply the predefined filter to a 3c Seismogram object")
