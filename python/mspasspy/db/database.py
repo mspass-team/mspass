@@ -257,8 +257,14 @@ class Database(pymongo.database.Database):
         """
         return Collection(self, name)
 
-    def get_collection(self, name, codec_options=None, read_preference=None,
-                    write_concern=None, read_concern=None):
+    def get_collection(
+        self,
+        name,
+        codec_options=None,
+        read_preference=None,
+        write_concern=None,
+        read_concern=None,
+    ):
         """
         Get a :class:`mspasspy.db.collection.Collection` with the given name
         and options.
@@ -285,12 +291,25 @@ class Database(pymongo.database.Database):
             used.
         """
         return Collection(
-            self, name, False, codec_options, read_preference,
-            write_concern, read_concern)
+            self,
+            name,
+            False,
+            codec_options,
+            read_preference,
+            write_concern,
+            read_concern,
+        )
 
-    def create_collection(self, name, codec_options=None,
-                          read_preference=None, write_concern=None,
-                          read_concern=None, session=None, **kwargs):
+    def create_collection(
+        self,
+        name,
+        codec_options=None,
+        read_preference=None,
+        write_concern=None,
+        read_concern=None,
+        session=None,
+        **kwargs
+    ):
         """
         Create a new :class:`mspasspy.db.collection.Collection` in this
         database.
@@ -337,14 +356,24 @@ class Database(pymongo.database.Database):
         with self.__client._tmp_session(session) as s:
             # Skip this check in a transaction where listCollections is not
             # supported.
-            if ((not s or not s.in_transaction) and
-                    name in self.list_collection_names(
-                        filter={"name": name}, session=s)):
-                raise pymongo.errors.CollectionInvalid("collection %s already exists" % name)
+            if (not s or not s.in_transaction) and name in self.list_collection_names(
+                filter={"name": name}, session=s
+            ):
+                raise pymongo.errors.CollectionInvalid(
+                    "collection %s already exists" % name
+                )
 
-            return Collection(self, name, True, codec_options,
-                              read_preference, write_concern,
-                              read_concern, session=s, **kwargs)
+            return Collection(
+                self,
+                name,
+                True,
+                codec_options,
+                read_preference,
+                write_concern,
+                read_concern,
+                session=s,
+                **kwargs
+            )
 
     def set_metadata_schema(self, schema):
         """

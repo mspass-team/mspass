@@ -6,7 +6,8 @@ from mspasspy.db.schema import MetadataSchema
 
 from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
-#from mspasspy.db.collection import Collection
+
+# from mspasspy.db.collection import Collection
 
 
 class TestDatabase:
@@ -62,7 +63,7 @@ class TestDatabase:
                 "magnitude": 1.0,
             }
         )
-    
+
     def test_collection(self):
         col1 = self.db.source
         col2 = self.db["source"]
