@@ -4842,10 +4842,8 @@ class Database(pymongo.database.Database):
         o["last_packet_time"] = index_record.last_packet_time
         o["foff"] = index_record.foff
         o["nbytes"] = index_record.nbytes
-        # FIXME: The following are commented out because some simple tests showed that
-        #   the numbers are very different from the data being read by ObsPy's reader.
-        # o['endtime'] = index_record.endtime
-        # o['npts'] = index_record.npts
+        o['endtime'] = index_record.endtime
+        o['npts'] = index_record.npts
         return o
 
     def index_mseed_file(
