@@ -84,7 +84,7 @@ long int fwrite_to_file(Seismogram& d, const string dir,const string dfile)
 
 	return(foff);
 }
-std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::TimeSeries>& d, const std::string dir,const std::string dfile)
+std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>& d, const std::string dir,const std::string dfile)
 {
 	try{
 		FILE *fp;
@@ -100,10 +100,6 @@ std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::
 		if((fp=fopen(fname.c_str(),"a")) == NULL)
 		  /* use the name of the overloaded parent instead of the actual function - intentional*/
 			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
-	  /* Both fseek and ftell can fail in weird circumstances, but I intentionally
-		do not trap that condition as if either have issues I am quite sure
-		the fwrite will fail */
-		fseek(fp,0L,2);
 		for (int i = 0; i < d.member.size(); ++i) {
 			long int foff = ftell(fp);
 			foffs.push_back(foff);
@@ -125,7 +121,7 @@ std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::
 		return foffs;
 	}catch(...){throw;};
 }
-std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::Seismogram>& d, const std::string dir,const std::string dfile)
+std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram>& d, const std::string dir,const std::string dfile)
 {
 	try{
 		FILE *fp;
@@ -141,10 +137,6 @@ std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::
 		if((fp=fopen(fname.c_str(),"a")) == NULL)
 		  /* use the name of the overloaded parent instead of the actual function - intentional*/
 			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
-	  /* Both fseek and ftell can fail in weird circumstances, but I intentionally
-		do not trap that condition as if either have issues I am quite sure
-		the fwrite will fail */
-		fseek(fp,0L,2);
 		for (int i = 0; i < d.member.size(); ++i) {
 			long int foff = ftell(fp);
 			foffs.push_back(foff);
@@ -212,12 +204,11 @@ size_t fread_from_file(TimeSeries& d,const string dir, const string dfile,
 		return ns_read;
 	}catch(...){throw;};
 }
-size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::Seismogram> &de, const std::string dir, 
-    const std::string dfile, std::vector<long int> foffs, std::vector<long int> indexes, const long int length)
+size_t fread_from_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram> &de,
+ const std::string dir, const std::string dfile, std::vector<long int> indexes)
 {
 	size_t ns_read_sum;
-	int n = foffs.size();
-	de.member.resize(length);
+	int n = indexes.size();
 	FILE *fp;
 	string fname;
 	if(dir.length()>0)
@@ -227,35 +218,66 @@ size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::Seismogram> &
 	else
 	  /* Null as always in unix means use current directory*/
 		fname=dfile;
-	if((fp=fopen(fname.c_str(),"r")) == NULL)
-		throw MsPASSError("fread_data_from_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
+	if((fp=fopen(fname.c_str(),"r")) == NULL) {
+		de.kill();
+		stringstream ss;
+		ss << "can not open file in " << fname << endl;
+		de.elog.log_error(ss.str());
+		return -1;
+	}
 	
-	for (int i = 0; i < n; ++i) {
+	for (int ind = 0; ind < n; ++ind) {
 		size_t ns_read;
-		long int foff = foffs[i];
-		int index = indexes[i];
+		int i = indexes[ind];
+		long int foff;
+		if (de.member[i].is_defined(SEISMICMD_foff))
+		{
+		  foff = de.member[i].get_long(SEISMICMD_foff);
+		}
+		else
+		{
+		  de.member[i].kill();
+		  stringstream ss;
+		  ss << "foff not defined for " << i << " member in ensemble" << endl;
+		  de.member[i].elog.log_error(ss.str());
+		  continue;
+		}
 		try{
 			if(foff>0)
 			{
 				if(fseek(fp,foff,SEEK_SET))
 				{
 					fclose(fp);
-				throw MsPASSError("fread_data_from_file:  fseek failure on file="+fname,ErrorSeverity::Invalid);
+					de.member[i].kill();
+					stringstream ss;
+		  			ss << "can not fseek in " << foff << endl;
+					de.member[i].elog.log_error(ss.str());
+					continue;
 				}
 			}
-			ns_read = fread((void*)de.member[index].u.get_address(0, 0), sizeof(double), 3 * de.member[index].npts(), fp);
+			ns_read = fread((void*)de.member[i].u.get_address(0, 0), sizeof(double), 3 * de.member[i].npts(), fp);
+			if (ns_read != 3 * de.member[i].npts())
+			{
+				de.member[i].elog.log_error(string("read error: npts not equal"));
+				de.member[i].kill();
+			}
+			else
+			{
+				de.member[i].set_live();
+			}
 			ns_read_sum += ns_read;
 		}catch(...){throw;};
 	}
 	fclose(fp);
+	de.set_live();
 	return ns_read_sum;
 }
-size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::TimeSeries> &de, const std::string dir, 
-    const std::string dfile, std::vector<long int> foffs, std::vector<long int> indexes, const long int length)
+size_t fread_from_file(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries> &de,
+ const std::string dir, const std::string dfile, std::vector<long int> indexes)
+
 {
 	size_t ns_read_sum;
-	int n = foffs.size();
-	de.member.resize(length);
+	int n = indexes.size();
 	FILE *fp;
 	string fname;
 	if(dir.length()>0)
@@ -265,27 +287,57 @@ size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::TimeSeries> &
 	else
 	  /* Null as always in unix means use current directory*/
 		fname=dfile;
-	if((fp=fopen(fname.c_str(),"r")) == NULL)
-		throw MsPASSError("fread_data_from_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
-
-	for (int i = 0; i < n; ++i) {
+	if((fp=fopen(fname.c_str(),"r")) == NULL) {
+		de.kill();
+		stringstream ss;
+		ss << "can not open file in " << fname << endl;
+		de.elog.log_error(ss.str());
+		return -1;
+	}
+	for (int ind = 0; ind < n; ++ind) {
 		size_t ns_read;
-		long int foff = foffs[i];
-		int index = indexes[i];
+		int i = indexes[ind];
+		long int foff;
+		if (de.member[i].is_defined(SEISMICMD_foff))
+		{
+		  foff = de.member[i].get_long(SEISMICMD_foff);
+		}
+		else
+		{
+		  de.member[i].kill();
+		  stringstream ss;
+		  ss << "foff not defined for " << i << " member in ensemble" << endl;
+		  de.member[i].elog.log_error(ss.str());
+		  continue;
+		}
 		try{
 			if(foff>0)
 			{
 				if(fseek(fp,foff,SEEK_SET))
 				{
 					fclose(fp);
-				throw MsPASSError("fread_data_from_file:  fseek failure on file="+fname,ErrorSeverity::Invalid);
+					de.member[i].kill();
+					stringstream ss;
+		  			ss << "can not fseek in " << foff << endl;
+					de.member[i].elog.log_error(ss.str());
+					continue;
 				}
 			}
-			ns_read = fread((void*)(&(de.member[index].s[0])), sizeof(double), de.member[index].npts(), fp);
+			ns_read = fread((void*)(&(de.member[i].s[0])), sizeof(double), de.member[i].npts(), fp);
+			if (ns_read != de.member[i].npts())
+			{
+				de.member[i].elog.log_error(string("read error: npts not equal"));
+				de.member[i].kill();
+			}
+			else
+			{
+				de.member[i].set_live();
+			}
 			ns_read_sum += ns_read;
 		}catch(...){throw;};
 	}
 	fclose(fp);
+	de.set_live();
 	return ns_read_sum;
 }
 } // Termination of namespace definitions

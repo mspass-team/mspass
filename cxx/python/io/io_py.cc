@@ -16,18 +16,18 @@ long int fwrite_to_file(mspass::seismic::TimeSeries& d,
   const std::string dir,const std::string dfile);
 long int fwrite_to_file(mspass::seismic::Seismogram& d,
     const std::string dir,const std::string dfile);
-std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::TimeSeries>& d,
+std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>& d,
   const std::string dir,const std::string dfile);
-std::vector<long int> fwrite_to_file(mspass::seismic::Ensemble<mspass::seismic::Seismogram>& d,
+std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram>& d,
   const std::string dir,const std::string dfile);
 size_t fread_from_file(mspass::seismic::Seismogram& d,const std::string dir, const std::string dfile,
     const long int foff);
 size_t fread_from_file(mspass::seismic::TimeSeries& d,const std::string dir, const std::string dfile,
     const long int foff);
-size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::TimeSeries> &d, const std::string dir, 
-    const std::string dfile, std::vector<long int> foffs, std::vector<long int> indexes, const long int length);
-size_t fread_from_files(mspass::seismic::Ensemble<mspass::seismic::Seismogram> &d, const std::string dir, 
-    const std::string dfile, std::vector<long int> foffs, std::vector<long int> indexes, const long int length);
+size_t fread_from_file(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries> &d, const std::string dir, 
+    const std::string dfile, std::vector<long int> indexes);
+size_t fread_from_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram> &d, const std::string dir, 
+    const std::string dfile, std::vector<long int> indexes);
 }
 
 PYBIND11_MAKE_OPAQUE(std::vector<mspass::io::mseed_index>);
@@ -90,7 +90,7 @@ PYBIND11_MODULE(io,m){
      py::arg("dir"),
      py::arg("dfile")
    );
-  m.def("_fwrite_to_file",py::overload_cast<mspass::seismic::Ensemble<mspass::seismic::Seismogram>&,
+  m.def("_fwrite_to_file",py::overload_cast<mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram>&,
     const std::string,const std::string>(&fwrite_to_file),
     "Write data for format Ensemble<Seismogram> to one file",
     py::return_value_policy::copy,
@@ -98,7 +98,7 @@ PYBIND11_MODULE(io,m){
     py::arg("dir"),
     py::arg("dfile")
   );
-  m.def("_fwrite_to_file",py::overload_cast<mspass::seismic::Ensemble<mspass::seismic::TimeSeries>&,
+  m.def("_fwrite_to_file",py::overload_cast<mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>&,
     const std::string,const std::string>(&fwrite_to_file),
     "Write data for format Ensemble<TimeSeries> to one file",
     py::return_value_policy::copy,
@@ -124,29 +124,23 @@ PYBIND11_MODULE(io,m){
      py::arg("dfile"),
      py::arg("foff")
    );
-   m.def("_fread_from_files",
-      py::overload_cast<mspass::seismic::Ensemble<mspass::seismic::TimeSeries>&,
-        const std::string,const std::string,std::vector<long int>,std::vector<long int>,const long int>(&fread_from_files),
+   m.def("_fread_from_file",
+      py::overload_cast<mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>&,
+        const std::string,const std::string,std::vector<long int>>(&fread_from_file),
       "Read the sample data for a TimeSeriesEnsemble object from files as native doubles",
-      py::return_value_policy::copy,
      py::arg("de"),
      py::arg("dir"),
      py::arg("dfile"),
-     py::arg("foffs"),
-     py::arg("indexes"),
-     py::arg("length")
+     py::arg("indexes")
    );
-   m.def("_fread_from_files",
-      py::overload_cast<mspass::seismic::Ensemble<mspass::seismic::Seismogram>&,
-         const std::string,const std::string,std::vector<long int>,std::vector<long int>,const long int>(&fread_from_files),
+   m.def("_fread_from_file",
+      py::overload_cast<mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram>&,
+         const std::string,const std::string,std::vector<long int>>(&fread_from_file),
       "Read the sample data for a SeismogramEnsemble object from files as native doubles",
-      py::return_value_policy::copy,
      py::arg("de"),
      py::arg("dir"),
      py::arg("dfile"),
-     py::arg("foffs"),
-     py::arg("indexes"),
-     py::arg("length") 
+     py::arg("indexes")
    );
 }
 }   // namespace mspasspy
