@@ -507,6 +507,60 @@ of the keys will be deleted from the database.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.database.Database.create_collection">
+<span class="sig-name descname"><span class="pre">create_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codec_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_preference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.create_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.create_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new <code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.collection.Collection</span></code> in this
+database.
+Normally collection creation is automatic. This method should
+only be used to specify options on
+creation. <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/errors.html#pymongo.errors.CollectionInvalid" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CollectionInvalid</span></code></a> will be
+raised if the collection already exists.
+:Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>name</cite>: the name of the collection to create</p></li>
+<li><p><cite>codec_options</cite> (optional): An instance of
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/codec_options.html#bson.codec_options.CodecOptions" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">codec_options</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
+used.</p></li>
+<li><p><cite>read_preference</cite> (optional): The read preference to use. If
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_preference</span></code> of this
+<a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is used.</p></li>
+<li><p><cite>write_concern</cite> (optional): An instance of
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
+used.</p></li>
+<li><p><cite>read_concern</cite> (optional): An instance of
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_concern.html#pymongo.read_concern.ReadConcern" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
+used.</p></li>
+<li><p><cite>collation</cite> (optional): An instance of
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/collation.html#pymongo.collation.Collation" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collation</span></code></a>.</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/client_session.html#pymongo.client_session.ClientSession" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a>.</p></li>
+<li><p><cite>**kwargs</cite> (optional): additional keyword arguments will
+be passed as options for the <a href="#id8"><span class="problematic" id="id9">`create collection command`_</span></a></p></li>
+</ul>
+</div></blockquote>
+<p>All optional <a href="#id10"><span class="problematic" id="id11">`create collection command`_</span></a> parameters should be passed
+as keyword arguments to this method. Valid options include, but are not
+limited to:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: desired initial size for the collection (in
+bytes). For capped collections this size is the max
+size of the collection.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">capped</span></code>: if True, this is a capped collection</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max</span></code>: maximum number of objects if capped (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timeseries</span></code>: a document specifying configuration options for
+timeseries collections</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expireAfterSeconds</span></code>: the number of seconds after which a
+document in a timeseries collection expires</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.delete_data">
 <span class="sig-name descname"><span class="pre">delete_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_unreferenced_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_elog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.delete_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.delete_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete method for handling mspass data objects (TimeSeries and Seismograms).</p>
@@ -535,6 +589,38 @@ a datum is optional.</p>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.database.Database.get_collection">
+<span class="sig-name descname"><span class="pre">get_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codec_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_preference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.collection.Collection</span></code> with the given name
+and options.
+Useful for creating a <code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.collection.Collection</span></code> with
+different codec options, read preference, and/or write concern from
+this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a>.
+:Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>name</cite>: The name of the collection - a string.</p></li>
+<li><p><cite>codec_options</cite> (optional): An instance of
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/codec_options.html#bson.codec_options.CodecOptions" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.codec_options.CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">codec_options</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
+used.</p></li>
+<li><p><cite>read_preference</cite> (optional): The read preference to use. If
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_preference</span></code> of this
+<a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is used. See <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_preferences.html#module-pymongo.read_preferences" title="(in PyMongo v4.3.3)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo.read_preferences</span></code></a>
+for options.</p></li>
+<li><p><cite>write_concern</cite> (optional): An instance of
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.write_concern.WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
+used.</p></li>
+<li><p><cite>read_concern</cite> (optional): An instance of
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_concern.html#pymongo.read_concern.ReadConcern" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.read_concern.ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
+used.</p></li>
+</ul>
+</div></blockquote>
 </dd></dl>
 
 <dl class="py method">
@@ -1170,7 +1256,7 @@ all attributes with a key defined as readonly are tested
 with a method in the Metadata container that keeps track of
 any Metadata changes.  If a readonly attribute is found to
 have been changed it will be renamed with the prefix
-“<a href="#id8"><span class="problematic" id="id9">READONLYERROR_</span></a>”, saved, and an error posted (e.g. if you try
+“<a href="#id12"><span class="problematic" id="id13">READONLYERROR_</span></a>”, saved, and an error posted (e.g. if you try
 to alter site_lat (a readonly attribute) in a workflow when
 you save the waveform you will find an entry with the key
 READONERROR_site_lat.)   In the default ‘promiscuous’ mode
@@ -1656,7 +1742,7 @@ method for handling this as the save_data method.  That is,
 for all “mode” parameters if an key is defined in the schema as
 readonly and it is listed as having been modified, it will
 be save with a new key creating by adding the prefix
-“<a href="#id10"><span class="problematic" id="id11">READONLYERROR_</span></a>” .  e.g. if we had a site_sta read as
+“<a href="#id14"><span class="problematic" id="id15">READONLYERROR_</span></a>” .  e.g. if we had a site_sta read as
 ‘AAK’ but we changed it to ‘XYZ’ in a workflow, when we tried
 to save the data you will find an entry in the document
 of {‘READONLYERROR_site_sta’ : ‘XYZ’}</p>
@@ -2779,7 +2865,7 @@ defined “starttime” and “endtime” attributes.</p>
 A common current issue is that if miniseed data are saved
 to wf_TimeSeries and then read back in a later workflow
 the default schema will alter the keys for net, sta, chan,
-and loc to add the prefix “<a href="#id12"><span class="problematic" id="id13">READONLY_</span></a>” (e.g. READONLY_net).
+and loc to add the prefix “<a href="#id16"><span class="problematic" id="id17">READONLY_</span></a>” (e.g. READONLY_net).
 The query automatically tries to recover any of the
 station name keys using that recipe.</p>
 <dl class="field-list simple">
@@ -2913,11 +2999,11 @@ document would be returned as “channel_lat”.</p></li>
 <dd><p>Concrete implementations of this required method.  The cache_id
 in this algorithm is a composite key made from net, sta, chan, and
 loc with a fixed separator string of “_”.  A typical example
-is <a href="#id14"><span class="problematic" id="id15">IU_AAK_BHZ_00_</span></a>.</p>
+is <a href="#id18"><span class="problematic" id="id19">IU_AAK_BHZ_00_</span></a>.</p>
 <p>An added feature to mesh with MsPASS conventions is a safety
 for attributes that are automatically renamed when saved
 that are marked readonly in the schema.   Such attributes
-have a prepended tag, (at this time “<a href="#id16"><span class="problematic" id="id17">READONLYERROR_</span></a>”).  If
+have a prepended tag, (at this time “<a href="#id20"><span class="problematic" id="id21">READONLYERROR_</span></a>”).  If
 one of the required keys for the index is missing (e.g. “net”)
 the function tries to then fetch the modified name
 (e.g. “READONLYERROR_net”).  If that also fails it returns
@@ -2943,7 +3029,7 @@ If any of the required keys is missing it will return a None</p>
 <dd><p>Concrete implementations of this required method.  The cache_id
 in this algorithm is a composite key made from net, sta, chan, and
 loc with a fixed separator string of “_”.  A typical example
-is <a href="#id18"><span class="problematic" id="id19">IU_AAK_BHZ_00_</span></a>.  This method creates this string from
+is <a href="#id22"><span class="problematic" id="id23">IU_AAK_BHZ_00_</span></a>.  This method creates this string from
 a MongoDB document assumed passed through a python dictionary
 as argument doc.  Unlike the cache_id method this function
 does not have a safety for readonly errors.  The reason is that

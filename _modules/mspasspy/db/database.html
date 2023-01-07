@@ -229,6 +229,7 @@
 
 <span class="kn">import</span> <span class="nn">gridfs</span>
 <span class="kn">import</span> <span class="nn">pymongo</span>
+<span class="kn">import</span> <span class="nn">pymongo.errors</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">obspy</span>
 <span class="kn">from</span> <span class="nn">obspy.clients.fdsn</span> <span class="kn">import</span> <span class="n">Client</span>
@@ -258,6 +259,7 @@
     <span class="n">dmatrix</span><span class="p">,</span>
     <span class="n">ProcessingHistory</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.collection</span> <span class="kn">import</span> <span class="n">Collection</span>
 <span class="kn">from</span> <span class="nn">mspasspy.db.schema</span> <span class="kn">import</span> <span class="n">DatabaseSchema</span><span class="p">,</span> <span class="n">MetadataSchema</span>
 <span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="n">Textfile2Dataframe</span>
 
@@ -442,6 +444,133 @@
 
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;_Database__client&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;_Database__client&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a collection of this database by name.</span>
+<span class="sd">        Raises InvalidName if an invalid collection name is used.</span>
+<span class="sd">        :Parameters:</span>
+<span class="sd">          - `name`: the name of the collection to get</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Database.get_collection"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_collection">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">codec_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">read_preference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">write_concern</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">read_concern</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a :class:`mspasspy.db.collection.Collection` with the given name</span>
+<span class="sd">        and options.</span>
+<span class="sd">        Useful for creating a :class:`mspasspy.db.collection.Collection` with</span>
+<span class="sd">        different codec options, read preference, and/or write concern from</span>
+<span class="sd">        this :class:`Database`.</span>
+<span class="sd">        :Parameters:</span>
+<span class="sd">          - `name`: The name of the collection - a string.</span>
+<span class="sd">          - `codec_options` (optional): An instance of</span>
+<span class="sd">            :class:`bson.codec_options.CodecOptions`. If ``None`` (the</span>
+<span class="sd">            default) the :attr:`codec_options` of this :class:`Database` is</span>
+<span class="sd">            used.</span>
+<span class="sd">          - `read_preference` (optional): The read preference to use. If</span>
+<span class="sd">            ``None`` (the default) the :attr:`read_preference` of this</span>
+<span class="sd">            :class:`Database` is used. See :mod:`pymongo.read_preferences`</span>
+<span class="sd">            for options.</span>
+<span class="sd">          - `write_concern` (optional): An instance of</span>
+<span class="sd">            :class:`pymongo.write_concern.WriteConcern`. If ``None`` (the</span>
+<span class="sd">            default) the :attr:`write_concern` of this :class:`Database` is</span>
+<span class="sd">            used.</span>
+<span class="sd">          - `read_concern` (optional): An instance of</span>
+<span class="sd">            :class:`pymongo.read_concern.ReadConcern`. If ``None`` (the</span>
+<span class="sd">            default) the :attr:`read_concern` of this :class:`Database` is</span>
+<span class="sd">            used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Collection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="n">codec_options</span><span class="p">,</span>
+            <span class="n">read_preference</span><span class="p">,</span>
+            <span class="n">write_concern</span><span class="p">,</span>
+            <span class="n">read_concern</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Database.create_collection"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.create_collection">[docs]</a>    <span class="k">def</span> <span class="nf">create_collection</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">codec_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">read_preference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">write_concern</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">read_concern</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new :class:`mspasspy.db.collection.Collection` in this</span>
+<span class="sd">        database.</span>
+<span class="sd">        Normally collection creation is automatic. This method should</span>
+<span class="sd">        only be used to specify options on</span>
+<span class="sd">        creation. :class:`~pymongo.errors.CollectionInvalid` will be</span>
+<span class="sd">        raised if the collection already exists.</span>
+<span class="sd">        :Parameters:</span>
+<span class="sd">          - `name`: the name of the collection to create</span>
+<span class="sd">          - `codec_options` (optional): An instance of</span>
+<span class="sd">            :class:`~bson.codec_options.CodecOptions`. If ``None`` (the</span>
+<span class="sd">            default) the :attr:`codec_options` of this :class:`Database` is</span>
+<span class="sd">            used.</span>
+<span class="sd">          - `read_preference` (optional): The read preference to use. If</span>
+<span class="sd">            ``None`` (the default) the :attr:`read_preference` of this</span>
+<span class="sd">            :class:`Database` is used.</span>
+<span class="sd">          - `write_concern` (optional): An instance of</span>
+<span class="sd">            :class:`~pymongo.write_concern.WriteConcern`. If ``None`` (the</span>
+<span class="sd">            default) the :attr:`write_concern` of this :class:`Database` is</span>
+<span class="sd">            used.</span>
+<span class="sd">          - `read_concern` (optional): An instance of</span>
+<span class="sd">            :class:`~pymongo.read_concern.ReadConcern`. If ``None`` (the</span>
+<span class="sd">            default) the :attr:`read_concern` of this :class:`Database` is</span>
+<span class="sd">            used.</span>
+<span class="sd">          - `collation` (optional): An instance of</span>
+<span class="sd">            :class:`~pymongo.collation.Collation`.</span>
+<span class="sd">          - `session` (optional): a</span>
+<span class="sd">            :class:`~pymongo.client_session.ClientSession`.</span>
+<span class="sd">          - `**kwargs` (optional): additional keyword arguments will</span>
+<span class="sd">            be passed as options for the `create collection command`_</span>
+<span class="sd">        All optional `create collection command`_ parameters should be passed</span>
+<span class="sd">        as keyword arguments to this method. Valid options include, but are not</span>
+<span class="sd">        limited to:</span>
+<span class="sd">          - ``size``: desired initial size for the collection (in</span>
+<span class="sd">            bytes). For capped collections this size is the max</span>
+<span class="sd">            size of the collection.</span>
+<span class="sd">          - ``capped``: if True, this is a capped collection</span>
+<span class="sd">          - ``max``: maximum number of objects if capped (optional)</span>
+<span class="sd">          - ``timeseries``: a document specifying configuration options for</span>
+<span class="sd">            timeseries collections</span>
+<span class="sd">          - ``expireAfterSeconds``: the number of seconds after which a</span>
+<span class="sd">            document in a timeseries collection expires</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__client</span><span class="o">.</span><span class="n">_tmp_session</span><span class="p">(</span><span class="n">session</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+            <span class="c1"># Skip this check in a transaction where listCollections is not</span>
+            <span class="c1"># supported.</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">s</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">in_transaction</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_collection_names</span><span class="p">(</span>
+                <span class="nb">filter</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span> <span class="n">session</span><span class="o">=</span><span class="n">s</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">CollectionInvalid</span><span class="p">(</span>
+                    <span class="s2">&quot;collection </span><span class="si">%s</span><span class="s2"> already exists&quot;</span> <span class="o">%</span> <span class="n">name</span>
+                <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">Collection</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="n">name</span><span class="p">,</span>
+                <span class="kc">True</span><span class="p">,</span>
+                <span class="n">codec_options</span><span class="p">,</span>
+                <span class="n">read_preference</span><span class="p">,</span>
+                <span class="n">write_concern</span><span class="p">,</span>
+                <span class="n">read_concern</span><span class="p">,</span>
+                <span class="n">session</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.set_metadata_schema"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.set_metadata_schema">[docs]</a>    <span class="k">def</span> <span class="nf">set_metadata_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
