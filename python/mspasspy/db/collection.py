@@ -1,5 +1,7 @@
 import pymongo
 
+_UJOIN = u"%s.%s"
+
 
 class Collection(pymongo.database.Collection):
     """
