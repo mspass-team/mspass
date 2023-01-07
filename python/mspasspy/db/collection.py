@@ -1,7 +1,5 @@
 import pymongo
 
-_UJOIN = u"%s.%s"
-
 
 class Collection(pymongo.database.Collection):
     """
@@ -26,7 +24,7 @@ class Collection(pymongo.database.Collection):
     def __getitem__(self, name):
         return Collection(
             self.__database,
-            _UJOIN % (self.__name, name),
+            "%s.%s" % (self.__name, name),
             False,
             self.codec_options,
             self.read_preference,
