@@ -53,7 +53,8 @@ class TestDatabase:
                 "hang": 1.0,
             }
         )
-        self.db["source"].insert_one(
+        col_source = self.db.create_collection("source")
+        col_source.insert_one(
             {
                 "_id": source_id,
                 "lat": 1.2,
@@ -76,3 +77,12 @@ class TestDatabase:
         col11 = pickle.loads(pickle.dumps(col1))
         col21 = pickle.loads(pickle.dumps(col2))
         assert col11 == col21
+
+        col11.test2.insert_one(
+            {
+                "lat": 1.9,
+                "lon": 1.2,
+                "time": datetime.utcnow().timestamp(),
+            }
+        )
+        assert col11["test2"].find_one()["lat"] == 1.9
