@@ -64,6 +64,10 @@ class TestDatabase:
             }
         )
 
+    def teardown_class(self):
+        client = DBClient("localhost")
+        client.drop_database("dbtest")
+
     def test_collection(self):
         col1 = self.db.source
         col2 = self.db["source"]
