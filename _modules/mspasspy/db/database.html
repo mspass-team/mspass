@@ -434,6 +434,7 @@
     <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;_Database__client&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+        <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;_BaseObject__codec_options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">codec_options</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">ret</span>
 
     <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
@@ -441,8 +442,14 @@
         <span class="c1"># work without it.  Not sure how the symbol MongoClient is required</span>
         <span class="c1"># here but it is - ignore if a lint like ide says MongoClient is not used</span>
         <span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+        <span class="c1"># The following is also needed for this object to be serialized correctly </span>
+        <span class="c1"># with dask distributed. Otherwise, the deserialized codec_options</span>
+        <span class="c1"># will become a different type unrecognized by pymongo. Not sure why...</span>
+        <span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">CodecOptions</span><span class="p">,</span> <span class="n">TypeRegistry</span>
+        <span class="kn">from</span> <span class="nn">bson.binary</span> <span class="kn">import</span> <span class="n">UuidRepresentation</span>
 
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;_Database__client&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;_Database__client&quot;</span><span class="p">])</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;_BaseObject__codec_options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;_BaseObject__codec_options&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
