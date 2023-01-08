@@ -21,7 +21,8 @@ from mspasspy.ccore.utility import (
 )
 
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, ErrorLogger
-from mspasspy.algorithms.baisc import rtoa
+
+# from mspasspy.algorithms.basic import rtoa
 
 
 def isOldEnsembleObject(obj):
@@ -80,7 +81,7 @@ class BasicGather(ABC):
 
     Methods for this base class are largely getters and setters for
     univeral parameters that match the above.  It must be understood that
-    with this desig the base class is an incomplete skeleton that
+    with this design the base class is an incomplete skeleton that
     is fleshed out by subclasses.   This clsss has some virtual methods
     (defined with the ABC @abstractmethod decorator) and a set of methods
     that would never work if only the base class were contructed
@@ -92,7 +93,29 @@ class BasicGather(ABC):
     A design issue for discussionis is whether not a gather should implement
     the ator and rota functionality of BasicTimeSeries.   The cost is
     tiny up front and retrofitting after that fact might cause a lot of
-    headaches.  REcommend we implement them as defined below.
+    headaches.
+
+    """
+
+    """
+    Note:
+    Fields in the class:
+    1. size/capacity: number of members in the gather (x)
+    2. npts: number of samples for all data in the gather (y)
+    3. array_type: which array we are using? Dask/numpy
+    4. number_components: 1 for timeseries, 3 for seismogram
+    Actually, for now, we are not using capacity at all, instead we are depending on the dask/numpy
+    array's append.
+    5. Column_values: a list of values assigned to the column axis, default is a list
+
+    What should the ensemble metadata have:
+    1. is_utc  //  We assume that the data is either UTC or relative
+    2. dt
+
+    What should the member metadata have:
+    1. starttime
+    2. is_live
+    3. t0_shift
 
     """
 
@@ -123,6 +146,7 @@ class BasicGather(ABC):
         self.is_compact = is_compact
         self.num_partition = num_partition
         self.elog = ErrorLogger()
+        self.column_values = None
 
         supported_array_types = [
             "numpy",
@@ -331,6 +355,7 @@ class BasicGather(ABC):
             self.ensemble_metadata = {
                 "is_live": False,
                 "is_utc": False,
+                "dt": 0,
             }
 
         if input_obj is not None:
@@ -374,6 +399,19 @@ class BasicGather(ABC):
         ):
             raise TypeError("The components number doesn't match the input object")
 
+        new_data = extractDataFromMsPassObject(mspass_object)  # get the numpy data
+        if self.array_type == "dask":
+            if is_compact:
+                # Not very sure if it can work
+                da.append(self.member_data, new_data, 2)
+            else:
+                da.append(self.member_data, new_data, 1)
+        elif self.array_type == "numpy":
+            if is_compact:
+                np.append(self.member_data, new_data, 2)
+            else:
+                np.append(self.member_data, new_data, 1)
+
     def starttime(self) -> list:
         """
         Return a list (python array) of starttimes.  We should assume
@@ -388,13 +426,22 @@ class BasicGather(ABC):
         should be allowed to be anything, however, to handle things
         like variable offset record sections.
         """
-        pass
+        if self.column_values is None:
+            return list(range(size))
+        else:
+            return self.column_values
 
     def set_column_values(self, x):
         """
         Set the column values array to the values in x.
         """
-        pass
+        # Sanity check: the input be a list
+        if type(x) != list:
+            raise TypeError("The column values should be a list")
+        self.column_values = x
+
+    def dt(self):
+        return self.ensemble_metadata["dt"]
 
     # The following names match BasicTimeSeries because the match in
     # concept.  starttime above doesn't really because in a single object
@@ -404,7 +451,9 @@ class BasicGather(ABC):
         Return time of array position i,j (Note works the same for 3c and
         scalar data)
         """
-        return self.member_metadata["time"][i][j]
+        # from the definiation in timeseries:
+        # time(i) = (mt0+mdt*i);
+        return self.starttime()[i] + self.dt() * j
 
     def sample_number(self, time, x) -> tuple:
         """
@@ -412,7 +461,9 @@ class BasicGather(ABC):
         (row) value and a column value that can be mapped to the
         column index.
         """
-        pass
+        indexes = [self.column_values.index(i) for i in x]
+        ans = [(time - self.starttime()[ind]) / self.dt() for ind in indexes]
+        return tuple(ans)
 
     def time_is_UTC(self):
         """
@@ -438,42 +489,41 @@ class BasicGather(ABC):
         """
         Return true if jth member is marked dead (opposite of live).
         """
-        return not self.dead()
+        return not self.dead(j)
 
     # This next set are s in BasicTimeSeries but all
     def samprate(self):
-        return 1.0 / self.dt
+        return 1.0 / self.dt()
 
     def rtoa(self):
         if not self.time_is_relative():
             return
 
-        def rtoa_single(time):
-            """
-            TODO: Implement to converter
-            """
-            pass
+        if self.t0shift <= 100.0:
+            raise MsPASSError(
+                "time shift to return to UTC time is not defined", "Invalid"
+            )
 
-        self.member_metadata["time"].applymap(rtoa_single)
+        # TODO: do we need to check if the items are live or dead here?
+        self.member_metadata["starttime"].applymap(lambda x: (x + self.t0shift))
+
+        self.t0shift = 0
+        self.ensemble_metadata["is_utc"] = True
 
     def ator(self, shift):
         if not self.time_is_UTC():
             return
-
-        def ator_single(time):
-            """
-            TODO: Implement to converter
-            """
-            pass
-
-        self.member_metadata["time"].applymap(ator_single)
+        self.t0shift = shift
+        self.member_metadata["time"].applymap(lambda x: (x - self.t0shift))
 
     def shift(self, timeshift):
-        pass
+        old_t0shift = t0shift
+        self.rtoa()
+        self.ator(old_t0shift + timeshift)
 
     # The following methods in BasicTimeSeries are optional.  It isn't
     # clear to me if their use is required - at least initially.  With
-    # pythona ddingg methods is not as probematic as a Java or C++
+    # python a ddingg methods is not as probematic as a Java or C++
     # They are;  time_reference, timetype, set_to, set_tref, and
     # set_npts.
 
@@ -556,7 +606,17 @@ class BasicGather(ABC):
         """
         Like metadata method but returns the ensemble metadata.
         """
-        return self.ensemble_metadata
+        supported_return_types = ["dict", "metadata"]
+        if return_type not in supported_return_types:
+            raise TypeError(
+                "The return type should be one of the follows: {}".format(
+                    supported_return_types
+                )
+            )
+        if return_type == "dict":
+            return self.ensemble_metadata
+        elif return_type == "metadata":
+            return Metadata(self.ensemble_metadata)
 
     def sync_metadata(self):
         """
@@ -588,7 +648,7 @@ class BasicGather(ABC):
         pass
 
 
-class Gather(BasciEnsembleArray):
+class Gather(BasicGather):
     """
     Concrete implementtion for a scalar gather.  This is the array
     equivalent of a TimeSeriesEnsemble appropriate when the input matches
@@ -694,7 +754,7 @@ class Gather(BasciEnsembleArray):
         """
         pass  # stub
 
-    def data(self, j) -> ndarray:
+    def data(self, j) -> np.ndarray:
         """
         Return the raw data vector associated with column j.   Defined here
         as an ndarray return but probably should be any iterable
@@ -703,7 +763,7 @@ class Gather(BasciEnsembleArray):
         """
         pass
 
-    def subset(self, start, end) -> Gather:
+    def subset(self, start, end) -> "Gather":
         """
         Return a subset of the Gather with signals from start to end
         (like start:end in F90 or matlab).
