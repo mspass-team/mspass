@@ -16,9 +16,18 @@ class Collection(pymongo.database.Collection):
 
     def __getstate__(self):
         ret = self.__dict__.copy()
+        ret["_BaseObject__codec_options"] = self.codec_options.__repr__()
         return ret
 
     def __setstate__(self, data):
+        # Same as the Database class
+        # The following is also needed for this object to be serialized correctly 
+        # with dask distributed. Otherwise, the deserialized codec_options
+        # will become a different type unrecognized by pymongo. Not sure why...
+        from bson.codec_options import CodecOptions, TypeRegistry
+        from bson.binary import UuidRepresentation
+        
+        data["_BaseObject__codec_options"] = eval(data["_BaseObject__codec_options"])
         self.__dict__.update(data)
 
     def __getitem__(self, name):

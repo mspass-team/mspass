@@ -237,6 +237,7 @@ class Database(pymongo.database.Database):
     def __getstate__(self):
         ret = self.__dict__.copy()
         ret["_Database__client"] = self.client.__repr__()
+        ret["_BaseObject__codec_options"] = self.codec_options.__repr__()
         return ret
 
     def __setstate__(self, data):
@@ -244,8 +245,14 @@ class Database(pymongo.database.Database):
         # work without it.  Not sure how the symbol MongoClient is required
         # here but it is - ignore if a lint like ide says MongoClient is not used
         from pymongo import MongoClient
+        # The following is also needed for this object to be serialized correctly 
+        # with dask distributed. Otherwise, the deserialized codec_options
+        # will become a different type unrecognized by pymongo. Not sure why...
+        from bson.codec_options import CodecOptions, TypeRegistry
+        from bson.binary import UuidRepresentation
 
         data["_Database__client"] = eval(data["_Database__client"])
+        data["_BaseObject__codec_options"] = eval(data["_BaseObject__codec_options"])
         self.__dict__.update(data)
 
     def __getitem__(self, name):
