@@ -160,6 +160,11 @@ class BasicGather(ABC):
                 )
             )
 
+        if (
+            number_components == 1
+        ):  # For the scalar data, we don't need to do rearrangement
+            is_compact = False
+
         shape = (
             [capacity, number_components, npts]
             if is_compact
@@ -264,7 +269,7 @@ class BasicGather(ABC):
         supported_ensemble_types = (TimeSeriesEnsemble, SeismogramEnsemble)
         if not isinstance(input_obj, supported_ensemble_types):
             raise TypeError(
-                "The array type should be one of the follows: {}".format(
+                "The input object should be one of the follows: {}".format(
                     supported_ensemble_types
                 )
             )
@@ -411,6 +416,8 @@ class BasicGather(ABC):
                 np.append(self.member_data, new_data, 2)
             else:
                 np.append(self.member_data, new_data, 1)
+
+        self.size += 1
 
     def starttime(self) -> list:
         """
@@ -659,11 +666,18 @@ class Gather(BasicGather):
 
     def __init__(
         self,
-        mspass_object,
-        capacity=None,
-        npts=None,
+        capacity,
+        size,
+        npts,
+        number_components,
+        num_partition,
+        input_data=None,
+        input_obj=None,
+        member_metadata=None,
+        ensemble_metadata=None,
         dt=None,
-        array_type="numpy",
+        array_type="xarray",
+        is_compact=True,
     ):
         """
         Because in this design the base class only sets up the workspace
@@ -695,56 +709,18 @@ class Gather(BasicGather):
         base clsss.  They are passed directly to the base class
         construtor
         """
-        # this is a rough prototype showing how the base clsss constructor
-        # should be used.
-        if mspass_object is None:
-            if capacity is None or npts is None:
-                raise RuntimeError("illegal input ")
-            super().__init__(
-                capacity,
-                npts,
-                number_components=1,
-                dt=dt,
-                array_type=array_type,
-            )
-        elif isinstance(mspass_object, TimeSeriesEnsemble):
-            enssize = len(mspass_object.member)
-            if capacity is None:
-                nmem_to_use = enssize
-            else:
-                if capacity < enssize:
-                    nmem_to_use = enssize
-                else:
-                    nmem_to_use = enssize
-            for d in mspass_object.member:
-                if d.live:
-                    npts_to_use = d.npts
-                    break
-            super().__init__(
-                nmem_to_use,
-                npts_to_use,
-                number_components=1,
-                dt=dt,
-                array_type=array_type,
-            )
-            # elo is assumed created in base clsss consructor
-            self.elog.log_error("npts and input disageement", ErrorSeverity.Warning)
+        # Will directly call the constructor of the base class, but we need
+        # to do some sanity check first.
+        if input_obj is not None:
+            if not isinstance(input_obj, TimeSeriesEnsemble):
+                raise TypeError("The input object should be a TimeSeriesEnsemble")
 
-            # Additional code to initialie here to load metadata and any
-            # other stuff
-        elif isinstance(mspass_object, Gather):
-            # this maybe could do with deepcopy but suspect the disk
-            # arrays might not work
-            super().__init__(
-                mspass_object.capacity,
-                mspass_object.npts,
-                number_components=1,
-                dt=mspass_object.dt,
-                array_type=mspass_object.array_type,
-            )
-            # additional code here to load other attributes to copy
-        else:
-            raise RuntimeError("illegal input error")
+        elif input_data is not None:
+            input_num_comp = input_data.shape[1]
+            if input_num_comp != 1:
+                raise TypeError(
+                    "The input data shape is not valid, should be scalar data"
+                )
 
     def member(self, j) -> TimeSeries:
         """
@@ -752,7 +728,18 @@ class Gather(BasicGather):
         we not do the idea of "data_only".  Aways return a TimeSeries.
         Suggest data method for that purpose
         """
-        pass  # stub
+        if j >= self.size:
+            raise MsPASSError(
+                "The given index: {} is out of range.".format(j), "Invalid"
+            )
+        md = self.metadata(j, "metadata")
+        obj = TimeSeries(md)
+
+        obj.data = DoubleVector(self.data(j))
+        obj.npts = len(mspass_object.data)
+        if self.dead(j):
+            obj.kill()
+        return obj
 
     def data(self, j) -> np.ndarray:
         """
@@ -761,7 +748,15 @@ class Gather(BasicGather):
         container that acts like a vector.  Not clear what will be needed to
         support large matrix formats.
         """
-        pass
+        if j >= self.size:
+            raise MsPASSError(
+                "The given index: {} is out of range.".format(j), "Invalid"
+            )
+        col = self.member_data[j].reshape()
+        if self.is_parallel:
+            return col.compute()
+        else:
+            return col
 
     def subset(self, start, end) -> "Gather":
         """
@@ -770,16 +765,26 @@ class Gather(BasicGather):
 
         TBD is if subset should be overloaded to allow other selections
         """
-        pass
+        new_input_data = self.member_data[start:end]
+        new_gather = Gather(
+            input_data=new_input_data,
+            array_type=self.array_type,
+            is_compact=self.is_compact,
+            num_partition=self.num_partition,
+        )
 
     def __getitem__(self, i, j):
         """
         Index operator to return data value at sample index i,j.
         """
-        pass
+        val = self.member_data[i][j][0]
+        if self.is_parallel:
+            return val.compute()
+        else:
+            return val
 
     def __setitem__(self, i, j, newvalue):
         """
         Index setter - I think this is the right syntax for two indices.
         """
-        pass
+        self.member_data[i][j][0] = newvalue
