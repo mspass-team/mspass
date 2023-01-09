@@ -24,11 +24,7 @@ import json
 import base64
 import uuid
 
-from mspasspy.ccore.io import (
-    _mseed_file_indexer,
-    _fwrite_to_file,
-    _fread_from_file
-)
+from mspasspy.ccore.io import _mseed_file_indexer, _fwrite_to_file, _fread_from_file
 from mspasspy.util.converter import Trace2TimeSeries, Stream2Seismogram
 
 from mspasspy.ccore.seismic import (
@@ -2852,7 +2848,7 @@ class Database(pymongo.database.Database):
         cur_collection = self[wf_collection]
 
         # this for loop build the skeleton of the ensemble:
-        # firstly construct each object with metadata retrieved from mongodb document, 
+        # firstly construct each object with metadata retrieved from mongodb document,
         # and then add the object to the ensemble
         for object_id in objectid_list:
             # This assumes the name of a metadata schema matches the data type it defines.
@@ -3056,7 +3052,7 @@ class Database(pymongo.database.Database):
                         "read_data", msg, ErrorSeverity.Complaint
                     )
 
-        # read from files to the ensemble. To make the reading more efficient and avoid open 
+        # read from files to the ensemble. To make the reading more efficient and avoid open
         # one file multiple times, we firstly group the objects according to different files,
         # then read objects from each file.
 
@@ -3086,17 +3082,15 @@ class Database(pymongo.database.Database):
             # sort according to foff in the file, because sequential reads are faster than random
             # here use zip to make sure foff and index has the same order
             zipped = zip(foffs, indexes)
-            sort_zipped = sorted(zipped,key=lambda x:x[0])
+            sort_zipped = sorted(zipped, key=lambda x: x[0])
             foffs, indexes = [list(x) for x in zip(*sort_zipped)]
 
             # now the objects of indexes are in the sequential reading order
-            
+
             try:
                 # call C++ function fread_from_file to read part of ensemble from current file,
                 # indexes are the indexes of objects in the ensemble to be read
-                cnt = _fread_from_file(
-                    ensemble, cur_dir, cur_dfile, indexes
-                )
+                cnt = _fread_from_file(ensemble, cur_dir, cur_dfile, indexes)
                 if cnt <= 0:
                     message = "fread returned a count of {count}".format(count=cnt)
                     ensemble.elog.log_error(
