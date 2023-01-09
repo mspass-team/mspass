@@ -722,6 +722,21 @@ class Gather(BasicGather):
                     "The input data shape is not valid, should be scalar data"
                 )
 
+        super().__init__(
+            capacity=capacity,
+            size=size,
+            npts=npts,
+            number_components=number_components,
+            num_partition=num_partition,
+            input_data=input_data,
+            input_obj=input_obj,
+            member_metadata=member_metadata,
+            ensemble_metadata=ensemble_metadata,
+            dt=dt,
+            array_type=array_type,
+            is_compact=is_compact,
+        )
+
     def member(self, j) -> TimeSeries:
         """
         Returns the data associated with member j.  Unlike above I suggest
@@ -788,3 +803,153 @@ class Gather(BasicGather):
         Index setter - I think this is the right syntax for two indices.
         """
         self.member_data[i][j][0] = newvalue
+
+
+class SeismogramGather(BasicGather):
+    """
+    Gather for three-component data.  Can only be created from inputs that
+    satisfy the restrictions of BasicGather.  It is much like Gather
+    but with a 3D instead of a 2D array holding sample data.
+    """
+
+    def __init__(
+        self,
+        capacity,
+        size,
+        npts,
+        number_components,
+        num_partition,
+        input_data=None,
+        input_obj=None,
+        member_metadata=None,
+        ensemble_metadata=None,
+        dt=None,
+        array_type="xarray",
+        is_compact=True,
+    ):
+        """
+        Because in this design the base class only sets up the workspace
+        most of the nitty gritty work of building this thig will go here.
+
+        :param mspss_object:  Should contain the data to be loaded.
+        :type mspass_object:  should accept TimeSeriesEnsemble or another
+          Gather object.  Would advise a different class if we wanted to
+          allow soemthig like a raw matrix as input.  We perhaps should
+          accept a None and in that situation just create the workspace
+          of a speciied size and assume the gather will be build by
+          many calls to append.
+
+        :param number_members:  expected number of signals the gather
+          will eventually contain.  If None (default) the size is
+          determined by the input ensemble.  If nonzero it should be
+          a positive integer larger than the size of the ensemble passed
+          as mspass_object.
+        :type:  integer
+
+        :param npts:  expected number of samples for all data in the gather
+          If None, which is the default, it should be estimated from the
+          input data.  Note mspass_object beng set None and this parameter
+          or number_members set None should cause an exception to be
+          raised.  Either that or it should be ignored and a warning
+          message posted - probably a better idea.
+
+        dt, array_type, and resize_blocksize are as defined in the
+        base clsss.  They are passed directly to the base class
+        construtor
+        """
+        # Will directly call the constructor of the base class, but we need
+        # to do some sanity check first.
+        if input_obj is not None:
+            if not isinstance(input_obj, SeismogramEnsemble):
+                raise TypeError("The input object should be a TimeSeriesEnsemble")
+
+        elif input_data is not None:
+            input_num_comp = input_data.shape[1]
+            if input_num_comp != 3:
+                raise TypeError(
+                    "The input data shape is not valid, should be scalar data"
+                )
+
+        super().__init__(
+            capacity=capacity,
+            size=size,
+            npts=npts,
+            number_components=number_components,
+            num_partition=num_partition,
+            input_data=input_data,
+            input_obj=input_obj,
+            member_metadata=member_metadata,
+            ensemble_metadata=ensemble_metadata,
+            dt=dt,
+            array_type=array_type,
+            is_compact=is_compact,
+        )
+
+    def member(self, j) -> Seismogram:
+        """
+        Returns the data associated with member j.  Unlike above I suggest
+        we not do the idea of "data_only".  Aways return a TimeSeries.
+        Suggest data method for that purpose
+        """
+        if j >= self.size:
+            raise MsPASSError(
+                "The given index: {} is out of range.".format(j), "Invalid"
+            )
+        md = self.metadata(j, "metadata")
+        obj = Seismogram(md)
+
+        obj.data = dmatrix(self.data(j))
+        obj.npts = len(mspass_object.data)
+        if self.dead(j):
+            obj.kill()
+        return obj
+
+    def data(self, j) -> ndarray:
+        """
+        Return the raw data matrix associated with column j.   Defined here
+        as an ndarray return but probably should be any iterable
+        container that acts like a matrix.  Not clear what will be needed to
+        support large matrix formats.
+        """
+        if j >= self.size:
+            raise MsPASSError(
+                "The given index: {} is out of range.".format(j), "Invalid"
+            )
+        col = self.member_data[j].reshape()
+        if self.is_parallel:
+            return col.compute()
+        else:
+            return col
+
+    def subset(self, start, end) -> SeismogramGather:
+        """
+        Return a subset of the Gather with signals from start to end
+        (like start:end in F90 or matlab).
+
+        TBD is if subset should be overloaded to allow other selections
+        """
+        new_input_data = self.member_data[start:end]
+        new_gather = Gather(
+            input_data=new_input_data,
+            array_type=self.array_type,
+            is_compact=self.is_compact,
+            num_partition=self.num_partition,
+        )
+
+    def __getitem__(self, i, j, k):
+        """
+        Index operator to fetch sample from time axis at i, member axis at j,
+        and component number k.
+        """
+        val = self.member_data[i][j][k]
+        if self.is_parallel:
+            return val.compute()
+        else:
+            return val
+
+    def __setitem__(self, i, j, k, newvalue):
+        """
+        Indexing setter.   Not sure this is the right syntax but should show
+        the idea.
+        """
+        self.member_data[i][j][k] = newvalue
