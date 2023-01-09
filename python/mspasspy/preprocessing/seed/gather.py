@@ -96,28 +96,6 @@ class BasicGather(ABC):
 
     """
 
-    """
-    Note:
-    Fields in the class:
-    1. size/capacity: number of members in the gather (x)
-    2. npts: number of samples for all data in the gather (y)
-    3. array_type: which array we are using? Dask/numpy
-    4. number_components: 1 for timeseries, 3 for seismogram
-    Actually, for now, we are not using capacity at all, instead we are depending on the dask/numpy
-    array's append.
-    5. Column_values: a list of values assigned to the column axis, default is a list
-
-    What should the ensemble metadata have:
-    1. is_utc  //  We assume that the data is either UTC or relative
-    2. dt
-
-    What should the member metadata have:
-    1. starttime
-    2. is_live
-    3. t0_shift
-
-    """
-
     def __default_constructor__(
         self,
         capacity,
@@ -980,3 +958,56 @@ class SeismogramGather(BasicGather):
         the idea.
         """
         self.member_data[i][j][k] = newvalue
+
+
+"""
+object_id: the MongoDB object id of the ensemble to be read from the disk. The object is unique
+        and provides a one-to-one mapping to the ensemble's metadata and member data.
+the schema for ensemble doc:
+    _id : unique id
+    metadata : a dict that stores the ensemble's metadata
+    member_metadata : a list of metadata for each member
+    store_type = 'zarr' : we might support other storage?
+    zarr_group_path : str, the path of the zarr group
+    zarr_arr_name : str, the name of the zarr array
+"""
+
+
+def read_basic_array_ensemble(db, ensemble_object, object_id):
+    ensemble_col = db.ensemble
+    doc = ensemble_col.find_one({"_id": object_id})
+    df = pd.DataFrame(doc["member_metadata"])
+    ddf = dask.dataframe.from_pandas(df)
+    ensemble_object.member_metadata = ddf
+    if ensemble_object.impl == "xarray":
+        ensemble_object.member.attrs = doc[
+            "metadata"
+        ]  # we can store the metadata in .attrs
+        if doc["store_type"] == "zarr":
+            store = zarr.DirectoryStore(doc["zarr_group_path"])
+            zarr_arr = zarr.group(store=store)[doc["zarr_arr_name"]]
+            dask_arr = da.from_array(zarr_arr, chunks=zarr_arr.chunks)
+            ensemble_object.member.data = dask_arr
+    return ensemble_object
+
+
+def write_basic_array_ensemble(db, ensemble_object, object_id):
+    ensemble_col = db.ensemble
+    doc = ensemble_col.find_one({"_id": object_id})
+    df = ensemble_object.member_metadata.compute()
+    key = {"_id": object_id}
+    data = {"member_metadata": df.to_dict()}
+    if ensemble_object.impl == "xarray":
+        data["metadata"] = ensemble_object.member.attrs
+        if doc["store_type"] == "zarr":
+            store = zarr.DirectoryStore(doc["zarr_group_path"])
+            group = zarr.group(store=store)
+            zarr_arr = group.create_dataset(
+                [doc["zarr_arr_name"]],
+                shape=ensemble_object.member.shape,
+                chunks=ensemble_object.member.data.chunks,
+                dtype=ensemble_object.member.dtype,
+                overwritebool=True,
+            )
+            dask.array.to_zarr(ensemble_object.member.data, zarr_arr, overwrite=True)
+    ensemble_col.update_one(filter=key, update=data, upsert=True)
