@@ -6,6 +6,10 @@ import dask
 import dask.bag as db
 import numpy as np
 import mspasspy.algorithms.signals as signals
+from unittest import mock
+
+with mock.patch.dict(sys.modules, {"pyspark": None, "dask": None}):
+    from mspasspy.reduce import stack
 from mspasspy.ccore.utility import dmatrix
 from mspasspy.ccore.seismic import (
     Seismogram,

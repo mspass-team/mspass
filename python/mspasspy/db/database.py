@@ -10,10 +10,29 @@ import struct
 import urllib.request
 from array import array
 import pandas as pd
-import dask.bag as daskbag
-import dask.dataframe as daskdf
+
+try:
+    import dask.bag as daskbag
+
+    _mspasspy_has_dask = True
+except ImportError:
+    _mspasspy_has_dask = False
+
+try:
+    import dask.dataframe as daskdf
+except ImportError:
+    _mspasspy_has_dask = False
+
+try:
+    import pyspark
+
+    _mspasspy_has_pyspark = True
+except ImportError:
+    _mspasspy_has_pyspark = False
+
 import gridfs
 import pymongo
+import pymongo.errors
 import numpy as np
 import obspy
 from obspy.clients.fdsn import Client
@@ -43,6 +62,7 @@ from mspasspy.ccore.utility import (
     dmatrix,
     ProcessingHistory,
 )
+from mspasspy.db.collection import Collection
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util.converter import Textfile2Dataframe
 
@@ -128,7 +148,7 @@ def read_distributed_data(
       is "Spark" and a dask 'bag' if format is "dask"
     """
     collection = cursor.collection.name
-    if format == "spark":
+    if format == "spark" or (format == None and _mspasspy_has_pyspark):
         list_ = spark_context.parallelize(cursor, numSlices=npartitions)
         return list_.map(
             lambda cur: db.read_data(
@@ -143,7 +163,7 @@ def read_distributed_data(
                 aws_secret_access_key=aws_secret_access_key,
             )
         )
-    elif format == "dask":
+    elif format == "dask" or (format == None and _mspasspy_has_dask):
         list_ = daskbag.from_sequence(cursor, npartitions=npartitions)
         return list_.map(
             lambda cur: db.read_data(
@@ -217,6 +237,7 @@ class Database(pymongo.database.Database):
     def __getstate__(self):
         ret = self.__dict__.copy()
         ret["_Database__client"] = self.client.__repr__()
+        ret["_BaseObject__codec_options"] = self.codec_options.__repr__()
         return ret
 
     def __setstate__(self, data):
@@ -224,9 +245,142 @@ class Database(pymongo.database.Database):
         # work without it.  Not sure how the symbol MongoClient is required
         # here but it is - ignore if a lint like ide says MongoClient is not used
         from pymongo import MongoClient
+        # The following is also needed for this object to be serialized correctly 
+        # with dask distributed. Otherwise, the deserialized codec_options
+        # will become a different type unrecognized by pymongo. Not sure why...
+        from bson.codec_options import CodecOptions, TypeRegistry
+        from bson.binary import UuidRepresentation
 
         data["_Database__client"] = eval(data["_Database__client"])
+        data["_BaseObject__codec_options"] = eval(data["_BaseObject__codec_options"])
         self.__dict__.update(data)
+
+    def __getitem__(self, name):
+        """
+        Get a collection of this database by name.
+        Raises InvalidName if an invalid collection name is used.
+        :Parameters:
+          - `name`: the name of the collection to get
+        """
+        return Collection(self, name)
+
+    def get_collection(
+        self,
+        name,
+        codec_options=None,
+        read_preference=None,
+        write_concern=None,
+        read_concern=None,
+    ):
+        """
+        Get a :class:`mspasspy.db.collection.Collection` with the given name
+        and options.
+        Useful for creating a :class:`mspasspy.db.collection.Collection` with
+        different codec options, read preference, and/or write concern from
+        this :class:`Database`.
+        :Parameters:
+          - `name`: The name of the collection - a string.
+          - `codec_options` (optional): An instance of
+            :class:`bson.codec_options.CodecOptions`. If ``None`` (the
+            default) the :attr:`codec_options` of this :class:`Database` is
+            used.
+          - `read_preference` (optional): The read preference to use. If
+            ``None`` (the default) the :attr:`read_preference` of this
+            :class:`Database` is used. See :mod:`pymongo.read_preferences`
+            for options.
+          - `write_concern` (optional): An instance of
+            :class:`pymongo.write_concern.WriteConcern`. If ``None`` (the
+            default) the :attr:`write_concern` of this :class:`Database` is
+            used.
+          - `read_concern` (optional): An instance of
+            :class:`pymongo.read_concern.ReadConcern`. If ``None`` (the
+            default) the :attr:`read_concern` of this :class:`Database` is
+            used.
+        """
+        return Collection(
+            self,
+            name,
+            False,
+            codec_options,
+            read_preference,
+            write_concern,
+            read_concern,
+        )
+
+    def create_collection(
+        self,
+        name,
+        codec_options=None,
+        read_preference=None,
+        write_concern=None,
+        read_concern=None,
+        session=None,
+        **kwargs
+    ):
+        """
+        Create a new :class:`mspasspy.db.collection.Collection` in this
+        database.
+        Normally collection creation is automatic. This method should
+        only be used to specify options on
+        creation. :class:`~pymongo.errors.CollectionInvalid` will be
+        raised if the collection already exists.
+        :Parameters:
+          - `name`: the name of the collection to create
+          - `codec_options` (optional): An instance of
+            :class:`~bson.codec_options.CodecOptions`. If ``None`` (the
+            default) the :attr:`codec_options` of this :class:`Database` is
+            used.
+          - `read_preference` (optional): The read preference to use. If
+            ``None`` (the default) the :attr:`read_preference` of this
+            :class:`Database` is used.
+          - `write_concern` (optional): An instance of
+            :class:`~pymongo.write_concern.WriteConcern`. If ``None`` (the
+            default) the :attr:`write_concern` of this :class:`Database` is
+            used.
+          - `read_concern` (optional): An instance of
+            :class:`~pymongo.read_concern.ReadConcern`. If ``None`` (the
+            default) the :attr:`read_concern` of this :class:`Database` is
+            used.
+          - `collation` (optional): An instance of
+            :class:`~pymongo.collation.Collation`.
+          - `session` (optional): a
+            :class:`~pymongo.client_session.ClientSession`.
+          - `**kwargs` (optional): additional keyword arguments will
+            be passed as options for the `create collection command`_
+        All optional `create collection command`_ parameters should be passed
+        as keyword arguments to this method. Valid options include, but are not
+        limited to:
+          - ``size``: desired initial size for the collection (in
+            bytes). For capped collections this size is the max
+            size of the collection.
+          - ``capped``: if True, this is a capped collection
+          - ``max``: maximum number of objects if capped (optional)
+          - ``timeseries``: a document specifying configuration options for
+            timeseries collections
+          - ``expireAfterSeconds``: the number of seconds after which a
+            document in a timeseries collection expires
+        """
+        with self.__client._tmp_session(session) as s:
+            # Skip this check in a transaction where listCollections is not
+            # supported.
+            if (not s or not s.in_transaction) and name in self.list_collection_names(
+                filter={"name": name}, session=s
+            ):
+                raise pymongo.errors.CollectionInvalid(
+                    "collection %s already exists" % name
+                )
+
+            return Collection(
+                self,
+                name,
+                True,
+                codec_options,
+                read_preference,
+                write_concern,
+                read_concern,
+                session=s,
+                **kwargs
+            )
 
     def set_metadata_schema(self, schema):
         """

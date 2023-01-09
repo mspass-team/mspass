@@ -1,6 +1,11 @@
-import pyspark
-import dask.bag as daskbag
-
+try:
+    import dask.bag as daskbag
+except ImportError:
+    pass
+try:
+    import pyspark
+except ImportError:
+    pass
 from mspasspy.util.decorators import mspass_reduce_func_wrapper
 from mspasspy.util.converter import list2Ensemble
 from mspasspy.ccore.seismic import (
@@ -76,5 +81,11 @@ def mspass_dask_foldby(self, key="site_id"):
     ).map(lambda x: list2Ensemble(x[1]))
 
 
-pyspark.RDD.mspass_foldby = mspass_spark_foldby
-daskbag.Bag.mspass_foldby = mspass_dask_foldby
+try:
+    daskbag.Bag.mspass_foldby = mspass_dask_foldby
+except NameError:
+    pass
+try:
+    pyspark.RDD.mspass_foldby = mspass_spark_foldby
+except NameError:
+    pass

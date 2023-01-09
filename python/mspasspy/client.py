@@ -4,10 +4,27 @@ import pymongo
 from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
 from mspasspy.global_history.manager import GlobalHistoryManager
-from pyspark import SparkConf, SparkContext
-from pyspark.sql import SparkSession
+
+try:
+    from pyspark import SparkConf, SparkContext
+
+    _mspasspy_has_pyspark = True
+except ImportError:
+    _mspasspy_has_pyspark = False
+
+try:
+    from pyspark.sql import SparkSession
+except ImportError:
+    _mspasspy_has_pyspark = False
+
+try:
+    from dask.distributed import Client as DaskClient
+
+    _mspasspy_has_dask_distributed = True
+except ImportError:
+    _mspasspy_has_dask_distributed = False
+
 from mspasspy.ccore.utility import MsPASSError
-from dask.distributed import Client as DaskClient
 
 
 class Client:
@@ -133,7 +150,12 @@ class Client:
         elif MSPASS_SCHEDULER:
             self._scheduler = MSPASS_SCHEDULER
         else:
-            self._scheduler = "dask"
+            if _mspasspy_has_dask_distributed:
+                self._scheduler = "dask"
+            elif _mspasspy_has_pyspark:
+                self._scheduler = "spark"
+            else:
+                self._scheduler = None
 
         # scheduler configuration
         if self._scheduler == "spark":
@@ -244,12 +266,17 @@ class Client:
         """
         Get the scheduler(spark/dask) with this client
 
-        :return: :class:`pyspark.SparkContext`/:class:`dask.distributed.Client`
+        :return: :class:`pyspark.SparkContext`/:class:`dask.distributed.Client`/None
         """
         if self._scheduler == "spark":
             return self._spark_context
-        else:
+        elif self._scheduler == "dask":
             return self._dask_client
+        else:
+            print(
+                "There is no spark or dask installed, this client has no scheduler, returned None"
+            )
+            return None
 
     def set_database_client(self, database_host, database_port=None):
         """
