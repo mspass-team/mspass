@@ -45,13 +45,26 @@ def stack(data1, data2, object_history=False, alg_id=None, alg_name=None, dryrun
 
 def mspass_spark_foldby(self, key="site_id"):
     """
-    This function implements a convenient foldby method for :class:`dask.bag.Bag`.
-    The concept is to compose gathers of TimeSeries or Seismograms with a common key from a list of TimeSeries or Seismograms.
-    So, the input needs to be a Bag of :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`,
-    and the output is a Bag of :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+    This function implements a convenient foldby method for a spark RDD to generate ensembles from atomic data.  
+    The concept is to assemble ensembles of :class:`mspasspy.ccore.seismic.TimeSeries` or 
+    :class:`mspasspy.ccore.seismic.Seismogram` objects with a common Metadata attribute using 
+    a single key.  The output is the ensemble objects we call class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` 
+    and :class:`mspasspy.ccore.seismic.SeismogramEnsemble` respectively.  Note that "foldby" in this context
+    acts a bit like a reduce operator BUT the data volume is not reduced;  we just bundle groups of 
+    related data into ensembles.   The outputs are always larger due to the overhead of the ensemble 
+    container.   That is important as be careful with this operator as it can easily create huge
+    ensembles that could cause a memory fault in your workflow.  
+    
+    Note that because this is implemented as a method of the RDD class the usage is a different from 
+    the map and reduce methods.  arg0 is "self" which means it must be defined by the input RDD.  
+    
+    Example::
+    
+      # preceded by set of map-reduce lines to create RDD mydata
+      mydata = mspass_spark_foldby(mydata,key="source_id")
 
     :param key: The key that defines the gather. By default, it will use "site_id" to produce a common station gather.
-    :return: :class:`dask.bag.Bag` of :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+    :return: :class:`pyspark.RDD` of :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
     """
     return (
         self.map(lambda x: (x[key], x))
@@ -66,13 +79,26 @@ def mspass_spark_foldby(self, key="site_id"):
 
 def mspass_dask_foldby(self, key="site_id"):
     """
-    This function implements a convenient foldby method for :class:`pyspark.RDD`.
-    The concept is to compose gathers of TimeSeries or Seismograms with a common key from a list of TimeSeries or Seismograms.
-    So, the input needs to be an RDD of :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`,
-    and the output is an RDD of :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+    This function implements a convenient foldby method for a dask bag to generate ensembles from atomic data.  
+    The concept is to assemble ensembles of :class:`mspasspy.ccore.seismic.TimeSeries` or 
+    :class:`mspasspy.ccore.seismic.Seismogram` objects with a common Metadata attribute using 
+    a single key.  The output is the ensemble objects we call class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` 
+    and :class:`mspasspy.ccore.seismic.SeismogramEnsemble` respectively.  Note that "foldby" in this context
+    acts a bit like a reduce operator BUT the data volume is not reduced;  we just bundle groups of 
+    related data into ensembles.   The outputs are always larger due to the overhead of the ensemble 
+    container.   That is important as be careful with this operator as it can easily create huge
+    ensembles that could cause a memory fault in your workflow.  
+    
+    Note that because this is implemented as a method of the bag class the usage is a different from 
+    the map and reduce methods.  arg0 is "self" which means it must be defined by the input bag.  
+    
+    Example::
+    
+      # preceded by set of map-reduce lines to create a bag called mydata
+      mydata = mspass_dask_foldby(mydata,key="source_id")
 
     :param key: The key that defines the gather. By default, it will use "site_id" to produce a common station gather.
-    :return: :class:`pyspark.RDD` of :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+    :return: :class:`dask.bag.Bag` of :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
     """
     return self.foldby(
         lambda x: x[key],
