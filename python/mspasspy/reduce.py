@@ -45,21 +45,21 @@ def stack(data1, data2, object_history=False, alg_id=None, alg_name=None, dryrun
 
 def mspass_spark_foldby(self, key="site_id"):
     """
-    This function implements a convenient foldby method for a spark RDD to generate ensembles from atomic data.  
-    The concept is to assemble ensembles of :class:`mspasspy.ccore.seismic.TimeSeries` or 
-    :class:`mspasspy.ccore.seismic.Seismogram` objects with a common Metadata attribute using 
-    a single key.  The output is the ensemble objects we call class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` 
+    This function implements a convenient foldby method for a spark RDD to generate ensembles from atomic data.
+    The concept is to assemble ensembles of :class:`mspasspy.ccore.seismic.TimeSeries` or
+    :class:`mspasspy.ccore.seismic.Seismogram` objects with a common Metadata attribute using
+    a single key.  The output is the ensemble objects we call class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`
     and :class:`mspasspy.ccore.seismic.SeismogramEnsemble` respectively.  Note that "foldby" in this context
-    acts a bit like a reduce operator BUT the data volume is not reduced;  we just bundle groups of 
-    related data into ensembles.   The outputs are always larger due to the overhead of the ensemble 
+    acts a bit like a reduce operator BUT the data volume is not reduced;  we just bundle groups of
+    related data into ensembles.   The outputs are always larger due to the overhead of the ensemble
     container.   That is important as be careful with this operator as it can easily create huge
-    ensembles that could cause a memory fault in your workflow.  
-    
-    Note that because this is implemented as a method of the RDD class the usage is a different from 
-    the map and reduce methods.  arg0 is "self" which means it must be defined by the input RDD.  
-    
+    ensembles that could cause a memory fault in your workflow.
+
+    Note that because this is implemented as a method of the RDD class the usage is a different from
+    the map and reduce methods.  arg0 is "self" which means it must be defined by the input RDD.
+
     Example::
-    
+
       # preceded by set of map-reduce lines to create RDD mydata
       mydata = mspass_spark_foldby(mydata,key="source_id")
 
@@ -79,21 +79,21 @@ def mspass_spark_foldby(self, key="site_id"):
 
 def mspass_dask_foldby(self, key="site_id"):
     """
-    This function implements a convenient foldby method for a dask bag to generate ensembles from atomic data.  
-    The concept is to assemble ensembles of :class:`mspasspy.ccore.seismic.TimeSeries` or 
-    :class:`mspasspy.ccore.seismic.Seismogram` objects with a common Metadata attribute using 
-    a single key.  The output is the ensemble objects we call class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` 
+    This function implements a convenient foldby method for a dask bag to generate ensembles from atomic data.
+    The concept is to assemble ensembles of :class:`mspasspy.ccore.seismic.TimeSeries` or
+    :class:`mspasspy.ccore.seismic.Seismogram` objects with a common Metadata attribute using
+    a single key.  The output is the ensemble objects we call class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`
     and :class:`mspasspy.ccore.seismic.SeismogramEnsemble` respectively.  Note that "foldby" in this context
-    acts a bit like a reduce operator BUT the data volume is not reduced;  we just bundle groups of 
-    related data into ensembles.   The outputs are always larger due to the overhead of the ensemble 
+    acts a bit like a reduce operator BUT the data volume is not reduced;  we just bundle groups of
+    related data into ensembles.   The outputs are always larger due to the overhead of the ensemble
     container.   That is important as be careful with this operator as it can easily create huge
-    ensembles that could cause a memory fault in your workflow.  
-    
-    Note that because this is implemented as a method of the bag class the usage is a different from 
-    the map and reduce methods.  arg0 is "self" which means it must be defined by the input bag.  
-    
+    ensembles that could cause a memory fault in your workflow.
+
+    Note that because this is implemented as a method of the bag class the usage is a different from
+    the map and reduce methods.  arg0 is "self" which means it must be defined by the input bag.
+
     Example::
-    
+
       # preceded by set of map-reduce lines to create a bag called mydata
       mydata = mspass_dask_foldby(mydata,key="source_id")
 
