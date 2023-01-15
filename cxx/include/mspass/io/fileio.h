@@ -70,7 +70,8 @@ function in a try block.
 */
 long int fwrite_to_file(mspass::seismic::Seismogram& d,
   const std::string dir,const std::string dfile);
-/*! \brief Fast file writer for native TimeSeries save to a file.
+  
+/*! \brief Fast file writer for native Ensemble<TimeSeries> save to a file.
 
 When saving data to a file system there is no standard way to do so we
 know of that is faster than the low level C fwrite function.  This function
