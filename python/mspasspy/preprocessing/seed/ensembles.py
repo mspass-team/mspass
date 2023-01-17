@@ -3,10 +3,6 @@ from pathlib import Path
 from obspy import read, UTCDateTime
 import pandas as pd
 import numpy as np
-import xarray as xr
-import dask.array as da
-import dask
-import zarr
 from mspasspy.ccore.utility import (
     Metadata,
     MsPASSError,
@@ -911,5 +907,3 @@ def erase_seed_metadata(d, keys=["mseed", "_format"]):
     for mem in d.member:
         for k in keys:
             mem.erase(k)
-
-

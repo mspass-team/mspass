@@ -25,7 +25,7 @@ from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, ErrorLogger
 
 
 def isOldEnsembleObject(obj):
-    old_ensemble_types = (TimeSeriesEnsemble, SeismogramEnsemble)
+    supported_ensemble_types = (TimeSeriesEnsemble, SeismogramEnsemble)
     return isinstance(obj, supported_ensemble_types)
 
 
@@ -52,13 +52,29 @@ def extractDataFromOldEnsemble(ensemble_object):
         )
     if len(ensemble_object.member) <= 0:
         raise TypeError("The input object doesn't have any member data")
-    num_components = 3 if isinstance(ensemble_object, SeismogramEnsemble) else 1
-
-    shape = [len(ensemble_object.member), ensemble_object[0].npts, num_components]
+    shape = [len(ensemble_object.member), 1, ensemble_object[0].npts]
+    if isinstance(ensemble_object, SeismogramEnsemble):
+        shape = [len(ensemble_object.member), 3, ensemble_object[0].npts]
     ret = np.empty(shape)
     for i in range(len(ensemble_object.member)):
-        ret[i] = extractDataFromMsPassObject(ensemble_object[i])
+        item_data = extractDataFromMsPassObject(ensemble_object[i])
+        if isinstance(ensemble_object, TimeSeriesEnsemble):
+            item_data = item_data.reshape(1, ensemble_object[0].npts)
+        ret[i] = item_data
     return ret
+
+def extractMetadataFromOldEnsemble(ensemble_object):
+    if not isOldEnsembleObject(ensemble_object):
+        raise TypeError(
+            "Can't extract metadata from the object, not an old ensemble object"
+        )
+    if len(ensemble_object.member) <= 0:
+        raise TypeError("The input object doesn't have any member data")
+
+    metadata_list = [dict(ensemble_object.member[i]) for i in range(len(ensemble_object.member))]
+    member_metadata = pd.DataFrame(metadata_list)
+
+    return member_metadata
 
 
 class BasicGather(ABC):
@@ -95,6 +111,38 @@ class BasicGather(ABC):
     headaches.
 
     """
+
+    def __str__(self):
+        return """
+    <
+        capacity: {},
+        size: {},
+        npts: {},
+        array_type: {},
+        number_components: {},
+        ensemble_metadata: {},
+        member_metadata: {},
+        is_parallel: {},
+        is_compact: {},
+        num_partition: {},
+        elog: {},
+        member_data: {},
+        column_values: {}
+    >""".format(
+            self.capacity,
+            self.size,
+            self.npts,
+            self.array_type,
+            self.number_components,
+            self.ensemble_metadata,
+            self.member_metadata,
+            self.is_parallel,
+            self.is_compact,
+            self.num_partition,
+            self.elog,
+            self.member_data,
+            self.column_values,
+        )
 
     def __default_constructor__(
         self,
@@ -183,7 +231,7 @@ class BasicGather(ABC):
         self.num_partition = num_partition
         self.elog = ErrorLogger()
 
-        supported_types = (da.Array, np.array)
+        supported_types = (da.Array, np.ndarray)
         if not isinstance(input_data, supported_types):
             raise TypeError(
                 "The array type should be one of the follows: {}".format(
@@ -211,24 +259,24 @@ class BasicGather(ABC):
                 self.member_data = input_data
         elif array_type == "xarray":
             self.member_data = xr.DataArray()
+            chunksize = [
+                input_data.shape[0] // self.num_partition,
+                input_data.shape[1],
+                input_data.shape[2],
+            ]
             if isinstance(input_data, da.Array):
-                chunksize = [
-                    input_data.shape[0] // self.num_partition,
-                    input_data.shape[1],
-                    input_data.shape[2],
-                ]
                 self.member_data.data = input_data.rechunk(chunks=chunksize)
-            elif isinstance(input_data, np.array):
+            elif isinstance(input_data, np.ndarray):
                 self.member_data.data = da.from_array(input_data, chunks=chunksize)
         elif array_type == "dask":
+            chunksize = [
+                input_data.shape[0] // self.num_partition,
+                input_data.shape[1],
+                input_data.shape[2],
+            ]
             if isinstance(input_data, da.Array):
-                chunksize = [
-                    input_data.shape[0] // self.num_partition,
-                    input_data.shape[1],
-                    input_data.shape[2],
-                ]
                 self.member_data = input_data.rechunk(chunks=chunksize)
-            elif isinstance(input_data, np.array):
+            elif isinstance(input_data, np.ndarray):
                 self.member_data = da.from_array(input_data, chunks=chunksize)
 
         if self.is_compact:
@@ -281,10 +329,11 @@ class BasicGather(ABC):
             )
 
         # Add the ensemble's metadata
-        self.ensemble_metadata = input_obj.todict()
+        self.ensemble_metadata = dict(input_obj)
 
+        # Extract Member Metadata from old ensemble
         # Add the members' metadata
-        metadata_list = [self.member_data[i].todict() for i in range(self.size)]
+        metadata_list = [self.member_metadata[i].todict() for i in range(self.size)]
         self.member_metadata = pd.DataFrame(metadata_list)
 
     def __init__(
@@ -301,6 +350,7 @@ class BasicGather(ABC):
         dt=None,
         array_type="dask",
         is_compact=True,
+        is_parallel=True,
     ):
         """
         This base class constructor should take the view that the base
@@ -340,16 +390,6 @@ class BasicGather(ABC):
          :type array_type:  string that must match keywords TBD
 
         """
-        self.capacity = capacity
-        self.npts = npts
-        self.array_type = array_type
-        self.number_components = number_components
-        self.ensemble_metadata = ensemble_metadata
-        self.member_metadata = member_metadata
-        self.is_parallel = is_parallel
-        self.is_compact = is_compact
-        self.num_partition = num_partition
-        self.elog = ErrorLogger()
 
         if input_obj is not None:
             self.__constructor_from_ensemble_obj__(
@@ -369,6 +409,10 @@ class BasicGather(ABC):
             )
             return
 
+        if member_metadata is None:
+            raise TypeError(
+                "member metadata should be given")
+
         self.__default_constructor__(
             capacity=capacity,
             npts=npts,
@@ -377,6 +421,17 @@ class BasicGather(ABC):
             is_compact=is_compact,
             num_partition=num_partition,
         )
+
+        self.capacity = capacity
+        self.npts = npts
+        self.array_type = array_type
+        self.number_components = number_components
+        self.ensemble_metadata = ensemble_metadata
+        self.member_metadata = member_metadata
+        self.is_parallel = is_parallel
+        self.is_compact = is_compact
+        self.num_partition = num_partition
+        self.elog = ErrorLogger()
 
         if dt is None:
             dt = self.member_metadata["delta"][0]
@@ -570,7 +625,7 @@ class BasicGather(ABC):
             raise TypeError("The metadata should be a dict-like object")
         if isinstance(md, Metadata):
             md = md.to_dict()
-        md_df = pd.Dataframe.from_dict(md)
+        md_df = pd.DataFrame.from_dict(md)
         self.member_metadata.loc[j] = md_df
 
     def edit_metadata(self, j, md):
@@ -662,18 +717,15 @@ class Gather(BasicGather):
     """
     Concrete implementtion for a scalar gather.  This is the array
     equivalent of a TimeSeriesEnsemble appropriate when the input matches
-    the concept of BasicGather.    It follows the OOP stndard
-    pardigm that creation is initialization.  This puts a lot of features
-    in the constructor for the class.
-    """
+    the concept of BasicGather.    It follows the OOP stndard pardigm that creation is initialization.  This puts a lot of features in the constructor for the class.  """
 
     def __init__(
         self,
-        capacity,
-        size,
-        npts,
-        number_components,
-        num_partition,
+        capacity=0,
+        size=0,
+        npts=0,
+        number_components=0,
+        num_partition=0,
         input_data=None,
         input_obj=None,
         member_metadata=None,
