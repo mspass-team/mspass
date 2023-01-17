@@ -50,6 +50,7 @@ from mspasspy.util.converter import Textfile2Dataframe
 import dask.bag as daskbag
 import dask.dataframe as daskdf
 
+
 def read_distributed_data_df(
     df,
     load_history=False,
@@ -85,28 +86,28 @@ def read_distributed_data_df(
         return df.map(
             lambda cur: read_df_data(
                 cur["md"],
-                cur["object_type"], 
-                cur["is_dead"], 
+                cur["object_type"],
+                cur["is_dead"],
                 cur["object_doc"],
-                cur["log_error_msg"], 
-                load_history, 
-                cur["history_obj_id_name"], 
+                cur["log_error_msg"],
+                load_history,
+                cur["history_obj_id_name"],
                 cur["history_object_id"],
-                cur["res"]
+                cur["res"],
             )
         )
     elif format == "dask":
         return df.map(
             lambda cur: read_df_data(
                 cur["md"],
-                cur["object_type"], 
-                cur["is_dead"], 
+                cur["object_type"],
+                cur["is_dead"],
                 cur["object_doc"],
-                cur["log_error_msg"], 
-                load_history, 
-                cur["history_obj_id_name"], 
+                cur["log_error_msg"],
+                load_history,
+                cur["history_obj_id_name"],
                 cur["history_object_id"],
-                cur["res"]
+                cur["res"],
             )
         )
     else:
@@ -259,7 +260,7 @@ def read_metadata(
             return None
 
     # 1. build metadata as dict
-    md = dict() 
+    md = dict()
 
     # 1.1 read in the attributes from the document in the database
     for k in object_doc:
@@ -270,9 +271,7 @@ def read_metadata(
             continue
         # FIXME: note that we do not check whether the attributes' type in the database matches the schema's definition.
         # This may or may not be correct. Should test in practice and get user feedbacks.
-        if read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(
-            k
-        ):
+        if read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(k):
             md[k] = object_doc[k]
 
     # 1.2 read the attributes in the metadata schema
@@ -371,10 +370,8 @@ def read_metadata(
             md[k] = b"\x00"
         else:
             md[k] = None
-    
-    history_obj_id_name = (
-                self.database_schema.default_name("history_object") + "_id"
-            )
+
+    history_obj_id_name = self.database_schema.default_name("history_object") + "_id"
     collection = self.database_schema.default_name("history_object")
     history_object_id = object_doc[history_obj_id_name]
     res = self[collection].find_one({"_id": history_object_id})
@@ -482,7 +479,7 @@ def read_df_data(
                     atomic_type = AtomicType.TIMESERIES
                 else:
                     atomic_type = AtomicType.SEISMOGRAM
-                
+
                 if retrieve_history_record:
                     mspass_object.load_history(pickle.loads(res["processing_history"]))
                 else:
@@ -502,5 +499,3 @@ def read_df_data(
             mspass_object.elog.log_error("read_data", msg, ErrorSeverity.Complaint)
 
     return mspass_object
-
-
