@@ -1504,7 +1504,7 @@ class MiniseedDBMatcher(DatabaseMatcher):
                     return [None, elog]
                 find_output = self.find(mspass_object)
                 if find_output[0] is None:
-                    return [None, find_output[0])
+                    return [None, find_output[0]]
                 number_matches = len(find_output[0])
                 if number_matches == 1:
                     return [find_output[0][0], find_output[1]]
