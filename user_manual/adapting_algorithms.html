@@ -306,8 +306,8 @@ some time.   The prototype for this function can be found at the
 Antelope User’s group contrib repository in the file
 <a class="reference external" href="https://github.com/antelopeusersgroup/antelope_contrib/blob/master/lib/seismic/libseispp/slice_and_dice.cc">slice_and_dice.cpp</a></p>
 <p>We retained the original function interface:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">TimeSeries</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">TimeSeries</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span><span class="w"></span>
-<span class="n">ThreeComponentSeismogram</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ThreeComponentSeismogram</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">TimeSeries</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">TimeSeries</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
+<span class="n">ThreeComponentSeismogram</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ThreeComponentSeismogram</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>with two changes.</p>
@@ -327,8 +327,8 @@ comments for reference):</p>
 <span class="cm">\exception MsPASSError object if the requested time window is not inside data range</span>
 <span class="cm">\param parent is the larger TimeSeries object to be windowed</span>
 <span class="cm">\param tw defines the data range to be extracted from parent.</span>
-<span class="cm">*/</span><span class="w"></span>
-<span class="n">TimeSeries</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">TimeSeries</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span><span class="w"></span>
+<span class="cm">*/</span>
+<span class="n">TimeSeries</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">TimeSeries</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
 <span class="cm">/*! \brief Extracts a requested time window of data from a parent Seismogram object.</span>
 <span class="cm">It is common to need to extract a smaller segment of data from a larger</span>
 <span class="cm">time window of data.  This function accomplishes this in a nifty method that</span>
@@ -339,8 +339,8 @@ comments for reference):</p>
 <span class="cm">\exception MsPASSError object if the requested time window is not inside data range</span>
 <span class="cm">\param parent is the larger Seismogram object to be windowed</span>
 <span class="cm">\param tw defines the data range to be extracted from parent.</span>
-<span class="cm">*/</span><span class="w"></span>
-<span class="n">Seismogram</span><span class="w"> </span><span class="nf">WindowData3C</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Seismogram</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span><span class="w"></span>
+<span class="cm">*/</span>
+<span class="n">Seismogram</span><span class="w"> </span><span class="nf">WindowData3C</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Seismogram</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>A nontrivial detail we will not inflict on the reader is how we modified
@@ -360,23 +360,23 @@ and the C++ function code <a class="reference external" href="https://github.com
 <p>Creating the python bindings for these two functions required inserting the
 following blocks in the binding code for the algorithms module found
 <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/python/algorithms/basic_py.cc">here</a>:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">mspass</span><span class="o">::</span><span class="n">WindowData</span><span class="p">,</span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span><span class="w"></span>
-<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;twin&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w"></span>
-<span class="p">;</span><span class="w"></span>
-<span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData3C&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">mspass</span><span class="o">::</span><span class="n">WindowData3C</span><span class="p">,</span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span><span class="w"></span>
-<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;twin&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w"></span>
-<span class="p">;</span><span class="w"></span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">mspass</span><span class="o">::</span><span class="n">WindowData</span><span class="p">,</span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;twin&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="p">;</span>
+<span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData3C&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">mspass</span><span class="o">::</span><span class="n">WindowData3C</span><span class="p">,</span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;twin&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="p">;</span>
 </pre></div>
 </div>
 <p>We note a few details about this block of code:</p>
 <ol class="arabic">
 <li><p>The <code class="code docutils literal notranslate"><span class="pre">m</span></code> symbol is defined earlier in this file as a tag for the module to which we aim to bind this function.
 It is defined earlier in the file with this construct:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">ccore</span><span class="p">,</span><span class="n">m</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">ccore</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>That is, this construct defines the symbol <code class="code docutils literal notranslate"><span class="pre">m</span></code> as an abstraction for the

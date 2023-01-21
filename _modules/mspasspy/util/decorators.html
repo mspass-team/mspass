@@ -224,7 +224,7 @@
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator wrapper to adapt a simple function to the mspass parallel processing framework.</span>
 
 <span class="sd">    This function serves as a decorator wrapper, which is widely used in mspasspy library. It executes the target</span>
@@ -342,7 +342,7 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This wrapper serves the same functionality as mspass_func_wrapper, but there are a few differences. The first is</span>
 <span class="sd">    this wrapper accepts two mspasspy data objects as input data. The second is that inplace_return is not implemented</span>
 <span class="sd">    here. The same processing history and error logs will be duplicated and stored in both of the input.</span>
@@ -435,7 +435,7 @@
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator wrapper to adapt a class method function to the mspass parallel processing framework.</span>
 
 <span class="sd">    This function serves as a decorator wrapper, which is widely used in the mspasspy library.</span>
@@ -547,7 +547,7 @@
 
 
 <div class="viewcode-block" id="is_input_dead"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.is_input_dead">[docs]</a><span class="k">def</span> <span class="nf">is_input_dead</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A helper method to see if any mspass objects in the input parameters are dead. If one is dead,</span>
 <span class="sd">    we should keep silent, i.e. no longer perform any further operations on this dead mspass object.</span>
 <span class="sd">    Note for an ensemble object, only if all the objects of it are dead, we mark them as dead,</span>
@@ -614,7 +614,7 @@
 
 <div class="viewcode-block" id="timeseries_as_trace"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_as_trace">[docs]</a><span class="nd">@decorator</span>
 <span class="k">def</span> <span class="nf">timeseries_as_trace</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This decorator converts all the mspasspy TimeSeries objects in user inputs (*args and **kargs)</span>
 <span class="sd">    to trace objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,</span>
 <span class="sd">    the trace objects will be converted back by overriding the data and metadata of the origin mspasspy objects. This</span>
@@ -674,7 +674,7 @@
 
 <div class="viewcode-block" id="seismogram_as_stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_as_stream">[docs]</a><span class="nd">@decorator</span>
 <span class="k">def</span> <span class="nf">seismogram_as_stream</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This decorator converts all the mspasspy Seismogram objects in user inputs (*args and **kargs)</span>
 <span class="sd">    to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,</span>
 <span class="sd">    the stream objects will be converted back by overriding the data and metadata of the origin mspasspy objects.</span>
@@ -726,7 +726,7 @@
 
 <div class="viewcode-block" id="timeseries_ensemble_as_stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_ensemble_as_stream">[docs]</a><span class="nd">@decorator</span>
 <span class="k">def</span> <span class="nf">timeseries_ensemble_as_stream</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This decorator converts all the mspasspy TimeSeries ensemble objects in user inputs (*args and **kargs)</span>
 <span class="sd">    to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,</span>
 <span class="sd">    the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.</span>
@@ -770,7 +770,7 @@
 
 <div class="viewcode-block" id="seismogram_ensemble_as_stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_ensemble_as_stream">[docs]</a><span class="nd">@decorator</span>
 <span class="k">def</span> <span class="nf">seismogram_ensemble_as_stream</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This decorator converts all the mspasspy Seismogram ensemble objects in user inputs (*args and **kargs)</span>
 <span class="sd">    to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,</span>
 <span class="sd">    the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.</span>
@@ -824,7 +824,7 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This decorator is designed to wrap functions so that they can be used as reduce operator. It takes two inputs, data1</span>
 <span class="sd">    and data2, both of them are mspasspy objects. The processing history and error logs will recorded in both data1</span>
 <span class="sd">    and data2. Other functionalities are the same as mspass_func_wrapper.</span>

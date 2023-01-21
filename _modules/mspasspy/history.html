@@ -199,7 +199,7 @@
 
 
 <div class="viewcode-block" id="get_jobid"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.get_jobid">[docs]</a><span class="k">def</span> <span class="nf">get_jobid</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ask MongoDB for the a valid jobid.</span>
 
 <span class="sd">    All processing jobs should have a call to this function at the beginning</span>
@@ -223,7 +223,7 @@
 
 
 <div class="viewcode-block" id="pfbranch_to_dict"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.pfbranch_to_dict">[docs]</a><span class="k">def</span> <span class="nf">pfbranch_to_dict</span><span class="p">(</span><span class="n">pf</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Recursive function to convert a single branch in an AntelopePf to a python dict.</span>
 
 <span class="sd">    This function utilizes recursion to follow a chain of arbitrary length of</span>
@@ -266,7 +266,7 @@
 
 
 <div class="viewcode-block" id="basic_history_data"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.basic_history_data">[docs]</a><span class="k">class</span> <span class="nc">basic_history_data</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a pure data object that if it were written in C could be</span>
 <span class="sd">    defined as a struct.   It holds the data used to define the</span>
 <span class="sd">    parameters for a given algorithm.</span>
@@ -279,7 +279,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict with unspecified content dumped to collection</span>
 
 <div class="viewcode-block" id="basic_history_data.load_algorithm_args"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.basic_history_data.load_algorithm_args">[docs]</a>    <span class="k">def</span> <span class="nf">load_algorithm_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg</span><span class="p">,</span> <span class="n">argdict</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads parameters defined to a set of function arguments.</span>
 
 <span class="sd">        Simple algorithms without a lot of parameters often simply need a</span>
@@ -302,7 +302,7 @@
 
 
 <div class="viewcode-block" id="pf_history_data"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.pf_history_data">[docs]</a><span class="k">class</span> <span class="nc">pf_history_data</span><span class="p">(</span><span class="n">basic_history_data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Loads history data container with data from an AntelopePf object.</span>
 
 <span class="sd">    mspasspy.ccore.utility defines the AntelopePf object that is an option for parameter</span>
@@ -318,7 +318,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">alg</span><span class="p">,</span> <span class="n">pf</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Basic constructor for this subclass.</span>
 
 <span class="sd">        This constructor applies the construction is initialization model</span>
@@ -352,7 +352,7 @@
 
 
 <div class="viewcode-block" id="HistoryLogger"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.HistoryLogger">[docs]</a><span class="k">class</span> <span class="nc">HistoryLogger</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for generic, global history/provenance preservation in MsPASS.</span>
 <span class="sd">    The main concept of this object that a pymongo script to run a processing</span>
 <span class="sd">    job would create this object or one of it&#39;s children to preserve the</span>
@@ -364,7 +364,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Basic constructor.</span>
 
 <span class="sd">        This is currently the only constructor for this object.  It creates</span>
@@ -402,7 +402,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">history_chain</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># create empty container for history record</span>
 
 <div class="viewcode-block" id="HistoryLogger.register"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.HistoryLogger.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg</span><span class="p">,</span> <span class="n">partype</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register an algorithm&#39;s signature to preserve processing history.</span>
 <span class="sd">        Each algorithm in a processing chains should be registered by this</span>
 <span class="sd">        mechanism before starting a mspass processing chain.  The</span>
@@ -433,7 +433,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="HistoryLogger.save"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.HistoryLogger.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the contents to the history collection.</span>
 
 <span class="sd">        The doc created in a save is more or less an image of the</span>

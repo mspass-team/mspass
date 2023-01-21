@@ -216,7 +216,7 @@
 
 
 <span class="k">def</span> <span class="nf">_window_invalid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">win</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Small helper used internally in this module.  Tests if TimeWidow defined</span>
 <span class="sd">    by win has a span inside the range of the data object d.  Return True</span>
 <span class="sd">    if the range is invalid - somewhat reversed logic is used because of</span>
@@ -229,7 +229,7 @@
 
 
 <span class="k">def</span> <span class="nf">_safe_snr_calculation</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper used in this module for all snr calculations.   snr is</span>
 <span class="sd">    always defined as a ratio of signal amplitude divided by noise amplitude.</span>
 <span class="sd">    An issue is that with simulation data it is very common to have a noise</span>
@@ -258,7 +258,7 @@
     <span class="n">signal_metric</span><span class="o">=</span><span class="s2">&quot;mad&quot;</span><span class="p">,</span>
     <span class="n">perc</span><span class="o">=</span><span class="mf">95.0</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute time-domain based signal-to-noise ratio with a specified metric.</span>
 
 <span class="sd">    Signal-to-noise ratio is a fundamental measurement in all forms of</span>
@@ -378,7 +378,7 @@
 <span class="k">def</span> <span class="nf">_reformat_mspass_error</span><span class="p">(</span>
     <span class="n">mserr</span><span class="p">,</span> <span class="n">prefix_message</span><span class="p">,</span> <span class="n">suffix_message</span><span class="o">=</span><span class="s2">&quot;Some requested metrics may not be computed&quot;</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper for below used to reformat a message from ccore functions that</span>
 <span class="sd">    throw a MsPASSError.   Needed to produce rational messages from</span>
 <span class="sd">    different error metric calculations.</span>
@@ -422,7 +422,7 @@
     <span class="n">save_spectra</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1"># optional_metrics=[&#39;snr_stats&#39;,&#39;filtered_envelope&#39;,&#39;filtered_L2&#39;,&#39;filtered_Linf&#39;,&#39;filtered_MAD&#39;,&#39;filtered_perc&#39;]):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Estimates one or more amplitude metrics of signal-to-noise from a TimeSeries object.</span>
 <span class="sd">    An implicit assumption is that the analysis is centered on a timeable &quot;phase&quot;</span>
 <span class="sd">    like P, PP, etc.</span>
@@ -864,7 +864,7 @@
     <span class="p">],</span>
 <span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Specialization of FD_snr_estimator.   A common situation where snr</span>
 <span class="sd">    data is a critical thing to estimate is data windowed around a given</span>
 <span class="sd">    seismic phase.   FD_snr_estimator is a bit more generic.  This function</span>
@@ -1032,7 +1032,7 @@
     <span class="n">source_collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
     <span class="n">receiver_collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute a series of metrics that can be used for quality control</span>
 <span class="sd">    filtering of seismic phase data.</span>
 
@@ -1290,7 +1290,7 @@
     <span class="n">update_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">validate_wfid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function is a companion to broadband_snr_QC.   It handles the</span>
 <span class="sd">    situation where the workflow aims to post calculated snr metrics to</span>
 <span class="sd">    an output database (normally in the &quot;arrival&quot; collection but optionally</span>

@@ -229,7 +229,7 @@
     <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     This decorator method performs map function in Python. Instead of performing the normal map function,</span>
 <span class="sd">     if user provides global history manager, alg_id(optional), alg_name(optional) and parameters(optional)</span>
 <span class="sd">     as input, the global history manager will log down the usage of the algorithm. Also, if user set</span>
@@ -301,7 +301,7 @@
     <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     This method performs reduce function using functools. Instead of performing the normal reduce function,</span>
 <span class="sd">     if user provides global history manager, alg_id(optional), alg_name(optional) and parameters(optional)</span>
 <span class="sd">     as input, the global history manager will log down the usage of the algorithm. Also, if user set</span>
@@ -379,7 +379,7 @@
     <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     This decorator method add more functionaliy on the standard spark map method and be a part of member functions</span>
 <span class="sd">     in the spark RDD library. Instead of performing the normal map function, if user provides global history manager,</span>
 <span class="sd">     alg_id(optional), alg_name(optional) and parameters(optional) as input, the global history manager will log down</span>
@@ -481,7 +481,7 @@
     <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     This decorator method add more functionaliy on the standard dask map method and be a part of member functions</span>
 <span class="sd">     in the dask bag library. Instead of performing the normal map function, if user provides global history manager,</span>
 <span class="sd">     alg_id(optional), alg_name(optional) and parameters(optional) as input, the global history manager will log down</span>
@@ -582,7 +582,7 @@
     <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     This decorator method add more functionaliy on the standard spark reduce method and be a part of member functions</span>
 <span class="sd">     in the spark RDD library. Instead of performing the normal reduce function, if user provides global history manager,</span>
 <span class="sd">     alg_id(optional), alg_name(optional) and parameters(optional) as input, the global history manager will log down</span>
@@ -659,7 +659,7 @@
     <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     This decorator method add more functionaliy on the standard dask fold method and be a part of member functions</span>
 <span class="sd">     in the dask bag library. Instead of performing the normal fold function, if user provides global history manager,</span>
 <span class="sd">     alg_id(optional), alg_name(optional) and parameters(optional) as input, the global history manager will log down</span>
@@ -726,7 +726,7 @@
 
 
 <div class="viewcode-block" id="GlobalHistoryManager"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager">[docs]</a><span class="k">class</span> <span class="nc">GlobalHistoryManager</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Global History Mananger handler.</span>
 
 <span class="sd">    This is a handler used in the mspass_client, normally user should not directly create</span>
@@ -776,7 +776,7 @@
             <span class="k">pass</span>
 
 <div class="viewcode-block" id="GlobalHistoryManager.logging"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.logging">[docs]</a>    <span class="k">def</span> <span class="nf">logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the usage of the algorithm in the map/reduce operation</span>
 
 <span class="sd">        :param alg_id: the UUID of the combination of algorithm_name and parameters</span>
@@ -801,7 +801,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="GlobalHistoryManager.get_alg_id"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.get_alg_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_alg_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the usage of the algorithm in the map/reduce operation</span>
 
 <span class="sd">        :param alg_name: the name of the algorithm</span>
@@ -823,7 +823,7 @@
         <span class="k">return</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;alg_id&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="GlobalHistoryManager.get_alg_list"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.get_alg_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_alg_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_name</span><span class="p">,</span> <span class="n">job_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of history records by job name(and job_id)</span>
 
 <span class="sd">        :param job_name: the name of the job</span>
@@ -841,7 +841,7 @@
         <span class="k">return</span> <span class="n">alg_list</span></div>
 
 <div class="viewcode-block" id="GlobalHistoryManager.set_alg_name_and_parameters"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.set_alg_name_and_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">set_alg_name_and_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the alg_name and parameters by a user specified alg_id</span>
 
 <span class="sd">        :param alg_id: the UUID of the combination of algorithm_name and parameters, used to find the records</span>

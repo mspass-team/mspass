@@ -855,9 +855,9 @@ script:</p>
 <span class="linenos"> 14</span><span class="c1"># Most HPC systems like stampede2 use a softwere module</span>
 <span class="linenos"> 15</span><span class="c1"># manager to allow each job to define any special packages it needs to</span>
 <span class="linenos"> 16</span><span class="c1"># run.  In our case that is only tacc-singularity.</span>
-<span class="linenos"> 17</span>ml unload xalt
-<span class="linenos"> 18</span>ml tacc-singularity
-<span class="linenos"> 19</span>module list
+<span class="linenos"> 17</span>ml<span class="w"> </span>unload<span class="w"> </span>xalt
+<span class="linenos"> 18</span>ml<span class="w"> </span>tacc-singularity
+<span class="linenos"> 19</span>module<span class="w"> </span>list
 <span class="linenos"> 20</span><span class="nb">pwd</span>
 <span class="linenos"> 21</span>date
 <span class="linenos"> 22</span>
@@ -881,7 +881,7 @@ script:</p>
 <span class="linenos"> 40</span><span class="nv">SHARD_DATABASE</span><span class="o">=</span><span class="s2">&quot;usarraytest&quot;</span>
 <span class="linenos"> 41</span><span class="c1"># define (collection:shard_key) pairs</span>
 <span class="linenos"> 42</span><span class="nv">SHARD_COLLECTIONS</span><span class="o">=(</span>
-<span class="linenos"> 43</span>    <span class="s2">&quot;arrival:_id&quot;</span>
+<span class="linenos"> 43</span><span class="w">    </span><span class="s2">&quot;arrival:_id&quot;</span>
 <span class="linenos"> 44</span><span class="o">)</span>
 <span class="linenos"> 45</span><span class="c1"># This variable is used to simplify launching each container</span>
 <span class="linenos"> 46</span><span class="c1"># Arguments are added to this string to launch each instance of a</span>
@@ -892,147 +892,147 @@ script:</p>
 <span class="linenos"> 51</span>
 <span class="linenos"> 52</span><span class="c1"># Section 4:  Set up some necessary communication channels</span>
 <span class="linenos"> 53</span><span class="c1"># obtain the hostname of the node, and generate a random port number</span>
-<span class="linenos"> 54</span><span class="nv">NODE_HOSTNAME</span><span class="o">=</span><span class="sb">`</span>hostname -s<span class="sb">`</span>
-<span class="linenos"> 55</span><span class="nb">echo</span> <span class="s2">&quot;primary node </span><span class="nv">$NODE_HOSTNAME</span><span class="s2">&quot;</span>
-<span class="linenos"> 56</span><span class="nv">LOGIN_PORT</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$NODE_HOSTNAME</span> <span class="p">|</span> perl -ne <span class="s1">&#39;print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;&#39;</span><span class="sb">`</span>
-<span class="linenos"> 57</span><span class="nv">STATUS_PORT</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$LOGIN_PORT</span><span class="s2"> + 1&quot;</span> <span class="p">|</span> bc -l<span class="sb">`</span>
-<span class="linenos"> 58</span><span class="nb">echo</span> <span class="s2">&quot;got login node port </span><span class="nv">$LOGIN_PORT</span><span class="s2">&quot;</span>
+<span class="linenos"> 54</span><span class="nv">NODE_HOSTNAME</span><span class="o">=</span><span class="sb">`</span>hostname<span class="w"> </span>-s<span class="sb">`</span>
+<span class="linenos"> 55</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;primary node </span><span class="nv">$NODE_HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos"> 56</span><span class="nv">LOGIN_PORT</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$NODE_HOSTNAME</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;&#39;</span><span class="sb">`</span>
+<span class="linenos"> 57</span><span class="nv">STATUS_PORT</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$LOGIN_PORT</span><span class="s2"> + 1&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>bc<span class="w"> </span>-l<span class="sb">`</span>
+<span class="linenos"> 58</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;got login node port </span><span class="nv">$LOGIN_PORT</span><span class="s2">&quot;</span>
 <span class="linenos"> 59</span>
 <span class="linenos"> 60</span><span class="c1"># create reverse tunnel port to login nodes.  Make one tunnel for each login so the user can just</span>
 <span class="linenos"> 61</span><span class="c1"># connect to stampede2.tacc.utexas.edu</span>
-<span class="linenos"> 62</span><span class="k">for</span> i <span class="k">in</span> <span class="sb">`</span>seq <span class="m">4</span><span class="sb">`</span><span class="p">;</span> <span class="k">do</span>
-<span class="linenos"> 63</span>    ssh -q -f -g -N -R <span class="nv">$LOGIN_PORT</span>:<span class="nv">$NODE_HOSTNAME</span>:8888 login<span class="nv">$i</span>
-<span class="linenos"> 64</span>    ssh -q -f -g -N -R <span class="nv">$STATUS_PORT</span>:<span class="nv">$NODE_HOSTNAME</span>:8787 login<span class="nv">$i</span>
+<span class="linenos"> 62</span><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="sb">`</span>seq<span class="w"> </span><span class="m">4</span><span class="sb">`</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="linenos"> 63</span><span class="w">    </span>ssh<span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span>-g<span class="w"> </span>-N<span class="w"> </span>-R<span class="w"> </span><span class="nv">$LOGIN_PORT</span>:<span class="nv">$NODE_HOSTNAME</span>:8888<span class="w"> </span>login<span class="nv">$i</span>
+<span class="linenos"> 64</span><span class="w">    </span>ssh<span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span>-g<span class="w"> </span>-N<span class="w"> </span>-R<span class="w"> </span><span class="nv">$STATUS_PORT</span>:<span class="nv">$NODE_HOSTNAME</span>:8787<span class="w"> </span>login<span class="nv">$i</span>
 <span class="linenos"> 65</span><span class="k">done</span>
-<span class="linenos"> 66</span><span class="nb">echo</span> <span class="s2">&quot;Created reverse ports on Stampede2 logins&quot;</span>
+<span class="linenos"> 66</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Created reverse ports on Stampede2 logins&quot;</span>
 <span class="linenos"> 67</span>
 <span class="linenos"> 68</span>
 <span class="linenos"> 69</span><span class="c1"># Section 5:  Launch all the containers</span>
 <span class="linenos"> 70</span><span class="c1"># In this job we create a working directory on stampede2&#39;s scratch area</span>
 <span class="linenos"> 71</span><span class="c1"># Most workflows may omit the mkdir and just use cd to a working</span>
 <span class="linenos"> 72</span><span class="c1"># directory created and populated earlier</span>
-<span class="linenos"> 73</span>mkdir -p <span class="nv">$WORK_DIR</span>
-<span class="linenos"> 74</span><span class="nb">cd</span> <span class="nv">$WORK_DIR</span>
+<span class="linenos"> 73</span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$WORK_DIR</span>
+<span class="linenos"> 74</span><span class="nb">cd</span><span class="w"> </span><span class="nv">$WORK_DIR</span>
 <span class="linenos"> 75</span>
 <span class="linenos"> 76</span><span class="c1"># start a distributed scheduler container in the primary node</span>
-<span class="linenos"> 77</span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
-<span class="linenos"> 78</span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>scheduler <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
+<span class="linenos"> 77</span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos"> 78</span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>scheduler<span class="w"> </span><span class="nv">$SING_COM</span><span class="w"> </span><span class="p">&amp;</span>
 <span class="linenos"> 79</span>
 <span class="linenos"> 80</span><span class="c1"># get the all the hostnames of worker nodes</span>
-<span class="linenos"> 81</span><span class="nv">WORKER_LIST</span><span class="o">=</span><span class="sb">`</span>scontrol show hostname <span class="si">${</span><span class="nv">SLURM_NODELIST</span><span class="si">}</span> <span class="p">|</span> <span class="se">\</span>
-<span class="linenos"> 82</span>             awk -vORS<span class="o">=</span>, -v <span class="nv">hostvar</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NODE_HOSTNAME</span><span class="s2">&quot;</span> <span class="s1">&#39;{ if ($0!=hostvar) print $0 }&#39;</span> <span class="p">|</span> <span class="se">\</span>
-<span class="linenos"> 83</span>             sed <span class="s1">&#39;s/,$/\n/&#39;</span><span class="sb">`</span>
-<span class="linenos"> 84</span><span class="nb">echo</span> <span class="nv">$WORKER_LIST</span>
+<span class="linenos"> 81</span><span class="nv">WORKER_LIST</span><span class="o">=</span><span class="sb">`</span>scontrol<span class="w"> </span>show<span class="w"> </span>hostname<span class="w"> </span><span class="si">${</span><span class="nv">SLURM_NODELIST</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos"> 82</span><span class="w">             </span>awk<span class="w"> </span>-vORS<span class="o">=</span>,<span class="w"> </span>-v<span class="w"> </span><span class="nv">hostvar</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NODE_HOSTNAME</span><span class="s2">&quot;</span><span class="w"> </span><span class="s1">&#39;{ if ($0!=hostvar) print $0 }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos"> 83</span><span class="w">             </span>sed<span class="w"> </span><span class="s1">&#39;s/,$/\n/&#39;</span><span class="sb">`</span>
+<span class="linenos"> 84</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$WORKER_LIST</span>
 <span class="linenos"> 85</span>
 <span class="linenos"> 86</span><span class="c1"># start worker container in each worker node</span>
-<span class="linenos"> 87</span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
-<span class="linenos"> 88</span><span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos"> 89</span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>worker <span class="se">\</span>
-<span class="linenos"> 90</span>mpiexec.hydra -n <span class="k">$((</span>SLURM_NNODES-1<span class="k">))</span> -ppn <span class="m">1</span> -hosts <span class="nv">$WORKER_LIST</span> <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
+<span class="linenos"> 87</span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos"> 88</span><span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos"> 89</span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>worker<span class="w"> </span><span class="se">\</span>
+<span class="linenos"> 90</span>mpiexec.hydra<span class="w"> </span>-n<span class="w"> </span><span class="k">$((</span>SLURM_NNODES-1<span class="k">))</span><span class="w"> </span>-ppn<span class="w"> </span><span class="m">1</span><span class="w"> </span>-hosts<span class="w"> </span><span class="nv">$WORKER_LIST</span><span class="w"> </span><span class="nv">$SING_COM</span><span class="w"> </span><span class="p">&amp;</span>
 <span class="linenos"> 91</span>
-<span class="linenos"> 92</span><span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$DB_SHARDING</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="nb">true</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
-<span class="linenos"> 93</span>    <span class="nb">echo</span> <span class="s1">&#39;Using Sharding MongoDB&#39;</span>
-<span class="linenos"> 94</span>    <span class="c1"># extract the hostname of each worker node</span>
-<span class="linenos"> 95</span>    <span class="nv">OLD_IFS</span><span class="o">=</span><span class="nv">$IFS</span>
-<span class="linenos"> 96</span>    <span class="nv">IFS</span><span class="o">=</span><span class="s2">&quot;,&quot;</span>
-<span class="linenos"> 97</span>    <span class="nv">WORKER_LIST_ARR</span><span class="o">=(</span><span class="nv">$WORKER_LIST</span><span class="o">)</span>
-<span class="linenos"> 98</span>    <span class="nv">IFS</span><span class="o">=</span><span class="nv">$OLD_IFS</span>
+<span class="linenos"> 92</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DB_SHARDING</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 93</span><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;Using Sharding MongoDB&#39;</span>
+<span class="linenos"> 94</span><span class="w">    </span><span class="c1"># extract the hostname of each worker node</span>
+<span class="linenos"> 95</span><span class="w">    </span><span class="nv">OLD_IFS</span><span class="o">=</span><span class="nv">$IFS</span>
+<span class="linenos"> 96</span><span class="w">    </span><span class="nv">IFS</span><span class="o">=</span><span class="s2">&quot;,&quot;</span>
+<span class="linenos"> 97</span><span class="w">    </span><span class="nv">WORKER_LIST_ARR</span><span class="o">=(</span><span class="nv">$WORKER_LIST</span><span class="o">)</span>
+<span class="linenos"> 98</span><span class="w">    </span><span class="nv">IFS</span><span class="o">=</span><span class="nv">$OLD_IFS</span>
 <span class="linenos"> 99</span>
-<span class="linenos">100</span>    <span class="c1"># control the interval between mongo instance and mongo shell execution</span>
-<span class="linenos">101</span>    <span class="nv">SLEEP_TIME</span><span class="o">=</span><span class="m">15</span>
+<span class="linenos">100</span><span class="w">    </span><span class="c1"># control the interval between mongo instance and mongo shell execution</span>
+<span class="linenos">101</span><span class="w">    </span><span class="nv">SLEEP_TIME</span><span class="o">=</span><span class="m">15</span>
 <span class="linenos">102</span>
-<span class="linenos">103</span>    <span class="c1"># start a dbmanager container in the primary node</span>
-<span class="linenos">104</span>    <span class="nv">username</span><span class="o">=</span><span class="sb">`</span>whoami<span class="sb">`</span>
-<span class="linenos">105</span>    <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="p">!WORKER_LIST_ARR[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
-<span class="linenos">106</span>        SHARD_LIST<span class="o">[</span><span class="nv">$i</span><span class="o">]=</span><span class="s2">&quot;rs</span><span class="nv">$i</span><span class="s2">/</span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">:27017&quot;</span>
-<span class="linenos">107</span>        SHARD_ADDRESS<span class="o">[</span><span class="nv">$i</span><span class="o">]=</span><span class="s2">&quot;</span><span class="nv">$username</span><span class="s2">@</span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="linenos">108</span>        SHARD_DB_PATH<span class="o">[</span><span class="nv">$i</span><span class="o">]=</span><span class="s2">&quot;</span><span class="nv">$username</span><span class="s2">@</span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">:/tmp/db/data_shard_</span><span class="nv">$i</span><span class="s2">&quot;</span>
-<span class="linenos">109</span>        SHARD_LOGS_PATH<span class="o">[</span><span class="nv">$i</span><span class="o">]=</span><span class="s2">&quot;</span><span class="nv">$username</span><span class="s2">@</span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">:/tmp/logs/mongo_log_shard_</span><span class="nv">$i</span><span class="s2">&quot;</span>
-<span class="linenos">110</span>    <span class="k">done</span>
+<span class="linenos">103</span><span class="w">    </span><span class="c1"># start a dbmanager container in the primary node</span>
+<span class="linenos">104</span><span class="w">    </span><span class="nv">username</span><span class="o">=</span><span class="sb">`</span>whoami<span class="sb">`</span>
+<span class="linenos">105</span><span class="w">    </span><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="p">!WORKER_LIST_ARR[@]</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="linenos">106</span><span class="w">        </span>SHARD_LIST<span class="o">[</span><span class="nv">$i</span><span class="o">]=</span><span class="s2">&quot;rs</span><span class="nv">$i</span><span class="s2">/</span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">:27017&quot;</span>
+<span class="linenos">107</span><span class="w">        </span>SHARD_ADDRESS<span class="o">[</span><span class="nv">$i</span><span class="o">]=</span><span class="s2">&quot;</span><span class="nv">$username</span><span class="s2">@</span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">108</span><span class="w">        </span>SHARD_DB_PATH<span class="o">[</span><span class="nv">$i</span><span class="o">]=</span><span class="s2">&quot;</span><span class="nv">$username</span><span class="s2">@</span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">:/tmp/db/data_shard_</span><span class="nv">$i</span><span class="s2">&quot;</span>
+<span class="linenos">109</span><span class="w">        </span>SHARD_LOGS_PATH<span class="o">[</span><span class="nv">$i</span><span class="o">]=</span><span class="s2">&quot;</span><span class="nv">$username</span><span class="s2">@</span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">:/tmp/logs/mongo_log_shard_</span><span class="nv">$i</span><span class="s2">&quot;</span>
+<span class="linenos">110</span><span class="w">    </span><span class="k">done</span>
 <span class="linenos">111</span>
-<span class="linenos">112</span>    <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
-<span class="linenos">113</span>    <span class="nv">SINGULARITYENV_MSPASS_SHARD_DATABASE</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_DATABASE</span><span class="si">}</span> <span class="se">\</span>
-<span class="linenos">114</span>    <span class="nv">SINGULARITYENV_MSPASS_SHARD_COLLECTIONS</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_COLLECTIONS</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
-<span class="linenos">115</span>    <span class="nv">SINGULARITYENV_MSPASS_SHARD_LIST</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_LIST</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
-<span class="linenos">116</span>    <span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span> <span class="se">\</span>
-<span class="linenos">117</span>    <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>dbmanager <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
+<span class="linenos">112</span><span class="w">    </span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">113</span><span class="w">    </span><span class="nv">SINGULARITYENV_MSPASS_SHARD_DATABASE</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_DATABASE</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">114</span><span class="w">    </span><span class="nv">SINGULARITYENV_MSPASS_SHARD_COLLECTIONS</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_COLLECTIONS</span><span class="p">[@]</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">115</span><span class="w">    </span><span class="nv">SINGULARITYENV_MSPASS_SHARD_LIST</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_LIST</span><span class="p">[@]</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">116</span><span class="w">    </span><span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">117</span><span class="w">    </span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>dbmanager<span class="w"> </span><span class="nv">$SING_COM</span><span class="w"> </span><span class="p">&amp;</span>
 <span class="linenos">118</span>
-<span class="linenos">119</span>    <span class="c1"># ensure enough time for dbmanager to finish</span>
-<span class="linenos">120</span>    sleep <span class="m">30</span>
+<span class="linenos">119</span><span class="w">    </span><span class="c1"># ensure enough time for dbmanager to finish</span>
+<span class="linenos">120</span><span class="w">    </span>sleep<span class="w"> </span><span class="m">30</span>
 <span class="linenos">121</span>
-<span class="linenos">122</span>    <span class="c1"># start a shard container in each worker node</span>
-<span class="linenos">123</span>    <span class="c1"># mipexec could be cleaner while ssh would induce more complexity</span>
-<span class="linenos">124</span>    <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="p">!WORKER_LIST_ARR[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
-<span class="linenos">125</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
-<span class="linenos">126</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_ID</span><span class="o">=</span><span class="nv">$i</span> <span class="se">\</span>
-<span class="linenos">127</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span> <span class="se">\</span>
-<span class="linenos">128</span>        <span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span> <span class="se">\</span>
-<span class="linenos">129</span>        <span class="nv">SINGULARITYENV_MSPASS_CONFIG_SERVER_ADDR</span><span class="o">=</span><span class="s2">&quot;configserver/</span><span class="si">${</span><span class="nv">NODE_HOSTNAME</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">:27018&quot;</span> <span class="se">\</span>
-<span class="linenos">130</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>shard <span class="se">\</span>
-<span class="linenos">131</span>        mpiexec.hydra -n <span class="m">1</span> -ppn <span class="m">1</span> -hosts <span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[i]</span><span class="si">}</span> <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
-<span class="linenos">132</span>    <span class="k">done</span>
+<span class="linenos">122</span><span class="w">    </span><span class="c1"># start a shard container in each worker node</span>
+<span class="linenos">123</span><span class="w">    </span><span class="c1"># mipexec could be cleaner while ssh would induce more complexity</span>
+<span class="linenos">124</span><span class="w">    </span><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="p">!WORKER_LIST_ARR[@]</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="linenos">125</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">126</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SHARD_ID</span><span class="o">=</span><span class="nv">$i</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">127</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">128</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">129</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_CONFIG_SERVER_ADDR</span><span class="o">=</span><span class="s2">&quot;configserver/</span><span class="si">${</span><span class="nv">NODE_HOSTNAME</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">HOSTNAME_BASE</span><span class="si">}</span><span class="s2">:27018&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">130</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>shard<span class="w"> </span><span class="se">\</span>
+<span class="linenos">131</span><span class="w">        </span>mpiexec.hydra<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>-ppn<span class="w"> </span><span class="m">1</span><span class="w"> </span>-hosts<span class="w"> </span><span class="si">${</span><span class="nv">WORKER_LIST_ARR</span><span class="p">[i]</span><span class="si">}</span><span class="w"> </span><span class="nv">$SING_COM</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">132</span><span class="w">    </span><span class="k">done</span>
 <span class="linenos">133</span>
-<span class="linenos">134</span>    <span class="c1"># Launch the jupyter notebook frontend in the primary node.</span>
-<span class="linenos">135</span>    <span class="c1"># Run in batch mode if the script was</span>
-<span class="linenos">136</span>    <span class="c1"># submitted with a &quot;-b notebook.ipynb&quot;</span>
-<span class="linenos">137</span>    <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">138</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
-<span class="linenos">139</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos">140</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos">141</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span> <span class="se">\</span>
-<span class="linenos">142</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_ADDRESS</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_ADDRESS</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
-<span class="linenos">143</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_DB_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_DB_PATH</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
-<span class="linenos">144</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_LOGS_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_LOGS_PATH</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
-<span class="linenos">145</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_MODE</span><span class="o">=</span><span class="s2">&quot;shard&quot;</span> <span class="se">\</span>
-<span class="linenos">146</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span>
-<span class="linenos">147</span>    <span class="k">else</span>
-<span class="linenos">148</span>        <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;b:&quot;</span> flag
-<span class="linenos">149</span>        <span class="k">do</span>
-<span class="linenos">150</span>            <span class="k">case</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">flag</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">in</span>
-<span class="linenos">151</span>                b<span class="o">)</span> <span class="nv">notebook_file</span><span class="o">=</span><span class="si">${</span><span class="nv">OPTARG</span><span class="si">}</span><span class="p">;</span>
-<span class="linenos">152</span>            <span class="k">esac</span>
-<span class="linenos">153</span>        <span class="k">done</span>
-<span class="linenos">154</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
-<span class="linenos">155</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos">156</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos">157</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span> <span class="se">\</span>
-<span class="linenos">158</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_ADDRESS</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_ADDRESS</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
-<span class="linenos">159</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_DB_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_DB_PATH</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
-<span class="linenos">160</span>        <span class="nv">SINGULARITYENV_MSPASS_SHARD_LOGS_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_LOGS_PATH</span><span class="p">[@]</span><span class="si">}</span> <span class="se">\</span>
-<span class="linenos">161</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_MODE</span><span class="o">=</span><span class="s2">&quot;shard&quot;</span> <span class="se">\</span>
-<span class="linenos">162</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span> --batch <span class="nv">$notebook_file</span>
-<span class="linenos">163</span>    <span class="k">fi</span>
+<span class="linenos">134</span><span class="w">    </span><span class="c1"># Launch the jupyter notebook frontend in the primary node.</span>
+<span class="linenos">135</span><span class="w">    </span><span class="c1"># Run in batch mode if the script was</span>
+<span class="linenos">136</span><span class="w">    </span><span class="c1"># submitted with a &quot;-b notebook.ipynb&quot;</span>
+<span class="linenos">137</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$#</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">138</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">139</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">140</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">141</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">142</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SHARD_ADDRESS</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_ADDRESS</span><span class="p">[@]</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">143</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SHARD_DB_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_DB_PATH</span><span class="p">[@]</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">144</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SHARD_LOGS_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_LOGS_PATH</span><span class="p">[@]</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">145</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_DB_MODE</span><span class="o">=</span><span class="s2">&quot;shard&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">146</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend<span class="w"> </span><span class="nv">$SING_COM</span>
+<span class="linenos">147</span><span class="w">    </span><span class="k">else</span>
+<span class="linenos">148</span><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="nb">getopts</span><span class="w"> </span><span class="s2">&quot;b:&quot;</span><span class="w"> </span>flag
+<span class="linenos">149</span><span class="w">        </span><span class="k">do</span>
+<span class="linenos">150</span><span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">flag</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">in</span>
+<span class="linenos">151</span><span class="w">                </span>b<span class="o">)</span><span class="w"> </span><span class="nv">notebook_file</span><span class="o">=</span><span class="si">${</span><span class="nv">OPTARG</span><span class="si">}</span><span class="p">;</span>
+<span class="linenos">152</span><span class="w">            </span><span class="k">esac</span>
+<span class="linenos">153</span><span class="w">        </span><span class="k">done</span>
+<span class="linenos">154</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">155</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">156</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">157</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">158</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SHARD_ADDRESS</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_ADDRESS</span><span class="p">[@]</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">159</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SHARD_DB_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_DB_PATH</span><span class="p">[@]</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">160</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SHARD_LOGS_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">SHARD_LOGS_PATH</span><span class="p">[@]</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">161</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_DB_MODE</span><span class="o">=</span><span class="s2">&quot;shard&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">162</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend<span class="w"> </span><span class="nv">$SING_COM</span><span class="w"> </span>--batch<span class="w"> </span><span class="nv">$notebook_file</span>
+<span class="linenos">163</span><span class="w">    </span><span class="k">fi</span>
 <span class="linenos">164</span><span class="k">else</span>
-<span class="linenos">165</span>    <span class="nb">echo</span> <span class="s2">&quot;Using Single node MongoDB&quot;</span>
-<span class="linenos">166</span>    <span class="c1"># start a db container in the primary node</span>
-<span class="linenos">167</span>    <span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span> <span class="se">\</span>
-<span class="linenos">168</span>    <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
-<span class="linenos">169</span>    <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>db <span class="nv">$SING_COM</span> <span class="p">&amp;</span>
-<span class="linenos">170</span>    <span class="c1"># ensure enough time for db instance to finish</span>
-<span class="linenos">171</span>    sleep <span class="m">10</span>
+<span class="linenos">165</span><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Using Single node MongoDB&quot;</span>
+<span class="linenos">166</span><span class="w">    </span><span class="c1"># start a db container in the primary node</span>
+<span class="linenos">167</span><span class="w">    </span><span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">168</span><span class="w">    </span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">169</span><span class="w">    </span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>db<span class="w"> </span><span class="nv">$SING_COM</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">170</span><span class="w">    </span><span class="c1"># ensure enough time for db instance to finish</span>
+<span class="linenos">171</span><span class="w">    </span>sleep<span class="w"> </span><span class="m">10</span>
 <span class="linenos">172</span>
-<span class="linenos">173</span>    <span class="c1"># Launch the jupyter notebook frontend in the primary node.</span>
-<span class="linenos">174</span>    <span class="c1"># Run in batch mode if the script was</span>
-<span class="linenos">175</span>    <span class="c1"># submitted with a &quot;-b notebook.ipynb&quot;</span>
-<span class="linenos">176</span>    <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">177</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
-<span class="linenos">178</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos">179</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos">180</span>        <span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span> <span class="se">\</span>
-<span class="linenos">181</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span>
-<span class="linenos">182</span>    <span class="k">else</span>
-<span class="linenos">183</span>        <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;b:&quot;</span> flag
-<span class="linenos">184</span>        <span class="k">do</span>
-<span class="linenos">185</span>            <span class="k">case</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">flag</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">in</span>
-<span class="linenos">186</span>                b<span class="o">)</span> <span class="nv">notebook_file</span><span class="o">=</span><span class="si">${</span><span class="nv">OPTARG</span><span class="si">}</span><span class="p">;</span>
-<span class="linenos">187</span>            <span class="k">esac</span>
-<span class="linenos">188</span>        <span class="k">done</span>
-<span class="linenos">189</span>        <span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span> <span class="se">\</span>
-<span class="linenos">190</span>        <span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos">191</span>        <span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span> <span class="se">\</span>
-<span class="linenos">192</span>        <span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span> <span class="se">\</span>
-<span class="linenos">193</span>        <span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend <span class="nv">$SING_COM</span> --batch <span class="nv">$notebook_file</span>
-<span class="linenos">194</span>    <span class="k">fi</span>
+<span class="linenos">173</span><span class="w">    </span><span class="c1"># Launch the jupyter notebook frontend in the primary node.</span>
+<span class="linenos">174</span><span class="w">    </span><span class="c1"># Run in batch mode if the script was</span>
+<span class="linenos">175</span><span class="w">    </span><span class="c1"># submitted with a &quot;-b notebook.ipynb&quot;</span>
+<span class="linenos">176</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$#</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">177</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">178</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">179</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">180</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">181</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend<span class="w"> </span><span class="nv">$SING_COM</span>
+<span class="linenos">182</span><span class="w">    </span><span class="k">else</span>
+<span class="linenos">183</span><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="nb">getopts</span><span class="w"> </span><span class="s2">&quot;b:&quot;</span><span class="w"> </span>flag
+<span class="linenos">184</span><span class="w">        </span><span class="k">do</span>
+<span class="linenos">185</span><span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">flag</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">in</span>
+<span class="linenos">186</span><span class="w">                </span>b<span class="o">)</span><span class="w"> </span><span class="nv">notebook_file</span><span class="o">=</span><span class="si">${</span><span class="nv">OPTARG</span><span class="si">}</span><span class="p">;</span>
+<span class="linenos">187</span><span class="w">            </span><span class="k">esac</span>
+<span class="linenos">188</span><span class="w">        </span><span class="k">done</span>
+<span class="linenos">189</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">190</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">191</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$NODE_HOSTNAME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">192</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="nv">$SLEEP_TIME</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos">193</span><span class="w">        </span><span class="nv">SINGULARITYENV_MSPASS_ROLE</span><span class="o">=</span>frontend<span class="w"> </span><span class="nv">$SING_COM</span><span class="w"> </span>--batch<span class="w"> </span><span class="nv">$notebook_file</span>
+<span class="linenos">194</span><span class="w">    </span><span class="k">fi</span>
 <span class="linenos">195</span><span class="k">fi</span>
 </pre></div>
 </div>
@@ -1118,316 +1118,316 @@ relative to the code base and the anchor comments.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="ch">#!/bin/bash</span>
 <span class="linenos">  2</span>
 <span class="linenos">  3</span><span class="c1"># If running with docker use /home, else use pwd to store all data and logs</span>
-<span class="linenos">  4</span><span class="k">if</span> grep <span class="s2">&quot;docker/containers&quot;</span> /proc/self/mountinfo -qa<span class="p">;</span> <span class="k">then</span>
-<span class="linenos">  5</span>  <span class="nv">MSPASS_WORKDIR</span><span class="o">=</span>/home
-<span class="linenos">  6</span><span class="k">elif</span> <span class="o">[[</span> -z <span class="si">${</span><span class="nv">MSPASS_WORK_DIR</span><span class="si">}</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">  7</span>  <span class="nv">MSPASS_WORKDIR</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>
+<span class="linenos">  4</span><span class="k">if</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;docker/containers&quot;</span><span class="w"> </span>/proc/self/mountinfo<span class="w"> </span>-qa<span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">  5</span><span class="w">  </span><span class="nv">MSPASS_WORKDIR</span><span class="o">=</span>/home
+<span class="linenos">  6</span><span class="k">elif</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-z<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_WORK_DIR</span><span class="si">}</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">  7</span><span class="w">  </span><span class="nv">MSPASS_WORKDIR</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>
 <span class="linenos">  8</span><span class="k">else</span>
-<span class="linenos">  9</span>  <span class="nv">MSPASS_WORKDIR</span><span class="o">=</span><span class="nv">$MSPASS_WORK_DIR</span>
+<span class="linenos">  9</span><span class="w">  </span><span class="nv">MSPASS_WORKDIR</span><span class="o">=</span><span class="nv">$MSPASS_WORK_DIR</span>
 <span class="linenos"> 10</span><span class="k">fi</span>
 <span class="linenos"> 11</span>
 <span class="linenos"> 12</span><span class="c1"># define SLEEP_TIME</span>
-<span class="linenos"> 13</span><span class="k">if</span> <span class="o">[[</span> -z <span class="nv">$MSPASS_SLEEP_TIME</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos"> 14</span>  <span class="nv">MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="m">15</span>
+<span class="linenos"> 13</span><span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-z<span class="w"> </span><span class="nv">$MSPASS_SLEEP_TIME</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 14</span><span class="w">  </span><span class="nv">MSPASS_SLEEP_TIME</span><span class="o">=</span><span class="m">15</span>
 <span class="linenos"> 15</span><span class="k">fi</span>
 <span class="linenos"> 16</span>
 <span class="linenos"> 17</span><span class="nv">MSPASS_DB_DIR</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_WORKDIR</span><span class="si">}</span>/db
 <span class="linenos"> 18</span><span class="nv">MSPASS_LOG_DIR</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_WORKDIR</span><span class="si">}</span>/logs
 <span class="linenos"> 19</span><span class="nv">MSPASS_WORKER_DIR</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_WORKDIR</span><span class="si">}</span>/work
 <span class="linenos"> 20</span><span class="c1"># Note that only log is required for all roles. Other dirs will be created later when needed.</span>
-<span class="linenos"> 21</span><span class="o">[[</span> -d <span class="nv">$MSPASS_LOG_DIR</span> <span class="o">]]</span> <span class="o">||</span> mkdir -p <span class="nv">$MSPASS_LOG_DIR</span>
+<span class="linenos"> 21</span><span class="o">[[</span><span class="w"> </span>-d<span class="w"> </span><span class="nv">$MSPASS_LOG_DIR</span><span class="w"> </span><span class="o">]]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$MSPASS_LOG_DIR</span>
 <span class="linenos"> 22</span>
 <span class="linenos"> 23</span><span class="nv">MONGO_DATA</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data
 <span class="linenos"> 24</span><span class="nv">MONGO_LOG</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_LOG_DIR</span><span class="si">}</span>/mongo_log
-<span class="linenos"> 25</span><span class="nb">export</span> <span class="nv">SPARK_WORKER_DIR</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_WORKER_DIR</span><span class="si">}</span>
-<span class="linenos"> 26</span><span class="nb">export</span> <span class="nv">SPARK_LOG_DIR</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_LOG_DIR</span><span class="si">}</span>
+<span class="linenos"> 25</span><span class="nb">export</span><span class="w"> </span><span class="nv">SPARK_WORKER_DIR</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_WORKER_DIR</span><span class="si">}</span>
+<span class="linenos"> 26</span><span class="nb">export</span><span class="w"> </span><span class="nv">SPARK_LOG_DIR</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_LOG_DIR</span><span class="si">}</span>
 <span class="linenos"> 27</span>
-<span class="linenos"> 28</span><span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span> <span class="o">||</span> <span class="o">[</span> <span class="nv">$1</span> <span class="o">=</span> <span class="s2">&quot;--batch&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="linenos"> 28</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$#</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;--batch&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
 <span class="linenos"> 29</span>
-<span class="linenos"> 30</span>  <span class="k">function</span> start_mspass_frontend <span class="o">{</span>
-<span class="linenos"> 31</span>    <span class="nv">BATCH_MODE_ARGS</span><span class="o">=</span><span class="s2">&quot;--to notebook --inplace --execute </span><span class="nv">$1</span><span class="s2">&quot;</span>
-<span class="linenos"> 32</span>    <span class="nv">NOTEBOOK_ARGS</span><span class="o">=</span><span class="s2">&quot;--notebook-dir=</span><span class="si">${</span><span class="nv">MSPASS_WORKDIR</span><span class="si">}</span><span class="s2"> --port=</span><span class="si">${</span><span class="nv">JUPYTER_PORT</span><span class="si">}</span><span class="s2"> --no-browser --ip=0.0.0.0 --allow-root&quot;</span>
-<span class="linenos"> 33</span>    <span class="c1"># if MSPASS_JUPYTER_PWD is not set, notebook will generate a default token</span>
-<span class="linenos"> 34</span>    <span class="k">if</span> <span class="o">[[</span> ! -z <span class="si">${</span><span class="nv">MSPASS_JUPYTER_PWD</span><span class="p">+x</span><span class="si">}</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos"> 35</span>      <span class="c1"># we rely on jupyter&#39;s python function to hash the password</span>
-<span class="linenos"> 36</span>      <span class="nv">MSPASS_JUPYTER_PWD_HASHED</span><span class="o">=</span><span class="k">$(</span>python3 -c <span class="s2">&quot;from notebook.auth import passwd; print(passwd(&#39;</span><span class="si">${</span><span class="nv">MSPASS_JUPYTER_PWD</span><span class="si">}</span><span class="s2">&#39;))&quot;</span><span class="k">)</span>
-<span class="linenos"> 37</span>      <span class="nv">NOTEBOOK_ARGS</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">NOTEBOOK_ARGS</span><span class="si">}</span><span class="s2"> --NotebookApp.password=</span><span class="si">${</span><span class="nv">MSPASS_JUPYTER_PWD_HASHED</span><span class="si">}</span><span class="s2">&quot;</span> 
-<span class="linenos"> 38</span>    <span class="k">fi</span>
-<span class="linenos"> 39</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_SCHEDULER</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;spark&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos"> 40</span>      <span class="nb">export</span> <span class="nv">PYSPARK_DRIVER_PYTHON</span><span class="o">=</span>jupyter
-<span class="linenos"> 41</span>      <span class="k">if</span> <span class="o">[</span> -z <span class="nv">$1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos"> 42</span>        <span class="nb">export</span> <span class="nv">PYSPARK_DRIVER_PYTHON_OPTS</span><span class="o">=</span><span class="s2">&quot;notebook </span><span class="si">${</span><span class="nv">NOTEBOOK_ARGS</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="linenos"> 43</span>      <span class="k">else</span>
-<span class="linenos"> 44</span>        <span class="nb">export</span> <span class="nv">PYSPARK_DRIVER_PYTHON_OPTS</span><span class="o">=</span><span class="s2">&quot;nbconvert </span><span class="si">${</span><span class="nv">BATCH_MODE_ARGS</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="linenos"> 45</span>      <span class="k">fi</span>
-<span class="linenos"> 46</span>      pyspark <span class="se">\</span>
-<span class="linenos"> 47</span>        --conf <span class="s2">&quot;spark.mongodb.input.uri=mongodb://</span><span class="si">${</span><span class="nv">MSPASS_DB_ADDRESS</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">MONGODB_PORT</span><span class="si">}</span><span class="s2">/test.misc&quot;</span> <span class="se">\</span>
-<span class="linenos"> 48</span>        --conf <span class="s2">&quot;spark.mongodb.output.uri=mongodb://</span><span class="si">${</span><span class="nv">MSPASS_DB_ADDRESS</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">MONGODB_PORT</span><span class="si">}</span><span class="s2">/test.misc&quot;</span> <span class="se">\</span>
-<span class="linenos"> 49</span>        --conf <span class="s2">&quot;spark.master=spark://</span><span class="si">${</span><span class="nv">MSPASS_SCHEDULER_ADDRESS</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">SPARK_MASTER_PORT</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
-<span class="linenos"> 50</span>        --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0
-<span class="linenos"> 51</span>    <span class="k">else</span> <span class="c1"># if [ &quot;$MSPASS_SCHEDULER&quot; = &quot;dask&quot; ]</span>
-<span class="linenos"> 52</span>      <span class="nb">export</span> <span class="nv">DASK_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_SCHEDULER_ADDRESS</span><span class="si">}</span>:<span class="si">${</span><span class="nv">DASK_SCHEDULER_PORT</span><span class="si">}</span>
-<span class="linenos"> 53</span>      <span class="k">if</span> <span class="o">[</span> -z <span class="nv">$1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos"> 54</span>        jupyter notebook <span class="si">${</span><span class="nv">NOTEBOOK_ARGS</span><span class="si">}</span>
-<span class="linenos"> 55</span>      <span class="k">else</span>
-<span class="linenos"> 56</span>        jupyter nbconvert <span class="si">${</span><span class="nv">BATCH_MODE_ARGS</span><span class="si">}</span>
-<span class="linenos"> 57</span>      <span class="k">fi</span>
-<span class="linenos"> 58</span>    <span class="k">fi</span>
-<span class="linenos"> 59</span>  <span class="o">}</span>
+<span class="linenos"> 30</span><span class="w">  </span><span class="k">function</span><span class="w"> </span>start_mspass_frontend<span class="w"> </span><span class="o">{</span>
+<span class="linenos"> 31</span><span class="w">    </span><span class="nv">BATCH_MODE_ARGS</span><span class="o">=</span><span class="s2">&quot;--to notebook --inplace --execute </span><span class="nv">$1</span><span class="s2">&quot;</span>
+<span class="linenos"> 32</span><span class="w">    </span><span class="nv">NOTEBOOK_ARGS</span><span class="o">=</span><span class="s2">&quot;--notebook-dir=</span><span class="si">${</span><span class="nv">MSPASS_WORKDIR</span><span class="si">}</span><span class="s2"> --port=</span><span class="si">${</span><span class="nv">JUPYTER_PORT</span><span class="si">}</span><span class="s2"> --no-browser --ip=0.0.0.0 --allow-root&quot;</span>
+<span class="linenos"> 33</span><span class="w">    </span><span class="c1"># if MSPASS_JUPYTER_PWD is not set, notebook will generate a default token</span>
+<span class="linenos"> 34</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>!<span class="w"> </span>-z<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_JUPYTER_PWD</span><span class="p">+x</span><span class="si">}</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 35</span><span class="w">      </span><span class="c1"># we rely on jupyter&#39;s python function to hash the password</span>
+<span class="linenos"> 36</span><span class="w">      </span><span class="nv">MSPASS_JUPYTER_PWD_HASHED</span><span class="o">=</span><span class="k">$(</span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from notebook.auth import passwd; print(passwd(&#39;</span><span class="si">${</span><span class="nv">MSPASS_JUPYTER_PWD</span><span class="si">}</span><span class="s2">&#39;))&quot;</span><span class="k">)</span>
+<span class="linenos"> 37</span><span class="w">      </span><span class="nv">NOTEBOOK_ARGS</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">NOTEBOOK_ARGS</span><span class="si">}</span><span class="s2"> --NotebookApp.password=</span><span class="si">${</span><span class="nv">MSPASS_JUPYTER_PWD_HASHED</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>
+<span class="linenos"> 38</span><span class="w">    </span><span class="k">fi</span>
+<span class="linenos"> 39</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_SCHEDULER</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;spark&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 40</span><span class="w">      </span><span class="nb">export</span><span class="w"> </span><span class="nv">PYSPARK_DRIVER_PYTHON</span><span class="o">=</span>jupyter
+<span class="linenos"> 41</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-z<span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 42</span><span class="w">        </span><span class="nb">export</span><span class="w"> </span><span class="nv">PYSPARK_DRIVER_PYTHON_OPTS</span><span class="o">=</span><span class="s2">&quot;notebook </span><span class="si">${</span><span class="nv">NOTEBOOK_ARGS</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos"> 43</span><span class="w">      </span><span class="k">else</span>
+<span class="linenos"> 44</span><span class="w">        </span><span class="nb">export</span><span class="w"> </span><span class="nv">PYSPARK_DRIVER_PYTHON_OPTS</span><span class="o">=</span><span class="s2">&quot;nbconvert </span><span class="si">${</span><span class="nv">BATCH_MODE_ARGS</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos"> 45</span><span class="w">      </span><span class="k">fi</span>
+<span class="linenos"> 46</span><span class="w">      </span>pyspark<span class="w"> </span><span class="se">\</span>
+<span class="linenos"> 47</span><span class="w">        </span>--conf<span class="w"> </span><span class="s2">&quot;spark.mongodb.input.uri=mongodb://</span><span class="si">${</span><span class="nv">MSPASS_DB_ADDRESS</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">MONGODB_PORT</span><span class="si">}</span><span class="s2">/test.misc&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos"> 48</span><span class="w">        </span>--conf<span class="w"> </span><span class="s2">&quot;spark.mongodb.output.uri=mongodb://</span><span class="si">${</span><span class="nv">MSPASS_DB_ADDRESS</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">MONGODB_PORT</span><span class="si">}</span><span class="s2">/test.misc&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos"> 49</span><span class="w">        </span>--conf<span class="w"> </span><span class="s2">&quot;spark.master=spark://</span><span class="si">${</span><span class="nv">MSPASS_SCHEDULER_ADDRESS</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">SPARK_MASTER_PORT</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="linenos"> 50</span><span class="w">        </span>--packages<span class="w"> </span>org.mongodb.spark:mongo-spark-connector_2.12:3.0.0
+<span class="linenos"> 51</span><span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="c1"># if [ &quot;$MSPASS_SCHEDULER&quot; = &quot;dask&quot; ]</span>
+<span class="linenos"> 52</span><span class="w">      </span><span class="nb">export</span><span class="w"> </span><span class="nv">DASK_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_SCHEDULER_ADDRESS</span><span class="si">}</span>:<span class="si">${</span><span class="nv">DASK_SCHEDULER_PORT</span><span class="si">}</span>
+<span class="linenos"> 53</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-z<span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 54</span><span class="w">        </span>jupyter<span class="w"> </span>notebook<span class="w"> </span><span class="si">${</span><span class="nv">NOTEBOOK_ARGS</span><span class="si">}</span>
+<span class="linenos"> 55</span><span class="w">      </span><span class="k">else</span>
+<span class="linenos"> 56</span><span class="w">        </span>jupyter<span class="w"> </span>nbconvert<span class="w"> </span><span class="si">${</span><span class="nv">BATCH_MODE_ARGS</span><span class="si">}</span>
+<span class="linenos"> 57</span><span class="w">      </span><span class="k">fi</span>
+<span class="linenos"> 58</span><span class="w">    </span><span class="k">fi</span>
+<span class="linenos"> 59</span><span class="w">  </span><span class="o">}</span>
 <span class="linenos"> 60</span>
-<span class="linenos"> 61</span>  <span class="k">function</span> clean_up_single_node <span class="o">{</span>
-<span class="linenos"> 62</span>    <span class="c1"># ---------------------- clean up workflow -------------------------</span>
-<span class="linenos"> 63</span>    <span class="c1"># stop mongodb</span>
-<span class="linenos"> 64</span>    mongo --port <span class="nv">$MONGODB_PORT</span> admin --eval <span class="s2">&quot;db.shutdownServer({force:true})&quot;</span>
-<span class="linenos"> 65</span>    sleep <span class="m">5</span>
-<span class="linenos"> 66</span>    <span class="c1"># copy shard data to scratch</span>
-<span class="linenos"> 67</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;tmp&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos"> 68</span>      <span class="nb">echo</span> <span class="s2">&quot;standalone: copy shard data to scratch&quot;</span>
-<span class="linenos"> 69</span>      <span class="c1"># copy data</span>
-<span class="linenos"> 70</span>      scp -r /tmp/db/data <span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>
-<span class="linenos"> 71</span>      <span class="c1"># copy log</span>
-<span class="linenos"> 72</span>      scp -r /tmp/logs/mongo_log <span class="si">${</span><span class="nv">MSPASS_LOG_DIR</span><span class="si">}</span>
-<span class="linenos"> 73</span>    <span class="k">fi</span>
-<span class="linenos"> 74</span>    sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos"> 75</span>  <span class="o">}</span>
+<span class="linenos"> 61</span><span class="w">  </span><span class="k">function</span><span class="w"> </span>clean_up_single_node<span class="w"> </span><span class="o">{</span>
+<span class="linenos"> 62</span><span class="w">    </span><span class="c1"># ---------------------- clean up workflow -------------------------</span>
+<span class="linenos"> 63</span><span class="w">    </span><span class="c1"># stop mongodb</span>
+<span class="linenos"> 64</span><span class="w">    </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>admin<span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;db.shutdownServer({force:true})&quot;</span>
+<span class="linenos"> 65</span><span class="w">    </span>sleep<span class="w"> </span><span class="m">5</span>
+<span class="linenos"> 66</span><span class="w">    </span><span class="c1"># copy shard data to scratch</span>
+<span class="linenos"> 67</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tmp&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 68</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;standalone: copy shard data to scratch&quot;</span>
+<span class="linenos"> 69</span><span class="w">      </span><span class="c1"># copy data</span>
+<span class="linenos"> 70</span><span class="w">      </span>scp<span class="w"> </span>-r<span class="w"> </span>/tmp/db/data<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>
+<span class="linenos"> 71</span><span class="w">      </span><span class="c1"># copy log</span>
+<span class="linenos"> 72</span><span class="w">      </span>scp<span class="w"> </span>-r<span class="w"> </span>/tmp/logs/mongo_log<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_LOG_DIR</span><span class="si">}</span>
+<span class="linenos"> 73</span><span class="w">    </span><span class="k">fi</span>
+<span class="linenos"> 74</span><span class="w">    </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos"> 75</span><span class="w">  </span><span class="o">}</span>
 <span class="linenos"> 76</span>
-<span class="linenos"> 77</span>  <span class="k">function</span> clean_up_multiple_nodes <span class="o">{</span>
-<span class="linenos"> 78</span>    <span class="c1"># ---------------------- clean up workflow -------------------------</span>
-<span class="linenos"> 79</span>    <span class="c1"># stop mongos routers</span>
-<span class="linenos"> 80</span>    mongo --port <span class="nv">$MONGODB_PORT</span> admin --eval <span class="s2">&quot;db.shutdownServer({force:true})&quot;</span>
-<span class="linenos"> 81</span>    sleep <span class="m">5</span>
-<span class="linenos"> 82</span>    <span class="c1"># stop each shard replica set</span>
-<span class="linenos"> 83</span>    <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="nv">MSPASS_SHARD_ADDRESS</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
-<span class="linenos"> 84</span>        ssh -o <span class="s2">&quot;StrictHostKeyChecking no&quot;</span> <span class="si">${</span><span class="nv">i</span><span class="si">}</span> <span class="s2">&quot;kill -2 \$(pgrep mongo)&quot;</span>
-<span class="linenos"> 85</span>        sleep <span class="m">5</span>
-<span class="linenos"> 86</span>    <span class="k">done</span>
-<span class="linenos"> 87</span>    <span class="c1"># stop config servers</span>
-<span class="linenos"> 88</span>    mongo --port <span class="k">$((</span><span class="nv">$MONGODB_PORT</span><span class="o">+</span><span class="m">1</span><span class="k">))</span> admin --eval <span class="s2">&quot;db.shutdownServer({force:true})&quot;</span>
+<span class="linenos"> 77</span><span class="w">  </span><span class="k">function</span><span class="w"> </span>clean_up_multiple_nodes<span class="w"> </span><span class="o">{</span>
+<span class="linenos"> 78</span><span class="w">    </span><span class="c1"># ---------------------- clean up workflow -------------------------</span>
+<span class="linenos"> 79</span><span class="w">    </span><span class="c1"># stop mongos routers</span>
+<span class="linenos"> 80</span><span class="w">    </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>admin<span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;db.shutdownServer({force:true})&quot;</span>
+<span class="linenos"> 81</span><span class="w">    </span>sleep<span class="w"> </span><span class="m">5</span>
+<span class="linenos"> 82</span><span class="w">    </span><span class="c1"># stop each shard replica set</span>
+<span class="linenos"> 83</span><span class="w">    </span><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SHARD_ADDRESS</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="linenos"> 84</span><span class="w">        </span>ssh<span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;StrictHostKeyChecking no&quot;</span><span class="w"> </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="w"> </span><span class="s2">&quot;kill -2 \$(pgrep mongo)&quot;</span>
+<span class="linenos"> 85</span><span class="w">        </span>sleep<span class="w"> </span><span class="m">5</span>
+<span class="linenos"> 86</span><span class="w">    </span><span class="k">done</span>
+<span class="linenos"> 87</span><span class="w">    </span><span class="c1"># stop config servers</span>
+<span class="linenos"> 88</span><span class="w">    </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="k">$((</span><span class="nv">$MONGODB_PORT</span><span class="o">+</span><span class="m">1</span><span class="k">))</span><span class="w"> </span>admin<span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;db.shutdownServer({force:true})&quot;</span>
 <span class="linenos"> 89</span>
-<span class="linenos"> 90</span>    <span class="c1"># copy the shard data to scratch if the shards are deployed in /tmp</span>
-<span class="linenos"> 91</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;tmp&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos"> 92</span>      <span class="nb">echo</span> <span class="s2">&quot;distributed: copy shard data to scratch&quot;</span>
-<span class="linenos"> 93</span>      <span class="c1"># copy data</span>
-<span class="linenos"> 94</span>      <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="nv">MSPASS_SHARD_DB_PATH</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
-<span class="linenos"> 95</span>        scp -r -o <span class="nv">StrictHostKeyChecking</span><span class="o">=</span>no <span class="si">${</span><span class="nv">i</span><span class="si">}</span> <span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>
-<span class="linenos"> 96</span>      <span class="k">done</span>
-<span class="linenos"> 97</span>      <span class="c1"># copy log</span>
-<span class="linenos"> 98</span>      <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="nv">MSPASS_SHARD_LOGS_PATH</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
-<span class="linenos"> 99</span>        scp -r -o <span class="nv">StrictHostKeyChecking</span><span class="o">=</span>no <span class="si">${</span><span class="nv">i</span><span class="si">}</span> <span class="si">${</span><span class="nv">MSPASS_LOG_DIR</span><span class="si">}</span>
-<span class="linenos">100</span>      <span class="k">done</span>
-<span class="linenos">101</span>    <span class="k">fi</span>
-<span class="linenos">102</span>    sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">103</span>  <span class="o">}</span>
+<span class="linenos"> 90</span><span class="w">    </span><span class="c1"># copy the shard data to scratch if the shards are deployed in /tmp</span>
+<span class="linenos"> 91</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tmp&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 92</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;distributed: copy shard data to scratch&quot;</span>
+<span class="linenos"> 93</span><span class="w">      </span><span class="c1"># copy data</span>
+<span class="linenos"> 94</span><span class="w">      </span><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SHARD_DB_PATH</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="linenos"> 95</span><span class="w">        </span>scp<span class="w"> </span>-r<span class="w"> </span>-o<span class="w"> </span><span class="nv">StrictHostKeyChecking</span><span class="o">=</span>no<span class="w"> </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>
+<span class="linenos"> 96</span><span class="w">      </span><span class="k">done</span>
+<span class="linenos"> 97</span><span class="w">      </span><span class="c1"># copy log</span>
+<span class="linenos"> 98</span><span class="w">      </span><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SHARD_LOGS_PATH</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="linenos"> 99</span><span class="w">        </span>scp<span class="w"> </span>-r<span class="w"> </span>-o<span class="w"> </span><span class="nv">StrictHostKeyChecking</span><span class="o">=</span>no<span class="w"> </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_LOG_DIR</span><span class="si">}</span>
+<span class="linenos">100</span><span class="w">      </span><span class="k">done</span>
+<span class="linenos">101</span><span class="w">    </span><span class="k">fi</span>
+<span class="linenos">102</span><span class="w">    </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">103</span><span class="w">  </span><span class="o">}</span>
 <span class="linenos">104</span>
-<span class="linenos">105</span>  <span class="k">function</span> start_db_scratch <span class="o">{</span>
-<span class="linenos">106</span>    <span class="o">[[</span> -d <span class="nv">$MONGO_DATA</span> <span class="o">]]</span> <span class="o">||</span> mkdir -p <span class="nv">$MONGO_DATA</span>
-<span class="linenos">107</span>    mongod --port <span class="nv">$MONGODB_PORT</span> --dbpath <span class="nv">$MONGO_DATA</span> --logpath <span class="nv">$MONGO_LOG</span> --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">108</span>  <span class="o">}</span>
+<span class="linenos">105</span><span class="w">  </span><span class="k">function</span><span class="w"> </span>start_db_scratch<span class="w"> </span><span class="o">{</span>
+<span class="linenos">106</span><span class="w">    </span><span class="o">[[</span><span class="w"> </span>-d<span class="w"> </span><span class="nv">$MONGO_DATA</span><span class="w"> </span><span class="o">]]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$MONGO_DATA</span>
+<span class="linenos">107</span><span class="w">    </span>mongod<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--dbpath<span class="w"> </span><span class="nv">$MONGO_DATA</span><span class="w"> </span>--logpath<span class="w"> </span><span class="nv">$MONGO_LOG</span><span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">108</span><span class="w">  </span><span class="o">}</span>
 <span class="linenos">109</span>
-<span class="linenos">110</span>  <span class="k">function</span> start_db_tmp <span class="o">{</span>
-<span class="linenos">111</span>    <span class="c1"># create db and log dirs if not exists</span>
-<span class="linenos">112</span>    <span class="o">[[</span> -d /tmp/db <span class="o">]]</span> <span class="o">||</span> mkdir -p /tmp/db
-<span class="linenos">113</span>    <span class="o">[[</span> -d /tmp/logs <span class="o">]]</span> <span class="o">||</span> mkdir -p /tmp/logs <span class="o">&amp;&amp;</span> touch /tmp/logs/mongo_log
-<span class="linenos">114</span>    <span class="c1"># copy all data on scratch to the local tmp folder</span>
-<span class="linenos">115</span>    <span class="k">if</span> <span class="o">[[</span> -d <span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">116</span>      cp -r <span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data /tmp/db
-<span class="linenos">117</span>    <span class="k">else</span>
-<span class="linenos">118</span>      mkdir -p /tmp/db/data
-<span class="linenos">119</span>    <span class="k">fi</span>
-<span class="linenos">120</span>    <span class="c1"># copy dfiles to /tmp</span>
-<span class="linenos">121</span>    <span class="k">if</span> <span class="o">[[</span> -d <span class="nv">$MSPASS_SCRATCH_DATA_DIR</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">122</span>      cp -r <span class="nv">$MSPASS_SCRATCH_DATA_DIR</span> /tmp
-<span class="linenos">123</span>    <span class="k">fi</span>
-<span class="linenos">124</span>    <span class="c1"># start mongodb on /tmp</span>
-<span class="linenos">125</span>    mongod --port <span class="nv">$MONGODB_PORT</span> --dbpath /tmp/db/data --logpath /tmp/logs/mongo_log --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">126</span>  <span class="o">}</span>
+<span class="linenos">110</span><span class="w">  </span><span class="k">function</span><span class="w"> </span>start_db_tmp<span class="w"> </span><span class="o">{</span>
+<span class="linenos">111</span><span class="w">    </span><span class="c1"># create db and log dirs if not exists</span>
+<span class="linenos">112</span><span class="w">    </span><span class="o">[[</span><span class="w"> </span>-d<span class="w"> </span>/tmp/db<span class="w"> </span><span class="o">]]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/tmp/db
+<span class="linenos">113</span><span class="w">    </span><span class="o">[[</span><span class="w"> </span>-d<span class="w"> </span>/tmp/logs<span class="w"> </span><span class="o">]]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/tmp/logs<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>touch<span class="w"> </span>/tmp/logs/mongo_log
+<span class="linenos">114</span><span class="w">    </span><span class="c1"># copy all data on scratch to the local tmp folder</span>
+<span class="linenos">115</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-d<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data<span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">116</span><span class="w">      </span>cp<span class="w"> </span>-r<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data<span class="w"> </span>/tmp/db
+<span class="linenos">117</span><span class="w">    </span><span class="k">else</span>
+<span class="linenos">118</span><span class="w">      </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/tmp/db/data
+<span class="linenos">119</span><span class="w">    </span><span class="k">fi</span>
+<span class="linenos">120</span><span class="w">    </span><span class="c1"># copy dfiles to /tmp</span>
+<span class="linenos">121</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-d<span class="w"> </span><span class="nv">$MSPASS_SCRATCH_DATA_DIR</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">122</span><span class="w">      </span>cp<span class="w"> </span>-r<span class="w"> </span><span class="nv">$MSPASS_SCRATCH_DATA_DIR</span><span class="w"> </span>/tmp
+<span class="linenos">123</span><span class="w">    </span><span class="k">fi</span>
+<span class="linenos">124</span><span class="w">    </span><span class="c1"># start mongodb on /tmp</span>
+<span class="linenos">125</span><span class="w">    </span>mongod<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--dbpath<span class="w"> </span>/tmp/db/data<span class="w"> </span>--logpath<span class="w"> </span>/tmp/logs/mongo_log<span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">126</span><span class="w">  </span><span class="o">}</span>
 <span class="linenos">127</span>
-<span class="linenos">128</span>  <span class="nv">MY_ID</span><span class="o">=</span><span class="k">$(</span>cat /dev/urandom <span class="p">|</span> tr -dc <span class="s1">&#39;a-zA-Z0-9&#39;</span> <span class="p">|</span> fold -w <span class="m">12</span> <span class="p">|</span> head -n <span class="m">1</span><span class="k">)</span>
-<span class="linenos">129</span>  <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_SCHEDULER</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;spark&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">130</span>    <span class="nv">MSPASS_SCHEDULER_CMD</span><span class="o">=</span><span class="s1">&#39;$SPARK_HOME/sbin/start-master.sh&#39;</span>
-<span class="linenos">131</span>    <span class="nv">MSPASS_WORKER_CMD</span><span class="o">=</span><span class="s1">&#39;$SPARK_HOME/sbin/start-slave.sh spark://$MSPASS_SCHEDULER_ADDRESS:$SPARK_MASTER_PORT&#39;</span>
-<span class="linenos">132</span>  <span class="k">else</span> <span class="c1"># if [ &quot;$MSPASS_SCHEDULER&quot; = &quot;dask&quot; ]</span>
-<span class="linenos">133</span>    <span class="nv">MSPASS_SCHEDULER_CMD</span><span class="o">=</span><span class="s1">&#39;dask-scheduler --port $DASK_SCHEDULER_PORT &gt; ${MSPASS_LOG_DIR}/dask-scheduler_log_${MY_ID} 2&gt;&amp;1 &amp; sleep 5&#39;</span>
-<span class="linenos">134</span>    <span class="nv">MSPASS_WORKER_CMD</span><span class="o">=</span><span class="s1">&#39;dask-worker ${MSPASS_WORKER_ARG} --local-directory $MSPASS_WORKER_DIR tcp://$MSPASS_SCHEDULER_ADDRESS:$DASK_SCHEDULER_PORT &gt; ${MSPASS_LOG_DIR}/dask-worker_log_${MY_ID} 2&gt;&amp;1 &amp;&#39;</span>
-<span class="linenos">135</span>  <span class="k">fi</span>
+<span class="linenos">128</span><span class="w">  </span><span class="nv">MY_ID</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span>/dev/urandom<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-dc<span class="w"> </span><span class="s1">&#39;a-zA-Z0-9&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>fold<span class="w"> </span>-w<span class="w"> </span><span class="m">12</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="k">)</span>
+<span class="linenos">129</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_SCHEDULER</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;spark&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">130</span><span class="w">    </span><span class="nv">MSPASS_SCHEDULER_CMD</span><span class="o">=</span><span class="s1">&#39;$SPARK_HOME/sbin/start-master.sh&#39;</span>
+<span class="linenos">131</span><span class="w">    </span><span class="nv">MSPASS_WORKER_CMD</span><span class="o">=</span><span class="s1">&#39;$SPARK_HOME/sbin/start-slave.sh spark://$MSPASS_SCHEDULER_ADDRESS:$SPARK_MASTER_PORT&#39;</span>
+<span class="linenos">132</span><span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="c1"># if [ &quot;$MSPASS_SCHEDULER&quot; = &quot;dask&quot; ]</span>
+<span class="linenos">133</span><span class="w">    </span><span class="nv">MSPASS_SCHEDULER_CMD</span><span class="o">=</span><span class="s1">&#39;dask-scheduler --port $DASK_SCHEDULER_PORT &gt; ${MSPASS_LOG_DIR}/dask-scheduler_log_${MY_ID} 2&gt;&amp;1 &amp; sleep 5&#39;</span>
+<span class="linenos">134</span><span class="w">    </span><span class="nv">MSPASS_WORKER_CMD</span><span class="o">=</span><span class="s1">&#39;dask-worker ${MSPASS_WORKER_ARG} --local-directory $MSPASS_WORKER_DIR tcp://$MSPASS_SCHEDULER_ADDRESS:$DASK_SCHEDULER_PORT &gt; ${MSPASS_LOG_DIR}/dask-worker_log_${MY_ID} 2&gt;&amp;1 &amp;&#39;</span>
+<span class="linenos">135</span><span class="w">  </span><span class="k">fi</span>
 <span class="linenos">136</span>
-<span class="linenos">137</span>  <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;db&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">138</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;tmp&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">139</span>      start_db_tmp
-<span class="linenos">140</span>    <span class="k">else</span>
-<span class="linenos">141</span>      start_db_scratch
-<span class="linenos">142</span>    <span class="k">fi</span>
-<span class="linenos">143</span>  <span class="k">elif</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;dbmanager&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">144</span>    <span class="c1"># config server configuration</span>
-<span class="linenos">145</span>    <span class="nv">MONGODB_CONFIG_PORT</span><span class="o">=</span><span class="k">$((</span><span class="nv">$MONGODB_PORT</span><span class="o">+</span><span class="m">1</span><span class="k">))</span>
-<span class="linenos">146</span>    <span class="k">if</span> <span class="o">[</span> -d <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">147</span>      <span class="nb">echo</span> <span class="s2">&quot;restore config server </span><span class="nv">$HOSTNAME</span><span class="s2"> cluster&quot;</span>
-<span class="linenos">148</span>      <span class="c1"># start a mongod instance</span>
-<span class="linenos">149</span>      mongod --port <span class="nv">$MONGODB_CONFIG_PORT</span> --dbpath <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_config --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">150</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">151</span>      <span class="c1"># drop the local database</span>
-<span class="linenos">152</span>      <span class="nb">echo</span> <span class="s2">&quot;drop local database for config server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
-<span class="linenos">153</span>      mongo --port <span class="nv">$MONGODB_CONFIG_PORT</span> <span class="nb">local</span> --eval <span class="s2">&quot;db.dropDatabase()&quot;</span>
-<span class="linenos">154</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">155</span>      <span class="c1"># update config.shards collections</span>
-<span class="linenos">156</span>      <span class="nb">echo</span> <span class="s2">&quot;update shard host names for config server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
-<span class="linenos">157</span>      <span class="c1"># if using ${!MSPASS_SHARD_LIST[@]} style for loop, it doesn&#39;t work. Not sure why it doesn&#39;t work.</span>
-<span class="linenos">158</span>      <span class="nv">ITER</span><span class="o">=</span><span class="m">0</span>
-<span class="linenos">159</span>      <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="nv">MSPASS_SHARD_LIST</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
-<span class="linenos">160</span>        <span class="nb">echo</span> <span class="s2">&quot;update rs</span><span class="si">${</span><span class="nv">ITER</span><span class="si">}</span><span class="s2"> with host </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="linenos">161</span>        mongo --port <span class="nv">$MONGODB_CONFIG_PORT</span> config --eval <span class="s2">&quot;db.shards.updateOne({\&quot;_id\&quot;: \&quot;rs</span><span class="si">${</span><span class="nv">ITER</span><span class="si">}</span><span class="s2">\&quot;}, {\$set: {\&quot;host\&quot;: \&quot;</span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">\&quot;}})&quot;</span>
-<span class="linenos">162</span>        <span class="o">((</span>ITER++<span class="o">))</span>
-<span class="linenos">163</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">164</span>      <span class="k">done</span>
-<span class="linenos">165</span>      <span class="nb">echo</span> <span class="s2">&quot;restart the config server </span><span class="nv">$HOSTNAME</span><span class="s2"> as a replica set&quot;</span>
-<span class="linenos">166</span>      <span class="c1"># restart the mongod as a new single-node replica set</span>
-<span class="linenos">167</span>      mongo --port <span class="nv">$MONGODB_CONFIG_PORT</span> admin --eval <span class="s2">&quot;db.shutdownServer()&quot;</span>
-<span class="linenos">168</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">169</span>      mongod --port <span class="nv">$MONGODB_CONFIG_PORT</span> --configsvr --replSet configserver --dbpath <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_config --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">170</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">171</span>      <span class="c1"># initiate the new replica set</span>
-<span class="linenos">172</span>      mongo --port <span class="nv">$MONGODB_CONFIG_PORT</span> --eval <span class="se">\</span>
-<span class="linenos">173</span>        <span class="s2">&quot;rs.initiate({_id: \&quot;configserver\&quot;, configsvr: true, version: 1, members: [{ _id: 0, host : \&quot;</span><span class="nv">$HOSTNAME</span><span class="s2">:</span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="s2">\&quot; }]})&quot;</span>
-<span class="linenos">174</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">137</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;db&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">138</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tmp&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">139</span><span class="w">      </span>start_db_tmp
+<span class="linenos">140</span><span class="w">    </span><span class="k">else</span>
+<span class="linenos">141</span><span class="w">      </span>start_db_scratch
+<span class="linenos">142</span><span class="w">    </span><span class="k">fi</span>
+<span class="linenos">143</span><span class="w">  </span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;dbmanager&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">144</span><span class="w">    </span><span class="c1"># config server configuration</span>
+<span class="linenos">145</span><span class="w">    </span><span class="nv">MONGODB_CONFIG_PORT</span><span class="o">=</span><span class="k">$((</span><span class="nv">$MONGODB_PORT</span><span class="o">+</span><span class="m">1</span><span class="k">))</span>
+<span class="linenos">146</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-d<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config<span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">147</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;restore config server </span><span class="nv">$HOSTNAME</span><span class="s2"> cluster&quot;</span>
+<span class="linenos">148</span><span class="w">      </span><span class="c1"># start a mongod instance</span>
+<span class="linenos">149</span><span class="w">      </span>mongod<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="w"> </span>--dbpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config<span class="w"> </span>--logpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_config<span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">150</span><span class="w">      </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">151</span><span class="w">      </span><span class="c1"># drop the local database</span>
+<span class="linenos">152</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;drop local database for config server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">153</span><span class="w">      </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="w"> </span><span class="nb">local</span><span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;db.dropDatabase()&quot;</span>
+<span class="linenos">154</span><span class="w">      </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">155</span><span class="w">      </span><span class="c1"># update config.shards collections</span>
+<span class="linenos">156</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;update shard host names for config server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">157</span><span class="w">      </span><span class="c1"># if using ${!MSPASS_SHARD_LIST[@]} style for loop, it doesn&#39;t work. Not sure why it doesn&#39;t work.</span>
+<span class="linenos">158</span><span class="w">      </span><span class="nv">ITER</span><span class="o">=</span><span class="m">0</span>
+<span class="linenos">159</span><span class="w">      </span><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SHARD_LIST</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="linenos">160</span><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;update rs</span><span class="si">${</span><span class="nv">ITER</span><span class="si">}</span><span class="s2"> with host </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">161</span><span class="w">        </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="w"> </span>config<span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;db.shards.updateOne({\&quot;_id\&quot;: \&quot;rs</span><span class="si">${</span><span class="nv">ITER</span><span class="si">}</span><span class="s2">\&quot;}, {\$set: {\&quot;host\&quot;: \&quot;</span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">\&quot;}})&quot;</span>
+<span class="linenos">162</span><span class="w">        </span><span class="o">((</span>ITER++<span class="o">))</span>
+<span class="linenos">163</span><span class="w">        </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">164</span><span class="w">      </span><span class="k">done</span>
+<span class="linenos">165</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;restart the config server </span><span class="nv">$HOSTNAME</span><span class="s2"> as a replica set&quot;</span>
+<span class="linenos">166</span><span class="w">      </span><span class="c1"># restart the mongod as a new single-node replica set</span>
+<span class="linenos">167</span><span class="w">      </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="w"> </span>admin<span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;db.shutdownServer()&quot;</span>
+<span class="linenos">168</span><span class="w">      </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">169</span><span class="w">      </span>mongod<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="w"> </span>--configsvr<span class="w"> </span>--replSet<span class="w"> </span>configserver<span class="w"> </span>--dbpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config<span class="w"> </span>--logpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_config<span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">170</span><span class="w">      </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">171</span><span class="w">      </span><span class="c1"># initiate the new replica set</span>
+<span class="linenos">172</span><span class="w">      </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="w"> </span>--eval<span class="w"> </span><span class="se">\</span>
+<span class="linenos">173</span><span class="w">        </span><span class="s2">&quot;rs.initiate({_id: \&quot;configserver\&quot;, configsvr: true, version: 1, members: [{ _id: 0, host : \&quot;</span><span class="nv">$HOSTNAME</span><span class="s2">:</span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="s2">\&quot; }]})&quot;</span>
+<span class="linenos">174</span><span class="w">      </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
 <span class="linenos">175</span>
-<span class="linenos">176</span>      <span class="c1"># start a mongos router server</span>
-<span class="linenos">177</span>      mongos --port <span class="nv">$MONGODB_PORT</span> --configdb configserver/<span class="nv">$HOSTNAME</span>:<span class="nv">$MONGODB_CONFIG_PORT</span> --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_router --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">178</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">179</span>    <span class="k">else</span>
-<span class="linenos">180</span>      <span class="c1"># create a config dir</span>
-<span class="linenos">181</span>      mkdir -p <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config
-<span class="linenos">182</span>      <span class="nb">echo</span> <span class="s2">&quot;dbmanager config server </span><span class="nv">$HOSTNAME</span><span class="s2"> replicaSet is initialized&quot;</span>
-<span class="linenos">183</span>      <span class="c1"># start a config server</span>
-<span class="linenos">184</span>      mongod --port <span class="nv">$MONGODB_CONFIG_PORT</span> --configsvr --replSet configserver --dbpath <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_config --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">185</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">186</span>      mongo --port <span class="nv">$MONGODB_CONFIG_PORT</span> --eval <span class="se">\</span>
-<span class="linenos">187</span>        <span class="s2">&quot;rs.initiate({_id: \&quot;configserver\&quot;, configsvr: true, version: 1, members: [{ _id: 0, host : \&quot;</span><span class="nv">$HOSTNAME</span><span class="s2">:</span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="s2">\&quot; }]})&quot;</span>
-<span class="linenos">188</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">189</span>      
-<span class="linenos">190</span>      <span class="c1"># start a mongos router server</span>
-<span class="linenos">191</span>      mongos --port <span class="nv">$MONGODB_PORT</span> --configdb configserver/<span class="nv">$HOSTNAME</span>:<span class="nv">$MONGODB_CONFIG_PORT</span> --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_router --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">192</span>      <span class="c1"># add shard clusters</span>
-<span class="linenos">193</span>      <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="nv">MSPASS_SHARD_LIST</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
-<span class="linenos">194</span>        <span class="nb">echo</span> <span class="s2">&quot;add shard with host </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="linenos">195</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">196</span>        mongo --host <span class="nv">$HOSTNAME</span> --port <span class="nv">$MONGODB_PORT</span> --eval <span class="s2">&quot;sh.addShard(\&quot;</span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">\&quot;)&quot;</span>
-<span class="linenos">197</span>      <span class="k">done</span>
-<span class="linenos">198</span>    <span class="k">fi</span>
+<span class="linenos">176</span><span class="w">      </span><span class="c1"># start a mongos router server</span>
+<span class="linenos">177</span><span class="w">      </span>mongos<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--configdb<span class="w"> </span>configserver/<span class="nv">$HOSTNAME</span>:<span class="nv">$MONGODB_CONFIG_PORT</span><span class="w"> </span>--logpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_router<span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">178</span><span class="w">      </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">179</span><span class="w">    </span><span class="k">else</span>
+<span class="linenos">180</span><span class="w">      </span><span class="c1"># create a config dir</span>
+<span class="linenos">181</span><span class="w">      </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config
+<span class="linenos">182</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;dbmanager config server </span><span class="nv">$HOSTNAME</span><span class="s2"> replicaSet is initialized&quot;</span>
+<span class="linenos">183</span><span class="w">      </span><span class="c1"># start a config server</span>
+<span class="linenos">184</span><span class="w">      </span>mongod<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="w"> </span>--configsvr<span class="w"> </span>--replSet<span class="w"> </span>configserver<span class="w"> </span>--dbpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_config<span class="w"> </span>--logpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_config<span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">185</span><span class="w">      </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">186</span><span class="w">      </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="w"> </span>--eval<span class="w"> </span><span class="se">\</span>
+<span class="linenos">187</span><span class="w">        </span><span class="s2">&quot;rs.initiate({_id: \&quot;configserver\&quot;, configsvr: true, version: 1, members: [{ _id: 0, host : \&quot;</span><span class="nv">$HOSTNAME</span><span class="s2">:</span><span class="nv">$MONGODB_CONFIG_PORT</span><span class="s2">\&quot; }]})&quot;</span>
+<span class="linenos">188</span><span class="w">      </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">189</span><span class="w">      </span>
+<span class="linenos">190</span><span class="w">      </span><span class="c1"># start a mongos router server</span>
+<span class="linenos">191</span><span class="w">      </span>mongos<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--configdb<span class="w"> </span>configserver/<span class="nv">$HOSTNAME</span>:<span class="nv">$MONGODB_CONFIG_PORT</span><span class="w"> </span>--logpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_router<span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">192</span><span class="w">      </span><span class="c1"># add shard clusters</span>
+<span class="linenos">193</span><span class="w">      </span><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SHARD_LIST</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="linenos">194</span><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;add shard with host </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">195</span><span class="w">        </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">196</span><span class="w">        </span>mongo<span class="w"> </span>--host<span class="w"> </span><span class="nv">$HOSTNAME</span><span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;sh.addShard(\&quot;</span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">\&quot;)&quot;</span>
+<span class="linenos">197</span><span class="w">      </span><span class="k">done</span>
+<span class="linenos">198</span><span class="w">    </span><span class="k">fi</span>
 <span class="linenos">199</span>
-<span class="linenos">200</span>    <span class="c1"># enable database sharding</span>
-<span class="linenos">201</span>    <span class="nb">echo</span> <span class="s2">&quot;enable database </span><span class="nv">$MSPASS_SHARD_DATABASE</span><span class="s2"> sharding&quot;</span>
-<span class="linenos">202</span>    mongo --host <span class="nv">$HOSTNAME</span> --port <span class="nv">$MONGODB_PORT</span> --eval <span class="s2">&quot;sh.enableSharding(\&quot;</span><span class="si">${</span><span class="nv">MSPASS_SHARD_DATABASE</span><span class="si">}</span><span class="s2">\&quot;)&quot;</span>
-<span class="linenos">203</span>    sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">204</span>    <span class="c1"># shard collection(using hashed)</span>
-<span class="linenos">205</span>    <span class="k">for</span> i <span class="k">in</span> <span class="si">${</span><span class="nv">MSPASS_SHARD_COLLECTIONS</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
-<span class="linenos">206</span>      <span class="nb">echo</span> <span class="s2">&quot;shard collection </span><span class="nv">$MSPASS_SHARD_DATABASE</span><span class="s2">.</span><span class="si">${</span><span class="nv">i</span><span class="p">%%:*</span><span class="si">}</span><span class="s2"> and shard key is </span><span class="si">${</span><span class="nv">i</span><span class="p">##*:</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="linenos">207</span>      mongo --host <span class="nv">$HOSTNAME</span> --port <span class="nv">$MONGODB_PORT</span> --eval <span class="s2">&quot;sh.shardCollection(\&quot;</span><span class="nv">$MSPASS_SHARD_DATABASE</span><span class="s2">.</span><span class="si">${</span><span class="nv">i</span><span class="p">%%:*</span><span class="si">}</span><span class="s2">\&quot;, {</span><span class="si">${</span><span class="nv">i</span><span class="p">##*:</span><span class="si">}</span><span class="s2">: \&quot;hashed\&quot;})&quot;</span>
-<span class="linenos">208</span>      sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">209</span>    <span class="k">done</span>
-<span class="linenos">210</span>    tail -f /dev/null
-<span class="linenos">211</span>  <span class="k">elif</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;shard&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">212</span>    <span class="o">[[</span> -n <span class="nv">$MSPASS_SHARD_ID</span> <span class="o">]]</span> <span class="o">||</span> <span class="nv">MSPASS_SHARD_ID</span><span class="o">=</span><span class="nv">$MY_ID</span>
-<span class="linenos">213</span>    <span class="c1"># Note that we have to create a one-member replica set here </span>
-<span class="linenos">214</span>    <span class="c1"># because certain pymongo API will use &quot;retryWrites=true&quot; </span>
-<span class="linenos">215</span>    <span class="c1"># and thus trigger an error.</span>
-<span class="linenos">216</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;tmp&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">217</span>      <span class="nb">echo</span> <span class="s2">&quot;store shard data in tmp for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
-<span class="linenos">218</span>      <span class="c1"># create db and log dirs if not exists</span>
-<span class="linenos">219</span>      <span class="o">[[</span> -d /tmp/db <span class="o">]]</span> <span class="o">||</span> mkdir -p /tmp/db
-<span class="linenos">220</span>      <span class="o">[[</span> -d /tmp/logs <span class="o">]]</span> <span class="o">||</span> mkdir -p /tmp/logs <span class="o">&amp;&amp;</span> touch /tmp/logs/mongo_log_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span>
-<span class="linenos">221</span>      <span class="c1"># copy all the shard data to the local tmp folder</span>
-<span class="linenos">222</span>      <span class="k">if</span> <span class="o">[[</span> -d <span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">223</span>        scp -r -o <span class="nv">StrictHostKeyChecking</span><span class="o">=</span>no <span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> /tmp/db
-<span class="linenos">224</span>      <span class="k">else</span>
-<span class="linenos">225</span>        mkdir -p /tmp/db/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span>
-<span class="linenos">226</span>      <span class="k">fi</span>
-<span class="linenos">227</span>      <span class="c1"># reconfig the shard replica set</span>
-<span class="linenos">228</span>      <span class="k">if</span> <span class="o">[</span> -d <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">229</span>        <span class="c1"># restore the shard replica set</span>
-<span class="linenos">230</span>        mongod --port <span class="nv">$MONGODB_PORT</span> --dbpath /tmp/db/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --logpath /tmp/logs/mongo_log_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">231</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">232</span>        <span class="c1"># drop local database</span>
-<span class="linenos">233</span>        <span class="nb">echo</span> <span class="s2">&quot;drop local database for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
-<span class="linenos">234</span>        mongo --port <span class="nv">$MONGODB_PORT</span> <span class="nb">local</span> --eval <span class="s2">&quot;db.dropDatabase()&quot;</span>
-<span class="linenos">235</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">236</span>        <span class="c1"># update shard metadata in each shard&#39;s identity document</span>
-<span class="linenos">237</span>        <span class="nb">echo</span> <span class="s2">&quot;update config server host names for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
-<span class="linenos">238</span>        mongo --port <span class="nv">$MONGODB_PORT</span> admin --eval <span class="s2">&quot;db.system.version.updateOne({\&quot;_id\&quot;: \&quot;shardIdentity\&quot;}, {\$set: {\&quot;configsvrConnectionString\&quot;: \&quot;</span><span class="si">${</span><span class="nv">MSPASS_CONFIG_SERVER_ADDR</span><span class="si">}</span><span class="s2">\&quot;}})&quot;</span>
-<span class="linenos">239</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">240</span>        <span class="c1"># restart the mongod as a new single-node replica set</span>
-<span class="linenos">241</span>        <span class="nb">echo</span> <span class="s2">&quot;restart the shard server </span><span class="nv">$HOSTNAME</span><span class="s2"> as a replica set&quot;</span>
-<span class="linenos">242</span>        mongo --port <span class="nv">$MONGODB_PORT</span> admin --eval <span class="s2">&quot;db.shutdownServer()&quot;</span>
-<span class="linenos">243</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">244</span>        mongod --port <span class="nv">$MONGODB_PORT</span> --shardsvr --replSet <span class="s2">&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">&quot;</span> --dbpath /tmp/db/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --logpath /tmp/logs/mongo_log_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">245</span>      <span class="k">else</span>
-<span class="linenos">246</span>        <span class="c1"># store the shard data in the /tmp folder in local machine</span>
-<span class="linenos">247</span>        mongod --port <span class="nv">$MONGODB_PORT</span> --shardsvr --replSet <span class="s2">&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">&quot;</span> --dbpath /tmp/db/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --logpath /tmp/logs/mongo_log_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">248</span>      <span class="k">fi</span>
-<span class="linenos">249</span>    <span class="k">else</span>
-<span class="linenos">250</span>      <span class="nb">echo</span> <span class="s2">&quot;store shard data in scratch for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
-<span class="linenos">251</span>      <span class="k">if</span> <span class="o">[</span> -d <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">252</span>        <span class="c1"># restore the shard replica set</span>
-<span class="linenos">253</span>        mongod --port <span class="nv">$MONGODB_PORT</span> --dbpath <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">254</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">255</span>        <span class="c1"># drop local database</span>
-<span class="linenos">256</span>        <span class="nb">echo</span> <span class="s2">&quot;drop local database for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
-<span class="linenos">257</span>        mongo --port <span class="nv">$MONGODB_PORT</span> <span class="nb">local</span> --eval <span class="s2">&quot;db.dropDatabase()&quot;</span>
-<span class="linenos">258</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">259</span>        <span class="c1"># update shard metadata in each shard&#39;s identity document</span>
-<span class="linenos">260</span>        <span class="nb">echo</span> <span class="s2">&quot;update config server host names for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
-<span class="linenos">261</span>        mongo --port <span class="nv">$MONGODB_PORT</span> admin --eval <span class="s2">&quot;db.system.version.updateOne({\&quot;_id\&quot;: \&quot;shardIdentity\&quot;}, {\$set: {\&quot;configsvrConnectionString\&quot;: \&quot;</span><span class="si">${</span><span class="nv">MSPASS_CONFIG_SERVER_ADDR</span><span class="si">}</span><span class="s2">\&quot;}})&quot;</span>
-<span class="linenos">262</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">263</span>        <span class="c1"># restart the mongod as a new single-node replica set</span>
-<span class="linenos">264</span>        <span class="nb">echo</span> <span class="s2">&quot;restart the shard server </span><span class="nv">$HOSTNAME</span><span class="s2"> as a replica set&quot;</span>
-<span class="linenos">265</span>        mongo --port <span class="nv">$MONGODB_PORT</span> admin --eval <span class="s2">&quot;db.shutdownServer()&quot;</span>
-<span class="linenos">266</span>        sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
-<span class="linenos">267</span>        mongod --port <span class="nv">$MONGODB_PORT</span> --shardsvr --replSet <span class="s2">&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">&quot;</span> --dbpath <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">268</span>      <span class="k">else</span>
-<span class="linenos">269</span>        <span class="c1"># initialize the shard replica set</span>
-<span class="linenos">270</span>        mkdir -p <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span>
-<span class="linenos">271</span>        mongod --port <span class="nv">$MONGODB_PORT</span> --shardsvr --replSet <span class="s2">&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">&quot;</span> --dbpath <span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --logpath <span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span> --bind_ip_all <span class="p">&amp;</span>
-<span class="linenos">272</span>      <span class="k">fi</span>
-<span class="linenos">273</span>    <span class="k">fi</span>
-<span class="linenos">274</span>    sleep <span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">200</span><span class="w">    </span><span class="c1"># enable database sharding</span>
+<span class="linenos">201</span><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;enable database </span><span class="nv">$MSPASS_SHARD_DATABASE</span><span class="s2"> sharding&quot;</span>
+<span class="linenos">202</span><span class="w">    </span>mongo<span class="w"> </span>--host<span class="w"> </span><span class="nv">$HOSTNAME</span><span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;sh.enableSharding(\&quot;</span><span class="si">${</span><span class="nv">MSPASS_SHARD_DATABASE</span><span class="si">}</span><span class="s2">\&quot;)&quot;</span>
+<span class="linenos">203</span><span class="w">    </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">204</span><span class="w">    </span><span class="c1"># shard collection(using hashed)</span>
+<span class="linenos">205</span><span class="w">    </span><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SHARD_COLLECTIONS</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="linenos">206</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;shard collection </span><span class="nv">$MSPASS_SHARD_DATABASE</span><span class="s2">.</span><span class="si">${</span><span class="nv">i</span><span class="p">%%:*</span><span class="si">}</span><span class="s2"> and shard key is </span><span class="si">${</span><span class="nv">i</span><span class="p">##*:</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">207</span><span class="w">      </span>mongo<span class="w"> </span>--host<span class="w"> </span><span class="nv">$HOSTNAME</span><span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;sh.shardCollection(\&quot;</span><span class="nv">$MSPASS_SHARD_DATABASE</span><span class="s2">.</span><span class="si">${</span><span class="nv">i</span><span class="p">%%:*</span><span class="si">}</span><span class="s2">\&quot;, {</span><span class="si">${</span><span class="nv">i</span><span class="p">##*:</span><span class="si">}</span><span class="s2">: \&quot;hashed\&quot;})&quot;</span>
+<span class="linenos">208</span><span class="w">      </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">209</span><span class="w">    </span><span class="k">done</span>
+<span class="linenos">210</span><span class="w">    </span>tail<span class="w"> </span>-f<span class="w"> </span>/dev/null
+<span class="linenos">211</span><span class="w">  </span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;shard&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">212</span><span class="w">    </span><span class="o">[[</span><span class="w"> </span>-n<span class="w"> </span><span class="nv">$MSPASS_SHARD_ID</span><span class="w"> </span><span class="o">]]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nv">MSPASS_SHARD_ID</span><span class="o">=</span><span class="nv">$MY_ID</span>
+<span class="linenos">213</span><span class="w">    </span><span class="c1"># Note that we have to create a one-member replica set here </span>
+<span class="linenos">214</span><span class="w">    </span><span class="c1"># because certain pymongo API will use &quot;retryWrites=true&quot; </span>
+<span class="linenos">215</span><span class="w">    </span><span class="c1"># and thus trigger an error.</span>
+<span class="linenos">216</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tmp&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">217</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;store shard data in tmp for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">218</span><span class="w">      </span><span class="c1"># create db and log dirs if not exists</span>
+<span class="linenos">219</span><span class="w">      </span><span class="o">[[</span><span class="w"> </span>-d<span class="w"> </span>/tmp/db<span class="w"> </span><span class="o">]]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/tmp/db
+<span class="linenos">220</span><span class="w">      </span><span class="o">[[</span><span class="w"> </span>-d<span class="w"> </span>/tmp/logs<span class="w"> </span><span class="o">]]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/tmp/logs<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>touch<span class="w"> </span>/tmp/logs/mongo_log_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span>
+<span class="linenos">221</span><span class="w">      </span><span class="c1"># copy all the shard data to the local tmp folder</span>
+<span class="linenos">222</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-d<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">223</span><span class="w">        </span>scp<span class="w"> </span>-r<span class="w"> </span>-o<span class="w"> </span><span class="nv">StrictHostKeyChecking</span><span class="o">=</span>no<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_DB_DIR</span><span class="si">}</span>/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>/tmp/db
+<span class="linenos">224</span><span class="w">      </span><span class="k">else</span>
+<span class="linenos">225</span><span class="w">        </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/tmp/db/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span>
+<span class="linenos">226</span><span class="w">      </span><span class="k">fi</span>
+<span class="linenos">227</span><span class="w">      </span><span class="c1"># reconfig the shard replica set</span>
+<span class="linenos">228</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-d<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">229</span><span class="w">        </span><span class="c1"># restore the shard replica set</span>
+<span class="linenos">230</span><span class="w">        </span>mongod<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--dbpath<span class="w"> </span>/tmp/db/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>--logpath<span class="w"> </span>/tmp/logs/mongo_log_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">231</span><span class="w">        </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">232</span><span class="w">        </span><span class="c1"># drop local database</span>
+<span class="linenos">233</span><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;drop local database for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">234</span><span class="w">        </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span><span class="nb">local</span><span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;db.dropDatabase()&quot;</span>
+<span class="linenos">235</span><span class="w">        </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">236</span><span class="w">        </span><span class="c1"># update shard metadata in each shard&#39;s identity document</span>
+<span class="linenos">237</span><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;update config server host names for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">238</span><span class="w">        </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>admin<span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;db.system.version.updateOne({\&quot;_id\&quot;: \&quot;shardIdentity\&quot;}, {\$set: {\&quot;configsvrConnectionString\&quot;: \&quot;</span><span class="si">${</span><span class="nv">MSPASS_CONFIG_SERVER_ADDR</span><span class="si">}</span><span class="s2">\&quot;}})&quot;</span>
+<span class="linenos">239</span><span class="w">        </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">240</span><span class="w">        </span><span class="c1"># restart the mongod as a new single-node replica set</span>
+<span class="linenos">241</span><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;restart the shard server </span><span class="nv">$HOSTNAME</span><span class="s2"> as a replica set&quot;</span>
+<span class="linenos">242</span><span class="w">        </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>admin<span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;db.shutdownServer()&quot;</span>
+<span class="linenos">243</span><span class="w">        </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">244</span><span class="w">        </span>mongod<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--shardsvr<span class="w"> </span>--replSet<span class="w"> </span><span class="s2">&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>--dbpath<span class="w"> </span>/tmp/db/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>--logpath<span class="w"> </span>/tmp/logs/mongo_log_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">245</span><span class="w">      </span><span class="k">else</span>
+<span class="linenos">246</span><span class="w">        </span><span class="c1"># store the shard data in the /tmp folder in local machine</span>
+<span class="linenos">247</span><span class="w">        </span>mongod<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--shardsvr<span class="w"> </span>--replSet<span class="w"> </span><span class="s2">&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>--dbpath<span class="w"> </span>/tmp/db/data_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>--logpath<span class="w"> </span>/tmp/logs/mongo_log_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">248</span><span class="w">      </span><span class="k">fi</span>
+<span class="linenos">249</span><span class="w">    </span><span class="k">else</span>
+<span class="linenos">250</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;store shard data in scratch for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">251</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-d<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">252</span><span class="w">        </span><span class="c1"># restore the shard replica set</span>
+<span class="linenos">253</span><span class="w">        </span>mongod<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--dbpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>--logpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">254</span><span class="w">        </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">255</span><span class="w">        </span><span class="c1"># drop local database</span>
+<span class="linenos">256</span><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;drop local database for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">257</span><span class="w">        </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span><span class="nb">local</span><span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;db.dropDatabase()&quot;</span>
+<span class="linenos">258</span><span class="w">        </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">259</span><span class="w">        </span><span class="c1"># update shard metadata in each shard&#39;s identity document</span>
+<span class="linenos">260</span><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;update config server host names for shard server </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+<span class="linenos">261</span><span class="w">        </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>admin<span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;db.system.version.updateOne({\&quot;_id\&quot;: \&quot;shardIdentity\&quot;}, {\$set: {\&quot;configsvrConnectionString\&quot;: \&quot;</span><span class="si">${</span><span class="nv">MSPASS_CONFIG_SERVER_ADDR</span><span class="si">}</span><span class="s2">\&quot;}})&quot;</span>
+<span class="linenos">262</span><span class="w">        </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">263</span><span class="w">        </span><span class="c1"># restart the mongod as a new single-node replica set</span>
+<span class="linenos">264</span><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;restart the shard server </span><span class="nv">$HOSTNAME</span><span class="s2"> as a replica set&quot;</span>
+<span class="linenos">265</span><span class="w">        </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>admin<span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;db.shutdownServer()&quot;</span>
+<span class="linenos">266</span><span class="w">        </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
+<span class="linenos">267</span><span class="w">        </span>mongod<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--shardsvr<span class="w"> </span>--replSet<span class="w"> </span><span class="s2">&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>--dbpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>--logpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">268</span><span class="w">      </span><span class="k">else</span>
+<span class="linenos">269</span><span class="w">        </span><span class="c1"># initialize the shard replica set</span>
+<span class="linenos">270</span><span class="w">        </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span>
+<span class="linenos">271</span><span class="w">        </span>mongod<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--shardsvr<span class="w"> </span>--replSet<span class="w"> </span><span class="s2">&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>--dbpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_DATA</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>--logpath<span class="w"> </span><span class="si">${</span><span class="nv">MONGO_LOG</span><span class="si">}</span>_shard_<span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="w"> </span>--bind_ip_all<span class="w"> </span><span class="p">&amp;</span>
+<span class="linenos">272</span><span class="w">      </span><span class="k">fi</span>
+<span class="linenos">273</span><span class="w">    </span><span class="k">fi</span>
+<span class="linenos">274</span><span class="w">    </span>sleep<span class="w"> </span><span class="si">${</span><span class="nv">MSPASS_SLEEP_TIME</span><span class="si">}</span>
 <span class="linenos">275</span>
-<span class="linenos">276</span>    <span class="c1"># shard server configuration</span>
-<span class="linenos">277</span>    <span class="nb">echo</span> <span class="s2">&quot;shard server </span><span class="nv">$HOSTNAME</span><span class="s2"> replicaSet is initialized&quot;</span>
-<span class="linenos">278</span>    mongo --port <span class="nv">$MONGODB_PORT</span> --eval <span class="se">\</span>
-<span class="linenos">279</span>      <span class="s2">&quot;rs.initiate({_id: \&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">\&quot;, version: 1, members: [{ _id: 0, host : \&quot;</span><span class="nv">$HOSTNAME</span><span class="s2">:</span><span class="nv">$MONGODB_PORT</span><span class="s2">\&quot; }]})&quot;</span>
-<span class="linenos">280</span>    tail -f /dev/null
-<span class="linenos">281</span>  <span class="k">elif</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;scheduler&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">282</span>    <span class="nb">eval</span> <span class="nv">$MSPASS_SCHEDULER_CMD</span>
-<span class="linenos">283</span>    tail -f /dev/null
-<span class="linenos">284</span>  <span class="k">elif</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;worker&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">285</span>    <span class="o">[[</span> -d <span class="nv">$MSPASS_WORKER_DIR</span> <span class="o">]]</span> <span class="o">||</span> mkdir -p <span class="nv">$MSPASS_WORKER_DIR</span>
-<span class="linenos">286</span>    <span class="nb">eval</span> <span class="nv">$MSPASS_WORKER_CMD</span>
-<span class="linenos">287</span>    <span class="c1"># copy dfiles to /tmp</span>
-<span class="linenos">288</span>    <span class="k">if</span> <span class="o">[[</span> -d <span class="nv">$MSPASS_SCRATCH_DATA_DIR</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">289</span>      cp -r <span class="nv">$MSPASS_SCRATCH_DATA_DIR</span> /tmp
-<span class="linenos">290</span>    <span class="k">fi</span>
-<span class="linenos">291</span>    tail -f /dev/null
-<span class="linenos">292</span>  <span class="k">elif</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;frontend&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">293</span>    start_mspass_frontend <span class="nv">$2</span>
-<span class="linenos">294</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_DB_MODE</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;shard&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">295</span>      clean_up_multiple_nodes
-<span class="linenos">296</span>    <span class="k">else</span>
-<span class="linenos">297</span>      clean_up_single_node
-<span class="linenos">298</span>    <span class="k">fi</span>
-<span class="linenos">299</span>  <span class="k">else</span> <span class="c1"># if [ &quot;$MSPASS_ROLE&quot; = &quot;all&quot; ]</span>
-<span class="linenos">300</span>    <span class="nv">MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$HOSTNAME</span>
-<span class="linenos">301</span>    <span class="nv">MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$HOSTNAME</span>
-<span class="linenos">302</span>    <span class="nb">eval</span> <span class="nv">$MSPASS_SCHEDULER_CMD</span>
-<span class="linenos">303</span>    <span class="nb">eval</span> <span class="nv">$MSPASS_WORKER_CMD</span>
-<span class="linenos">304</span>    <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;tmp&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-<span class="linenos">305</span>      start_db_tmp
-<span class="linenos">306</span>    <span class="k">else</span>
-<span class="linenos">307</span>      start_db_scratch
-<span class="linenos">308</span>    <span class="k">fi</span>
-<span class="linenos">309</span>    start_mspass_frontend <span class="nv">$2</span>
-<span class="linenos">310</span>    clean_up_single_node
-<span class="linenos">311</span>  <span class="k">fi</span>
+<span class="linenos">276</span><span class="w">    </span><span class="c1"># shard server configuration</span>
+<span class="linenos">277</span><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;shard server </span><span class="nv">$HOSTNAME</span><span class="s2"> replicaSet is initialized&quot;</span>
+<span class="linenos">278</span><span class="w">    </span>mongo<span class="w"> </span>--port<span class="w"> </span><span class="nv">$MONGODB_PORT</span><span class="w"> </span>--eval<span class="w"> </span><span class="se">\</span>
+<span class="linenos">279</span><span class="w">      </span><span class="s2">&quot;rs.initiate({_id: \&quot;rs</span><span class="si">${</span><span class="nv">MSPASS_SHARD_ID</span><span class="si">}</span><span class="s2">\&quot;, version: 1, members: [{ _id: 0, host : \&quot;</span><span class="nv">$HOSTNAME</span><span class="s2">:</span><span class="nv">$MONGODB_PORT</span><span class="s2">\&quot; }]})&quot;</span>
+<span class="linenos">280</span><span class="w">    </span>tail<span class="w"> </span>-f<span class="w"> </span>/dev/null
+<span class="linenos">281</span><span class="w">  </span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;scheduler&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">282</span><span class="w">    </span><span class="nb">eval</span><span class="w"> </span><span class="nv">$MSPASS_SCHEDULER_CMD</span>
+<span class="linenos">283</span><span class="w">    </span>tail<span class="w"> </span>-f<span class="w"> </span>/dev/null
+<span class="linenos">284</span><span class="w">  </span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;worker&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">285</span><span class="w">    </span><span class="o">[[</span><span class="w"> </span>-d<span class="w"> </span><span class="nv">$MSPASS_WORKER_DIR</span><span class="w"> </span><span class="o">]]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$MSPASS_WORKER_DIR</span>
+<span class="linenos">286</span><span class="w">    </span><span class="nb">eval</span><span class="w"> </span><span class="nv">$MSPASS_WORKER_CMD</span>
+<span class="linenos">287</span><span class="w">    </span><span class="c1"># copy dfiles to /tmp</span>
+<span class="linenos">288</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-d<span class="w"> </span><span class="nv">$MSPASS_SCRATCH_DATA_DIR</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">289</span><span class="w">      </span>cp<span class="w"> </span>-r<span class="w"> </span><span class="nv">$MSPASS_SCRATCH_DATA_DIR</span><span class="w"> </span>/tmp
+<span class="linenos">290</span><span class="w">    </span><span class="k">fi</span>
+<span class="linenos">291</span><span class="w">    </span>tail<span class="w"> </span>-f<span class="w"> </span>/dev/null
+<span class="linenos">292</span><span class="w">  </span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_ROLE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;frontend&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">293</span><span class="w">    </span>start_mspass_frontend<span class="w"> </span><span class="nv">$2</span>
+<span class="linenos">294</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_DB_MODE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;shard&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">295</span><span class="w">      </span>clean_up_multiple_nodes
+<span class="linenos">296</span><span class="w">    </span><span class="k">else</span>
+<span class="linenos">297</span><span class="w">      </span>clean_up_single_node
+<span class="linenos">298</span><span class="w">    </span><span class="k">fi</span>
+<span class="linenos">299</span><span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="c1"># if [ &quot;$MSPASS_ROLE&quot; = &quot;all&quot; ]</span>
+<span class="linenos">300</span><span class="w">    </span><span class="nv">MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="nv">$HOSTNAME</span>
+<span class="linenos">301</span><span class="w">    </span><span class="nv">MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="nv">$HOSTNAME</span>
+<span class="linenos">302</span><span class="w">    </span><span class="nb">eval</span><span class="w"> </span><span class="nv">$MSPASS_SCHEDULER_CMD</span>
+<span class="linenos">303</span><span class="w">    </span><span class="nb">eval</span><span class="w"> </span><span class="nv">$MSPASS_WORKER_CMD</span>
+<span class="linenos">304</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_DB_PATH</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tmp&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">305</span><span class="w">      </span>start_db_tmp
+<span class="linenos">306</span><span class="w">    </span><span class="k">else</span>
+<span class="linenos">307</span><span class="w">      </span>start_db_scratch
+<span class="linenos">308</span><span class="w">    </span><span class="k">fi</span>
+<span class="linenos">309</span><span class="w">    </span>start_mspass_frontend<span class="w"> </span><span class="nv">$2</span>
+<span class="linenos">310</span><span class="w">    </span>clean_up_single_node
+<span class="linenos">311</span><span class="w">  </span><span class="k">fi</span>
 <span class="linenos">312</span><span class="k">else</span>
-<span class="linenos">313</span>  docker-entrypoint.sh <span class="nv">$@</span>
+<span class="linenos">313</span><span class="w">  </span>docker-entrypoint.sh<span class="w"> </span><span class="nv">$@</span>
 <span class="linenos">314</span><span class="k">fi</span>
 </pre></div>
 </div>
@@ -1478,8 +1478,8 @@ by setting the variable name in the job script.</p></li>
 code.</p></li>
 </ul>
 <div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="c"># Add startup script</span>
-<span class="k">ADD</span><span class="w"> </span>scripts/start-mspass.sh /usr/sbin/start-mspass.sh
-<span class="k">RUN</span><span class="w"> </span>chmod +x /usr/sbin/start-mspass.sh
+<span class="k">ADD</span><span class="w"> </span>scripts/start-mspass.sh<span class="w"> </span>/usr/sbin/start-mspass.sh
+<span class="k">RUN</span><span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span>/usr/sbin/start-mspass.sh
 </pre></div>
 </div>
 <ul class="simple">

@@ -224,7 +224,7 @@
 
 
 <div class="viewcode-block" id="dict2Metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.dict2Metadata">[docs]</a><span class="k">def</span> <span class="nf">dict2Metadata</span><span class="p">(</span><span class="n">dic</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to convert Python dict data to Metadata.</span>
 
 <span class="sd">    pymongo returns a Python dict container from find queries to any collection.</span>
@@ -243,7 +243,7 @@
 
 
 <div class="viewcode-block" id="Metadata2dict"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Metadata2dict">[docs]</a><span class="k">def</span> <span class="nf">Metadata2dict</span><span class="p">(</span><span class="n">md</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a Metadata object to a Python dict.</span>
 
 <span class="sd">    This is the inverse of dict2Metadata.  It converts a Metadata object to</span>
@@ -262,7 +262,7 @@
 
 
 <div class="viewcode-block" id="AntelopePf2dict"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.AntelopePf2dict">[docs]</a><span class="k">def</span> <span class="nf">AntelopePf2dict</span><span class="p">(</span><span class="n">pf</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a AntelopePf object to a Python dict.</span>
 <span class="sd">    This converts a AntelopePf object to a Python dict by recursively</span>
 <span class="sd">    decoding the tbls.</span>
@@ -294,7 +294,7 @@
 
 
 <div class="viewcode-block" id="TimeSeries2Trace"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.TimeSeries2Trace">[docs]</a><span class="k">def</span> <span class="nf">TimeSeries2Trace</span><span class="p">(</span><span class="n">ts</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a TimeSeries object to an obspy Trace object.</span>
 
 <span class="sd">    MsPASS can handle scalar data either as an obspy Trace object or</span>
@@ -390,7 +390,7 @@
     <span class="n">sg</span><span class="p">,</span> <span class="n">chanmap</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">],</span> <span class="n">hang</span><span class="o">=</span><span class="p">[</span><span class="mf">90.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">vang</span><span class="o">=</span><span class="p">[</span><span class="mf">90.0</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
 <span class="p">):</span>
     <span class="c1"># fixme hang and vang parameters</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a mspass::Seismogram object to an obspy::Stream with 3 components split apart.</span>
 
 <span class="sd">    mspass and obspy have completely incompatible approaches to handling three</span>
@@ -454,7 +454,7 @@
 
 
 <div class="viewcode-block" id="Trace2TimeSeries"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Trace2TimeSeries">[docs]</a><span class="k">def</span> <span class="nf">Trace2TimeSeries</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">history</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert an obspy Trace object to a TimeSeries object.</span>
 
 <span class="sd">    An obspy Trace object mostly maps directly into the mspass TimeSeries</span>
@@ -532,7 +532,7 @@
 
 
 <div class="viewcode-block" id="Stream2Seismogram"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Stream2Seismogram">[docs]</a><span class="k">def</span> <span class="nf">Stream2Seismogram</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">master</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">azimuth</span><span class="o">=</span><span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="n">dip</span><span class="o">=</span><span class="s2">&quot;dip&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert obspy Stream to a Seismogram.</span>
 
 <span class="sd">    Convert an obspy Stream object with 3 components to a mspass::Seismogram</span>
@@ -650,7 +650,7 @@
 
 
 <div class="viewcode-block" id="TimeSeriesEnsemble2Stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.TimeSeriesEnsemble2Stream">[docs]</a><span class="k">def</span> <span class="nf">TimeSeriesEnsemble2Stream</span><span class="p">(</span><span class="n">tse</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a timeseries ensemble to stream.  Always copies</span>
 <span class="sd">    all ensemble Metadata to tse members before conversion.   That is</span>
 <span class="sd">    necessary to avoid loss of data in the case where the only copy is</span>
@@ -686,7 +686,7 @@
 
 
 <div class="viewcode-block" id="list2Ensemble"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.list2Ensemble">[docs]</a><span class="k">def</span> <span class="nf">list2Ensemble</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a list of TimeSeries or Seismograms to a corresponding type of Ensemble.</span>
 <span class="sd">    This function will make copies of all the data, to create a new Ensemble.</span>
 <span class="sd">    Note that the Ensemble&#39;s Metadata will always be copied from the first member.</span>
@@ -728,7 +728,7 @@
 
 
 <div class="viewcode-block" id="Pf2AttributeNameTbl"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Pf2AttributeNameTbl">[docs]</a><span class="k">def</span> <span class="nf">Pf2AttributeNameTbl</span><span class="p">(</span><span class="n">pf</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;attributes&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function will parse a pf file to extract a tbl with a specific</span>
 <span class="sd">    key and return a data structure that defines the names and types of</span>
 <span class="sd">    each column in the input file.</span>
@@ -803,7 +803,7 @@
     <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">insert_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Import a text file representation of a table and store its</span>
 <span class="sd">    representation as a pandas dataframe.</span>
 <span class="sd">    Note that even in the parallel environment, a dask dataframe will be</span>
@@ -920,7 +920,7 @@
 
 
 <span class="k">def</span> <span class="nf">_converter_get_ensemble_keys</span><span class="p">(</span><span class="n">ens</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Small helper for converting from Stream to either of the</span>
 <span class="sd">    mspass ensemble objects.   Returns a list of keys from the first</span>
 <span class="sd">    live member using the internal key CONVERTER_ENSEMBLE_KEYS.</span>
@@ -936,7 +936,7 @@
 
 
 <div class="viewcode-block" id="Stream2TimeSeriesEnsemble"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Stream2TimeSeriesEnsemble">[docs]</a><span class="k">def</span> <span class="nf">Stream2TimeSeriesEnsemble</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a stream to timeseries ensemble.</span>
 <span class="sd">    :param stream: stream input</span>
 <span class="sd">    :return: converted timeseries ensemble</span>
@@ -966,7 +966,7 @@
 
 
 <div class="viewcode-block" id="SeismogramEnsemble2Stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.SeismogramEnsemble2Stream">[docs]</a><span class="k">def</span> <span class="nf">SeismogramEnsemble2Stream</span><span class="p">(</span><span class="n">sge</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a seismogram ensemble to stream</span>
 <span class="sd">    :param sge: seismogram ensemble input</span>
 <span class="sd">    :return: stream</span>
@@ -989,7 +989,7 @@
 
 
 <div class="viewcode-block" id="Stream2SeismogramEnsemble"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Stream2SeismogramEnsemble">[docs]</a><span class="k">def</span> <span class="nf">Stream2SeismogramEnsemble</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a stream to seismogram ensemble.</span>
 <span class="sd">    :param stream: stream input</span>
 <span class="sd">    :return: converted seismogram ensemble</span>
@@ -1020,7 +1020,7 @@
 
 
 <span class="k">def</span> <span class="nf">_all_members_match</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a helper function for below.  I scans ens to assure all members</span>
 <span class="sd">    of the ensemble have the same value for the requested key. It uses</span>
 <span class="sd">    the python operator == for testing.  That can fail for a variety of</span>
@@ -1056,7 +1056,7 @@
 
 
 <div class="viewcode-block" id="post_ensemble_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.post_ensemble_metadata">[docs]</a><span class="k">def</span> <span class="nf">post_ensemble_metadata</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">check_all_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">clean_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    It may be necessary to call this function after conversion from</span>
 <span class="sd">    an obspy Stream to one of the mspass Ensemble classes.  This function</span>
 <span class="sd">    is necessary because a mspass Ensemble has a concept not part of the</span>

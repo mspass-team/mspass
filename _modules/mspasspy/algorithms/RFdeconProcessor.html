@@ -224,7 +224,7 @@
 
 
 <div class="viewcode-block" id="RFdeconProcessor"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor">[docs]</a><span class="k">class</span> <span class="nc">RFdeconProcessor</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is a wrapper for the suite of receiver function deconvolution</span>
 <span class="sd">    methods we call scalar methods.  That is, the operation is reducable to</span>
 <span class="sd">    two time series:   wavelet signal and the data (TimeSeries) signal.</span>
@@ -272,7 +272,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RFdeconProcessor.loaddata"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loaddata">[docs]</a>    <span class="k">def</span> <span class="nf">loaddata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads data for processing.  When window is set true</span>
 <span class="sd">        use the internal pf definition of data time window</span>
 <span class="sd">        and window the data.  The dtype parameter changes the</span>
@@ -422,7 +422,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nvector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nvector</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RFdeconProcessor.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the RF estimate using the algorithm defined internally.</span>
 
 <span class="sd">        :return: vector of data that are the RF estimate computed from previously loaded data.</span>
@@ -445,7 +445,7 @@
         <span class="k">return</span> <span class="n">processor</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="RFdeconProcessor.actual_output"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.actual_output">[docs]</a>    <span class="k">def</span> <span class="nf">actual_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The actual output of a decon operator is the inverse filter applied to</span>
 <span class="sd">        the wavelet.  By design it is an approximation of the shaping wavelet</span>
 <span class="sd">        defined for this operator.</span>
@@ -474,7 +474,7 @@
         <span class="k">return</span> <span class="n">processor</span><span class="o">.</span><span class="n">actual_output</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="RFdeconProcessor.ideal_output"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.ideal_output">[docs]</a>    <span class="k">def</span> <span class="nf">ideal_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The ideal output of a decon operator is the same thing we call a</span>
 <span class="sd">        shaping wavelet.  This method returns the ideal output=shaping wavelet</span>
 <span class="sd">        as a TimeSeries object.   Like the actual output method the return</span>
@@ -503,7 +503,7 @@
         <span class="k">return</span> <span class="n">processor</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="RFdeconProcessor.inverse_filter"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.inverse_filter">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method returns the actual inverse filter that if convolved with</span>
 <span class="sd">        he original data will produce the RF estimate.  Note the filter is</span>
 <span class="sd">        meaningful only if the source wavelet is minimum phase.  A standard</span>
@@ -532,7 +532,7 @@
         <span class="k">return</span> <span class="n">processor</span><span class="o">.</span><span class="n">inverse_filter</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="RFdeconProcessor.QCMetrics"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.QCMetrics">[docs]</a>    <span class="k">def</span> <span class="nf">QCMetrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All decon algorithms compute a set of algorithm dependent quality</span>
 <span class="sd">        control metrics.  This method returns the metrics as a set of fixed</span>
 <span class="sd">        name:value pairs in a mspass.Metadata object.   The details are</span>
@@ -556,7 +556,7 @@
         <span class="k">return</span> <span class="n">processor</span><span class="o">.</span><span class="n">QCMetrics</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="RFdeconProcessor.change_parameters"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.change_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">change_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use this method to change the internal parameter setting of the</span>
 <span class="sd">        processor.  It can be used, for example, to switch from the damped</span>
 <span class="sd">        least square method to the water level method.  Note the input</span>
@@ -603,7 +603,7 @@
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use this function to compute conventional receiver functions</span>
 <span class="sd">    from a single three component seismogram. In this function,</span>
 <span class="sd">    an instance of wrapper class RFdeconProcessor will be built and</span>

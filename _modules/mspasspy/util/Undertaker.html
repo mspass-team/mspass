@@ -209,7 +209,7 @@
 
 
 <div class="viewcode-block" id="Undertaker"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker">[docs]</a><span class="k">class</span> <span class="nc">Undertaker</span><span class="p">(</span><span class="n">mspasspy</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">Database</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to handle dead data.  Many for ensembles, but has methods to</span>
 <span class="sd">    save elog entries for Seismogram or TimeSeries objects marked dead.</span>
 <span class="sd">    A concept of this class is any thing received that is live is not</span>
@@ -221,7 +221,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dbh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">elog</span>
 
 <div class="viewcode-block" id="Undertaker.bury_the_dead"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury_the_dead">[docs]</a>    <span class="k">def</span> <span class="nf">bury_the_dead</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">save_history</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear the contents of an ensemble and optionally save the history and</span>
 <span class="sd">        error log of the dead.  Return the cleaned ensmble.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -256,7 +256,7 @@
         <span class="k">return</span> <span class="n">newens</span></div>
 
 <div class="viewcode-block" id="Undertaker.cremate"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.cremate">[docs]</a>    <span class="k">def</span> <span class="nf">cremate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Like bury_the_dead but nothing is preserved of the dead.   Functionally equivalent to</span>
 <span class="sd">        bury_the_dead with save_history False, but with a more memorable name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -264,7 +264,7 @@
         <span class="k">return</span> <span class="n">dlive</span></div>
 
 <div class="viewcode-block" id="Undertaker.bring_out_your_dead"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead">[docs]</a>    <span class="k">def</span> <span class="nf">bring_out_your_dead</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">bury</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Seperate an ensemble into live and dead members.</span>
 
 <span class="sd">        :param d:  must be either a TimeSeriesEnsemble or SeismogramEnsemble of</span>

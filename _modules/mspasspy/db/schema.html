@@ -275,7 +275,7 @@
     <span class="n">_xref_keys</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.add"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new entry to the definitions. Note that because the internal</span>
 <span class="sd">        container is `dict` if attribute for name is already present it</span>
 <span class="sd">        will be silently replaced.</span>
@@ -297,7 +297,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_xref_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.add_alias"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.add_alias">[docs]</a>    <span class="k">def</span> <span class="nf">add_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">aliasname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add an alias for key</span>
 
 <span class="sd">        :param key: key to be added</span>
@@ -309,7 +309,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="p">[</span><span class="n">aliasname</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.remove_alias"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.remove_alias">[docs]</a>    <span class="k">def</span> <span class="nf">remove_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alias</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove an alias. Will silently ignore if alias is not found</span>
 
 <span class="sd">        :param alias: alias to be removed</span>
@@ -321,7 +321,7 @@
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.aliases"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.aliases">[docs]</a>    <span class="k">def</span> <span class="nf">aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of aliases for a given key.</span>
 
 <span class="sd">        :param key: The unique key that has aliases defined.</span>
@@ -336,7 +336,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.apply_aliases"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.apply_aliases">[docs]</a>    <span class="k">def</span> <span class="nf">apply_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">md</span><span class="p">,</span> <span class="n">alias</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply a set of aliases to a data object.</span>
 
 <span class="sd">        This method will change the unique keys of a data object into aliases.</span>
@@ -381,7 +381,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.clear_aliases"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.clear_aliases">[docs]</a>    <span class="k">def</span> <span class="nf">clear_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Restore any aliases to unique names.</span>
 
 <span class="sd">        Aliases are needed to support legacy packages, but can cause downstream problem</span>
@@ -401,7 +401,7 @@
                     <span class="k">del</span> <span class="n">md</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.concept"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.concept">[docs]</a>    <span class="k">def</span> <span class="nf">concept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a description of the concept this attribute defines.</span>
 
 <span class="sd">        :param key: The name that defines the attribute of interest</span>
@@ -415,7 +415,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;concept&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.has_alias"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.has_alias">[docs]</a>    <span class="k">def</span> <span class="nf">has_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if a key has registered aliases</span>
 
 <span class="sd">        Sometimes it is helpful to have alias keys to define a common concept.</span>
@@ -432,7 +432,7 @@
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span> <span class="ow">and</span> <span class="s2">&quot;aliases&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.is_alias"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_alias">[docs]</a>    <span class="k">def</span> <span class="nf">is_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if a key is a registered alias</span>
 
 <span class="sd">        This asks the inverse question to has_alias. That is, it yields true of the key is</span>
@@ -447,7 +447,7 @@
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.is_defined"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_defined">[docs]</a>    <span class="k">def</span> <span class="nf">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if a key is defined either as a unique key or an alias</span>
 
 <span class="sd">        :param key: key to be tested</span>
@@ -458,7 +458,7 @@
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.keys"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of all the unique keys defined.</span>
 
 <span class="sd">        :return: list of all the unique keys defined</span>
@@ -467,7 +467,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.type"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the type of an attribute. If not recognized, it returns None.</span>
 
 <span class="sd">        :param key: The name that defines the attribute of interest</span>
@@ -495,7 +495,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.unique_name"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.unique_name">[docs]</a>    <span class="k">def</span> <span class="nf">unique_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliasname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get definitive name for an alias.</span>
 
 <span class="sd">        This method is used to ask the opposite question as aliases. The aliases method</span>
@@ -516,7 +516,7 @@
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">aliasname</span> <span class="o">+</span> <span class="s2">&quot; is not defined&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.required_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.required_keys">[docs]</a>    <span class="k">def</span> <span class="nf">required_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all the required keys in the current collection as a list</span>
 
 <span class="sd">        :return: type of data associated with the collection</span>
@@ -525,7 +525,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_required_keys</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.xref_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.xref_keys">[docs]</a>    <span class="k">def</span> <span class="nf">xref_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all the xref keys in the current collection as a list</span>
 
 <span class="sd">        :return: type of data associated with the collection</span>
@@ -534,7 +534,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xref_keys</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.constraint"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.constraint">[docs]</a>    <span class="k">def</span> <span class="nf">constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a description of the constraint this attribute defines.</span>
 
 <span class="sd">        :param key: The name that defines the attribute of interest</span>
@@ -545,7 +545,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;constraint&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.is_required"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_required">[docs]</a>    <span class="k">def</span> <span class="nf">is_required</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if the constraint of the key is required to the schema</span>
 
 <span class="sd">        :param key: key to be tested</span>
@@ -556,7 +556,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;constraint&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;required&quot;</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.is_xref_key"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_xref_key">[docs]</a>    <span class="k">def</span> <span class="nf">is_xref_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if the constraint of the key is xref_key to the schema</span>
 
 <span class="sd">        :param key: key to be tested</span>
@@ -567,7 +567,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;constraint&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;xref_key&quot;</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.is_normal"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_normal">[docs]</a>    <span class="k">def</span> <span class="nf">is_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if the constraint of the key is normal to the schema</span>
 
 <span class="sd">        :param key: key to be tested</span>
@@ -578,7 +578,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;constraint&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;normal&quot;</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.is_optional"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_optional">[docs]</a>    <span class="k">def</span> <span class="nf">is_optional</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if the constraint of the key is optional to the schema</span>
 
 <span class="sd">        :param key: key to be tested</span>
@@ -610,7 +610,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
 
 <div class="viewcode-block" id="DatabaseSchema.default"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema.default">[docs]</a>    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the schema definition of a default collection.</span>
 
 <span class="sd">        This method is used when multiple collections of the same concept is defined.</span>
@@ -634,7 +634,7 @@
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; has no default defined&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DatabaseSchema.default_name"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema.default_name">[docs]</a>    <span class="k">def</span> <span class="nf">default_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the name of a default collection.</span>
 
 <span class="sd">        This method is behaves similar to the default method, but it only returns the</span>
@@ -653,7 +653,7 @@
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; has no default defined&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DatabaseSchema.set_default"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema.set_default">[docs]</a>    <span class="k">def</span> <span class="nf">set_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a collection as the default.</span>
 
 <span class="sd">        This method is used to change the default collections (e.g., switching between</span>
@@ -674,7 +674,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">[</span><span class="n">default</span><span class="p">]</span> <span class="o">=</span> <span class="n">collection</span></div>
 
 <div class="viewcode-block" id="DatabaseSchema.unset_default"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema.unset_default">[docs]</a>    <span class="k">def</span> <span class="nf">unset_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unset a default.</span>
 
 <span class="sd">        This method does nothing if ``default`` is not defined.</span>
@@ -727,7 +727,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_data_type</span> <span class="o">=</span> <span class="n">schema_dic</span><span class="p">[</span><span class="n">collection_str</span><span class="p">][</span><span class="s2">&quot;data_type&quot;</span><span class="p">]</span>
 
 <div class="viewcode-block" id="DBSchemaDefinition.add"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DBSchemaDefinition.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new entry to the definitions. Note that because the internal</span>
 <span class="sd">        container is `dict` if attribute for name is already present it</span>
 <span class="sd">        will be silently replaced.</span>
@@ -744,7 +744,7 @@
         <span class="n">SchemaDefinitionBase</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DBSchemaDefinition.reference"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DBSchemaDefinition.reference">[docs]</a>    <span class="k">def</span> <span class="nf">reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the collection name that a key is referenced from.</span>
 
 <span class="sd">        :param key: the name of the key</span>
@@ -762,7 +762,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DBSchemaDefinition.data_type"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DBSchemaDefinition.data_type">[docs]</a>    <span class="k">def</span> <span class="nf">data_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the data type that the collection is used to reference.</span>
 <span class="sd">        If not recognized, it returns None.</span>
 
@@ -829,7 +829,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_xref_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MDSchemaDefinition.add"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new entry to the definitions. Note that because the internal</span>
 <span class="sd">        container is `dict` if attribute for name is already present it</span>
 <span class="sd">        will be silently replaced.</span>
@@ -846,7 +846,7 @@
         <span class="n">SchemaDefinitionBase</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MDSchemaDefinition.collection"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.collection">[docs]</a>    <span class="k">def</span> <span class="nf">collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the collection name that a key belongs to</span>
 
 <span class="sd">        :param key: the name of the key</span>
@@ -861,7 +861,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="MDSchemaDefinition.set_collection"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.set_collection">[docs]</a>    <span class="k">def</span> <span class="nf">set_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">dbschema</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the collection name that a key belongs to. It optionally takes</span>
 <span class="sd">        a dbschema argument and will set the attribute of that key with the</span>
 <span class="sd">        corresponding one defined in the dbschema.</span>
@@ -908,7 +908,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;collection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">collection</span></div>
 
 <div class="viewcode-block" id="MDSchemaDefinition.swap_collection"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.swap_collection">[docs]</a>    <span class="k">def</span> <span class="nf">swap_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original_collection</span><span class="p">,</span> <span class="n">new_collection</span><span class="p">,</span> <span class="n">dbschema</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Swap the collection name of all the keys of a matching colletions.</span>
 <span class="sd">        It optionally takes a dbschema argument and will set the attribute</span>
 <span class="sd">        of that key with the corresponding one defined in the dbschema. It</span>
@@ -926,7 +926,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">set_collection</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">new_collection</span><span class="p">,</span> <span class="n">dbschema</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MDSchemaDefinition.readonly"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.readonly">[docs]</a>    <span class="k">def</span> <span class="nf">readonly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if an attribute is marked readonly.</span>
 
 <span class="sd">        :param key: key to be tested</span>
@@ -944,7 +944,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="MDSchemaDefinition.writeable"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.writeable">[docs]</a>    <span class="k">def</span> <span class="nf">writeable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if an attribute is writeable. Inverted logic from the readonly method.</span>
 
 <span class="sd">        :param key: key to be tested</span>
@@ -956,7 +956,7 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MDSchemaDefinition.set_readonly"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.set_readonly">[docs]</a>    <span class="k">def</span> <span class="nf">set_readonly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Lock an attribute to assure it will not be saved.</span>
 
 <span class="sd">        Parameters can be defined readonly. That is a standard feature of this class,</span>
@@ -975,7 +975,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;readonly&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="MDSchemaDefinition.set_writeable"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.set_writeable">[docs]</a>    <span class="k">def</span> <span class="nf">set_writeable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Force an attribute to be writeable.</span>
 
 <span class="sd">        Normally some parameters are marked readonly on construction to avoid</span>
@@ -997,7 +997,7 @@
 
 
 <span class="k">def</span> <span class="nf">_is_basic_type</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function used to check if the value of the type attribute is valid</span>
 
 <span class="sd">    :param s: the str value in the type attribute</span>
@@ -1028,7 +1028,7 @@
 
 
 <span class="k">def</span> <span class="nf">_check_min_default_key</span><span class="p">(</span><span class="n">db_dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function used to check if there are at least 3 defined default keys, which are &#39;wf&#39;, &#39;elog&#39; and &#39;history_object&#39;</span>
 
 <span class="sd">    :param db_dict: the database schema dictionary</span>
@@ -1055,7 +1055,7 @@
 
 
 <span class="k">def</span> <span class="nf">_is_valid_schema</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">schema_</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function used to validate all collections in a schema dictionary</span>
 <span class="sd">    :param dic: a schema dictionary</span>
 <span class="sd">    :type dic: dict</span>
@@ -1072,7 +1072,7 @@
 
 
 <span class="k">def</span> <span class="nf">_is_valid_database_schema_definition</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">collection_name_list</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function used to validate all attributes in a database schema definition dictionary</span>
 <span class="sd">    :param dic: a schema definition dictionary</span>
 <span class="sd">    :type dic: dict</span>
@@ -1096,7 +1096,7 @@
 
 
 <span class="k">def</span> <span class="nf">_is_valid_metadata_schema_definition</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">collection_name_list</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function used to validate all attributes in a metadata schema definition dictionary</span>
 <span class="sd">    :param dic: a schema definition dictionary</span>
 <span class="sd">    :type dic: dict</span>
@@ -1120,7 +1120,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_schema_definition_schema</span><span class="p">(</span><span class="n">collection_name_list</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ref</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to get the schema for schema definitions</span>
 
 <span class="sd">    :param collection_name_list: a list of collection name to be used for reference</span>
@@ -1215,7 +1215,7 @@
 
 
 <span class="k">def</span> <span class="nf">_check_format</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    check if a mspass.yaml file user provides is valid or not</span>
 
 <span class="sd">    :param schema_dic: the dictionary that a yaml file is dumped</span>

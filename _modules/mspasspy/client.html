@@ -225,7 +225,7 @@
 
 
 <div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client">[docs]</a><span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A client-side representation of MSPASS.</span>
 
 <span class="sd">    This is the only client users should use in MSPASS. The client manages all the other clients or instances.</span>
@@ -432,7 +432,7 @@
                     <span class="p">)</span>
 
 <div class="viewcode-block" id="Client.get_database_client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_database_client">[docs]</a>    <span class="k">def</span> <span class="nf">get_database_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the database client in the global history manager</span>
 
 <span class="sd">        :return: :class:`mspasspy.db.database.Database`</span>
@@ -440,7 +440,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span></div>
 
 <div class="viewcode-block" id="Client.get_database"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_database">[docs]</a>    <span class="k">def</span> <span class="nf">get_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a database by database_name, if database_name is not specified, use the default one</span>
 
 <span class="sd">        :param database_name: the name of database</span>
@@ -452,7 +452,7 @@
         <span class="k">return</span> <span class="n">Database</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span><span class="p">,</span> <span class="n">database_name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Client.get_global_history_manager"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_global_history_manager">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_history_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the global history manager with this client</span>
 
 <span class="sd">        :return: :class:`mspasspy.global_history.manager.GlobalHistoryManager`</span>
@@ -460,7 +460,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_history_manager</span></div>
 
 <div class="viewcode-block" id="Client.get_scheduler"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_scheduler">[docs]</a>    <span class="k">def</span> <span class="nf">get_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the scheduler(spark/dask) with this client</span>
 
 <span class="sd">        :return: :class:`pyspark.SparkContext`/:class:`dask.distributed.Client`/None</span>
@@ -476,7 +476,7 @@
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Client.set_database_client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_database_client">[docs]</a>    <span class="k">def</span> <span class="nf">set_database_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_host</span><span class="p">,</span> <span class="n">database_port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a database client by database_host(and database_port)</span>
 
 <span class="sd">        :param database_host: the host address of database client</span>
@@ -507,7 +507,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Client.set_global_history_manager"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_global_history_manager">[docs]</a>    <span class="k">def</span> <span class="nf">set_global_history_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">history_db</span><span class="p">,</span> <span class="n">job_name</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a global history manager by history_db, job_name(and collection)</span>
 
 <span class="sd">        :param history_db: the database will be set in the global history manager</span>
@@ -539,7 +539,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Client.set_scheduler"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_scheduler">[docs]</a>    <span class="k">def</span> <span class="nf">set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scheduler</span><span class="p">,</span> <span class="n">scheduler_host</span><span class="p">,</span> <span class="n">scheduler_port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a scheduler by scheduler type, scheduler_host(and scheduler_port)</span>
 
 <span class="sd">        :param scheduler: the scheduler type, should be either dask or spark</span>

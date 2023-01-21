@@ -212,7 +212,7 @@
 
 
 <span class="k">def</span> <span class="nf">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This internal function standardizes the test to certify the</span>
 <span class="sd">    input datum, d, is or is not a valid MsPASS data object.   Putting it</span>
 <span class="sd">    in one place makes extending the code base for other data types much</span>
@@ -227,7 +227,7 @@
 
 
 <span class="k">def</span> <span class="nf">_is_ensemble</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Standardized (simple) test if the data are an ensemble.  Returns true if d is</span>
 <span class="sd">    an ensemble.  false otherwise.   Will yield a potentially misleading</span>
 <span class="sd">    False if d is anything but one of the MsPASS ensemble objects.</span>
@@ -244,7 +244,7 @@
 
 
 <div class="viewcode-block" id="Executioner"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Executioner">[docs]</a><span class="k">class</span> <span class="nc">Executioner</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for family of python classes used for killing</span>
 <span class="sd">    mspass data objects failing to pass a particular metric.</span>
 <span class="sd">    It is made abstract to define required methods a particular instance</span>
@@ -254,7 +254,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method can make the object callable and easier to use.</span>
 <span class="sd">        After an instance is iniated, instead of explicitly calling</span>
 <span class="sd">        kill_if_true, one can just call this object.</span>
@@ -267,7 +267,7 @@
 
 <div class="viewcode-block" id="Executioner.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Executioner.kill_if_true">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method should run a test on d that will call the kill method</span>
 <span class="sd">        on MsPASS atomic object d if the test defined by the implementation</span>
 <span class="sd">        fails.  This is the main working method of this class of function</span>
@@ -276,7 +276,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Executioner.edit_ensemble_members"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Executioner.edit_ensemble_members">[docs]</a>    <span class="k">def</span> <span class="nf">edit_ensemble_members</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Subclasses should call this method if the input data are an</span>
 <span class="sd">        ensemble.   A trick of inheritance allows the algorithm of self</span>
 <span class="sd">        to then be applied to whole ensemble.  Putting this in the</span>
@@ -290,7 +290,7 @@
         <span class="k">return</span> <span class="n">ensemble</span></div>
 
 <div class="viewcode-block" id="Executioner.log_kill"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Executioner.log_kill">[docs]</a>    <span class="k">def</span> <span class="nf">log_kill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">testname</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">severity</span><span class="o">=</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Informational</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This base class method is used to standardize the error logging</span>
 <span class="sd">        functionality of all Executioners.   It writes a standardized</span>
 <span class="sd">        message to simplify writing of subclasses - they need only</span>
@@ -322,7 +322,7 @@
 
 
 <div class="viewcode-block" id="MetadataGT"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataGT">[docs]</a><span class="k">class</span> <span class="nc">MetadataGT</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of Executioner using a greater than test of a</span>
 <span class="sd">    Metadata attribute.  Both the metadata key and the threshold</span>
 <span class="sd">    for the kill test are set on creation.  This implementation should</span>
@@ -336,7 +336,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One and only constructor.  Sets the parameters that define this</span>
 <span class="sd">        tester.</span>
 
@@ -354,7 +354,7 @@
 
 <div class="viewcode-block" id="MetadataGT.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataGT.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span> <span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] &gt; value stored with the class.</span>
 
@@ -385,7 +385,7 @@
 
 
 <div class="viewcode-block" id="MetadataGE"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataGE">[docs]</a><span class="k">class</span> <span class="nc">MetadataGE</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of Executioner using a greater than or equal test of a</span>
 <span class="sd">    Metadata attribute.  Both the metadata key and the threshold</span>
 <span class="sd">    for the kill test are set on creation.  This implementation should</span>
@@ -399,7 +399,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One and only constructor.  Sets the parameters that define this</span>
 <span class="sd">        tester.</span>
 
@@ -417,7 +417,7 @@
 
 <div class="viewcode-block" id="MetadataGE.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataGE.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span> <span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] &gt;= value stored with the class.</span>
 
@@ -446,7 +446,7 @@
 
 
 <div class="viewcode-block" id="MetadataLT"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataLT">[docs]</a><span class="k">class</span> <span class="nc">MetadataLT</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of Executioner using a lessthan test of a</span>
 <span class="sd">    Metadata attribute.  Both the metadata key and the threshold</span>
 <span class="sd">    for the kill test are set on creation.  This implementation should</span>
@@ -460,7 +460,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One and only constructor.  Sets the parameters that define this</span>
 <span class="sd">        tester.</span>
 
@@ -478,7 +478,7 @@
 
 <div class="viewcode-block" id="MetadataLT.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataLT.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span> <span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] &gt; value stored with the class.</span>
 
@@ -507,7 +507,7 @@
 
 
 <div class="viewcode-block" id="MetadataLE"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataLE">[docs]</a><span class="k">class</span> <span class="nc">MetadataLE</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of Executioner using a less than or equal test of a</span>
 <span class="sd">    Metadata attribute.  Both the metadata key and the threshold</span>
 <span class="sd">    for the kill test are set on creation.  This implementation should</span>
@@ -521,7 +521,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One and only constructor.  Sets the parameters that define this</span>
 <span class="sd">        tester.</span>
 
@@ -539,7 +539,7 @@
 
 <div class="viewcode-block" id="MetadataLE.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataLE.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span> <span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] &lt;= value stored with the class.</span>
 
@@ -568,7 +568,7 @@
 
 
 <div class="viewcode-block" id="MetadataEQ"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataEQ">[docs]</a><span class="k">class</span> <span class="nc">MetadataEQ</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of Executioner using an equality test of a</span>
 <span class="sd">    Metadata attribute.  Both the metadata key and the threshold</span>
 <span class="sd">    for the kill test are set on creation.  This implementation should</span>
@@ -584,7 +584,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One and only constructor.  Sets the parameters that define this</span>
 <span class="sd">        tester.</span>
 
@@ -602,7 +602,7 @@
 
 <div class="viewcode-block" id="MetadataEQ.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataEQ.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span> <span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] == value stored with the class.</span>
 
@@ -631,7 +631,7 @@
 
 
 <div class="viewcode-block" id="MetadataNE"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataNE">[docs]</a><span class="k">class</span> <span class="nc">MetadataNE</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of Executioner using an not equal (NE) test of a</span>
 <span class="sd">    Metadata attribute.  Both the metadata key and the threshold</span>
 <span class="sd">    for the kill test are set on creation.  This implementation should</span>
@@ -647,7 +647,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One and only constructor.  Sets the parameters that define this</span>
 <span class="sd">        tester.</span>
 
@@ -665,7 +665,7 @@
 
 <div class="viewcode-block" id="MetadataNE.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataNE.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span> <span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] != value stored with the class.</span>
 
@@ -694,7 +694,7 @@
 
 
 <div class="viewcode-block" id="MetadataDefined"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataDefined">[docs]</a><span class="k">class</span> <span class="nc">MetadataDefined</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of Executioner using an existence test.  The</span>
 <span class="sd">    constructor loads only a key string.   The test for the kill_if_true</span>
 <span class="sd">    method is then simply for the existence of a value associated with</span>
@@ -703,7 +703,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One and only constructor.  Sets the key used for the existence test.</span>
 
 <span class="sd">        :param key:  key used for existence test.</span>
@@ -718,7 +718,7 @@
 
 <div class="viewcode-block" id="MetadataDefined.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataDefined.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span> <span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if self.key is defined for this datum</span>
 
@@ -743,7 +743,7 @@
 
 
 <div class="viewcode-block" id="MetadataUndefined"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataUndefined">[docs]</a><span class="k">class</span> <span class="nc">MetadataUndefined</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of Executioner using an nonexistence test.  The</span>
 <span class="sd">    constructor loads only a key string.   The test for the kill_if_true</span>
 <span class="sd">    method is then simply for the existence of a value associated with</span>
@@ -756,7 +756,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One and only constructor.  Sets the key used for the existence test.</span>
 
 <span class="sd">        :param key:  key used for existence test.</span>
@@ -771,7 +771,7 @@
 
 <div class="viewcode-block" id="MetadataUndefined.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataUndefined.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span> <span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if self.key is not defined for this datum</span>
 
@@ -796,7 +796,7 @@
 
 
 <div class="viewcode-block" id="MetadataInterval"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataInterval">[docs]</a><span class="k">class</span> <span class="nc">MetadataInterval</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of Executioner based on a numeric range of values.</span>
 <span class="sd">    i.e. it tests if a metadata value is in a range defined by</span>
 <span class="sd">    an upper and lower value.   Ranges have a minor complication in</span>
@@ -827,7 +827,7 @@
         <span class="n">kill_if_outside</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One and only constructor.  Sets the parameters that define this</span>
 <span class="sd">        tester.</span>
 
@@ -860,7 +860,7 @@
 
 <div class="viewcode-block" id="MetadataInterval.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataInterval.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span> <span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] &lt;= value stored with the class.</span>
 
@@ -932,7 +932,7 @@
 
 
 <div class="viewcode-block" id="FiringSquad"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.FiringSquad">[docs]</a><span class="k">class</span> <span class="nc">FiringSquad</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to apply multiple Executioners in a single pass - hence the name</span>
 <span class="sd">    FiringSquare image; facing more than one thing that could kill you.</span>
 <span class="sd">    The implementation in kill_if_true iterates through a list of</span>
@@ -947,7 +947,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">executioner_list</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One and only constructor.  executioner_list does not literally</span>
 <span class="sd">        have to be a list container.  It can be any container that is iterable so</span>
 <span class="sd">        a list, tuple, or array can be used.   Internally the contents</span>
@@ -974,7 +974,7 @@
 
 <div class="viewcode-block" id="FiringSquad.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.FiringSquad.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span> <span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of base class method.  In this case failure is</span>
 <span class="sd">        defined as not passing one of the set of tests loaded  when</span>
 <span class="sd">        the object was created.  As noted earlier the tests are performed</span>
@@ -999,7 +999,7 @@
             <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Defines the += operator for the class. In that case it means a new</span>
 <span class="sd">        test is appended.   Raises a MsPASSError set Fatal other is not a</span>
 <span class="sd">        subclass of Executioner.</span>
@@ -1018,7 +1018,7 @@
 
 
 <div class="viewcode-block" id="MetadataOperator"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperator">[docs]</a><span class="k">class</span> <span class="nc">MetadataOperator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for a set of inline Metadata editors. That is, there</span>
 <span class="sd">    are many instances where Metadata attributes need to be altered</span>
 <span class="sd">    during a workflow where it is either unnecessary or inappropriate</span>
@@ -1031,7 +1031,7 @@
 
 <div class="viewcode-block" id="MetadataOperator.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperator.apply">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fast_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementations are required to implement this method.  It must</span>
 <span class="sd">        accept a MsPASS data object, d, (TimeSeries, Seismogram, TimeSeriesEnsemble,</span>
 <span class="sd">        or SeimogramEnsemble) and apply the operator the implementation defines</span>
@@ -1068,7 +1068,7 @@
 
 <div class="viewcode-block" id="MetadataOperator.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperator.check_keys">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All implementation should implement this checker even if all it contains</span>
 <span class="sd">        is a pass.  It should validate the keys are defined in data to be</span>
 <span class="sd">        handled in the apply method.   An early call in apply should always</span>
@@ -1078,7 +1078,7 @@
 
 <div class="viewcode-block" id="MetadataOperator.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperator.check_operation">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All implementations should implement this method even if they choose</span>
 <span class="sd">        to ignore it.   It should be used to guarantee the operator the class</span>
 <span class="sd">        defines will succeed on the datum sent to the apply method.</span>
@@ -1094,7 +1094,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="MetadataOperator.edit_ensemble_members"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperator.edit_ensemble_members">[docs]</a>    <span class="k">def</span> <span class="nf">edit_ensemble_members</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Subclasses should call this method if the input data are an </span>
 <span class="sd">        ensemble.   A trick of inheritance allows the algorithm of self </span>
 <span class="sd">        to then be applied to whole ensemble.  Putting this in the </span>
@@ -1108,7 +1108,7 @@
         <span class="k">return</span> <span class="n">ensemble</span></div>
 
 <div class="viewcode-block" id="MetadataOperator.log_edit"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperator.log_edit">[docs]</a>    <span class="k">def</span> <span class="nf">log_edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">testname</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">severity</span><span class="o">=</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Informational</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This base class method is used to standardize the error logging</span>
 <span class="sd">        functionality of all editors.   It writes a standardized</span>
 <span class="sd">        message to simplify writing of subclasses - they need only</span>
@@ -1209,7 +1209,7 @@
                 <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="ChangeKey.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.ChangeKey.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        there is no operation on a ChangeKey so this method does nothing.</span>
 <span class="sd">        Because it is an abstract base we have to have this stub.</span>
 
@@ -1218,7 +1218,7 @@
 
 
 <div class="viewcode-block" id="SetValue"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.SetValue">[docs]</a><span class="k">class</span> <span class="nc">SetValue</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to set a specified metadata key to a constant value.  Note any</span>
 <span class="sd">    existing value of Metadata associated with the key defined in the</span>
 <span class="sd">    operator always be overwritten.</span>
@@ -1230,7 +1230,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">constant_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor for this operator.</span>
 
 <span class="sd">        :param key: string defining key for Metadata to be set.</span>
@@ -1244,7 +1244,7 @@
 
 <div class="viewcode-block" id="SetValue.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.SetValue.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Used to apply this operator to Metadata of a MsPASS data object.</span>
 <span class="sd">        Use of decorator adds common MsPASS arguments as call options.</span>
 
@@ -1279,7 +1279,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SetValue.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.SetValue.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Useless implementation of required abstract base method.  In this</span>
 <span class="sd">        case all it does is test if the stored value of key is a string.</span>
 <span class="sd">        Returns true if the key is a string and false otherwise.</span>
@@ -1297,7 +1297,7 @@
 <span class="c1"># all arithmetic operators need an output key to place result that can be the same as one of the inputs</span>
 <span class="c1"># These are unary - operate using a constant value set on constructoin</span>
 <div class="viewcode-block" id="Add"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add">[docs]</a><span class="k">class</span> <span class="nc">Add</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement += operator on a specified Metadata key.</span>
 <span class="sd">    Example:  to add 2 to data, d, with key=&#39;icdp&#39; could use this</span>
 
@@ -1344,7 +1344,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Add.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks that the key defined for the operator is defined for d.</span>
 <span class="sd">        Returns true if is defined and false if not.  the method assumes</span>
 <span class="sd">        d is a valid child of Metadata so the is_defined method will</span>
@@ -1357,7 +1357,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Add.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks to make sure the value works with the operation</span>
 <span class="sd">        required.  It provides a (required by the base class) standardization</span>
 <span class="sd">        of testing for validity of the operation.</span>
@@ -1374,7 +1374,7 @@
 
 
 <div class="viewcode-block" id="Multiply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply">[docs]</a><span class="k">class</span> <span class="nc">Multiply</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement *= operator on a specified Metadata key.</span>
 <span class="sd">    Example:  to multiple metadata in, d, with key=&#39;Pamp&#39; by 2.5</span>
 <span class="sd">    you could use this</span>
@@ -1422,7 +1422,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Multiply.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks that the key defined for the operator is defined for d.</span>
 <span class="sd">        Returns true if is defined and false if not.  the method assumes</span>
 <span class="sd">        d is a valid child of Metadata so the is_defined method will</span>
@@ -1435,7 +1435,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Multiply.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks to make sure the value works with the operation</span>
 <span class="sd">        required.  It provides a (required by the base class) standardization</span>
 <span class="sd">        of testing for validity of the operation.</span>
@@ -1452,7 +1452,7 @@
 
 
 <div class="viewcode-block" id="Subtract"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract">[docs]</a><span class="k">class</span> <span class="nc">Subtract</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement -= operator on a specified Metadata key.</span>
 <span class="sd">    Example:  to subtract 2 from metadata, d, with key=&#39;icdp&#39; could use this</span>
 
@@ -1499,7 +1499,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Subtract.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks that the key defined for the operator is defined for d.</span>
 <span class="sd">        Returns true if is defined and false if not.  the method assumes</span>
 <span class="sd">        d is a valid child of Metadata so the is_defined method will</span>
@@ -1512,7 +1512,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Subtract.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks to make sure the value works with the operation</span>
 <span class="sd">        required.  It provides a (required by the base class) standardization</span>
 <span class="sd">        of testing for validity of the operation.</span>
@@ -1529,7 +1529,7 @@
 
 
 <div class="viewcode-block" id="Divide"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide">[docs]</a><span class="k">class</span> <span class="nc">Divide</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement /= operator on a specified Metadata key.</span>
 <span class="sd">    Example:  to divide metadata in, d, with key=&#39;Pamp&#39; by 2.0</span>
 <span class="sd">    you could use this</span>
@@ -1577,7 +1577,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Divide.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks that the key defined for the operator is defined for d.</span>
 <span class="sd">        Returns true if is defined and false if not.  the method assumes</span>
 <span class="sd">        d is a valid child of Metadata so the is_defined method will</span>
@@ -1590,7 +1590,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Divide.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks to make sure the value works with the operation</span>
 <span class="sd">        required.  It provides a (required by the base class) standardization</span>
 <span class="sd">        of testing for validity of the operation.</span>
@@ -1607,7 +1607,7 @@
 
 
 <div class="viewcode-block" id="IntegerDivide"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide">[docs]</a><span class="k">class</span> <span class="nc">IntegerDivide</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement // operator on a specified Metadata key.</span>
 <span class="sd">    The // operator is a bit obscure but it implements the common</span>
 <span class="sd">    need to truncate a division result to an integer.  This will work</span>
@@ -1663,7 +1663,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="IntegerDivide.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks that the key defined for the operator is defined for d.</span>
 <span class="sd">        Returns true if is defined and false if not.  the method assumes</span>
 <span class="sd">        d is a valid child of Metadata so the is_defined method will</span>
@@ -1676,7 +1676,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="IntegerDivide.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks to make sure the value works with the operation</span>
 <span class="sd">        required.  It provides a (required by the base class) standardization</span>
 <span class="sd">        of testing for validity of the operation.</span>
@@ -1693,7 +1693,7 @@
 
 
 <div class="viewcode-block" id="Mod"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod">[docs]</a><span class="k">class</span> <span class="nc">Mod</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement % operator on a specified Metadata key.</span>
 <span class="sd">    The % operator is a bit obscure but it implements the common</span>
 <span class="sd">    need return the remainder of a divide operation.   It is commonly</span>
@@ -1752,7 +1752,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Mod.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks that the key defined for the operator is defined for d.</span>
 <span class="sd">        Returns true if is defined and false if not.  the method assumes</span>
 <span class="sd">        d is a valid child of Metadata so the is_defined method will</span>
@@ -1765,7 +1765,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Mod.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks to make sure the value works with the operation</span>
 <span class="sd">        required.  It provides a (required by the base class) standardization</span>
 <span class="sd">        of testing for validity of the operation.</span>
@@ -1783,7 +1783,7 @@
 
 <span class="c1"># These are binary operators using two keys set in constructor</span>
 <div class="viewcode-block" id="Add2"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add2">[docs]</a><span class="k">class</span> <span class="nc">Add2</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement + operator that adds two Metadata attributes</span>
 <span class="sd">    together.  The attributes are feteched with two keys set when</span>
 <span class="sd">    the operator is constructed.  Let a be the value in a datum</span>
@@ -1851,7 +1851,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Add2.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add2.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks that the keys required for the operator are defined for d.</span>
 <span class="sd">        If either required key are missing from d return False.  Return</span>
 <span class="sd">        True if both are set in d. The method assumes</span>
@@ -1865,7 +1865,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Add2.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add2.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks to make sure the value works with the operation</span>
 <span class="sd">        required.  It provides a (required by the base class) standardization</span>
 <span class="sd">        of testing for validity of the operation.</span>
@@ -1883,7 +1883,7 @@
 
 
 <div class="viewcode-block" id="Multiply2"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply2">[docs]</a><span class="k">class</span> <span class="nc">Multiply2</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement * operator that multiplies two Metadata attributes</span>
 <span class="sd">    together.  The attributes are feteched with two keys set when</span>
 <span class="sd">    the operator is constructed.  Let a be the value in a datum</span>
@@ -1951,7 +1951,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Multiply2.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply2.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks that the keys required for the operator are defined for d.</span>
 <span class="sd">        If either required key are missing from d return False.  Return</span>
 <span class="sd">        True if both are set in d. The method assumes</span>
@@ -1965,7 +1965,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Multiply2.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply2.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks to make sure the value works with the operation</span>
 <span class="sd">        required.  It provides a (required by the base class) standardization</span>
 <span class="sd">        of testing for validity of the operation.</span>
@@ -1983,7 +1983,7 @@
 
 
 <div class="viewcode-block" id="Subtract2"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract2">[docs]</a><span class="k">class</span> <span class="nc">Subtract2</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement - operator that computes the difference of two Metadata</span>
 <span class="sd">    attributes.  The attributes are feteched with two keys set when</span>
 <span class="sd">    the operator is constructed.  Let a be the value in a datum</span>
@@ -2051,7 +2051,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Subtract2.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract2.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks that the keys required for the operator are defined for d.</span>
 <span class="sd">        If either required key are missing from d return False.  Return</span>
 <span class="sd">        True if both are set in d. The method assumes</span>
@@ -2065,7 +2065,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Subtract2.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract2.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks to make sure the value works with the operation</span>
 <span class="sd">        required.  It provides a (required by the base class) standardization</span>
 <span class="sd">        of testing for validity of the operation.</span>
@@ -2083,7 +2083,7 @@
 
 
 <div class="viewcode-block" id="Divide2"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide2">[docs]</a><span class="k">class</span> <span class="nc">Divide2</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement / operator that divides two Metadata attributes.</span>
 <span class="sd">    The attributes are feteched with two keys set when</span>
 <span class="sd">    the operator is constructed.  Let a be the value in a datum</span>
@@ -2151,7 +2151,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Divide2.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide2.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks that the keys required for the operator are defined for d.</span>
 <span class="sd">        If either required key are missing from d return False.  Return</span>
 <span class="sd">        True if both are set in d. The method assumes</span>
@@ -2165,7 +2165,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Divide2.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide2.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks to make sure the value works with the operation</span>
 <span class="sd">        required.  It provides a (required by the base class) standardization</span>
 <span class="sd">        of testing for validity of the operation.</span>
@@ -2183,7 +2183,7 @@
 
 
 <div class="viewcode-block" id="IntegerDivide2"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide2">[docs]</a><span class="k">class</span> <span class="nc">IntegerDivide2</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement // operator between two Metadata attributes.</span>
 <span class="sd">    The attributes are feteched with two keys set when</span>
 <span class="sd">    the operator is constructed.  Let a be the value in a datum</span>
@@ -2251,7 +2251,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="IntegerDivide2.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide2.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks that the keys required for the operator are defined for d.</span>
 <span class="sd">        If either required key are missing from d return False.  Return</span>
 <span class="sd">        True if both are set in d. The method assumes</span>
@@ -2265,7 +2265,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="IntegerDivide2.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide2.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks to make sure the value works with the operation</span>
 <span class="sd">        required.  It provides a (required by the base class) standardization</span>
 <span class="sd">        of testing for validity of the operation.</span>
@@ -2283,7 +2283,7 @@
 
 
 <div class="viewcode-block" id="Mod2"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod2">[docs]</a><span class="k">class</span> <span class="nc">Mod2</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement % operator between two Metadata attributes.</span>
 <span class="sd">    The attributes are feteched with two keys set when</span>
 <span class="sd">    the operator is constructed.  Let a be the value in a datum</span>
@@ -2351,7 +2351,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Mod2.check_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod2.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks that the keys required for the operator are defined for d.</span>
 <span class="sd">        If either required key are missing from d return False.  Return</span>
 <span class="sd">        True if both are set in d. The method assumes</span>
@@ -2365,7 +2365,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Mod2.check_operation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod2.check_operation">[docs]</a>    <span class="k">def</span> <span class="nf">check_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method checks to make sure the value works with the operation</span>
 <span class="sd">        required.  It provides a (required by the base class) standardization</span>
 <span class="sd">        of testing for validity of the operation.</span>
@@ -2386,7 +2386,7 @@
 <span class="c1"># is identical.  I did little more than edit a copy of FiringSquad to produce</span>
 <span class="c1"># this class</span>
 <div class="viewcode-block" id="MetadataOperatorChain"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperatorChain">[docs]</a><span class="k">class</span> <span class="nc">MetadataOperatorChain</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to apply multiple a chain of arithmetic operators to derive</span>
 <span class="sd">    computed metadata attributes.  Very elaborate calculations can be</span>
 <span class="sd">    done through this class by chaining appropriate atomic operators</span>
@@ -2400,7 +2400,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operator_list</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One and only constructor.  operator_list does not literally</span>
 <span class="sd">        have to be a list container.  It can be any container that is iterable so</span>
 <span class="sd">        a list, tuple, or array can be used.   Internally the contents</span>
@@ -2428,7 +2428,7 @@
 
 <div class="viewcode-block" id="MetadataOperatorChain.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperatorChain.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of base class method.  In this case failure is</span>
 <span class="sd">        defined as not passing one of the set of tests loaded  when</span>
 <span class="sd">        the object was created.  As noted earlier the tests are performed</span>
@@ -2462,7 +2462,7 @@
         <span class="k">pass</span></div>
 
     <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Defines the += operator for the class. In that case it means a new</span>
 <span class="sd">        operator is appended.   Raises a MsPASSError set Fatal other is not a</span>
 <span class="sd">        subclass of MetadataOperator.</span>
@@ -2481,7 +2481,7 @@
 
 
 <div class="viewcode-block" id="erase_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.erase_metadata">[docs]</a><span class="k">def</span> <span class="nf">erase_metadata</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">keylist</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This editor clears the contents of any data associated with a list of</span>
 <span class="sd">    Metadata keys.   If there is no data for that key it will silently do</span>
 <span class="sd">    nothing.  If the input is an ensemble and apply_to_members is True</span>

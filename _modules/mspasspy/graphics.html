@@ -209,7 +209,7 @@
 
 
 <div class="viewcode-block" id="wtva_raw"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.wtva_raw">[docs]</a><span class="k">def</span> <span class="nf">wtva_raw</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot a numpy 2D array (matrix) in a wiggle trace, variable area</span>
 <span class="sd">    format as used in paper seismic section displays.   This is the low</span>
 <span class="sd">    level function that displays a ensemble of scalar data cast into</span>
@@ -288,7 +288,7 @@
 <div class="viewcode-block" id="image_raw"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.image_raw">[docs]</a><span class="k">def</span> <span class="nf">image_raw</span><span class="p">(</span>
     <span class="n">section</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">pyplot</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot a numpy 2D array (matrix) in an image format.  This type of</span>
 <span class="sd">    plot has two uses: (1) large numbers of spatially coherent signals</span>
 <span class="sd">    (as in a conventional seismic reflection) are more clearly displayed</span>
@@ -423,7 +423,7 @@
 <div class="viewcode-block" id="wtvaplot"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.wtvaplot">[docs]</a><span class="k">def</span> <span class="nf">wtvaplot</span><span class="p">(</span>
     <span class="n">d</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">fill_color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wiggle trace variable area plotter for mspass ensemble objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># We have to handle 3C ensembles specially to make 3 separate</span>
@@ -484,7 +484,7 @@
 <div class="viewcode-block" id="imageplot"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.imageplot">[docs]</a><span class="k">def</span> <span class="nf">imageplot</span><span class="p">(</span>
     <span class="n">d</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">pyplot</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Image plotter for mspass ensemble objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># We have to handle 3C ensembles specially to make 3 separate</span>
@@ -539,7 +539,7 @@
 
 
 <div class="viewcode-block" id="SectionPlotter"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SectionPlotter">[docs]</a><span class="k">class</span> <span class="nc">SectionPlotter</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class was designed to plot data in a seismic reflection style</span>
 <span class="sd">    display.  That means time is the y axis but runs in a reverse direction</span>
 <span class="sd">    and traces are equally spaced along the x axis. The data can be plotted</span>
@@ -568,7 +568,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The constructor initializes all the internal variables that define</span>
 <span class="sd">        the possible behaviors of the plotting engine.  The constructor</span>
 <span class="sd">        currently does no sanity check on the compatibility of the parameters.</span>
@@ -616,7 +616,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">change_style</span><span class="p">(</span><span class="s2">&quot;wtvaimg&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SectionPlotter.change_style"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SectionPlotter.change_style">[docs]</a>    <span class="k">def</span> <span class="nf">change_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newstyle</span><span class="p">,</span> <span class="n">fill_color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">color_map</span><span class="o">=</span><span class="s2">&quot;seismic&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use this method to change the plot style.   Options are described</span>
 <span class="sd">        below.   Some parameter combinations are illegal and will result in</span>
 <span class="sd">        a RuntimeError if used.  The illegal combos are listed below for</span>
@@ -692,7 +692,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SectionPlotter.plot"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SectionPlotter.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call this method to plot any data using the current style setup and any</span>
 <span class="sd">        details defined by public attributes.</span>
 
@@ -739,7 +739,7 @@
 
 
 <div class="viewcode-block" id="SeismicPlotter"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter">[docs]</a><span class="k">class</span> <span class="nc">SeismicPlotter</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    SeismicPlotter is used to plot mspass data objects in the</span>
 <span class="sd">    seismology convention with time as the x axis.  Use SectionPlotter</span>
 <span class="sd">    to plot data in the seismic reflection convention with time on the</span>
@@ -763,7 +763,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor for this object.   It mostly sets defaults but</span>
 <span class="sd">        has a few common optional parameters to set at construction</span>
 <span class="sd">        time.  Note style is intentionally not a constructor</span>
@@ -811,7 +811,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">change_style</span><span class="p">(</span><span class="s2">&quot;wtvaimg&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SeismicPlotter.change_style"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.change_style">[docs]</a>    <span class="k">def</span> <span class="nf">change_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newstyle</span><span class="p">,</span> <span class="n">fill_color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">color_map</span><span class="o">=</span><span class="s2">&quot;seismic&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use this method to change the plot style.   Options are described</span>
 <span class="sd">        below.   Some parameter combinations are illegal and will result in</span>
 <span class="sd">        a RuntimeError if used.  The illegal combos are listed below for</span>
@@ -881,14 +881,14 @@
     <span class="c1"># These two method should perhaps be implemented as decorators</span>
 
 <div class="viewcode-block" id="SeismicPlotter.topdown"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.topdown">[docs]</a>    <span class="k">def</span> <span class="nf">topdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Switch to mode of plotting ensembles from the top downward</span>
 <span class="sd">        from default of bottum upward.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plot_topdown</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="SeismicPlotter.bottomup"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.bottomup">[docs]</a>    <span class="k">def</span> <span class="nf">bottomup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Restore (or force) default ensemble plot order of bottup upward.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plot_topdown</span> <span class="o">=</span> <span class="kc">False</span></div>
@@ -917,7 +917,7 @@
             <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Private helper method for immediately above.   Necessary because</span>
 <span class="sd">        copy.deepcopy doesn&#39;t work with our pybind11 wrappers. There may be a</span>
 <span class="sd">        fix, but for now we have to use copy constructors specific to each</span>
@@ -938,7 +938,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="SeismicPlotter.set_topdown"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.set_topdown">[docs]</a>    <span class="k">def</span> <span class="nf">set_topdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call this method to have datat plotted from top down.  Default plots</span>
 <span class="sd">        ensemble member 0 at the bottom of the plot with successive members</span>
 <span class="sd">        plotted in units of 1.0 above the last.  When this is called the</span>
@@ -949,7 +949,7 @@
     <span class="c1"># These are private methods used internally</span>
 
     <span class="k">def</span> <span class="nf">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Normalizes data (d) using scale function.  for ensembles that</span>
 <span class="sd">        is peak normalization to level self.scale by section. For</span>
 <span class="sd">        Seismograms each component will be normalized independently.</span>
@@ -976,7 +976,7 @@
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_3C_titles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Private method to add titles with pyplot.title to 3C ensemble data.</span>
 <span class="sd">        This algorithm is a bit fragile as it depends upon use of</span>
 <span class="sd">        figure tagged with integer component number.</span>
@@ -988,7 +988,7 @@
                 <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title3c</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_wtva</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Private method for making all forms of wiggle trace plots.  The</span>
 <span class="sd">        fill boolean determines if shading is applied.  When used the shading</span>
 <span class="sd">        is assumed properly defined by self._fill_color.   In this implementation</span>
@@ -1023,7 +1023,7 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">base_error</span> <span class="o">+</span> <span class="s2">&quot;Received unsupported data type=&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_imageplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Private method for making all forms of image plots.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">base_error</span> <span class="o">=</span> <span class="s2">&quot;SeismicPlotter._imageplot (Error):  &quot;</span>

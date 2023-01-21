@@ -261,197 +261,197 @@ If unset, the Jupyter Notebook will generate a random token and print to stdout,
 Below, we provide two exemplary Docker Compose configurations that have distributed setup for both the computation (with Dask or Spark) and the database (with MongoDB).</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-number">Listing 1 </span><span class="caption-text">Docker Compose example that configures a MongoDB cluster of two shards and a Dask cluster of one worker.</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3&#39;</span>
 <span class="linenos">  2</span>
-<span class="linenos">  3</span><span class="nt">services</span><span class="p">:</span><span class="w"></span>
+<span class="linenos">  3</span><span class="nt">services</span><span class="p">:</span>
 <span class="linenos">  4</span>
-<span class="linenos">  5</span><span class="w">  </span><span class="nt">mspass-dbmanager</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">  6</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span><span class="w"></span>
-<span class="linenos">  7</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">  8</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span><span class="w"></span>
-<span class="linenos">  9</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 10</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017:27017</span><span class="w"></span>
-<span class="linenos"> 11</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 12</span><span class="w">      </span><span class="nt">mspass-shard-0</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 13</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span><span class="w"></span>
-<span class="linenos"> 14</span><span class="w">      </span><span class="nt">mspass-shard-1</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 15</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span><span class="w"></span>
-<span class="linenos"> 16</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 17</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbmanager</span><span class="w"></span>
-<span class="linenos"> 18</span><span class="w">      </span><span class="nt">MSPASS_SHARD_LIST</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-0/mspass-shard-0:27017 mspass-shard-1/mspass-shard-1:27017</span><span class="w"></span>
-<span class="linenos"> 19</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span><span class="w"></span>
-<span class="linenos"> 20</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span><span class="w"></span>
+<span class="linenos">  5</span><span class="w">  </span><span class="nt">mspass-dbmanager</span><span class="p">:</span>
+<span class="linenos">  6</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">  7</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">  8</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos">  9</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos"> 10</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017:27017</span>
+<span class="linenos"> 11</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos"> 12</span><span class="w">      </span><span class="nt">mspass-shard-0</span><span class="p">:</span>
+<span class="linenos"> 13</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos"> 14</span><span class="w">      </span><span class="nt">mspass-shard-1</span><span class="p">:</span>
+<span class="linenos"> 15</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos"> 16</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos"> 17</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbmanager</span>
+<span class="linenos"> 18</span><span class="w">      </span><span class="nt">MSPASS_SHARD_LIST</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-0/mspass-shard-0:27017 mspass-shard-1/mspass-shard-1:27017</span>
+<span class="linenos"> 19</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
+<span class="linenos"> 20</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
 <span class="linenos"> 21</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo &#39;db.runCommand(&quot;ping&quot;).ok&#39; | mongo localhost:27017/test --quiet</span><span class="w"> </span>
-<span class="linenos"> 22</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span><span class="w"></span>
-<span class="linenos"> 23</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span><span class="w"></span>
-<span class="linenos"> 24</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
-<span class="linenos"> 25</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span><span class="w"></span>
+<span class="linenos"> 22</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos"> 23</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
+<span class="linenos"> 24</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos"> 25</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
 <span class="linenos"> 26</span><span class="w">  </span>
-<span class="linenos"> 27</span><span class="w">  </span><span class="nt">mspass-shard-0</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 28</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-0</span><span class="w"></span>
-<span class="linenos"> 29</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span><span class="w"></span>
-<span class="linenos"> 30</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 31</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span><span class="w"></span>
-<span class="linenos"> 32</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 33</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shard</span><span class="w"></span>
-<span class="linenos"> 34</span><span class="w">      </span><span class="nt">MSPASS_SHARD_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
-<span class="linenos"> 35</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span><span class="w"></span>
-<span class="linenos"> 36</span><span class="w">      </span><span class="nt">SHARD_DB_PATH</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scratch</span><span class="w"></span>
-<span class="linenos"> 37</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span><span class="w"></span>
+<span class="linenos"> 27</span><span class="w">  </span><span class="nt">mspass-shard-0</span><span class="p">:</span>
+<span class="linenos"> 28</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-0</span>
+<span class="linenos"> 29</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos"> 30</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos"> 31</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos"> 32</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos"> 33</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shard</span>
+<span class="linenos"> 34</span><span class="w">      </span><span class="nt">MSPASS_SHARD_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="linenos"> 35</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
+<span class="linenos"> 36</span><span class="w">      </span><span class="nt">SHARD_DB_PATH</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scratch</span>
+<span class="linenos"> 37</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
 <span class="linenos"> 38</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo &#39;db.runCommand(&quot;ping&quot;).ok&#39; | mongo localhost:27017/test --quiet</span><span class="w"> </span>
-<span class="linenos"> 39</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span><span class="w"></span>
-<span class="linenos"> 40</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span><span class="w"></span>
-<span class="linenos"> 41</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
-<span class="linenos"> 42</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span><span class="w"></span>
+<span class="linenos"> 39</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos"> 40</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
+<span class="linenos"> 41</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos"> 42</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
 <span class="linenos"> 43</span><span class="w">  </span>
-<span class="linenos"> 44</span><span class="w">  </span><span class="nt">mspass-shard-1</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 45</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-1</span><span class="w"></span>
-<span class="linenos"> 46</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span><span class="w"></span>
-<span class="linenos"> 47</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 48</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span><span class="w"></span>
-<span class="linenos"> 49</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 50</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shard</span><span class="w"></span>
-<span class="linenos"> 51</span><span class="w">      </span><span class="nt">MSPASS_SHARD_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
-<span class="linenos"> 52</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span><span class="w"></span>
-<span class="linenos"> 53</span><span class="w">      </span><span class="nt">SHARD_DB_PATH</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scratch</span><span class="w"></span>
-<span class="linenos"> 54</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 55</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo &#39;db.runCommand(&quot;ping&quot;).ok&#39; | mongo localhost:27017/test --quiet</span><span class="w"></span>
-<span class="linenos"> 56</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span><span class="w"></span>
-<span class="linenos"> 57</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span><span class="w"></span>
-<span class="linenos"> 58</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
-<span class="linenos"> 59</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span><span class="w"></span>
+<span class="linenos"> 44</span><span class="w">  </span><span class="nt">mspass-shard-1</span><span class="p">:</span>
+<span class="linenos"> 45</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-1</span>
+<span class="linenos"> 46</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos"> 47</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos"> 48</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos"> 49</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos"> 50</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shard</span>
+<span class="linenos"> 51</span><span class="w">      </span><span class="nt">MSPASS_SHARD_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="linenos"> 52</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
+<span class="linenos"> 53</span><span class="w">      </span><span class="nt">SHARD_DB_PATH</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scratch</span>
+<span class="linenos"> 54</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="linenos"> 55</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo &#39;db.runCommand(&quot;ping&quot;).ok&#39; | mongo localhost:27017/test --quiet</span>
+<span class="linenos"> 56</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos"> 57</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
+<span class="linenos"> 58</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos"> 59</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
 <span class="linenos"> 60</span>
-<span class="linenos"> 61</span><span class="w">  </span><span class="nt">mspass-scheduler</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 62</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span><span class="w"></span>
-<span class="linenos"> 63</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 64</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span><span class="w"></span>
-<span class="linenos"> 65</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 66</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8786:8786</span><span class="w"></span>
-<span class="linenos"> 67</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 68</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scheduler</span><span class="w"></span>
-<span class="linenos"> 69</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span><span class="w"></span>
-<span class="linenos"> 70</span><span class="w">      </span><span class="nt">DASK_SCHEDULER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8786</span><span class="w"></span>
-<span class="linenos"> 71</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 72</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wget --no-verbose --tries=1 --spider http://localhost:8786</span><span class="w"></span>
-<span class="linenos"> 73</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span><span class="w"></span>
-<span class="linenos"> 74</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span><span class="w"></span>
-<span class="linenos"> 75</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
-<span class="linenos"> 76</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span><span class="w"></span>
+<span class="linenos"> 61</span><span class="w">  </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos"> 62</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos"> 63</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos"> 64</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos"> 65</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos"> 66</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8786:8786</span>
+<span class="linenos"> 67</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos"> 68</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scheduler</span>
+<span class="linenos"> 69</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
+<span class="linenos"> 70</span><span class="w">      </span><span class="nt">DASK_SCHEDULER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8786</span>
+<span class="linenos"> 71</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="linenos"> 72</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wget --no-verbose --tries=1 --spider http://localhost:8786</span>
+<span class="linenos"> 73</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos"> 74</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
+<span class="linenos"> 75</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos"> 76</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
 <span class="linenos"> 77</span><span class="w">  </span>
-<span class="linenos"> 78</span><span class="w">  </span><span class="nt">mspass-worker</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 79</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span><span class="w"></span>
-<span class="linenos"> 80</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 81</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span><span class="w"></span>
-<span class="linenos"> 82</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 83</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 84</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span><span class="w"></span>
-<span class="linenos"> 85</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 86</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span><span class="w"></span>
-<span class="linenos"> 87</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span><span class="w"></span>
-<span class="linenos"> 88</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span><span class="w"></span>
+<span class="linenos"> 78</span><span class="w">  </span><span class="nt">mspass-worker</span><span class="p">:</span>
+<span class="linenos"> 79</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos"> 80</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos"> 81</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos"> 82</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos"> 83</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos"> 84</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos"> 85</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos"> 86</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
+<span class="linenos"> 87</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
+<span class="linenos"> 88</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
 <span class="linenos"> 89</span><span class="w">  </span>
-<span class="linenos"> 90</span><span class="w">  </span><span class="nt">mspass-frontend</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 91</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span><span class="w"></span>
-<span class="linenos"> 92</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 93</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span><span class="w"></span>
-<span class="linenos"> 94</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 95</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888:8888</span><span class="w"></span>
-<span class="linenos"> 96</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 97</span><span class="w">      </span><span class="nt">mspass-dbmanager</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 98</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span><span class="w"></span>
-<span class="linenos"> 99</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">100</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span><span class="w"></span>
-<span class="linenos">101</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">102</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span><span class="w"></span>
-<span class="linenos">103</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span><span class="w"></span>
-<span class="linenos">104</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span><span class="w"></span>
-<span class="linenos">105</span><span class="w">      </span><span class="nt">MSPASS_DB_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-dbmanager</span><span class="w"></span>
-<span class="linenos">106</span><span class="w">      </span><span class="nt">MSPASS_JUPYTER_PWD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass</span><span class="w"></span>
-<span class="linenos">107</span><span class="w">      </span><span class="nt">JUPYTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span><span class="w"></span>
+<span class="linenos"> 90</span><span class="w">  </span><span class="nt">mspass-frontend</span><span class="p">:</span>
+<span class="linenos"> 91</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos"> 92</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos"> 93</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos"> 94</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos"> 95</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888:8888</span>
+<span class="linenos"> 96</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos"> 97</span><span class="w">      </span><span class="nt">mspass-dbmanager</span><span class="p">:</span>
+<span class="linenos"> 98</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos"> 99</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos">100</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos">101</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">102</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span>
+<span class="linenos">103</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
+<span class="linenos">104</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">105</span><span class="w">      </span><span class="nt">MSPASS_DB_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-dbmanager</span>
+<span class="linenos">106</span><span class="w">      </span><span class="nt">MSPASS_JUPYTER_PWD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass</span>
+<span class="linenos">107</span><span class="w">      </span><span class="nt">JUPYTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span>
 </pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-number">Listing 2 </span><span class="caption-text">Docker Compose example that configures a MongoDB cluster of two shards and a Spark cluster of one worker.</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3&#39;</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="nt">services</span><span class="p">:</span><span class="w"></span>
+<span class="linenos"> 3</span><span class="nt">services</span><span class="p">:</span>
 <span class="linenos"> 4</span>
-<span class="linenos"> 5</span><span class="w">  </span><span class="nt">mspass-dbmanager</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 6</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span><span class="w"></span>
-<span class="linenos"> 7</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="linenos"> 8</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span><span class="w"></span>
-<span class="linenos"> 9</span><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dockerize -wait tcp://mspass-shard-0:27017 -wait tcp://mspass-shard-1:27017 -timeout 240s /usr/sbin/start-mspass.sh</span><span class="w"></span>
-<span class="linenos">10</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">11</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017:27017</span><span class="w"></span>
-<span class="linenos">12</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">13</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-0</span><span class="w"></span>
-<span class="linenos">14</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-1</span><span class="w"></span>
-<span class="linenos">15</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">16</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbmanager</span><span class="w"></span>
-<span class="linenos">17</span><span class="w">      </span><span class="nt">MSPASS_SHARD_LIST</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-0/mspass-shard-0:27017 mspass-shard-1/mspass-shard-1:27017</span><span class="w"></span>
-<span class="linenos">18</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span><span class="w"></span>
+<span class="linenos"> 5</span><span class="w">  </span><span class="nt">mspass-dbmanager</span><span class="p">:</span>
+<span class="linenos"> 6</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos"> 8</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dockerize -wait tcp://mspass-shard-0:27017 -wait tcp://mspass-shard-1:27017 -timeout 240s /usr/sbin/start-mspass.sh</span>
+<span class="linenos">10</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos">11</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017:27017</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-0</span>
+<span class="linenos">14</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-1</span>
+<span class="linenos">15</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">16</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbmanager</span>
+<span class="linenos">17</span><span class="w">      </span><span class="nt">MSPASS_SHARD_LIST</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-0/mspass-shard-0:27017 mspass-shard-1/mspass-shard-1:27017</span>
+<span class="linenos">18</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
 <span class="linenos">19</span><span class="w">  </span>
-<span class="linenos">20</span><span class="w">  </span><span class="nt">mspass-shard-0</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">21</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-0</span><span class="w"></span>
-<span class="linenos">22</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span><span class="w"></span>
-<span class="linenos">23</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">24</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span><span class="w"></span>
-<span class="linenos">25</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">26</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shard</span><span class="w"></span>
-<span class="linenos">27</span><span class="w">      </span><span class="nt">MSPASS_SHARD_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
-<span class="linenos">28</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span><span class="w"></span>
+<span class="linenos">20</span><span class="w">  </span><span class="nt">mspass-shard-0</span><span class="p">:</span>
+<span class="linenos">21</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-0</span>
+<span class="linenos">22</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">23</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">24</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos">25</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">26</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shard</span>
+<span class="linenos">27</span><span class="w">      </span><span class="nt">MSPASS_SHARD_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="linenos">28</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
 <span class="linenos">29</span><span class="w">  </span>
-<span class="linenos">30</span><span class="w">  </span><span class="nt">mspass-shard-1</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">31</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-1</span><span class="w"></span>
-<span class="linenos">32</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span><span class="w"></span>
-<span class="linenos">33</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">34</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span><span class="w"></span>
-<span class="linenos">35</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">36</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shard</span><span class="w"></span>
-<span class="linenos">37</span><span class="w">      </span><span class="nt">MSPASS_SHARD_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
-<span class="linenos">38</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span><span class="w"></span>
+<span class="linenos">30</span><span class="w">  </span><span class="nt">mspass-shard-1</span><span class="p">:</span>
+<span class="linenos">31</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-shard-1</span>
+<span class="linenos">32</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">33</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">34</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos">35</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">36</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shard</span>
+<span class="linenos">37</span><span class="w">      </span><span class="nt">MSPASS_SHARD_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="linenos">38</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
 <span class="linenos">39</span>
-<span class="linenos">40</span><span class="w">  </span><span class="nt">mspass-scheduler</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">41</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span><span class="w"></span>
-<span class="linenos">42</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">43</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span><span class="w"></span>
-<span class="linenos">44</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">45</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7077:7077</span><span class="w"></span>
-<span class="linenos">46</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">47</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scheduler</span><span class="w"></span>
-<span class="linenos">48</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span><span class="w"></span>
-<span class="linenos">49</span><span class="w">      </span><span class="nt">SPARK_MASTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7077</span><span class="w"></span>
+<span class="linenos">40</span><span class="w">  </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos">41</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">42</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">43</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos">44</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos">45</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7077:7077</span>
+<span class="linenos">46</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">47</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scheduler</span>
+<span class="linenos">48</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span>
+<span class="linenos">49</span><span class="w">      </span><span class="nt">SPARK_MASTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7077</span>
 <span class="linenos">50</span><span class="w">  </span>
-<span class="linenos">51</span><span class="w">  </span><span class="nt">mspass-worker</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">52</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span><span class="w"></span>
-<span class="linenos">53</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">54</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span><span class="w"></span>
-<span class="linenos">55</span><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dockerize -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh</span><span class="w"></span>
-<span class="linenos">56</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">57</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span><span class="w"></span>
-<span class="linenos">58</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">59</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span><span class="w"></span>
-<span class="linenos">60</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span><span class="w"></span>
-<span class="linenos">61</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span><span class="w"></span>
+<span class="linenos">51</span><span class="w">  </span><span class="nt">mspass-worker</span><span class="p">:</span>
+<span class="linenos">52</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">53</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">54</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos">55</span><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dockerize -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh</span>
+<span class="linenos">56</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos">57</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">58</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">59</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
+<span class="linenos">60</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span>
+<span class="linenos">61</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
 <span class="linenos">62</span><span class="w">  </span>
-<span class="linenos">63</span><span class="w">  </span><span class="nt">mspass-frontend</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">64</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span><span class="w"></span>
-<span class="linenos">65</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">66</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span><span class="w"></span>
-<span class="linenos">67</span><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh</span><span class="w"></span>
-<span class="linenos">68</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">69</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888:8888</span><span class="w"></span>
-<span class="linenos">70</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">71</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-dbmanager</span><span class="w"></span>
-<span class="linenos">72</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span><span class="w"></span>
-<span class="linenos">73</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="linenos">74</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span><span class="w"></span>
-<span class="linenos">75</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span><span class="w"></span>
-<span class="linenos">76</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span><span class="w"></span>
-<span class="linenos">77</span><span class="w">      </span><span class="nt">MSPASS_DB_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-dbmanager</span><span class="w"></span>
-<span class="linenos">78</span><span class="w">      </span><span class="nt">MSPASS_JUPYTER_PWD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass</span><span class="w"></span>
-<span class="linenos">79</span><span class="w">      </span><span class="nt">JUPYTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span><span class="w"></span>
+<span class="linenos">63</span><span class="w">  </span><span class="nt">mspass-frontend</span><span class="p">:</span>
+<span class="linenos">64</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">65</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">66</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos">67</span><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh</span>
+<span class="linenos">68</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos">69</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888:8888</span>
+<span class="linenos">70</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos">71</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-dbmanager</span>
+<span class="linenos">72</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">73</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">74</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span>
+<span class="linenos">75</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span>
+<span class="linenos">76</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">77</span><span class="w">      </span><span class="nt">MSPASS_DB_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-dbmanager</span>
+<span class="linenos">78</span><span class="w">      </span><span class="nt">MSPASS_JUPYTER_PWD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass</span>
+<span class="linenos">79</span><span class="w">      </span><span class="nt">JUPYTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span>
 </pre></div>
 </div>
 </div>
@@ -462,7 +462,7 @@ Then, run the following command to start all the containers:</p>
 </pre></div>
 </div>
 <p>This command will start all the containers as services running in the background and you will see all the containers started correctly with outputs like this:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>docker-compose -f docker-compose.yml up -d
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>docker-compose<span class="w"> </span>-f<span class="w"> </span>docker-compose.yml<span class="w"> </span>up<span class="w"> </span>-d
 <span class="go">Creating network &quot;mspass_default&quot; with the default driver</span>
 <span class="go">Creating mspass_mspass-shard-1_1   ... done</span>
 <span class="go">Creating mspass_mspass-scheduler_1 ... done</span>
@@ -484,7 +484,7 @@ You can check the status of the frontend with this command:</p>
 </pre></div>
 </div>
 <p>You should see similar outputs to the following indicating all the containers are correctly cleaned up:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>docker-compose -f docker-compose.yml down
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>docker-compose<span class="w"> </span>-f<span class="w"> </span>docker-compose.yml<span class="w"> </span>down
 <span class="go">Stopping mspass_mspass-frontend_1  ... done</span>
 <span class="go">Stopping mspass_mspass-dbmanager_1 ... done</span>
 <span class="go">Stopping mspass_mspass-worker_1    ... done</span>
