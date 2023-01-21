@@ -1503,10 +1503,10 @@ class MiniseedDBMatcher(DatabaseMatcher):
                     elog.log_error(message, ErrorSeverity.Invalid)
                     return [None, elog]
                 find_output = self.find(mspass_object)
+                if find_output[0] is None:
+                    return [None, find_output[0])
                 number_matches = len(find_output[0])
-                if number_matches == 0:
-                    return [None, find_output[1]]
-                elif number_matches == 1:
+                if number_matches == 1:
                     return [find_output[0][0], find_output[1]]
                 else:
                     if find_output[1] is None:
@@ -1819,8 +1819,7 @@ class MiniseedMatcher(DictionaryCacheMatcher):
                     elog.log_error(message, ErrorSeverity.Invalid)
                     return [None, elog]
                 find_output = self.find(mspass_object)
-                number_matches = len(find_output[0])
-                if number_matches == 0:
+                if find_output[0] is None:
                     # Current implementation posts a elog message that is
                     # returned in file_output[1].  Could consider adding to
                     # that log message here to clarify it was the miniseed
@@ -1858,10 +1857,10 @@ class MiniseedMatcher(DictionaryCacheMatcher):
                     message += "net=" + mspass_object["net"]
                     message += ", sta=" + mspass_object["sta"]
                     message += ", chan=" + mspass_object["chan"]
-                    if mspass_object.is_defined["loc"]:
+                    if mspass_object.is_defined("loc"):
                         message += ", loc=" + mspass_object["loc"]
                     message += "time=" + str(UTCDateTime(mspass_object.t0))
-                    message += "\nFound match for station codes but there is data start time is outside all channel time ranges "
+                    message += "\nFound a match for station codes but no channel time range contains that time "
                     elog.log_error(message, ErrorSeverity.Invalid)
                     return [None, elog]
             else:
