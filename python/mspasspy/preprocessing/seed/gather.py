@@ -10,6 +10,7 @@ from mspasspy.ccore.seismic import (
     SeismogramEnsemble,
     TimeSeries,
     Seismogram,
+    DoubleVector,
 )
 
 from mspasspy.ccore.utility import (
@@ -63,7 +64,8 @@ def extractDataFromOldEnsemble(ensemble_object):
         ret[i] = item_data
     return ret
 
-def extractMetadataFromOldEnsemble(ensemble_object):
+
+def extractMemberMetadataFromOldEnsemble(ensemble_object):
     if not isOldEnsembleObject(ensemble_object):
         raise TypeError(
             "Can't extract metadata from the object, not an old ensemble object"
@@ -71,8 +73,16 @@ def extractMetadataFromOldEnsemble(ensemble_object):
     if len(ensemble_object.member) <= 0:
         raise TypeError("The input object doesn't have any member data")
 
-    metadata_list = [dict(ensemble_object.member[i]) for i in range(len(ensemble_object.member))]
+    metadata_list = [
+        dict(ensemble_object.member[i]) for i in range(len(ensemble_object.member))
+    ]
     member_metadata = pd.DataFrame(metadata_list)
+
+    is_live = [
+        ensemble_object.member[i].live for i in range(len(ensemble_object.member))
+    ]
+
+    member_metadata["is_live"] = is_live
 
     return member_metadata
 
@@ -333,8 +343,7 @@ class BasicGather(ABC):
 
         # Extract Member Metadata from old ensemble
         # Add the members' metadata
-        metadata_list = [self.member_metadata[i].todict() for i in range(self.size)]
-        self.member_metadata = pd.DataFrame(metadata_list)
+        self.member_metadata = extractMemberMetadataFromOldEnsemble(input_obj)
 
     def __init__(
         self,
@@ -398,36 +407,34 @@ class BasicGather(ABC):
                 is_compact=is_compact,
                 num_partition=num_partition,
             )
-            return
 
-        if input_data is not None:
+        elif input_data is not None:
             self.__constructor_from_input_data(
                 input_data=input_data,
                 array_type=array_type,
                 is_compact=is_compact,
                 num_partition=num_partition,
             )
-            return
+        else:
+            if member_metadata is None:
+                raise TypeError("member metadata should be given")
 
-        if member_metadata is None:
-            raise TypeError(
-                "member metadata should be given")
-
-        self.__default_constructor__(
-            capacity=capacity,
-            npts=npts,
-            number_components=number_components,
-            array_type=array_type,
-            is_compact=is_compact,
-            num_partition=num_partition,
-        )
+            self.__default_constructor__(
+                capacity=capacity,
+                npts=npts,
+                number_components=number_components,
+                array_type=array_type,
+                is_compact=is_compact,
+                num_partition=num_partition,
+            )
 
         self.capacity = capacity
         self.npts = npts
         self.array_type = array_type
         self.number_components = number_components
         self.ensemble_metadata = ensemble_metadata
-        self.member_metadata = member_metadata
+        if self.member_metadata is None:
+            self.member_metadata = member_metadata
         self.is_parallel = is_parallel
         self.is_compact = is_compact
         self.num_partition = num_partition
@@ -556,7 +563,7 @@ class BasicGather(ABC):
         """
         Return true if jth member is marked dead (opposite of live).
         """
-        return not self.dead(j)
+        return not self.live(j)
 
     # This next set are s in BasicTimeSeries but all
     def samprate(self):
@@ -596,7 +603,7 @@ class BasicGather(ABC):
 
     # An alternative design would be to put these in an intermediate
     # class but don't think that would be useful for a python implementation
-    def metadata(self, j, return_type="dict"):
+    def get_metadata(self, j, return_type="dict"):
         """
         Return the Metadata components of member j.  return_type should
         allow optional return as dict or Metadata.  Not clear which should
@@ -717,7 +724,7 @@ class Gather(BasicGather):
     """
     Concrete implementtion for a scalar gather.  This is the array
     equivalent of a TimeSeriesEnsemble appropriate when the input matches
-    the concept of BasicGather.    It follows the OOP stndard pardigm that creation is initialization.  This puts a lot of features in the constructor for the class.  """
+    the concept of BasicGather.    It follows the OOP stndard pardigm that creation is initialization.  This puts a lot of features in the constructor for the class."""
 
     def __init__(
         self,
@@ -802,11 +809,12 @@ class Gather(BasicGather):
             raise MsPASSError(
                 "The given index: {} is out of range.".format(j), "Invalid"
             )
-        md = self.metadata(j, "metadata")
+        md = self.get_metadata(j, "metadata")
         obj = TimeSeries(md)
 
-        obj.data = DoubleVector(self.data(j))
-        obj.npts = len(mspass_object.data)
+        for i, d in enumerate(self.data(j)):
+            obj.data[i] = d
+        obj.live = True
         if self.dead(j):
             obj.kill()
         return obj
@@ -824,9 +832,9 @@ class Gather(BasicGather):
             )
         col = self.member_data[j]
         if self.is_parallel:
-            return col.compute()
+            return col.compute().flatten()
         else:
-            return col
+            return col.flatten()
 
     def subset(self, start, end) -> "Gather":
         """
@@ -836,28 +844,43 @@ class Gather(BasicGather):
         TBD is if subset should be overloaded to allow other selections
         """
         new_input_data = self.member_data[start:end]
+        new_member_metadata = self.member_metadata[start:end]
+        new_partition = end - start
+        if new_partition > self.num_partition:
+            num_partition = self.num_partition
+
         new_gather = Gather(
             input_data=new_input_data,
             array_type=self.array_type,
             is_compact=self.is_compact,
-            num_partition=self.num_partition,
+            num_partition=new_partition,
+            member_metadata=new_member_metadata,
         )
+        return new_gather
 
-    def __getitem__(self, i, j):
+    def __getitem__(self, pos):
         """
         Index operator to return data value at sample index i,j.
         """
-        val = self.member_data[i][j][0]
+        i, j = pos
+        if self.is_compact:
+            val = self.member_data[i][0][j]
+        else:
+            val = self.member_data[i][j][0]
         if self.is_parallel:
             return val.compute()
         else:
             return val
 
-    def __setitem__(self, i, j, newvalue):
+    def __setitem__(self, pos, newvalue):
         """
         Index setter - I think this is the right syntax for two indices.
         """
-        self.member_data[i][j][0] = newvalue
+        i, j = pos
+        if self.is_compact:
+            self.member_data[i, 0, j] = newvalue
+        else:
+            self.member_data[i, j, 0] = newvalue
 
 
 class SeismogramGather(BasicGather):
@@ -869,17 +892,17 @@ class SeismogramGather(BasicGather):
 
     def __init__(
         self,
-        capacity,
-        size,
-        npts,
-        number_components,
-        num_partition,
+        capacity=0,
+        size=0,
+        npts=0,
+        number_components=0,
+        num_partition=0,
         input_data=None,
         input_obj=None,
         member_metadata=None,
         ensemble_metadata=None,
         dt=None,
-        array_type="xarray",
+        array_type="dask",
         is_compact=True,
     ):
         """
@@ -950,11 +973,11 @@ class SeismogramGather(BasicGather):
             raise MsPASSError(
                 "The given index: {} is out of range.".format(j), "Invalid"
             )
-        md = self.metadata(j, "metadata")
-        obj = Seismogram(md)
+        md = self.get_metadata(j, "metadata")
+        obj = Seismogram(md, False)
 
         obj.data = dmatrix(self.data(j))
-        obj.npts = len(mspass_object.data)
+        obj.set_live()
         if self.dead(j):
             obj.kill()
         return obj
@@ -986,30 +1009,45 @@ class SeismogramGather(BasicGather):
         TBD is if subset should be overloaded to allow other selections
         """
         new_input_data = self.member_data[start:end]
-        new_gather = Gather(
+        new_member_metadata = self.member_metadata[start:end]
+        new_partition = end - start
+        if new_partition > self.num_partition:
+            num_partition = self.num_partition
+
+        new_gather = SeismogramGather(
             input_data=new_input_data,
             array_type=self.array_type,
             is_compact=self.is_compact,
-            num_partition=self.num_partition,
+            num_partition=new_partition,
+            member_metadata=new_member_metadata,
         )
+        return new_gather
 
-    def __getitem__(self, i, j, k):
+    def __getitem__(self, pos):
         """
         Index operator to fetch sample from time axis at i, member axis at j,
         and component number k.
         """
-        val = self.member_data[i][j][k]
+        i, j, k = pos
+        if self.is_compact:
+            val = self.member_data[i][k][j]
+        else:
+            val = self.member_data[i][j][k]
         if self.is_parallel:
             return val.compute()
         else:
             return val
 
-    def __setitem__(self, i, j, k, newvalue):
+    def __setitem__(self, pos, newvalue):
         """
         Indexing setter.   Not sure this is the right syntax but should show
         the idea.
         """
-        self.member_data[i][j][k] = newvalue
+        i, j, k = pos
+        if self.is_compact:
+            self.member_data[i, k, j] = newvalue
+        else:
+            self.member_data[i, j, k] = newvalue
 
 
 """
