@@ -76,6 +76,55 @@ class BasicResampler(ABC):
             self.dt = 1.0 / sampling_rate
             self.samprate = sampling_rate
 
+    def target_samprate(self):
+        return self.samprate
+
+    def target_dt(self):
+        return self.dt
+
+    def dec_factor(self, d):
+        """
+        All implementations of decimation algorithms should use this 
+        method to test if resampling by decimation is feasible.  
+        A decimation operator only works for downsampling with 
+        the restriction that the ouptut sample interval is an integer 
+        multiple of the input sample interval. 
+        
+        The function returns a decimation factor to use for atomic data d
+        being tested.  The algorithm uses the numpy "isclose"
+        function to establish if the sample interval is feasible.
+        If so it returns the decimation factor as an integer that should be
+        used on d.  Not implementations should handle a return of 1 
+        specially for efficiency.  A return of 1 means no resampling 
+        is needed.  A return of 0 or -1 is used for two slightly different 
+        cases that indicate a decimation operation is not feasible.  
+        A return of 0 should be taken as a signal that the data requires
+        upsampling to match the target sampling rate (interval).  
+        A return of -1 means the data require downsampling but the 
+        a decimator operator is not feasible.  (e.g. needing to create 
+        10 sps data from 25 sps input.)
+        
+        
+        :param d:   input mspass data object to be tested.   All that is 
+        actually required is d have a "dt" attribute (i.e. d.dt is defined)
+        that is the sample interval for that datum.  
+        :type d:   assumed to be a MsPASS atomic data object for which the 
+        dt attribute is defined.  This method has no safeties to test 
+        input type.  It will throw an exception if d.dt does not resolve.
+        """
+        # internal use guarantees this can only be TimeSeries or Seismogram
+        # so this resolves
+        d_dt = d.dt
+        float_dfac = self.dt / d_dt
+        int_dfac = int(float_dfac)
+        # This perhaps should use a softer constraint than default
+        if np.isclose(float_dfac, float(int_dfac)):
+            return int_dfac
+        elif int_dfac == 0:
+            return 0
+        else:
+            return -1
+
     @abstractmethod
     def resample(self, mspass_object):
         """
@@ -241,10 +290,10 @@ class ScipyDecimator(BasicResampler):
     discard the pad zone when you enter the final stage.   Note that is
     actually true of ALL filtering.
 
-    The constructor are a subset of those defined on the documentation
+    The constructor has almost the same arguments defined in the documentation
     page for scipy.signal.decimate.   The only exception is the axis
-    argument.  We do that because it is frozen internally.  For scalar
-    data we pass 0 while for three component data we sent it 1 which is
+    argument.  It needs to be defined internally.  
+    For scalar data we pass 0 while for three component data we sent it 1 which is
     means the decimator is applied per channel.
     """
 
@@ -254,29 +303,6 @@ class ScipyDecimator(BasicResampler):
         self.ftype = ftype
         self.zero_phase = zero_phase
         self.order = n
-
-    def _dec_factor(self, d):
-        """
-        Returns decimation factor to use for atomic data d.
-        d can be a mspass atomic type or an obspy Trace.
-        Uses np.isclose to establish if the sample interval is feasible.
-        If so it returns the decimation factor as an integer that should be
-        used on d.   Returns -1 if the sample rate is irregular and
-        is not close enough to be an integer multiple.  Return 0 if
-        the data dt would require upsampling
-        """
-        # internal use guarantees this can only be TimeSeries or Seismogram
-        # so this resolves
-        d_dt = d.dt
-        float_dfac = self.dt / d_dt
-        int_dfac = int(float_dfac)
-        # This perhaps should use a softer constraint than default
-        if np.isclose(float_dfac, float(int_dfac)):
-            return int_dfac
-        elif int_dfac == 0:
-            return 0
-        else:
-            return -1
 
     def _make_illegal_decimator_message(self, error_code, data_dt):
         """
@@ -289,10 +315,8 @@ class ScipyDecimator(BasicResampler):
                 ddt=data_dt, sdt=self.dt
             )
         else:
-            message = (
-                "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
-                    ddt=data_dt, sdt=self.dt
-                )
+            message = "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
+                ddt=data_dt, sdt=self.dt
             )
         return message
 
@@ -304,6 +328,14 @@ class ScipyDecimator(BasicResampler):
         If the input is not a mspass data object (i.e. atomic TimeSeries
         or Seismogram) or one of the enemble objects it will throw a
         TypeError exception.
+        
+        Note for ensembles the algorithm simply applies this method in 
+        a loop over all the members of the ensemble.  Be aware that any 
+        members of the ensemble cannot be resampled to the target sampling 
+        frequency (interval) they will be killed.  For example, if you 
+        are downsampling to 20 sps and you have 25 sps data in the ensemble 
+        the 25 sps data will be killed on output with an elog message
+        posted.
 
         Returns an edited clone of the input with revised sample data but
         no changes to any Metadata.
@@ -323,7 +355,7 @@ class ScipyDecimator(BasicResampler):
             raise TypeError(message)
 
         if isinstance(mspass_object, TimeSeries):
-            decfac = self._dec_factor(mspass_object)
+            decfac = self.dec_factor(mspass_object)
             if decfac <= 0:
                 mspass_object.kill()
                 message = self._make_illegal_decimator_message(decfac, mspass_object.dt)
@@ -346,7 +378,7 @@ class ScipyDecimator(BasicResampler):
                 mspass_object.data = DoubleVector(dsdata)
 
         elif isinstance(mspass_object, Seismogram):
-            decfac = self._dec_factor(mspass_object)
+            decfac = self.dec_factor(mspass_object)
             if decfac <= 0:
                 mspass_object.kill()
                 message = self._make_illegal_decimator_message(decfac, mspass_object.dt)
@@ -380,6 +412,101 @@ class ScipyDecimator(BasicResampler):
             # Change if we add support for additional data objects like gather
             # version of ensemble currently under construction
             for d in mspass_object.member:
-                self.resample(d)
+                d = self.resample(d)
 
         return mspass_object
+
+
+def resample(mspass_object, decimator, resampler, verify_operators=True):
+    """
+    Resample any valid data object to a common sample rate (sample interval).
+    
+    This function is a wrapper that automates handling of resampling.
+    Its main use is in a dask/spark map operator where the input can 
+    be a set of irregularly sampled data and the output is required to be
+    at a common sample rate (interval).   The problem has some complexity
+    because decimation is normally the preferred method of resampling 
+    when possible due to speed and more predictable behavior.
+    The problem is that downsampling by decimation is only possible if 
+    the output sampling interval is an integer multiple of the input 
+    sample interval.   With modern seismology data that is usually 
+    possible, but there are some common exceptions.  For example, 
+    10 sps cannot be created from 25 sps by decimation.   The algorithm 
+    tests the data sample rate and if decimation is possible it 
+    applies a decimation operator passed as the argument "decimator".
+    If not, it calls the operator "resampler" that is assumed to be 
+    capable of handling any sample rate change.   The two operators 
+    must have been constructed with the same output target sampling 
+    frequency (interval).  Both must also be a subclass of BasicResampler
+    to match the api requirements.
+    
+    :param mspass_object:   mspass datum to be resampled
+    :type mspass_object:  Must a TimeSeries, Seismogram, TimeSeriesEnsemble,
+      or SeismogramEnsemble object.   
+    :param decimator:   decimation operator.  
+    :type decimator:  Must be a subclass of BasicResampler
+    :param resampler:  resampling operator
+    :type resampler:  Must be a subclass of BasicResampler
+    :param verify_operators: boolean controlling whether safety checks 
+      are applied to inputs.  When True (default) the contents of 
+      decimator and resampler are verified as subclasses of BasicResampler 
+      and the function tests if the target output sampling frequency (interval)
+      of both operators are the same.  The function will throw an exception if 
+      any of the verify tests fail.   Standard practice should be to verify 
+      the operators and valid before running a large workflow and running 
+      production with this arg set False for efficiency.  That should 
+      acceptable in any case I can conceive as once the operators are 
+      defined in a parallel workflow they should be invariant for the 
+      entire application in a map operator. 
+        
+    """
+    if verify_operators:
+        if not isinstance(decimator, BasicResampler):
+            raise TypeError(
+                "resample:  decimator operator (arg1) must be subclass of BasicResampler"
+            )
+        if not isinstance(resampler, BasicResampler):
+            raise TypeError(
+                "resample:  resampler operator (arg2) must be subclass of BasicResampler"
+            )
+        if not np.isclose(decimator.target_dt(), resampler.target_dt()):
+            raise MsPASSError(
+                "resample:  decimator and resampler must have the same target sampling rate",
+                ErrorSeverity.Fatal,
+            )
+    if isinstance(mspass_object, (TimeSeries, Seismogram)):
+        # This method returns -1 if decimation is not possible because
+        # sampling frequency is not an integer multiple of the target
+        # df defined in decimator.  Use that as switch to enable
+        # resampling
+        decfac = decimator.dec_factor(mspass_object)
+        if decfac == 1:
+            return mspass_object
+        elif decfac > 0:
+            return decimator.resample(mspass_object)
+        else:
+            return resampler.resample(mspass_object)
+    elif isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
+        if mspass_object.dead():
+            return mspass_object
+        # I tried to do this loop with recursion but spyder kept
+        # flagging it as an error - I'm not sure it would be.
+        # The logic for atomic data is simple anyway and this
+        # might actually be faster avoiding the function calls
+        nmembers = len(mspass_object.member)
+        for i in range(nmembers):
+            d = mspass_object.member[i]
+            decfac = decimator.dec_factor(d)
+            # Note when decfac is 1 the current member is not altered
+            if decfac > 1:
+                mspass_object.member[i] = decimator.resample(d)
+            elif decfac <= 0:
+                mspass_object.member[i] = resampler.resample(d)
+        return mspass_object
+
+    elif mspass_object is None:
+        # Handle this automatically for robustness.  Just silently return
+        return mspass_object
+    else:
+        #  It should be an exception if we get anything else
+        raise TypeError("resample:   arg0 must be a MsPASS data object")
