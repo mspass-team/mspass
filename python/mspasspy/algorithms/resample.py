@@ -84,32 +84,32 @@ class BasicResampler(ABC):
 
     def dec_factor(self, d):
         """
-        All implementations of decimation algorithms should use this 
-        method to test if resampling by decimation is feasible.  
-        A decimation operator only works for downsampling with 
-        the restriction that the ouptut sample interval is an integer 
-        multiple of the input sample interval. 
-        
+        All implementations of decimation algorithms should use this
+        method to test if resampling by decimation is feasible.
+        A decimation operator only works for downsampling with
+        the restriction that the ouptut sample interval is an integer
+        multiple of the input sample interval.
+
         The function returns a decimation factor to use for atomic data d
         being tested.  The algorithm uses the numpy "isclose"
         function to establish if the sample interval is feasible.
         If so it returns the decimation factor as an integer that should be
-        used on d.  Not implementations should handle a return of 1 
-        specially for efficiency.  A return of 1 means no resampling 
-        is needed.  A return of 0 or -1 is used for two slightly different 
-        cases that indicate a decimation operation is not feasible.  
+        used on d.  Not implementations should handle a return of 1
+        specially for efficiency.  A return of 1 means no resampling
+        is needed.  A return of 0 or -1 is used for two slightly different
+        cases that indicate a decimation operation is not feasible.
         A return of 0 should be taken as a signal that the data requires
-        upsampling to match the target sampling rate (interval).  
-        A return of -1 means the data require downsampling but the 
-        a decimator operator is not feasible.  (e.g. needing to create 
+        upsampling to match the target sampling rate (interval).
+        A return of -1 means the data require downsampling but the
+        a decimator operator is not feasible.  (e.g. needing to create
         10 sps data from 25 sps input.)
-        
-        
-        :param d:   input mspass data object to be tested.   All that is 
+
+
+        :param d:   input mspass data object to be tested.   All that is
         actually required is d have a "dt" attribute (i.e. d.dt is defined)
-        that is the sample interval for that datum.  
-        :type d:   assumed to be a MsPASS atomic data object for which the 
-        dt attribute is defined.  This method has no safeties to test 
+        that is the sample interval for that datum.
+        :type d:   assumed to be a MsPASS atomic data object for which the
+        dt attribute is defined.  This method has no safeties to test
         input type.  It will throw an exception if d.dt does not resolve.
         """
         # internal use guarantees this can only be TimeSeries or Seismogram
@@ -292,7 +292,7 @@ class ScipyDecimator(BasicResampler):
 
     The constructor has almost the same arguments defined in the documentation
     page for scipy.signal.decimate.   The only exception is the axis
-    argument.  It needs to be defined internally.  
+    argument.  It needs to be defined internally.
     For scalar data we pass 0 while for three component data we sent it 1 which is
     means the decimator is applied per channel.
     """
@@ -315,8 +315,10 @@ class ScipyDecimator(BasicResampler):
                 ddt=data_dt, sdt=self.dt
             )
         else:
-            message = "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
-                ddt=data_dt, sdt=self.dt
+            message = (
+                "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
+                    ddt=data_dt, sdt=self.dt
+                )
             )
         return message
 
@@ -328,12 +330,12 @@ class ScipyDecimator(BasicResampler):
         If the input is not a mspass data object (i.e. atomic TimeSeries
         or Seismogram) or one of the enemble objects it will throw a
         TypeError exception.
-        
-        Note for ensembles the algorithm simply applies this method in 
-        a loop over all the members of the ensemble.  Be aware that any 
-        members of the ensemble cannot be resampled to the target sampling 
-        frequency (interval) they will be killed.  For example, if you 
-        are downsampling to 20 sps and you have 25 sps data in the ensemble 
+
+        Note for ensembles the algorithm simply applies this method in
+        a loop over all the members of the ensemble.  Be aware that any
+        members of the ensemble cannot be resampled to the target sampling
+        frequency (interval) they will be killed.  For example, if you
+        are downsampling to 20 sps and you have 25 sps data in the ensemble
         the 25 sps data will be killed on output with an elog message
         posted.
 
@@ -420,45 +422,45 @@ class ScipyDecimator(BasicResampler):
 def resample(mspass_object, decimator, resampler, verify_operators=True):
     """
     Resample any valid data object to a common sample rate (sample interval).
-    
+
     This function is a wrapper that automates handling of resampling.
-    Its main use is in a dask/spark map operator where the input can 
+    Its main use is in a dask/spark map operator where the input can
     be a set of irregularly sampled data and the output is required to be
     at a common sample rate (interval).   The problem has some complexity
-    because decimation is normally the preferred method of resampling 
+    because decimation is normally the preferred method of resampling
     when possible due to speed and more predictable behavior.
-    The problem is that downsampling by decimation is only possible if 
-    the output sampling interval is an integer multiple of the input 
-    sample interval.   With modern seismology data that is usually 
-    possible, but there are some common exceptions.  For example, 
-    10 sps cannot be created from 25 sps by decimation.   The algorithm 
-    tests the data sample rate and if decimation is possible it 
+    The problem is that downsampling by decimation is only possible if
+    the output sampling interval is an integer multiple of the input
+    sample interval.   With modern seismology data that is usually
+    possible, but there are some common exceptions.  For example,
+    10 sps cannot be created from 25 sps by decimation.   The algorithm
+    tests the data sample rate and if decimation is possible it
     applies a decimation operator passed as the argument "decimator".
-    If not, it calls the operator "resampler" that is assumed to be 
-    capable of handling any sample rate change.   The two operators 
-    must have been constructed with the same output target sampling 
+    If not, it calls the operator "resampler" that is assumed to be
+    capable of handling any sample rate change.   The two operators
+    must have been constructed with the same output target sampling
     frequency (interval).  Both must also be a subclass of BasicResampler
     to match the api requirements.
-    
+
     :param mspass_object:   mspass datum to be resampled
     :type mspass_object:  Must a TimeSeries, Seismogram, TimeSeriesEnsemble,
-      or SeismogramEnsemble object.   
-    :param decimator:   decimation operator.  
+      or SeismogramEnsemble object.
+    :param decimator:   decimation operator.
     :type decimator:  Must be a subclass of BasicResampler
     :param resampler:  resampling operator
     :type resampler:  Must be a subclass of BasicResampler
-    :param verify_operators: boolean controlling whether safety checks 
-      are applied to inputs.  When True (default) the contents of 
-      decimator and resampler are verified as subclasses of BasicResampler 
+    :param verify_operators: boolean controlling whether safety checks
+      are applied to inputs.  When True (default) the contents of
+      decimator and resampler are verified as subclasses of BasicResampler
       and the function tests if the target output sampling frequency (interval)
-      of both operators are the same.  The function will throw an exception if 
-      any of the verify tests fail.   Standard practice should be to verify 
-      the operators and valid before running a large workflow and running 
-      production with this arg set False for efficiency.  That should 
-      acceptable in any case I can conceive as once the operators are 
-      defined in a parallel workflow they should be invariant for the 
-      entire application in a map operator. 
-        
+      of both operators are the same.  The function will throw an exception if
+      any of the verify tests fail.   Standard practice should be to verify
+      the operators and valid before running a large workflow and running
+      production with this arg set False for efficiency.  That should
+      acceptable in any case I can conceive as once the operators are
+      defined in a parallel workflow they should be invariant for the
+      entire application in a map operator.
+
     """
     if verify_operators:
         if not isinstance(decimator, BasicResampler):
