@@ -182,7 +182,7 @@ class TestGather:
         d = make_constant_data_ts(d)
         for i in range(3):
             es.member.append(d)
-        self.gather = Gather(input_obj=es, num_partition=3)
+        self.gather = Gather(input_obj=es, npartitions=3)
 
     def test_init(self):
         default_gather = Gather(
@@ -190,7 +190,7 @@ class TestGather:
             size=5,
             npts=6,
             number_components=3,
-            num_partition=3,
+            npartitions=3,
             member_metadata=self.md,
         )
         assert default_gather.member_data.shape == (5, 3, 6)
@@ -199,7 +199,7 @@ class TestGather:
             size=5,
             npts=6,
             number_components=3,
-            num_partition=3,
+            npartitions=3,
             member_metadata=self.md,
             is_compact=False,
         )
@@ -212,7 +212,7 @@ class TestGather:
         for i in range(3):
             es.member.append(d)
 
-        gather_from_old = Gather(input_obj=es, num_partition=3)
+        gather_from_old = Gather(input_obj=es, npartitions=3)
         assert gather_from_old.member_data.shape == (3, 1, 5)
 
     def test_data(self):
@@ -226,7 +226,7 @@ class TestGather:
     def test_subset(self):
         ts_subset = self.gather.subset(0, 2)
         assert ts_subset.size == 2
-        assert ts_subset.num_partition == 2
+        assert ts_subset.npartitions == 2
 
     def test_getitem(self):
         assert self.gather[0, 0] == 1
@@ -252,7 +252,7 @@ class TestSeismogramGather:
         d = make_constant_data_seis(d, t0=-0.2, nsamp=6, val=2.0)
         for i in range(3):
             es.member.append(d)
-        self.gather = SeismogramGather(input_obj=es, num_partition=3)
+        self.gather = SeismogramGather(input_obj=es, npartitions=3)
 
     def test_init(self):
         default_gather = SeismogramGather(
@@ -260,7 +260,7 @@ class TestSeismogramGather:
             size=5,
             npts=6,
             number_components=3,
-            num_partition=3,
+            npartitions=3,
             member_metadata=self.md,
         )
         assert default_gather.member_data.shape == (5, 3, 6)
@@ -269,7 +269,7 @@ class TestSeismogramGather:
             size=5,
             npts=6,
             number_components=3,
-            num_partition=3,
+            npartitions=3,
             member_metadata=self.md,
             is_compact=False,
         )
@@ -283,7 +283,7 @@ class TestSeismogramGather:
         for i in range(3):
             es.member.append(d)
 
-        gather_from_old = SeismogramGather(input_obj=es, num_partition=3)
+        gather_from_old = SeismogramGather(input_obj=es, npartitions=3)
         assert gather_from_old.member_data.shape == (3, 3, 6)
 
     def test_data(self):
@@ -303,7 +303,7 @@ class TestSeismogramGather:
     def test_subset(self):
         ts_subset = self.gather.subset(0, 2)
         assert ts_subset.size == 2
-        assert ts_subset.num_partition == 2
+        assert ts_subset.npartitions == 2
 
     def test_getitem(self):
         assert self.gather[0, 0, 0] == 2.0

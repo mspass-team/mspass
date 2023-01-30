@@ -23,6 +23,7 @@ from mspasspy.ccore.utility import (
 )
 
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, ErrorLogger
+from mspasspy.algorithms.window import WindowData
 
 
 def isOldEnsembleObject(obj):
@@ -40,13 +41,108 @@ def extractDataFromMsPassObject(mspass_object):
     is a DoubleVector/dmatrix, we want to convert it extract the data from it and
     convert it into a numpy array
     The return type is np.ndarray
+
+    :param mspass_object:   Seismogram or TimeSeries to extract data from
     """
     if not isMsPassObject(mspass_object):
         raise TypeError("Can't extract data from the object, not a mspass object")
     return np.array(mspass_object.data)
 
 
-def extractDataFromOldEnsemble(ensemble_object):
+def resample(mspass_object, decimator, resampler, verify_operators=True):
+    """
+    Resample any valid data object to a common sample rate (sample interval).
+    This function is a wrapper that automates handling of resampling.
+    Its main use is in a dask/spark map operator where the input can
+    be a set of irregularly sampled data and the output is required to be
+    at a common sample rate (interval).   The problem has some complexity
+    because decimation is normally the preferred method of resampling
+    when possible due to speed and more predictable behavior.
+    The problem is that downsampling by decimation is only possible if
+    the output sampling interval is an integer multiple of the input
+    sample interval.   With modern seismology data that is usually
+    possible, but there are some common exceptions.  For example,
+    10 sps cannot be created from 25 sps by decimation.   The algorithm
+    tests the data sample rate and if decimation is possible it
+    applies a decimation operator passed as the argument "decimator".
+    If not, it calls the operator "resampler" that is assumed to be
+    capable of handling any sample rate change.   The two operators
+    must have been constructed with the same output target sampling
+    frequency (interval).  Both must also be a subclass of BasicResampler
+    to match the api requirements.
+    :param mspass_object:   mspass datum to be resampled
+    :type mspass_object:  Must a TimeSeries, Seismogram, TimeSeriesEnsemble,
+      or SeismogramEnsemble object.
+    :param decimator:   decimation operator.
+    :type decimator:  Must be a subclass of BasicResampler
+    :param resampler:  resampling operator
+    :type resampler:  Must be a subclass of BasicResampler
+    :param verify_operators: boolean controlling whether safety checks
+      are applied to inputs.  When True (default) the contents of
+      decimator and resampler are verified as subclasses of BasicResampler
+      and the function tests if the target output sampling frequency (interval)
+      of both operators are the same.  The function will throw an exception if
+      any of the verify tests fail.   Standard practice should be to verify
+      the operators and valid before running a large workflow and running
+      production with this arg set False for efficiency.  That should
+      acceptable in any case I can conceive as once the operators are
+      defined in a parallel workflow they should be invariant for the
+      entire application in a map operator.
+    """
+    if verify_operators:
+        if not isinstance(decimator, BasicResampler):
+            raise TypeError(
+                "resample:  decimator operator (arg1) must be subclass of BasicResampler"
+            )
+        if not isinstance(resampler, BasicResampler):
+            raise TypeError(
+                "resample:  resampler operator (arg2) must be subclass of BasicResampler"
+            )
+        if not np.isclose(decimator.target_dt(), resampler.target_dt()):
+            raise MsPASSError(
+                "resample:  decimator and resampler must have the same target sampling rate",
+                ErrorSeverity.Fatal,
+            )
+    if not isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
+        raise TypeError("resample:   arg0 must be a MsPASS data object")
+
+    resampled_obj = mspass_object
+    if not mspass_object.dead():
+        # I tried to do this loop with recursion but spyder kept
+        # flagging it as an error - I'm not sure it would be.
+        # The logic for atomic data is simple anyway and this
+        # might actually be faster avoiding the function calls
+        nmembers = len(mspass_object.member)
+        for i in range(nmembers):
+            d = mspass_object.member[i]
+            decfac = decimator.dec_factor(d)
+            # Note when decfac is 1 the current member is not altered
+            if decfac > 1:
+                resampled_obj.member[i] = decimator.resample(d)
+            elif decfac <= 0:
+                resampled_obj.member[i] = resampler.resample(d)
+        starttime = min([mspass_object.member[i].t0 for i in range(nmembers)])
+        endtime = max([mspass_object.member[i].endtime() for i in range(nmembers)])
+        resampled_obj = WindowData(resampled_obj, starttime, endtime)
+    return resampled_obj
+
+
+def extractDataFromOldEnsemble(ensemble_object, decimator, resampler):
+    """
+    A wrapper function to extract data data from an old ensemble object, works by
+    iterating the member in the ensemble and calling extractDataFromMsPassObject
+    on each of them.
+    Note that we want to make sure that all member data have the same starttime
+    and sample rate, so resample is called on the ensemble object before doing the
+    actual data handling.
+
+    :param ensemble_object: TimeSeriesEnsemble or SeismogramEnsemble
+    :param decimator:   decimation operator.
+    :type decimator:  Must be a subclass of BasicResampler
+    :param resampler:  resampling operator
+    :type resampler:  Must be a subclass of BasicResampler
+    """
+
     if not isOldEnsembleObject(ensemble_object):
         raise TypeError(
             "Can't extract data from the object, not an old ensemble object"
@@ -66,6 +162,13 @@ def extractDataFromOldEnsemble(ensemble_object):
 
 
 def extractMemberMetadataFromOldEnsemble(ensemble_object):
+    """
+    A helper function to extract the member metadata from the old ensemble object
+    It iterates all the members, reads the metadata and concatenate them into one
+    single dataframe.
+
+    :param ensemble_object: TimeSeriesEnsemble or SeismogramEnsemble
+    """
     if not isOldEnsembleObject(ensemble_object):
         raise TypeError(
             "Can't extract metadata from the object, not an old ensemble object"
@@ -119,7 +222,6 @@ class BasicGather(ABC):
     the ator and rota functionality of BasicTimeSeries.   The cost is
     tiny up front and retrofitting after that fact might cause a lot of
     headaches.
-
     """
 
     def __str__(self):
@@ -129,12 +231,12 @@ class BasicGather(ABC):
         size: {},
         npts: {},
         array_type: {},
-        number_components: {},
+        num_components: {},
         ensemble_metadata: {},
         member_metadata: {},
         is_parallel: {},
         is_compact: {},
-        num_partition: {},
+        npartitions: {},
         elog: {},
         member_data: {},
         column_values: {}
@@ -143,12 +245,12 @@ class BasicGather(ABC):
             self.size,
             self.npts,
             self.array_type,
-            self.number_components,
+            self.num_components,
             self.ensemble_metadata,
             self.member_metadata,
             self.is_parallel,
             self.is_compact,
-            self.num_partition,
+            self.npartitions,
             self.elog,
             self.member_data,
             self.column_values,
@@ -158,27 +260,64 @@ class BasicGather(ABC):
         self,
         capacity,
         npts,
-        number_components,
+        num_components,
         array_type,
         is_compact,
-        num_partition,
+        npartitions,
     ):
         """
         This constructor is used to create an empty object with the given
         capacity and size, the main idea of this constructor is to intialize
         the fields in the object, including the member data and the metadata.
         None of the arguments can be empty.
+
+        :param capacity: Expected number of signals in the ensemble
+          to be loaded.  That is, the number of columns in the array
+          container.   The idea is that we standardize creation of the
+          work array in this base class.   Concrete implementations are
+          expected to estimte the size of array needed and then call
+          this constuctor before filling the array with data based on
+          the input to the subclass constructor.  e.g. for MsPASS
+          ensembles that would be set by len(ensemble.member).
+          The array implementtion is set by the related parameter
+          array_size.  This parameter is required and there is no
+          default due to the expected use only by subclasses
+        :type capacity:  integer
+
+        :param npts:  length in samples of all members.  This parameter
+          is required and there is no default due to the expected use only
+          by subclasses
+        :type npts:  integer
+
+        :param num_components:  number of components in one member, 1 for
+          TimeSeries, and 3 for Seismogram
+        :type num_components: int
+
+        :param array_type:  sets the way large arrays are implemented.
+          Default should by "numpy" which means the sample array will
+          be defined as a nptsXnumber_members FORTRAN order numpy array.
+          Other obvious choices are "dask" or "zarr"  List of acceptable
+          options to be determined
+         :type array_type:  string that must match keywords
+
+        :param is_compact: if true, the member data are stored in row major
+        order, which means they are stored in adjacent memory locations.
+        otherwise, the data are stored in column major order.
+        :type is_compact: boolean
+
+        :param npartitions: The number of desired partitions for Dask or xarray.
+        :type npartitions: :class:`int`
         """
         self.capacity = capacity
         self.npts = npts
         self.size = 0
         self.array_type = array_type
-        self.number_components = number_components
+        self.num_components = num_components
         self.ensemble_metadata = None
         self.member_metadata = None
         self.member_data = None
         self.is_compact = is_compact
-        self.num_partition = num_partition
+        self.npartitions = npartitions
         self.elog = ErrorLogger()
         self.column_values = None
 
@@ -196,24 +335,24 @@ class BasicGather(ABC):
             )
 
         if (
-            number_components == 1
+            num_components == 1
         ):  # For the scalar data, we don't need to do rearrangement
             is_compact = False
 
         shape = (
-            [capacity, number_components, npts]
+            [capacity, num_components, npts]
             if is_compact
-            else [capacity, npts, number_components]
+            else [capacity, npts, num_components]
         )
 
         if array_type == "xarray":
             self.member_data = xr.DataArray()
-            chunksize = [shape[0] // num_partition, shape[1], shape[2]]
+            chunksize = [shape[0] // npartitions, shape[1], shape[2]]
             self.member_data.data = da.empty(shape=shape, chunks=chunksize)
         elif array_type == "numpy":
             self.member_data = np.empty(shape)
         elif array_type == "dask":
-            chunksize = [shape[0] // num_partition, shape[1], shape[2]]
+            chunksize = [shape[0] // npartitions, shape[1], shape[2]]
             self.member_data = da.empty(shape=shape, chunks=chunksize)
 
     def __constructor_from_input_data(
@@ -221,24 +360,45 @@ class BasicGather(ABC):
         input_data,
         array_type,
         is_compact,
-        num_partition,
+        npartitions,
     ):
         """
         This constructor is used for converting raw data into the new array based
         ensemble, we want to support the following types:
         dask array, numpy array
         the input data should have the same compact type as this new object
+
+        :param input_data: the array that stored the member data of the ensemble
+        most common usage is to pass the data extracted by the helper function.
+        It supports both dask array and numpy array. We would convert the type if
+        the input_data's type is different from the array_type
+        :type input_data: da.Array or np.ndarray
+
+        :param array_type:  sets the way large arrays are implemented.
+          Default should by "numpy" which means the sample array will
+          be defined as a nptsXnumber_members FORTRAN order numpy array.
+          Other obvious choices are "dask" or "zarr"  List of acceptable
+          options to be determined
+         :type array_type:  string that must match keywords
+
+        :param is_compact: if true, the member data are stored in row major
+        order, which means they are stored in adjacent memory locations.
+        otherwise, the data are stored in column major order.
+        :type is_compact: boolean
+
+        :param npartitions: The number of desired partitions for Dask or xarray.
+        :type npartitions: :class:`int`
         """
         self.capacity = 0
         self.npts = 0
         self.size = 0
         self.array_type = array_type
-        self.number_components = 0
+        self.num_components = 0
         self.ensemble_metadata = None
         self.member_metadata = None
         self.member_data = None
         self.is_compact = is_compact
-        self.num_partition = num_partition
+        self.npartitions = npartitions
         self.elog = ErrorLogger()
 
         supported_types = (da.Array, np.ndarray)
@@ -270,7 +430,7 @@ class BasicGather(ABC):
         elif array_type == "xarray":
             self.member_data = xr.DataArray()
             chunksize = [
-                input_data.shape[0] // self.num_partition,
+                input_data.shape[0] // self.npartitions,
                 input_data.shape[1],
                 input_data.shape[2],
             ]
@@ -280,7 +440,7 @@ class BasicGather(ABC):
                 self.member_data.data = da.from_array(input_data, chunks=chunksize)
         elif array_type == "dask":
             chunksize = [
-                input_data.shape[0] // self.num_partition,
+                input_data.shape[0] // self.npartitions,
                 input_data.shape[1],
                 input_data.shape[2],
             ]
@@ -293,10 +453,10 @@ class BasicGather(ABC):
             self.member_data.transpose((0, 2, 1))
 
         """
-        if is_compact: [size, number_components, npts]
-        else:          [size, npts, number_components]
+        if is_compact: [size, num_components, npts]
+        else:          [size, npts, num_components]
         """
-        self.size, self.number_components, self.npts = (
+        self.size, self.num_components, self.npts = (
             self.member_data.shape[0],
             self.member_data.shape[1],
             self.member_data.shape[2],
@@ -308,11 +468,27 @@ class BasicGather(ABC):
         input_obj,
         array_type,
         is_compact,
-        num_partition,
+        npartitions,
     ):
         """
         This constructor is used for converting an old ensemble object to the new
-        array based ensemble
+        array based ensemble, basically just a wrapper for the construction from
+        raw data.
+        :param input_obj:   Seismogram or TimeSeries to extract data from
+        :param array_type:  sets the way large arrays are implemented.
+          Default should by "numpy" which means the sample array will
+          be defined as a nptsXnumber_members FORTRAN order numpy array.
+          Other obvious choices are "dask" or "zarr"  List of acceptable
+          options to be determined
+         :type array_type:  string that must match keywords
+
+        :param is_compact: if true, the member data are stored in row major
+        order, which means they are stored in adjacent memory locations.
+        otherwise, the data are stored in column major order.
+        :type is_compact: boolean
+
+        :param npartitions: The number of desired partitions for Dask or xarray.
+        :type npartitions: :class:`int`
         """
         supported_ensemble_types = (TimeSeriesEnsemble, SeismogramEnsemble)
         if not isinstance(input_obj, supported_ensemble_types):
@@ -327,7 +503,7 @@ class BasicGather(ABC):
                 extractDataFromOldEnsemble(input_obj),
                 array_type,
                 is_compact,
-                num_partition,
+                npartitions,
             )
 
         elif isinstance(input_obj, SeismogramEnsemble):
@@ -335,7 +511,7 @@ class BasicGather(ABC):
                 extractDataFromOldEnsemble(input_obj),
                 array_type,
                 is_compact,
-                num_partition,
+                npartitions,
             )
 
         # Add the ensemble's metadata
@@ -350,8 +526,8 @@ class BasicGather(ABC):
         capacity,
         size,
         npts,
-        number_components,
-        num_partition,
+        num_components,
+        npartitions,
         input_data=None,
         input_obj=None,
         member_metadata=None,
@@ -396,7 +572,7 @@ class BasicGather(ABC):
           be defined as a nptsXnumber_members FORTRAN order numpy array.
           Other obvious choices are "dask" or "zarr"  List of acceptable
           options to be determined
-         :type array_type:  string that must match keywords TBD
+         :type array_type:  string that must match keywords
 
         """
 
@@ -405,7 +581,7 @@ class BasicGather(ABC):
                 input_obj=input_obj,
                 array_type=array_type,
                 is_compact=is_compact,
-                num_partition=num_partition,
+                npartitions=npartitions,
             )
 
         elif input_data is not None:
@@ -413,7 +589,7 @@ class BasicGather(ABC):
                 input_data=input_data,
                 array_type=array_type,
                 is_compact=is_compact,
-                num_partition=num_partition,
+                npartitions=npartitions,
             )
         else:
             if member_metadata is None:
@@ -422,22 +598,22 @@ class BasicGather(ABC):
             self.__default_constructor__(
                 capacity=capacity,
                 npts=npts,
-                number_components=number_components,
+                num_components=num_components,
                 array_type=array_type,
                 is_compact=is_compact,
-                num_partition=num_partition,
+                npartitions=npartitions,
             )
 
         self.capacity = capacity
         self.npts = npts
         self.array_type = array_type
-        self.number_components = number_components
+        self.num_components = num_components
         self.ensemble_metadata = ensemble_metadata
         if self.member_metadata is None:
             self.member_metadata = member_metadata
         self.is_parallel = is_parallel
         self.is_compact = is_compact
-        self.num_partition = num_partition
+        self.npartitions = npartitions
         self.elog = ErrorLogger()
 
         if dt is None:
@@ -458,8 +634,8 @@ class BasicGather(ABC):
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
-        if (isinstance(mspass_object, TimeSeries) and self.number_components != 1) or (
-            isinstance(mspass_object, Seismogram) and self.number_components != 3
+        if (isinstance(mspass_object, TimeSeries) and self.num_components != 1) or (
+            isinstance(mspass_object, Seismogram) and self.num_components != 3
         ):
             raise TypeError("The components number doesn't match the input object")
 
@@ -508,6 +684,7 @@ class BasicGather(ABC):
     def set_column_values(self, x):
         """
         Set the column values array to the values in x.
+        :param x: a list of column names
         """
         # Sanity check: the input be a list
         if type(x) != list:
@@ -515,6 +692,9 @@ class BasicGather(ABC):
         self.column_values = x
 
     def dt(self):
+        """
+        Return the sample rate of the ensemble
+        """
         return self.ensemble_metadata["dt"]
 
     # The following names match BasicTimeSeries because the match in
@@ -524,52 +704,67 @@ class BasicGather(ABC):
         """
         Return time of array position i,j (Note works the same for 3c and
         scalar data)
+
+        :param i:   row index
+        :type i: int
+        :param j:   column index
+        :type j: int
         """
         # from the definiation in timeseries:
         # time(i) = (mt0+mdt*i);
         return self.starttime()[i] + self.dt() * j
 
-    def sample_number(self, time, x) -> tuple:
+    def sample_number(self, time, x) -> np.ndarray:
         """
-        Return a tuple of ints of the index position of an ordered pair defined by a time
+        Return a numpy array of ints of the index position of an ordered pair defined by a time
         (row) value and a column value that can be mapped to the
         column index.
+        :param x: a list of column names
+        :param time: the time (row) value
         """
         indexes = [self.column_values.index(i) for i in x]
         ans = [(time - self.starttime()[ind]) / self.dt() for ind in indexes]
-        return tuple(ans)
+        return np.asarray(ans)
 
     def time_is_UTC(self):
         """
-        Returns True if the time standard for the data is set as
-        UTC
+        Returns True if the time standard for the data is set as UTC
         """
         return self.ensemble_metadata["is_utc"]
 
     def time_is_relative(self):
         """
-        Returns True if the time standard for the data is set as
-        relative
+        Returns True if the time standard for the data is set as relative
         """
         return not self.time_is_UTC()
 
     def live(self, j) -> bool:
         """
         Return true if jth member is set live.
+        :param j: index number
+        :type j: int
         """
         return self.member_metadata["is_live"][j]
 
     def dead(self, j) -> bool:
         """
         Return true if jth member is marked dead (opposite of live).
+        :param j: index number
+        :type j: int
         """
         return not self.live(j)
 
     # This next set are s in BasicTimeSeries but all
     def samprate(self):
+        """
+        Return the sample rate of the ensemble
+        """
         return 1.0 / self.dt()
 
     def rtoa(self):
+        """
+        Convert the relative time to absolute time
+        """
         if not self.time_is_relative():
             return
 
@@ -585,12 +780,20 @@ class BasicGather(ABC):
         self.ensemble_metadata["is_utc"] = True
 
     def ator(self, shift):
+        """
+        Convert the absolut time to relative time
+        """
         if not self.time_is_UTC():
             return
         self.t0shift = shift
         self.member_metadata["time"].applymap(lambda x: (x - self.t0shift))
 
     def shift(self, timeshift):
+        """
+        Time shift for all the member in the ensemble
+        :param timeshift: the shift time range
+        :type timeshift: float
+        """
         old_t0shift = t0shift
         self.rtoa()
         self.ator(old_t0shift + timeshift)
@@ -608,6 +811,10 @@ class BasicGather(ABC):
         Return the Metadata components of member j.  return_type should
         allow optional return as dict or Metadata.  Not clear which should
         be default.
+        :param j: index of member
+        :type j: int
+        :param return_type: return type, dict or metadata
+        :type return_type: str
         """
         supported_return_types = ["dict", "metadata"]
         if return_type not in supported_return_types:
@@ -627,6 +834,10 @@ class BasicGather(ABC):
         """
         Setter for metadata of member j.   md is the new continer that would
         replace current conent.  Most useful for constructors.
+        :param j: index of member
+        :type j: int
+        :param md: the metadata to set, dict or metadata
+        :type md: dict or metadata
         """
         if not isinstance(md, (dict, Metadata)):
             raise TypeError("The metadata should be a dict-like object")
@@ -640,6 +851,10 @@ class BasicGather(ABC):
         Differs from set_metadata in that the contents of md are added to
         the current and do not fully repalce them.   Needed for updating
         metadata after costruction
+        :param j: index of member
+        :type j: int
+        :param md: the metadata to edit, dict or metadata
+        :type md: dict or metadata
         """
         if not isinstance(md, (dict, Metadata)):
             raise TypeError("The metadata should be a dict-like object")
@@ -731,8 +946,8 @@ class Gather(BasicGather):
         capacity=0,
         size=0,
         npts=0,
-        number_components=0,
-        num_partition=0,
+        num_components=0,
+        npartitions=0,
         input_data=None,
         input_obj=None,
         member_metadata=None,
@@ -788,8 +1003,8 @@ class Gather(BasicGather):
             capacity=capacity,
             size=size,
             npts=npts,
-            number_components=number_components,
-            num_partition=num_partition,
+            num_components=num_components,
+            npartitions=npartitions,
             input_data=input_data,
             input_obj=input_obj,
             member_metadata=member_metadata,
@@ -804,6 +1019,8 @@ class Gather(BasicGather):
         Returns the data associated with member j.  Unlike above I suggest
         we not do the idea of "data_only".  Aways return a TimeSeries.
         Suggest data method for that purpose
+        :param j: index
+        :param j: int
         """
         if j >= self.size:
             raise MsPASSError(
@@ -823,8 +1040,9 @@ class Gather(BasicGather):
         """
         Return the raw data vector associated with column j.   Defined here
         as an ndarray return but probably should be any iterable
-        container that acts like a vector.  Not clear what will be needed to
-        support large matrix formats.
+        container that acts like a vector.
+        :param j: index
+        :param j: int
         """
         if j >= self.size:
             raise MsPASSError(
@@ -841,26 +1059,30 @@ class Gather(BasicGather):
         Return a subset of the Gather with signals from start to end
         (like start:end in F90 or matlab).
 
-        TBD is if subset should be overloaded to allow other selections
+        :param start:   the start index of the subset
+        :param end: specifies the index where the subset ends (but
+        excluding the value at this index, just like array's slicing)
         """
         new_input_data = self.member_data[start:end]
         new_member_metadata = self.member_metadata[start:end]
-        new_partition = end - start
-        if new_partition > self.num_partition:
-            num_partition = self.num_partition
+        new_npartitions = end - start
+        if new_npartitions > self.npartitions:
+            npartitions = self.npartitions
 
         new_gather = Gather(
             input_data=new_input_data,
             array_type=self.array_type,
             is_compact=self.is_compact,
-            num_partition=new_partition,
+            npartitions=new_npartitions,
             member_metadata=new_member_metadata,
         )
         return new_gather
 
     def __getitem__(self, pos):
         """
-        Index operator to return data value at sample index i,j.
+        Index operator to return data value at sample index pos = (i,j).
+        :param pos: a tuple of index to data value
+        :type pos: tuple
         """
         i, j = pos
         if self.is_compact:
@@ -875,6 +1097,10 @@ class Gather(BasicGather):
     def __setitem__(self, pos, newvalue):
         """
         Index setter - I think this is the right syntax for two indices.
+        :param pos: a tuple of index to data value
+        :type pos: tuple
+        :param newvalue: the new value to set
+        :type newvalue: any type
         """
         i, j = pos
         if self.is_compact:
@@ -895,8 +1121,8 @@ class SeismogramGather(BasicGather):
         capacity=0,
         size=0,
         npts=0,
-        number_components=0,
-        num_partition=0,
+        num_components=0,
+        npartitions=0,
         input_data=None,
         input_obj=None,
         member_metadata=None,
@@ -952,8 +1178,8 @@ class SeismogramGather(BasicGather):
             capacity=capacity,
             size=size,
             npts=npts,
-            number_components=number_components,
-            num_partition=num_partition,
+            num_components=num_components,
+            npartitions=npartitions,
             input_data=input_data,
             input_obj=input_obj,
             member_metadata=member_metadata,
@@ -968,6 +1194,8 @@ class SeismogramGather(BasicGather):
         Returns the data associated with member j.  Unlike above I suggest
         we not do the idea of "data_only".  Aways return a TimeSeries.
         Suggest data method for that purpose
+        :param j: index
+        :param j: int
         """
         if j >= self.size:
             raise MsPASSError(
@@ -988,6 +1216,8 @@ class SeismogramGather(BasicGather):
         as an ndarray return but probably should be any iterable
         container that acts like a matrix.  Not clear what will be needed to
         support large matrix formats.
+        :param j: index
+        :param j: int
         """
         if j >= self.size:
             raise MsPASSError(
@@ -1006,19 +1236,21 @@ class SeismogramGather(BasicGather):
         Return a subset of the Gather with signals from start to end
         (like start:end in F90 or matlab).
 
-        TBD is if subset should be overloaded to allow other selections
+        :param start:   the start index of the subset
+        :param end: specifies the index where the subset ends (but
+        excluding the value at this index, just like array's slicing)
         """
         new_input_data = self.member_data[start:end]
         new_member_metadata = self.member_metadata[start:end]
-        new_partition = end - start
-        if new_partition > self.num_partition:
-            num_partition = self.num_partition
+        new_npartitions = end - start
+        if new_npartitions > self.npartitions:
+            npartitions = self.npartitions
 
         new_gather = SeismogramGather(
             input_data=new_input_data,
             array_type=self.array_type,
             is_compact=self.is_compact,
-            num_partition=new_partition,
+            npartitions=new_npartitions,
             member_metadata=new_member_metadata,
         )
         return new_gather
@@ -1027,6 +1259,8 @@ class SeismogramGather(BasicGather):
         """
         Index operator to fetch sample from time axis at i, member axis at j,
         and component number k.
+        :param pos: a tuple of index to data value
+        :type pos: tuple
         """
         i, j, k = pos
         if self.is_compact:
@@ -1042,6 +1276,9 @@ class SeismogramGather(BasicGather):
         """
         Indexing setter.   Not sure this is the right syntax but should show
         the idea.
+        :param pos: a tuple of index to data value
+        :type pos: tuple
+        :param newvalue: the value to set
         """
         i, j, k = pos
         if self.is_compact:
@@ -1050,20 +1287,19 @@ class SeismogramGather(BasicGather):
             self.member_data[i, j, k] = newvalue
 
 
-"""
-object_id: the MongoDB object id of the ensemble to be read from the disk. The object is unique
-        and provides a one-to-one mapping to the ensemble's metadata and member data.
-the schema for ensemble doc:
-    _id : unique id
-    metadata : a dict that stores the ensemble's metadata
-    member_metadata : a list of metadata for each member
-    store_type = 'zarr' : we might support other storage?
-    zarr_group_path : str, the path of the zarr group
-    zarr_arr_name : str, the name of the zarr array
-"""
-
-
 def read_basic_array_ensemble(db, ensemble_object, object_id):
+    """
+    read the array from database and dump data to the ensemble object
+    object_id: the MongoDB object id of the ensemble to be read from the disk. The object is unique
+            and provides a one-to-one mapping to the ensemble's metadata and member data.
+    the schema for ensemble doc:
+        _id : unique id
+        metadata : a dict that stores the ensemble's metadata
+        member_metadata : a list of metadata for each member
+        store_type = 'zarr' : we might support other storage?
+        zarr_group_path : str, the path of the zarr group
+        zarr_arr_name : str, the name of the zarr array
+    """
     ensemble_col = db.ensemble
     doc = ensemble_col.find_one({"_id": object_id})
     df = pd.DataFrame(doc["member_metadata"])
@@ -1082,6 +1318,18 @@ def read_basic_array_ensemble(db, ensemble_object, object_id):
 
 
 def write_basic_array_ensemble(db, ensemble_object, object_id):
+    """
+    write the data of ensemble_object to the storage, and save the metadata
+    object_id: the MongoDB object id of the ensemble to be read from the disk. The object is unique
+            and provides a one-to-one mapping to the ensemble's metadata and member data.
+    the schema for ensemble doc:
+        _id : unique id
+        metadata : a dict that stores the ensemble's metadata
+        member_metadata : a list of metadata for each member
+        store_type = 'zarr' : we might support other storage?
+        zarr_group_path : str, the path of the zarr group
+        zarr_arr_name : str, the name of the zarr array
+    """
     ensemble_col = db.ensemble
     doc = ensemble_col.find_one({"_id": object_id})
     df = ensemble_object.member_metadata.compute()
