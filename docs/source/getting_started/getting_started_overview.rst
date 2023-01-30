@@ -1,18 +1,19 @@
 .. _getting_started_overview:
 
-MsPASS Setup In-Depth Overview
-==============================
+MsPASS Virtual Cluster Concepts
+=================================
 
 Audience
 ~~~~~~~~~~~~~~
-This section is mainly for user's new to MsPASS.  Those readers
+This section is mainly for user's new to MsPASS needing to run
+the system on an HPC system.  Those readers
 may find the general issue about HPC concepts helpful, but
 how helpful will be entirely dependent upon the background of the reader.
 Parts of this section will also
 be of use to experienced users needing to configure MsPASS for
-new system.  If that is you, then you will more likely want to
-skip to the configuration section titled
-"TACC-Stampede2 Example Implementation".
+new system.  If that is you, then you may find it useful to
+read this section in combination with the last section of
+the document titled :ref:`_deploy_mspass_on_HPC`.
 
 All readers should note this section leans heavily on several more
 specialized sections for specific environments.   That is, a
@@ -30,7 +31,7 @@ reading the :ref:`user_manual_introduction` section at the same time
 your read the section here titled `Fundamental Concepts`_.
 We created these sections to help you understand some
 of the fundamentals that shaped the design of MsPASS.
-That background can help you understand this section.
+That background may help you understand material in this document.
 
 Fundamental Concepts
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,10 +42,10 @@ The most basic issue that created a need for a framework like MsPASS
 is a fundamental change in computing that began more than 20 years ago.
 That is, prior to that time a computer was synonymous with a single cpu
 and an associated set of hardware to feed the processor.  Today only
-antique desktops have only a single cpu.   Multicore processors are
+antique desktops have only one cpu.   Multicore processors are
 now universal other than for specialized hardware like low-power data
 loggers.  The worlds largest "supercomputers" (alias HPC system or cluster)
-have thousands of nodes and tens of thousands of cores, noting that
+have thousands of nodes and tens of thousands of cores, noting that that
 sentence is likely to become quickly out of date as the upper limit
 grows yearly.  A special form of computer cluster is what is
 now called "cloud computing".  Cloud systems add a few
@@ -92,10 +93,10 @@ step to run each component in your local computing environment.
 Containers
 -------------
 The enabling technology that allows MsPASS to be readily run on a wide variety
-of platforms is relevant to the concept of :code:`virtual machine` or
+of platforms is the concept of :code:`virtual machine` or
 :code:`virtualization`.   If you are unfamiliar with this topic,
 an internet search will yield all the sources you can ever have the
-stomach to read.   MsPASS uses a much lighter weight technology than virtual machine
+stomach to read.   MsPASS uses a light weight technology than virtual machine
 called a :code:`container`.  Those who, to use a modern cliche, want to get
 into the weeds, on this topic may want to read
 `this article <https://kodekloud.com/docker-introduction-for-beginners-new-updated/?utm_source=google&utm_medium=&utm_id=16440672657&utm_content=&utm_term=&creativeId=&gclid=EAIaIQobChMI_-GBhLXN9wIVTcmUCR3UYw0YEAAYAiAAEgJ6CfD_BwE&gclid=EAIaIQobChMI_-GBhLXN9wIVTcmUCR3UYw0YEAAYAiAAEgJ6CfD_BwE>`__
@@ -108,8 +109,8 @@ MsPASS currently supports two container technologies:
     appropriately for this use, `docker desktop <https://docs.docker.com/desktop/>`__.
     The links above contain secondary links to doownload pages and installation
     instruction for the package.
-#.  For HPC systems we use a comparable software for HPC systems
-    called :code:`singularity` as an example.  If you are reading this to
+#.  For HPC systems we use a comparable software
+    called :code:`singularity`.  If you are reading this to
     adapt MsPASS to an HPC system there is probably a web page describing
     singularity or something similar.   If not, there are numerous sources on the
     web.  A simplistic perspective is that singularity is docker for
@@ -125,11 +126,9 @@ is used directly to run your job.
 The key point about containers, in general, is that a container eliminates
 the long list of system dependency issues that arise with conventional
 software installation.   It also allows MsPASS to run on any operating
-systems with the x86 architecture (Intel or AMD processors).
-Additional hardware support is possible.  For instance, at
-this writing we have an experimental container to run on
-machines using Apple silicon chips.
-That may be available by the time you read this.
+systems with the x86 architecture (Intel or AMD processors) on
+the Apple ARM chip used on newer Apple products.
+Additional hardware support is possible provided docker support it.
 
 Foreman-worker Model
 --------------------------
@@ -174,7 +173,7 @@ setting up dask or spark on a cluster:
 
 #.  Most clusters are shared facilities with many simultaneous users.
     All cluster use some form of higher level scheduler to schedule
-    "jobs", which is the modern ancestor of batch systems developed for
+    "jobs", which is the modern descendant of batch systems developed for
     "mainframe computers" in the 1960s.   A "batch job" means you
     submit a script of command line instructions to run your application(s)
     on the system.   Hence, the first thing to understand is that to run
@@ -253,12 +252,12 @@ Frontend
 The standard MsPASS container assumes the use of a
 `jupyter notebook <https://jupyter.org/>`__
 to assemble and test your workflow.  As noted elsewhere
-we believe jupyter notebooks can be used to encourage reproducible
+we believe jupyter notebooks are a useful tool to encourage reproducible
 science.   We use a jupyter notebook service to define the
 role we call :code:`frontend`.  The concept of the :code:`frontend`
 is the abstract box that communicates directly with you as the user.
 The process of driving a jupyter notebook is well documented
-on many internet pages so if you are now familiar with jupyter notebook
+on many internet pages so if you are not familiar with jupyter notebook
 we advise you to find a good tutorial on the topic before you try to use
 MsPASS.
 
@@ -267,7 +266,7 @@ that you will use jupyter notebook in two ways:
 
 #.  Jupyter is an effective tool to assemble and test your python
     code (your workflow) on a desktop or interactive node in an HPC cluster.
-    The thing jupyter allows that goes far beyond contentional code comments
+    The thing jupyter allows that goes far beyond conventional code comments
     is the ability to insert full-featured text as "markdown" boxes between
     code blocks.   Our
     `tutorials <https://github.com/mspass-team/mspass_tutorial/tree/master/notebooks>`__
@@ -292,10 +291,10 @@ understand some fundamental concepts that are treated as abstractions.
 You can think of the configuration as making the abstractions concrete.
 
 #.  The MsPASS framework is generic and has to be informed about
-    that actual physical configuration.   How much it can determine automatically
+    the actual physical configuration.   How much it can determine automatically
     and what it needs to be told manually are system dependent.
-#.  As much as possible we abstract all IO.   Input means you use a handle of
-    some kind to create some data object.   Output means you use a handle to
+#.  As much as possible we abstract all IO.   That is, Input (I) means you use a handle of
+    some kind to create some data object.   Output (O) means you use a handle to
     save that data in a form that allows it to be reconstructed later.
     Whether that is done by reading from a file on file system,
     cloud (via a URL), or something not yet invented
@@ -304,15 +303,17 @@ You can think of the configuration as making the abstractions concrete.
 #.  A special case of IO is interprocess communication.   Spark and Dask
     both abstract that process in a manner opaque to you as a user.
     This allows them to automatically determine if a connection is
-    process-to-process within a shared memory environment (within a node)
-    or between nodes.   Mechanisms for the first are varied.  For the later
+    process-to-process within a shared memory environment
+    (threads running on the same node)
+    or between nodes.   The first is memory-to-memory transfer.  For the later
     it means network communications between two processes on two nodes with the cluster's
     internal network.
 #.  We made a design choice in MsPASS to further abstract the overall system
-    in terms of one a finite set of functional blocks we refer to as the
-    blocks :code:`role`.   There are three core "roles" any MsPASS
+    in terms of one of a finite set of functional blocks we refer to as the
+    :code:`role`.   There are four required "roles" any MsPASS
     setup needs to define:  (1) :code:`scheduler`, (2) :code:`worker`,
-    and :code:`db`.  Sharding adds a level of complexity.  When sharding is
+    :code:`db`, and :code:`frontend`.
+    Sharding adds a level of complexity.  When sharding is
     enabled two additional function "roles" are required we call
     :code:`dbmanager` (replaces :code:`db` in a sharded environment) and
     :code:`shard`.  Finally, we define the role of :code:`frontend`
@@ -363,8 +364,8 @@ reasons we discuss at the end of this section.
 This simple example is helpful to clarify some important implementation
 details that we use in MsPASS to define a virtual cluster:
 
-- The fundamental components are defined by what we call a :code:`role`.
-  In this example there are four:  :code:`db`, :code:`frontend`,
+- The functinality of  block is driven by what we call a :code:`role`.
+  In this example shows the four standard roles:  :code:`db`, :code:`frontend`,
   :code:`scheduler`, and :code:`worker`.  Those names define the
   following:
 
@@ -374,19 +375,28 @@ details that we use in MsPASS to define a virtual cluster:
   * The :code:`scheduler` container runs the dask or spark scheduler.
   * The :code:`worker` container runs a dask or spark worker.
 
-- The configuration is all driven by a master script illustrated at the top
-  of the figure with the tag "start-mspass.sh".  Because our container
-  runs a version of linux that script is a Bourne (bash) shell script.
-  We discuss the contents of that script below.
+- This example dedicates each node to a single role
+  and each node runs one instance of the container.  We reiterate that
+  would almost certainly be a very inefficient way to build the virtual
+  cluster but is the simplest model one could build.
 
-- This example shows a simple configuration with one container per
-  physical node.  However, it also shows that the worker node is configured
+- When the container is launched it goes through a fast boot process that
+  the setup completes by running the master shell script called
+  `start-mspass.sh`.   `start-mspass.sh` is a shell script that is part of the
+  container and not something you modify.  The script launches different
+  services depending on the `role` it receives from the launcher
+  (docker or singularity).
+
+- Although in this example we run only one container per
+  physical node, it also shows that the worker node is configured
   with four processes labeled P1, P2, P3, and P4.  Note our terminology
   has created an ambiguity of language in the current setup you need to
   understand.  A single instance of a container is
   run with its "role" defined as :code:`worker` but both dask and spark,
   by default, will have its worker spin up one process per core defined for that
-  container. That is, a worker hosts multiple processes.
+  container. That is, a worker hosts multiple processes.  That is
+  an important capability of dask and spark as it means all cores of a
+  node can be utilized by a worker.
 
 - The worker node has lines with arrows drawn between the four boxes labeled P1, P2, P3, and P4.
   Those lines symbolize intra-node, interprocess communication between the worker processes.
@@ -402,7 +412,9 @@ details that we use in MsPASS to define a virtual cluster:
   role set as :code:`frontend`.   As noted earlier the :code:`frontend` box is an
   abstraction of a user interface but in our implementation it runs the
   service that allows a web browswer to connect to the virtual cluster
-  by running a jupyter notebook on your local machine. 
+  by running a jupyter notebook on your local machine. We note that in
+  processing a large data set interactive connections are normally a bad
+  idea and the notebook is normally run in a "batch" mode.
 
 Before continuing it is worth noting why this simple configuration is
 useful for understanding but likely a bad idea for an actual configuration,
@@ -415,8 +427,10 @@ inefficiency.   All but archaic clusters today have multicore nodes.
 Dedicating a full node to each "role" would waste resources.  The most
 extreme is the :code:`frontend` box that in our implementation launches a
 container dedicated only to running a jupyter notebook server.
-The jupyter notebook server is a very lightweight process tha consumes very
-few resources.   A run in this cofiguration would show node2 nearly idle
+The jupyter notebook server is a very lightweight process that consumes very
+few resources.   Most of the computing in that role is dominated by
+the python interpreter that for most workflows is lightweight compared
+to data processing computations.  A run in this cofiguration would show node2 nearly idle
 for an entire run.   In contrast, we have found devoting a node to
 the :code:`scheduler` role may often be prudent.   The key point here is
 that "fine-tuning" of a production workflow may require some
@@ -474,11 +488,12 @@ Example 3:  Multiple nodes with optional Sharding
 
 :numref:`Configuration_figure3` is the first example
 that is known to give reasonable load balancing on an HPC system.
-It is, in fact, a schematic diagram of our example configuration for
-creating a virtual cluster at TACC.   A configuration file that would
-create this virtual cluster is given below.   The most up-to-date
-version can be found
-`here <https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh>`__ on GitHub.
+It is, in fact, a schematic diagram of our example generic
+configuration for creating a virtual cluster.   Configuration files that would
+create this virtual cluster can be found on github in the
+directory "scripts/template".   How those scripts are used to define the
+virtual cluster are described below and in the section
+of the user manual titled :ref:`_deploy_mspass_on_HPC`
 
 .. _Configuration_figure3:
 
@@ -487,31 +502,36 @@ version can be found
      :align: center
 
      Block diagram showing abstract components of the virtual cluster
-     configuration of example 3.  This example shows a cluster with
-     five physical nodes that define alternative operational modes
-     in our example "distributed node" script.  (a) shows a configuration
-     without MongoDB sharding enabled.   In that case node  1 has a
+     configuration of generic templates.  This example shows a cluster with
+     five physical nodes.  (a) shows a configuration
+     without MongoDB sharding enabled.   In that case node 1 has a
      container running a single instance of MongoDB (box labeled db).
      Node 1 also has two other containers: one running with role
      :code:`scheduler` and another running with role :code:`frontend`.
      (b) shows a similar configuration that would be created with the
-     configuration script if shading is enabled.  Note that in that
+     alternative configuration script not enables sharding.  Note that in that
      situation the :code:`db` box is assigned the role :code:`dbmanager`.
      The :code:`dbmanager` coordinates database transitions with the
      shards defined in the other nodes.  In this example each node running
      a worker container also runs a container with a role defined as
      :code:`shard`.
 
-This figure actually illusrates two different configurations.   We consider
-them together because the script that could be run at TACC to create this
-virtual cluster has an option for turning MongoDB's "sharding" feature (see above
-and the MongoDB documentation) on and off.  Consider first the case with
+This figure actually illustrates two different configurations.   We consider
+them together because they are defined by two similar scripts in the
+scripts/template directory with the file names run_mspass.sh and
+run_mspas_sharded.sh.  How either of these are used in an actual HPC
+job is discussed below.  Here we focus on the abstract configuration
+they define.
+
+Consider first the case with
 sharding False (off) as it has much in common with example 2.  Some key
 points about the case with sharding off are the following:
 
 *  In this case we have four dedicated worker nodes and put all the other
    required "roles" in a single node.
-*  As in example 2 all each container runs one and only one role.
+*  As in example 2 each container runs one and only one role.  The worker
+   nodes all run only one container while the node illustrated to the left
+   runs three roles in three different instances of the container.
 *  We don't illustrate the worker processes in this figure for simplicity.
    We note that both dask and spark will default to creating one worker
    process per core assigned to the container.   In this configuration that
@@ -523,9 +543,11 @@ Whether or not this configuration is well balanced depends upon the
 workflow and the physical nodes on which it is run.
 Putting the database server on the same node as the scheduler
 could cause issues for a workflow running lots of database operations.
+
 We show the example with sharding turned on (part b of the figure) as
 an illustration of how sharding could be enabld to possibly improve load balancing
-in such a situation.  Some key points about the sharding example are the
+in such a situation with high database traffic.
+Some key points about the sharding example are the
 following:
 
 *  When sharding is used we add two new MsPASS "role" definitions:
@@ -533,24 +555,21 @@ following:
    a feature of MsPASS and not something you will find in the MongoDB
    documentation.   Both define configurations defined in the start-mspass.sh
    script used to launch each container.   To see exactly what each do
-   look at the contents of start-mspass.sh found `here <https://github.com/mspass-team/mspass/blob/extend_normalization_options/scripts/start-mspass.sh>`__.
+   look at the contents of start-mspass.sh found `here <https://github.com/mspass-team/mspass/blob/master/scripts/start-mspass.sh>`__.
 *  Sharding adds complexity to a setup and run time environment that
    should not be taken lightly.   In general, we would recommend avoiding
    it unless you have a production workflow you find limited by
-   database transactions.   Our example below and with start-mspass.sh
-   provide a starting point to implement a sharded cluster.   That should,
-   however, be viewed only as a supplement the MongoDB documentation on
-   sharding easily found by a web search.
+   database transactions.
 
 Example 4:  All-in-one desktop setup
 ---------------------------------------
-We leave the special case we call "all-in-one" until now even
+We left the special case we call "all-in-one" until now even
 though virtually all MsPASS users will likely first use it in that mode.
 The reason is that although
 it is implemented through the same master script (start-msspas.sh),
 it is a special case that might be confusing if we had started there.
 That is, because the framework is primarily designed for running on
-a cluster running on a desktop has to simulate elements of cluster.
+a cluster running on a desktop has to simulate elements of a cluster.
 That said, the following figure illustrates an abstraction of the
 all-in-one mode with symbols the same as the examples above:
 
@@ -564,14 +583,16 @@ all-in-one mode with symbols the same as the examples above:
      call the all-in-one mode used for running on a single node.
      Symbols and line styles are as with all the related figures above.
 
-The fundamental difference to note in this run mode is all four
+The fundamental difference to note in this run mode is that all four
 of the required mspass "roles" (:code:`scheduler, worker, db, frontend`)
 are run in the same container.  All the previous examples used
-used multiple containers with only one "role" per container.
+multiple containers with only one "role" per container instance.
 We emphasize either choice (one role per container or multiple roles
 per container instance) is an implementation detail.   The single container
 mode is more straightforward for a desktop.  Multiple containers are more appropriate
-for clusters to make the configuration more generic.  
+for clusters to make the configuration more generic.  When you see docker/singularity
+containers as being "lightweight" part of what that means is that multiple
+instances can be run on the same node with minimal performance impact.
 
 A final point about this configuration is that by default both dask and
 spark will define the number of process devoted to workers to be the number of
@@ -580,210 +601,125 @@ you want to simultaneously use for other purposes you may want to configure dock
 to not use all the cores on the system.   That process is described
 `here <https://docs.docker.com/config/containers/resource_constraints/>`__.
 
-
-TACC-Stampede2 Example Implementation
+HPC Job Submission
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Overview
-----------
-In this section we show a concrete implementation of our abstract
-example 3.  This example will is known to run on the
-`TACC <https://www.tacc.utexas.edu/use-tacc/getting-started>`__
-system called stampede2.  On that system a package called
-:code:`singularity` is used to launch containers.
-Job level scheduling is handled by a system called :code:`Slurm`.
-Details on how to use those two packages to run jobs are found
-in :ref:`deploy_mspass_on_HPC`.
-This section covers some of the same material, but relates some of the
-details back to the more abstract concepts discussed above.
-A practical guide is that this section of this document
-is the tutorial while the other sections of Getting Started
-are reference material better used after you are familiar with the
-material found here.
-
-The subsections below give some of the details of three files
-MsPASS uses to construct a virtual cluster:
-
-#.  We show an example job control script that implements the abstract,
-    five-node cluster illustrated above in :numref:`Configuration_figure3`
-    for the case with sharding turned off.
-#.  We cover highlights of the  :code:`start-mspass.sh` file illustrated in all
-    the figures above.  As noted it is a master shell script used to
-    launch a single instance of a container.
-#.  We include a brief discussion of the docker configuration file.
-    That discussion is not all inclusive, but it might make some
-    unix shell incantations slightly less mysterious.  We emphasize that
-    file has no direct role in configuration.   The issue we clarify below
-    is how :code:`start-mspass.sh` is used in the container setup.
-
-These three files are tightly connected.  The first two define
-the configuration for the virtual cluster in which you run the job.
-The third is important only to understand the way the contaienr is
-constructed to use these two configuration files.
-Understanding how they work together is much like understanding
-the control flow of any piece of
-computer code that has subprograms (functions).   The job script
-is like a main program (function).   It defines the environment in which
-the job is to be run, launches containers used to define the virtual
-cluster, configures the containers, and then run the desired workflow.
-The docker configuration file can be thought of as like the operating
-system code:  you only interact with it, you don't change it.
-
-Job Script
------------------------
-Because the job script is effectively the main program for any workflow
-we begin with our example.  Note this script was derived from an
-ancestor of the current file found on github
-`here <https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh>`__.
-It differs mainly with some minor changes to match the configuration
-described in this  document.   I also includes some additional comments
-with the tag *Section n* used as anchors for descriptions following the
-script:
-
-.. literalinclude:: ../../../scripts/tacc_examples/distributed_node.sh
-   :language: bash
-   :linenos:
-
-There are lots of details you may need to consider to adapt this
-script but we highlight a few key points here.  The points are
-organized by the "Section" tags in the comments:
-
-*  *Section 1*  These are system dependent commands to control the
-   global scheduler (see above), which in the case of stampede2 is
-   a package called Slurm.  Any HPC system will have a basic introduction
-   describing Slurm or a similar package used for the same
-   purpose.  For example, Slurm is discussed in the User Guide for
-   stampede2 found `here <https://portal.tacc.utexas.edu/user-guides/stampede2#running-slurm>`__.
-*  *Section 2* may or may not be necessary on your system.   These lines
-   are calls to a software management system. All large
-   HPC clusters we know of use a software management system like that
-   at stampede2.   The reason is that large clusters serve a diverse
-   group of uses with different software needs.   Some packages have
-   incompatibilities that can be managed with such systems.   Note
-   that issue is an important advantage of using container technology in
-   MsPASS.  This example is simple because using the container eliminates
-   most such dependencies.
-*  *Section 3* sets some basic control variables.  The most important point
-   to understand at this point is that this script is using shell variables
-   (local and environmental) to define basic properties that need to be
-   used later.   Those familiar with shell programming will recognize this
-   as common practice to define parameters subject to change.  The lesson
-   for this manual is that all shell variables are details you may need to change
-   to match your configuration.
-*  *Section 4* contains a number of complicated shell constructs that
-   border on incantations.   These constructs are necessary to set up
-   communications between the physical nodes of the cluster and the
-   "login nodes" of stampede2. This sequence is necessary only if you
-   are running interactively from web server on a stampede2 login node.
-   If you are running this script with the --batch option your notebook
-   will be executed when the :code:`frontend` container is launched.
-*  *Section 5* launches the containers that define the virtual cluster
-   configuration illustrated in  :numref:`Configuration_figure3`.
-   This example has complexity because it provides the option for sharding.
-   There are two big-picture points we note about this section.  First,
-   individual configuration parameters to run a particular container
-   are defined with the prefix :code:`SINGULARITYENV_`.  This example
-   assumes the job is run using the packaged called
-   singularity to launch the containers (for more details on using
-   MsPASS with singularity see the related section :ref:`deploy_mspass_on_HPC`).
-   Singularity strips that magic string and defines the variable within the container.
-   Second, a potentially confusing issue is that
-   the script can launch commands directly from the master/foreman node.
-   You should realize this shell script is run in that special node.
-   In the other nodes the MsPASS container is launched with mode set to
-   :code:`worker`.   The workers then simply wait for instructions
-   until told to exit by the :code:`scheduler`.
-   Hence "Node 1" in :numref:`Configuration_figure3` is that "master"/"foreman"
-   node.  The workers are launched here with a mpiexec.hydra.
-   Users familiar with mpi should understand we are only using this program to
-   launch our worker containers.   MsPASS does not use mpi.
-
-A final, auxiliary point about this script is an important detail
-about launching the :code:`frontend`.  The final few lines of *Section 5*
-launches the :code:`frontend`.   The bash incantation here is one way to
-check for the arg combination "-b notebook" in the job submission line.
-That is how this script implements running a notebook without human
-interaction (a "batch" (-b) mode).  Note that what that does is pass
-the notebook file name to the startup script for the :code:`frontend`
-container.  One could simplify this a bit by hard coding the notebook
-file name, but this example provides a template for defining a generic
-configuration that could be used to run multiple notebooks.
-
-start-mspass.sh
-----------------------
-We reiterate that our current implementation of MsPASS uses a single
-master shell script called :code:`start-mspass.sh` to configure each
-running container.   i.e. the way this file is used is after
-linux boots in each container instance the :code:`start-mspass.sh`
-is run.
-Like the job script above we show the current version of ths script
-below adding some additional comments for anchors to this text.
-Be warned it may differ from the
-master found on github
-`here <https://github.com/mspass-team/mspass/blob/master/scripts/start-mspass.sh>`__
-due to inevitable version skew of documentation
-relative to the code base and the anchor comments.
-
-.. literalinclude:: ../../../scripts/start-mspass.sh
-   :language: bash
-   :linenos:
-
-There is a lot there, but we highlight a few key points:
-
-*  The file is a unix shells script using the bash dialect.
-*  The behavior of the script is driven by a long list of
-   environment variables.   Remember this is the master script used to
-   launch each instance of a container.   The suite
-   of containers that are to be launched are defined outside of this
-   master script through a job script.   Comparing this script with the
-   job script above note names like :code:`SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS`
-   are converted by singularity to the :code:`MSPASS_SCHEDULER_ADDRESS`
-   when running :code:`start-mspass.sh`.
-*  The primary flow control is the environment variable
-   :code:`MSPASS_ROLE`.   i.e. the overall control flow is a single
-   chain of :code:`if, elif, elif,  ... , else,  fi`.   That implementation
-   detail is why the MsPASS container is limited to one "role" per container.
-   (see above)
-*  Note the :code:`else` block on the chain of :code:`MSPASS_ROLE` values
-   creates an instance of the container we call the all-in-one mode (:numref:`Configuration_figure4`).
-   The comments call this "all" but it is more appropriately called a default.
-   Note also the final else is actually different - it links to a default
-   behavior (the shell script docker-entrypoint.sh) and should not be changed.
+A final point anyone running MsPASS on an HPC cluster needs to understand
+is how a "job" (aka your workflow) is run on such a cluster.
+We first consider how a batch job is run since most HPC compute jobs
+should be run that way.  Figure :numref:`_HPC_batch_run_figure`
+is a graphic that we use as an aid to explaining the process.
 
 
-Docker Configuration File
--------------------------------
+.. _HPC_batch_run_figure:
 
-The docker configuration file is not something any user should need to
-change.  The only exception is if you have a code suite you want to use
-to extend MsPASS as an independent package.   If that is you, will need to
-dig deeper into the docker documentation.   For most of you the key point
-we want to make here is how the :code:`start-mspass.sh` script is used
-in combination with the configuration.
+.. figure:: ../_static/figures/BatchRunSchematic.jpg
+     :width: 600px
+     :align: center
 
-First, the master docker configuration file is found
-`here <https://github.com/mspass-team/mspass/blob/master/Dockerfile>`__
-on GitHub.   We highlioght only a few key points:
+     Block diagram illustrating how jobs are run on an HPC system
+     with MsPASS.  Main text uses this figure for a detailed description
+     of the process.
 
-*  You will see a number of lines like this one:  :code:`ENV DASK_SCHEDULER_PORT 8786`.
-   "ENV" is docker shorthard for "ENVIRONMENT" which means the symbol
-   "DASK_SCHEDULER_PORT" is assigned a value 8786 when the container boots.
-   You will see the same symbol (DASK_SCHEDULER_PORT) appears in the
-   :code:`start-mspass.sh` script.   Hence, you should realize the
-   docker configuration file defines defaults for required environment
-   variables like this one.  They can be changed in :code:`start-mspass.sh` OR
-   by setting the variable name in the job script.
-*  The :code:`start-mspass.sh` script is add to the container by the following block of
-   code.
+There are two large boxes in that figure.  The box defined by
+a heavy dashed line box and labeled "Batch Job"
+encloses a set of four smaller boxes that represent four files that define
+a particular "job".   Three are unix shell scripts that contains
+unix shell commands that are executed sequentially on the native
+operating system of one or more of the physical nodes.
+The fact that there are three files for this process is an implementation
+detail in our setup done to make it easier for an individual user to
+create and run jobs.   Details of how these files are customized for
+a particular setup are given in :ref:`_deploy_mspass_on_HPC`.
+For the present you should understand that the
+box labeled `job_script.sh` in the figure is the shell script you submit to the cluster
+scheduler (slurm or the equivalent).  It acts like "main" in a C/FORTRAN program.
+The two auxiliary files illustrated as boxes in the figure and labeled
+`mspass_setup.sh` and `run_mspass.sh` act like functions/subroutines
+where they execute to completion and return control to `job_script.sh`.
+`mspass_setup.sh` is used only to put all the user-specific setup
+parameters in a single
+place.  In standard unix shell fashion that is done with "environment variables".
+As the figure illustrates you can think of that process as setting environment
+variables in the run area of the virtual cluster.
 
-.. code-block:: dockerfile
+The second subroutine-like
+shell script, which is labeled as `run_mspass.sh` in the figure, is more
+complex but is static for a particular cluster.  That is, many jobs can run
+with the same `run_mspass.sh` setup.   It is the recipe for defining
+a partiular configuration for the "virtual cluster".  The main thing that shell script does is
+launch the set of one or more container defining the four required "roles" that
+together define a particular virtual cluster setup.  That is illustrated in the
+figure with the boxes with dashed lines enclosing the four role keywords.
+The fact those functional boxes are launched by `run_mspass.sh` is illustrated
+by the arrows running from the box for the script and each of the dashed line
+boxes in the virtual cluster with a particular role.  Each of the
+launching steps use one or more environment variables to define key setup parameters.
+Note the reason no containers instances are illustrated within the virtual
+cluster box is that from the job script's perspective that is an implementaton detail.
+The perspective you should have when writing any variation of `job_script.sh`
+is that `run_mspass.sh` creates the virtual cluster.
+Note also we illustrate one worker in the figure only to keep the figure simple.
+The virtual cluster box is open-ended and could conceivably define hundreds of
+workers.
 
-  # Add startup script
-  ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
-  RUN chmod +x /usr/sbin/start-mspass.sh
+The final file that drives the processing is the box with the tag "Jupyter Notebook".
+The last line of the `run_mspass.sh` script launches the jupyter notebook
+server in a mode where the server immediately loads and executes a notebook file you
+specify as an argument to job_script.sh.  The entire job terminates when the
+notebook finishes (or exits on an error).  The line launching the jupyter notebook
+server ("frontend" role) blocks until the notebook server exits.   Control is then returned
+to `job_script.sh` which either does cleanup or exits.  The cluster management
+software (slurm or the equivalent) then kills all the running containers.
 
-*  The run line for the :code:`start-mspass.sh` is tightly linked to this special
-   line that is no something users should ever need to alter:
+Figure :numref:`_HPC_interactive_run_figure` is a similar to
+Figure :numref:`_HPC_batch_run_figure` but illustrates how a "job" is
+run on an HPC virtual cluster if you need to run a notebook interactively.
 
-.. code-block:: dockerfile
+.. _HPC_interactive_run_figure:
 
-  ENTRYPOINT ["/usr/sbin/tini", "-g", "--", "/usr/sbin/start-mspass.sh"]
+.. figure:: ../_static/figures/InteractiveRunSchematic.jpg
+     :width: 600px
+     :align: center
+
+     Block diagram illustrating how jobs are run on an HPC system
+     with MsPASS when human interaction with the jupyter notebook
+     server is required.
+
+A comparison of the two figures may be helpful.   The only difference is
+in this case we show a connection to the "frontend" box from a
+web browser illustrated as box on the left hand side of the figure.
+The actual run procedure has only one difference;  when the jupyter
+notebook server is launched it doesn't immediately start executing
+a script but waits on input from the user.  Hence, when you run a notebook
+one code box at a time, which is the typical interactive use,
+the virtual cluster only does computing when each box is run.
+With that understanding it should be clear that running a job in
+this mode is a really bad idea unless you are forced to do so to
+debug a problem.   The smallest human response time is many orders of
+magnitude slower than any of the processors.  On HPC when your job is
+running you are the only user on the nodes reserved for your job.
+Needless to say running a large job in interactive mode can be a serious
+waste of resources.  For that reason the standard approach you should
+use is to develop any workflow is a three step procedure:
+1.   Develop the notebook workflow on a desktop system with a small subset
+     of the larger data set you aim to process.
+2.   Transfer the (working) notebook and test file to the HPC system.  Run it
+     in batch mode and verify it gives the same answer.
+3.   Submit the workflow to the HPC system with modifications to process
+     the full data set.
+
+There is one final variant worth noting that is not illustrated in
+either Figure :numref:`_HPC_batch_run_figure` or :numref:`_HPC_interactive_run_figure`.
+That is, dask has a useful
+`diagnostic dashboard<https://docs.dask.org/en/stable/diagnostics-distributed.html>`__
+that can be used for real-time monitoring of a job.  The reason is that
+graphically the setup is identical to that illustrated in
+Figure :numref:`_HPC_interactive_run_figure`.  The difference is that the
+job would normally still be run in batch mode, but the external web browser
+would connect to the "diagnostic port" (8787 by default) instead of the
+network port used by the notebook server (normally 8888).  We note that
+any variation of Figure :numref:`_HPC_interactive_run_figure` an
+external web browser will only be able to make such a connection if
+networking to the cluster is set up to allow that connection.
+We discuss those issues and potential solution in the
+related section titled :ref:`_deploy_mspass_on_HPC`.
