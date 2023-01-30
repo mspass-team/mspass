@@ -12,9 +12,13 @@ from mspasspy.ccore.seismic import (
     TimeSeriesEnsemble,
     SeismogramEnsemble,
 )
-import matplotlib.pyplot as plt
+from mspasspy.ccore.utility import MsPASSError
 
-from mspasspy.algorithms.resample import ScipyDecimator, ScipyResampler
+from mspasspy.algorithms.resample import (
+    ScipyDecimator,
+    ScipyResampler,
+    resample,
+)
 
 
 def test_resample():
@@ -113,3 +117,62 @@ def test_resample():
         assert d.live
         assert np.isclose(d.dt, 0.2)
         assert d.npts == npup
+    # Now test resample function.   We define two operators
+    # for 40 sps target
+    resample40 = ScipyResampler(40.0)
+    decimate40 = ScipyDecimator(40.0)
+
+    d = resample(ts, decimate40, resample40)
+    assert d.dt == 0.025
+    assert d.live
+    assert d.npts == 104
+    # print(d.dt,d.live,d.npts)
+    d = resample(ts0, decimate40, resample40)
+    # print(d.dt,d.live,d.npts)
+    assert d.dt == 0.025
+    assert d.live
+    assert d.npts == 101
+    d = resample(tse0, decimate40, resample40)
+    # print("tse0")
+    for d in tse0.member:
+        # print(d.dt,d.live,d.npts)
+        assert d.dt == 0.025
+        assert d.live
+        assert d.npts == 510
+    d = resample(tse, decimate40, resample40)
+    # print('tse')
+    for d in tse0.member:
+        # print(d.dt,d.live,d.npts)
+        assert d.dt == 0.025
+        assert d.live
+        assert d.npts == 510
+
+    d = resample(seis, decimate40, resample40)
+    # print(d.dt,d.live,d.npts)
+    d = resample(seis0, decimate40, resample40)
+    # print(d.dt,d.live,d.npts)
+    d = resample(seis_e, decimate40, resample40)
+    # print('seis_e')
+    for d in seis_e.member:
+        # print(d.dt,d.live,d.npts)
+        assert d.dt == 0.025
+        assert d.live
+        assert d.npts == 512
+    d = resample(seis_e0, decimate40, resample40)
+    # print('seis_e0')
+    for d in seis_e0.member:
+        # print(d.dt,d.live,d.npts)
+        assert d.dt == 0.025
+        assert d.live
+        assert d.npts == 510
+
+    # Test verify mode mode sample interval mismatch exception
+    try:
+        d = resample(tse, decimator, resample40)
+        print("Error - should not get here")
+        assert False
+    except MsPASSError as merr:
+        print("Handled exception properly")
+    else:
+        print("Error - should not be here")
+        assert False
