@@ -54,9 +54,8 @@ import pyspark
 from pyspark.sql import SQLContext
 
 
-def read_distributed_data_df(
-    df,
-    db,
+def read_distributed_data_new(
+    data,
     cursor,
     mode="promiscuous",
     normalize=None,
@@ -73,17 +72,23 @@ def read_distributed_data_df(
     This function should be used to read an entire dataset that is to be handled
     by subsequent parallel operations.  The function can be thought of as
     loading the entire data set into a parallel container (rdd for spark
-    implementations or bag for a dask implementatio).  If a dataframe is given,
-    it will read from files distributedly and then read from the database
-    sequentially. The normal use of this function is to construct a query of
-    the desired waveform collection with the MongoDB find operation.
-    MongoDB find returns the cursor object that is the expected input.
+    implementations or bag for a dask implementatio).
+
+    This new function is to divide the process of reading into two parts:
+    reading from database and reading from file, where reading from file is done
+    with dask/spark, and reading from database is done in sequence. The two parts
+    are done in two functions: read_to_dataframe, and read_files
+
+    The data param can be database or dataframe. If a database is given,
+    it will firstly read from the database sequentially, and save the metadata
+    to a dataframe. Then use the information in the dataframe and dask/spark to
+    read from files distributedly, and generate the objects to the container.
+    This step uses map in dask/spark to improve efficiency.
+
     All other arguments are options that change behavior as described below.
 
-    :param df: the dataframe from which the data are to be read.
-    :type df: :class:`dask.bag.Bag` or :class:`pyspark.RDD`.
-    :param db: the database from which the data are to be read.
-    :type db: :class:`mspasspy.db.database.Database`.
+    :param data: the data to be read, can be database or dataframe.
+    :type data: :class:`dask.bag.Bag` or :class:`pyspark.RDD` or :class:`pandas.DataFrame`
     :param cursor: mongodb cursor defining what "the dataset" is.  It would
       normally be the output of the find method with a workflow dependent
       query.
@@ -136,62 +141,41 @@ def read_distributed_data_df(
     :return: container defining the parallel dataset.  A spark `RDD` if format
       is "Spark" and a dask 'bag' if format is "dask"
     """
-    if df == None and db != None:
-        collection = cursor.collection.name
-        if format == "spark":
-            list_ = spark_context.parallelize(cursor, numSlices=npartitions)
-            return list_.map(
-                lambda cur: db.read_data(
-                    cur,
-                    mode=mode,
-                    normalize=normalize,
-                    load_history=load_history,
-                    exclude_keys=exclude_keys,
-                    collection=collection,
-                    data_tag=data_tag,
-                    aws_access_key_id=aws_access_key_id,
-                    aws_secret_access_key=aws_secret_access_key,
-                )
-            )
-        elif format == "dask":
-            list_ = daskbag.from_sequence(cursor, npartitions=npartitions)
-            return list_.map(
-                lambda cur: db.read_data(
-                    cur,
-                    mode=mode,
-                    normalize=normalize,
-                    load_history=load_history,
-                    exclude_keys=exclude_keys,
-                    collection=collection,
-                    data_tag=data_tag,
-                    aws_access_key_id=aws_access_key_id,
-                    aws_secret_access_key=aws_secret_access_key,
-                )
-            )
-        else:
-            raise TypeError("Only spark and dask are supported")
-    elif isinstance(df, pd.DataFrame):
-        if format == "spark":
-            df = SQLContext.createDataFrame(df).rdd
-        else:
-            df = daskdf.from_pandas(df).to_bag()
-    return df.map(
-        lambda cur: read_data_file(
-            cur["mspass_object"],
-            db,
-            cur["object_doc"],
+    if not (isinstance(data, pd.DataFrame) or isinstance(data, Database)):
+        raise TypeError("Only Database or DataFrame are supported")
+
+    if isinstance(data, Database):
+        #  first read the metadata from database to a dataframe, and save to data
+        data = read_to_dataframe(
+            data,
+            cursor,
+            mode,
+            normalize,
+            load_history,
+            exclude_keys,
+            format,
+            npartitions,
+            spark_context,
+            data_tag,
+            aws_access_key_id,
+            aws_secret_access_key,
         )
-    )
+
+    # now the type of data is a dataframe
+    if format == "spark":
+        list_ = SQLContext.createDataFrame(data).rdd
+    else:
+        list_ = daskdf.from_pandas(data).to_bag()
+    return list_.map(lambda cur: read_files(cur))
 
 
-def read_data_db(
+def read_to_dataframe(
     db,  # db
-    object_id,
+    cursor,
     mode="promiscuous",
     normalize=None,
     load_history=False,
     exclude_keys=None,
-    collection="wf",
     data_tag=None,
     alg_name="read_data",
     alg_id="0",
@@ -200,9 +184,10 @@ def read_data_db(
 ):
     """
     This is the MsPASS reader for constructing metadata of Seismogram or TimeSeries
-    objects from data managed with MondoDB through MsPASS. It only construct the
-    skeleton of object but doesn't read from the storage. Return type is a dict
-    of mspass object and object_doc.
+    objects from data managed with MondoDB through MsPASS. Firstly construct a list
+    of objects using cursor. Then for each object, constrcut the metadata and add to
+    the list. Finally convert the list to a dataframe. The return type is a dataframe
+    of metadata.
 
     :param db: the database from which the data are to be read.
     :type db: :class:`mspasspy.db.database.Database`.
@@ -258,6 +243,9 @@ def read_data_db(
     :param retrieve_history_record: a boolean control whether we would like to load processing history
     :type retrieve_history_record: :class:`bool`
     """
+    # first get the object list
+    obj_list = list(cursor)
+    collection = cursor.collection.name
     try:
         wf_collection = db.database_schema.default_name(collection)
     except MsPASSError as err:
@@ -304,137 +292,225 @@ def read_data_db(
 
     # find the corresponding document according to object id
     col = db[wf_collection]
-    try:
-        oid = object_id["_id"]
-    except:
-        oid = object_id
-    object_doc = col.find_one({"_id": oid})
-    if not object_doc:
-        return None
 
-    if data_tag:
-        if "data_tag" not in object_doc or object_doc["data_tag"] != data_tag:
-            return None
+    md_list = []
 
-    # 1. build metadata as dict
-    md = dict()
+    # sequentially get all metadata for each object
+    for object_id in obj_list:
 
-    # 1.1 read in the attributes from the document in the database
-    for k in object_doc:
-        if k in exclude_keys:
-            continue
-        if mode == "promiscuous":
-            md[k] = object_doc[k]
-            continue
-        # FIXME: note that we do not check whether the attributes' type in the database matches the schema's definition.
-        # This may or may not be correct. Should test in practice and get user feedbacks.
-        if read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(k):
-            md[k] = object_doc[k]
+        try:
+            oid = object_id["_id"]
+        except:
+            oid = object_id
+        object_doc = col.find_one({"_id": oid})
+        if not object_doc:
+            md_list.append(None)
 
-    # 1.2 read the attributes in the metadata schema
-    # col_dict is a hashmap used to store the normalized records by the normalized_id in object_doc
-    col_dict = {}
-    # log_error_msg is used to record all the elog entries generated during the reading process
-    # After the mspass_object is created, we would post every elog entry with the messages in the log_error_msg.
-    log_error_msg = []
-    for k in read_metadata_schema.keys():
-        col = read_metadata_schema.collection(k)
-        # explanation of the 4 conditions in the following if statement
-        # 1.2.1. col is not None and is a normalized collection name
-        # 1.2.2. normalized key id exists in the wf document
-        # 1.2.3. k is not one of the exclude keys
-        # 1.2.4. col is in the normalize list provided by user
-        if (
-            col
-            and col != wf_collection
-            and col + "_id" in object_doc
-            and k not in exclude_keys
-            and col in normalize
-        ):
-            # try to find the corresponding record in the normalized collection from the database
-            if col not in col_dict:
-                col_dict[col] = db[col].find_one({"_id": object_doc[col + "_id"]})
-            # might unable to find the normalized document by the normalized_id in the object_doc
-            # we skip reading this attribute
-            if not col_dict[col]:
+        if data_tag:
+            if "data_tag" not in object_doc or object_doc["data_tag"] != data_tag:
+                md_list.append(None)
+
+        # 1. build metadata as dict
+        md = dict()
+
+        # 1.1 read in the attributes from the document in the database
+        for k in object_doc:
+            if k in exclude_keys:
                 continue
-            # this attribute may be missing in the normalized record we retrieve above
-            # in this case, we skip reading this attribute
-            # however, if it is a required attribute for the normalized collection
-            # we should post an elog entry to the associated wf object created after.
-            unique_k = db.database_schema[col].unique_name(k)
-            if not unique_k in col_dict[col]:
-                if db.database_schema[col].is_required(unique_k):
-                    log_error_msg.append(
-                        "Attribute {} is required in collection {}, but is missing in the document with id={}.".format(
-                            unique_k, col, object_doc[col + "_id"]
-                        )
-                    )
+            if mode == "promiscuous":
+                md[k] = object_doc[k]
                 continue
-            md[k] = col_dict[col][unique_k]
+            # FIXME: note that we do not check whether the attributes' type in the database matches the schema's definition.
+            # This may or may not be correct. Should test in practice and get user feedbacks.
+            if read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(
+                k
+            ):
+                md[k] = object_doc[k]
 
-    # 1.3 schema check normalized data according to the read mode
-    is_dead = False
-    fatal_keys = []
-    if mode == "cautious":
-        for k in md:
-            if read_metadata_schema.is_defined(k):
-                col = read_metadata_schema.collection(k)
-                unique_key = db.database_schema[col].unique_name(k)
-                if not isinstance(md[k], read_metadata_schema.type(k)):
-                    # try to convert the mismatch attribute
-                    try:
-                        # convert the attribute to the correct type
-                        md[k] = read_metadata_schema.type(k)(md[k])
-                    except:
-                        if db.database_schema[col].is_required(unique_key):
-                            fatal_keys.append(k)
-                            is_dead = True
-                            log_error_msg.append(
-                                "cautious mode: Required attribute {} has type {}, forbidden by definition and unable to convert".format(
-                                    k, type(md[k])
-                                )
+        # 1.2 read the attributes in the metadata schema
+        # col_dict is a hashmap used to store the normalized records by the normalized_id in object_doc
+        col_dict = {}
+        # log_error_msg is used to record all the elog entries generated during the reading process
+        # After the mspass_object is created, we would post every elog entry with the messages in the log_error_msg.
+        log_error_msg = []
+        for k in read_metadata_schema.keys():
+            col = read_metadata_schema.collection(k)
+            # explanation of the 4 conditions in the following if statement
+            # 1.2.1. col is not None and is a normalized collection name
+            # 1.2.2. normalized key id exists in the wf document
+            # 1.2.3. k is not one of the exclude keys
+            # 1.2.4. col is in the normalize list provided by user
+            if (
+                col
+                and col != wf_collection
+                and col + "_id" in object_doc
+                and k not in exclude_keys
+                and col in normalize
+            ):
+                # try to find the corresponding record in the normalized collection from the database
+                if col not in col_dict:
+                    col_dict[col] = db[col].find_one({"_id": object_doc[col + "_id"]})
+                # might unable to find the normalized document by the normalized_id in the object_doc
+                # we skip reading this attribute
+                if not col_dict[col]:
+                    continue
+                # this attribute may be missing in the normalized record we retrieve above
+                # in this case, we skip reading this attribute
+                # however, if it is a required attribute for the normalized collection
+                # we should post an elog entry to the associated wf object created after.
+                unique_k = db.database_schema[col].unique_name(k)
+                if not unique_k in col_dict[col]:
+                    if db.database_schema[col].is_required(unique_k):
+                        log_error_msg.append(
+                            "Attribute {} is required in collection {}, but is missing in the document with id={}.".format(
+                                unique_k, col, object_doc[col + "_id"]
                             )
-
-    elif mode == "pedantic":
-        for k in md:
-            if read_metadata_schema.is_defined(k):
-                if not isinstance(md[k], read_metadata_schema.type(k)):
-                    fatal_keys.append(k)
-                    is_dead = True
-                    log_error_msg.append(
-                        "pedantic mode: {} has type {}, forbidden by definition".format(
-                            k, type(md[k])
                         )
-                    )
+                    continue
+                md[k] = col_dict[col][unique_k]
 
-    # 1.4 create a mspass object by passing MetaData
-    # if not changing the fatal key values, runtime error in construct a mspass object
-    for k in fatal_keys:
-        if read_metadata_schema.type(k) is str:
-            md[k] = ""
-        elif read_metadata_schema.type(k) is int:
-            md[k] = 0
-        elif read_metadata_schema.type(k) is float:
-            md[k] = 0.0
-        elif read_metadata_schema.type(k) is bool:
-            md[k] = False
-        elif read_metadata_schema.type(k) is dict:
-            md[k] = {}
-        elif read_metadata_schema.type(k) is list:
-            md[k] = []
-        elif read_metadata_schema.type(k) is bytes:
-            md[k] = b"\x00"
+        # 1.3 schema check normalized data according to the read mode
+        is_dead = False
+        fatal_keys = []
+        if mode == "cautious":
+            for k in md:
+                if read_metadata_schema.is_defined(k):
+                    col = read_metadata_schema.collection(k)
+                    unique_key = db.database_schema[col].unique_name(k)
+                    if not isinstance(md[k], read_metadata_schema.type(k)):
+                        # try to convert the mismatch attribute
+                        try:
+                            # convert the attribute to the correct type
+                            md[k] = read_metadata_schema.type(k)(md[k])
+                        except:
+                            if db.database_schema[col].is_required(unique_key):
+                                fatal_keys.append(k)
+                                is_dead = True
+                                log_error_msg.append(
+                                    "cautious mode: Required attribute {} has type {}, forbidden by definition and unable to convert".format(
+                                        k, type(md[k])
+                                    )
+                                )
+
+        elif mode == "pedantic":
+            for k in md:
+                if read_metadata_schema.is_defined(k):
+                    if not isinstance(md[k], read_metadata_schema.type(k)):
+                        fatal_keys.append(k)
+                        is_dead = True
+                        log_error_msg.append(
+                            "pedantic mode: {} has type {}, forbidden by definition".format(
+                                k, type(md[k])
+                            )
+                        )
+
+        # 1.4 create a mspass object by passing MetaData
+        # if not changing the fatal key values, runtime error in construct a mspass object
+        for k in fatal_keys:
+            if read_metadata_schema.type(k) is str:
+                md[k] = ""
+            elif read_metadata_schema.type(k) is int:
+                md[k] = 0
+            elif read_metadata_schema.type(k) is float:
+                md[k] = 0.0
+            elif read_metadata_schema.type(k) is bool:
+                md[k] = False
+            elif read_metadata_schema.type(k) is dict:
+                md[k] = {}
+            elif read_metadata_schema.type(k) is list:
+                md[k] = []
+            elif read_metadata_schema.type(k) is bytes:
+                md[k] = b"\x00"
+            else:
+                md[k] = None
+
+        # init a ProcessingHistory to store history
+        h = ProcessingHistory()
+
+        # not continue step 2 & 3 if the mspass object is dead
+        if is_dead:
+            md["is_dead"] = True  # mspass_object.kill()
+            for msg in log_error_msg:
+                h.elog.log_error("read_data", msg, ErrorSeverity.Invalid)
         else:
-            md[k] = None
+            md["is_dead"] = False  # mspass_object.live = True
 
+            # 3.load history
+            if load_history:
+                history_obj_id_name = (
+                    db.database_schema.default_name("history_object") + "_id"
+                )
+                if history_obj_id_name in object_doc:
+                    # Load (in place) the processing history into h.
+                    history_object_id = object_doc[history_obj_id_name]
+                    # get the atomic type of the mspass object
+                    if object_type is TimeSeries:
+                        atomic_type = AtomicType.TIMESERIES
+                    else:
+                        atomic_type = AtomicType.SEISMOGRAM
+                    if not collection:
+                        collection = db.database_schema.default_name("history_object")
+                    # load history if set True
+                    res = db[collection].find_one({"_id": history_object_id})
+                    # retrieve_history_record
+                    if retrieve_history_record:
+                        h = pickle.loads(res["processing_history"])
+                    else:
+                        # set the associated history_object_id as the uuid of the origin
+                        if not alg_name:
+                            alg_name = "0"
+                        if not alg_id:
+                            alg_id = "0"
+                        h.set_as_origin(
+                            alg_name,
+                            alg_id,
+                            history_object_id,
+                            atomic_type,
+                            define_as_raw,
+                        )
+
+            md.clear_modified()
+
+            # 4.post complaint elog entries if any
+            for msg in log_error_msg:
+                h.elog.log_error("read_data", msg, ErrorSeverity.Complaint)
+
+        # save additional params to metadata
+        md["history"] = h
+        md["object_type"] = object_type
+        md["storage_mode"] = object_doc["storage_mode"]
+        if md["storage_mode"] == "gridfs":
+            md["gfsh"] = gridfs.GridFS(db)
+        md["dir"] = object_doc.get("dir")
+        md["dfile"] = object_doc.get("dfile")
+        md["foff"] = object_doc.get("foff")
+        md["nbytes"] = object_doc.get("nbytes")
+        md["format"] = object_doc.get("format")
+        md["gridfs_id"] = object_doc.get("gridfs_id")
+        md["url"] = object_doc.get("url")
+
+        # add metadata for current object to metadata list
+        md_list.append(md)
+
+    # convert the list to dataframe
+    return pd.DataFrame(md_list)
+
+
+def read_files(md):
+    """
+    This is the reader for constructing the object from storage. Return type is a
+    complete mspass object.
+
+    :param md: the metadata for the object to be read.
+    :type md: :class:`mspasspy.ccore.utility.Metadata`.
+    """
     try:
         # Note a CRITICAL feature of the Metadata constructors
         # for both of these objects is that they allocate the
         # buffer for the sample data and initialize it to zero.
         # This allows sample data readers to load the buffer without
         # having to handle memory management.
-        if object_type is TimeSeries:
+        if md["object_type"] is TimeSeries:
             mspass_object = TimeSeries(md)
         else:
             # api mismatch here.  This ccore Seismogram constructor
@@ -444,114 +520,105 @@ def read_data_db(
     except MsPASSError as merr:
         # if the constructor fails mspass_object will be invalid
         # To preserve the error we have to create a shell to hold the error
-        if object_type is TimeSeries:
+        if md["object_type"] is TimeSeries:
             mspass_object = TimeSeries()
         else:
             mspass_object = Seismogram()
         # Default constructors leaves result marked dead so below should work
         mspass_object.elog.log_error(merr)
-        r = dict()
-        r["mspass_object"] = mspass_object
-        r["object_doc"] = object_doc
-        return r
+        return mspass_object
 
-    # not continue step 2 & 3 if the mspass object is dead
-    if is_dead:
-        mspass_object.kill()
-        for msg in log_error_msg:
-            mspass_object.elog.log_error("read_data", msg, ErrorSeverity.Invalid)
-    else:
-        mspass_object.live = True
+    # load history
+    if "history" in md:
+        mspass_object.load_history(md["history"])
 
-        # 3.load history
-        if load_history:
-            history_obj_id_name = (
-                db.database_schema.default_name("history_object") + "_id"
-            )
-            if history_obj_id_name in object_doc:
-                db._load_history(
-                    mspass_object,
-                    object_doc[history_obj_id_name],
-                    alg_name,
-                    alg_id,
-                    define_as_raw,
-                    retrieve_history_record,
-                )
-
-        mspass_object.clear_modified()
-
-        # 4.post complaint elog entries if any
-        for msg in log_error_msg:
-            mspass_object.elog.log_error("read_data", msg, ErrorSeverity.Complaint)
-
-    r = dict()
-    r["mspass_object"] = mspass_object
-    r["object_doc"] = object_doc
-    return r
-
-
-def read_data_file(
-    mspass_object,
-    db,
-    object_doc,
-):
-    """
-    This is the reader for constructing the object from storage. Return type is a
-    complete mspass object.
-
-    :param db: the database from which the data are to be read.
-    :type db: :class:`mspasspy.db.database.Database`.
-    :param mspass_object: the object you want to read.
-    :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-    :param object_doc: document of the object in the database
-    :type object_doc: class:`dict`.
-    """
-    if mspass_object.live:
+    if not md["is_dead"]:
         # 2.load data from different modes
-        storage_mode = object_doc["storage_mode"]
+        storage_mode = md["storage_mode"]
         if storage_mode == "file":
-            if "format" in object_doc:
+            if md["format"] != None:  # "format" in object_doc:
                 Database._read_data_from_dfile(
                     mspass_object,
-                    object_doc["dir"],
-                    object_doc["dfile"],
-                    object_doc["foff"],
-                    nbytes=object_doc["nbytes"],
-                    format=object_doc["format"],
+                    md["dir"],
+                    md["dfile"],
+                    md["foff"],
+                    nbytes=md["nbytes"],
+                    format=md["format"],
                 )
             else:
                 Database._read_data_from_dfile(
                     mspass_object,
-                    object_doc["dir"],
-                    object_doc["dfile"],
-                    object_doc["foff"],
+                    md["dir"],
+                    md["dfile"],
+                    md["foff"],
                 )
         elif storage_mode == "gridfs":
-            db._read_data_from_gridfs(mspass_object, object_doc["gridfs_id"])
+            # use new function here to avoid using database
+            _read_data_from_gridfs(md["gfsh"], mspass_object, md["gridfs_id"])
         elif storage_mode == "url":
             Database._read_data_from_url(
                 mspass_object,
-                object_doc["url"],
-                format=None if "format" not in object_doc else object_doc["format"],
+                md["url"],
+                format=md["format"],
             )
         elif storage_mode == "s3_continuous":
-            db._read_data_from_s3_continuous(mspass_object)
+            Database._read_data_from_s3_continuous(mspass_object)
         elif storage_mode == "s3_lambda":
-            db._read_data_from_s3_lambda(mspass_object)
+            Database._read_data_from_s3_lambda(mspass_object)
         elif storage_mode == "fdsn":
-            db._read_data_from_fdsn(mspass_object)
+            Database._read_data_from_fdsn(mspass_object)
         else:  # add another parameter
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
     return mspass_object
 
 
+def _read_data_from_gridfs(gfsh, mspass_object, gridfs_id):
+    """
+    Read data stored in gridfs and load it into a mspasspy object. This is similar
+    to database._read_data_from_gridfs(), but here have gfsh as a parameter to
+    avoid using database object
+
+    :param gfsh: GridFS object
+    :type gfsh: :class:`gridfs.GridFS`
+    :param mspass_object: the target object.
+    :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+    :param gridfs_id: the object id of the data stored in gridfs.
+    :type gridfs_id: :class:`bson.objectid.ObjectId`
+    """
+    fh = gfsh.get(file_id=gridfs_id)
+    if isinstance(mspass_object, TimeSeries):
+        # fh.seek(16)
+        float_array = array("d")
+        if not mspass_object.is_defined("npts"):
+            raise KeyError("npts is not defined")
+        float_array.frombytes(fh.read(mspass_object.get("npts") * 8))
+        mspass_object.data = DoubleVector(float_array)
+    elif isinstance(mspass_object, Seismogram):
+        if not mspass_object.is_defined("npts"):
+            raise KeyError("npts is not defined")
+        npts = mspass_object["npts"]
+        np_arr = np.frombuffer(fh.read(npts * 8 * 3))
+        file_size = fh.tell()
+        if file_size != npts * 8 * 3:
+            # Note we can only detect the cases where given npts is larger than
+            # the number of points in the file
+            emess = (
+                "Size mismatch in sample data. Number of points in gridfs file = %d but expected %d"
+                % (file_size / 8, (3 * mspass_object["npts"]))
+            )
+            raise ValueError(emess)
+        np_arr = np_arr.reshape(npts, 3).transpose()
+        mspass_object.data = dmatrix(np_arr)
+    else:
+        raise TypeError("only TimeSeries and Seismogram are supported")
+
+
 def write_distributed_data(
+    data,
     db,
-    df,
     mode="promiscuous",
     storage_mode="gridfs",
-    spark_context=None,
     dir=None,
     dfile=None,
     format=None,
@@ -566,10 +633,15 @@ def write_distributed_data(
     This function should be used to write an entire dataset that is to be handled
     by subsequent parallel operations.  The function can be thought of as
     writing the entire data set from a parallel container (rdd for spark
-    implementations or bag for a dask implementatio).  From a dataframe,
-    it will read from files distributedly and then read from the database
-    sequentially.
+    implementations or bag for a dask implementatio) to storage. From the container,
+    it will write to files distributedly using spark/dask, and then write to the
+    database sequentially. The two parts are done in two functions: write_files,
+    and write_to_db. It returns a dataframe of metadata for each object in the
+    original container. The return value can be used as input for
+    read_distributed_data_new() function.
 
+    :param data: the data to be written
+    :type data: :class:`dask.bag.Bag` or :class:`pyspark.RDD`.
     :param db: the database from which the data are to be written.
     :type db: :class:`mspasspy.db.database.Database`.
     :param mspass_object: the object you want to save.
@@ -649,16 +721,18 @@ def write_distributed_data(
         User's manual for guidance on how the use of this option.
     :type data_tag: :class:`str`
     """
-    # 1. write to file system
-    t = df.map(lambda cur: write_data_file(cur, dir, dfile, format))
-    # 2. write to database
+    # 1. write to file system, distributed
+    t = data.map(
+        lambda cur: write_files(
+            cur, dir, dfile, format, storage_mode, overwrite, gfsh=gridfs.GridFS(db)
+        )
+    )
+    # 2. write to database, sequential, use map here for concise
     if format == "spark":
         r = map(
-            lambda x: write_data_db(
+            lambda x: write_to_db(
                 db,
-                x["mspass_object"],
-                x["foff"],
-                x["nbytes"],
+                x,
                 mode=mode,
                 storage_mode=storage_mode,
                 dir=dir,
@@ -673,14 +747,11 @@ def write_distributed_data(
             ),
             t.collect(),  # rdd -> list
         )
-        return spark_context.parallelize(r)
     else:
         r = map(
-            lambda x: write_data_db(
+            lambda x: write_to_db(
                 db,
-                x["mspass_object"],
-                x["foff"],
-                x["nbytes"],
+                x,
                 mode=mode,
                 storage_mode=storage_mode,
                 dir=dir,
@@ -695,14 +766,12 @@ def write_distributed_data(
             ),
             t.compute(),  # bag -> list
         )
-        return daskbag.from_sequence(r)
+    return pd.DataFrame(r)
 
 
-def write_data_db(
+def write_to_db(
     db,
     mspass_object,
-    foff,
-    nbytes,
     mode="promiscuous",
     storage_mode="gridfs",
     dir=None,
@@ -719,8 +788,8 @@ def write_data_db(
     Use this method to save an atomic data object (TimeSeries or Seismogram)
     to be managed with MongoDB.  The Metadata are stored as documents in
     a MongoDB collection.  This method will not write data to file system,
-    it only writes to the doc and to the database. Return type is a dict
-    of mspass object and object_doc.
+    it only writes to the doc and to the database. Return type is metadata
+    for the given mspass_object.
 
     Any errors messages held in the object being saved are always
     written to documents in MongoDB is a special collection defined in
@@ -1047,18 +1116,12 @@ def write_data_db(
             """
             insertion_dict["dir"] = dir
             insertion_dict["dfile"] = dfile
-            insertion_dict["foff"] = foff
+            insertion_dict["foff"] = mspass_object["foff"]
             if format:
-                insertion_dict["nbytes"] = nbytes
+                insertion_dict["nbytes"] = mspass_object["nbytes"]
                 insertion_dict["format"] = format
         elif storage_mode == "gridfs":
-            if overwrite and "gridfs_id" in insertion_dict:
-                gridfs_id = db._save_data_to_gridfs(
-                    mspass_object, insertion_dict["gridfs_id"]
-                )
-            else:
-                gridfs_id = db._save_data_to_gridfs(mspass_object)
-            insertion_dict["gridfs_id"] = gridfs_id
+            insertion_dict["gridfs_id"] = mspass_object["gridfs_id"]
             # TODO will support url mode later
             # elif storage_mode == "url":
             #    pass
@@ -1155,21 +1218,27 @@ def write_data_db(
             old_elog_id = None
         elog_id = db._save_elog(mspass_object, elog_id=old_elog_id)
     # Both live and dead data land here.
-    r = dict()
-    r["mspass_object"] = mspass_object
-    r["object_doc"] = insertion_dict
-    return r
+
+    md = Metadata(mspass_object)
+    md["object_type"] = db.database_schema[wf_collection].data_type()
+    md["storage_mode"] = storage_mode
+    md["dir"] = dir
+    md["dfile"] = dfile
+    return md
 
 
-def write_data_file(
+def write_files(
     mspass_object,
     dir,
     dfile,
     format,
+    storage_mode,
+    overwrite,
+    gfsh=None,
 ):
     """
-    This is the writer for writing the object to storage. Return type is a
-    dataframe, rdd for spark implementations or bag for a dask implementatio.
+    This is the writer for writing the object to storage. Return type is the
+    original object with some more parameters added.
 
     :param mspass_object: the object you want to read.
     :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -1192,14 +1261,63 @@ def write_data_file(
         primarily a simple export mechanism.  See the User's manual for
         more details on data export.  Used only for "file" storage mode.
     :type format: :class:`str`
+    :param storage_mode: Must be either "gridfs" or "file.  When set to
+        "gridfs" the waveform data are stored internally and managed by
+        MongoDB.  If set to "file" the data will be stored in a file system
+        with the dir and dfile arguments defining a file name.   The
+        default is "gridfs".
+    :type storage_mode: :class:`str`
+    :param overwrite:  If true gridfs data linked to the original
+        waveform will be replaced by the sample data from this save.
+        Default is false, and should be the normal use.  This option
+        should never be used after a reduce operator as the parents
+        are not tracked and the space advantage is likely minimal for
+        the confusion it would cause.   This is most useful for light, stable
+        preprocessing with a set of map operators to regularize a data
+        set before more extensive processing.  It can only be used when
+        storage_mode is set to gridfs.
+    :type overwrite:  boolean
+    :param gfsh: GridFS object
+    :type gfsh: :class:`gridfs.GridFS`
 
     """
+    if storage_mode == "file":
+        foff, nbytes = Database._save_data_to_dfile(
+            mspass_object, dir, dfile, format=format
+        )
 
-    foff, nbytes = Database._save_data_to_dfile(
-        mspass_object, dir, dfile, format=format
-    )
-    r = dict()
-    r["foff"] = foff
-    r["nbytes"] = nbytes
-    r["mspass_object"] = mspass_object
-    return r
+        mspass_object["foff"] = foff
+        mspass_object["nbytes"] = nbytes
+    elif storage_mode == "gridfs":
+        if overwrite and "gridfs_id" in mspass_object:
+            gridfs_id = _save_data_to_gridfs(
+                gfsh, mspass_object, mspass_object["gridfs_id"]
+            )
+        else:
+            gridfs_id = _save_data_to_gridfs(gfsh, mspass_object)
+        mspass_object["gridfs_id"] = gridfs_id
+    return mspass_object
+
+
+def _save_data_to_gridfs(gfsh, mspass_object, gridfs_id=None):
+    """
+    Save a mspasspy object sample data to MongoDB grid file system. We recommend to use this method
+    for saving a mspasspy object inside MongoDB. This is similar to database._save_data_to_gridfs(),
+    but here have gfsh as a parameter to avoid using database object
+
+    :param gfsh: GridFS object
+    :type gfsh: :class:`gridfs.GridFS`
+    :param mspass_object: the target object.
+    :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+    :param gridfs_id: if the data is already stored and you want to update it, you should provide the object id
+    of the previous data, which will be deleted. A new document will be inserted instead.
+    :type gridfs_id: :class:`bson.objectid.ObjectId`.
+    :return inserted gridfs object id.
+    """
+    if gridfs_id and gfsh.exists(gridfs_id):
+        gfsh.delete(gridfs_id)
+    if isinstance(mspass_object, Seismogram):
+        ub = bytes(np.array(mspass_object.data).transpose())
+    else:
+        ub = bytes(mspass_object.data)
+    return gfsh.put(ub)

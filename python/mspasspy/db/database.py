@@ -3830,8 +3830,9 @@ class Database(pymongo.database.Database):
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
 
+    @staticmethod
     def _read_data_from_s3_continuous(
-        self, mspass_object, aws_access_key_id=None, aws_secret_access_key=None
+        mspass_object, aws_access_key_id=None, aws_secret_access_key=None
     ):
         """
         Read data stored in s3 and load it into a mspasspy object.
@@ -3910,8 +3911,9 @@ class Database(pymongo.database.Database):
         except Exception as e:
             raise MsPASSError("Error while read data from s3.", "Fatal") from e
 
+    @staticmethod
     def _read_data_from_s3_lambda(
-        self, mspass_object, aws_access_key_id=None, aws_secret_access_key=None
+        mspass_object, aws_access_key_id=None, aws_secret_access_key=None
     ):
         year = mspass_object["year"]
         day_of_year = mspass_object["day_of_year"]
@@ -3929,7 +3931,7 @@ class Database(pymongo.database.Database):
             location = mspass_object["loc"]
 
         try:
-            st = self._download_windowed_mseed_file(
+            st = Database._download_windowed_mseed_file(
                 aws_access_key_id,
                 aws_secret_access_key,
                 year,
@@ -4051,7 +4053,8 @@ class Database(pymongo.database.Database):
                 mspass_object.npts = sm.data.columns()
                 mspass_object.data = sm.data
 
-    def _read_data_from_fdsn(self, mspass_object):
+    @staticmethod
+    def _read_data_from_fdsn(mspass_object):
         provider = mspass_object["provider"]
         year = mspass_object["year"]
         day_of_year = mspass_object["day_of_year"]
