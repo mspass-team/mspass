@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from mspasspy.util.decorators import mspass_func_wrapper
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, dmatrix
 from mspasspy.ccore.seismic import (
     TimeSeries,
@@ -315,10 +316,8 @@ class ScipyDecimator(BasicResampler):
                 ddt=data_dt, sdt=self.dt
             )
         else:
-            message = (
-                "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
-                    ddt=data_dt, sdt=self.dt
-                )
+            message = "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
+                ddt=data_dt, sdt=self.dt
             )
         return message
 
@@ -419,7 +418,19 @@ class ScipyDecimator(BasicResampler):
         return mspass_object
 
 
-def resample(mspass_object, decimator, resampler, verify_operators=True):
+@mspass_func_wrapper
+def resample(
+    mspass_object,
+    decimator,
+    resampler,
+    verify_operators=True,
+    object_history=False,
+    alg_name="resample",
+    alg_id=None,
+    dryrun=False,
+    inplace_return=False,
+    function_return_key=None,
+):
     """
     Resample any valid data object to a common sample rate (sample interval).
 
@@ -441,6 +452,11 @@ def resample(mspass_object, decimator, resampler, verify_operators=True):
     must have been constructed with the same output target sampling
     frequency (interval).  Both must also be a subclass of BasicResampler
     to match the api requirements.
+    
+    The parameters object_history, alg_name, alg_id, dryrun, inplace_return,
+    and function_return_key are handled by the decorator called 
+    mspass_func_wrapper used by this function.  See the docstring for 
+    mspass_func_wrapper for the generic use of those parameters.
 
     :param mspass_object:   mspass datum to be resampled
     :type mspass_object:  Must a TimeSeries, Seismogram, TimeSeriesEnsemble,
