@@ -339,7 +339,7 @@ def test_read_distributed_data_dask():
         db.save_data(
             ts,
             mode="promiscuous",
-            storage_mode="file",
+            storage_mode="gridfs",
             dir="./data/",
             dfile="test_db_output",
         )
@@ -540,12 +540,14 @@ def test_write_distributed_data(spark_context):
         list_,
         db,
         mode="pedantic",
-        storage_mode="file",
+        storage_mode="gridfs",
         format="spark",
     )
+    cursors = db["wf_TimeSeries"].find({})
     obj_list = read_distributed_data_new(
-        df, format="spark", spark_context=spark_context
+        db, cursors, format="spark", spark_context=spark_context
     ).collect()
+    assert len(obj_list) == 3
     for idx, l in enumerate(obj_list):
         assert l
         assert np.isclose(l.data, ts_list[idx].data).all()
@@ -631,6 +633,7 @@ def test_write_distributed_data_dask():
         format="dask",
     )
     obj_list = read_distributed_data_new(df, format="dask").compute()
+    assert len(obj_list) == 3
     for idx, l in enumerate(obj_list):
         assert l
         assert all(a.any() == b.any() for a, b in zip(l.data, ts_list[idx].data))

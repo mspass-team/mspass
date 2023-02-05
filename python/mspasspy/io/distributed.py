@@ -143,7 +143,7 @@ def read_distributed_data_new(
     """
     if not (isinstance(data, pd.DataFrame) or isinstance(data, Database)):
         raise TypeError("Only Database or DataFrame are supported")
-
+    db = data
     if isinstance(data, Database):
         #  first read the metadata from database to a dataframe, and save to data
         data = read_to_dataframe(
@@ -163,9 +163,15 @@ def read_distributed_data_new(
         )
     else:
         list_ = daskbag.from_sequence(data.to_dict("records"), npartitions=npartitions)
+    # list_ is a parallel container of dict
     return list_.map(
         lambda cur: read_files(
-            Metadata(cur),
+            Metadata(cur),  # convert dict to metadata
+            gridfs.GridFS(db)
+            if (isinstance(db, Database) and cur["storage_mode"] == "gridfs")
+            else None,
+            # if storage mode is gridfs, pass a GridFS object, it can not be put in the dataframe because rdd/bag
+            # can't pickle _thread.RLock objects
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key,
         )
@@ -190,7 +196,7 @@ def read_to_dataframe(
     objects from data managed with MondoDB through MsPASS. Firstly construct a list
     of objects using cursor. Then for each object, constrcut the metadata and add to
     the list. Finally convert the list to a dataframe. The return type is a dataframe
-    of metadata.
+    of metadata. The logic of constructing metadata is same as Database.read_data().
 
     :param db: the database from which the data are to be read.
     :type db: :class:`mspasspy.db.database.Database`.
@@ -248,6 +254,7 @@ def read_to_dataframe(
     """
     # first get the object list
     obj_list = list(cursor)
+
     collection = cursor.collection.name
     try:
         wf_collection = db.database_schema.default_name(collection)
@@ -300,7 +307,7 @@ def read_to_dataframe(
 
     # sequentially get all metadata for each object
     for object_id in obj_list:
-
+        # the same as read_data() in database.py
         try:
             oid = object_id["_id"]
         except:
@@ -479,7 +486,7 @@ def read_to_dataframe(
                 h.elog.log_error("read_data", msg, ErrorSeverity.Complaint)
 
         # save additional params to metadata
-        md["history"] = h  # if '_thread.lock' object is here
+        md["history"] = h
         if object_type is TimeSeries:
             md["object_type"] = "TimeSeries"
         else:
@@ -504,12 +511,13 @@ def read_to_dataframe(
 
 def read_files(
     md,
+    gfsh=None,
     aws_access_key_id=None,
     aws_secret_access_key=None,
 ):
     """
     This is the reader for constructing the object from storage. Return type is a
-    complete mspass object.
+    complete mspass object. The logic of is same as Database.read_data().
 
     :param md: the metadata for the object to be read.
     :type md: :class:`mspasspy.ccore.utility.Metadata`.
@@ -566,8 +574,13 @@ def read_files(
             # tried to store GridFS object in metadata here, but GridFS object in Pandas.DataFrame
             # can not be converted to RDD or daskbag, it will throw a TypeError: can't pickle _thread.RLock objects.
             # If the storage mode is gridfs, we have to use the database.
-            raise TypeError("gridfs storage mode are not supported in distributed read")
-            # _read_data_from_gridfs(md["gfsh"], mspass_object, md["gridfs_id"])
+            # raise TypeError("gridfs storage mode are not supported in distributed read")
+            if gfsh is not None:
+                _read_data_from_gridfs(gfsh, mspass_object, md["gridfs_id"])
+            else:
+                raise TypeError(
+                    "To use gridfs storage mode, must provide database rather than dataframe"
+                )
         elif storage_mode == "url":
             Database._read_data_from_url(
                 mspass_object,
@@ -588,6 +601,47 @@ def read_files(
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
     return mspass_object
+
+
+def _read_data_from_gridfs(gfsh, mspass_object, gridfs_id):
+    """
+    Read data stored in gridfs and load it into a mspasspy object. This is similar
+    to database._read_data_from_gridfs(), but here we have gfsh as a parameter to
+    avoid using database object.
+
+    :param gfsh: GridFS object
+    :type gfsh: :class:`gridfs.GridFS`
+    :param mspass_object: the target object.
+    :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+    :param gridfs_id: the object id of the data stored in gridfs.
+    :type gridfs_id: :class:`bson.objectid.ObjectId`
+    """
+    fh = gfsh.get(file_id=gridfs_id)
+    if isinstance(mspass_object, TimeSeries):
+        # fh.seek(16)
+        float_array = array("d")
+        if not mspass_object.is_defined("npts"):
+            raise KeyError("npts is not defined")
+        float_array.frombytes(fh.read(mspass_object.get("npts") * 8))
+        mspass_object.data = DoubleVector(float_array)
+    elif isinstance(mspass_object, Seismogram):
+        if not mspass_object.is_defined("npts"):
+            raise KeyError("npts is not defined")
+        npts = mspass_object["npts"]
+        np_arr = np.frombuffer(fh.read(npts * 8 * 3))
+        file_size = fh.tell()
+        if file_size != npts * 8 * 3:
+            # Note we can only detect the cases where given npts is larger than
+            # the number of points in the file
+            emess = (
+                "Size mismatch in sample data. Number of points in gridfs file = %d but expected %d"
+                % (file_size / 8, (3 * mspass_object["npts"]))
+            )
+            raise ValueError(emess)
+        np_arr = np_arr.reshape(npts, 3).transpose()
+        mspass_object.data = dmatrix(np_arr)
+    else:
+        raise TypeError("only TimeSeries and Seismogram are supported")
 
 
 def write_distributed_data(
@@ -749,7 +803,7 @@ def write_to_db(
     to be managed with MongoDB.  The Metadata are stored as documents in
     a MongoDB collection.  This method will not write data to file system,
     it only writes to the doc and to the database. Return type is metadata
-    for the given mspass_object.
+    for the given mspass_object. The logic is same as Database.save_data().
 
     Any errors messages held in the object being saved are always
     written to documents in MongoDB is a special collection defined in
@@ -1248,7 +1302,7 @@ def _save_data_to_gridfs(gfsh, mspass_object, gridfs_id=None):
     """
     Save a mspasspy object sample data to MongoDB grid file system. We recommend to use this method
     for saving a mspasspy object inside MongoDB. This is similar to database._save_data_to_gridfs(),
-    but here have gfsh as a parameter to avoid using database object
+    but here we have gfsh as a parameter to avoid using database object.
 
     :param gfsh: GridFS object
     :type gfsh: :class:`gridfs.GridFS`
