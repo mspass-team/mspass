@@ -24,7 +24,7 @@ from mspasspy.ccore.utility import (
 
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, ErrorLogger
 from mspasspy.algorithms.window import WindowData
-
+from mspasspy.algorithms.resample import resample, ScipyDecimator, ScipyResampler
 
 def isOldEnsembleObject(obj):
     supported_ensemble_types = (TimeSeriesEnsemble, SeismogramEnsemble)
@@ -49,98 +49,31 @@ def extractDataFromMsPassObject(mspass_object):
     return np.array(mspass_object.data)
 
 
-def resample(mspass_object, decimator, resampler, verify_operators=True):
+def resample_ensemble(ens, dt=None):
     """
-    Resample any valid data object to a common sample rate (sample interval).
-    This function is a wrapper that automates handling of resampling.
-    Its main use is in a dask/spark map operator where the input can
-    be a set of irregularly sampled data and the output is required to be
-    at a common sample rate (interval).   The problem has some complexity
-    because decimation is normally the preferred method of resampling
-    when possible due to speed and more predictable behavior.
-    The problem is that downsampling by decimation is only possible if
-    the output sampling interval is an integer multiple of the input
-    sample interval.   With modern seismology data that is usually
-    possible, but there are some common exceptions.  For example,
-    10 sps cannot be created from 25 sps by decimation.   The algorithm
-    tests the data sample rate and if decimation is possible it
-    applies a decimation operator passed as the argument "decimator".
-    If not, it calls the operator "resampler" that is assumed to be
-    capable of handling any sample rate change.   The two operators
-    must have been constructed with the same output target sampling
-    frequency (interval).  Both must also be a subclass of BasicResampler
-    to match the api requirements.
-    :param mspass_object:   mspass datum to be resampled
-    :type mspass_object:  Must a TimeSeries, Seismogram, TimeSeriesEnsemble,
-      or SeismogramEnsemble object.
-    :param decimator:   decimation operator.
-    :type decimator:  Must be a subclass of BasicResampler
-    :param resampler:  resampling operator
-    :type resampler:  Must be a subclass of BasicResampler
-    :param verify_operators: boolean controlling whether safety checks
-      are applied to inputs.  When True (default) the contents of
-      decimator and resampler are verified as subclasses of BasicResampler
-      and the function tests if the target output sampling frequency (interval)
-      of both operators are the same.  The function will throw an exception if
-      any of the verify tests fail.   Standard practice should be to verify
-      the operators and valid before running a large workflow and running
-      production with this arg set False for efficiency.  That should
-      acceptable in any case I can conceive as once the operators are
-      defined in a parallel workflow they should be invariant for the
-      entire application in a map operator.
+    A wrapper for the resample function defined in resample.py. It would automate
+    handling of resampling any valid data object to a common sample rate.
+    The user can pass the sample interval for the resampler, if not given by the
+    user, we would use the sample interval from the first data member.
     """
-    if verify_operators:
-        if not isinstance(decimator, BasicResampler):
-            raise TypeError(
-                "resample:  decimator operator (arg1) must be subclass of BasicResampler"
-            )
-        if not isinstance(resampler, BasicResampler):
-            raise TypeError(
-                "resample:  resampler operator (arg2) must be subclass of BasicResampler"
-            )
-        if not np.isclose(decimator.target_dt(), resampler.target_dt()):
-            raise MsPASSError(
-                "resample:  decimator and resampler must have the same target sampling rate",
-                ErrorSeverity.Fatal,
-            )
-    if not isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
-        raise TypeError("resample:   arg0 must be a MsPASS data object")
-
-    resampled_obj = mspass_object
-    if not mspass_object.dead():
-        # I tried to do this loop with recursion but spyder kept
-        # flagging it as an error - I'm not sure it would be.
-        # The logic for atomic data is simple anyway and this
-        # might actually be faster avoiding the function calls
-        nmembers = len(mspass_object.member)
-        for i in range(nmembers):
-            d = mspass_object.member[i]
-            decfac = decimator.dec_factor(d)
-            # Note when decfac is 1 the current member is not altered
-            if decfac > 1:
-                resampled_obj.member[i] = decimator.resample(d)
-            elif decfac <= 0:
-                resampled_obj.member[i] = resampler.resample(d)
-        starttime = min([mspass_object.member[i].t0 for i in range(nmembers)])
-        endtime = max([mspass_object.member[i].endtime() for i in range(nmembers)])
-        resampled_obj = WindowData(resampled_obj, starttime, endtime)
-    return resampled_obj
+    if not isOldEnsembleObject(ens):
+        raise TypeError(
+            "Can't resample the object, not an old ensemble object"
+        )
+    if dt is None:
+        dt = ens.member[0].dt
+    decimator = ScipyDecimator(dt)
+    resampler = ScipyResampler(dt)
+    return resample(ens, decimator, resampler)
 
 
-def extractDataFromOldEnsemble(ensemble_object, decimator, resampler):
+def extractDataFromOldEnsemble(ensemble_object):
     """
     A wrapper function to extract data data from an old ensemble object, works by
     iterating the member in the ensemble and calling extractDataFromMsPassObject
     on each of them.
-    Note that we want to make sure that all member data have the same starttime
-    and sample rate, so resample is called on the ensemble object before doing the
-    actual data handling.
 
     :param ensemble_object: TimeSeriesEnsemble or SeismogramEnsemble
-    :param decimator:   decimation operator.
-    :type decimator:  Must be a subclass of BasicResampler
-    :param resampler:  resampling operator
-    :type resampler:  Must be a subclass of BasicResampler
     """
 
     if not isOldEnsembleObject(ensemble_object):
@@ -158,7 +91,6 @@ def extractDataFromOldEnsemble(ensemble_object, decimator, resampler):
         if isinstance(ensemble_object, TimeSeriesEnsemble):
             item_data = item_data.reshape(1, ensemble_object[0].npts)
         ret[i] = item_data
-    resample(ret, decimator, resampler)
     return ret
 
 
