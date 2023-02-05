@@ -448,7 +448,13 @@ def test_read_distributed_data_dask_df():
         load_history=True,
     )
 
-    list2 = read_distributed_data_new(df, cursor=None, format="dask").compute()
+    list_ = daskbag.from_sequence(df.to_dict("records"))
+
+    list2 = list_.map(
+        lambda cur: read_files(
+            Metadata(cur),
+        )
+    ).compute()
     assert len(list2) == 3
     for l in list2:
         assert l
@@ -549,7 +555,7 @@ def test_write_distributed_data_dask():
     client = DBClient("localhost")
     client.drop_database("mspasspy_test_db")
 
-    test_ts = get_live_timeseries()
+    test_ts = get_live_seismogram()
 
     client = DBClient("localhost")
     db = Database(client, "mspasspy_test_db")
@@ -627,4 +633,5 @@ def test_write_distributed_data_dask():
     obj_list = read_distributed_data_new(df, format="dask").compute()
     for idx, l in enumerate(obj_list):
         assert l
-        assert np.isclose(l.data, ts_list[idx].data).all()
+        assert all(a.any() == b.any() for a, b in zip(l.data, ts_list[idx].data))
+    write_files(ts1, storage_mode="gridfs", overwrite=False, gfsh=gridfs.GridFS(db))

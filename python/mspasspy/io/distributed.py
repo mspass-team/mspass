@@ -75,15 +75,15 @@ def read_distributed_data_new(
     implementations or bag for a dask implementatio).
 
     This new function is to divide the process of reading into two parts:
-    reading from database and reading from file, where reading from file is done
-    with dask/spark, and reading from database is done in sequence. The two parts
-    are done in two functions: read_to_dataframe, and read_files
+    reading from database and reading from file, where where reading from database
+    is done in sequence, and reading from file is done with dask/spark. The two parts
+    are done in two functions: read_to_dataframe, and read_files.
 
-    The data param can be database or dataframe. If a database is given,
-    it will firstly read from the database sequentially, and save the metadata
-    to a dataframe. Then use the information in the dataframe and dask/spark to
-    read from files distributedly, and generate the objects to the container.
-    This step uses map in dask/spark to improve efficiency.
+    The data param can be database or dataframe. If it is database, the function will
+    firstly read from the database sequentially, and save the metadata to a dataframe.
+    Then we have the dataframe. Use the information in the dataframe to read from files
+    using dask/spark distributedly, and generate the objects to the container. This step
+    uses map in dask/spark to improve efficiency.
 
     All other arguments are options that change behavior as described below.
 
@@ -499,10 +499,7 @@ def read_to_dataframe(
         md_list.append(md)
 
     # convert the metadata list to a dataframe
-    # 1. list of metadata -> list of dataframe
-    df_list = map(lambda l: pd.DataFrame(l.todict(), index=[0]), md_list)
-    # 2. merge the dataframe list to one dataframe
-    return pd.concat(df_list)
+    return pd.json_normalize(map(lambda cur: cur.todict(), md_list))
 
 
 def read_files(
@@ -729,8 +726,7 @@ def write_distributed_data(
             t.compute(),  # bag -> list
         )
     # convert list of metadata to dataframe
-    df_list = map(lambda l: pd.DataFrame(l.todict(), index=[0]), r)
-    return pd.concat(df_list)
+    return pd.json_normalize(map(lambda cur: cur.todict(), r))
 
 
 def write_to_db(
@@ -1196,9 +1192,9 @@ def write_to_db(
 
 def write_files(
     mspass_object,
-    format,
-    storage_mode,
-    overwrite,
+    format=None,
+    storage_mode="gridfs",
+    overwrite=False,
     gfsh=None,
 ):
     """
