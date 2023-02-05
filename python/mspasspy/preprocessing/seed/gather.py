@@ -158,6 +158,7 @@ def extractDataFromOldEnsemble(ensemble_object, decimator, resampler):
         if isinstance(ensemble_object, TimeSeriesEnsemble):
             item_data = item_data.reshape(1, ensemble_object[0].npts)
         ret[i] = item_data
+    resample(ret, decimator, resampler)
     return ret
 
 
@@ -640,19 +641,19 @@ class BasicGather(ABC):
             raise TypeError("The components number doesn't match the input object")
 
         new_data = extractDataFromMsPassObject(mspass_object)  # get the numpy data
-        if is_compact:
+        if self.is_compact:
             new_data.transpose()
 
         if self.size < self.capacity:
             self.member_data[self.size] = new_data
         else:
             if self.array_type == "dask":
-                if is_compact:
+                if self.is_compact:
                     da.append(self.member_data, new_data, 2)
                 else:
                     da.append(self.member_data, new_data, 1)
             elif self.array_type == "numpy":
-                if is_compact:
+                if self.is_compact:
                     np.append(self.member_data, new_data, 2)
                 else:
                     np.append(self.member_data, new_data, 1)
@@ -677,7 +678,7 @@ class BasicGather(ABC):
         like variable offset record sections.
         """
         if self.column_values is None:
-            return list(range(size))
+            return list(range(self.size))
         else:
             return self.column_values
 
@@ -794,7 +795,7 @@ class BasicGather(ABC):
         :param timeshift: the shift time range
         :type timeshift: float
         """
-        old_t0shift = t0shift
+        old_t0shift = self.t0shift
         self.rtoa()
         self.ator(old_t0shift + timeshift)
 
