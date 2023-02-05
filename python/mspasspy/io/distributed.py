@@ -51,12 +51,12 @@ import dask.bag as daskbag
 import dask.dataframe as daskdf
 import dask
 import pyspark
-from pyspark.sql import SQLContext
+from pyspark.sql import SQLContext, SparkSession
 
 
 def read_distributed_data_new(
     data,
-    cursor,
+    cursor=None,
     mode="promiscuous",
     normalize=None,
     load_history=False,
@@ -153,20 +153,23 @@ def read_distributed_data_new(
             normalize,
             load_history,
             exclude_keys,
-            format,
-            npartitions,
-            spark_context,
             data_tag,
-            aws_access_key_id,
-            aws_secret_access_key,
         )
 
     # now the type of data is a dataframe
     if format == "spark":
-        list_ = SQLContext.createDataFrame(data).rdd
+        list_ = spark_context.parallelize(
+            data.to_dict("records"), numSlices=npartitions
+        )
     else:
-        list_ = daskdf.from_pandas(data).to_bag()
-    return list_.map(lambda cur: read_files(cur))
+        list_ = daskbag.from_sequence(data.to_dict("records"), npartitions=npartitions)
+    return list_.map(
+        lambda cur: read_files(
+            Metadata(cur),
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
+        )
+    )  # does not compute or collect
 
 
 def read_to_dataframe(
@@ -177,7 +180,7 @@ def read_to_dataframe(
     load_history=False,
     exclude_keys=None,
     data_tag=None,
-    alg_name="read_data",
+    alg_name="read_to_dataframe",
     alg_id="0",
     define_as_raw=False,
     retrieve_history_record=False,
@@ -302,7 +305,7 @@ def read_to_dataframe(
             oid = object_id["_id"]
         except:
             oid = object_id
-        object_doc = col.find_one({"_id": oid})
+        object_doc = db[wf_collection].find_one({"_id": oid})
         if not object_doc:
             md_list.append(None)
 
@@ -311,7 +314,7 @@ def read_to_dataframe(
                 md_list.append(None)
 
         # 1. build metadata as dict
-        md = dict()
+        md = Metadata()
 
         # 1.1 read in the attributes from the document in the database
         for k in object_doc:
@@ -476,11 +479,14 @@ def read_to_dataframe(
                 h.elog.log_error("read_data", msg, ErrorSeverity.Complaint)
 
         # save additional params to metadata
-        md["history"] = h
-        md["object_type"] = object_type
+        md["history"] = h  # if '_thread.lock' object is here
+        if object_type is TimeSeries:
+            md["object_type"] = "TimeSeries"
+        else:
+            md["object_type"] = "Seismogram"
         md["storage_mode"] = object_doc["storage_mode"]
-        if md["storage_mode"] == "gridfs":
-            md["gfsh"] = gridfs.GridFS(db)
+        # if md["storage_mode"] == "gridfs":
+        #    md["gfsh"] = gridfs.GridFS(db)
         md["dir"] = object_doc.get("dir")
         md["dfile"] = object_doc.get("dfile")
         md["foff"] = object_doc.get("foff")
@@ -492,11 +498,18 @@ def read_to_dataframe(
         # add metadata for current object to metadata list
         md_list.append(md)
 
-    # convert the list to dataframe
-    return pd.DataFrame(md_list)
+    # convert the metadata list to a dataframe
+    # 1. list of metadata -> list of dataframe
+    df_list = map(lambda l: pd.DataFrame(l.todict(), index=[0]), md_list)
+    # 2. merge the dataframe list to one dataframe
+    return pd.concat(df_list)
 
 
-def read_files(md):
+def read_files(
+    md,
+    aws_access_key_id=None,
+    aws_secret_access_key=None,
+):
     """
     This is the reader for constructing the object from storage. Return type is a
     complete mspass object.
@@ -510,7 +523,7 @@ def read_files(md):
         # buffer for the sample data and initialize it to zero.
         # This allows sample data readers to load the buffer without
         # having to handle memory management.
-        if md["object_type"] is TimeSeries:
+        if md["object_type"] == "TimeSeries":
             mspass_object = TimeSeries(md)
         else:
             # api mismatch here.  This ccore Seismogram constructor
@@ -520,7 +533,7 @@ def read_files(md):
     except MsPASSError as merr:
         # if the constructor fails mspass_object will be invalid
         # To preserve the error we have to create a shell to hold the error
-        if md["object_type"] is TimeSeries:
+        if md["object_type"] == "TimeSeries":
             mspass_object = TimeSeries()
         else:
             mspass_object = Seismogram()
@@ -536,7 +549,7 @@ def read_files(md):
         # 2.load data from different modes
         storage_mode = md["storage_mode"]
         if storage_mode == "file":
-            if md["format"] != None:  # "format" in object_doc:
+            if md.is_defined("format"):  # "format" in object_doc:
                 Database._read_data_from_dfile(
                     mspass_object,
                     md["dir"],
@@ -553,8 +566,11 @@ def read_files(md):
                     md["foff"],
                 )
         elif storage_mode == "gridfs":
-            # use new function here to avoid using database
-            _read_data_from_gridfs(md["gfsh"], mspass_object, md["gridfs_id"])
+            # tried to store GridFS object in metadata here, but GridFS object in Pandas.DataFrame
+            # can not be converted to RDD or daskbag, it will throw a TypeError: can't pickle _thread.RLock objects.
+            # If the storage mode is gridfs, we have to use the database.
+            raise TypeError("gridfs storage mode are not supported in distributed read")
+            # _read_data_from_gridfs(md["gfsh"], mspass_object, md["gridfs_id"])
         elif storage_mode == "url":
             Database._read_data_from_url(
                 mspass_object,
@@ -562,9 +578,13 @@ def read_files(md):
                 format=md["format"],
             )
         elif storage_mode == "s3_continuous":
-            Database._read_data_from_s3_continuous(mspass_object)
+            Database._read_data_from_s3_continuous(
+                mspass_object, aws_access_key_id, aws_secret_access_key
+            )
         elif storage_mode == "s3_lambda":
-            Database._read_data_from_s3_lambda(mspass_object)
+            Database._read_data_from_s3_lambda(
+                mspass_object, aws_access_key_id, aws_secret_access_key
+            )
         elif storage_mode == "fdsn":
             Database._read_data_from_fdsn(mspass_object)
         else:  # add another parameter
@@ -573,60 +593,18 @@ def read_files(md):
     return mspass_object
 
 
-def _read_data_from_gridfs(gfsh, mspass_object, gridfs_id):
-    """
-    Read data stored in gridfs and load it into a mspasspy object. This is similar
-    to database._read_data_from_gridfs(), but here have gfsh as a parameter to
-    avoid using database object
-
-    :param gfsh: GridFS object
-    :type gfsh: :class:`gridfs.GridFS`
-    :param mspass_object: the target object.
-    :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-    :param gridfs_id: the object id of the data stored in gridfs.
-    :type gridfs_id: :class:`bson.objectid.ObjectId`
-    """
-    fh = gfsh.get(file_id=gridfs_id)
-    if isinstance(mspass_object, TimeSeries):
-        # fh.seek(16)
-        float_array = array("d")
-        if not mspass_object.is_defined("npts"):
-            raise KeyError("npts is not defined")
-        float_array.frombytes(fh.read(mspass_object.get("npts") * 8))
-        mspass_object.data = DoubleVector(float_array)
-    elif isinstance(mspass_object, Seismogram):
-        if not mspass_object.is_defined("npts"):
-            raise KeyError("npts is not defined")
-        npts = mspass_object["npts"]
-        np_arr = np.frombuffer(fh.read(npts * 8 * 3))
-        file_size = fh.tell()
-        if file_size != npts * 8 * 3:
-            # Note we can only detect the cases where given npts is larger than
-            # the number of points in the file
-            emess = (
-                "Size mismatch in sample data. Number of points in gridfs file = %d but expected %d"
-                % (file_size / 8, (3 * mspass_object["npts"]))
-            )
-            raise ValueError(emess)
-        np_arr = np_arr.reshape(npts, 3).transpose()
-        mspass_object.data = dmatrix(np_arr)
-    else:
-        raise TypeError("only TimeSeries and Seismogram are supported")
-
-
 def write_distributed_data(
     data,
     db,
     mode="promiscuous",
     storage_mode="gridfs",
-    dir=None,
-    dfile=None,
     format=None,
+    file_format=None,
     overwrite=False,
     exclude_keys=None,
     collection=None,
     data_tag=None,
-    alg_name="save_data",
+    alg_name="write_distributed_data",
     alg_id="0",
 ):
     """
@@ -639,6 +617,9 @@ def write_distributed_data(
     and write_to_db. It returns a dataframe of metadata for each object in the
     original container. The return value can be used as input for
     read_distributed_data_new() function.
+
+    Objects should be written to different files, otherwise it may overwrite each other.
+    dir and dfile should be stored in each object.
 
     :param data: the data to be written
     :type data: :class:`dask.bag.Bag` or :class:`pyspark.RDD`.
@@ -660,25 +641,6 @@ def write_distributed_data(
         with the dir and dfile arguments defining a file name.   The
         default is "gridfs".
     :type storage_mode: :class:`str`
-    :param dir: file directory for storage.  This argument is ignored if
-        storage_mode is set to "gridfs".  When storage_mode is "file" it
-        sets the directory in a file system where the data should be saved.
-        Note this can be an absolute or relative path.  If the path is
-        relative it will be expanded with the standard python library
-        path functions to a full path name for storage in the database
-        document with the attribute "dir".  As for any io we remind the
-        user that you much have write permission in this directory.
-        The writer will also fail if this directory does not already
-        exist.  i.e. we do not attempt to
-    :type dir: :class:`str`
-    :param dfile: file name for storage of waveform data.  As with dir
-        this parameter is ignored if storage_mode is "gridfs" and is
-        required only if storage_mode is "file".   Note that this file
-        name does not have to be unique.  The writer always calls positions
-        the write pointer to the end of the file referenced and sets the
-        attribute "foff" to that position. That allows automatic appends to
-        files without concerns about unique names.
-    :type dfile: :class:`str`
     :param format: the format of the file. This can be one of the
         `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__
         of ObsPy writer. The default the python None which the method
@@ -724,7 +686,7 @@ def write_distributed_data(
     # 1. write to file system, distributed
     t = data.map(
         lambda cur: write_files(
-            cur, dir, dfile, format, storage_mode, overwrite, gfsh=gridfs.GridFS(db)
+            cur, file_format, storage_mode, overwrite, gfsh=gridfs.GridFS(db)
         )
     )
     # 2. write to database, sequential, use map here for concise
@@ -735,9 +697,9 @@ def write_distributed_data(
                 x,
                 mode=mode,
                 storage_mode=storage_mode,
-                dir=dir,
-                dfile=dfile,
-                format=format,
+                dir=None,
+                dfile=None,
+                format=file_format,
                 overwrite=overwrite,
                 exclude_keys=exclude_keys,
                 collection=collection,
@@ -754,9 +716,9 @@ def write_distributed_data(
                 x,
                 mode=mode,
                 storage_mode=storage_mode,
-                dir=dir,
-                dfile=dfile,
-                format=format,
+                dir=None,
+                dfile=None,
+                format=file_format,
                 overwrite=overwrite,
                 exclude_keys=exclude_keys,
                 collection=collection,
@@ -766,7 +728,9 @@ def write_distributed_data(
             ),
             t.compute(),  # bag -> list
         )
-    return pd.DataFrame(r)
+    # convert list of metadata to dataframe
+    df_list = map(lambda l: pd.DataFrame(l.todict(), index=[0]), r)
+    return pd.concat(df_list)
 
 
 def write_to_db(
@@ -781,7 +745,7 @@ def write_to_db(
     exclude_keys=None,
     collection=None,
     data_tag=None,
-    alg_name="save_data",
+    alg_name="write_to_db",
     alg_id="0",
 ):
     """
@@ -967,8 +931,10 @@ def write_to_db(
     schema = db.metadata_schema
     if isinstance(mspass_object, TimeSeries):
         save_schema = schema.TimeSeries
+        mspass_object["object_type"] = "TimeSeries"
     else:
         save_schema = schema.Seismogram
+        mspass_object["object_type"] = "Seismogram"
 
     # should define wf_collection here because if the mspass_object is dead
     if collection:
@@ -1220,17 +1186,16 @@ def write_to_db(
     # Both live and dead data land here.
 
     md = Metadata(mspass_object)
-    md["object_type"] = db.database_schema[wf_collection].data_type()
+    # md["object_type"] = db.database_schema[wf_collection].data_type()
     md["storage_mode"] = storage_mode
     md["dir"] = dir
     md["dfile"] = dfile
+    md["is_dead"] = False
     return md
 
 
 def write_files(
     mspass_object,
-    dir,
-    dfile,
     format,
     storage_mode,
     overwrite,
@@ -1244,22 +1209,6 @@ def write_files(
     :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
     :param object_doc: document of the object in the database
     :type object_doc: class:`dict`.
-    :type dir: :class:`str`
-    :param dfile: file name for storage of waveform data.  As with dir
-        this parameter is ignored if storage_mode is "gridfs" and is
-        required only if storage_mode is "file".   Note that this file
-        name does not have to be unique.  The writer always calls positions
-        the write pointer to the end of the file referenced and sets the
-        attribute "foff" to that position. That allows automatic appends to
-        files without concerns about unique names.
-    :type dfile: :class:`str`
-    :param format: the format of the file. This can be one of the
-        `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__
-        of ObsPy writer. The default the python None which the method
-        assumes means to store the data in its raw binary form.  The default
-        should normally be used for efficiency.  Alternate formats are
-        primarily a simple export mechanism.  See the User's manual for
-        more details on data export.  Used only for "file" storage mode.
     :type format: :class:`str`
     :param storage_mode: Must be either "gridfs" or "file.  When set to
         "gridfs" the waveform data are stored internally and managed by
@@ -1283,7 +1232,7 @@ def write_files(
     """
     if storage_mode == "file":
         foff, nbytes = Database._save_data_to_dfile(
-            mspass_object, dir, dfile, format=format
+            mspass_object, mspass_object["dir"], mspass_object["dfile"], format=format
         )
 
         mspass_object["foff"] = foff
