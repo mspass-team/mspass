@@ -23,8 +23,10 @@ from mspasspy.ccore.utility import (
 )
 
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, ErrorLogger
-from mspasspy.algorithms.window import WindowData
+
+# from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.resample import resample, ScipyDecimator, ScipyResampler
+
 
 def isOldEnsembleObject(obj):
     supported_ensemble_types = (TimeSeriesEnsemble, SeismogramEnsemble)
@@ -57,9 +59,7 @@ def resample_ensemble(ens, dt=None):
     user, we would use the sample interval from the first data member.
     """
     if not isOldEnsembleObject(ens):
-        raise TypeError(
-            "Can't resample the object, not an old ensemble object"
-        )
+        raise TypeError("Can't resample the object, not an old ensemble object")
     if dt is None:
         dt = ens.member[0].dt
     decimator = ScipyDecimator(dt)
