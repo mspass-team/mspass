@@ -24,7 +24,7 @@ from mspasspy.ccore.utility import (
 
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, ErrorLogger
 
-# from mspasspy.algorithms.window import WindowData
+from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.resample import resample, ScipyDecimator, ScipyResampler
 
 
@@ -55,7 +55,7 @@ def resample_ensemble(ens, dt=None):
     """
     A wrapper for the resample function defined in resample.py. It would automate
     handling of resampling any valid data object to a common sample rate.
-    The user can pass the sample interval for the resampler, if not given by the
+    User can pass the sample interval for the resampler, if not given by the
     user, we would use the sample interval from the first data member.
     """
     if not isOldEnsembleObject(ens):
@@ -65,6 +65,33 @@ def resample_ensemble(ens, dt=None):
     decimator = ScipyDecimator(dt)
     resampler = ScipyResampler(dt)
     return resample(ens, decimator, resampler)
+
+
+def regularize_ensemble(ens, regularizer=None):
+    """
+    A helper function to regularize all the member data in an ensemble.
+    The purpose of this function is to set all member data to have the same start
+    time.
+    By default, the regularization is carried out by simply applying a time window
+    on each member.
+    :param regularizer: A function object defined by user that regularize all data
+    members in the ensemble, it should take only one argument (a timeseries/seismogram)
+    and return the regularized object.
+    :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]
+    """
+    if not isOldEnsembleObject(ens):
+        raise TypeError("Can't resample the object, not an old ensemble object")
+    nmembers = len(ens.member)
+
+    if regularizer is not None:
+        for i in range(nmembers):
+            ens.member[i] = regularizer(ens.member[i])
+    else:
+        starttime = min([ens.member[i].t0 for i in range(nmembers)])
+        endtime = max([ens.member[i].endtime() for i in range(nmembers)])
+        for i in range(nmembers):
+            ens.member[i] = WindowData(ens.member[i], starttime, endtime)
+    return ens
 
 
 def extractDataFromOldEnsemble(ensemble_object):
@@ -402,6 +429,10 @@ class BasicGather(ABC):
         array_type,
         is_compact,
         npartitions,
+        resample=True,
+        dt=None,
+        regularize=False,
+        regularizer=None,
     ):
         """
         This constructor is used for converting an old ensemble object to the new
@@ -421,7 +452,26 @@ class BasicGather(ABC):
         :type is_compact: boolean
 
         :param npartitions: The number of desired partitions for Dask or xarray.
-        :type npartitions: :class:`int`
+        :type npartitions:  class:`int`
+
+        :param resample: If True, the data are resampled before stored into the new
+        object. If false, the data are stored directly without any resampling. Default
+        value is true.
+        :type resample: boolean
+
+        :param dt: sample interval of all data in ensemble.  Default is
+          None which means it should be taken from the first element in the data.
+        :type dt:   float
+
+        :param regularize: If True, the starttime of each data is regularized before
+        being stored to the object, see regularize_ensemble for more details.
+        :type regularize: boolean
+
+        :param regularizer: A function object defined by user that regularize all data
+        members in the ensemble, it should take only one argument (a timeseries/seismogram)
+        and return the regularized object. If user doesn't pass any regularizer, a TimeWindow
+        would be simply applied to every member.
+        :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]
         """
         supported_ensemble_types = (TimeSeriesEnsemble, SeismogramEnsemble)
         if not isinstance(input_obj, supported_ensemble_types):
@@ -430,6 +480,12 @@ class BasicGather(ABC):
                     supported_ensemble_types
                 )
             )
+
+        if resample:
+            input_obj = resample_ensemble(input_obj, dt)
+
+        if regularize:
+            input_obj = regularize_ensemble(input_obj, regularizer)
 
         if isinstance(input_obj, TimeSeriesEnsemble):
             self.__constructor_from_input_data(
@@ -466,6 +522,9 @@ class BasicGather(ABC):
         member_metadata=None,
         ensemble_metadata=None,
         dt=None,
+        resample=True,
+        regularize=False,
+        regularizer=None,
         array_type="dask",
         is_compact=True,
         is_parallel=True,
@@ -507,7 +566,25 @@ class BasicGather(ABC):
           options to be determined
          :type array_type:  string that must match keywords
 
+        :param resample: If True, the data are resampled before stored into the new
+        object. If false, the data are stored directly without any resampling. Default
+        value is true.
+        :type resample: boolean
+
+        :param regularize: If True, the starttime of each data is regularized before
+        being stored to the object, see regularize_ensemble for more details.
+        :type regularize: boolean
+
+        :param regularizer: A function object defined by user that regularize all data
+        members in the ensemble, it should take only one argument (a timeseries/seismogram)
+        and return the regularized object. If user doesn't pass any regularizer, a TimeWindow
+        would be simply applied to every member.
+        :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]
+
         """
+
+        self.capacity = capacity
+        self.size = size
 
         if input_obj is not None:
             self.__constructor_from_ensemble_obj__(
@@ -515,6 +592,10 @@ class BasicGather(ABC):
                 array_type=array_type,
                 is_compact=is_compact,
                 npartitions=npartitions,
+                resample=resample,
+                dt=dt,
+                regularize=regularize,
+                regularizer=regularizer,
             )
 
         elif input_data is not None:
@@ -537,7 +618,6 @@ class BasicGather(ABC):
                 npartitions=npartitions,
             )
 
-        self.capacity = capacity
         self.npts = npts
         self.array_type = array_type
         self.num_components = num_components
@@ -885,7 +965,10 @@ class Gather(BasicGather):
         input_obj=None,
         member_metadata=None,
         ensemble_metadata=None,
+        resample=True,
         dt=None,
+        regularize=False,
+        regularizer=None,
         array_type="dask",
         is_compact=True,
     ):
@@ -942,7 +1025,10 @@ class Gather(BasicGather):
             input_obj=input_obj,
             member_metadata=member_metadata,
             ensemble_metadata=ensemble_metadata,
+            resample=resample,
             dt=dt,
+            regularize=regularize,
+            regularizer=regularizer,
             array_type=array_type,
             is_compact=is_compact,
         )
@@ -1060,7 +1146,10 @@ class SeismogramGather(BasicGather):
         input_obj=None,
         member_metadata=None,
         ensemble_metadata=None,
+        resample=True,
         dt=None,
+        regularize=False,
+        regularizer=None,
         array_type="dask",
         is_compact=True,
     ):
@@ -1117,7 +1206,10 @@ class SeismogramGather(BasicGather):
             input_obj=input_obj,
             member_metadata=member_metadata,
             ensemble_metadata=ensemble_metadata,
+            resample=resample,
             dt=dt,
+            regularize=regularize,
+            regularizer=regularizer,
             array_type=array_type,
             is_compact=is_compact,
         )
