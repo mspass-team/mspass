@@ -455,10 +455,12 @@ excluding the node running the script (result of the hostname command).
 To help clarify here is the section of output produced by this
 script run with four nodes on an Indiana University cluster::
 
-  xxxx
+    Lauching scheduler on primary node
+    c23,c31,c41
 
-
-That list is used to launch worker in another shell incantation that
+where c23, c31, and c41 are the hostnames of the three compute nodes
+slurm assigned to this job.
+That list is used to launch each worker in another shell incantation that
 follows immediately after the above:
 
 .. code-block::
