@@ -10,7 +10,7 @@ linked by high speed interconnections designed for large-scale, parallel
 processing.  If you are not familiar with modern concepts of this type of
 hardware and how they interact in HPC systems you should first do
 some background reading started with the section in our Getting Started pages
-found at `ref::_getting_started_overview`.
+found at :ref:`getting_started_overview`.
 
 An axiom for working with MsPASS is that any workflow you need to
 develop should first be prototyped on a desktop system.
@@ -28,13 +28,13 @@ Examples, are file system directory names and variations in the
 software used to run jobs on the cluster.   If there are other people
 in your institute who use MsPASS on the same cluster, your job will be much
 easier.   If that is your situation then the section below titled
-"Running MsPASS with Existing Configuration Scripts" should get you started.
+`Running MsPASS with Existing Configuration Scripts`_ should get you started.
 If you are the first person
 in your institute to use MsPASS with the cluster you are using, you will
 need to do some nontrivial work to configure the cluster setup.  A sketch
-of that process is below in the section titled "Configuring MsPASS on an HPC cluster" .
+of that process is below in the section titled `Setting Up Configuration Files on a new Cluster`_.
 The background for what is needed to do a Configuration
-can be found in `ref::_getting_started_overview`.
+can be found in :ref:`getting_started_overview`.
 
 Running MsPASS with Existing Configuration Scripts
 ------------------------------------------------------
@@ -42,7 +42,7 @@ Running MsPASS with Existing Configuration Scripts
 Get a Copy of Configuration Scripts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 You may first want to search the suite of configuration scripts found
-on github `here<https://github.com/mspass-team/mspass/tree/master/scripts>`__
+on github `here <https://github.com/mspass-team/mspass/tree/master/scripts>`__
 If the system you are using has a folder there you should download the
 scripts from the appropriate folder and you should be able to proceed.
 We assume here the file name convention is the same as that for the
@@ -54,7 +54,7 @@ supply a README file.
 If the files you need are not on github and you are aware of colleagues
 using mspass you may need to contact them and ask for their working
 startup scripts.   If you are a trailblazer, then you will need to jump
-to the section below titled "Configureing MsPASS on an HPC cluster".
+to the section below titled `Setting Up Configuration Files on a new Cluster`_.
 You can then use the next section for reference when you are actively
 workig with MsPASS on that system.
 
@@ -345,7 +345,7 @@ The "Role" Concept
 In the section titled :ref:`getting_started_overview` we discuss in
 detail the abstraction we used in MsPASS to define what we call
 a "virtual cluster".   A key idea in that abstraction is a set of
-functional boxes illustrated in Figure :numref:`_HPC_config_figure1`.
+functional boxes illustrated in :numref:`HPC_config_figure1`.
 The function each box illustrated there is defined by what we call
 its "role".   The keywords defining "role", with one line descriptions of what functionality
 they enable are the followings:
@@ -356,13 +356,13 @@ they enable are the followings:
 - *frontend* is the jupyter notebook server,
   which means it also is the home of the master python script that drives your workflow.
 
-Note the configuration illustrated in Figure :numref:`_HPC_config_figure1`
+Note the configuration illustrated in :numref:`HPC_config_figure1`
 is a graphical illustration of that created with the template `run_mspass.sh`
 script.
 
 .. _HPC_config_figure1:
 
-.. figure:: ../_static/figures/FiveNodesNoSharding.jpg
+.. figure:: ../_static/figures/FiveNodeExampleComposite.jpg
      :width: 600px
      :align: center
 
@@ -375,7 +375,7 @@ script.
 
 How Different Roles are Run
 """""""""""""""""""""""""""""""""""
-Notice from Figure :numref:`_HPC_config_figure1` that all 4 roles are
+Notice from :numref:`HPC_config_figure1` that all 4 roles are
 launched as separate instances of the singularity container.   In the script
 they are all launched with variations of this following:
 
@@ -420,9 +420,9 @@ Launching workers is linked to a fundamental problem you will face
 in adapting the template script to a different cluster:   node-to-node
 communications.   There are three low-level issues you will need to
 understand before proceeding:
-1.   How are nodes addressed?  i.e. what symbolic name does node A need to
-     know to talk to node B?
-2.   What communication channel should be used between nodes?
+
+#. How are nodes addressed?  i.e. what symbolic name does node A need to know to talk to node B?
+#. What communication channel should be used between nodes?
 
 For the first, all the examples we know use a short form of hostname
 addressing that strips a subnet description.   You are probably familiar with
@@ -485,22 +485,22 @@ Last, but far from least you may need to sort out some fundamental
 issues about how networking is implemented on your cluster.  There are
 two different issues you may need to consider:
 
-1.  Are there any network communication restrictions between compute nodes?
-    `Dask<https://dask-chtc.readthedocs.io/en/latest/networking.html>`__
-    and `spark<https://www.ibm.com/docs/en/zpfas/1.1.0?topic=spark-configuring-networking-apache>`__
+#.  Are there any network communication restrictions between compute nodes?
+    `Dask <https://dask-chtc.readthedocs.io/en/latest/networking.html>`__
+    and `spark <https://www.ibm.com/docs/en/zpfas/1.1.0?topic=spark-configuring-networking-apache>`__
     have different communication setups described in the links in this
     sentence.  The general pattern seems to be that clusters are normally
     configured to have completely open communication between nodes
     within the cluster but are appropriately paranoid about connections
     with the outside world.  You probably won't need to worry about
     connectivity of the compute nodes, but problems are not inconceivable.
-2.  A problem you are guaranteed to face is how to connect to a job running
+#.  A problem you are guaranteed to face is how to connect to a job running
     on the cluster.   The simplest example is needing to connect to the
     jupyter notebook server for an interactive run.  We reiterate that isn't
     a great idea, but you will likely eventually need to use that feature
     to solve some problem that you can't solve easily with batch submissions.
     A more universal need is to run real-time
-    `dask diagnostics<https://docs.dask.org/en/stable/diagnostics-distributed.html>`__.
+    `dask diagnostics <https://docs.dask.org/en/stable/diagnostics-distributed.html>`__.
     These are an important tool to understand bottlenecks in a parallel workflow that
     are limiting performance.  For dask diagnostics to work you will need to
     connect on some port (default is 8787) to the node running the scheduler.
@@ -509,26 +509,25 @@ two different issues you may need to consider:
     only through "login nodes" (also sometimes called head nodes).
     The login nodes are sometimes called a network "gateway" to the cluster.
 
-  Our template script addresses item 2 by a variant of that
-  describe in
-  `this dask package extension documentation<https://dask-chtc.readthedocs.io/en/latest/networking.html>`__.
-  That source has some useful background to explain the following
-  approach we use in our template run_mspass.sh script:
+Our template script addresses item 2 by a variant of that
+describe in
+`this dask package extension documentation <https://dask-chtc.readthedocs.io/en/latest/networking.html>`__.
+That source has some useful background to explain the following
+approach we use in our template run_mspass.sh script:
 
-  ..code-block::
+.. code-block::
 
+  NODE_HOSTNAME=`hostname -s`
+  LOGIN_PORT=`echo $NODE_HOSTNAME | perl -ne 'print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;'`
+  STATUS_PORT=`echo "$LOGIN_PORT + 1" | bc -l`
+  echo "got login node port $LOGIN_PORT"
 
-    NODE_HOSTNAME=`hostname -s`
-    LOGIN_PORT=`echo $NODE_HOSTNAME | perl -ne 'print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;'`
-    STATUS_PORT=`echo "$LOGIN_PORT + 1" | bc -l`
-    echo "got login node port $LOGIN_PORT"
-
-    NUMBER_LOGIN_NODES=4
-    LOGIN_NODE_BASENAME=login
-    for i in `seq $NUMBER_LOGIN_NODES`; do
-      ssh -q -f -g -N -R $LOGIN_PORT:$NODE_HOSTNAME:8888 $LOGIN_NODE_BASENAME$i
-      ssh -q -f -g -N -R $STATUS_PORT:$NODE_HOSTNAME:8787 $LOGIN_NODE_BASENAME$i
-    done
+  NUMBER_LOGIN_NODES=4
+  LOGIN_NODE_BASENAME=login
+  for i in `seq $NUMBER_LOGIN_NODES`; do
+    ssh -q -f -g -N -R $LOGIN_PORT:$NODE_HOSTNAME:8888 $LOGIN_NODE_BASENAME$i
+    ssh -q -f -g -N -R $STATUS_PORT:$NODE_HOSTNAME:8787 $LOGIN_NODE_BASENAME$i
+  done
 
 The complexity of the first section using perl solves a potential problem
 automatically.   Because login nodes are nearly always shared by multiple

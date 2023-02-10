@@ -606,7 +606,7 @@ HPC Job Submission
 A final point anyone running MsPASS on an HPC cluster needs to understand
 is how a "job" (aka your workflow) is run on such a cluster.
 We first consider how a batch job is run since most HPC compute jobs
-should be run that way.  Figure :numref:`_HPC_batch_run_figure`
+should be run that way.  :numref:`HPC_batch_run_figure`
 is a graphic that we use as an aid to explaining the process.
 
 
@@ -629,7 +629,7 @@ operating system of one or more of the physical nodes.
 The fact that there are three files for this process is an implementation
 detail in our setup done to make it easier for an individual user to
 create and run jobs.   Details of how these files are customized for
-a particular setup are given in :ref:`_deploy_mspass_on_HPC`.
+a particular setup are given in :ref:`deploy_mspass_on_HPC`.
 For the present you should understand that the
 box labeled `job_script.sh` in the figure is the shell script you submit to the cluster
 scheduler (slurm or the equivalent).  It acts like "main" in a C/FORTRAN program.
@@ -670,9 +670,8 @@ notebook finishes (or exits on an error).  The line launching the jupyter notebo
 server ("frontend" role) blocks until the notebook server exits.   Control is then returned
 to `job_script.sh` which either does cleanup or exits.  The cluster management
 software (slurm or the equivalent) then kills all the running containers.
-
-Figure :numref:`_HPC_interactive_run_figure` is a similar to
-Figure :numref:`_HPC_batch_run_figure` but illustrates how a "job" is
+:numref:`HPC_interactive_run_figure` is a similar to
+:numref:`HPC_batch_run_figure` but illustrates how a "job" is
 run on an HPC virtual cluster if you need to run a notebook interactively.
 
 .. _HPC_interactive_run_figure:
@@ -701,25 +700,26 @@ running you are the only user on the nodes reserved for your job.
 Needless to say running a large job in interactive mode can be a serious
 waste of resources.  For that reason the standard approach you should
 use is to develop any workflow is a three step procedure:
-1.   Develop the notebook workflow on a desktop system with a small subset
-     of the larger data set you aim to process.
-2.   Transfer the (working) notebook and test file to the HPC system.  Run it
-     in batch mode and verify it gives the same answer.
-3.   Submit the workflow to the HPC system with modifications to process
-     the full data set.
+
+#. Develop the notebook workflow on a desktop system with a small subset
+   of the larger data set you aim to process.
+#. Transfer the (working) notebook and test file to the HPC system.  Run it
+   in batch mode and verify it gives the same answer.
+#. Submit the workflow to the HPC system with modifications to process
+   the full data set.
 
 There is one final variant worth noting that is not illustrated in
-either Figure :numref:`_HPC_batch_run_figure` or :numref:`_HPC_interactive_run_figure`.
+either :numref:`HPC_batch_run_figure` or :numref:`HPC_interactive_run_figure`.
 That is, dask has a useful
-`diagnostic dashboard<https://docs.dask.org/en/stable/diagnostics-distributed.html>`__
+`diagnostic dashboard <https://docs.dask.org/en/stable/diagnostics-distributed.html>`__
 that can be used for real-time monitoring of a job.  The reason is that
 graphically the setup is identical to that illustrated in
-Figure :numref:`_HPC_interactive_run_figure`.  The difference is that the
+:numref:`HPC_interactive_run_figure`.  The difference is that the
 job would normally still be run in batch mode, but the external web browser
 would connect to the "diagnostic port" (8787 by default) instead of the
 network port used by the notebook server (normally 8888).  We note that
-any variation of Figure :numref:`_HPC_interactive_run_figure` an
+any variation of :numref:`HPC_interactive_run_figure` an
 external web browser will only be able to make such a connection if
 networking to the cluster is set up to allow that connection.
 We discuss those issues and potential solution in the
-related section titled :ref:`_deploy_mspass_on_HPC`.
+related section titled :ref:`deploy_mspass_on_HPC`.
