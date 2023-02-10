@@ -9,6 +9,7 @@ from mspasspy.ccore.seismic import (
     SeismogramEnsemble,
 )
 
+
 # this is copied from edit.py.  easier to duplicate than load that entire
 # module with this one
 def _input_is_valid(d):
