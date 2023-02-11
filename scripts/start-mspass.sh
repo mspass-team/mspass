@@ -14,9 +14,17 @@ if [[ -z $MSPASS_SLEEP_TIME ]]; then
   MSPASS_SLEEP_TIME=15
 fi
 
-MSPASS_DB_DIR=${MSPASS_WORKDIR}/db
-MSPASS_LOG_DIR=${MSPASS_WORKDIR}/logs
-MSPASS_WORKER_DIR=${MSPASS_WORKDIR}/work
+# This sets defaults for this set of env variables
+if [[ -z ${MSPASS_DB_DIR} ]]; then
+  MSPASS_DB_DIR=${MSPASS_WORKDIR}/db
+fi
+
+if [[ -z ${MSPASS_LOG_DIR} ]]; then
+  MSPASS_LOG_DIR=${MSPASS_WORKDIR}/logs
+fi
+if [[ -z ${MSPASS_WORKER_DIR} ]]; then
+  MSPASS_WORKER_DIR=${MSPASS_WORKDIR}/work
+fi
 # Note that only log is required for all roles. Other dirs will be created later when needed.
 [[ -d $MSPASS_LOG_DIR ]] || mkdir -p $MSPASS_LOG_DIR
 
@@ -24,7 +32,6 @@ MONGO_DATA=${MSPASS_DB_DIR}/data
 MONGO_LOG=${MSPASS_LOG_DIR}/mongo_log
 export SPARK_WORKER_DIR=${MSPASS_WORKER_DIR}
 export SPARK_LOG_DIR=${MSPASS_LOG_DIR}
-
 if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
 
   function start_mspass_frontend {
