@@ -3,7 +3,7 @@
 # See User's Manual for more guidance on setting these variables
 export MSPASS_HOME=~/mspass
 # full path to the singularity container
-export MSPASS_CONTAINER=/N/slate/pavlis/mspass/mspass_latest.sif
+export MSPASS_CONTAINER=${MSPASS_HOME}/containers/mspass_latest.sif
 # If needed list all file systems names that should be mounted when
 # the container boots.  Usually an explicit path is best to avoid 
 # errors from aliasing a directory name
