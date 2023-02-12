@@ -1,14 +1,22 @@
 #! /bin/bash
 
-# See User's Manual for guidance on setting these variables
+# See User's Manual for more guidance on setting these variables
 export MSPASS_HOME=~/mspass
-export MSPASS_CONTAINER=$MSPASS_HOME/containers/mspass_latest.sif
+# full path to the singularity container
+export MSPASS_CONTAINER=/N/slate/pavlis/mspass/mspass_latest.sif
+# If needed list all file systems names that should be mounted when
+# the container boots.  Usually an explicit path is best to avoid 
+# errors from aliasing a directory name
+export SINGULARITY_BIND=/N/slate/pavlis,/N/scratch/pavlis
 
-export WORK_DIR=/N/scratch/pavlis/mspass/workdir
-export DB_PATH="/N/scratch/pavlis/work/db"
+export MSPASS_WORK_DIR=/N/slate/pavlis/test_scripts
+export MSPASS_DB_DIR=/N/scratch/pavlis/usarray/db
+export MSPASS_LOG_DIR=/N/scratch/pavlis/usarray/logs
+export MSPASS_WORKER_DIR=/N/scratch/pavlis/usarray/work
 
-export HOSTNAME_BASE="uits.iu.edu"
 
-if [ -z $MSPASS_RUNSCRIPT] ; then
-    export MSPASS_RUNSCRIPT $MSPASS_HOME/cluster_definitions/run_mspass.sh
+export HOSTNAME_BASE="carbonate.uits.iu.edu"
+
+if [ -z $MSPASS_RUNSCRIPT ] ; then
+    export MSPASS_RUNSCRIPT=/N/slate/pavlis/test_scripts/run_mspass.sh
 fi
