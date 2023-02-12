@@ -72,7 +72,7 @@ def read_distributed_data_new(
     This function should be used to read an entire dataset that is to be handled
     by subsequent parallel operations.  The function can be thought of as
     loading the entire data set into a parallel container (rdd for spark
-    implementations or bag for a dask implementatio).
+    implementations or bag for a dask implementations).
 
     This new function is to divide the process of reading into two parts:
     reading from database and reading from file, where where reading from database
