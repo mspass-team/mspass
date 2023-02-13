@@ -44,7 +44,8 @@ Get a Copy of Configuration Scripts
 You may first want to search the suite of configuration scripts found
 on github `here<https://github.com/mspass-team/mspass/tree/master/scripts>`__
 If the system you are using has a folder there you should download the
-scripts from the appropriate folder and you should be able to proceed.
+scripts from the appropriate folder and you should be able to proceed
+without having too dig too deep into this section.
 We assume here the file name convention is the same as that for the
 set in the folder `template`.   If the file names for your institution
 are different you will have to do some additional work to puzzle out
@@ -54,9 +55,9 @@ supply a README file.
 If the files you need are not on github and you are aware of colleagues
 using mspass you may need to contact them and ask for their working
 startup scripts.   If you are a trailblazer, then you will need to jump
-to the section below titled "Configureing MsPASS on an HPC cluster".
+to the section below titled "Configuring MsPASS on an HPC cluster".
 You can then use the next section for reference when you are actively
-workig with MsPASS on that system.
+working with MsPASS on that system.
 
 Build MsPASS Container with Singularity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -65,7 +66,7 @@ clusters we know of.   HPC systems do not use docker for security
 reasons because docker defaults to allowing processes in the container
 to run as root.  Singularity, however, is compatible with docker
 in the sense that it can pull containers constructed with docker and
-build a file to run on the HPC cluster.   That is the process we illustrate
+build a file to run on the HPC cluster.   That is the approach we use
 in this section.
 
 Because HPC clusters commonly support a wide range of applications all
@@ -81,8 +82,8 @@ the proper incantation is the following:
 
 A more stock version might omit the "tacc-" part of that name.  Once your
 shell knows about singularity you can create an instance of the MsPASS
-container.  Unless you have a quota problem we recommend you
-the container in the directory `~/mspass/containers`.   Assuming that
+container.  Unless you have a quota problem we recommend you put
+the container file in the directory `~/mspass/containers`.   Assuming that
 directory exists the following commands can be used to generate your
 working copy of the MsPASS container:
 
@@ -91,8 +92,8 @@ working copy of the MsPASS container:
     cd ~/mspass/containers
     singularity build mspass_latest.sif docker://mspass/mspass
 
-When the command exists you should now see the file "mspass_latest.sif"
-in the current directory.
+When the command exits you should now see the file "mspass_latest.sif"
+in the current directory ("~mspass/containers" for the example).
 
 Edit template scripts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -114,7 +115,8 @@ from the days of mainframe computers from IBM and CDC may remember
 older, more primitive job control languages like the long dead
 IBM JCL (job control language).  The concept is the same but
 today the language is a version of the unix shell.  At present all our
-examples use the shell dialect called `bash`.
+examples use the shell dialect called `bash`, but you are free to use any
+shell dialect supported by the cluster operating system.
 
 Our standard template uses three shell scripts that work together to
 run a mspass workflow.   The section heading titles below
@@ -127,42 +129,106 @@ Before you run your first job you will almost certainly need to
 create a private copy of the template file `mspass_setup.sh`.
 This script does little more than define a set of shell environment
 variables to define where on the cluster file system the job
-can find your data and the mspass container.  The file puts in one place
-all the parameters that most users will need to customize.
+can find your data and the mspass container.
+It also needs to define where a suite of work directories the different
+components of MsPASS need to utilize.  The `mspass_setup.sh` file
+contains shell commands to set all the parameters that most users will need to customize.
 The idea is each user-dataset combination will normally
-require edits to this file.  Guidance on each follow.
+require edits to this file.  The rest of this section is arranged in the
+order of appearance of parameters in the template version of `mspass_setup.sh`
+show here:
 
-`MSPASS_HOME` is used like many software packages to define the home
+.. code-block:: bash
+
+  #! /bin/bash
+
+  # See User's Manual for more guidance on setting these variables
+  export MSPASS_HOME=~/mspass
+  export MSPASS_CONTAINER=${MSPASS_HOME}/containers/mspass_latest.sif
+  # the container boots.  Usually an explicit path is best to avoid
+  export SINGULARITY_BIND=/N/slate/pavlis,/N/scratch/pavlis
+
+  export MSPASS_WORK_DIR=/N/slate/pavlis/test_scripts
+  export MSPASS_DB_DIR=/N/scratch/pavlis/usarray/db
+  export MSPASS_LOG_DIR=/N/scratch/pavlis/usarray/logs
+  export MSPASS_WORKER_DIR=/N/scratch/pavlis/usarray/work
+
+
+  export HOSTNAME_BASE="carbonate.uits.iu.edu"
+
+  if [ -z $MSPASS_RUNSCRIPT ] ; then
+    export MSPASS_RUNSCRIPT=/N/slate/pavlis/test_scripts/run_mspass.sh
+  fi
+
+
+Notice that all this shell script does is set several environment
+variables that all begin with the string `MSPASS_`.
+The first one set is `MSPASS_HOME`.  It is used like many software packages to define the home
 base for the software.  In the MsPASS case it is used to define the
 location of the singularity container needed to run MsPASS.  If you
 created a private copy of the container in the section above you will
-not need to alter this parameter at all.   If mulitple people at your
+not need to alter this parameter at all.   If multiple people at your
 institute run MsPASS, there may be a master copy of the MsPASS container
-you can use in this definition.
+you can use in this definition.  If so insert that path for this parameter.
 
-`WORK_DIR` and `DB_PATH` define data locations.   `WORK_DIR` is the run
-directory.   In shell lingo it defines what "." is for the notebook.
-`DB_PATH` is assumed to define a (user writable) directory where the
-database is to be found or created.   Be aware at this point that there
-are large database performance tradeoffs with different types of file
-systems that are commonly available in HPC systems.   See the configuration
-section below for details.   How much to worry about this issue is
-dependent on the size of the dataset.  Most can just set it to some working
-directory and ignore this issue until performance becomes an issue.
+The next line, which sets the environment variable `SINGULARITY_BIND`,
+is a bit more obscure.   Full understanding of why that incatation
+is necessary requires the
+concept of how to "bind" a file system to the container.   A starting
+point is the singularity documentation found
+`here<https://docs.sylabs.io/guides/3.5/user-guide/bind_paths_and_mounts.html>`__.
+Briefly, the idea is much like a file system "mount" in unix.
+The comma separated list of directory names will be visible to your
+application as if it were a local file system.
+For the example above, that means
+your python script can open files in directories "/N/slate/pavlis" or
+"/N/scratch/pavlis".   Provided you have write permission to those directories
+you can also create file(s) and subdirectories under that mount point.
+Finally, note it is possible to also mount a file system on one of two
+standard mount points in the container:   "/mnt" and "/home".
+That can be convenient, for example, to utilize a database created with docker
+where files were similarly "bound" to /home so that "dir" entries in wf
+database collections do not resolve.
+
+The four variables `MSPASS_WORK_DIR, MSPASS_DB_DIR, MSPASS_LOG_DIR`, and,
+`MSPASS_WORKER_DIR` define key directories needs to work.  There use is
+as follows:
+
+-   `MSPASS_WORK_DIR` is best viewed as the run directory.   The run script
+    will launch jupyter notebook with this directory as the top level
+    directory.  That means your notebook must be in this directory.
+    It also serves as a top-level directory for defaults for
+    `MSPASS_DB_DIR, MSPASS_LOG_DIR`, and,
+    `MSPASS_WORKER_DIR` as noted in related items below.
+-   `MSPASS_DB_DIR` is the work directory where MongoDB uses to store
+    database data.  If this variable is not set it defaults to
+    `$MSPASS_WORK_DIR/db`.
+-   `MSPASS_LOG_DIR` is used to write any log files.   In MsPASS that means
+    MongoDB and dask/Spark.  Any application that extends MsPaSS may choose to
+    log its own messages there.  If so we recommend creating an appropriately
+    named subdirectory under the one defined for `MSPASS_LOG_DIR`.
+    If this variable is not set it defaults to
+    `$MSPASS_WORK_DIR/logs`
+-   `MSPASS_WORKER_DIR` is used by dask/Spark as a scratch workspace.
+    Currently that workspace is always in a subdirectory with the
+    path `$MSPASS_WORKER_DIR/work`.   If this variable is not set it defaults to
+    `$MSPASS_WORK_DIR/work`
 
 `HOSTNAME_BASE` should be set to the network subnet name the cluster runs in.
 That is usually necessary because all clusters we know of use a shortened
 name convention for individual nodes (i.e. the hostname has no "." that
 is used for subnet naming.)  If you are using an existing configuration
-file you almost certainly can use the value you inherited.
+file you almost certainly can use the value you inherited.   Be warned that
+all HPC clusters we know use short names internally and the subnet
+definition is only needed if you plan to work interactively.
 
 `MSPASS_RUNSCRIPT` defines what in section :ref:`getting_started_overview`
 is called a "virtual cluster".   The file is normally static for a
 particular cluster, although there may be mulitple options.   e.g. the
 standard template file has versions with or without MongoDB "sharding".
-For most applications this line will be changed until performance
-becomes and issue and you find it necessary to do some advanced tuning.
-This file standardizes one or more local configurations.  The last section
+For most users this file should be treated as static until performance
+becomes an issue and you find it necessary to do some advanced tuning.
+The last section
 of this document describes how that file may need to be modified if
 you are the first to use mspass on a cluster.
 
@@ -178,14 +244,13 @@ the workflow in the jupyter notebook file `myworkflow.ipynd` is;
 
 The template file assumes the file `mspass_setup.sh` defined above
 and the notebook file, `myworkflow.ipynb`, are present in the
-directory defined by `WORK_DIR`.
+directory defined by `MSPASS_WORK_DIR`.
 
 The only thing you would normally need to change in `job_script.sh` are
 the run parameters passed to slumm with the `#SBATCH` lines at the top
 of the file.  There are always cluster-dependent options you will need to
 understand before running a large job.    Consult local documentation
-before setting these directives and submiting your first job.
-You also need to read the
+before setting these directives and submitting your first job.
 
 Running a notebook interactively
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -200,9 +265,8 @@ You may need to follow the procedure here if you need to do some additional
 interactive debugging or your desktop has limitations (e.g. memory size)
 that you cannot simulate on your desktop.  This section describes
 the basic concepts required to do that.   Details will differ with
-how you communicate with the HPC cluster you are using include the
-system you are using to run a web browser for interaction with the
-notebook server.  i.e. some extrapolation may be needed to make this work.
+how you communicate with the HPC cluster.  That is, what web browser
+you use on our local to interact with the jupyter notebook server.
 Furthermore, the complexity of ths section should be a warning that this
 entire process is not a good idea, at least for getting strarted,
 unless you have no other option.
@@ -272,11 +336,12 @@ would use the following url::
 
   http://c4.uits.iu.edu:8888/?token=e7464f3b156b27efcaf2c9e52197b40068c5eefd8231a955
 
-you would paste into a browser.   We emphasize the detailed URL you would used
+Thanks to cut-paste standard graphical manipulation today as usual that is
+the best way to pass that messy URL to a browser.   We emphasize the detailed URL you would used
 is heavily site dependent.  There can be a great deal more complexity than this
 simplified example where all we change is the hostname.   You can universally
 expect to need a more complex mapping to get the remote connection from
-your browswer through the cluster firewall.   The mechanism may be defined in
+your browser through the cluster firewall.   The mechanism may be defined in
 the script defined by `MSPASS_RUNSCRIPT`, but it might not be either.
 Some guidance can be found in the networking configuration subsection below and
 by looking at other implementation found on in the scripts directory
@@ -311,7 +376,7 @@ running an interactive job is exactly like running with docker except
 you use singularity and can run jobs on many nodes.
 In addition, the batch submission is not necessary and you can run
 the configuration shell script interactively.  For the RED example you
-can explicitly launch and "ineractive job" that creates a terminal
+can explicitly launch and "interactive job" that creates a terminal
 window.  Inside that terminal you can then run:
 
 .. code-block::
@@ -328,7 +393,7 @@ Overview
 """""""""""
 If you are a trailblazer at your institution and need to configure MsPASS for
 your local cluster, you may want to first review the material in this
-User's Manual fourd in the section :ref:`getting_started_overview`.
+User's Manual found in the section :ref:`getting_started_overview`.
 That provides some fundamental concepts on HPC systems and how those concepts
 are abstracted in MsPASS to produce a virtual cluster.  This section
 focuses on the nuts and bolts of what you might have to change in your
@@ -351,7 +416,7 @@ its "role".   The keywords defining "role", with one line descriptions of what f
 they enable are the followings:
 
 - *db* creates and manages the MongoDB server
-- *scheduler* is the dask or spark manager that controls data flow to and from
+- *scheduler* is the dask or spark manager that controls data flow to and from workers
 - *worker* task that do all the computational task.
 - *frontend* is the jupyter notebook server,
   which means it also is the home of the master python script that drives your workflow.
@@ -388,7 +453,7 @@ they are all launched with variations of this following:
 where we illustrate the definition of the symbol `SING_COM` for
 clarity only.  In the actual script that line appears earlier.
 The above is the actual launch line for the scheduler.  Note the following
-that follow for all other roles:
+that are used when each instance of the container is launched:
 
 -  The run command is preceded by a set of shell variable definitions
    that all begin with the keyword `SINGULARITYENV`.   An odd feature of
@@ -409,7 +474,7 @@ that follow for all other roles:
    script to block until the notebook exits.   When the master job
    script exits singularity does the housecleaning to kill all the running
    containers on multiple nodes running in the background.
--  The instances of the containe for the `db` and `frontend` role launch
+-  The instances of the container for the `db` and `frontend` role launch
    are similar to the scheduler example above but with different
    SINGULARITYENV inputs.   The `worker` launching is different, however,
    and is the topic of the next section.
@@ -450,7 +515,8 @@ it may not be required on your site as it is common to use only the base
 name to reference nodes.
 
 The second line, which truly deserved the incantation title,
-sets the shell variable `WORKER_LIST` of all nodes allocated to this job
+sets the shell variable `WORKER_LIST` to a white-space delimited list of
+the hostname of all nodes allocated to this job
 excluding the node running the script (result of the hostname command).
 To help clarify here is the section of output produced by this
 script run with four nodes on an Indiana University cluster::
@@ -470,14 +536,15 @@ follows immediately after the above:
     SINGULARITYENV_MSPASS_ROLE=worker \
     mpiexec -n $((SLURM_NNODES-1)) -host $WORKER_LIST $SING_COM &
 
-This uses the openmp command line tool `mpiexec` to launch the
+This uses the openmpi command line tool `mpiexec` to launch the
 container on all the nodes except the first one in the list.
-This is only using mpi as a convenient way to launch background
+We are only using mpi as a convenient way to launch background
 processes on nodes slurm assigns to the job.  An alternative
 that might be preferable at other sites is do the same thing with a
 shell loop and calls to ssh.   The mpi implementation shown here, however,
 is known to work and one or more versions of mpi are universally available
-at HPC centers at the time this manual was written.
+at HPC centers at the time this manual was written.  Hence, you the odds
+are high you will not need to modify this line.
 
 Communications
 """""""""""""""""""
@@ -492,7 +559,7 @@ two different issues you may need to consider:
     sentence.  The general pattern seems to be that clusters are normally
     configured to have completely open communication between nodes
     within the cluster but are appropriately paranoid about connections
-    with the outside world.  You probably won't need to worry about
+    with the outside world.  i.e. you probably won't need to worry about
     connectivity of the compute nodes, but problems are not inconceivable.
 2.  A problem you are guaranteed to face is how to connect to a job running
     on the cluster.   The simplest example is needing to connect to the
@@ -507,7 +574,11 @@ two different issues you may need to consider:
     The fundamental problem both connection face is that cluster are
     normally accessible from outside
     only through "login nodes" (also sometimes called head nodes).
-    The login nodes are sometimes called a network "gateway" to the cluster.
+    The login nodes are sometimes called a network "gateway" to the cluster,
+    which should not be confused with the something more properly called a
+    "scientific gateway".  The later is a simplified access method to reduce
+    the very kind of complexity discussed in this section for normal
+    humans.
 
   Our template script addresses item 2 by a variant of that
   describe in
@@ -542,8 +613,9 @@ at other sites.  A simpler solution that might be suitable for many
 sites is to just set LOGIN_PORT and STATUS_PORT to some fixed numbers
 known to not collide with any services on the login node.
 
-The second second solves a second potential problem.   A large cluster
-will have multiple login nodes.  The example in the template file is
+The second section above (i.e. the part below the blank line)
+solves a second potential problem.   A large cluster
+will always have multiple login/head nodes.  The example in the template file is
 set for TACC where there are four login nodes with names
 login1, login2, login3, and login4.  Thus, above we set
 `NUMBER_LOGIN_NODES` to 4 and the shell variable `LOGIN_NODE_BASENAME` to
@@ -560,10 +632,10 @@ Similarly the dask status port 8787 is mapped to the value of $STATUS_PORT.
 We emphasize that none of the network complexity is required in two situations
 we know of:
 
-1.  If you only intend to run batch jobs connections to the outside will not
+1.  If you only intend to run batch jobs, then connections to the outside will not
     be needed and you can delete all the network stuff from the template.
     In fact, we recommend you prepare a separate run script, which you
-    migh call `run_mspass_batch.sh` that doesn't simply deletes all the
+    might call `run_mspass_batch.sh` that simply deletes all the
     network stuff above.
 2.  Some sites may have a science gateway setup to provide a mechanism to
     run jobs interactively on the cluster.  The example noted earlier used
