@@ -122,7 +122,7 @@ example above.).   That URL should resolve and a Jupyter notebook home page
 should come up in the browser.
 This page assumes you know where to go from here.
 If you are not familiar with Jupyter Notebook, refer to the
-`documentation found here<https://jupyter-notebook.readthedocs.io/en/stable/ui_components.html>`__ .
+`documentation found here <https://jupyter-notebook.readthedocs.io/en/stable/ui_components.html>`__ .
 
 The root directory of the notebook contains three different directories, *db*, *logs*, and *work*,
 that will have been created in your working directory the first time you launch
