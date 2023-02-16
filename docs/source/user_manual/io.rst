@@ -17,7 +17,7 @@ Read
 Read is the proccess of loading the entire data set into a parallel container (RDD for SPARK 
 implementations or BAG for a DASK implementations). 
 
-1.  :py:meth:`read_distributed_data_new <mspasspy.io.distributed.read_distributed_data_new>` is the core method for reading data.
+1.  :py:meth:`read_distributed_data <mspasspy.io.distributed.read_distributed_data>` is the core method for reading data.
 
 The input includes the metadata information stored in the dataframe. Depending on the storage mode, 
 the metadata should include parameters such as file path, gridfs id, etc. This function will 
@@ -28,6 +28,7 @@ the parallel container. A block of example code should make this clearer:
 
         from mspasspy.db.client import Client
         from mspasspy.db.database import Database
+        from mspasspy.io.distributed import read_distributed_data
         dbclient = Client()
         # This is the name used to acccess the database of interest assumed
         # to contain data loaded previously.  Name used would change for user
@@ -36,7 +37,7 @@ the parallel container. A block of example code should make this clearer:
         # This example reads all the data currently stored in this database
         cursor = db.wf_TimeSeries.find({})
         df = read_to_dataframe(dbclient, cursor) # store to dataframe
-        rdd0 = read_distributed_data_new(
+        rdd0 = read_distributed_data(
             df,
             cursor=None,
             format="spark",
@@ -55,7 +56,7 @@ Write is the proccess of saving the entire data set into the file system.
 
 1.  :py:meth:`write_distributed_data <mspasspy.io.distributed.write_distributed_data>` is the core method for writing data.
 
-The input is SPARK RDD or DASK BAG of objects (TimeSeries or Seismogram), and the output includes a dataframe of metadata. 
+The input includes SPARK RDD or DASK BAG of objects (TimeSeries or Seismogram), and the output is a dataframe of metadata. 
 From the container, it will firstly write to files distributedly using SPARK or DASK, and then write to the database 
 sequentially. It returns a dataframe of metadata for each object in the original container. The return value 
 can be used as input for :code:`read_distributed_data` function. 
@@ -79,8 +80,8 @@ A block of example code should make this clearer:
             format="dask",
         ) 
         # read from the dataframe
-        obj_list = read_distributed_data_new(df, format="dask").compute()
+        obj_list = read_distributed_data(df, format="dask").compute()
         
 
     The output of the write is the dataframe containing the metadata information that 
-    can be used in :code:`read_distributed_data_new` function.
+    can be used in :code:`read_distributed_data` function.

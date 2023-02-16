@@ -20,7 +20,8 @@ from botocore.stub import Stubber
 from unittest.mock import patch, Mock
 import json
 import base64
-
+import dask.dataframe as dd
+from pyspark.sql import SparkSession
 
 from mspasspy.util.converter import (
     TimeSeries2Trace,
@@ -61,7 +62,7 @@ from helper import (
 )
 
 from mspasspy.io.distributed import (
-    read_distributed_data_new,
+    read_distributed_data,
     read_to_dataframe,
     read_files,
     write_distributed_data,
@@ -148,7 +149,7 @@ def test_read_distributed_data(spark_context):
         )
     cursors = db["wf_TimeSeries"].find({})
 
-    spark_list = read_distributed_data_new(
+    spark_list = read_distributed_data(
         db,
         cursors,
         mode="cautious",
@@ -252,7 +253,7 @@ def test_read_distributed_data_df(spark_context):
         load_history=True,
     )
 
-    list2 = read_distributed_data_new(
+    list2 = read_distributed_data(
         df,
         cursor=None,
         format="spark",
@@ -345,7 +346,7 @@ def test_read_distributed_data_dask():
         )
     cursors = db["wf_TimeSeries"].find({})
 
-    dask_list = read_distributed_data_new(
+    dask_list = read_distributed_data(
         db,
         cursors,
         mode="pedantic",
@@ -464,6 +465,105 @@ def test_read_distributed_data_dask_df():
     client.drop_database("mspasspy_test_db")
 
 
+def test_read_distributed_data_daskdf():
+    client = DBClient("localhost")
+    client.drop_database("mspasspy_test_db")
+
+    test_ts = get_live_timeseries()
+
+    client = DBClient("localhost")
+    db = Database(client, "mspasspy_test_db")
+
+    site_id = ObjectId()
+    channel_id = ObjectId()
+    source_id = ObjectId()
+    db["site"].insert_one(
+        {
+            "_id": site_id,
+            "net": "net",
+            "sta": "sta",
+            "loc": "loc",
+            "lat": 1.0,
+            "lon": 1.0,
+            "elev": 2.0,
+            "starttime": datetime.utcnow().timestamp(),
+            "endtime": datetime.utcnow().timestamp(),
+        }
+    )
+    db["channel"].insert_one(
+        {
+            "_id": channel_id,
+            "net": "net1",
+            "sta": "sta1",
+            "loc": "loc1",
+            "chan": "chan",
+            "lat": 1.1,
+            "lon": 1.1,
+            "elev": 2.1,
+            "starttime": datetime.utcnow().timestamp(),
+            "endtime": datetime.utcnow().timestamp(),
+            "edepth": 3.0,
+            "vang": 1.0,
+            "hang": 1.0,
+        }
+    )
+    db["source"].insert_one(
+        {
+            "_id": source_id,
+            "lat": 1.2,
+            "lon": 1.2,
+            "time": datetime.utcnow().timestamp(),
+            "depth": 3.1,
+            "magnitude": 1.0,
+        }
+    )
+    test_ts["site_id"] = site_id
+    test_ts["source_id"] = source_id
+    test_ts["channel_id"] = channel_id
+
+    ts1 = copy.deepcopy(test_ts)
+    ts2 = copy.deepcopy(test_ts)
+    ts3 = copy.deepcopy(test_ts)
+    logging_helper.info(ts1, "1", "deepcopy")
+    logging_helper.info(ts2, "1", "deepcopy")
+    logging_helper.info(ts3, "1", "deepcopy")
+
+    ts_list = [ts1, ts2, ts3]
+    dir = "data/"
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+    dfile = "test_db_output"
+    for ts in ts_list:
+        db.save_data(
+            ts,
+            mode="promiscuous",
+            storage_mode="file",
+            dir="./data/",
+            dfile="test_db_output",
+        )
+    cursors = db["wf_TimeSeries"].find({})
+
+    df = read_to_dataframe(
+        db,
+        cursors,
+        mode="cautious",
+        normalize=["source", "site", "channel"],
+        load_history=True,
+    )
+
+    ddf = dd.from_pandas(df, npartitions=100)
+
+    list2 = read_distributed_data(ddf).compute()
+
+    assert len(list2) == 3
+    for l in list2:
+        assert l
+        assert np.isclose(l.data, test_ts.data).all()
+
+    client = DBClient("localhost")
+    client.drop_database("mspasspy_test_db")
+
+
 def test_write_distributed_data(spark_context):
     client = DBClient("localhost")
     client.drop_database("mspasspy_test_db")
@@ -544,7 +644,7 @@ def test_write_distributed_data(spark_context):
         format="spark",
     )
     cursors = db["wf_TimeSeries"].find({})
-    obj_list = read_distributed_data_new(
+    obj_list = read_distributed_data(
         db, cursors, format="spark", spark_context=spark_context
     ).collect()
     assert len(obj_list) == 3
@@ -632,7 +732,7 @@ def test_write_distributed_data_dask():
         storage_mode="file",
         format="dask",
     )
-    obj_list = read_distributed_data_new(df, format="dask").compute()
+    obj_list = read_distributed_data(df, format="dask").compute()
     assert len(obj_list) == 3
     for idx, l in enumerate(obj_list):
         assert l

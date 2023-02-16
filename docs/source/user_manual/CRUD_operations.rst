@@ -212,11 +212,13 @@ and most up to date usage:
     dir and dfile should be stored in each object.
 
     :code:`write_files` is the writer for writing the object to storage. Input is an object (TimeSeries/Seismogram), 
-    output is the original object with some more parameters added.
+    output is the metadata of the original object with some more parameters added. This is 
+    the reverse of :code:`read_files`.
 
-    :code:`write_to_db` is to save an atomic data object (TimeSeries or Seismogram)
-    to be managed with MongoDB. It will write to the doc and to the database, then 
-    return the metadata of the object.
+    :code:`write_to_db` is to save a list of atomic data objects (TimeSeries or Seismogram)
+    to be managed with MongoDB. It will write to the doc and to the database for every metadata of the
+    target mspass object. Then return a dataframe of the metadata for target mspass objects. 
+    The function is the reverse of :code:`read_to_dataframe`.
 
 Read
 ~~~~~~~
@@ -385,7 +387,11 @@ reader to the sphinx documentation for full usage.
     Then for each object, constrcut the metadata and add to the list. Finally it will
     convert the list to a dataframe. 
 
-    :code:`read_files` will construct the object from the metadata and return a complete object.
+    :code:`read_files` is the reader for constructing the object from storage. Firstly construct the object,
+    either TimeSeries or Seismogram, then read the stored data from a file or in gridfs and 
+    loads it into the mspasspy object. It will also load history in metadata. If the object is
+    marked dead, it will not read and return an empty object with history. The logic of reading
+    is same as :code:`Database.read_data`.
 
 Update
 ~~~~~~

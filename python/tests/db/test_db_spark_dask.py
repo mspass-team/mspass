@@ -51,7 +51,8 @@ from datetime import datetime
 
 sys.path.append("python/tests")
 
-from mspasspy.db.database import Database, read_distributed_data
+from mspasspy.db.database import Database
+from mspasspy.io.distributed import read_distributed_data
 from mspasspy.db.client import DBClient
 from helper import (
     get_live_seismogram,
