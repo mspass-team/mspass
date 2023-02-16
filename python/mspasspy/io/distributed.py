@@ -52,7 +52,7 @@ from dask.dataframe.core import DataFrame as daskDF
 import dask
 import pyspark
 from pyspark.sql.dataframe import DataFrame as sparkDF
-import pyspark.sql 
+import pyspark.sql
 
 
 def read_distributed_data(
@@ -90,6 +90,7 @@ def read_distributed_data(
 
     :param data: the data to be read, can be database or dataframe.
     :type data: :class:`mspasspy.db.database.Database` or :class:`pandas.DataFrame`
+    or :class:`dask.dataframe.core.DataFrame` or :class:`pyspark.sql.dataframe.DataFrame`
     :param cursor: mongodb cursor defining what "the dataset" is.  It would
       normally be the output of the find method with a workflow dependent
       query.
@@ -144,7 +145,12 @@ def read_distributed_data(
     :return: container defining the parallel dataset.  A spark `RDD` if format
       is "Spark" and a dask 'bag' if format is "dask"
     """
-    if not (isinstance(data, pd.DataFrame) or isinstance(data, Database) or isinstance(data, sparkDF) or isinstance(data, daskDF)):
+    if not (
+        isinstance(data, pd.DataFrame)
+        or isinstance(data, Database)
+        or isinstance(data, sparkDF)
+        or isinstance(data, daskDF)
+    ):
         raise TypeError("Only Database or DataFrame are supported")
     db = data
     if isinstance(data, Database):
@@ -453,7 +459,9 @@ def read_to_dataframe(
         if is_dead:
             md["is_dead"] = True  # mspass_object.kill()
             for msg in log_error_msg:
-                processing_history_record.elog.log_error("read_data", msg, ErrorSeverity.Invalid)
+                processing_history_record.elog.log_error(
+                    "read_data", msg, ErrorSeverity.Invalid
+                )
         else:
             md["is_dead"] = False  # mspass_object.live = True
 
@@ -476,7 +484,9 @@ def read_to_dataframe(
                     res = db[collection].find_one({"_id": history_object_id})
                     # retrieve_history_record
                     if retrieve_history_record:
-                        processing_history_record = pickle.loads(res["processing_history"])
+                        processing_history_record = pickle.loads(
+                            res["processing_history"]
+                        )
                     else:
                         # set the associated history_object_id as the uuid of the origin
                         if not alg_name:
@@ -495,7 +505,9 @@ def read_to_dataframe(
 
             # 4.post complaint elog entries if any
             for msg in log_error_msg:
-                processing_history_record.elog.log_error("read_data", msg, ErrorSeverity.Complaint)
+                processing_history_record.elog.log_error(
+                    "read_data", msg, ErrorSeverity.Complaint
+                )
 
         # save additional params to metadata
         md["history"] = processing_history_record
@@ -529,7 +541,7 @@ def read_files(
 ):
     """
     This is the reader for constructing the object from storage. Firstly construct the object,
-    either TimeSeries or Seismogram, then read the stored data from a file or in gridfs and 
+    either TimeSeries or Seismogram, then read the stored data from a file or in gridfs and
     loads it into the mspasspy object. It will also load history in metadata. If the object is
     marked dead, it will not read and return an empty object with history. The logic of reading
     is same as Database.read_data().
@@ -762,20 +774,20 @@ def write_distributed_data(
     # 2. write to database, sequential
     # convert the parallel container to list
     if format == "spark":
-        md_list = metadata_container.collect() # rdd -> list
+        md_list = metadata_container.collect()  # rdd -> list
     else:
-        md_list = metadata_container.compute() # bag -> list
+        md_list = metadata_container.compute()  # bag -> list
     return write_to_db(
-                db,
-                md_list,
-                mode=mode,
-                storage_mode=storage_mode,
-                format=file_format,
-                overwrite=overwrite,
-                exclude_keys=exclude_keys,
-                collection=collection,
-                data_tag=data_tag,
-            )
+        db,
+        md_list,
+        mode=mode,
+        storage_mode=storage_mode,
+        format=file_format,
+        overwrite=overwrite,
+        exclude_keys=exclude_keys,
+        collection=collection,
+        data_tag=data_tag,
+    )
 
 
 def write_to_db(
@@ -913,7 +925,7 @@ def write_to_db(
             ),
             "Fatal",
         )
-    
+
     for md in md_list:
         # below we try to capture permission issue before writing anything to the database.
         # However, in the case that a storage is almost full, exceptions can still be
@@ -944,7 +956,9 @@ def write_to_db(
                     if os.path.exists(path_item):
                         if not os.access(path_item, os.W_OK | os.X_OK):
                             raise PermissionError(
-                                "No write permission to the save directory: {}".format(dir)
+                                "No write permission to the save directory: {}".format(
+                                    dir
+                                )
                             )
                         break
 
@@ -1110,7 +1124,9 @@ def write_to_db(
                 #    pass
 
             # save history if not empty
-            history_obj_id_name = db.database_schema.default_name("history_object") + "_id"
+            history_obj_id_name = (
+                db.database_schema.default_name("history_object") + "_id"
+            )
             history_object_id = None
             if md["history"].is_empty():
                 # Use this trick in update_metadata too. None is needed to
@@ -1119,7 +1135,9 @@ def write_to_db(
                 insertion_dict.pop(history_obj_id_name, None)
             else:
                 # optional history save - only done if history container is not empty
-                history_object_id = _save_history(db, md, save_schema, atomic_type, alg_name, alg_id)
+                history_object_id = _save_history(
+                    db, md, save_schema, atomic_type, alg_name, alg_id
+                )
                 insertion_dict[history_obj_id_name] = history_object_id
 
             # add tag
@@ -1185,7 +1203,9 @@ def write_to_db(
             # above with saave_history may be incorrect.  We use a
             # stock test with the is_empty method for know if history data is present
             if not md["history"].is_empty():
-                history_object_col = db[db.database_schema.default_name("history_object")]
+                history_object_col = db[
+                    db.database_schema.default_name("history_object")
+                ]
                 wf_id_name = wf_collection_name + "_id"
                 filter_ = {"_id": history_object_id}
                 update_dict = {wf_id_name: wfid}
@@ -1216,7 +1236,7 @@ def write_files(
     """
     This is the writer for writing the object to storage. Return type is the
     metadata of the original object with some more parameters added, including
-    storage_mode, history, whether the object is alive. This function is 
+    storage_mode, history, whether the object is alive. This function is
     the reverse of read_files().
 
     :param mspass_object: the object you want to read.
@@ -1248,7 +1268,7 @@ def write_files(
         raise TypeError("only TimeSeries and Seismogram are supported")
     if storage_mode not in ["file", "gridfs"]:
         raise TypeError("Unknown storage mode: {}".format(storage_mode))
-    
+
     mspass_object["storage_mode"] = storage_mode
 
     if mspass_object.live:
@@ -1259,7 +1279,10 @@ def write_files(
 
         if storage_mode == "file":
             foff, nbytes = Database._save_data_to_dfile(
-                mspass_object, mspass_object["dir"], mspass_object["dfile"], format=format
+                mspass_object,
+                mspass_object["dir"],
+                mspass_object["dfile"],
+                format=format,
             )
 
             mspass_object["foff"] = foff
@@ -1383,7 +1406,15 @@ def _save_elog(db, md, update_metadata_def, elog_id=None, collection=None):
         return ret_elog_id
 
 
-def _save_history(db, md, update_metadata_def, atomic_type, alg_name=None, alg_id=None, collection=None):
+def _save_history(
+    db,
+    md,
+    update_metadata_def,
+    atomic_type,
+    alg_name=None,
+    alg_id=None,
+    collection=None,
+):
     """
     Save the processing history of a metadata object, which contains a key "history".
 
@@ -1445,4 +1476,3 @@ def _save_history(db, md, update_metadata_def, atomic_type, alg_name=None, alg_i
     md["history"].set_as_origin(alg_name, alg_id, current_uuid, atomic_type)
 
     return current_uuid
-
