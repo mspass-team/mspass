@@ -22,6 +22,9 @@ date
 
 
 #SECTION 3:  Define some basic control variables for this shell
+# This sets the scheduler
+# Currently we support two parallel execution frameworkds: spark and dask
+SCHEDULER=dask
 # this sets the working directory
 # SCRATCH is an environment variable defined for all jobs on stempede2
 WORK_DIR=$SCRATCH/mspass/workdir
@@ -74,6 +77,7 @@ mkdir -p $WORK_DIR
 cd $WORK_DIR
 
 # start a distributed scheduler container in the primary node
+SINGULARITYENV_MSPASS_SCHEDULER=$SCHEDULER \
 SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
 SINGULARITYENV_MSPASS_ROLE=scheduler $SING_COM &
 
@@ -84,6 +88,7 @@ WORKER_LIST=`scontrol show hostname ${SLURM_NODELIST} | \
 echo $WORKER_LIST
 
 # start worker container in each worker node
+SINGULARITYENV_MSPASS_SCHEDULER=$SCHEDULER \
 SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
 SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
 SINGULARITYENV_MSPASS_ROLE=worker \
