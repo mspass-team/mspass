@@ -857,7 +857,6 @@ class SeismicPlotter:
             raise RuntimeError(base_error + "Received unsupported data type=", type(d))
 
     def _wtva_TimeSeries(self, d, fill):
-
         # this plot reduces to a simple call to plot defining a time axis from
         # a single trace - pretty much like the obspy plot but with optional
         # shading.  It assumes d is a TimeSeries.
@@ -1068,7 +1067,6 @@ class SeismicPlotter:
         self._imageplot_TimeSeriesEnsemble(ens)
 
     def _imageplot_TimeSeries(self, d):
-
         # this plot reduces to a simple call to plot defining a time axis from
         # a single trace - pretty much like the obspy plot but with optional
         # shading.  It assumes d is a TimeSeries.
