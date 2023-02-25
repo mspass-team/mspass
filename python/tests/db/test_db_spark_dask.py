@@ -1,5 +1,5 @@
 from mspasspy.db.client import DBClient
-from mspasspy.db.database import Database, read_distributed_data
+from mspasspy.db.database import Database
 import copy
 import io
 import os
