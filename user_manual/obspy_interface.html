@@ -1,38 +1,17 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Using ObsPy with MsPASS &mdash; MsPASS 0.0.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
@@ -41,10 +20,7 @@
         <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Database Concepts" href="database_concepts.html" />
@@ -57,49 +33,26 @@
   
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> MsPASS
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
@@ -138,79 +91,36 @@
 <li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
 
-            
-          
     <a href= "../genindex.html">Index</a>
   
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">MsPASS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>Using ObsPy with MsPASS</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Using ObsPy with MsPASS</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
-            
               <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/obspy_interface.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="using-obspy-with-mspass">
-<span id="obspy-interface"></span><h1>Using ObsPy with MsPASS<a class="headerlink" href="#using-obspy-with-mspass" title="Permalink to this heading">¶</a></h1>
+<span id="obspy-interface"></span><h1>Using ObsPy with MsPASS<a class="headerlink" href="#using-obspy-with-mspass" title="Permalink to this heading"></a></h1>
 <section id="role-of-obspy-in-mspass">
-<h2>Role of ObsPy in MsPASS<a class="headerlink" href="#role-of-obspy-in-mspass" title="Permalink to this heading">¶</a></h2>
+<h2>Role of ObsPy in MsPASS<a class="headerlink" href="#role-of-obspy-in-mspass" title="Permalink to this heading"></a></h2>
 <p>The home page for <a class="reference external" href="https://docs.obspy.org/">Obspy</a> defines the package as follows:</p>
 <blockquote>
 <div><p>ObsPy is an open-source project dedicated to provide a Python framework for processing seismological data.
@@ -225,7 +135,7 @@ We have implemented fast algorithms to do those operation, but the performance c
 We describe more details on converters below and how ObsPy processing algorithms can be used in parallel workflows.</p>
 </section>
 <section id="converters">
-<h2>Converters<a class="headerlink" href="#converters" title="Permalink to this heading">¶</a></h2>
+<h2>Converters<a class="headerlink" href="#converters" title="Permalink to this heading"></a></h2>
 <p>To understand converters and their limitations it is helpful to describe details of ObsPy and MsPASS data objects.
 They have similarities but some major differences that a software engineer might call “a collision in concept”.
 ObsPy defines two core data objects:</p>
@@ -321,7 +231,7 @@ If the converters are used in isolation (e.g. one could easily run several ObsPy
 For this reason we recommend only running ObsPy algorithms through the decorators described in the next section.</p>
 </section>
 <section id="decorated-obspy-functions">
-<h2>Decorated ObsPy Functions<a class="headerlink" href="#decorated-obspy-functions" title="Permalink to this heading">¶</a></h2>
+<h2>Decorated ObsPy Functions<a class="headerlink" href="#decorated-obspy-functions" title="Permalink to this heading"></a></h2>
 <p>The decorated ObsPy functions can be thought of as a way to run ObsPy’s functions on mspass data objects.
 That means both atomic data and Ensembles.
 This should be clearer from an example.</p>
@@ -361,7 +271,7 @@ For example, the <code class="code docutils literal notranslate"><span class="pr
 See the <a class="reference internal" href="../python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.signals" title="mspasspy.algorithms.signals"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mspasspy.algorithms.signals</span></code></a> documentation for details.</p>
 </section>
 <section id="obspy-processing-in-parallel">
-<h2>ObsPy Processing in Parallel<a class="headerlink" href="#obspy-processing-in-parallel" title="Permalink to this heading">¶</a></h2>
+<h2>ObsPy Processing in Parallel<a class="headerlink" href="#obspy-processing-in-parallel" title="Permalink to this heading"></a></h2>
 <p>The ObsPy decorator allow ObsPy operators to be applied in parallel.
 For example, the following is a variant of filter algorithm but this example uses the Dask scheduler to process the entire data set:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume db is created as above</span>
@@ -381,42 +291,30 @@ For more on parallel processing constructs see <span class="xref std std-ref">pa
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="database_concepts.html" class="btn btn-neutral float-right" title="Database Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="time_standard_constraints.html" class="btn btn-neutral float-left" title="Time Standard Constraints" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="database_concepts.html" class="btn btn-neutral float-right" title="Database Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020-2021, Ian Wang.
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
 
-    </p>
-  </div> 
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

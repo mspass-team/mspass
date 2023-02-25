@@ -1,38 +1,17 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Adapting an Existing Algorithm to MsPASS &mdash; MsPASS 0.0.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
@@ -41,10 +20,7 @@
         <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Python API" href="../python_api/index.html" />
@@ -57,49 +33,26 @@
   
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> MsPASS
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
@@ -143,79 +96,36 @@
 <li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
 
-            
-          
     <a href= "../genindex.html">Index</a>
   
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">MsPASS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>Adapting an Existing Algorithm to MsPASS</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Adapting an Existing Algorithm to MsPASS</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
-            
               <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/adapting_algorithms.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="adapting-an-existing-algorithm-to-mspass">
-<span id="adapting-algorithms"></span><h1>Adapting an Existing Algorithm to MsPASS<a class="headerlink" href="#adapting-an-existing-algorithm-to-mspass" title="Permalink to this heading">¶</a></h1>
+<span id="adapting-algorithms"></span><h1>Adapting an Existing Algorithm to MsPASS<a class="headerlink" href="#adapting-an-existing-algorithm-to-mspass" title="Permalink to this heading"></a></h1>
 <section id="purpose">
-<h2>Purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">¶</a></h2>
+<h2>Purpose<a class="headerlink" href="#purpose" title="Permalink to this heading"></a></h2>
 <p>The purpose of this document is to describe how an existing algorithm written
 in C/C++ or python can be adapted to the MsPASS framework.  The ideas should
 also readily be adapted to Fortran algorithms as well, but the authors have
@@ -232,9 +142,9 @@ with the framework.  The remainder of the document centers on a set of examples
 of increasing complexity.</p>
 </section>
 <section id="what-you-will-need-to-implement">
-<h2>What you will need to implement<a class="headerlink" href="#what-you-will-need-to-implement" title="Permalink to this heading">¶</a></h2>
+<h2>What you will need to implement<a class="headerlink" href="#what-you-will-need-to-implement" title="Permalink to this heading"></a></h2>
 <section id="required">
-<h3>Required<a class="headerlink" href="#required" title="Permalink to this heading">¶</a></h3>
+<h3>Required<a class="headerlink" href="#required" title="Permalink to this heading"></a></h3>
 <p>The following must be satisfied by an implementation to mesh with the MsPASS
 framework.</p>
 <ul class="simple">
@@ -263,7 +173,7 @@ satisfied.</p></li>
 </ul>
 </section>
 <section id="optional-but-recommended">
-<h3>Optional but recommended<a class="headerlink" href="#optional-but-recommended" title="Permalink to this heading">¶</a></h3>
+<h3>Optional but recommended<a class="headerlink" href="#optional-but-recommended" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>MsPASS has a global level and object level history mechanism an algorithm
 should implement to be fully integrated in the framework.  The history mechanisms were
@@ -295,7 +205,7 @@ otherwise.</p></li>
 </section>
 </section>
 <section id="example-1-simple-function-time-windowing-function">
-<h2>Example 1:  Simple function - Time Windowing Function<a class="headerlink" href="#example-1-simple-function-time-windowing-function" title="Permalink to this heading">¶</a></h2>
+<h2>Example 1:  Simple function - Time Windowing Function<a class="headerlink" href="#example-1-simple-function-time-windowing-function" title="Permalink to this heading"></a></h2>
 <p>This example illustrates how we adapted an existing C++ algorithm to the
 MsPASS framework.   The objective was to produce a standard processing
 function to cut smaller time windows of data from a longer (in time)
@@ -401,51 +311,39 @@ wrapped the functions with a name containing a leading underscore.)</p></li>
 </ol>
 </section>
 <section id="example-2-pure-python-function">
-<h2>Example 2:  Pure Python Function<a class="headerlink" href="#example-2-pure-python-function" title="Permalink to this heading">¶</a></h2>
+<h2>Example 2:  Pure Python Function<a class="headerlink" href="#example-2-pure-python-function" title="Permalink to this heading"></a></h2>
 </section>
 <section id="example-3-more-complicated-mixed-c-and-python-example-scale-function">
-<h2>Example 3:  More complicated mixed C++ and python example - scale function<a class="headerlink" href="#example-3-more-complicated-mixed-c-and-python-example-scale-function" title="Permalink to this heading">¶</a></h2>
+<h2>Example 3:  More complicated mixed C++ and python example - scale function<a class="headerlink" href="#example-3-more-complicated-mixed-c-and-python-example-scale-function" title="Permalink to this heading"></a></h2>
 </section>
 </section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../python_api/index.html" class="btn btn-neutral float-right" title="Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="normalization.html" class="btn btn-neutral float-left" title="Normalization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../python_api/index.html" class="btn btn-neutral float-right" title="Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020-2021, Ian Wang.
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
 
-    </p>
-  </div> 
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
