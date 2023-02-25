@@ -91,6 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
 <ul>
@@ -307,6 +308,28 @@ If you need to modify an existing site or channel
 collection that has invalid documents you will need to write a custom function to override that
 behaviour or rebuild the collection as needed with web services.</p>
 </li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">write_distributed_data</span></code> is a parallel equivalent of <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> and <code class="code docutils literal notranslate"><span class="pre">save_ensemble_data</span></code>.
+MsPASS supports two parallel frameworks called SPARK and DASK.
+Both abstract the concept of the parallel data set in
+a container they call an RDD and Bag respectively.   Both are best thought
+of as a handle to the entire data set that can be passed between
+processing functions.  The function can be thought of as writing the entire data set
+from a parallel container to storage. The input is SPARK RDD or DASK BAG of objects (TimeSeries or Seismogram), and the
+output is a dataframe of metadata. From the container, it will firstly write to files distributedly
+using SPARK or DASK, and then write to the database sequentially. The two parts are done in two
+functions: <code class="code docutils literal notranslate"><span class="pre">write_files</span></code>, and <code class="code docutils literal notranslate"><span class="pre">write_to_db</span></code>. It returns a dataframe of metadata for
+each object in the original container. The return value can be used as input for <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code>
+function.</p>
+<p>Note that the objects should be written to different files, otherwise it may overwrite each other.
+dir and dfile should be stored in each object.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">write_files</span></code> is the writer for writing the object to storage. Input is an object (TimeSeries/Seismogram),
+output is the metadata of the original object with some more parameters added. This is
+the reverse of <code class="code docutils literal notranslate"><span class="pre">read_files</span></code>.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">write_to_db</span></code> is to save a list of atomic data objects (TimeSeries or Seismogram)
+to be managed with MongoDB. It will write to the doc and to the database for every metadata of the
+target mspass object. Then return a dataframe of the metadata for target mspass objects.
+The function is the reverse of <code class="code docutils literal notranslate"><span class="pre">read_to_dataframe</span></code>.</p>
+</li>
 </ol>
 </section>
 <section id="read">
@@ -457,6 +480,21 @@ a block of example code should make this clearer:</p>
 <p>The output of the read is the SPARK RDD that we assign the symbol rdd0.
 If you are using DASK instead of SPARK you would add the optional
 argument <code class="code docutils literal notranslate"><span class="pre">format='dask'</span></code>.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> divide the process of reading into two parts:
+reading from database and reading from file, where reading from database is
+done in sequence, and reading from file is done with DASK or SPARK. The two parts
+are done in two functions: <code class="code docutils literal notranslate"><span class="pre">read_to_dataframe</span></code>, and <code class="code docutils literal notranslate"><span class="pre">read_files</span></code>.
+The division is to avoid using database in DASK or SPARK to improve efficiency.</p>
+<p>The input can also be a dataframe, which stores the information of the metadata.
+It will read from file/gridfs according to the metadata and construct the objects.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">read_to_dataframe</span></code> firstly construct a list of objects using cursor.
+Then for each object, constrcut the metadata and add to the list. Finally it will
+convert the list to a dataframe.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">read_files</span></code> is the reader for constructing the object from storage. Firstly construct the object,
+either TimeSeries or Seismogram, then read the stored data from a file or in gridfs and
+loads it into the mspasspy object. It will also load history in metadata. If the object is
+marked dead, it will not read and return an empty object with history. The logic of reading
+is same as <code class="code docutils literal notranslate"><span class="pre">Database.read_data</span></code>.</p>
 </li>
 </ol>
 </section>

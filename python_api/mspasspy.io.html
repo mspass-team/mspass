@@ -1,47 +1,30 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>mspasspy.io &mdash; MsPASS 0.0.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mspasspy.history" href="mspasspy.history.html" />
-    <link rel="prev" title="mspasspy.db" href="mspasspy.db.html" />  
+    <link rel="next" title="C++ API" href="../cxx_api/index.html" />
+    <link rel="prev" title="mspasspy.util" href="mspasspy.util.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -50,201 +33,513 @@
   
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> MsPASS
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../user_manual.html">User’s Manual</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../reference_manual.html">Reference Manual</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../reference_manual.html#python-api">Python API</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">mspasspy.io</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.io</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.read_distributed_data"><code class="docutils literal notranslate"><span class="pre">read_distributed_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.read_files"><code class="docutils literal notranslate"><span class="pre">read_files()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.read_to_dataframe"><code class="docutils literal notranslate"><span class="pre">read_to_dataframe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.write_distributed_data"><code class="docutils literal notranslate"><span class="pre">write_distributed_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.write_files"><code class="docutils literal notranslate"><span class="pre">write_files()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.write_to_db"><code class="docutils literal notranslate"><span class="pre">write_to_db()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../reference_manual.html#c-api">C++ API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference_manual.html#mspass-schema">MsPASS Schema</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
 
-            
-          
     <a href= "../genindex.html">Index</a>
   
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">MsPASS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../reference_manual.html">Reference Manual</a> &raquo;</li>
-        
-      <li>mspasspy.io</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Python API</a></li>
+      <li class="breadcrumb-item active">mspasspy.io</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="../_sources/python_api/mspasspy.io.rst.txt" rel="nofollow"> View page source</a>
-          
-        
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/python_api/mspasspy.io.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
+             
+  <section id="module-mspasspy.io.distributed">
+<span id="mspasspy-io"></span><h1>mspasspy.io<a class="headerlink" href="#module-mspasspy.io.distributed" title="Permalink to this heading"></a></h1>
+<p>Distributed Reader and Writer using DataFrame</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.io.distributed.read_distributed_data">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">read_distributed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dask'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npartitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spark_context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#read_distributed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.read_distributed_data" title="Permalink to this definition"></a></dt>
+<dd><p>This function should be used to read an entire dataset that is to be handled
+by subsequent parallel operations.  The function can be thought of as
+loading the entire data set into a parallel container (rdd for spark
+implementations or bag for a dask implementations).</p>
+<p>This function is to divide the process of reading into two parts:
+reading from database and reading from file, where where reading from database
+is done in sequence, and reading from file is done with dask/spark. The two parts
+are done in two functions: read_to_dataframe, and read_files.</p>
+<p>The data param can be database or dataframe. If it is database, the function will
+firstly read from the database sequentially, and save the metadata to a dataframe.
+Then we have the dataframe. Use the information in the dataframe to read from files
+using dask/spark distributedly, and generate the objects to the container. This step
+uses map in dask/spark to improve efficiency.</p>
+<p>All other arguments are options that change behavior as described below.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – the data to be read, can be database or dataframe.</p>
+</dd>
+</dl>
+<p>or <code class="xref py py-class docutils literal notranslate"><span class="pre">dask.dataframe.core.DataFrame</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pyspark.sql.dataframe.DataFrame</span></code>
+:param cursor: mongodb cursor defining what “the dataset” is.  It would</p>
+<blockquote>
+<div><p>normally be the output of the find method with a workflow dependent
+query.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode that controls how the function interacts with
+the schema definition for the data type.   Must be one of
+[‘promiscuous’,’cautious’,’pedantic’].   See user’s manual for a
+detailed description of what the modes mean.  Default is ‘promiscuous’
+which turns off all schema checks and loads all attributes defined for
+each object read.</p></li>
+<li><p><strong>normalize</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – list of collections that are to used for data
+normalization. (see User’s manual and MongoDB documentation for
+details on this concept)  Briefly normalization means common
+metadata like source and receiver geometry are defined in separate
+smaller collections that are linked through this mechanism
+during reads. Default uses no normalization.</p></li>
+<li><p><strong>load_history</strong> – boolean (True or False) switch used to enable or
+disable object level history mechanism.   When set True each datum
+will be tagged with its origin id that defines the leaf nodes of a
+history G-tree.  See the User’s manual for additional details of this
+feature.  Default is False.</p></li>
+<li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Sometimes it is helpful to remove one or more
+attributes stored in the database from the data’s Metadata (header)
+so they will not cause problems in downstream processing.</p></li>
+<li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Set the format of the parallel container to define the
+dataset.   Must be either “spark” or “dask” or the job will abort
+immediately with an exception</p></li>
+<li><p><strong>spark_context</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pyspark.SparkContext</span></code>) – If using spark this argument is required.  Spark
+defines the concept of a “context” that is a global control object that
+manages schduling.  See online Spark documentation for details on
+this concept.</p></li>
+<li><p><strong>npartitions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The number of desired partitions for Dask or the number
+of slices for Spark. By default Dask will use 100 and Spark will determine
+it automatically based on the cluster.</p></li>
+<li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The definition of a dataset can become ambiguous
+when partially processed data are saved within a workflow.   A common
+example would be windowing long time blocks of data to shorter time
+windows around a particular seismic phase and saving the windowed data.
+The windowed data can be difficult to distinguish from the original
+with standard queries.  For this reason we make extensive use of “tags”
+for save and read operations to improve the efficiency and simplify
+read operations.   Default turns this off by setting the tag null (None).</p></li>
+<li><p><strong>aws_access_key_id</strong> – A part of the credentials to authenticate the user</p></li>
+<li><p><strong>aws_secret_access_key</strong> – A part of the credentials to authenticate the user</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>container defining the parallel dataset.  A spark <cite>RDD</cite> if format
+is “Spark” and a dask ‘bag’ if format is “dask”</p>
+</dd>
+</dl>
+</dd></dl>
 
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.io.distributed.read_files">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">read_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gfsh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#read_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.read_files" title="Permalink to this definition"></a></dt>
+<dd><p>This is the reader for constructing the object from storage. Firstly construct the object,
+either TimeSeries or Seismogram, then read the stored data from a file or in gridfs and
+loads it into the mspasspy object. It will also load history in metadata. If the object is
+marked dead, it will not read and return an empty object with history. The logic of reading
+is same as Database.read_data().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.Metadata</span></code></a>.) – the metadata for the object to be read.</p></li>
+<li><p><strong>gfsh</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/gridfs/index.html#gridfs.GridFS" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gridfs.GridFS</span></code></a>) – GridFS object</p></li>
+<li><p><strong>aws_access_key_id</strong> – A part of the credentials to authenticate the user</p></li>
+<li><p><strong>aws_secret_access_key</strong> – A part of the credentials to authenticate the user</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.io.distributed.read_to_dataframe">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">read_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_to_dataframe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">define_as_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrieve_history_record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#read_to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.read_to_dataframe" title="Permalink to this definition"></a></dt>
+<dd><p>This is the MsPASS reader for constructing metadata of Seismogram or TimeSeries
+objects from data managed with MondoDB through MsPASS. Firstly construct a list
+of objects using cursor. Then for each object, constrcut the metadata and add to
+the list. Finally convert the list to a dataframe. The return type is a dataframe
+of metadata. The logic of constructing metadata is same as Database.read_data().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – the database from which the data are to be read.</p></li>
+<li><p><strong>object_id</strong> – MongoDB object id of the wf document to be constructed from
+data defined in the database.  The object id is guaranteed unique and provides
+a unique link to a unique document or nothing.   In the later case the
+function will return a None.</p></li>
+<li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode that controls how the function interacts with
+the schema definition for the data type.   Must be one of
+[‘promiscuous’,’cautious’,’pedantic’].   See user’s manual for a
+detailed description of what the modes mean.  Default is ‘promiscuous’
+which turns off all schema checks and loads all attributes defined for
+each object read.</p></li>
+<li><p><strong>normalize</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – list of collections that are to used for data
+normalization. (see User’s manual and MongoDB documentation for
+details on this concept)  Briefly normalization means common
+metadata like source and receiver geometry are defined in separate
+smaller collections that are linked through this mechanism
+during reads. Default uses no normalization.</p></li>
+<li><p><strong>load_history</strong> – boolean (True or False) switch used to enable or
+disable object level history mechanism.   When set True each datum
+will be tagged with its origin id that defines the leaf nodes of a
+history G-tree.  See the User’s manual for additional details of this
+feature.  Default is False.</p></li>
+<li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Sometimes it is helpful to remove one or more
+attributes stored in the database from the data’s Metadata (header)
+so they will not cause problems in downstream processing.</p></li>
+<li><p><strong>collection</strong> – Specify an alternate collection name to
+use for reading the data.  The default sets the collection name
+based on the data type and automatically loads the correct schema.
+The collection listed must be defined in the schema and satisfy
+the expectations of the reader.  This is an advanced option that
+is indended only to simplify extensions to the reader.</p></li>
+<li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The definition of a dataset can become ambiguous
+when partially processed data are saved within a workflow.   A common
+example would be windowing long time blocks of data to shorter time
+windows around a particular seismic phase and saving the windowed data.
+The windowed data can be difficult to distinguish from the original
+with standard queries.  For this reason we make extensive use of “tags”
+for save and read operations to improve the efficiency and simplify
+read operations.   Default turns this off by setting the tag null (None).</p></li>
+<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>define_as_raw</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – a boolean control whether we would like to set_as_origin when loading processing history</p></li>
+<li><p><strong>retrieve_history_record</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – a boolean control whether we would like to load processing history</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.io.distributed.write_distributed_data">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">write_distributed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gridfs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'write_distributed_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#write_distributed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.write_distributed_data" title="Permalink to this definition"></a></dt>
+<dd><p>This function should be used to write an entire dataset that is to be handled
+by subsequent parallel operations.  The function can be thought of as
+writing the entire data set from a parallel container (rdd for spark
+implementations or bag for a dask implementatio) to storage. From the container,
+it will write to files distributedly using spark/dask, and then write to the
+database sequentially. The two parts are done in two functions: write_files,
+and write_to_db. It returns a dataframe of metadata for each object in the
+original container. The return value can be used as input for
+read_distributed_data() function.</p>
+<p>Objects should be written to different files, otherwise it may overwrite each other.
+dir and dfile should be stored in each object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dask.bag.Bag</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pyspark.RDD</span></code>.) – the data to be written</p></li>
+<li><p><strong>db</strong> (<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – the database from which the data are to be written.</p></li>
+<li><p><strong>mspass_object</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>) – the object you want to save.</p></li>
+<li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – This parameter defines how attributes defined with
+key-value pairs in MongoDB documents are to be handled on reading.
+By “to be handled” we mean how strongly to enforce name and type
+specification in the schema for the type of object being constructed.
+Options are [‘promiscuous’,’cautious’,’pedantic’] with ‘promiscuous’
+being the default.  See the User’s manual for more details on
+the concepts and how to use this option.</p></li>
+<li><p><strong>storage_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Must be either “gridfs” or “file.  When set to
+“gridfs” the waveform data are stored internally and managed by
+MongoDB.  If set to “file” the data will be stored in a file system
+with the dir and dfile arguments defining a file name.   The
+default is “gridfs”.</p></li>
+<li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the format of the file. This can be one of the
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats">supported formats</a>
+of ObsPy writer. The default the python None which the method
+assumes means to store the data in its raw binary form.  The default
+should normally be used for efficiency.  Alternate formats are
+primarily a simple export mechanism.  See the User’s manual for
+more details on data export.  Used only for “file” storage mode.</p></li>
+<li><p><strong>overwrite</strong> (<em>boolean</em>) – If true gridfs data linked to the original
+waveform will be replaced by the sample data from this save.
+Default is false, and should be the normal use.  This option
+should never be used after a reduce operator as the parents
+are not tracked and the space advantage is likely minimal for
+the confusion it would cause.   This is most useful for light, stable
+preprocessing with a set of map operators to regularize a data
+set before more extensive processing.  It can only be used when
+storage_mode is set to gridfs.</p></li>
+<li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Metadata can often become contaminated with
+attributes that are no longer needed or a mismatch with the data.
+A type example is the bundle algorithm takes three TimeSeries
+objects and produces a single Seismogram from them.  That process
+can, and usually does, leave things like seed channel names and
+orientation attributes (hang and vang) from one of the components
+as extraneous baggage.   Use this of keys to prevent such attributes
+from being written to the output documents.  Not if the data being
+saved lack these keys nothing happens so it is safer, albeit slower,
+to have the list be as large as necessary to eliminate any potential
+debris.</p></li>
+<li><p><strong>collection</strong> – The default for this parameter is the python
+None.  The default should be used for all but data export functions.
+The normal behavior is for this writer to use the object
+data type to determine the schema is should use for any type or
+name enforcement.  This parameter allows an alernate collection to
+be used with or without some different name and type restrictions.
+The most common use of anything other than the default is an
+export to a diffrent format.</p></li>
+<li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified “data_tag” key.  See above and
+User’s manual for guidance on how the use of this option.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<div class="section" id="mspasspy-io">
-<h1>mspasspy.io<a class="headerlink" href="#mspasspy-io" title="Permalink to this headline">¶</a></h1>
-</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.io.distributed.write_files">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">write_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'file'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gfsh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#write_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.write_files" title="Permalink to this definition"></a></dt>
+<dd><p>This is the writer for writing the object to storage. Return type is the
+metadata of the original object with some more parameters added, including
+storage_mode, history, whether the object is alive. This function is
+the reverse of read_files().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mspass_object</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>) – the object you want to read.</p></li>
+<li><p><strong>object_doc</strong> (class:<cite>dict</cite>.) – document of the object in the database</p></li>
+<li><p><strong>storage_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Must be either “gridfs” or “file.  When set to
+“gridfs” the waveform data are stored internally and managed by
+MongoDB.  If set to “file” the data will be stored in a file system
+with the dir and dfile arguments defining a file name.   The
+default is “gridfs”.</p></li>
+<li><p><strong>overwrite</strong> (<em>boolean</em>) – If true gridfs data linked to the original
+waveform will be replaced by the sample data from this save.
+Default is false, and should be the normal use.  This option
+should never be used after a reduce operator as the parents
+are not tracked and the space advantage is likely minimal for
+the confusion it would cause.   This is most useful for light, stable
+preprocessing with a set of map operators to regularize a data
+set before more extensive processing.  It can only be used when
+storage_mode is set to gridfs.</p></li>
+<li><p><strong>gfsh</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/gridfs/index.html#gridfs.GridFS" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gridfs.GridFS</span></code></a>) – GridFS object</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.io.distributed.write_to_db">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">write_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'file'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'write_to_db'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#write_to_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.write_to_db" title="Permalink to this definition"></a></dt>
+<dd><p>Use this method to save a list of atomic data objects (TimeSeries or Seismogram)
+to be managed with MongoDB.  The Metadata are stored as documents in
+a MongoDB collection.  This method will not write data to file system,
+it only writes to the doc and to the database for every metadata of the
+target mspass object. Return type is a dataframe of metadata
+for the target mspass objects. The logic is same as Database.save_data().
+The function is the exact reverse of read_to_dataframe().</p>
+<p>Any errors messages held in the object being saved are always
+written to documents in MongoDB is a special collection defined in
+the schema.   Saving object level history is optional.</p>
+<p>There are multiple options described below.  One worth emphasizing is
+“data_tag”.   Such a tag is essential for intermediate saves of
+a dataset if there is no other unique way to distinguish the
+data in is current state from data saved earlier.  For example,
+consider a job that did nothing but read waveform segments spanning
+a long time period (e.g. day files),cutting out a shorter time window,
+and then saving windowed data.  Crafting an unambiguous query to
+find only the windowed data in that situation could be challenging
+or impossible.  Hence, we recommend a data tag always be used for
+most saves.</p>
+<p>The mode parameter needs to be understood by all users of this
+function.  All modes enforce a schema constraint for “readonly”
+attributes.   An immutable (readonly) attribute by definition
+should not be changed during processing.   During a save
+all attributes with a key defined as readonly are tested
+with a method in the Metadata container that keeps track of
+any Metadata changes.  If a readonly attribute is found to
+have been changed it will be renamed with the prefix
+“<a href="#id1"><span class="problematic" id="id2">READONLYERROR_</span></a>”, saved, and an error posted (e.g. if you try
+to alter site_lat (a readonly attribute) in a workflow when
+you save the waveform you will find an entry with the key
+READONERROR_site_lat.)   In the default ‘promiscuous’ mode
+all other attributes are blindly saved to the database as
+name value pairs with no safeties.  In ‘cautious’ mode we
+add a type check.  If the actual type of an attribute does not
+match what the schema expect, this method will try to fix the
+type error before saving the data.  If the conversion is
+successful it will be saved with a complaint error posted
+to elog.  If it fails, the attribute will not be saved, an
+additional error message will be posted, and the save
+algorithm continues.  In ‘pedantic’ mode, in contrast, all
+type errors are considered to invalidate the data.
+Similar error messages to that in ‘cautious’ mode are posted
+but any type errors will cause the datum passed as arg 0
+to be killed. The lesson is saves can leave entries that
+may need to be examined in elog and when really bad will
+cause the datum to be marked dead after the save.</p>
+<p>This method can throw an exception but only for errors in
+usage (i.e. arguments defined incorrectly)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – the database from which the data are to be written.</p></li>
+<li><p><strong>md_list</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – the metadata list you want to save.</p></li>
+<li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – This parameter defines how attributes defined with
+key-value pairs in MongoDB documents are to be handled on reading.
+By “to be handled” we mean how strongly to enforce name and type
+specification in the schema for the type of object being constructed.
+Options are [‘promiscuous’,’cautious’,’pedantic’] with ‘promiscuous’
+being the default.  See the User’s manual for more details on
+the concepts and how to use this option.</p></li>
+<li><p><strong>storage_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Must be either “gridfs” or “file.  When set to
+“gridfs” the waveform data are stored internally and managed by
+MongoDB.  If set to “file” the data will be stored in a file system
+with the dir and dfile arguments defining a file name.   The
+default is “gridfs”.</p></li>
+<li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the format of the file. This can be one of the
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats">supported formats</a>
+of ObsPy writer. The default the python None which the method
+assumes means to store the data in its raw binary form.  The default
+should normally be used for efficiency.  Alternate formats are
+primarily a simple export mechanism.  See the User’s manual for
+more details on data export.  Used only for “file” storage mode.</p></li>
+<li><p><strong>overwrite</strong> (<em>boolean</em>) – If true gridfs data linked to the original
+waveform will be replaced by the sample data from this save.
+Default is false, and should be the normal use.  This option
+should never be used after a reduce operator as the parents
+are not tracked and the space advantage is likely minimal for
+the confusion it would cause.   This is most useful for light, stable
+preprocessing with a set of map operators to regularize a data
+set before more extensive processing.  It can only be used when
+storage_mode is set to gridfs.</p></li>
+<li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Metadata can often become contaminated with
+attributes that are no longer needed or a mismatch with the data.
+A type example is the bundle algorithm takes three TimeSeries
+objects and produces a single Seismogram from them.  That process
+can, and usually does, leave things like seed channel names and
+orientation attributes (hang and vang) from one of the components
+as extraneous baggage.   Use this of keys to prevent such attributes
+from being written to the output documents.  Not if the data being
+saved lack these keys nothing happens so it is safer, albeit slower,
+to have the list be as large as necessary to eliminate any potential
+debris.</p></li>
+<li><p><strong>collection</strong> – The default for this parameter is the python
+None.  The default should be used for all but data export functions.
+The normal behavior is for this writer to use the object
+data type to determine the schema is should use for any type or
+name enforcement.  This parameter allows an alernate collection to
+be used with or without some different name and type restrictions.
+The most common use of anything other than the default is an
+export to a diffrent format.</p></li>
+<li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified “data_tag” key.  See above and
+User’s manual for guidance on how the use of this option.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="mspasspy.history.html" class="btn btn-neutral float-right" title="mspasspy.history" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="mspasspy.db.html" class="btn btn-neutral float-left" title="mspasspy.db" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mspasspy.util.html" class="btn btn-neutral float-left" title="mspasspy.util" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../cxx_api/index.html" class="btn btn-neutral float-right" title="C++ API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Ian Wang.
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
 
-    </p>
-  </div> 
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

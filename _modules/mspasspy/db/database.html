@@ -74,6 +74,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
 <ul>
@@ -176,121 +177,6 @@
 <span class="kn">from</span> <span class="nn">mspasspy.db.collection</span> <span class="kn">import</span> <span class="n">Collection</span>
 <span class="kn">from</span> <span class="nn">mspasspy.db.schema</span> <span class="kn">import</span> <span class="n">DatabaseSchema</span><span class="p">,</span> <span class="n">MetadataSchema</span>
 <span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="n">Textfile2Dataframe</span>
-
-
-<div class="viewcode-block" id="read_distributed_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.read_distributed_data">[docs]</a><span class="k">def</span> <span class="nf">read_distributed_data</span><span class="p">(</span>
-    <span class="n">db</span><span class="p">,</span>
-    <span class="n">cursor</span><span class="p">,</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
-    <span class="n">normalize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">load_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span>
-    <span class="n">npartitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">spark_context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function should be used to read an entire dataset that is to be handled</span>
-<span class="sd">    by subsequent parallel operations.  The function can be thought of as</span>
-<span class="sd">    loading the entire data set into a parallel container (rdd for spark</span>
-<span class="sd">    implementations or bag for a dask implementatio).   It doesn&#39;t really do</span>
-<span class="sd">    that to be scalable but conceptually the container that is the output of</span>
-<span class="sd">    this method is a handle to the entire data set defined by the input</span>
-<span class="sd">    cursor.   The normal use of this function is to construct a query of</span>
-<span class="sd">    the desired waveform collection with the MongoDB find operation.</span>
-<span class="sd">    MongoDB find returns the cursor object that is the expected input.</span>
-<span class="sd">    All other arguments are options that change behavior as described below.</span>
-
-<span class="sd">    :param db: the database from which the data are to be read.</span>
-<span class="sd">    :type db: :class:`mspasspy.db.database.Database`.</span>
-<span class="sd">    :param cursor: mongodb cursor defining what &quot;the dataset&quot; is.  It would</span>
-<span class="sd">      normally be the output of the find method with a workflow dependent</span>
-<span class="sd">      query.</span>
-<span class="sd">    :type cursor: :class:`pymongo.cursor.CursorType`</span>
-<span class="sd">    :param mode: reading mode that controls how the function interacts with</span>
-<span class="sd">      the schema definition for the data type.   Must be one of</span>
-<span class="sd">      [&#39;promiscuous&#39;,&#39;cautious&#39;,&#39;pedantic&#39;].   See user&#39;s manual for a</span>
-<span class="sd">      detailed description of what the modes mean.  Default is &#39;promiscuous&#39;</span>
-<span class="sd">      which turns off all schema checks and loads all attributes defined for</span>
-<span class="sd">      each object read.</span>
-<span class="sd">    :type mode: :class:`str`</span>
-<span class="sd">    :param normalize: list of collections that are to used for data</span>
-<span class="sd">      normalization. (see User&#39;s manual and MongoDB documentation for</span>
-<span class="sd">      details on this concept)  Briefly normalization means common</span>
-<span class="sd">      metadata like source and receiver geometry are defined in separate</span>
-<span class="sd">      smaller collections that are linked through this mechanism</span>
-<span class="sd">      during reads. Default uses no normalization.</span>
-<span class="sd">    :type normalize: a :class:`list` of :class:`str`</span>
-<span class="sd">    :param load_history: boolean (True or False) switch used to enable or</span>
-<span class="sd">      disable object level history mechanism.   When set True each datum</span>
-<span class="sd">      will be tagged with its origin id that defines the leaf nodes of a</span>
-<span class="sd">      history G-tree.  See the User&#39;s manual for additional details of this</span>
-<span class="sd">      feature.  Default is False.</span>
-<span class="sd">    :param exclude_keys: Sometimes it is helpful to remove one or more</span>
-<span class="sd">      attributes stored in the database from the data&#39;s Metadata (header)</span>
-<span class="sd">      so they will not cause problems in downstream processing.</span>
-<span class="sd">    :type exclude_keys: a :class:`list` of :class:`str`</span>
-<span class="sd">    :param format: Set the format of the parallel container to define the</span>
-<span class="sd">      dataset.   Must be either &quot;spark&quot; or &quot;dask&quot; or the job will abort</span>
-<span class="sd">      immediately with an exception</span>
-<span class="sd">    :type format: :class:`str`</span>
-<span class="sd">    :param spark_context: If using spark this argument is required.  Spark</span>
-<span class="sd">      defines the concept of a &quot;context&quot; that is a global control object that</span>
-<span class="sd">      manages schduling.  See online Spark documentation for details on</span>
-<span class="sd">      this concept.</span>
-<span class="sd">    :type spark_context: :class:`pyspark.SparkContext`</span>
-<span class="sd">    :param npartitions: The number of desired partitions for Dask or the number</span>
-<span class="sd">      of slices for Spark. By default Dask will use 100 and Spark will determine</span>
-<span class="sd">      it automatically based on the cluster.</span>
-<span class="sd">    :type npartitions: :class:`int`</span>
-<span class="sd">    :param data_tag:  The definition of a dataset can become ambiguous</span>
-<span class="sd">      when partially processed data are saved within a workflow.   A common</span>
-<span class="sd">      example would be windowing long time blocks of data to shorter time</span>
-<span class="sd">      windows around a particular seismic phase and saving the windowed data.</span>
-<span class="sd">      The windowed data can be difficult to distinguish from the original</span>
-<span class="sd">      with standard queries.  For this reason we make extensive use of &quot;tags&quot;</span>
-<span class="sd">      for save and read operations to improve the efficiency and simplify</span>
-<span class="sd">      read operations.   Default turns this off by setting the tag null (None).</span>
-<span class="sd">    :type data_tag: :class:`str`</span>
-<span class="sd">    :return: container defining the parallel dataset.  A spark `RDD` if format</span>
-<span class="sd">      is &quot;Spark&quot; and a dask &#39;bag&#39; if format is &quot;dask&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">collection</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">name</span>
-    <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">format</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_mspasspy_has_pyspark</span><span class="p">):</span>
-        <span class="n">list_</span> <span class="o">=</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">numSlices</span><span class="o">=</span><span class="n">npartitions</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">list_</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span>
-                <span class="n">cur</span><span class="p">,</span>
-                <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-                <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
-                <span class="n">load_history</span><span class="o">=</span><span class="n">load_history</span><span class="p">,</span>
-                <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span>
-                <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
-                <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">,</span>
-                <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">aws_access_key_id</span><span class="p">,</span>
-                <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;dask&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">format</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_mspasspy_has_dask</span><span class="p">):</span>
-        <span class="n">list_</span> <span class="o">=</span> <span class="n">daskbag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">list_</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span>
-                <span class="n">cur</span><span class="p">,</span>
-                <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-                <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
-                <span class="n">load_history</span><span class="o">=</span><span class="n">load_history</span><span class="p">,</span>
-                <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span>
-                <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
-                <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">,</span>
-                <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">aws_access_key_id</span><span class="p">,</span>
-                <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only spark and dask are supported&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Database"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database">[docs]</a><span class="k">class</span> <span class="nc">Database</span><span class="p">(</span><span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">):</span>
@@ -4649,8 +4535,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
 
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_read_data_from_s3_continuous</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span>
+        <span class="n">mspass_object</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read data stored in s3 and load it into a mspasspy object.</span>
@@ -4729,8 +4616,9 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;Error while read data from s3.&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
 
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_read_data_from_s3_lambda</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span>
+        <span class="n">mspass_object</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
         <span class="n">year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span>
         <span class="n">day_of_year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;day_of_year&quot;</span><span class="p">]</span>
@@ -4748,7 +4636,7 @@
             <span class="n">location</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">st</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_windowed_mseed_file</span><span class="p">(</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">_download_windowed_mseed_file</span><span class="p">(</span>
                 <span class="n">aws_access_key_id</span><span class="p">,</span>
                 <span class="n">aws_secret_access_key</span><span class="p">,</span>
                 <span class="n">year</span><span class="p">,</span>
@@ -4870,7 +4758,8 @@
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">()</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">data</span>
 
-    <span class="k">def</span> <span class="nf">_read_data_from_fdsn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_read_data_from_fdsn</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
         <span class="n">provider</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;provider&quot;</span><span class="p">]</span>
         <span class="n">year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span>
         <span class="n">day_of_year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;day_of_year&quot;</span><span class="p">]</span>

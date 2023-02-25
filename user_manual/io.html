@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>I/O in MsPASS &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Python API" href="../python_api/index.html" />
+    <link rel="prev" title="Adapting an Existing Algorithm to MsPASS" href="adapting_algorithms.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">I/O in MsPASS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#read">Read</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write">Write</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">I/O in MsPASS</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/io.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="i-o-in-mspass">
+<span id="io"></span><h1>I/O in MsPASS<a class="headerlink" href="#i-o-in-mspass" title="Permalink to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<p>We want to use parallel containers to load data for efficiency, and the process of reading
+data includes reading from the file system and reading from the database. To further improve
+efficiency, we want to avoid database related operations and only perform file system read and write
+operations in the parallel containers. This module describes distributed I/O operations in
+MsPASS without using Database. The functions here are not methods of Database.</p>
+<section id="read">
+<h3>Read<a class="headerlink" href="#read" title="Permalink to this heading"></a></h3>
+<p>Read is the proccess of loading the entire data set into a parallel container (RDD for SPARK
+implementations or BAG for a DASK implementations).</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data" title="mspasspy.io.distributed.read_distributed_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_distributed_data</span></code></a> is the core method for reading data.</p></li>
+</ol>
+<p>The input includes the metadata information stored in the dataframe. Depending on the storage mode,
+the metadata should include parameters such as file path, gridfs id, etc. This function will
+construct the objects from storage using DASK or SPARK, and loading complete mspass objects into
+the parallel container. A block of example code should make this clearer:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span> <span class="nn">mspasspy.io.distributed</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="c1"># This is the name used to acccess the database of interest assumed</span>
+<span class="c1"># to contain data loaded previously.  Name used would change for user</span>
+<span class="n">dbname</span> <span class="o">=</span> <span class="s1">&#39;distributed_data_example&#39;</span>  <span class="c1"># name of db set in MongoDB - example</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span><span class="n">dbname</span><span class="p">)</span>
+<span class="c1"># This example reads all the data currently stored in this database</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">read_to_dataframe</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span> <span class="c1"># store to dataframe</span>
+<span class="n">rdd0</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">,</span>
+    <span class="n">cursor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;spark&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
+    <span class="n">spark_context</span><span class="o">=</span><span class="n">spark_context</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The output of the read is the SPARK RDD that we assign the symbol rdd0.
+If you are using DASK instead of SPARK you would add the optional
+argument <code class="code docutils literal notranslate"><span class="pre">format='dask'</span></code>.</p>
+</div></blockquote>
+</section>
+<section id="write">
+<h3>Write<a class="headerlink" href="#write" title="Permalink to this heading"></a></h3>
+<p>Write is the proccess of saving the entire data set into the file system.</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data" title="mspasspy.io.distributed.write_distributed_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_distributed_data</span></code></a> is the core method for writing data.</p></li>
+</ol>
+<p>The input includes SPARK RDD or DASK BAG of objects (TimeSeries or Seismogram), and the output is a dataframe of metadata.
+From the container, it will firstly write to files distributedly using SPARK or DASK, and then write to the database
+sequentially. It returns a dataframe of metadata for each object in the original container. The return value
+can be used as input for <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> function.</p>
+<p>Note that the objects should be written to different files, otherwise it may overwrite each other.
+dir and dfile should be stored in each object.</p>
+<p>A block of example code should make this clearer:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dask.bag</span> <span class="k">as</span> <span class="nn">daskbag</span>
+<span class="n">ts_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span><span class="p">,</span> <span class="n">ts3</span><span class="p">]</span> <span class="c1"># given TimeSeries list</span>
+<span class="n">list_</span> <span class="o">=</span> <span class="n">daskbag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">ts_list</span><span class="p">)</span>
+<span class="c1"># write to file and get a dataframe</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span>
+    <span class="n">list_</span><span class="p">,</span>
+    <span class="n">db</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;cautious&quot;</span><span class="p">,</span>
+    <span class="n">storage_mode</span><span class="o">=</span><span class="s2">&quot;file&quot;</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># read from the dataframe</span>
+<span class="n">obj_list</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The output of the write is the dataframe containing the metadata information that
+can be used in <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> function.</p>
+</div></blockquote>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="adapting_algorithms.html" class="btn btn-neutral float-left" title="Adapting an Existing Algorithm to MsPASS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../python_api/index.html" class="btn btn-neutral float-right" title="Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

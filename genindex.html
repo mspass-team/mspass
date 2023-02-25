@@ -74,6 +74,7 @@
 <li class="toctree-l1"><a class="reference internal" href="user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/io.html">I/O in MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
 <ul>
@@ -1289,6 +1290,8 @@
 </li>
         <li><a href="python_api/mspasspy.history.html#module-mspasspy.history">mspasspy.history</a>
 </li>
+        <li><a href="python_api/mspasspy.io.html#module-mspasspy.io.distributed">mspasspy.io.distributed</a>
+</li>
         <li><a href="python_api/mspasspy.reduce.html#module-mspasspy.reduce">mspasspy.reduce</a>
 </li>
         <li><a href="python_api/mspasspy.util.html#module-mspasspy.util.converter">mspasspy.util.converter</a>
@@ -1543,6 +1546,13 @@
 
       <ul>
         <li><a href="python_api/mspasspy.history.html#module-mspasspy.history">module</a>
+</li>
+      </ul></li>
+      <li>
+    mspasspy.io.distributed
+
+      <ul>
+        <li><a href="python_api/mspasspy.io.html#module-mspasspy.io.distributed">module</a>
 </li>
       </ul></li>
       <li>
@@ -1809,13 +1819,17 @@
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data">read_data() (mspasspy.db.database.Database method)</a>
 </li>
-      <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.read_distributed_data">read_distributed_data() (in module mspasspy.db.database)</a>
+      <li><a href="python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data">read_distributed_data() (in module mspasspy.io.distributed)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data">read_ensemble_data() (mspasspy.db.database.Database method)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data_group">read_ensemble_data_group() (mspasspy.db.database.Database method)</a>
 </li>
+      <li><a href="python_api/mspasspy.io.html#mspasspy.io.distributed.read_files">read_files() (in module mspasspy.io.distributed)</a>
+</li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.read_inventory">read_inventory() (mspasspy.db.database.Database method)</a>
+</li>
+      <li><a href="python_api/mspasspy.io.html#mspasspy.io.distributed.read_to_dataframe">read_to_dataframe() (in module mspasspy.io.distributed)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.MetadataDefinitions.readonly">readonly() (mspasspy.ccore.utility.MetadataDefinitions method)</a>
 
@@ -1831,10 +1845,10 @@
 </li>
       <li><a href="python_api/mspasspy.util.html#mspasspy.util.logging_helper.reduce">reduce() (in module mspasspy.util.logging_helper)</a>
 </li>
-      <li><a href="python_api/mspasspy.db.html#mspasspy.db.schema.DBSchemaDefinition.reference">reference() (mspasspy.db.schema.DBSchemaDefinition method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python_api/mspasspy.db.html#mspasspy.db.schema.DBSchemaDefinition.reference">reference() (mspasspy.db.schema.DBSchemaDefinition method)</a>
+</li>
       <li><a href="python_api/mspasspy.history.html#mspasspy.history.HistoryLogger.register">register() (mspasspy.history.HistoryLogger method)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeReferenceType.Relative">Relative (mspasspy.ccore.seismic.TimeReferenceType attribute)</a>
@@ -2243,9 +2257,15 @@
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData_with_duration">WindowData_with_duration() (in module mspasspy.algorithms.window)</a>
 </li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger.worst_errors">worst_errors() (mspasspy.ccore.utility.ErrorLogger method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger.worst_errors">worst_errors() (mspasspy.ccore.utility.ErrorLogger method)</a>
+      <li><a href="python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data">write_distributed_data() (in module mspasspy.io.distributed)</a>
+</li>
+      <li><a href="python_api/mspasspy.io.html#mspasspy.io.distributed.write_files">write_files() (in module mspasspy.io.distributed)</a>
+</li>
+      <li><a href="python_api/mspasspy.io.html#mspasspy.io.distributed.write_to_db">write_to_db() (in module mspasspy.io.distributed)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.MetadataDefinitions.writeable">writeable() (mspasspy.ccore.utility.MetadataDefinitions method)</a>
 

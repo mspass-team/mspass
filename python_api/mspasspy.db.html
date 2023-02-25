@@ -77,6 +77,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
 <ul class="current">
@@ -91,7 +92,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.db.database">database</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.read_distributed_data"><code class="docutils literal notranslate"><span class="pre">read_distributed_data()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.db.normalize">normalize</a><ul>
@@ -130,6 +130,7 @@
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.reduce.html">mspasspy.reduce</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html">mspasspy.io</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
@@ -1813,73 +1814,6 @@ ids found after query and the ids should then always be valid.</p>
 </dl>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.db.database.read_distributed_data">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">read_distributed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dask'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npartitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spark_context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#read_distributed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.read_distributed_data" title="Permalink to this definition"></a></dt>
-<dd><p>This function should be used to read an entire dataset that is to be handled
-by subsequent parallel operations.  The function can be thought of as
-loading the entire data set into a parallel container (rdd for spark
-implementations or bag for a dask implementatio).   It doesn’t really do
-that to be scalable but conceptually the container that is the output of
-this method is a handle to the entire data set defined by the input
-cursor.   The normal use of this function is to construct a query of
-the desired waveform collection with the MongoDB find operation.
-MongoDB find returns the cursor object that is the expected input.
-All other arguments are options that change behavior as described below.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>db</strong> (<a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – the database from which the data are to be read.</p></li>
-<li><p><strong>cursor</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/cursor.html#pymongo.cursor.CursorType" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.cursor.CursorType</span></code></a>) – mongodb cursor defining what “the dataset” is.  It would
-normally be the output of the find method with a workflow dependent
-query.</p></li>
-<li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode that controls how the function interacts with
-the schema definition for the data type.   Must be one of
-[‘promiscuous’,’cautious’,’pedantic’].   See user’s manual for a
-detailed description of what the modes mean.  Default is ‘promiscuous’
-which turns off all schema checks and loads all attributes defined for
-each object read.</p></li>
-<li><p><strong>normalize</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – list of collections that are to used for data
-normalization. (see User’s manual and MongoDB documentation for
-details on this concept)  Briefly normalization means common
-metadata like source and receiver geometry are defined in separate
-smaller collections that are linked through this mechanism
-during reads. Default uses no normalization.</p></li>
-<li><p><strong>load_history</strong> – boolean (True or False) switch used to enable or
-disable object level history mechanism.   When set True each datum
-will be tagged with its origin id that defines the leaf nodes of a
-history G-tree.  See the User’s manual for additional details of this
-feature.  Default is False.</p></li>
-<li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Sometimes it is helpful to remove one or more
-attributes stored in the database from the data’s Metadata (header)
-so they will not cause problems in downstream processing.</p></li>
-<li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Set the format of the parallel container to define the
-dataset.   Must be either “spark” or “dask” or the job will abort
-immediately with an exception</p></li>
-<li><p><strong>spark_context</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pyspark.SparkContext</span></code>) – If using spark this argument is required.  Spark
-defines the concept of a “context” that is a global control object that
-manages schduling.  See online Spark documentation for details on
-this concept.</p></li>
-<li><p><strong>npartitions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The number of desired partitions for Dask or the number
-of slices for Spark. By default Dask will use 100 and Spark will determine
-it automatically based on the cluster.</p></li>
-<li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The definition of a dataset can become ambiguous
-when partially processed data are saved within a workflow.   A common
-example would be windowing long time blocks of data to shorter time
-windows around a particular seismic phase and saving the windowed data.
-The windowed data can be difficult to distinguish from the original
-with standard queries.  For this reason we make extensive use of “tags”
-for save and read operations to improve the efficiency and simplify
-read operations.   Default turns this off by setting the tag null (None).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>container defining the parallel dataset.  A spark <cite>RDD</cite> if format
-is “Spark” and a dask ‘bag’ if format is “dask”</p>
-</dd>
-</dl>
 </dd></dl>
 
 </section>
