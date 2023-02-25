@@ -316,8 +316,10 @@ class ScipyDecimator(BasicResampler):
                 ddt=data_dt, sdt=self.dt
             )
         else:
-            message = "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
-                ddt=data_dt, sdt=self.dt
+            message = (
+                "Data sample interval={ddt} is not an integer multiple of {sdt}".format(
+                    ddt=data_dt, sdt=self.dt
+                )
             )
         return message
 
@@ -452,10 +454,10 @@ def resample(
     must have been constructed with the same output target sampling
     frequency (interval).  Both must also be a subclass of BasicResampler
     to match the api requirements.
-    
+
     The parameters object_history, alg_name, alg_id, dryrun, inplace_return,
-    and function_return_key are handled by the decorator called 
-    mspass_func_wrapper used by this function.  See the docstring for 
+    and function_return_key are handled by the decorator called
+    mspass_func_wrapper used by this function.  See the docstring for
     mspass_func_wrapper for the generic use of those parameters.
 
     :param mspass_object:   mspass datum to be resampled
