@@ -50,6 +50,7 @@ package.
    user_manual/parallel_processing
    user_manual/normalization
    user_manual/adapting_algorithms
+   user_manual/io
 
 
 .. toctree::
