@@ -4,7 +4,7 @@
 #include <pybind11/stl_bind.h>
 #include <pybind11/operators.h>
 #include <pybind11/embed.h>
-
+#include "mspass/seismic/Ensemble.h"
 #include "mspass/io/mseed_index.h"
 #include "mspass/io/fileio.h"
 #include "mspass/seismic/TimeSeries.h"
@@ -16,10 +16,18 @@ long int fwrite_to_file(mspass::seismic::TimeSeries& d,
   const std::string dir,const std::string dfile);
 long int fwrite_to_file(mspass::seismic::Seismogram& d,
     const std::string dir,const std::string dfile);
+std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>& d,
+  const std::string dir,const std::string dfile);
+std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram>& d,
+  const std::string dir,const std::string dfile);
 size_t fread_from_file(mspass::seismic::Seismogram& d,const std::string dir, const std::string dfile,
     const long int foff);
 size_t fread_from_file(mspass::seismic::TimeSeries& d,const std::string dir, const std::string dfile,
     const long int foff);
+size_t fread_from_file(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries> &d, const std::string dir, 
+    const std::string dfile, std::vector<long int> indexes);
+size_t fread_from_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram> &d, const std::string dir, 
+    const std::string dfile, std::vector<long int> indexes);
 }
 
 PYBIND11_MAKE_OPAQUE(std::vector<mspass::io::mseed_index>);
@@ -82,6 +90,22 @@ PYBIND11_MODULE(io,m){
      py::arg("dir"),
      py::arg("dfile")
    );
+  m.def("_fwrite_to_file",py::overload_cast<mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram>&,
+    const std::string,const std::string>(&fwrite_to_file),
+    "Write data for format Ensemble<Seismogram> to one file",
+    py::return_value_policy::copy,
+    py::arg("d"),
+    py::arg("dir"),
+    py::arg("dfile")
+  );
+  m.def("_fwrite_to_file",py::overload_cast<mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>&,
+    const std::string,const std::string>(&fwrite_to_file),
+    "Write data for format Ensemble<TimeSeries> to one file",
+    py::return_value_policy::copy,
+    py::arg("d"),
+    py::arg("dir"),
+    py::arg("dfile")
+  );
    m.def("_fread_from_file",
       py::overload_cast<mspass::seismic::TimeSeries&,
          const std::string,const std::string,const long int>(&fread_from_file),
@@ -99,6 +123,24 @@ PYBIND11_MODULE(io,m){
      py::arg("dir"),
      py::arg("dfile"),
      py::arg("foff")
+   );
+   m.def("_fread_from_file",
+      py::overload_cast<mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>&,
+        const std::string,const std::string,std::vector<long int>>(&fread_from_file),
+      "Read the sample data for a TimeSeriesEnsemble object from files as native doubles",
+     py::arg("de"),
+     py::arg("dir"),
+     py::arg("dfile"),
+     py::arg("indexes")
+   );
+   m.def("_fread_from_file",
+      py::overload_cast<mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram>&,
+         const std::string,const std::string,std::vector<long int>>(&fread_from_file),
+      "Read the sample data for a SeismogramEnsemble object from files as native doubles",
+     py::arg("de"),
+     py::arg("dir"),
+     py::arg("dfile"),
+     py::arg("indexes")
    );
 }
 }   // namespace mspasspy
