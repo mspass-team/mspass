@@ -3366,7 +3366,6 @@ class Database(pymongo.database.Database):
                 ensemble_object.kill()
 
         for idx, mspass_object in enumerate(ensemble_object.member):
-
             if mspass_object.live:
                 if exclude_keys is None:
                     exclude_keys = []

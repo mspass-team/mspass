@@ -952,7 +952,8 @@ class Gather(BasicGather):
     """
     Concrete implementtion for a scalar gather.  This is the array
     equivalent of a TimeSeriesEnsemble appropriate when the input matches
-    the concept of BasicGather.    It follows the OOP stndard pardigm that creation is initialization.  This puts a lot of features in the constructor for the class."""
+    the concept of BasicGather.    It follows the OOP stndard pardigm that creation is initialization.  This puts a lot of features in the constructor for the class.
+    """
 
     def __init__(
         self,
