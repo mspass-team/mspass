@@ -1246,9 +1246,12 @@
                 <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span>
                 <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
                 <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;foff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">foff</span>
-                <span class="k">if</span> <span class="nb">format</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">format</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">!=</span> <span class="s2">&quot;binary&quot;</span><span class="p">:</span>
                     <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;nbytes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nbytes</span>
                     <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">format</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">insertion_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">insertion_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;nbytes&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">&quot;gridfs&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="s2">&quot;gridfs_id&quot;</span> <span class="ow">in</span> <span class="n">insertion_dict</span><span class="p">:</span>
                     <span class="n">gridfs_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_data_to_gridfs</span><span class="p">(</span>
@@ -3027,6 +3030,352 @@
             <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">ensemble</span></div>
 
+<div class="viewcode-block" id="Database.read_ensemble_data_group"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data_group">[docs]</a>    <span class="k">def</span> <span class="nf">read_ensemble_data_group</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">objectid_list</span><span class="p">,</span>
+        <span class="n">ensemble_metadata</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
+        <span class="n">normalize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">load_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf&quot;</span><span class="p">,</span>
+        <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;read_ensemble_data&quot;</span><span class="p">,</span>
+        <span class="n">alg_id</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads an subset of a dataset with some logical grouping into an Ensemble container. Groups</span>
+<span class="sd">        the files firstly to avoid duplicate open for the same file. Open and close the file only</span>
+<span class="sd">        when the dir or dfile change.</span>
+
+<span class="sd">        Ensembles are a core concept in MsPASS that are a generalization of</span>
+<span class="sd">        fixed &quot;gather&quot; types frozen into every seismic reflection processing</span>
+<span class="sd">        system we know of.  This reader is driven by a python list of</span>
+<span class="sd">        MongoDB object ids.  The method calls the atomic read_data</span>
+<span class="sd">        method for object_id to assemble the members of the ensemble.</span>
+<span class="sd">        All arguments except the objectid_list and ensemble_metadata are</span>
+<span class="sd">        passed directly to the read_data method in that loop.  The read_data</span>
+<span class="sd">        method and the User&#39;s manual have more information about how those</span>
+<span class="sd">        common arguments are used.</span>
+
+<span class="sd">        :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`,</span>
+<span class="sd">          of the ids defining the ensemble members or a :class:`pymongo.cursor.Cursor`</span>
+<span class="sd">        :param ensemble_metadata:  is a dict or dict like container containing</span>
+<span class="sd">          metadata to be stored in the ensemble&#39;s Metadata (common to the group)</span>
+<span class="sd">          container.  A common choice would be to post the query used to</span>
+<span class="sd">          define this ensemble, but there are not restictions.  The contents are</span>
+<span class="sd">          simply copied verbatim to the ensemble metadata container. The default</span>
+<span class="sd">          is an empty dict which translates to an empty ensemble metadata container.</span>
+<span class="sd">        :type ensemble_metadata: python dict or any container that is iterable</span>
+<span class="sd">          and supports the [key] key associative array syntax will work.</span>
+<span class="sd">          (Note this means both Metadata containers or mongodb docs both can</span>
+<span class="sd">          be used) The type of this arg is not tested so you may get a</span>
+<span class="sd">          mysterious exception if the data the arg defines does no meet the</span>
+<span class="sd">          two rules.</span>
+<span class="sd">        :param mode: reading mode regarding schema checks, should be one of [&#39;promiscuous&#39;,&#39;cautious&#39;,&#39;pedantic&#39;]</span>
+<span class="sd">        :type mode: :class:`str`</span>
+<span class="sd">        :param normalize: normalized collection you want to read into a mspass object</span>
+<span class="sd">        :type normalize: a :class:`list` of :class:`str`</span>
+<span class="sd">        :param load_history: ``True`` to load object-level history into the mspasspy object.</span>
+<span class="sd">        :param exclude_keys: the metadata attributes you want to exclude from being read.</span>
+<span class="sd">        :type exclude_keys: a :class:`list` of :class:`str`</span>
+<span class="sd">        :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.</span>
+<span class="sd">        :param data_tag: a user specified &quot;data_tag&quot; key to filter the read. If not match, the record will be skipped.</span>
+<span class="sd">        :type data_tag: :class:`str`</span>
+<span class="sd">        :return: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or</span>
+<span class="sd">            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">wf_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+        <span class="n">object_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">wf_collection</span><span class="p">]</span><span class="o">.</span><span class="n">data_type</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">object_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;only TimeSeries and Seismogram are supported, but </span><span class="si">{}</span><span class="s2"> is requested. Please check the data_type of </span><span class="si">{}</span><span class="s2"> collection.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">object_type</span><span class="p">,</span> <span class="n">wf_collection</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># if objectid_list is a cursor, convert the cursor to a list</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">objectid_list</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">Cursor</span><span class="p">):</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">objectid_list</span><span class="p">)</span>
+            <span class="n">objectid_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">:</span>
+                <span class="n">objectid_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="n">TimeSeries</span><span class="p">:</span>
+            <span class="n">ensemble</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objectid_list</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ensemble</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objectid_list</span><span class="p">))</span>
+        <span class="c1"># Here we post the ensemble metdata - see docstring notes on this feature</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ensemble_metadata</span><span class="p">:</span>
+            <span class="n">ensemble</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">ensemble_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+        <span class="n">cur_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection</span><span class="p">]</span>
+
+        <span class="c1"># this for loop build the skeleton of the ensemble:</span>
+        <span class="c1"># firstly construct each object with metadata retrieved from mongodb document,</span>
+        <span class="c1"># and then add the object to the ensemble</span>
+        <span class="k">for</span> <span class="n">object_id</span> <span class="ow">in</span> <span class="n">objectid_list</span><span class="p">:</span>
+            <span class="c1"># This assumes the name of a metadata schema matches the data type it defines.</span>
+            <span class="n">read_metadata_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span><span class="p">[</span><span class="n">object_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span>
+
+            <span class="c1"># We temporarily swap the main collection defined by the metadata schema by</span>
+            <span class="c1"># the wf_collection. This ensures the method works consistently for any</span>
+            <span class="c1"># user-specified collection argument.</span>
+            <span class="n">metadata_schema_collection</span> <span class="o">=</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">metadata_schema_collection</span> <span class="o">!=</span> <span class="n">wf_collection</span><span class="p">:</span>
+                <span class="n">temp_metadata_schema</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span><span class="p">)</span>
+                <span class="n">temp_metadata_schema</span><span class="p">[</span><span class="n">object_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span><span class="o">.</span><span class="n">swap_collection</span><span class="p">(</span>
+                    <span class="n">metadata_schema_collection</span><span class="p">,</span> <span class="n">wf_collection</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span>
+                <span class="p">)</span>
+                <span class="n">read_metadata_schema</span> <span class="o">=</span> <span class="n">temp_metadata_schema</span><span class="p">[</span><span class="n">object_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span>
+
+            <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">oid</span> <span class="o">=</span> <span class="n">object_id</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">oid</span> <span class="o">=</span> <span class="n">object_id</span>
+            <span class="n">object_doc</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">oid</span><span class="p">})</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">object_doc</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">data_tag</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;data_tag&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">object_doc</span> <span class="ow">or</span> <span class="n">object_doc</span><span class="p">[</span><span class="s2">&quot;data_tag&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">data_tag</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="c1"># 1. build metadata as dict</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
+
+            <span class="c1"># 1.1 read in the attributes from the document in the database</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">object_doc</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">exclude_keys</span> <span class="ow">and</span> <span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="n">exclude_keys</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;promiscuous&quot;</span><span class="p">:</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                    <span class="k">continue</span>
+                <span class="c1"># FIXME: note that we do not check whether the attributes&#39; type in the database matches the schema&#39;s definition.</span>
+                <span class="c1"># This may or may not be correct. Should test in practice and get user feedbacks.</span>
+                <span class="k">if</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span>
+                    <span class="n">k</span>
+                <span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">is_alias</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+            <span class="c1"># 1.2 read the attributes in the metadata schema</span>
+            <span class="c1"># col_dict is a hashmap used to store the normalized records by the normalized_id in object_doc</span>
+            <span class="n">col_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c1"># log_error_msg is used to record all the elog entries generated during the reading process</span>
+            <span class="c1"># After the mspass_object is created, we would post every elog entry with the messages in the log_error_msg.</span>
+            <span class="n">log_error_msg</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">col</span> <span class="o">=</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="c1"># explanation of the 4 conditions in the following if statement</span>
+                <span class="c1"># 1.2.1. col is not None and is a normalized collection name</span>
+                <span class="c1"># 1.2.2. normalized key id exists in the wf document</span>
+                <span class="c1"># 1.2.3. k is not one of the exclude keys</span>
+                <span class="c1"># 1.2.4. col is in the normalize list provided by user</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">col</span>
+                    <span class="ow">and</span> <span class="n">col</span> <span class="o">!=</span> <span class="n">wf_collection</span>
+                    <span class="ow">and</span> <span class="n">col</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span> <span class="ow">in</span> <span class="n">object_doc</span>
+                    <span class="c1"># and (not exclude_keys or k not in exclude_keys)</span>
+                    <span class="c1"># and col in normalize</span>
+                <span class="p">):</span>
+                    <span class="c1"># try to find the corresponding record in the normalized collection from the database</span>
+                    <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">col_dict</span><span class="p">:</span>
+                        <span class="n">col_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
+                            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">col</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span><span class="p">]}</span>
+                        <span class="p">)</span>
+                    <span class="c1"># might unable to find the normalized document by the normalized_id in the object_doc</span>
+                    <span class="c1"># we skip reading this attribute</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">col_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]:</span>
+                        <span class="k">continue</span>
+                    <span class="c1"># this attribute may be missing in the normalized record we retrieve above</span>
+                    <span class="c1"># in this case, we skip reading this attribute</span>
+                    <span class="c1"># however, if it is a required attribute for the normalized collection</span>
+                    <span class="c1"># we should post an elog entry to the associated wf object created after.</span>
+                    <span class="n">unique_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">unique_name</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">unique_k</span> <span class="ow">in</span> <span class="n">col_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">is_required</span><span class="p">(</span><span class="n">unique_k</span><span class="p">):</span>
+                            <span class="n">log_error_msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="s2">&quot;Attribute </span><span class="si">{}</span><span class="s2"> is required in collection </span><span class="si">{}</span><span class="s2">, but is missing in the document with id=</span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                    <span class="n">unique_k</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">col</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">col_dict</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">unique_k</span><span class="p">]</span>
+
+            <span class="c1"># 1.3 schema check normalized data according to the read mode</span>
+            <span class="n">is_dead</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">fatal_keys</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cautious&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">md</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                        <span class="n">col</span> <span class="o">=</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                        <span class="n">unique_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">unique_name</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)):</span>
+                            <span class="c1"># try to convert the mismatch attribute</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="c1"># convert the attribute to the correct type</span>
+                                <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)(</span><span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                            <span class="k">except</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">is_required</span><span class="p">(</span><span class="n">unique_key</span><span class="p">):</span>
+                                    <span class="n">fatal_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                                    <span class="n">is_dead</span> <span class="o">=</span> <span class="kc">True</span>
+                                    <span class="n">log_error_msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                        <span class="s2">&quot;cautious mode: Required attribute </span><span class="si">{}</span><span class="s2"> has type </span><span class="si">{}</span><span class="s2">, forbidden by definition and unable to convert&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                            <span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                                        <span class="p">)</span>
+                                    <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;pedantic&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">md</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)):</span>
+                            <span class="n">fatal_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                            <span class="n">is_dead</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="n">log_error_msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="s2">&quot;pedantic mode: </span><span class="si">{}</span><span class="s2"> has type </span><span class="si">{}</span><span class="s2">, forbidden by definition&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                    <span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+
+            <span class="c1"># 1.4 create a mspass object by passing MetaData</span>
+            <span class="c1"># if not changing the fatal key values, runtime error in construct a mspass object</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">fatal_keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">elif</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">elif</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">elif</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">elif</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">elif</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">elif</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bytes</span><span class="p">:</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Note a CRITICAL feature of the Metadata constructors</span>
+                <span class="c1"># for both of these objects is that they allocate the</span>
+                <span class="c1"># buffer for the sample data and initialize it to zero.</span>
+                <span class="c1"># This allows sample data readers to load the buffer without</span>
+                <span class="c1"># having to handle memory management.</span>
+                <span class="k">if</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="n">TimeSeries</span><span class="p">:</span>
+                    <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+                    <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># api mismatch here.  This ccore Seismogram constructor</span>
+                    <span class="c1"># had an ancestor that had an option to read data here.</span>
+                    <span class="c1"># we never do that here</span>
+                    <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                    <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">merr</span><span class="p">:</span>
+                <span class="c1"># if the constructor fails mspass_object will be invalid</span>
+                <span class="c1"># To preserve the error we have to create a shell to hold the error</span>
+                <span class="k">if</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="n">TimeSeries</span><span class="p">:</span>
+                    <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">()</span>
+                <span class="c1"># Default constructors leaves result marked dead so below should work</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">merr</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">mspass_object</span>
+
+                <span class="c1"># not continue step 2 &amp; 3 if the mspass object is dead</span>
+            <span class="k">if</span> <span class="n">is_dead</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">log_error_msg</span><span class="p">:</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="s2">&quot;read_data&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># 2.load data from different modes</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="c1"># 3.load history</span>
+                <span class="k">if</span> <span class="n">load_history</span><span class="p">:</span>
+                    <span class="n">history_obj_id_name</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">&quot;history_object&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">history_obj_id_name</span> <span class="ow">in</span> <span class="n">object_doc</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_load_history</span><span class="p">(</span>
+                            <span class="n">mspass_object</span><span class="p">,</span>
+                            <span class="n">object_doc</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">],</span>
+                            <span class="n">alg_name</span><span class="p">,</span>
+                            <span class="n">alg_id</span><span class="p">,</span>
+                            <span class="n">define_as_raw</span><span class="p">,</span>
+                            <span class="n">retrieve_history_record</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">clear_modified</span><span class="p">()</span>
+
+                <span class="c1"># 4.post complaint elog entries if any</span>
+                <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">log_error_msg</span><span class="p">:</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="s2">&quot;read_data&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
+                    <span class="p">)</span>
+
+        <span class="c1"># read from files to the ensemble. To make the reading more efficient and avoid open</span>
+        <span class="c1"># one file multiple times, we firstly group the objects according to different files,</span>
+        <span class="c1"># then read objects from each file.</span>
+
+        <span class="c1"># group the mongodb document according to the dir and dfile, find the foffs in each file</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">cur_collection</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;$match&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$expr&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$in&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;$_id&quot;</span><span class="p">,</span> <span class="n">objectid_list</span><span class="p">]}}},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;$group&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;$dir&quot;</span><span class="p">,</span> <span class="s2">&quot;dfile&quot;</span><span class="p">:</span> <span class="s2">&quot;$dfile&quot;</span><span class="p">},</span>
+                        <span class="s2">&quot;foffs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$push&quot;</span><span class="p">:</span> <span class="s2">&quot;$foff&quot;</span><span class="p">},</span>
+                        <span class="s2">&quot;ids&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$push&quot;</span><span class="p">:</span> <span class="s2">&quot;$_id&quot;</span><span class="p">},</span>
+                    <span class="p">}</span>
+                <span class="p">},</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="c1"># read in each file</span>
+            <span class="n">cur_dir</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">][</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span>
+            <span class="n">cur_dfile</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">][</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span>
+            <span class="n">foffs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;foffs&quot;</span><span class="p">]))</span>  <span class="c1"># string list -&gt; int list</span>
+            <span class="c1"># get indexes in the ensemble</span>
+            <span class="n">indexes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">objectid_list</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]))</span>
+
+            <span class="c1"># sort according to foff in the file, because sequential reads are faster than random</span>
+            <span class="c1"># here use zip to make sure foff and index has the same order</span>
+            <span class="n">zipped</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">foffs</span><span class="p">,</span> <span class="n">indexes</span><span class="p">)</span>
+            <span class="n">sort_zipped</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">zipped</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">foffs</span><span class="p">,</span> <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">sort_zipped</span><span class="p">)]</span>
+
+            <span class="c1"># now the objects of indexes are in the sequential reading order</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># call C++ function fread_from_file to read part of ensemble from current file,</span>
+                <span class="c1"># indexes are the indexes of objects in the ensemble to be read</span>
+                <span class="n">cnt</span> <span class="o">=</span> <span class="n">_fread_from_file</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">cur_dir</span><span class="p">,</span> <span class="n">cur_dfile</span><span class="p">,</span> <span class="n">indexes</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">cnt</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;fread returned a count of </span><span class="si">{count}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="n">cnt</span><span class="p">)</span>
+                    <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="s2">&quot;_fread_from_file&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Informational</span>
+                    <span class="p">)</span>
+            <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">merr</span><span class="p">:</span>
+                <span class="c1"># Errors thrown must always cause a failure</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">&quot;Error while reading ensemble in files.&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">merr</span>
+
+        <span class="c1"># explicitly mark empty ensembles dead.  Otherwise assume if</span>
+        <span class="c1"># we got this far we can mark it live</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ensemble</span></div>
+
 <div class="viewcode-block" id="Database.save_ensemble_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_ensemble_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_ensemble_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ensemble_object</span><span class="p">,</span>
@@ -3117,6 +3466,361 @@
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unknown storage mode: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">storage_mode</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Database.save_ensemble_data_binary_file"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_ensemble_data_binary_file">[docs]</a>    <span class="k">def</span> <span class="nf">save_ensemble_data_binary_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ensemble_object</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
+        <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">exclude_objects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;save_ensemble_data_binary_file&quot;</span><span class="p">,</span>
+        <span class="n">alg_id</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save an Ensemble container of a group of data objecs to MongoDB.</span>
+
+<span class="sd">        Ensembles are a core concept in MsPASS that are a generalization of</span>
+<span class="sd">        fixed &quot;gather&quot; types frozen into every seismic reflection processing</span>
+<span class="sd">        system we know of.   This is is a writer for data stored in such a</span>
+<span class="sd">        container.  It saves all the objects in the ensemble to one file.</span>
+
+<span class="sd">        Our implementation has a separate Metadata container associated with the overall</span>
+<span class="sd">        group that is assumed to be constant for every member of the ensemble.  For this</span>
+<span class="sd">        reason the method calls the objects sync_metadata method that copies (overwrites</span>
+<span class="sd">        if previously defined) the ensemble attributes to each member.  That assure</span>
+<span class="sd">        atomic saves will not lose their association with a unique ensemble indexing scheme.</span>
+
+<span class="sd">        A final feature of note is that an ensemble can be marked dead.</span>
+<span class="sd">        If the entire ensemble is set dead this function returns</span>
+<span class="sd">        immediately and does nothing.</span>
+
+
+<span class="sd">        :param ensemble_object: the ensemble you want to save.</span>
+<span class="sd">        :type ensemble_object: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or</span>
+<span class="sd">            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.</span>
+<span class="sd">        :param mode: reading mode regarding schema checks, should be one of [&#39;promiscuous&#39;,&#39;cautious&#39;,&#39;pedantic&#39;]</span>
+<span class="sd">        :type mode: :class:`str`</span>
+<span class="sd">        :param dir: file directory.</span>
+<span class="sd">        :type dir: :class:`str`</span>
+<span class="sd">        :param dfile: file name.</span>
+<span class="sd">        :type dfile: :class:`str`</span>
+<span class="sd">        :param exclude_keys: the metadata attributes you want to exclude from being stored.</span>
+<span class="sd">        :type exclude_keys: a :class:`list` of :class:`str`</span>
+<span class="sd">        :param exclude_objects: A list of indexes, where each specifies a object in the ensemble you want to exclude from being saved. Starting from 0.</span>
+<span class="sd">        :type exclude_objects: :class:`list`</span>
+<span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.</span>
+<span class="sd">        :param data_tag: a user specified &quot;data_tag&quot; key to tag the saved wf document.</span>
+<span class="sd">        :type data_tag: :class:`str`</span>
+<span class="sd">        :param kill_on_failure:  When true if an io error occurs the data object&#39;s</span>
+<span class="sd">          kill method will be invoked.  When false (the default) io errors are</span>
+<span class="sd">          logged and left set live.  (Note data already marked dead are return</span>
+<span class="sd">          are ignored by this function. )</span>
+<span class="sd">        :type kill_on_failure: boolean</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;only TimeSeriesEnsemble and SeismogramEnsemble are supported&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ensemble_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="c1"># sync_metadata is a ccore method of the Ensemble  template</span>
+        <span class="n">ensemble_object</span><span class="o">.</span><span class="n">sync_metadata</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dfile</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">dir</span><span class="p">:</span>
+            <span class="c1"># Note the following uses the dir and dfile defined in the data object.</span>
+            <span class="c1"># It will ignore these two keys already in the collection in an update</span>
+            <span class="c1"># transaction, and the dir and dfile in the collection will be replaced.</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;dir&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ensemble_object</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;dfile&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ensemble_object</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;dir or dfile is not specified in data object&quot;</span><span class="p">)</span>
+            <span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">ensemble_object</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">])</span>
+            <span class="n">dfile</span> <span class="o">=</span> <span class="n">ensemble_object</span><span class="p">[</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dfile_uuid</span><span class="p">(</span>
+                <span class="nb">format</span>
+            <span class="p">)</span>  <span class="c1"># If dfile name is not given, or defined in mspass_object, a new uuid will be generated</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span>
+                    <span class="s2">&quot;No write permission to the save file: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># the following loop finds the top level of existing parents to fname</span>
+            <span class="c1"># and check for write permission to that directory.</span>
+            <span class="k">for</span> <span class="n">path_item</span> <span class="ow">in</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">PurePath</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path_item</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">path_item</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">X_OK</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span>
+                            <span class="s2">&quot;No write permission to the save directory: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble_object</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+            <span class="n">save_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">TimeSeries</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">save_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Seismogram</span>
+
+        <span class="c1"># should define wf_collection here because if the mspass_object is dead</span>
+        <span class="k">if</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="n">wf_collection_name</span> <span class="o">=</span> <span class="n">collection</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># This returns a string that is the collection name for this atomic data type</span>
+            <span class="c1"># A weird construct</span>
+            <span class="n">wf_collection_name</span> <span class="o">=</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
+        <span class="n">wf_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection_name</span><span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># create directory if not exists</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+            <span class="c1"># This function has overloading.  this might not work</span>
+            <span class="n">foffs</span> <span class="o">=</span> <span class="n">_fwrite_to_file</span><span class="p">(</span><span class="n">ensemble_object</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">merr</span><span class="p">:</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">merr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">kill_on_failure</span><span class="p">:</span>
+                <span class="n">ensemble_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">mspass_object</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">exclude_keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">exclude_keys</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="c1"># FIXME starttime will be automatically created in this function</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sync_metadata_before_update</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+
+                <span class="c1"># This method of Metadata returns a list of all</span>
+                <span class="c1"># attributes that were changed after creation of the</span>
+                <span class="c1"># object to which they are attached.</span>
+                <span class="n">changed_key_list</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">modified</span><span class="p">()</span>
+
+                <span class="n">copied_metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+
+                <span class="c1"># clear all the aliases</span>
+                <span class="c1"># TODO  check for potential bug in handling clear_aliases</span>
+                <span class="c1"># and modified method - i.e. keys returned by modified may be</span>
+                <span class="c1"># aliases</span>
+                <span class="n">save_schema</span><span class="o">.</span><span class="n">clear_aliases</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">)</span>
+
+                <span class="c1"># remove any values with only spaces</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                        <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+                <span class="c1"># remove any defined items in exclude list</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">exclude_keys</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
+                        <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="c1"># the special mongodb key _id is currently set readonly in</span>
+                <span class="c1"># the mspass schema.  It would be cleard in the following loop</span>
+                <span class="c1"># but it is better to not depend on that external constraint.</span>
+                <span class="c1"># The reason is the insert_one used below for wf collections</span>
+                <span class="c1"># will silently update an existing record if the _id key</span>
+                <span class="c1"># is present in the update record.  We want this method</span>
+                <span class="c1"># to always save the current copy with a new id and so</span>
+                <span class="c1"># we make sure we clear it</span>
+                <span class="k">if</span> <span class="s2">&quot;_id&quot;</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
+                    <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
+                <span class="c1"># Now remove any readonly data</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">readonly</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">changed_key_list</span><span class="p">:</span>
+                                <span class="n">newkey</span> <span class="o">=</span> <span class="s2">&quot;READONLYERROR_&quot;</span> <span class="o">+</span> <span class="n">k</span>
+                                <span class="n">copied_metadata</span><span class="o">.</span><span class="n">change_key</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">newkey</span><span class="p">)</span>
+                                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                                    <span class="s2">&quot;Database.save_data&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;readonly attribute with key=&quot;</span>
+                                    <span class="o">+</span> <span class="n">k</span>
+                                    <span class="o">+</span> <span class="s2">&quot; was improperly modified.  Saved changed value with key=&quot;</span>
+                                    <span class="o">+</span> <span class="n">newkey</span><span class="p">,</span>
+                                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+                                <span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="c1"># Done editing, now we convert copied_metadata to a python dict</span>
+                <span class="c1"># using this Metadata method or the long version when in cautious or pedantic mode</span>
+                <span class="n">insertion_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;promiscuous&quot;</span><span class="p">:</span>
+                    <span class="c1"># A python dictionary can use Metadata as a constructor due to</span>
+                    <span class="c1"># the way the bindings were defined</span>
+                    <span class="n">insertion_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Other modes have to test every key and type of value</span>
+                    <span class="c1"># before continuing.  pedantic kills data with any problems</span>
+                    <span class="c1"># Cautious tries to fix the problem first</span>
+                    <span class="c1"># Note many errors can be posted - one for each problem key-value pair</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)):</span>
+                                <span class="n">insertion_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;pedantic&quot;</span><span class="p">:</span>
+                                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;pedantic mode error:  key=&quot;</span> <span class="o">+</span> <span class="n">k</span>
+                                    <span class="n">value</span> <span class="o">=</span> <span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                                    <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+                                        <span class="s2">&quot; type of stored value=&quot;</span>
+                                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+                                        <span class="o">+</span> <span class="s2">&quot; does not match schema expectation=&quot;</span>
+                                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+                                    <span class="p">)</span>
+                                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                                        <span class="s2">&quot;Database.save_data&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;message&quot;</span><span class="p">,</span>
+                                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                                    <span class="p">)</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="c1"># Careful if another mode is added here.  else means cautious in this logic</span>
+                                    <span class="k">try</span><span class="p">:</span>
+                                        <span class="c1"># The following convert the actual value in a dict to a required type.</span>
+                                        <span class="c1"># This is because the return of type() is the class reference.</span>
+                                        <span class="n">insertion_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)(</span>
+                                            <span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                                        <span class="p">)</span>
+                                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                                        <span class="c1">#  cannot convert required keys -&gt; kill the object</span>
+                                        <span class="k">if</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">is_required</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                                            <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                                            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;cautious mode error:  key=&quot;</span> <span class="o">+</span> <span class="n">k</span>
+                                            <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+                                                <span class="s2">&quot; Required key value could not be converted to required type=&quot;</span>
+                                                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+                                                <span class="o">+</span> <span class="s2">&quot; actual type=&quot;</span>
+                                                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span>
+                                            <span class="p">)</span>
+                                            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Python error exception message caught:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                                            <span class="n">message</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                                            <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                                                <span class="s2">&quot;Database.save&quot;</span><span class="p">,</span>
+                                                <span class="n">message</span><span class="p">,</span>
+                                                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                                            <span class="p">)</span>
+                                        <span class="c1"># cannot convert normal keys -&gt; erase the key</span>
+                                        <span class="c1"># TODO should we post a Complaint entry to the elog?</span>
+                                        <span class="k">else</span><span class="p">:</span>
+                                            <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+            <span class="c1"># Note we jump here immediately if mspass_object was marked dead</span>
+            <span class="c1"># on entry.  Data can, however, be killed in metadata section</span>
+            <span class="c1"># above so we need repeat the test for live</span>
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;file&quot;</span>
+
+                <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span>
+                <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
+                <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;foff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">foffs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+                <span class="c1"># save history if not empty</span>
+                <span class="n">history_obj_id_name</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">&quot;history_object&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span>
+                <span class="p">)</span>
+                <span class="n">history_object_id</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+                    <span class="c1"># Use this trick in update_metadata too. None is needed to</span>
+                    <span class="c1"># avoid a TypeError exception if the name is not defined.</span>
+                    <span class="c1"># could do this with a conditional as an alternative</span>
+                    <span class="n">insertion_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">history_obj_id_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># optional history save - only done if history container is not empty</span>
+                    <span class="n">history_object_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span>
+                        <span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span>
+                    <span class="p">)</span>
+                    <span class="n">insertion_dict</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
+
+                <span class="c1"># add tag</span>
+                <span class="k">if</span> <span class="n">data_tag</span><span class="p">:</span>
+                    <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;data_tag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_tag</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># We need to clear data tag if was previously defined in</span>
+                    <span class="c1"># this case or a the old tag will be saved with this datum</span>
+                    <span class="k">if</span> <span class="s2">&quot;data_tag&quot;</span> <span class="ow">in</span> <span class="n">insertion_dict</span><span class="p">:</span>
+                        <span class="n">insertion_dict</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;data_tag&quot;</span><span class="p">)</span>
+                <span class="c1"># We don&#39;t want an elog_id in the insertion at this point.</span>
+                <span class="c1"># A option to consider is if we need an update after _save_elog</span>
+                <span class="c1"># section below to post elog_id back.</span>
+
+                <span class="c1"># test will fail here because there might be some Complaint elog post to the wf above</span>
+                <span class="c1"># we need to save the elog and get the elog_id</span>
+                <span class="c1"># then associate with the wf document so that we could insert in the wf_collection</span>
+
+                <span class="c1"># save elogs if the size of elog is greater than 0</span>
+                <span class="n">elog_id</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">&quot;elog&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span>
+                    <span class="c1"># elog ids will be updated in the wf col when saving metadata</span>
+                    <span class="n">elog_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">elog_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+                    <span class="n">insertion_dict</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
+
+                <span class="c1"># finally ready to insert the wf doc - keep the id as we&#39;ll need</span>
+                <span class="c1"># it for tagging any elog entries</span>
+                <span class="n">wfid</span> <span class="o">=</span> <span class="n">wf_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">insertion_dict</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
+                <span class="c1"># Put wfid into the object&#39;s meta as the new definition of</span>
+                <span class="c1"># the parent of this waveform</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wfid</span>
+
+                <span class="c1"># we may probably set the history_object_id field in the mspass_object</span>
+                <span class="k">if</span> <span class="n">history_object_id</span><span class="p">:</span>
+                    <span class="n">mspass_object</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
+                <span class="c1"># we may probably set the elog_id field in the mspass_object</span>
+                <span class="k">if</span> <span class="n">elog_id</span><span class="p">:</span>
+                    <span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
+
+                <span class="c1"># Empty error logs are skipped.  When nonzero tag them with tid</span>
+                <span class="c1"># just returned</span>
+                <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># elog_id_name = self.database_schema.default_name(&#39;elog&#39;) + &#39;_id&#39;</span>
+                    <span class="c1"># _save_elog uses a  null id as a signal to add a new record</span>
+                    <span class="c1"># When we land here the record must be new since it is</span>
+                    <span class="c1"># associated with a new wf document.  elog_id=None is default</span>
+                    <span class="c1"># but set it explicitly for clarity</span>
+
+                    <span class="c1"># This is comment out becuase we need to save it before inserting into the wf_collection</span>
+                    <span class="c1"># elog_id = self._save_elog(mspass_object, elog_id=None)</span>
+
+                    <span class="c1"># cross reference for elog entry, assoicate the wfid to the elog entry</span>
+                    <span class="n">elog_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">&quot;elog&quot;</span><span class="p">)]</span>
+                    <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection_name</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span>
+                    <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">insertion_dict</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]}</span>
+                    <span class="n">elog_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+                        <span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]}}</span>
+                    <span class="p">)</span>
+                <span class="c1"># When history is enable we need to do an update to put the</span>
+                <span class="c1"># wf collection id as a cross-reference.    Any value stored</span>
+                <span class="c1"># above with saave_history may be incorrect.  We use a</span>
+                <span class="c1"># stock test with the is_empty method for know if history data is present</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+                    <span class="n">history_object_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">&quot;history_object&quot;</span><span class="p">)</span>
+                    <span class="p">]</span>
+                    <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection_name</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span>
+                    <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">}</span>
+                    <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">wfid</span><span class="p">}</span>
+                    <span class="n">history_object_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">})</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># We land here when the input is dead or was killed during a</span>
+                <span class="c1"># cautious or pedantic mode edit of the metadata.</span>
+                <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">&quot;elog&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span>
+                <span class="k">if</span> <span class="n">elog_id_name</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+                    <span class="n">old_elog_id</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">old_elog_id</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">elog_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">elog_id</span><span class="o">=</span><span class="n">old_elog_id</span><span class="p">)</span>
+            <span class="c1"># Both live and dead data land here.</span>
+
+        <span class="k">return</span> <span class="n">ensemble_object</span></div>
 
 <div class="viewcode-block" id="Database.update_ensemble_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_ensemble_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">update_ensemble_metadata</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3853,14 +4557,18 @@
         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">format</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">format</span> <span class="ow">or</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;binary&quot;</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># create directory if not exists</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
                 <span class="c1"># This function has overloading.  this might not work</span>
                 <span class="n">foff</span> <span class="o">=</span> <span class="n">_fwrite_to_file</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">merr</span><span class="p">:</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">merr</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">kill_on_failure</span><span class="p">:</span>
                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
             <span class="c1"># we can compute the number of bytes written for this case</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
                 <span class="n">nbytes_written</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span>

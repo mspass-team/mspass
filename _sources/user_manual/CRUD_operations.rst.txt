@@ -101,6 +101,10 @@ and most up to date usage:
     are copied verbatim to each member.  If previous values existed in any
     of the members they will be silently replaced by the ensemble groups version.
 
+    :py:meth:`save_ensemble_data_binary_file <mspasspy.db.database.Database.save_ensemble_data_binary_file>` 
+    is an optimized version of save_ensemble_data. It saves all objects of the
+    ensemble into one file, and only opens the file once. 
+
 3.  :py:meth:`save_catalog <mspasspy.db.database.Database.save_catalog>` should be viewed mostly as a convenience method to build
     the :code:`source` collection from QUAKEML data downloaded from FDSN data
     centers via obspy's web services functions.   :code:`save_catalog` can be
@@ -307,6 +311,13 @@ reader to the sphinx documentation for full usage.
         else:
             cursor = db.wf_TimeSeries.find(query)
             ens = db.read_ensemble_data(cursoe)
+
+    :py:meth:`read_ensemble_data_group <mspasspy.db.database.Database.read_ensemble_data_group>`
+    is an optimized version of :code:`save_ensemble_data`. It groups the files firstly to avoid 
+    duplicate open for the same file. Open and close the file only when the dir or dfile change.
+    When multiple objects store in the same file, this function will group the files first
+    and collect their foffs in that file. Then open the file once, and sequentially read the data 
+    according to the foffs.
 
 3.  A workflow that needs to read and process a large data sets in
     a parallel environment should use

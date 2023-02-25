@@ -1079,6 +1079,52 @@ is an empty dict which translates to an empty ensemble metadata container.</p></
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.database.Database.read_ensemble_data_group">
+<span class="sig-name descname"><span class="pre">read_ensemble_data_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objectid_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_ensemble_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_ensemble_data_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_ensemble_data_group" title="Permalink to this definition"></a></dt>
+<dd><p>Reads an subset of a dataset with some logical grouping into an Ensemble container. Groups
+the files firstly to avoid duplicate open for the same file. Open and close the file only
+when the dir or dfile change.</p>
+<p>Ensembles are a core concept in MsPASS that are a generalization of
+fixed “gather” types frozen into every seismic reflection processing
+system we know of.  This reader is driven by a python list of
+MongoDB object ids.  The method calls the atomic read_data
+method for object_id to assemble the members of the ensemble.
+All arguments except the objectid_list and ensemble_metadata are
+passed directly to the read_data method in that loop.  The read_data
+method and the User’s manual have more information about how those
+common arguments are used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>objectid_list</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>,
+of the ids defining the ensemble members or a <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/cursor.html#pymongo.cursor.Cursor" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.cursor.Cursor</span></code></a></p></li>
+<li><p><strong>ensemble_metadata</strong> (<em>python dict</em><em> or </em><em>any container that is iterable
+and supports the</em><em> [</em><em>key</em><em>] </em><em>key associative array syntax will work.</em><em>
+(</em><em>Note this means both Metadata containers</em><em> or </em><em>mongodb docs both can
+be used</em><em>) </em><em>The type</em><em> of </em><em>this arg is not tested so you may get a
+mysterious exception if the data the arg defines does no meet the
+two rules.</em>) – is a dict or dict like container containing
+metadata to be stored in the ensemble’s Metadata (common to the group)
+container.  A common choice would be to post the query used to
+define this ensemble, but there are not restictions.  The contents are
+simply copied verbatim to the ensemble metadata container. The default
+is an empty dict which translates to an empty ensemble metadata container.</p></li>
+<li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode regarding schema checks, should be one of [‘promiscuous’,’cautious’,’pedantic’]</p></li>
+<li><p><strong>normalize</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – normalized collection you want to read into a mspass object</p></li>
+<li><p><strong>load_history</strong> – <code class="docutils literal notranslate"><span class="pre">True</span></code> to load object-level history into the mspasspy object.</p></li>
+<li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being read.</p></li>
+<li><p><strong>collection</strong> – the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.</p></li>
+<li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified “data_tag” key to filter the read. If not match, the record will be skipped.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a> or
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.read_inventory">
 <span class="sig-name descname"><span class="pre">read_inventory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_inventory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_inventory" title="Permalink to this definition"></a></dt>
 <dd><p>Loads an obspy inventory object limited by one or more
@@ -1336,6 +1382,43 @@ the object in a binary file, which requires <code class="docutils literal notran
 <li><p><strong>exclude_objects</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – A list of indexes, where each specifies a object in the ensemble you want to exclude from being saved. Starting from 0.</p></li>
 <li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the metadata schema.</p></li>
 <li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified “data_tag” key to tag the saved wf document.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.database.Database.save_ensemble_data_binary_file">
+<span class="sig-name descname"><span class="pre">save_ensemble_data_binary_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'save_ensemble_data_binary_file'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_ensemble_data_binary_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_ensemble_data_binary_file" title="Permalink to this definition"></a></dt>
+<dd><p>Save an Ensemble container of a group of data objecs to MongoDB.</p>
+<p>Ensembles are a core concept in MsPASS that are a generalization of
+fixed “gather” types frozen into every seismic reflection processing
+system we know of.   This is is a writer for data stored in such a
+container.  It saves all the objects in the ensemble to one file.</p>
+<p>Our implementation has a separate Metadata container associated with the overall
+group that is assumed to be constant for every member of the ensemble.  For this
+reason the method calls the objects sync_metadata method that copies (overwrites
+if previously defined) the ensemble attributes to each member.  That assure
+atomic saves will not lose their association with a unique ensemble indexing scheme.</p>
+<p>A final feature of note is that an ensemble can be marked dead.
+If the entire ensemble is set dead this function returns
+immediately and does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble_object</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a> or
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>.) – the ensemble you want to save.</p></li>
+<li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode regarding schema checks, should be one of [‘promiscuous’,’cautious’,’pedantic’]</p></li>
+<li><p><strong>dir</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file directory.</p></li>
+<li><p><strong>dfile</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file name.</p></li>
+<li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being stored.</p></li>
+<li><p><strong>exclude_objects</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – A list of indexes, where each specifies a object in the ensemble you want to exclude from being saved. Starting from 0.</p></li>
+<li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the metadata schema.</p></li>
+<li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified “data_tag” key to tag the saved wf document.</p></li>
+<li><p><strong>kill_on_failure</strong> (<em>boolean</em>) – When true if an io error occurs the data object’s
+kill method will be invoked.  When false (the default) io errors are
+logged and left set live.  (Note data already marked dead are return
+are ignored by this function. )</p></li>
 </ul>
 </dd>
 </dl>
