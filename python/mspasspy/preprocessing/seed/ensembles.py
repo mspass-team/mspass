@@ -11,8 +11,6 @@ from mspasspy.ccore.utility import (
     ProcessingHistory,
 )
 from mspasspy.ccore.seismic import TimeSeriesEnsemble
-
-# from mspasspy.io.converter import Trace2TimeSeries
 from mspasspy.util.converter import Trace2TimeSeries
 
 
