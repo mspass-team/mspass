@@ -67,121 +67,6 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util.converter import Textfile2Dataframe
 
 
-def read_distributed_data(
-    db,
-    cursor,
-    mode="promiscuous",
-    normalize=None,
-    load_history=False,
-    exclude_keys=None,
-    format="dask",
-    npartitions=None,
-    spark_context=None,
-    data_tag=None,
-    aws_access_key_id=None,
-    aws_secret_access_key=None,
-):
-    """
-    This function should be used to read an entire dataset that is to be handled
-    by subsequent parallel operations.  The function can be thought of as
-    loading the entire data set into a parallel container (rdd for spark
-    implementations or bag for a dask implementatio).   It doesn't really do
-    that to be scalable but conceptually the container that is the output of
-    this method is a handle to the entire data set defined by the input
-    cursor.   The normal use of this function is to construct a query of
-    the desired waveform collection with the MongoDB find operation.
-    MongoDB find returns the cursor object that is the expected input.
-    All other arguments are options that change behavior as described below.
-
-    :param db: the database from which the data are to be read.
-    :type db: :class:`mspasspy.db.database.Database`.
-    :param cursor: mongodb cursor defining what "the dataset" is.  It would
-      normally be the output of the find method with a workflow dependent
-      query.
-    :type cursor: :class:`pymongo.cursor.CursorType`
-    :param mode: reading mode that controls how the function interacts with
-      the schema definition for the data type.   Must be one of
-      ['promiscuous','cautious','pedantic'].   See user's manual for a
-      detailed description of what the modes mean.  Default is 'promiscuous'
-      which turns off all schema checks and loads all attributes defined for
-      each object read.
-    :type mode: :class:`str`
-    :param normalize: list of collections that are to used for data
-      normalization. (see User's manual and MongoDB documentation for
-      details on this concept)  Briefly normalization means common
-      metadata like source and receiver geometry are defined in separate
-      smaller collections that are linked through this mechanism
-      during reads. Default uses no normalization.
-    :type normalize: a :class:`list` of :class:`str`
-    :param load_history: boolean (True or False) switch used to enable or
-      disable object level history mechanism.   When set True each datum
-      will be tagged with its origin id that defines the leaf nodes of a
-      history G-tree.  See the User's manual for additional details of this
-      feature.  Default is False.
-    :param exclude_keys: Sometimes it is helpful to remove one or more
-      attributes stored in the database from the data's Metadata (header)
-      so they will not cause problems in downstream processing.
-    :type exclude_keys: a :class:`list` of :class:`str`
-    :param format: Set the format of the parallel container to define the
-      dataset.   Must be either "spark" or "dask" or the job will abort
-      immediately with an exception
-    :type format: :class:`str`
-    :param spark_context: If using spark this argument is required.  Spark
-      defines the concept of a "context" that is a global control object that
-      manages schduling.  See online Spark documentation for details on
-      this concept.
-    :type spark_context: :class:`pyspark.SparkContext`
-    :param npartitions: The number of desired partitions for Dask or the number
-      of slices for Spark. By default Dask will use 100 and Spark will determine
-      it automatically based on the cluster.
-    :type npartitions: :class:`int`
-    :param data_tag:  The definition of a dataset can become ambiguous
-      when partially processed data are saved within a workflow.   A common
-      example would be windowing long time blocks of data to shorter time
-      windows around a particular seismic phase and saving the windowed data.
-      The windowed data can be difficult to distinguish from the original
-      with standard queries.  For this reason we make extensive use of "tags"
-      for save and read operations to improve the efficiency and simplify
-      read operations.   Default turns this off by setting the tag null (None).
-    :type data_tag: :class:`str`
-    :return: container defining the parallel dataset.  A spark `RDD` if format
-      is "Spark" and a dask 'bag' if format is "dask"
-    """
-    collection = cursor.collection.name
-    if format == "spark" or (format == None and _mspasspy_has_pyspark):
-        list_ = spark_context.parallelize(cursor, numSlices=npartitions)
-        return list_.map(
-            lambda cur: db.read_data(
-                cur,
-                mode=mode,
-                normalize=normalize,
-                load_history=load_history,
-                exclude_keys=exclude_keys,
-                collection=collection,
-                data_tag=data_tag,
-                aws_access_key_id=aws_access_key_id,
-                aws_secret_access_key=aws_secret_access_key,
-            )
-        )
-    elif format == "dask" or (format == None and _mspasspy_has_dask):
-        list_ = daskbag.from_sequence(cursor, npartitions=npartitions)
-        return list_.map(
-            lambda cur: db.read_data(
-                cur,
-                mode=mode,
-                normalize=normalize,
-                load_history=load_history,
-                exclude_keys=exclude_keys,
-                collection=collection,
-                data_tag=data_tag,
-                aws_access_key_id=aws_access_key_id,
-                aws_secret_access_key=aws_secret_access_key,
-            )
-        )
-    else:
-        raise TypeError("Only spark and dask are supported")
-
-
 class Database(pymongo.database.Database):
     """
     MsPASS core database handle.  All MongoDB database operation in MsPASS
@@ -4538,8 +4423,9 @@ class Database(pymongo.database.Database):
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
 
+    @staticmethod
     def _read_data_from_s3_continuous(
-        self, mspass_object, aws_access_key_id=None, aws_secret_access_key=None
+        mspass_object, aws_access_key_id=None, aws_secret_access_key=None
     ):
         """
         Read data stored in s3 and load it into a mspasspy object.
@@ -4618,8 +4504,9 @@ class Database(pymongo.database.Database):
         except Exception as e:
             raise MsPASSError("Error while read data from s3.", "Fatal") from e
 
+    @staticmethod
     def _read_data_from_s3_lambda(
-        self, mspass_object, aws_access_key_id=None, aws_secret_access_key=None
+        mspass_object, aws_access_key_id=None, aws_secret_access_key=None
     ):
         year = mspass_object["year"]
         day_of_year = mspass_object["day_of_year"]
@@ -4637,7 +4524,7 @@ class Database(pymongo.database.Database):
             location = mspass_object["loc"]
 
         try:
-            st = self._download_windowed_mseed_file(
+            st = Database._download_windowed_mseed_file(
                 aws_access_key_id,
                 aws_secret_access_key,
                 year,
@@ -4759,7 +4646,8 @@ class Database(pymongo.database.Database):
                 mspass_object.npts = sm.data.columns()
                 mspass_object.data = sm.data
 
-    def _read_data_from_fdsn(self, mspass_object):
+    @staticmethod
+    def _read_data_from_fdsn(mspass_object):
         provider = mspass_object["provider"]
         year = mspass_object["year"]
         day_of_year = mspass_object["day_of_year"]

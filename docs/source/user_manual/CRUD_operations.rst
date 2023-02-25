@@ -199,6 +199,31 @@ and most up to date usage:
     collection that has invalid documents you will need to write a custom function to override that
     behaviour or rebuild the collection as needed with web services.
 
+5.  :code:`write_distributed_data` is a parallel equivalent of :code:`save_data` and :code:`save_ensemble_data`.  
+    MsPASS supports two parallel frameworks called SPARK and DASK.   
+    Both abstract the concept of the parallel data set in
+    a container they call an RDD and Bag respectively.   Both are best thought
+    of as a handle to the entire data set that can be passed between
+    processing functions.  The function can be thought of as writing the entire data set 
+    from a parallel container to storage. The input is SPARK RDD or DASK BAG of objects (TimeSeries or Seismogram), and the
+    output is a dataframe of metadata. From the container, it will firstly write to files distributedly 
+    using SPARK or DASK, and then write to the database sequentially. The two parts are done in two 
+    functions: :code:`write_files`, and :code:`write_to_db`. It returns a dataframe of metadata for 
+    each object in the original container. The return value can be used as input for :code:`read_distributed_data`
+    function. 
+    
+    Note that the objects should be written to different files, otherwise it may overwrite each other.
+    dir and dfile should be stored in each object.
+
+    :code:`write_files` is the writer for writing the object to storage. Input is an object (TimeSeries/Seismogram), 
+    output is the metadata of the original object with some more parameters added. This is 
+    the reverse of :code:`read_files`.
+
+    :code:`write_to_db` is to save a list of atomic data objects (TimeSeries or Seismogram)
+    to be managed with MongoDB. It will write to the doc and to the database for every metadata of the
+    target mspass object. Then return a dataframe of the metadata for target mspass objects. 
+    The function is the reverse of :code:`read_to_dataframe`.
+
 Read
 ~~~~~~~
 
@@ -359,6 +384,25 @@ reader to the sphinx documentation for full usage.
     The output of the read is the SPARK RDD that we assign the symbol rdd0.
     If you are using DASK instead of SPARK you would add the optional
     argument :code:`format='dask'`.
+
+    :code:`read_distributed_data` divide the process of reading into two parts: 
+    reading from database and reading from file, where reading from database is 
+    done in sequence, and reading from file is done with DASK or SPARK. The two parts 
+    are done in two functions: :code:`read_to_dataframe`, and :code:`read_files`.
+    The division is to avoid using database in DASK or SPARK to improve efficiency.
+
+    The input can also be a dataframe, which stores the information of the metadata.
+    It will read from file/gridfs according to the metadata and construct the objects.
+
+    :code:`read_to_dataframe` firstly construct a list of objects using cursor. 
+    Then for each object, constrcut the metadata and add to the list. Finally it will
+    convert the list to a dataframe. 
+
+    :code:`read_files` is the reader for constructing the object from storage. Firstly construct the object,
+    either TimeSeries or Seismogram, then read the stored data from a file or in gridfs and 
+    loads it into the mspasspy object. It will also load history in metadata. If the object is
+    marked dead, it will not read and return an empty object with history. The logic of reading
+    is same as :code:`Database.read_data`.
 
 Update
 ~~~~~~
