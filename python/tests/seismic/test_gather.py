@@ -1,6 +1,6 @@
 import os
 
-from mspasspy.preprocessing.seed.gather import (
+from mspasspy.seismic.gather import (
     extractDataFromMsPassObject,
     extractDataFromOldEnsemble,
     extractMemberMetadataFromOldEnsemble,
