@@ -969,7 +969,6 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">base_error</span> <span class="o">+</span> <span class="s2">&quot;Received unsupported data type=&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_wtva_TimeSeries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">fill</span><span class="p">):</span>
-
         <span class="c1"># this plot reduces to a simple call to plot defining a time axis from</span>
         <span class="c1"># a single trace - pretty much like the obspy plot but with optional</span>
         <span class="c1"># shading.  It assumes d is a TimeSeries.</span>
@@ -1180,7 +1179,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_imageplot_TimeSeriesEnsemble</span><span class="p">(</span><span class="n">ens</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_imageplot_TimeSeries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-
         <span class="c1"># this plot reduces to a simple call to plot defining a time axis from</span>
         <span class="c1"># a single trace - pretty much like the obspy plot but with optional</span>
         <span class="c1"># shading.  It assumes d is a TimeSeries.</span>
