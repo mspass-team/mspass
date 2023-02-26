@@ -666,7 +666,6 @@ def arrival_snr(
         "filtered_perc",
     ],
 ):
-
     """
     Specialization of FD_snr_estimator.   A common situation where snr
     data is a critical thing to estimate is data windowed around a given

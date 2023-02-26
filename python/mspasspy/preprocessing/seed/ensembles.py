@@ -627,7 +627,6 @@ def load_site_data(db, ens):
     """
     dbsite = db.site
     try:
-
         for d in ens.member:
             if d.dead():
                 continue

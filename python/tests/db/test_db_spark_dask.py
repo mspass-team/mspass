@@ -504,7 +504,6 @@ class TestDatabase:
             and seis_ensemble_metadata["key2"] == "value2"
         )
 
-
     def mock_urlopen(*args):
         response = Mock()
         with open("python/tests/data/read_data_from_url.pickle", "rb") as handle:
