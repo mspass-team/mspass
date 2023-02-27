@@ -197,7 +197,7 @@ def read_distributed_data(
 
 
 def read_to_dataframe(
-    db,  # db
+    db, 
     cursor,
     mode="promiscuous",
     normalize=None,
@@ -454,6 +454,15 @@ def read_to_dataframe(
 
         # init a ProcessingHistory to store history
         processing_history_record = ProcessingHistory()
+        # load the history in database
+        elog_col_name = db.database_schema.default_name("elog")
+        elog_id_name = elog_col_name + "_id"
+        if elog_id_name in object_doc:
+            elog_id = object_doc[elog_id_name]
+            elog_doc = db[elog_col_name].find_one({"_id": elog_id})
+            for log in elog_doc['logdata']:
+                me = MsPASSError(log['error_message'], log['badness'].split(".")[1])
+                processing_history_record.elog.log_error(log['algorithm'], log['error_message'], me.severity)
 
         # not continue step 2 & 3 if the mspass object is dead
         if is_dead:
@@ -582,6 +591,7 @@ def read_files(
         mspass_object.load_history(md["history"])
 
     if not md["is_dead"]:
+        mspass_object.set_live()
         # 2.load data from different modes
         storage_mode = md["storage_mode"]
         if storage_mode == "file":
