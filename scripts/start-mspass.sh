@@ -32,6 +32,9 @@ MONGO_DATA=${MSPASS_DB_DIR}/data
 MONGO_LOG=${MSPASS_LOG_DIR}/mongo_log
 export SPARK_WORKER_DIR=${MSPASS_WORKER_DIR}
 export SPARK_LOG_DIR=${MSPASS_LOG_DIR}
+export PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9-src.zip:$PYTHONPATH
+export PATH=$SPARK_HOME/bin:$SPARK_HOME/python:$PATHa
+
 if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
 
   function start_mspass_frontend {
@@ -41,7 +44,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
     if [[ ! -z ${MSPASS_JUPYTER_PWD+x} ]]; then
       # we rely on jupyter's python function to hash the password
       MSPASS_JUPYTER_PWD_HASHED=$(python3 -c "from notebook.auth import passwd; print(passwd('${MSPASS_JUPYTER_PWD}'))")
-      NOTEBOOK_ARGS="${NOTEBOOK_ARGS} --NotebookApp.password=${MSPASS_JUPYTER_PWD_HASHED}" 
+      NOTEBOOK_ARGS="${NOTEBOOK_ARGS} --NotebookApp.password=${MSPASS_JUPYTER_PWD_HASHED}"
     fi
     if [ "$MSPASS_SCHEDULER" = "spark" ]; then
       export PYSPARK_DRIVER_PYTHON=jupyter
@@ -193,7 +196,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
       mongo --port $MONGODB_CONFIG_PORT --eval \
         "rs.initiate({_id: \"configserver\", configsvr: true, version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_CONFIG_PORT\" }]})"
       sleep ${MSPASS_SLEEP_TIME}
-      
+
       # start a mongos router server
       mongos --port $MONGODB_PORT --configdb configserver/$HOSTNAME:$MONGODB_CONFIG_PORT --logpath ${MONGO_LOG}_router --bind_ip_all &
       # add shard clusters
@@ -217,8 +220,8 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "shard" ]; then
     [[ -n $MSPASS_SHARD_ID ]] || MSPASS_SHARD_ID=$MY_ID
-    # Note that we have to create a one-member replica set here 
-    # because certain pymongo API will use "retryWrites=true" 
+    # Note that we have to create a one-member replica set here
+    # because certain pymongo API will use "retryWrites=true"
     # and thus trigger an error.
     if [ "$MSPASS_DB_PATH" = "tmp" ]; then
       echo "store shard data in tmp for shard server $HOSTNAME"

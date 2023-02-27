@@ -11,15 +11,15 @@ fi
 
 SING_COM="singularity run $MSPASS_CONTAINER"
 # We always need the hostname of the node running this script
-# it launches all containers other than the workers.  Workers 
+# it launches all containers other than the workers.  Workers
 # need to know this name only
 NODE_HOSTNAME=`hostname -s`
 
 #### Set up networking ####
 # See User manual for guidance to adapt to other systems
 # These are only needed if you are running interactively.
-# They are commented out in this template to reduce conversion 
-# efforts but you may need to enable this block for connections from 
+# They are commented out in this template to reduce conversion
+# efforts but you may need to enable this block for connections from
 # outside the cluster
 # The approach used at TACC to get a unique port doesn't work on this cluster.
 # Using fixed ports hoping this won't cause collisions
@@ -41,7 +41,12 @@ cd $MSPASS_WORK_DIR
 pwd
 env
 
+# This sets the scheduler
+# Currently we support two parallel execution frameworkds: spark and dask
+SCHEDULER=dask
+
 # start a distributed scheduler container in the primary node
+SINGULARITYENV_MSPASS_SCHEDULER=$SCHEDULER \
 SINGULARITYENV_MSPASS_WORK_DIR=$MSPASS_WORK_DIR \
 SINGULARITYENV_MSPASS_ROLE=scheduler $SING_COM &
 
@@ -54,6 +59,7 @@ WORKER_LIST=`scontrol show hostname ${SLURM_NODELIST} | \
 echo $WORKER_LIST
 
 # start worker container in each worker node
+SINGULARITYENV_MSPASS_SCHEDULER=$SCHEDULER \
 SINGULARITYENV_MSPASS_WORK_DIR=$MSPASS_WORK_DIR \
   SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
   SINGULARITYENV_MSPASS_ROLE=worker \
@@ -69,7 +75,7 @@ SINGULARITYENV_MSPASS_DB_PATH=$DB_PATH \
 sleep 10
 
 # Launch the jupyter notebook frontend in the primary node.
-# This example always runs the notebook on startup and 
+# This example always runs the notebook on startup and
 # exits the job when the notebook code exits
 # DO NOT add a & to the end of this line.  We need the script to block until
 # the notebook exits
@@ -79,6 +85,6 @@ SINGULARITYENV_MSPASS_WORK_DIR=$MSPASS_WORK_DIR \
   SINGULARITYENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
   SINGULARITYENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
 
-# Note when the calling script exits the system will kill the containers 
+# Note when the calling script exits the system will kill the containers
 # running in other nodes
 SINGULARITYENV_MSPASS_ROLE=frontend $SING_COM --batch $notebook_file
