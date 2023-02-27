@@ -197,7 +197,7 @@ def read_distributed_data(
 
 
 def read_to_dataframe(
-    db, 
+    db,
     cursor,
     mode="promiscuous",
     normalize=None,
@@ -460,9 +460,11 @@ def read_to_dataframe(
         if elog_id_name in object_doc:
             elog_id = object_doc[elog_id_name]
             elog_doc = db[elog_col_name].find_one({"_id": elog_id})
-            for log in elog_doc['logdata']:
-                me = MsPASSError(log['error_message'], log['badness'].split(".")[1])
-                processing_history_record.elog.log_error(log['algorithm'], log['error_message'], me.severity)
+            for log in elog_doc["logdata"]:
+                me = MsPASSError(log["error_message"], log["badness"].split(".")[1])
+                processing_history_record.elog.log_error(
+                    log["algorithm"], log["error_message"], me.severity
+                )
 
         # not continue step 2 & 3 if the mspass object is dead
         if is_dead:

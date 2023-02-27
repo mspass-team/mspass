@@ -372,8 +372,8 @@ def test_read_distributed_data_dask():
     assert list[0].elog.get_error_log() != []
 
     errlog = list[1].elog.get_error_log()[0]
-    assert errlog.message == 'testing for bug'
-    assert errlog.algorithm == 'debug'
+    assert errlog.message == "testing for bug"
+    assert errlog.algorithm == "debug"
     assert errlog.badness == ErrorSeverity(5)
 
     client = DBClient("localhost")
@@ -764,7 +764,7 @@ def test_write_distributed_data_dask():
     assert list[0].elog.get_error_log() != []
 
     errlog = list[1].elog.get_error_log()[0]
-    assert errlog.message == 'testing for bug'
-    assert errlog.algorithm == 'debug'
+    assert errlog.message == "testing for bug"
+    assert errlog.algorithm == "debug"
     assert errlog.badness == ErrorSeverity(5)
     write_files(ts1, storage_mode="gridfs", overwrite=False, gfsh=gridfs.GridFS(db))
