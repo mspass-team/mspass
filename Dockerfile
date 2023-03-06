@@ -5,7 +5,6 @@ FROM ghcr.io/seisscoped/container-base:latest
 
 LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
 
-# first build mongodb 5.0
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN set -eux; \
 	groupadd --gid 999 --system mongodb; \
@@ -109,10 +108,9 @@ VOLUME /data/db /data/configdb
 ENV HOME /data/db
 
 COPY docker-entrypoint.sh /usr/local/bin/
-# ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 27017
-CMD ["mongod"]
 
 RUN apt-get update \
     && apt-get install -y wget ssh rsync vim-tiny less \
@@ -125,7 +123,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
-ARG TARGETARCH
+ARG TARGETARCH=amd64
 
 # Prepare the environment
 ARG SPARK_VERSION=3.0.0
@@ -198,6 +196,7 @@ RUN chmod +x /usr/sbin/tini
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
 
 # Set the default behavior of this container
@@ -207,5 +206,4 @@ ENV MONGODB_PORT 27017
 ENV JUPYTER_PORT 8888
 ENV MSPASS_ROLE all
 ENV MSPASS_SCHEDULER dask
-
 ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
