@@ -13,7 +13,7 @@ Parts of this section will also
 be of use to experienced users needing to configure MsPASS for
 new system.  If that is you, then you may find it useful to
 read this section in combination with the last section of
-the document titled :ref:`_deploy_mspass_on_HPC`.
+the document titled :ref:`deploy_mspass_on_HPC`.
 
 All readers should note this section leans heavily on several more
 specialized sections for specific environments.   That is, a
@@ -483,7 +483,7 @@ and example 1 are:
 
 
 
-Example 3:  Multiple nodes with optional Sharding
+Example 3: Multiple nodes with optional Sharding
 -----------------------------------------------
 
 :numref:`Configuration_figure3` is the first example
@@ -493,7 +493,7 @@ configuration for creating a virtual cluster.   Configuration files that would
 create this virtual cluster can be found on github in the
 directory "scripts/template".   How those scripts are used to define the
 virtual cluster are described below and in the section
-of the user manual titled :ref:`_deploy_mspass_on_HPC`
+of the user manual titled :ref:`deploy_mspass_on_HPC`
 
 .. _Configuration_figure3:
 

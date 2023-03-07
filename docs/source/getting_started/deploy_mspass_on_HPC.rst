@@ -176,7 +176,7 @@ is a bit more obscure.   Full understanding of why that incatation
 is necessary requires the
 concept of how to "bind" a file system to the container.   A starting
 point is the singularity documentation found
-`here<https://docs.sylabs.io/guides/3.5/user-guide/bind_paths_and_mounts.html>`__.
+`here <https://docs.sylabs.io/guides/3.5/user-guide/bind_paths_and_mounts.html>`__.
 Briefly, the idea is much like a file system "mount" in unix.
 The comma separated list of directory names will be visible to your
 application as if it were a local file system.
