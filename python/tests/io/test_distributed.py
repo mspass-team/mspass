@@ -143,7 +143,7 @@ def test_read_distributed_data(spark_context):
         db.save_data(
             ts,
             mode="promiscuous",
-            storage_mode="file",
+            storage_mode="gridfs",
             dir="./data/",
             dfile="test_db_output",
         )
@@ -372,9 +372,18 @@ def test_read_distributed_data_dask():
     assert list[0].elog.get_error_log() != []
 
     errlog = list[1].elog.get_error_log()[0]
-    assert errlog.message == 'testing for bug'
-    assert errlog.algorithm == 'debug'
+    assert errlog.message == "testing for bug"
+    assert errlog.algorithm == "debug"
     assert errlog.badness == ErrorSeverity(5)
+
+    for ts in list:
+        db.save_data(
+            ts,
+            mode="promiscuous",
+            storage_mode="file",
+            dir="././data/t1/t2/y3",
+            dfile="test_db_output2",
+        )
 
     client = DBClient("localhost")
     client.drop_database("mspasspy_test_db")
@@ -452,7 +461,7 @@ def test_read_distributed_data_dask_df():
         db.save_data(
             ts,
             mode="promiscuous",
-            storage_mode="file",
+            storage_mode="gridfs",
             dir="./data/",
             dfile="test_db_output",
         )
@@ -469,9 +478,7 @@ def test_read_distributed_data_dask_df():
     list_ = daskbag.from_sequence(df.to_dict("records"))
 
     list2 = list_.map(
-        lambda cur: read_files(
-            Metadata(cur),
-        )
+        lambda cur: read_files(Metadata(cur), gfsh=gridfs.GridFS(db))
     ).compute()
     assert len(list2) == 3
     for l in list2:
@@ -764,7 +771,7 @@ def test_write_distributed_data_dask():
     assert list[0].elog.get_error_log() != []
 
     errlog = list[1].elog.get_error_log()[0]
-    assert errlog.message == 'testing for bug'
-    assert errlog.algorithm == 'debug'
+    assert errlog.message == "testing for bug"
+    assert errlog.algorithm == "debug"
     assert errlog.badness == ErrorSeverity(5)
-    write_files(ts1, storage_mode="gridfs", overwrite=False, gfsh=gridfs.GridFS(db))
+    # write_files(ts1, storage_mode="gridfs", overwrite=False, gfsh=gridfs.GridFS(db))

@@ -4333,6 +4333,7 @@ class Database(pymongo.database.Database):
         if not format or format == "binary":
             try:
                 # create directory if not exists
+                dir = os.path.abspath(dir)
                 if not os.path.exists(dir):
                     os.makedirs(dir)
                 # This function has overloading.  this might not work
