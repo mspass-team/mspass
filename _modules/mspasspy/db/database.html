@@ -4445,6 +4445,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">format</span> <span class="ow">or</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;binary&quot;</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># create directory if not exists</span>
+                <span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
                 <span class="c1"># This function has overloading.  this might not work</span>

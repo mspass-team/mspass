@@ -309,7 +309,7 @@
 
 
 <div class="viewcode-block" id="read_to_dataframe"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">read_to_dataframe</span><span class="p">(</span>
-    <span class="n">db</span><span class="p">,</span>  <span class="c1"># db</span>
+    <span class="n">db</span><span class="p">,</span>
     <span class="n">cursor</span><span class="p">,</span>
     <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
     <span class="n">normalize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -566,6 +566,17 @@
 
         <span class="c1"># init a ProcessingHistory to store history</span>
         <span class="n">processing_history_record</span> <span class="o">=</span> <span class="n">ProcessingHistory</span><span class="p">()</span>
+        <span class="c1"># load the history in database</span>
+        <span class="n">elog_col_name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">&quot;elog&quot;</span><span class="p">)</span>
+        <span class="n">elog_id_name</span> <span class="o">=</span> <span class="n">elog_col_name</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span>
+        <span class="k">if</span> <span class="n">elog_id_name</span> <span class="ow">in</span> <span class="n">object_doc</span><span class="p">:</span>
+            <span class="n">elog_id</span> <span class="o">=</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span>
+            <span class="n">elog_doc</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">elog_col_name</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">elog_id</span><span class="p">})</span>
+            <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">elog_doc</span><span class="p">[</span><span class="s2">&quot;logdata&quot;</span><span class="p">]:</span>
+                <span class="n">me</span> <span class="o">=</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;error_message&quot;</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;badness&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">processing_history_record</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="n">log</span><span class="p">[</span><span class="s2">&quot;algorithm&quot;</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;error_message&quot;</span><span class="p">],</span> <span class="n">me</span><span class="o">.</span><span class="n">severity</span>
+                <span class="p">)</span>
 
         <span class="c1"># not continue step 2 &amp; 3 if the mspass object is dead</span>
         <span class="k">if</span> <span class="n">is_dead</span><span class="p">:</span>
@@ -694,6 +705,7 @@
         <span class="n">mspass_object</span><span class="o">.</span><span class="n">load_history</span><span class="p">(</span><span class="n">md</span><span class="p">[</span><span class="s2">&quot;history&quot;</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">md</span><span class="p">[</span><span class="s2">&quot;is_dead&quot;</span><span class="p">]:</span>
+        <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
         <span class="c1"># 2.load data from different modes</span>
         <span class="n">storage_mode</span> <span class="o">=</span> <span class="n">md</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">&quot;file&quot;</span><span class="p">:</span>
@@ -743,6 +755,8 @@
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># add another parameter</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unknown storage mode: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">storage_mode</span><span class="p">))</span>
 
+    <span class="c1"># after loading history, the history in metadata can be removed</span>
+    <span class="n">mspass_object</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;history&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">mspass_object</span></div>
 
 
@@ -1276,6 +1290,8 @@
                 <span class="n">elog_id</span> <span class="o">=</span> <span class="n">_save_elog</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">md</span><span class="p">,</span> <span class="n">save_schema</span><span class="p">,</span> <span class="n">elog_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
                 <span class="n">insertion_dict</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
 
+            <span class="c1"># history attribute is redundant</span>
+            <span class="n">insertion_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;history&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="c1"># finally ready to insert the wf doc - keep the id as we&#39;ll need</span>
             <span class="c1"># it for tagging any elog entries</span>
             <span class="n">wfid</span> <span class="o">=</span> <span class="n">wf_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">insertion_dict</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
@@ -1492,6 +1508,8 @@
             <span class="n">docentry</span><span class="p">[</span><span class="n">wf_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">oid</span>
 
         <span class="k">if</span> <span class="n">md</span><span class="p">[</span><span class="s2">&quot;is_dead&quot;</span><span class="p">]:</span>
+            <span class="c1"># history attribute is redundant</span>
+            <span class="n">md</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;history&quot;</span><span class="p">)</span>
             <span class="n">docentry</span><span class="p">[</span><span class="s2">&quot;tombstone&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">elog_id</span><span class="p">:</span>
