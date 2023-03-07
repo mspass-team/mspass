@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deploy MsPASS on HPC &mdash; MsPASS 0.0.1 documentation</title>
+  <title>Deploying MsPASS on an HPC cluster &mdash; MsPASS 0.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
@@ -23,7 +23,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="MsPASS Setup In-Depth Overview" href="getting_started_overview.html" />
+    <link rel="next" title="MsPASS Virtual Cluster Concepts" href="getting_started_overview.html" />
     <link rel="prev" title="Deploy MsPASS with Docker Compose" href="deploy_mspass_with_docker_compose.html" />  
 
   <style>
@@ -57,15 +57,31 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Deploy MsPASS on HPC</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#introduction-to-singularity">Introduction to Singularity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create-mspass-container">Create MsPASS Container</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick Start</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#configuration-for-single-node-script">Configuration for Single Node script</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#configuration-for-distributed-node-script">Configuration for Distributed Node Script</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Deploying MsPASS on an HPC cluster</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-mspass-with-existing-configuration-scripts">Running MsPASS with Existing Configuration Scripts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#get-a-copy-of-configuration-scripts">Get a Copy of Configuration Scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#build-mspass-container-with-singularity">Build MsPASS Container with Singularity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#edit-template-scripts">Edit template scripts</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspass-setup-sh">mspass_setup.sh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#job-script-sh">job_script.sh</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-a-notebook-interactively">Running a notebook interactively</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-configuration-files-on-a-new-cluster">Setting Up Configuration Files on a new Cluster</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-role-concept">The “Role” Concept</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-different-roles-are-run">How Different Roles are Run</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#launching-workers">Launching Workers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#communications">Communications</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul>
@@ -109,7 +125,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Deploy MsPASS on HPC</li>
+      <li class="breadcrumb-item active">Deploying MsPASS on an HPC cluster</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/getting_started/deploy_mspass_on_HPC.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -119,138 +135,605 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="deploy-mspass-on-hpc">
-<span id="id1"></span><h1>Deploy MsPASS on HPC<a class="headerlink" href="#deploy-mspass-on-hpc" title="Permalink to this heading"></a></h1>
-<section id="introduction-to-singularity">
-<h2>Introduction to Singularity<a class="headerlink" href="#introduction-to-singularity" title="Permalink to this heading"></a></h2>
-<p>Singularity is a container implementation that runs on HPC cluster environments. Singularity provides similar features as Docker, and can handle the “escalated privilege” issue of Docker. Singularity is compatible with Docker containers, which means that one can develop the container in Docker, and use Singularity as the runtime on HPC clusters.</p>
+  <section id="deploying-mspass-on-an-hpc-cluster">
+<span id="deploy-mspass-on-hpc"></span><h1>Deploying MsPASS on an HPC cluster<a class="headerlink" href="#deploying-mspass-on-an-hpc-cluster" title="Permalink to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<p>First, by HPC (High-Performance Computing) we mean a cluster of multiple node
+linked by high speed interconnections designed for large-scale, parallel
+processing.  If you are not familiar with modern concepts of this type of
+hardware and how they interact in HPC systems you should first do
+some background reading started with the section in our Getting Started pages
+found at <a class="reference internal" href="getting_started_overview.html#getting-started-overview"><span class="std std-ref">MsPASS Virtual Cluster Concepts</span></a>.</p>
+<p>An axiom for working with MsPASS is that any workflow you need to
+develop should first be prototyped on a desktop system.
+HPC systems are by definition designed to run large jobs that run
+on multiple nodes and use many cores.   It is always best to test run
+any workflow on a subset of your data.   For most people that is
+easiest on their office desktop machine.  With that model you first construct the
+python code defining your workflow within a jupyter notebook
+on your desktop machine, transfer that notebook
+to the HPC system you want to use for the (presumably) much larger data
+set, and then face the new idioms of the HPC system you will be using.</p>
+<p>Like your desktop system every HPC cluster has a set of local idioms.
+Examples, are file system directory names and variations in the
+software used to run jobs on the cluster.   If there are other people
+in your institute who use MsPASS on the same cluster, your job will be much
+easier.   If that is your situation then the section below titled
+<a class="reference internal" href="#running-mspass-with-existing-configuration-scripts">Running MsPASS with Existing Configuration Scripts</a> should get you started.
+If you are the first person
+in your institute to use MsPASS with the cluster you are using, you will
+need to do some nontrivial work to configure the cluster setup.  A sketch
+of that process is below in the section titled <a class="reference internal" href="#setting-up-configuration-files-on-a-new-cluster">Setting Up Configuration Files on a new Cluster</a>.
+The background for what is needed to do a Configuration
+can be found in <a class="reference internal" href="getting_started_overview.html#getting-started-overview"><span class="std std-ref">MsPASS Virtual Cluster Concepts</span></a>.</p>
 </section>
-<section id="create-mspass-container">
-<h2>Create MsPASS Container<a class="headerlink" href="#create-mspass-container" title="Permalink to this heading"></a></h2>
-<p>Singularity is compatible with docker container, which is a more widely-used implementation.
-So we can build a singularity image from the MsPASS container hosted on Docker Hub.
-First of all, use the following command to load the singularity module.
-Here we use TACC’s Stampede2 system as an example, where you need to first get on to a compute node to be able to use Singularity.
-For other systems, you should be able to find specific instructions on running containers there.
-For example, <a class="reference external" href="https://containers-at-tacc.readthedocs.io/en/latest/index.html">this</a> is the container tutorial at TACC.</p>
+<section id="running-mspass-with-existing-configuration-scripts">
+<h2>Running MsPASS with Existing Configuration Scripts<a class="headerlink" href="#running-mspass-with-existing-configuration-scripts" title="Permalink to this heading"></a></h2>
+<section id="get-a-copy-of-configuration-scripts">
+<h3>Get a Copy of Configuration Scripts<a class="headerlink" href="#get-a-copy-of-configuration-scripts" title="Permalink to this heading"></a></h3>
+<p>You may first want to search the suite of configuration scripts found
+on github <a class="reference external" href="https://github.com/mspass-team/mspass/tree/master/scripts">here</a>
+If the system you are using has a folder there you should download the
+scripts from the appropriate folder and you should be able to proceed
+without having too dig too deep into this section.
+We assume here the file name convention is the same as that for the
+set in the folder <cite>template</cite>.   If the file names for your institution
+are different you will have to do some additional work to puzzle out
+what was done.   If there are deviations we recommend the author
+supply a README file.</p>
+<p>If the files you need are not on github and you are aware of colleagues
+using mspass you may need to contact them and ask for their working
+startup scripts.   If you are a trailblazer, then you will need to jump
+to the section below titled <a class="reference internal" href="#setting-up-configuration-files-on-a-new-cluster">Setting Up Configuration Files on a new Cluster</a>.
+You can then use the next section for reference when you are actively
+working with MsPASS on that system.</p>
+</section>
+<section id="build-mspass-container-with-singularity">
+<h3>Build MsPASS Container with Singularity<a class="headerlink" href="#build-mspass-container-with-singularity" title="Permalink to this heading"></a></h3>
+<p>Singularity is a container implementation that is used on all HPC
+clusters we know of.   HPC systems do not use docker for security
+reasons because docker defaults to allowing processes in the container
+to run as root.  Singularity, however, is compatible with docker
+in the sense that it can pull containers constructed with docker and
+build a file to run on the HPC cluster.   That is the approach we use
+in this section.</p>
+<p>Because HPC clusters commonly support a wide range of applications all
+HPC clusters we
+know of have a software management system that controls what software
+is loaded in your environment.   At TACC, where MsPASS was initially
+developed, they use a command line tool called <cite>module</cite>.  On TACC systems
+the proper incantation is the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">load</span> <span class="n">tacc</span><span class="o">-</span><span class="n">singularity</span>
 </pre></div>
 </div>
-<p>Then, execute:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">singularity</span> <span class="n">build</span> <span class="n">mspass_latest</span><span class="o">.</span><span class="n">sif</span> <span class="n">docker</span><span class="p">:</span><span class="o">//</span><span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>
+<p>A more stock version might omit the “tacc-” part of that name.  Once your
+shell knows about singularity you can create an instance of the MsPASS
+container.  Unless you have a quota problem we recommend you put
+the container file in the directory <cite>~/mspass/containers</cite>.   Assuming that
+directory exists the following commands can be used to generate your
+working copy of the MsPASS container:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">mspass</span><span class="o">/</span><span class="n">containers</span>
+<span class="n">singularity</span> <span class="n">build</span> <span class="n">mspass_latest</span><span class="o">.</span><span class="n">sif</span> <span class="n">docker</span><span class="p">:</span><span class="o">//</span><span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>
 </pre></div>
 </div>
-<p>The command above will build a Singularity container corresponding to the latest released MsPASS docker container and save as <code class="code docutils literal notranslate"><span class="pre">mspass_latest.sif`</span></code> in the current directory.</p>
-<p>Now we can run MsPASS using Singularity. However, lots of configurations are needed, especially when
-user wants to run MsPASS on distributed nodes, where each node perform a different role. To simplify the configuration,
-two example scripts are given: <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/single_node.sh">single_node.sh</a>
-and <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh">distributed_node.sh</a>.</p>
-<p>In this section, we will briefly describe how to use these scripts.</p>
-<p>Please note that these scripts are written for the TACC environment, users might need to make some changes to the scripts to accustom them with their own HPC environment.</p>
+<p>When the command exits you should now see the file “mspass_latest.sif”
+in the current directory (“~mspass/containers” for the example).</p>
 </section>
-<section id="quick-start">
-<h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this heading"></a></h2>
-<p>To run the MsPass on Stampede2, simply use:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sbatch</span> <span class="o">./</span><span class="n">single_node</span><span class="o">.</span><span class="n">sh</span>
-</pre></div>
-</div>
-<p>or</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sbatch</span> <span class="o">./</span><span class="n">distributed_node</span><span class="o">.</span><span class="n">sh</span>
-</pre></div>
-</div>
-<p>The sbatch commands will submit the batch file to the cluster. Then, the workload manager (Slurm) will allocate the nodes and run the batch script on the first node allocated.</p>
-<p>After the script is commited and executed, a file will be created on the current directory (mspass.o{JOBID}), it stores all the log from MsPass:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Sun Mar 20 02:44:20 CDT 2022
-primary node c492-092
-got login node port 19292
-Created reverse ports on Stampede2 logins
-cleaning done
-[WARN  tini (144729)] [WARN  tini (144730)] Tini is not running as PID 1 and isn&#39;t registered as a child subreaper.
-Zombie processes will not be re-parented to Tini, so zombie reaping won&#39;t work.
-Zombie processes will not be re-parented to Tini, so zombie reaping won&#39;t work.
-
-[WARN  tini (206416)] Tini is not running as PID 1 and isn&#39;t registered as a child subreaper.
-Zombie processes will not be re-parented to Tini, so zombie reaping won&#39;t work.
-[WARN  tini (145112)] Tini is not running as PID 1 and isn&#39;t registered as a child subreaper.
-Zombie processes will not be re-parented to Tini, so zombie reaping won&#39;t work.
-To fix the problem, use the -s option or set the environment variable TINI_SUBREAPER to register Tini as a child subreaper, or run Tini as PID 1.
-[I 02:46:48.738 NotebookApp] Serving notebooks from local directory: /scratch/08431/ztyang/mspass/workdir
-[I 02:46:48.738 NotebookApp] Jupyter Notebook 6.2.0 is running at:
-[I 02:46:48.738 NotebookApp] http://c492-092.stampede2.tacc.utexas.edu:8888/?token=fee57b8bf77dc608fc32ecf6ad8d85a70467d84cf52b439d
-[I 02:46:48.738 NotebookApp]  or http://127.0.0.1:8888/?token=fee57b8bf77dc608fc32ecf6ad8d85a70467d84cf52b439d
-[I 02:46:48.738 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
-[C 02:46:48.749 NotebookApp]
-
-    To access the notebook, open this file in a browser:
-        file:///home1/08431/ztyang/.local/share/jupyter/runtime/nbserver-145143-open.html
-    Or copy and paste one of these URLs:
-        http://c492-092.stampede2.tacc.utexas.edu:8888/?token=fee57b8bf77dc608fc32ecf6ad8d85a70467d84cf52b439d
-    or http://127.0.0.1:8888/?token=fee57b8bf77dc608fc32ecf6ad8d85a70467d84cf52b439d
-</pre></div>
-</div>
-<p>As can be seen from above, you will get the token for jupyter notebook from the log. If the reverse tunnel port is enabled, you will get a login node port. Replace the 8888 with the new port number, you will get the external jupyter link. (In this case, <code class="docutils literal notranslate"><span class="pre">http://stampede2.tacc.utexas.edu:19292/?token=fee57b8bf77dc608fc32ecf6ad8d85a70467d84cf52b439d</span></code>). In the meanwhile, another port will also be open for the status page, the port number is new port number + 1.</p>
-<p>When MsPass is running, check the task status using:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">showq</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">mspass</span>
-</pre></div>
-</div>
-<p>To stop the MsPass task, you can simply wait till the end of the run time, or explicitly cancel the task using:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scancel</span> <span class="p">{</span><span class="n">JOBID</span><span class="p">}</span>
-</pre></div>
-</div>
+<section id="edit-template-scripts">
+<h3>Edit template scripts<a class="headerlink" href="#edit-template-scripts" title="Permalink to this heading"></a></h3>
+<section id="id1">
+<h4>Overview<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h4>
+<p>HPC clusters are designed to run large jobs and are not well-suited to
+interactive work.  We reiterate that you are advised to develop
+your notebook on a desktop system using docker and a small subset of
+the data you need to process.  This section assumes you have such a
+workflow debugged and ready to release on the full data set.
+It also assumes you aren’t a trailblazer and you have a
+template “job script” you or someone else at your institute
+has created that you only need to modify.</p>
+<p>The standard way to run a mspass “job” on HPC systems is through a
+set of unix shell scripts.   We use that model because all HPC
+centers use the unix shell as the “job control” language.   Old-timers
+from the days of mainframe computers from IBM and CDC may remember
+older, more primitive job control languages like the long dead
+IBM JCL (job control language).  The concept is the same but
+today the language is a version of the unix shell.  At present all our
+examples use the shell dialect called <cite>bash</cite>, but you are free to use any
+shell dialect supported by the cluster operating system.</p>
+<p>Our standard template uses three shell scripts that work together to
+run a mspass workflow.   The section heading titles below
+use the names of the template files.  You can, of course
+change any of the file names provided you know how they are used.</p>
 </section>
-<section id="configuration-for-single-node-script">
-<h2>Configuration for Single Node script<a class="headerlink" href="#configuration-for-single-node-script" title="Permalink to this heading"></a></h2>
-<p>single_node.sh is for setting up a standalone instance with the mongodb server, dask scheduler and worker, and the jupyter frontend all on a single node.</p>
-<p>The script first setup some environment variables for HPCs:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#SBATCH -J mspass           # Job name</span>
-<span class="c1">#SBATCH -o mspass.o%j       # Name of stdout output file</span>
-<span class="c1">#SBATCH -p skx-dev          # Queue (partition) name</span>
-<span class="c1">#SBATCH -N 1                # Total # of nodes (must be 1 for serial)</span>
-<span class="c1">#SBATCH -n 1                # Total # of mpi tasks (should be 1 for serial)</span>
-<span class="c1">#SBATCH -t 02:00:00         # Run time (hh:mm:ss)</span>
-<span class="c1">#SBATCH -A MsPASS           # Allocation name (req&#39;d if you have more than 1)</span>
+<section id="mspass-setup-sh">
+<h4>mspass_setup.sh<a class="headerlink" href="#mspass-setup-sh" title="Permalink to this heading"></a></h4>
+<p>Before you run your first job you will almost certainly need to
+create a private copy of the template file <cite>mspass_setup.sh</cite>.
+This script does little more than define a set of shell environment
+variables to define where on the cluster file system the job
+can find your data and the mspass container.
+It also needs to define where a suite of work directories the different
+components of MsPASS need to utilize.  The <cite>mspass_setup.sh</cite> file
+contains shell commands to set all the parameters that most users will need to customize.
+The idea is each user-dataset combination will normally
+require edits to this file.  The rest of this section is arranged in the
+order of appearance of parameters in the template version of <cite>mspass_setup.sh</cite>
+show here:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /bin/bash</span>
+
+<span class="c1"># See User&#39;s Manual for more guidance on setting these variables</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_HOME</span><span class="o">=</span>~/mspass
+<span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_CONTAINER</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_HOME</span><span class="si">}</span>/containers/mspass_latest.sif
+<span class="c1"># the container boots.  Usually an explicit path is best to avoid</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SINGULARITY_BIND</span><span class="o">=</span>/N/slate/pavlis,/N/scratch/pavlis
+
+<span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_WORK_DIR</span><span class="o">=</span>/N/slate/pavlis/test_scripts
+<span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_DB_DIR</span><span class="o">=</span>/N/scratch/pavlis/usarray/db
+<span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_LOG_DIR</span><span class="o">=</span>/N/scratch/pavlis/usarray/logs
+<span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_WORKER_DIR</span><span class="o">=</span>/N/scratch/pavlis/usarray/work
+
+
+<span class="nb">export</span><span class="w"> </span><span class="nv">HOSTNAME_BASE</span><span class="o">=</span><span class="s2">&quot;carbonate.uits.iu.edu&quot;</span>
+
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-z<span class="w"> </span><span class="nv">$MSPASS_RUNSCRIPT</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span><span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_RUNSCRIPT</span><span class="o">=</span>/N/slate/pavlis/test_scripts/run_mspass.sh
+<span class="k">fi</span>
 </pre></div>
 </div>
-<p>You might want to change some of these fields. Note: the queue name and allocation name here refer to
-<a class="reference external" href="https://portal.tacc.utexas.edu/user-guides/stampede2#running-queues">TACC Slurm Queues</a> and <a class="reference external" href="https://portal.tacc.utexas.edu/allocations-overview">TACC Allocation</a>.</p>
-<p>In HPC environment, users could only get access to the services on limited nodes (login1 - login4 in Stampede2). So we need to create reverse tunnel port to support external access to the jupyter notebook and the <a class="reference external" href="https://docs.dask.org/en/stable/diagnostics-distributed.html">status page</a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>for i in `seq 4`; do
-    ssh -q -f -g -N -R $LOGIN_PORT:$NODE_HOSTNAME:8888 login$i
-    ssh -q -f -g -N -R $STATUS_PORT:$NODE_HOSTNAME:8787 login$i
+<p>Notice that all this shell script does is set several environment
+variables that all begin with the string <cite>MSPASS_</cite>.
+The first one set is <cite>MSPASS_HOME</cite>.  It is used like many software packages to define the home
+base for the software.  In the MsPASS case it is used to define the
+location of the singularity container needed to run MsPASS.  If you
+created a private copy of the container in the section above you will
+not need to alter this parameter at all.   If multiple people at your
+institute run MsPASS, there may be a master copy of the MsPASS container
+you can use in this definition.  If so insert that path for this parameter.</p>
+<p>The next line, which sets the environment variable <cite>SINGULARITY_BIND</cite>,
+is a bit more obscure.   Full understanding of why that incatation
+is necessary requires the
+concept of how to “bind” a file system to the container.   A starting
+point is the singularity documentation found
+<a class="reference external" href="https://docs.sylabs.io/guides/3.5/user-guide/bind_paths_and_mounts.html">here</a>.
+Briefly, the idea is much like a file system “mount” in unix.
+The comma separated list of directory names will be visible to your
+application as if it were a local file system.
+For the example above, that means
+your python script can open files in directories “/N/slate/pavlis” or
+“/N/scratch/pavlis”.   Provided you have write permission to those directories
+you can also create file(s) and subdirectories under that mount point.
+Finally, note it is possible to also mount a file system on one of two
+standard mount points in the container:   “/mnt” and “/home”.
+That can be convenient, for example, to utilize a database created with docker
+where files were similarly “bound” to /home so that “dir” entries in wf
+database collections do not resolve.</p>
+<p>The four variables <cite>MSPASS_WORK_DIR, MSPASS_DB_DIR, MSPASS_LOG_DIR</cite>, and,
+<cite>MSPASS_WORKER_DIR</cite> define key directories needs to work.  There use is
+as follows:</p>
+<ul class="simple">
+<li><p><cite>MSPASS_WORK_DIR</cite> is best viewed as the run directory.   The run script
+will launch jupyter notebook with this directory as the top level
+directory.  That means your notebook must be in this directory.
+It also serves as a top-level directory for defaults for
+<cite>MSPASS_DB_DIR, MSPASS_LOG_DIR</cite>, and,
+<cite>MSPASS_WORKER_DIR</cite> as noted in related items below.</p></li>
+<li><p><cite>MSPASS_DB_DIR</cite> is the work directory where MongoDB uses to store
+database data.  If this variable is not set it defaults to
+<cite>$MSPASS_WORK_DIR/db</cite>.</p></li>
+<li><p><cite>MSPASS_LOG_DIR</cite> is used to write any log files.   In MsPASS that means
+MongoDB and dask/Spark.  Any application that extends MsPaSS may choose to
+log its own messages there.  If so we recommend creating an appropriately
+named subdirectory under the one defined for <cite>MSPASS_LOG_DIR</cite>.
+If this variable is not set it defaults to
+<cite>$MSPASS_WORK_DIR/logs</cite></p></li>
+<li><p><cite>MSPASS_WORKER_DIR</cite> is used by dask/Spark as a scratch workspace.
+Currently that workspace is always in a subdirectory with the
+path <cite>$MSPASS_WORKER_DIR/work</cite>.   If this variable is not set it defaults to
+<cite>$MSPASS_WORK_DIR/work</cite></p></li>
+</ul>
+<p><cite>HOSTNAME_BASE</cite> should be set to the network subnet name the cluster runs in.
+That is usually necessary because all clusters we know of use a shortened
+name convention for individual nodes (i.e. the hostname has no “.” that
+is used for subnet naming.)  If you are using an existing configuration
+file you almost certainly can use the value you inherited.   Be warned that
+all HPC clusters we know use short names internally and the subnet
+definition is only needed if you plan to work interactively.</p>
+<p><cite>MSPASS_RUNSCRIPT</cite> defines what in section <a class="reference internal" href="getting_started_overview.html#getting-started-overview"><span class="std std-ref">MsPASS Virtual Cluster Concepts</span></a>
+is called a “virtual cluster”.   The file is normally static for a
+particular cluster, although there may be mulitple options.   e.g. the
+standard template file has versions with or without MongoDB “sharding”.
+For most users this file should be treated as static until performance
+becomes an issue and you find it necessary to do some advanced tuning.
+The last section
+of this document describes how that file may need to be modified if
+you are the first to use mspass on a cluster.</p>
+</section>
+<section id="job-script-sh">
+<h4>job_script.sh<a class="headerlink" href="#job-script-sh" title="Permalink to this heading"></a></h4>
+<p><cite>job_script.sh</cite> is the shell script you submit that runs your “job” on
+the cluster.   Standard usage with slurm as the workload manager to run
+the workflow in the jupyter notebook file <cite>myworkflow.ipynd</cite> is;</p>
+<p>The template file assumes the file <cite>mspass_setup.sh</cite> defined above
+and the notebook file, <cite>myworkflow.ipynb</cite>, are present in the
+directory defined by <cite>MSPASS_WORK_DIR</cite>.</p>
+<p>The only thing you would normally need to change in <cite>job_script.sh</cite> are
+the run parameters passed to slumm with the <cite>#SBATCH</cite> lines at the top
+of the file.  There are always cluster-dependent options you will need to
+understand before running a large job.    Consult local documentation
+before setting these directives and submitting your first job.</p>
+</section>
+</section>
+<section id="running-a-notebook-interactively">
+<h3>Running a notebook interactively<a class="headerlink" href="#running-a-notebook-interactively" title="Permalink to this heading"></a></h3>
+<p>In some cases is may be necessary or helpful to develop your
+workflow, which in the MsPASS case means the code blocks in a
+jupyter notebook, on the cluster.  Even if you developed the notebook
+on a desktop it is often necessary to run the same test you prototyped on
+the HPC cluster before running a very large job.   The simplest way to
+do that is to just run the notebook as above and verify you got the same
+answer you got on the version you debugged on your desktop.
+You may need to follow the procedure here if you need to do some additional
+interactive debugging or your desktop has limitations (e.g. memory size)
+that you cannot simulate on your desktop.  This section describes
+the basic concepts required to do that.   Details will differ with
+how you communicate with the HPC cluster.  That is, what web browser
+you use on our local to interact with the jupyter notebook server.
+Furthermore, the complexity of ths section should be a warning that this
+entire process is not a good idea, at least for getting strarted,
+unless you have no other option.</p>
+<p>The procedure for running MsPASS interactively is similar to that
+for running docker on a desktop system found in <a class="reference internal" href="run_mspass_with_docker.html#run-mspass-with-docker"><span class="std std-ref">Run MsPASS with Docker</span></a>.
+There are two key differences:  (1) you launch MsPASS with singularity
+(or something else) instead of docker and (2) there are a lot of
+potential network issues this manual cannot fully cover.  This subsection
+is mainly aimed to address the first.  We provide only some initial suggestions
+below for potential networking issues.</p>
+<p>We assume that the interactive job you need to run is
+suitable for the all-in-one configuration
+we use in docker.   In that configuration all the individual MsPaSS components
+are run as different processes in one container on one node.   Our template
+script for setup is called <cite>single_node.sh</cite>.  A method to launch MsPASS in that
+mode with slurm would be to enter the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sbatch</span> <span class="n">single_node</span><span class="o">.</span><span class="n">sh</span>
+</pre></div>
+</div>
+<p>You should then use the <cite>squeue</cite> slurm command to monitor when your job
+starts or watch for the appearance of the output file defined by slurm
+commands in <cite>single_node.sh</cite>.  Typically use the unix <cite>cat</cite> command to print the
+output file.   The output is similar to what one sees with docker run.
+The following is an example output generated this way
+on the Indiana University cluster called “carbonate”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>singularity version 3.6.4 loaded.
+Currently Loaded Modulefiles:
+1) quota/1.8                      8) boost/gnu/1.72.0
+2) git/2.13.0                     9) gcc/9.1.0
+3) xalt/2.10.30                  10) openblas/0.3.3
+4) core                          11) intel/19.0.5
+5) hpss/8.3_u4                   12) totalview/2020.0.25
+6) gsl/gnu/2.6                   13) singularity/3.6.4
+7) cmake/gnu/3.18.4              14) openmpi/intel/4.0.1(default)
+/N/slate/pavlis/usarray
+Thu Jan 26 10:43:56 EST 2023
+{&quot;t&quot;:{&quot;$date&quot;:&quot;2023-01-26T15:44:10.476Z&quot;},&quot;s&quot;:&quot;I&quot;,  &quot;c&quot;:&quot;CONTROL&quot;,  &quot;id&quot;:20697,   &quot;ctx&quot;:&quot;main&quot;,&quot;msg&quot;:&quot;Renamed existing log file&quot;,&quot;attr&quot;:{&quot;oldLogPath&quot;:&quot;/N/slate/pavlis/usarray/logs/mongo_log&quot;,&quot;newLogPath&quot;:&quot;/N/slate/pavlis/usarray/logs/mongo_log.2023-01-26T15-44-10&quot;}}
+[I 10:44:16.973 NotebookApp] Serving notebooks from local directory: /N/slate/pavlis/usarray
+[I 10:44:16.974 NotebookApp] Jupyter Notebook 6.2.0 is running at:
+[I 10:44:16.974 NotebookApp] http://c4:8888/?token=e7464f3b156b27efcaf2c9e52197b40068c5eefd8231a955
+[I 10:44:16.974 NotebookApp]  or http://127.0.0.1:8888/?token=e7464f3b156b27efcaf2c9e52197b40068c5eefd8231a955
+[I 10:44:16.974 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[C 10:44:17.036 NotebookApp]
+
+To access the notebook, open this file in a browser:
+    file:///N/slate/pavlis/usarray/.local/share/jupyter/runtime/nbserver-11604-open.html
+Or copy and paste one of these URLs:
+    http://c4:8888/?token=e7464f3b156b27efcaf2c9e52197b40068c5eefd8231a955
+ or http://127.0.0.1:8888/?token=e7464f3b156b27efcaf2c9e52197b40068c5eefd8231a955
+</pre></div>
+</div>
+<p>Like the docker case the information to connect to Jupyter is found in the
+last few lines.  For the above example the key line is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[I 10:44:16.974 NotebookApp] http://c4:8888/?token=e7464f3b156b27efcaf2c9e52197b40068c5eefd8231a955
+</pre></div>
+</div>
+<p>In this case <cite>c4</cite> is the hostname that for this cluster was shortened for
+simplicity of communication within the cluster.  If connecting from outside
+the cluster, which would be the norm, for this example we would need to
+modify that url.   Your use will vary, but in this case the connection
+would use the following url:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>http://c4.uits.iu.edu:8888/?token=e7464f3b156b27efcaf2c9e52197b40068c5eefd8231a955
+</pre></div>
+</div>
+<p>Thanks to cut-paste standard graphical manipulation today as usual that is
+the best way to pass that messy URL to a browser.   We emphasize the detailed URL you would used
+is heavily site dependent.  There can be a great deal more complexity than this
+simplified example where all we change is the hostname.   You can universally
+expect to need a more complex mapping to get the remote connection from
+your browser through the cluster firewall.   The mechanism may be defined in
+the script defined by <cite>MSPASS_RUNSCRIPT</cite>, but it might not be either.
+Some guidance can be found in the networking configuration subsection below and
+by looking at other implementation found on in the scripts directory
+of the mspass github site.</p>
+<p>There is a final, very important warning when running a “job” interactively
+started with slurm.  When you finish the interactive work you
+should kill your running “job” immediately.   If you don’t the node will sit around
+doing nothing until the time limit you specified expires.   If you ignore
+this warning you can quickly burn your entire allocation with no results.
+With slurm the way to terminate an interactive job is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">squeue</span> <span class="o">-</span><span class="n">u</span> <span class="n">myusername</span>
+<span class="n">scancel</span> <span class="n">jobid</span>
+</pre></div>
+</div>
+<p>Where you would run that pair of commands sequentially.  For the first Substitute
+your user name.  The output will show an “id” with a format something like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">JOBID</span> <span class="n">PARTITION</span>     <span class="n">NAME</span>     <span class="n">USER</span> <span class="n">ST</span>       <span class="n">TIME</span>  <span class="n">NODES</span> <span class="n">NODELIST</span><span class="p">(</span><span class="n">REASON</span><span class="p">)</span>
+<span class="mi">3298684</span>   <span class="n">general</span>   <span class="n">mspass</span>   <span class="n">pavlis</span>  <span class="n">R</span>       <span class="mi">4</span><span class="p">:</span><span class="mi">33</span>      <span class="mi">1</span> <span class="n">c4</span>
+</pre></div>
+</div>
+<p>For this example <cite>jobid</cite> is 3298684.  That job is “killed” by the command
+<cite>scancel 3298684</cite>.</p>
+<p>Finally, some clusters have a simplified procedure to run interactive jobs
+through some form of “gateway”.   For example, Indiana University has
+a “Research Desktop” (RED) system that provides a way to run a window on your
+local system that makes appear like a linux desktop.   In that case,
+running an interactive job is exactly like running with docker except
+you use singularity and can run jobs on many nodes.
+In addition, the batch submission is not necessary and you can run
+the configuration shell script interactively.  For the RED example you
+can explicitly launch and “interactive job” that creates a terminal
+window.  Inside that terminal you can then run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">single_node</span><span class="o">.</span><span class="n">sh</span>
+</pre></div>
+</div>
+<p>which should generate an output similar to that above for the sbatch example.
+Connection to the jupyter notebook server is then simple via a web browser
+running on top of the gateway.</p>
+</section>
+<section id="setting-up-configuration-files-on-a-new-cluster">
+<h3>Setting Up Configuration Files on a new Cluster<a class="headerlink" href="#setting-up-configuration-files-on-a-new-cluster" title="Permalink to this heading"></a></h3>
+<section id="id2">
+<h4>Overview<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h4>
+<p>If you are a trailblazer at your institution and need to configure MsPASS for
+your local cluster, you may want to first review the material in this
+User’s Manual found in the section <a class="reference internal" href="getting_started_overview.html#getting-started-overview"><span class="std std-ref">MsPASS Virtual Cluster Concepts</span></a>.
+That provides some fundamental concepts on HPC systems and how those concepts
+are abstracted in MsPASS to produce a virtual cluster.  This section
+focuses on the nuts and bolts of what you might have to change in your
+local configuration.  The descriptions here are limited to the simpler
+situation with a single instance of the database server (not “sharded”).
+Sharding is an advanced topic and we assume if you are needing that feature
+you are hardy enough you solve the problem yourself.  This section assumes
+you have a copy of the file in the mspass scripts/template directory
+called “run_mspass.sh”.  You may also find it useful to compare that file
+to the examples for specific sites.</p>
+</section>
+<section id="the-role-concept">
+<h4>The “Role” Concept<a class="headerlink" href="#the-role-concept" title="Permalink to this heading"></a></h4>
+<p>In the section titled <a class="reference internal" href="getting_started_overview.html#getting-started-overview"><span class="std std-ref">MsPASS Virtual Cluster Concepts</span></a> we discuss in
+detail the abstraction we used in MsPASS to define what we call
+a “virtual cluster”.   A key idea in that abstraction is a set of
+functional boxes illustrated in <a class="reference internal" href="#hpc-config-figure1"><span class="std std-numref">Fig. 1</span></a>.
+The function each box illustrated there is defined by what we call
+its “role”.   The keywords defining “role”, with one line descriptions of what functionality
+they enable are the followings:</p>
+<ul class="simple">
+<li><p><em>db</em> creates and manages the MongoDB server</p></li>
+<li><p><em>scheduler</em> is the dask or spark manager that controls data flow to and from workers</p></li>
+<li><p><em>worker</em> task that do all the computational task.</p></li>
+<li><p><em>frontend</em> is the jupyter notebook server,
+which means it also is the home of the master python script that drives your workflow.</p></li>
+</ul>
+<p>Note the configuration illustrated in <a class="reference internal" href="#hpc-config-figure1"><span class="std std-numref">Fig. 1</span></a>
+is a graphical illustration of that created with the template <cite>run_mspass.sh</cite>
+script.</p>
+<figure class="align-center" id="id3">
+<span id="hpc-config-figure1"></span><a class="reference internal image-reference" href="../_images/FiveNodeExampleComposite.jpg"><img alt="../_images/FiveNodeExampleComposite.jpg" src="../_images/FiveNodeExampleComposite.jpg" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">Block diagram of virtual cluster that is defined by the <cite>run_mspass.sh</cite>
+template file.   This illustrates the geometry for five nodes, but
+the configuration is open-ended.   If more than 5 nodes are used any
+additional nodes will be set with role == “worker”.   Notice with this
+configuration all roles other than worker are run on the same node
+as the job script is executed illustrated here as “node 1”</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="how-different-roles-are-run">
+<h4>How Different Roles are Run<a class="headerlink" href="#how-different-roles-are-run" title="Permalink to this heading"></a></h4>
+<p>Notice from <a class="reference internal" href="#hpc-config-figure1"><span class="std std-numref">Fig. 1</span></a> that all 4 roles are
+launched as separate instances of the singularity container.   In the script
+they are all launched with variations of this following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>SING_COM=&quot;singularity run $MSPASS_CONTAINER&quot;
+SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
+     SINGULARITYENV_MSPASS_ROLE=scheduler $SING_COM &amp;
+</pre></div>
+</div>
+<p>where we illustrate the definition of the symbol <cite>SING_COM</cite> for
+clarity only.  In the actual script that line appears earlier.
+The above is the actual launch line for the scheduler.  Note the following
+that are used when each instance of the container is launched:</p>
+<ul class="simple">
+<li><p>The run command is preceded by a set of shell variable definitions
+that all begin with the keyword <cite>SINGULARITYENV</cite>.   An odd feature of
+singularity is any shell symbol it detects that begin with
+<cite>SINGULARITYENV</cite> have that keyword stripped and the result posted to
+a shell environment variable that is available to the container boot script,
+which in mspass is called <cite>start-mspass-sh</cite>,
+(That shell script is not something you as user would ever change but
+it may be instructive to look at that file to understand this setup.
+That file can be found in the mspass github site at the top of the directory
+chain.)  For example, when the above line is executed the variable
+<cite>MSPASS_ROLE</cite> is set to “scheduler”.</p></li>
+<li><p>Notice the container is launched as a background process using the
+standard unix shell “&amp;” idiom.   Notice that
+all lines that execute $SING_COM contain the “&amp;” symbol
+EXCEPT the jupyter notebook server that is the last line in the
+script.   That syntax is important.  It cause the shell running the
+script to block until the notebook exits.   When the master job
+script exits singularity does the housecleaning to kill all the running
+containers on multiple nodes running in the background.</p></li>
+<li><p>The instances of the container for the <cite>db</cite> and <cite>frontend</cite> role launch
+are similar to the scheduler example above but with different
+SINGULARITYENV inputs.   The <cite>worker</cite> launching is different, however,
+and is the topic of the next section.</p></li>
+</ul>
+</section>
+<section id="launching-workers">
+<h4>Launching Workers<a class="headerlink" href="#launching-workers" title="Permalink to this heading"></a></h4>
+<p>Launching workers is linked to a fundamental problem you will face
+in adapting the template script to a different cluster:   node-to-node
+communications.   There are three low-level issues you will need to
+understand before proceeding:</p>
+<ol class="arabic simple">
+<li><p>How are nodes addressed?  i.e. what symbolic name does node A need to know to talk to node B?</p></li>
+<li><p>What communication channel should be used between nodes?</p></li>
+</ol>
+<p>For the first, all the examples we know use a short form of hostname
+addressing that strips a subnet description.   You are probably familiar with
+this idea working on any local network.  e.g. the machine in my office has
+the long name “quakes.geology.indiana.edu”.   That name resolves as a valid
+hostname on the internet because it is advertised by campus name servers.
+Within my department’s subnet, however, I can reference to the same machine with
+the simpler name “quakes”.   The same shorthand is standard on any clusters
+we know of so short hostnames are the norm.</p>
+<p>That background is necessary to explain this incantation you will find
+in run_mspass.sh:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>NODE_HOSTNAME=`hostname -s`
+WORKER_LIST=`scontrol show hostname ${SLURM_NODELIST} | \
+           awk -vORS=, -v hostvar=&quot;$NODE_HOSTNAME&quot; &#39;{ if ($0!=hostvar) print $0 }&#39; | \
+           sed &#39;s/,$/\n/&#39;`
+</pre></div>
+</div>
+<p>The first line returns the human readable name of the node on which the
+script is being executed.  The -s, which is mnemonic for short, strips
+the subnet name from the fully qualified hostname. As noted above
+it may not be required on your site as it is common to use only the base
+name to reference nodes.</p>
+<p>The second line, which truly deserved the incantation title,
+sets the shell variable <cite>WORKER_LIST</cite> to a white-space delimited list of
+the hostname of all nodes allocated to this job
+excluding the node running the script (result of the hostname command).
+To help clarify here is the section of output produced by this
+script run with four nodes on an Indiana University cluster:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Lauching</span> <span class="n">scheduler</span> <span class="n">on</span> <span class="n">primary</span> <span class="n">node</span>
+<span class="n">c23</span><span class="p">,</span><span class="n">c31</span><span class="p">,</span><span class="n">c41</span>
+</pre></div>
+</div>
+<p>where c23, c31, and c41 are the hostnames of the three compute nodes
+slurm assigned to this job.
+That list is used to launch each worker in another shell incantation that
+follows immediately after the above:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
+  SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
+  SINGULARITYENV_MSPASS_ROLE=worker \
+  mpiexec -n $((SLURM_NNODES-1)) -host $WORKER_LIST $SING_COM &amp;
+</pre></div>
+</div>
+<p>This uses the openmpi command line tool <cite>mpiexec</cite> to launch the
+container on all the nodes except the first one in the list.
+We are only using mpi as a convenient way to launch background
+processes on nodes slurm assigns to the job.  An alternative
+that might be preferable at other sites is do the same thing with a
+shell loop and calls to ssh.   The mpi implementation shown here, however,
+is known to work and one or more versions of mpi are universally available
+at HPC centers at the time this manual was written.  Hence, you the odds
+are high you will not need to modify this line.</p>
+</section>
+<section id="communications">
+<h4>Communications<a class="headerlink" href="#communications" title="Permalink to this heading"></a></h4>
+<p>Last, but far from least you may need to sort out some fundamental
+issues about how networking is implemented on your cluster.  There are
+two different issues you may need to consider:</p>
+<ol class="arabic simple">
+<li><p>Are there any network communication restrictions between compute nodes?
+<a class="reference external" href="https://dask-chtc.readthedocs.io/en/latest/networking.html">Dask</a>
+and <a class="reference external" href="https://www.ibm.com/docs/en/zpfas/1.1.0?topic=spark-configuring-networking-apache">spark</a>
+have different communication setups described in the links in this
+sentence.  The general pattern seems to be that clusters are normally
+configured to have completely open communication between nodes
+within the cluster but are appropriately paranoid about connections
+with the outside world.  i.e. you probably won’t need to worry about
+connectivity of the compute nodes, but problems are not inconceivable.</p></li>
+<li><p>A problem you are guaranteed to face is how to connect to a job running
+on the cluster.   The simplest example is needing to connect to the
+jupyter notebook server for an interactive run.  We reiterate that isn’t
+a great idea, but you will likely eventually need to use that feature
+to solve some problem that you can’t solve easily with batch submissions.
+A more universal need is to run real-time
+<a class="reference external" href="https://docs.dask.org/en/stable/diagnostics-distributed.html">dask diagnostics</a>.
+These are an important tool to understand bottlenecks in a parallel workflow that
+are limiting performance.  For dask diagnostics to work you will need to
+connect on some port (default is 8787) to the node running the scheduler.
+The fundamental problem both connection face is that cluster are
+normally accessible from outside
+only through “login nodes” (also sometimes called head nodes).
+The login nodes are sometimes called a network “gateway” to the cluster,
+which should not be confused with the something more properly called a
+“scientific gateway”.  The later is a simplified access method to reduce
+the very kind of complexity discussed in this section for normal
+humans.</p></li>
+</ol>
+<p>Our template script addresses item 2 by a variant of that
+describe in
+<a class="reference external" href="https://dask-chtc.readthedocs.io/en/latest/networking.html">this dask package extension documentation</a>.
+That source has some useful background to explain the following
+approach we use in our template run_mspass.sh script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>NODE_HOSTNAME=`hostname -s`
+LOGIN_PORT=`echo $NODE_HOSTNAME | perl -ne &#39;print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;&#39;`
+STATUS_PORT=`echo &quot;$LOGIN_PORT + 1&quot; | bc -l`
+echo &quot;got login node port $LOGIN_PORT&quot;
+
+NUMBER_LOGIN_NODES=4
+LOGIN_NODE_BASENAME=login
+for i in `seq $NUMBER_LOGIN_NODES`; do
+  ssh -q -f -g -N -R $LOGIN_PORT:$NODE_HOSTNAME:8888 $LOGIN_NODE_BASENAME$i
+  ssh -q -f -g -N -R $STATUS_PORT:$NODE_HOSTNAME:8787 $LOGIN_NODE_BASENAME$i
 done
 </pre></div>
 </div>
-<p>The code above creates one tunnel for each login node so that the users can just connect to stampede.tacc to visit the jupyter notebook and the status page. If you are not using a TACC machine, you might need to modify or delete this part to run on your own HPC environment.</p>
-<p>Some other variables you might need to change:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">WORK_DIR</span></code>: This is a directory path to store all runtime dat.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MSPASS_CONTAINER</span></code>: This is the path to the singualrity image to run.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DB_PATH</span></code>: This variable indicates where the db data are stored,
-there are two options: ‘scratch’ and ‘tmp’. ‘scratch’ saves the DB data to a shared filesystem, ‘tmp’ saves the DB data to a local filesystem.
-For more details on the difference between tmp and scratch, please refer to <a class="reference external" href="https://portal.tacc.utexas.edu/user-guides/stampede2#overview-filesystems">TACC user guide</a>.</p></li>
-</ul>
+<p>The complexity of the first section using perl solves a potential problem
+automatically.   Because login nodes are nearly always shared by multiple
+users a fixed port for a connection to the login can easily cause a
+mysterious collision if two people attempt to use the same port to
+access the login node.   The approach used here is that used at TACC.
+The perl command converts the compute node’s hostname to a port number.
+Since while you run your job you are the only one who can access that node
+that will guarantee a unique connection.   That approach may not work
+at other sites.  A simpler solution that might be suitable for many
+sites is to just set LOGIN_PORT and STATUS_PORT to some fixed numbers
+known to not collide with any services on the login node.</p>
+<p>The second section above (i.e. the part below the blank line)
+solves a second potential problem.   A large cluster
+will always have multiple login/head nodes.  The example in the template file is
+set for TACC where there are four login nodes with names
+login1, login2, login3, and login4.  Thus, above we set
+<cite>NUMBER_LOGIN_NODES</cite> to 4 and the shell variable <cite>LOGIN_NODE_BASENAME</cite> to
+“login”.   You will need to change those two variables to the
+appropriate number and name for your cluster.   The ssh lines in the
+for loop set up what is called an ssh tunnel from the compute node
+to all the login nodes.   It is necessary to create that in the job script
+as the job scheduler normally assigns the you to the least busy login
+node when you try to connect to one of them.   The mechanism above allows
+you to access the jupyter notebook listening on port 8888 to the port
+number created in the earlier incantation from the compute node name.
+Similarly the dask status port 8787 is mapped to the value of $STATUS_PORT.</p>
+<p>We emphasize that none of the network complexity is required in two situations
+we know of:</p>
+<ol class="arabic simple">
+<li><p>If you only intend to run batch jobs, then connections to the outside will not
+be needed and you can delete all the network stuff from the template.
+In fact, we recommend you prepare a separate run script, which you
+might call <cite>run_mspass_batch.sh</cite> that simply deletes all the
+network stuff above.</p></li>
+<li><p>Some sites may have a science gateway setup to provide a mechanism to
+run jobs interactively on the cluster.  The example noted earlier used
+at Indiana called “RED” is an example.   With RED you launch a window on
+your desktop that behaves as if you were at the system console for the
+login node.   In that situation the ssh tunnel stuff is not necessary.
+A web browser running in the RED window can connect directly with
+port 8888 and port 8787 on the compute node once the job starts.</p></li>
+</ol>
 </section>
-<section id="configuration-for-distributed-node-script">
-<h2>Configuration for Distributed Node Script<a class="headerlink" href="#configuration-for-distributed-node-script" title="Permalink to this heading"></a></h2>
-<p>To run MsPass on a distributed cluster, use the distributed_node script.</p>
-<p>similar the single node script, the distribute node script also does setup at the beggining:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#SBATCH -J mspass           # Job name</span>
-<span class="c1">#SBATCH -o mspass.o%j       # Name of stdout output file</span>
-<span class="c1">#SBATCH -p skx-dev          # Queue (partition) name</span>
-<span class="c1">#SBATCH -N 3                # Total # of nodes (must be 1 for serial)</span>
-<span class="c1">#SBATCH -n 3                # Total # of mpi tasks (should be 1 for serial)</span>
-<span class="c1">#SBATCH -t 02:00:00         # Run time (hh:mm:ss)</span>
-<span class="c1">#SBATCH -A MsPASS           # Allocation name (req&#39;d if you have more than 1)</span>
-</pre></div>
-</div>
-<p>The main difference here is the number of nodes and mpi tasks should be set to more than 1. One can set these two value to any number, but a larger number might result in longer waiting time in queue.</p>
-<p>For the distribute node script, here are some variables:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">HOSTNAME_BASE</span></code>: This is the base address for each node, for example, on stampede environment, it should be ‘stampede2.tacc.utexas.edu’</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DB_SHARDING</span></code>: This is a boolean value indicating whether the sharding is in use or not.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SHARD_DATABASE</span></code>: This is the name of the database that users want to enable sharding.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SHARD_COLLECTIONS</span></code>: This is the collection and index that users want to use for sharding, for example: <code class="docutils literal notranslate"><span class="pre">(&quot;arrival:_id&quot;)</span></code></p></li>
-</ul>
+</section>
 </section>
 </section>
 
@@ -259,7 +742,7 @@ For more details on the difference between tmp and scratch, please refer to <a c
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="deploy_mspass_with_docker_compose.html" class="btn btn-neutral float-left" title="Deploy MsPASS with Docker Compose" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="getting_started_overview.html" class="btn btn-neutral float-right" title="MsPASS Setup In-Depth Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="getting_started_overview.html" class="btn btn-neutral float-right" title="MsPASS Virtual Cluster Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

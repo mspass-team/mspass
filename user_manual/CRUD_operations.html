@@ -57,8 +57,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploy MsPASS on HPC</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Setup In-Depth Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
 <ul class="current">
@@ -364,11 +364,11 @@ multiple elements illustrated in the figure below.   Although these
 objects should be thought of as a single entity the individual
 parts are handled differently in reading because they define different concepts
 and are subject to different read, write, and storage rules.
-<a class="reference internal" href="#crud-operations-figure1"><span class="std std-numref">Fig. 5</span></a> illustrates this fragmentation:</p>
+<a class="reference internal" href="#crud-operations-figure1"><span class="std std-numref">Fig. 8</span></a> illustrates this fragmentation:</p>
 <figure class="align-center" id="id1">
 <span id="crud-operations-figure1"></span><a class="reference internal image-reference" href="../_images/CRUD_operations_figure1.png"><img alt="../_images/CRUD_operations_figure1.png" src="../_images/CRUD_operations_figure1.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 5 </span><span class="caption-text">Schematic diagram of how different parts of a data object are handled.
+<p><span class="caption-number">Fig. 8 </span><span class="caption-text">Schematic diagram of how different parts of a data object are handled.
 The red box around the center of the figure shows a schematic of the
 data components when a data object is constructed in memory.  The
 boxes in the right-hand (black) box illustrate that the different
