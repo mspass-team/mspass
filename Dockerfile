@@ -198,7 +198,7 @@ ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
-RUN sed -i 's/localhost/127.0.0.1/' /opt/conda/lib/python3.10/site-packages/pymongo/mongo_client.py
+RUN find /opt/conda/lib/python3.10/site-packages/pymongo/ -type f -name "*.py" -print0 | xargs -0 sed -i "s/localhost/127.0.0.1/"
 
 # Set the default behavior of this container
 ENV SPARK_MASTER_PORT 7077
