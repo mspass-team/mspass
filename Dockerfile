@@ -179,6 +179,7 @@ RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
 # Add data and env variable for the MetadataDefinition class
 ADD data /mspass/data
 ENV MSPASS_HOME /mspass
+ENV PFPATH /mspass/data/pf/RFdeconProcessor.pf
 
 # Add setup.py to install python components
 ADD setup.py /mspass/setup.py
