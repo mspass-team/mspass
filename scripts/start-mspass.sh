@@ -33,7 +33,7 @@ MONGO_LOG=${MSPASS_LOG_DIR}/mongo_log
 export SPARK_WORKER_DIR=${MSPASS_WORKER_DIR}
 export SPARK_LOG_DIR=${MSPASS_LOG_DIR}
 export PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9-src.zip:$PYTHONPATH
-export PATH=$SPARK_HOME/bin:$SPARK_HOME/python:$PATHa
+export PATH=$SPARK_HOME/bin:$SPARK_HOME/python:$PATH
 
 if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
 
