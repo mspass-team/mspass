@@ -1,11 +1,103 @@
 #include <vector>
+#include <cfloat>
+#include <time.h>
+#include <assert.h>
 #include "mspass/algorithms/deconvolution/wavelet.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h"
+#include "mspass/utility/dmatrix.h"
+#include "mspass/algorithms/deconvolution/dpss.h"
+#include "misc/blas.h"
+
+
 /* Hack test */
 using namespace std;
 using namespace mspass::seismic;
 using namespace mspass::algorithms::deconvolution;
+using namespace mspass::utility;
+
+/* convience function for testing dpss - returns a matrix of Slepian
+functions in the columns of the matrix.   It prints timing data
+outside the copy loop to estimate the base cost of computing the slepian
+functions for increasing array sizes.
+
+Note the dmatrix returned here puts the tapers in the columns of the matrix.
+MTPowerSpectrumEngine uses the transpose. */
+dmatrix *compute_slepians(int n, double tbp, int ntapers)
+{
+  dmatrix *result=new dmatrix(n,ntapers);
+  double *work = new double[ntapers*n];
+  clock_t stime,etime;
+  double cpu_time;
+
+  stime = clock();
+  dpss_calc(n,tbp,0,ntapers-1,work);
+  etime = clock();
+  cpu_time= ((double) (etime-stime)) / CLOCKS_PER_SEC;
+  cout << "dpss_calc compute time="<<cpu_time
+    <<" for Vector length="<<n<<" ntapers="<<ntapers<<endl;
+  for(auto j=0,ii=0;j<ntapers;++j)
+  {
+    /* This construct is more than a little weird.   Done because I didn't
+    want to return a reference to the large matrix so have ths pointer stuff*/
+    double *ptr;
+    for(auto i=0;i<n;++i,++ii)
+    {
+      ptr = result->get_address(i,j);
+      *ptr = work[ii];
+    }
+  }
+  delete [] work;
+  return result;
+}
+/* This small test function was added to validate this code relative to the
+current standard of German Prieto's mtspec library.   His library has two
+features this function tests.
+1.   mtspec always normalizes eigentapers by 1/eigenvalue from the \
+     eigenvalue equation used to compute the eigentapers.  The dpss library
+     we use in mspass normalizes the tapers by the L2 norm of each vector.
+     This validates that the tapers dpss produces really are orthogonal.
+2.   mtspec has an automatic feature to use a spline method to compute the
+     eigentapers when the number of samples is huge.  Calling this function
+     on a huge vector validates that the tapers returned with huge vectors
+     by dpss are not distorted.
+Both of these issues are motivated by a mismatch in results I obtained with
+this implementation and mtspec.  Note we didn't choose to add mtspec to the
+mspass container because mtspec object aren't serializable since the
+native code is FORTRAN90.
+*/
+void test_dpss_othogonality(int n,double tbp,int ntapers)
+{
+  int i,j;
+  dmatrix *tapers=compute_slepians(n,tbp,ntapers);
+  /* First test normalization to 1.0 */
+  cout << "L2 norm of eigentapers - should all be close to 1.0"<<endl;
+  for(j=0;j<ntapers;++j)
+  {
+    double nrm;
+    nrm = dnrm2(n,tapers->get_address(0,j),1);
+    cout << nrm << " ";
+    double testval;
+    // conservative test but seems necessary
+    testval=fabs(1.0-nrm)/sqrt((double)n);
+    assert(testval<DBL_EPSILON);
+  }
+  cout << endl;
+  cout << "All diagonal - these should all be zero"<<endl;
+  for(j=0;j<ntapers-1;++j)
+  {
+    for(i=j+1;i<ntapers;++i)
+    {
+      double dotij = ddot(n,tapers->get_address(0,j),1,tapers->get_address(0,i),1);
+      cout << "(" << j << ","<<i<<")="<<dotij<<" ";
+      double testval;
+      // conservative test but seems necessary
+      testval=fabs(dotij)/sqrt((double)n);
+      assert(testval<DBL_EPSILON);
+    }
+  }
+  delete tapers;
+}
 int main(int argc, char **argv)
 {
   cout << "mspass spectrum test program starting"<<endl
@@ -63,4 +155,14 @@ int main(int argc, char **argv)
       double amp=ps2.amplitude(f2);
       cout << f2 << " "<<amp<<endl;
   }
+  /*  New test for orthogonality of slepian functions for range of
+  vector sizes */
+  cout << "Verifying slepian function (dpss) library"<<endl;
+  cout << "Test for 10000 sample window"<<endl;
+  /* run these tests with a fixed tbp and numbe of tapers */
+  const double tbp(5.0);
+  const int ntapers(8);
+  test_dpss_othogonality(10000,tbp,ntapers);
+  /* Now 1 million sample window */
+  test_dpss_othogonality(1000000,tbp,ntapers);
 }
