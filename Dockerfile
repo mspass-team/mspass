@@ -123,7 +123,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
-ARG TARGETARCH
+ARG TARGETARCH=amd64
 
 # Prepare the environment
 ARG SPARK_VERSION=3.0.0
