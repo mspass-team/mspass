@@ -58,7 +58,9 @@ public:
   };
   std::vector<double> frequencies() const;
   size_t nf()const{return spectrum.size();};
-  double Nyquist() const {return this->frequency(this->nf() - 1);};
+  double Nyquist() const {return nyquist_frequency;};
+private:
+  double nyquist_frequency;
 };
 template <class T> PowerSpectrum::PowerSpectrum(const mspass::utility::Metadata& md,
     const std::vector<T>& d,const double dfin,const std::string nm)
@@ -68,6 +70,7 @@ template <class T> PowerSpectrum::PowerSpectrum(const mspass::utility::Metadata&
   spectrum.reserve(d.size());
   for(size_t k=0;k<d.size();++k)
     spectrum.push_back(static_cast<double>(d[k]));
+  nyquist_frequency=dfin*static_cast<double>(d.size()-1);
 };
 }  //end namespace
 #endif
