@@ -108,7 +108,7 @@ def main(args=None):
     if enable_rename:
         rename_map = rename_list_to_dict(rename)
 
-    dbclient = DBClient("127.0.0.1")
+    dbclient = DBClient()
     db = Database(dbclient, dbname)
     print(
         "Starting processing of ", collection, " collection of database named=", dbname
