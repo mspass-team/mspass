@@ -123,7 +123,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
-ARG TARGETARCH=amd64
+ARG TARGETARCH
 
 # Prepare the environment
 ARG SPARK_VERSION=3.0.0
@@ -198,7 +198,8 @@ ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
-RUN find /usr/local/lib/python3.8/dist-packages/pymongo/ -type f -name "*.py" -print0 | xargs -0 sed -i "s/localhost/127.0.0.1/"
+RUN find /opt/conda/lib/python3.10/site-packages/pymongo -type f -name "*.py" -print0 | xargs -0 sed -i "s/localhost/127.0.0.1/"
+ENV PYTHONPATH /usr/local/lib/python3.8/dist-packages:/opt/conda/lib/python3.10/site-packages
 
 # Set the default behavior of this container
 ENV SPARK_MASTER_PORT 7077
