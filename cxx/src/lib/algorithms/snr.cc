@@ -27,7 +27,7 @@ BandwidthData EstimateBandwidth(const double signal_df,
   /* Set the starting search points at low (based on noise tbp) and high (80% fny)
   sides */
   double flow_start, fhigh_start;
-  flow_start=(n.df)*tbp;
+  flow_start=(n.df())*tbp;
   /* Silently set to 80% of Nyquist if the passed value is negative or
   above nyquist - illegal values.  Assume python wrappers can post warning
   if deemeed essential.   This is a very harmless error so being silent is
@@ -36,7 +36,7 @@ BandwidthData EstimateBandwidth(const double signal_df,
     fhigh_start=s.Nyquist()*0.8;
   else
     fhigh_start = fhs;
-  double df_test_range=2.0*tbp*(n.df);
+  double df_test_range=2.0*tbp*(n.df());
   int s_range = s.sample_number(fhigh_start);
   BandwidthData result;
   /* First search from flow_start in increments of signal_df to find low
@@ -51,7 +51,8 @@ BandwidthData EstimateBandwidth(const double signal_df,
     f=s.frequency(i);
     /* We use amplitude snr not power snr*/
     sigamp=sqrt(s.spectrum[i]);
-    namp=n.amplitude(f);
+    namp=n.power(f);
+    namp=sqrt(namp);
     if(namp>0.0)
       snrnow=window_length_correction*sigamp/namp;
     else
@@ -103,8 +104,8 @@ BandwidthData EstimateBandwidth(const double signal_df,
   if(fix_high_edge_to_fhs)
   {
     result.high_edge_f = fhigh_start;
-    sigamp=s.amplitude(fhigh_start);
-    namp=n.amplitude(fhigh_start);
+    sigamp=sqrt(s.power(fhigh_start));
+    namp=sqrt(n.power(fhigh_start));
     if(namp>0.0)
       snrnow=window_length_correction*sigamp/namp;
     else
@@ -124,7 +125,7 @@ BandwidthData EstimateBandwidth(const double signal_df,
     {
       f=s.frequency(i);
       sigamp=sqrt(s.spectrum[i]);
-      namp=n.amplitude(f);
+      namp=sqrt(n.power(f));
       if(namp>0.0)
         snrnow=window_length_correction*sigamp/namp;
       else
@@ -161,7 +162,7 @@ BandwidthData EstimateBandwidth(const double signal_df,
       }
     }
   }
-  result.f_range = s.Nyquist() - s.f0;
+  result.f_range = s.Nyquist() - s.f0();
   return result;
 }
 Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
@@ -173,7 +174,7 @@ Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
   /* the algorithm below will fail if either of these conditions is true so
   we trap that and return a null result.   Caller must handle the null
   return correctly*/
-  if( ( bwd.f_range <= 0.0 ) || ( (bwd.high_edge_f-bwd.low_edge_f)<s.df) )
+  if( ( bwd.f_range <= 0.0 ) || ( (bwd.high_edge_f-bwd.low_edge_f)<s.df()) )
   {
     result.put_double("median_snr",0.0);
     result.put_double("maximum_snr",0.0);
@@ -186,11 +187,11 @@ Metadata BandwidthStatistics(const PowerSpectrum& s, const PowerSpectrum& n,
   }
   std::vector<double> bandsnr;
   double f;
-  for(f=bwd.low_edge_f;f<bwd.high_edge_f && f<s.Nyquist();f+=s.df)
+  for(f=bwd.low_edge_f;f<bwd.high_edge_f && f<s.Nyquist();f+=s.df())
   {
     double signal_amp,noise_amp,snr;
-    signal_amp = s.amplitude(f);
-    noise_amp = n.amplitude(f);
+    signal_amp = sqrt(s.power(f));
+    noise_amp = sqrt(n.power(f));
     if(noise_amp <= 0.0)
     {
       if(signal_amp>0.0)

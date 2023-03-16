@@ -96,6 +96,10 @@ void test_dpss_othogonality(int n,double tbp,int ntapers)
       assert(testval<DBL_EPSILON);
     }
   }
+  /* This is a hack, temporary step used to plot the tapers */
+  ofstream ofs;
+  ofs.open("tapers.csv",std::ofstream::out);
+  ofs << *tapers;
   delete tapers;
 }
 int main(int argc, char **argv)
@@ -142,17 +146,17 @@ int main(int argc, char **argv)
   cout << "Results f,tbp25,tbp4,tbp5"<<endl;
   for(i=0;i<f.size();++i)
   {
-    cout << ps2.f0+i*ps2.df<<" "<<ps2.spectrum[i]
+    cout << ps2.f0()+i*ps2.df()<<" "<<ps2.spectrum[i]
       << " "<<ps4.spectrum[i]
       << " "<<ps5.spectrum[i]<<endl;
   }
-  cout << "Testing interpolation for overloaded amplitude method"<<endl;
+  cout << "Testing interpolation for power method"<<endl;
   int nfreq2=2*f.size();
-  double df2=ps2.df/2.0;
+  double df2=ps2.df()/2.0;
   for(i=0;i<nfreq2;++i)
   {
-      double f2=ps2.f0+i*df2;
-      double amp=ps2.amplitude(f2);
+      double f2=ps2.f0()+i*df2;
+      double amp=sqrt(ps2.power(f2));
       cout << f2 << " "<<amp<<endl;
   }
   /*  New test for orthogonality of slepian functions for range of
@@ -164,5 +168,5 @@ int main(int argc, char **argv)
   const int ntapers(8);
   test_dpss_othogonality(10000,tbp,ntapers);
   /* Now 1 million sample window */
-  test_dpss_othogonality(1000000,tbp,ntapers);
+  //test_dpss_othogonality(1000000,tbp,ntapers);
 }

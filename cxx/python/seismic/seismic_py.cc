@@ -97,6 +97,44 @@ public:
       d0in);
   }
 };
+/* Trampoline class for BasicSpectrum */
+class PyBasicSpectrum : public BasicSpectrum
+{
+public:
+  std::vector<double> frequencies() const
+  {
+    PYBIND11_OVERLOAD_PURE(
+      std::vector<double>,
+      BasicSpectrum,
+      frequencies,
+    );
+  }
+  double frequency(const int sample_number) const
+  {
+    PYBIND11_OVERLOAD_PURE(
+      double,
+      BasicSpectrum,
+      frequency,
+      sample_number
+    );
+  }
+  size_t nf() const
+  {
+    PYBIND11_OVERLOAD_PURE(
+      size_t,
+      BasicSpectrum,
+      nf,
+    );
+  }
+  double Nyquist() const
+  {
+    PYBIND11_OVERLOAD_PURE(
+      double,
+      BasicSpectrum,
+      Nyquist,
+    );
+  }
+};
 
 /* Trampoline class for DataGap */
 class PyDataGap : public DataGap
@@ -789,18 +827,41 @@ PYBIND11_MODULE(seismic, m) {
       } )
     )
   ;
+  py::class_<BasicSpectrum,PyBasicSpectrum>(m,"_BasicSpectrum",
+     "Base class for data objects based on Fourier transforms with uniform sampling")
+    .def(py::init<>())
+    /* We do not need bindings for these base class constuctors.  they
+    cause errors with pybind11 and because I see no need for them we don't
+    include these bindings.
+    .def(py::init<const double, const double>())
+    .def(py::init<const BasicSpectrum&>())
+    */
+    .def("live",&BasicSpectrum::live,"Return True of marked ok, False if data are bad")
+    .def("dead",&BasicSpectrum::live,"Return True of marked bad, False if data are good - negation of live method")
+    .def("kill",&BasicSpectrum::kill,"Mark this datum bad (dead)")
+    .def("set_live",&BasicSpectrum::set_live,"Mark this datum as good (not dead)")
+    .def("df",&BasicSpectrum::df,"Return the frequency bin sample interval")
+    .def("f0",&BasicSpectrum::f0,
+      "Return frequency of first sample of the vector holding the spectrum (normally 0 but interface allow it to be nonzero)")
+    .def("sample_number",&BasicSpectrum::sample_number,"Return vector index position of a specified frequency")
+    .def("set_df",&BasicSpectrum::set_df,"Set the frequency bin interval")
+    .def("set_f0",&BasicSpectrum::set_f0,
+      "Set the frequency defined for first component of vector holding spectrum")
+  ;
 
-    py::class_<PowerSpectrum,Metadata>(m,"PowerSpectrum",
+  py::class_<PowerSpectrum,BasicSpectrum,Metadata>(m,"PowerSpectrum",
                   "Container for power spectrum estimates")
       .def(py::init<>())
       .def(py::init<const Metadata&,const vector<double>&,const double,const string>())
       .def(py::init<const PowerSpectrum&>())
+      .def("amplitude",&PowerSpectrum::amplitude,
+        "Return an std::vector of amplitude values (sqrt of power)")
+      .def("power",&PowerSpectrum::power,
+        "Return power at a specified frequency using linear interpolation between gridded values")
+      .def("frequency",&PowerSpectrum::frequency,"Return frequency linked to given sample number")
+      .def("frequencies",&PowerSpectrum::frequencies,"Return an std::vector of ")
       .def("nf",&PowerSpectrum::nf,"Return number of frequencies in this spectral estimate")
-      .def("frequency",&PowerSpectrum::frequency,"Return frequency of sample number of spectrum vector")
-      .def("Nyquist",&PowerSpectrum::Nyquist,"Return Nyquist frequency")
-      .def("sample_number",&PowerSpectrum::sample_number,"Return sample number of a given frequency")
-      .def_readwrite("df",&PowerSpectrum::df,"Frequency bin size")
-      .def_readwrite("f0",&PowerSpectrum::f0,"Frequency of sample 0 (This implementation supports only constant frequency bin size)")
+      .def("Nyquist",&PowerSpectrum::Nyquist,"Return Nyquist frequency of this powewr spectrum estimate")
       .def_readwrite("spectrum_type",&PowerSpectrum::spectrum_type,
           "Descriptive name of method used to generate spectrum")
       .def_readwrite("spectrum",&PowerSpectrum::spectrum,
@@ -818,7 +879,7 @@ PYBIND11_MODULE(seismic, m) {
           stringstream ss_elog;
           boost::archive::text_oarchive ar(ss_elog);
           ar << self.elog;
-          return py::make_tuple(sbuf,self.df,self.f0,self.spectrum_type,
+          return py::make_tuple(sbuf,self.df(),self.f0(),self.spectrum_type,
               ss_elog.str(),darr);
         },
         [](py::tuple t)
@@ -840,8 +901,7 @@ PYBIND11_MODULE(seismic, m) {
           d.resize(info.shape[0]);
           memcpy(d.data(), info.ptr, sizeof(double) * d.size());
           PowerSpectrum restored(md,d,df,spectrum_type);
-
-          restored.f0=f0;
+          restored.set_f0(f0);
           restored.elog=elog;
           return restored;
         }
