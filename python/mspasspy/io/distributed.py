@@ -197,7 +197,7 @@ def read_distributed_data(
 
 
 def read_to_dataframe(
-    db,  # db
+    db,
     cursor,
     mode="promiscuous",
     normalize=None,
@@ -454,6 +454,17 @@ def read_to_dataframe(
 
         # init a ProcessingHistory to store history
         processing_history_record = ProcessingHistory()
+        # load the history in database
+        elog_col_name = db.database_schema.default_name("elog")
+        elog_id_name = elog_col_name + "_id"
+        if elog_id_name in object_doc:
+            elog_id = object_doc[elog_id_name]
+            elog_doc = db[elog_col_name].find_one({"_id": elog_id})
+            for log in elog_doc["logdata"]:
+                me = MsPASSError(log["error_message"], log["badness"].split(".")[1])
+                processing_history_record.elog.log_error(
+                    log["algorithm"], log["error_message"], me.severity
+                )
 
         # not continue step 2 & 3 if the mspass object is dead
         if is_dead:
@@ -582,6 +593,7 @@ def read_files(
         mspass_object.load_history(md["history"])
 
     if not md["is_dead"]:
+        mspass_object.set_live()
         # 2.load data from different modes
         storage_mode = md["storage_mode"]
         if storage_mode == "file":
@@ -631,6 +643,8 @@ def read_files(
         else:  # add another parameter
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
+    # after loading history, the history in metadata can be removed
+    mspass_object.erase("history")
     return mspass_object
 
 
@@ -1164,6 +1178,8 @@ def write_to_db(
                 elog_id = _save_elog(db, md, save_schema, elog_id=None)
                 insertion_dict[elog_id_name] = elog_id
 
+            # history attribute is redundant
+            insertion_dict.pop("history", None)
             # finally ready to insert the wf doc - keep the id as we'll need
             # it for tagging any elog entries
             wfid = wf_collection.insert_one(insertion_dict).inserted_id
@@ -1380,6 +1396,8 @@ def _save_elog(db, md, update_metadata_def, elog_id=None, collection=None):
             docentry[wf_id_name] = oid
 
         if md["is_dead"]:
+            # history attribute is redundant
+            md.erase("history")
             docentry["tombstone"] = dict(md)
 
         if elog_id:

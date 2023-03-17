@@ -143,7 +143,7 @@ def test_read_distributed_data(spark_context):
         db.save_data(
             ts,
             mode="promiscuous",
-            storage_mode="file",
+            storage_mode="gridfs",
             dir="./data/",
             dfile="test_db_output",
         )
@@ -161,6 +161,7 @@ def test_read_distributed_data(spark_context):
     assert len(list) == 3
     for l in list:
         assert l
+        assert l.live
         assert np.isclose(l.data, test_ts.data).all()
 
     client = DBClient("localhost")
@@ -263,6 +264,7 @@ def test_read_distributed_data_df(spark_context):
     assert len(list2) == 3
     for l in list2:
         assert l
+        assert l.live
         assert np.isclose(l.data, test_ts.data).all()
     client = DBClient("localhost")
     client.drop_database("mspasspy_test_db")
@@ -327,9 +329,16 @@ def test_read_distributed_data_dask():
     ts1 = copy.deepcopy(test_ts)
     ts2 = copy.deepcopy(test_ts)
     ts3 = copy.deepcopy(test_ts)
+    ts1.set_live()
+    ts2.set_live()
+    ts3.set_live()
+
     logging_helper.info(ts1, "1", "deepcopy")
     logging_helper.info(ts2, "1", "deepcopy")
     logging_helper.info(ts3, "1", "deepcopy")
+
+    ts1.elog.log_error("debug", "testing for bug", ErrorSeverity.Debug)
+    ts2.elog.log_error("debug", "testing for bug", ErrorSeverity.Informational)
 
     ts_list = [ts1, ts2, ts3]
     dir = "data/"
@@ -357,7 +366,24 @@ def test_read_distributed_data_dask():
     assert len(list) == 3
     for l in list:
         assert l
+        assert l.live
         assert np.isclose(l.data, test_ts.data).all()
+
+    assert list[0].elog.get_error_log() != []
+
+    errlog = list[1].elog.get_error_log()[0]
+    assert errlog.message == "testing for bug"
+    assert errlog.algorithm == "debug"
+    assert errlog.badness == ErrorSeverity(5)
+
+    for ts in list:
+        db.save_data(
+            ts,
+            mode="promiscuous",
+            storage_mode="file",
+            dir="././data/t1/t2/y3",
+            dfile="test_db_output2",
+        )
 
     client = DBClient("localhost")
     client.drop_database("mspasspy_test_db")
@@ -435,7 +461,7 @@ def test_read_distributed_data_dask_df():
         db.save_data(
             ts,
             mode="promiscuous",
-            storage_mode="file",
+            storage_mode="gridfs",
             dir="./data/",
             dfile="test_db_output",
         )
@@ -452,13 +478,12 @@ def test_read_distributed_data_dask_df():
     list_ = daskbag.from_sequence(df.to_dict("records"))
 
     list2 = list_.map(
-        lambda cur: read_files(
-            Metadata(cur),
-        )
+        lambda cur: read_files(Metadata(cur), gfsh=gridfs.GridFS(db))
     ).compute()
     assert len(list2) == 3
     for l in list2:
         assert l
+        assert l.live
         assert np.isclose(l.data, test_ts.data).all()
 
     client = DBClient("localhost")
@@ -558,6 +583,7 @@ def test_read_distributed_data_daskdf():
     assert len(list2) == 3
     for l in list2:
         assert l
+        assert l.live
         assert np.isclose(l.data, test_ts.data).all()
 
     client = DBClient("localhost")
@@ -650,6 +676,7 @@ def test_write_distributed_data(spark_context):
     assert len(obj_list) == 3
     for idx, l in enumerate(obj_list):
         assert l
+        assert l.live
         assert np.isclose(l.data, ts_list[idx].data).all()
 
 
@@ -723,6 +750,8 @@ def test_write_distributed_data_dask():
     logging_helper.info(ts2, "1", "deepcopy")
     logging_helper.info(ts3, "1", "deepcopy")
 
+    ts1.elog.log_error("debug", "testing for bug", ErrorSeverity.Debug)
+    ts2.elog.log_error("debug", "testing for bug", ErrorSeverity.Informational)
     ts_list = [ts1, ts2, ts3]
     list_ = daskbag.from_sequence(ts_list)
     df = write_distributed_data(
@@ -736,5 +765,13 @@ def test_write_distributed_data_dask():
     assert len(obj_list) == 3
     for idx, l in enumerate(obj_list):
         assert l
+        assert l.live
         assert all(a.any() == b.any() for a, b in zip(l.data, ts_list[idx].data))
-    write_files(ts1, storage_mode="gridfs", overwrite=False, gfsh=gridfs.GridFS(db))
+    list = obj_list
+    assert list[0].elog.get_error_log() != []
+
+    errlog = list[1].elog.get_error_log()[0]
+    assert errlog.message == "testing for bug"
+    assert errlog.algorithm == "debug"
+    assert errlog.badness == ErrorSeverity(5)
+    # write_files(ts1, storage_mode="gridfs", overwrite=False, gfsh=gridfs.GridFS(db))
