@@ -369,7 +369,7 @@ jobs:
           
       - name: Build and push ubuntu_mpi image (amd64 amd arm64)
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           context: .
           file: Dockerfile_ubuntu20.04_mpi
