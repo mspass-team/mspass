@@ -93,11 +93,11 @@ jobs:
           
       - name: Build and push Docker image (amd64 and arm64)
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -183,7 +183,7 @@ jobs:
           
       - name: Build and push dev image (amd64 amd arm64)
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           context: .
           file: Dockerfile_dev
@@ -276,7 +276,7 @@ jobs:
           
       - name: Build and push ubuntu_jupyterlab image (amd64 amd arm64)
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           context: .
           file: Dockerfile_ubuntu20.04_jupyterlab
