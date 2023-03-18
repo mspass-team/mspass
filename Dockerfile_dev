@@ -45,7 +45,7 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
 # Install Python dependencies through pip
 ENV DISABLE_NUMCODECS_SSE2 true
 ENV DISABLE_NUMCODECS_AVX2 true
-ENV CFLAGS true
+ENV CFLAGS -g
 ADD requirements.txt requirements.txt
 RUN pip3 --no-cache-dir install --upgrade pip
 RUN pip3 --no-cache-dir install numpy \
