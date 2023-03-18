@@ -45,11 +45,12 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
 # Install Python dependencies through pip
 ENV DISABLE_NUMCODECS_SSE2 true
 ENV DISABLE_NUMCODECS_AVX2 true
+ENV CFLAGS true
 ADD requirements.txt requirements.txt
 RUN pip3 --no-cache-dir install --upgrade pip
-RUN export CFLAGS=true && pip3 --no-cache-dir install numpy \
+RUN pip3 --no-cache-dir install numpy \
     && pip3 --no-cache-dir install -r requirements.txt \
-    && rm -f requirements.txt && unset CFLAGS
+    && rm -f requirements.txt
 
 # Download & install pybind11
 ARG PYBIND11_VERSION=2.6.0
@@ -64,7 +65,7 @@ RUN pip3 --no-cache-dir install --upgrade setuptools
 
 # Add cxx library
 ADD cxx /mspass/cxx
-RUN cd /mspass/cxx \
+RUN unset CFLAGS && cd /mspass/cxx \
     && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Debug .. \
     && make \
@@ -78,7 +79,7 @@ ENV MSPASS_HOME /mspass
 # Add setup.py to install python components
 ADD setup.py /mspass/setup.py
 ADD python /mspass/python
-RUN pip3 install --global-option build --global-option --debug /mspass -v
+RUN unset CFLAGS && pip3 install --global-option build --global-option --debug /mspass -v
 
 # Install Jupyter notebook
 RUN pip3 --no-cache-dir install jedi==0.17.2 notebook==6.2.0
