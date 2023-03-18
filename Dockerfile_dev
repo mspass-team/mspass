@@ -43,14 +43,13 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && rm -r ./pyspark
 
 # Install Python dependencies through pip
-ENV CFLAGS true
 ENV DISABLE_NUMCODECS_SSE2 true
 ENV DISABLE_NUMCODECS_AVX2 true
 ADD requirements.txt requirements.txt
 RUN pip3 --no-cache-dir install --upgrade pip
-RUN pip3 --no-cache-dir install numpy \
+RUN export CFLAGS=true && pip3 --no-cache-dir install numpy \
     && pip3 --no-cache-dir install -r requirements.txt \
-    && rm -f requirements.txt
+    && rm -f requirements.txt && unset CFLAGS
 
 # Download & install pybind11
 ARG PYBIND11_VERSION=2.6.0
