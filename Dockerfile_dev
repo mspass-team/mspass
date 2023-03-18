@@ -43,6 +43,7 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && rm -r ./pyspark
 
 # Install Python dependencies through pip
+ENV CFLAGS true
 ENV DISABLE_NUMCODECS_SSE2 true
 ENV DISABLE_NUMCODECS_AVX2 true
 ADD requirements.txt requirements.txt
