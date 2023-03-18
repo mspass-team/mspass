@@ -150,10 +150,12 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && rm -r ./pyspark
 
 # Install Python dependencies through pip
+ENV DISABLE_NUMCODECS_SSE2 true
+ENV DISABLE_NUMCODECS_AVX2 true
 ADD requirements.txt requirements.txt
 RUN pip3 --no-cache-dir install --upgrade pip
 RUN pip3 --no-cache-dir install numpy \
-    && conda install -r requirements.txt \
+    && pip3 --no-cache-dir install -r requirements.txt \
     && rm -f requirements.txt
 
 # Download & install pybind11
