@@ -81,7 +81,7 @@ public:
   */
   int sample_number(const double f) const
   {
-    int itest=static_cast<int>(round(f-f0val)/dfval);
+    int itest=static_cast<int>( round( (f-f0val)/dfval ) );
     if(itest<0)
     {
       throw mspass::utility::MsPASSError(

@@ -18,6 +18,7 @@ PowerSpectrum::PowerSpectrum(const PowerSpectrum& parent)
   spectrum_type=parent.spectrum_type;
   spectrum_type=parent.spectrum_type;
   spectrum=parent.spectrum;
+  nyquist_frequency=parent.nyquist_frequency;
   elog=parent.elog;
 }
 PowerSpectrum& PowerSpectrum::operator=(const PowerSpectrum& parent)
@@ -29,6 +30,7 @@ PowerSpectrum& PowerSpectrum::operator=(const PowerSpectrum& parent)
     f0val=parent.f0val;
     spectrum_type=parent.spectrum_type;
     spectrum=parent.spectrum;
+    nyquist_frequency=parent.nyquist_frequency;
     elog=parent.elog;
   }
   return *this;

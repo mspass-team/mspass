@@ -70,7 +70,7 @@ template <class T> PowerSpectrum::PowerSpectrum(const mspass::utility::Metadata&
   spectrum.reserve(d.size());
   for(size_t k=0;k<d.size();++k)
     spectrum.push_back(static_cast<double>(d[k]));
-  nyquist_frequency=dfin*static_cast<double>(d.size()-1);
+  nyquist_frequency=dfin*static_cast<double>(d.size());
 };
 }  //end namespace
 #endif
