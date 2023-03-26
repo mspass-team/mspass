@@ -97,7 +97,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -367,9 +367,9 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache-ubuntu_mpi
           cache-to: type=local,dest=/tmp/.buildx-cache-ubuntu_mpi-new
           
-      - name: Build and push ubuntu_mpi image (amd64 amd arm64)
+      - name: Build and push ubuntu_mpi image (amd64)
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'schedule' }}
         with:
           context: .
           file: Dockerfile_ubuntu20.04_mpi

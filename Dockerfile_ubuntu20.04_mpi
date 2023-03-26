@@ -10,7 +10,8 @@ RUN set -eux; \
 	groupadd --gid 999 --system mongodb; \
 	useradd --uid 999 --system --gid mongodb --home-dir /data/db mongodb; \
 	mkdir -p /data/db /data/configdb; \
-	chown -R mongodb:mongodb /data/db /data/configdb
+	chown -R mongodb:mongodb /data/db /data/configdb \
+	&& docker-clean
 
 RUN set -eux; \
 	apt-get update; \
@@ -22,10 +23,9 @@ RUN set -eux; \
 		numactl \
 		procps \
 	; \
-	rm -rf /var/lib/apt/lists/*
+	rm -rf /var/lib/apt/lists/* \
+	&& docker-clean
 
-# grab gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
-ENV GOSU_VERSION 1.16
 # grab "js-yaml" for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
 ENV JSYAML_VERSION 3.13.1
 
@@ -39,25 +39,17 @@ RUN set -ex; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
-	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
-	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
 	gpgconf --kill all; \
-	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
 	\
 	wget -O /js-yaml.js "https://github.com/nodeca/js-yaml/raw/${JSYAML_VERSION}/dist/js-yaml.js"; \
 # TODO some sort of download verification here
 	\
 	apt-mark auto '.*' > /dev/null; \
 	apt-mark manual $savedAptMark > /dev/null; \
-	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-	\
-# smoke test
-	chmod +x /usr/local/bin/gosu; \
-	gosu --version; \
-	gosu nobody true
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+	&& docker-clean
 
 RUN mkdir /docker-entrypoint-initdb.d
 
@@ -70,7 +62,8 @@ RUN set -ex; \
 	mkdir -p /etc/apt/keyrings; \
 	gpg --batch --export "$@" > /etc/apt/keyrings/mongodb.gpg; \
 	gpgconf --kill all; \
-	rm -rf "$GNUPGHOME"
+	rm -rf "$GNUPGHOME" \
+	&& docker-clean
 
 # Allow build-time overrides (eg. to build image with MongoDB Enterprise version)
 # Options for MONGO_PACKAGE: mongodb-org OR mongodb-enterprise
@@ -81,7 +74,8 @@ ARG MONGO_REPO=repo.mongodb.org
 ENV MONGO_PACKAGE=${MONGO_PACKAGE} MONGO_REPO=${MONGO_REPO}
 
 ENV MONGO_MAJOR 5.0
-RUN echo "deb [ signed-by=/etc/apt/keyrings/mongodb.gpg ] http://$MONGO_REPO/apt/ubuntu focal/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list"
+RUN echo "deb [ signed-by=/etc/apt/keyrings/mongodb.gpg ] http://$MONGO_REPO/apt/ubuntu focal/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list" \
+	&& docker-clean
 
 # https://docs.mongodb.org/master/release-notes/5.0/
 ENV MONGO_VERSION 5.0.15
@@ -99,7 +93,8 @@ RUN set -x \
 		${MONGO_PACKAGE}-tools=$MONGO_VERSION \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& rm -rf /var/lib/mongodb \
-	&& mv /etc/mongod.conf /etc/mongod.conf.orig
+	&& mv /etc/mongod.conf /etc/mongod.conf.orig \
+	&& docker-clean
 
 VOLUME /data/db /data/configdb
 
@@ -108,7 +103,6 @@ VOLUME /data/db /data/configdb
 ENV HOME /data/db
 
 COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 27017
 
@@ -121,7 +115,8 @@ RUN apt-get update \
        liblapack-dev libboost-dev libboost-serialization-dev libyaml-dev \
        zip unzip \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* 
+    && rm -rf /var/lib/apt/lists/* \
+	&& docker-clean
 
 ARG TARGETARCH
 
@@ -137,7 +132,8 @@ ARG SPARK_URL=${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSIO
 
 # Download & install Spark
 RUN wget -qO - ${SPARK_URL} | tar -xz -C /usr/local/ \
-    && cd /usr/local && ln -s spark-${SPARK_VERSION}-bin-hadoop2.7 spark
+    && cd /usr/local && ln -s spark-${SPARK_VERSION}-bin-hadoop2.7 spark \
+	&& docker-clean
 RUN ln -s /usr/local/spark/bin/pyspark /usr/bin/pyspark
 RUN ln -s /usr/local/spark/python/pyspark /usr/local/lib/python3.8/dist-packages/pyspark
 RUN unzip /usr/local/spark/python/lib/py4j-0.10.9-src.zip -d /usr/local/lib/python3.8/dist-packages/
@@ -147,21 +143,22 @@ RUN sed -i 's/localhost/127.0.0.1/' /usr/local/spark/python/pyspark/accumulators
 RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && sed -i 's/localhost/127.0.0.1/' ./pyspark/accumulators.py \
     && zip /usr/local/spark/python/lib/pyspark.zip pyspark/accumulators.py \
-    && rm -r ./pyspark
+    && rm -r ./pyspark \
+	&& docker-clean
 
 # Install Python dependencies through pip
 ADD requirements.txt requirements.txt
 RUN pip3 --no-cache-dir install --upgrade pip
 RUN pip3 --no-cache-dir install numpy \
     && pip3 --no-cache-dir install -r requirements.txt \
-    && rm -f requirements.txt
+    && rm -f requirements.txt && docker-clean
 
 # Download & install pybind11
 ARG PYBIND11_VERSION=2.6.0
 ARG PYBIND11_URL=https://github.com/pybind/pybind11/archive/v${PYBIND11_VERSION}.tar.gz
 RUN wget -qO - ${PYBIND11_URL} | tar -xz -C /usr/local/ \
     && cd /usr/local/pybind11-${PYBIND11_VERSION} \
-    && mkdir build && cd build && cmake .. -DPYBIND11_TEST=OFF && make install
+    && mkdir build && cd build && cmake .. -DPYBIND11_TEST=OFF && make install && docker-clean
 RUN rm -r /usr/local/pybind11-${PYBIND11_VERSION}
 
 # Upgrade setuptools to enable namespace package
@@ -174,7 +171,7 @@ RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
     && cmake .. \
     && make \
     && make install \ 
-    && rm -rf ../build
+    && rm -rf ../build && docker-clean
 
 # Add data and env variable for the MetadataDefinition class
 ADD data /mspass/data
@@ -186,7 +183,7 @@ ADD python /mspass/python
 RUN pip3 install /mspass -v
 
 # Install Jupyter notebook
-RUN pip3 --no-cache-dir install jedi==0.17.2 notebook==6.2.0
+RUN pip3 --no-cache-dir install jedi==0.17.2 notebook==6.2.0 && docker-clean
 
 # Tini operates as a process subreaper for jupyter.
 ARG TINI_VERSION=v0.19.0
@@ -198,7 +195,10 @@ ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
-RUN find /usr/local/lib/python3.8/dist-packages/pymongo -type f -name "*.py" -print0 | xargs -0 sed -i "s/localhost/127.0.0.1/"
+RUN sed -i 's/localhost:27020,/127.0.0.1:27020,/g' /usr/local/lib/python3.8/dist-packages/pymongo/encryption_options.py && \
+	sed -i 's/HOST = "localhost"/HOST = "127.0.0.1"/g' /usr/local/lib/python3.8/dist-packages/pymongo/mongo_client.py && \
+	sed -i "s/'localhost'/'127.0.0.1'/g" /usr/local/lib/python3.8/dist-packages/pymongo/settings.py && \
+	sed -i "s/'localhost'/'127.0.0.1'/g" /usr/local/lib/python3.8/dist-packages/pymongo/pool.py
 
 # Set the default behavior of this container
 ENV SPARK_MASTER_PORT 7077
