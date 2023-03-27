@@ -206,6 +206,7 @@ jobs:
 
   build-ubuntu_jupyterlab:
 
+    if: ${{ github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -261,7 +262,6 @@ jobs:
       # Build and push ubuntu_jupyterlab image
       - name: Build and push ubuntu_jupyterlab image (amd64 only)
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        if: ${{ github.event_name == 'schedule' }}
         with:
           context: .
           file: Dockerfile_ubuntu20.04_jupyterlab
@@ -276,7 +276,6 @@ jobs:
           
       - name: Build and push ubuntu_jupyterlab image (amd64 amd arm64)
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        if: ${{ github.event_name == 'schedule' }}
         with:
           context: .
           file: Dockerfile_ubuntu20.04_jupyterlab
@@ -299,6 +298,7 @@ jobs:
 
   build-ubuntu_mpi:
 
+    if: ${{ github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -354,7 +354,6 @@ jobs:
       # Build and push ubuntu_mpi image
       - name: Build and push ubuntu_mpi image (amd64 only)
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        if: ${{ github.event_name == 'schedule' }}
         with:
           context: .
           file: Dockerfile_ubuntu20.04_mpi
@@ -369,7 +368,6 @@ jobs:
           
       - name: Build and push ubuntu_mpi image (amd64)
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        if: ${{ github.event_name == 'schedule' }}
         with:
           context: .
           file: Dockerfile_ubuntu20.04_mpi
