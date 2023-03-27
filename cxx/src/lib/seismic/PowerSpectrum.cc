@@ -26,6 +26,8 @@ PowerSpectrum& PowerSpectrum::operator=(const PowerSpectrum& parent)
   if(this!=(&parent))
   {
     this->Metadata::operator=(parent);
+    /* the next two are in BasicSpectrum but BasicSpectrum currently does
+    not have operator= defined. */
     dfval=parent.dfval;
     f0val=parent.f0val;
     spectrum_type=parent.spectrum_type;
@@ -48,12 +50,37 @@ PowerSpectrum& PowerSpectrum::operator+=(const PowerSpectrum& other)
     {
       stringstream ss;
       ss << "operator+=(accumulation) size mismatch of spectrum arrays"<<endl
-        << "right hade side spectrum size="<<this->nf()<<endl
-        << "left had side spectrum size="<<other.nf()<<endl;
-      throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
+        << "right hade side spectrum size="<<other.nf()<<endl
+        << "left had side spectrum size="<<this->nf()<<endl;
+      this->elog.log_error("PowerSpectrum::operator+-",
+                     ss.str(),ErrorSeverity::Invalid);
+      this->kill();
     }
-    for(int k=0;k<this->nf();++k)
-      spectrum[k] += other.spectrum[k];
+    else if(this->f0() != other.f0())
+    {
+      stringstream ss;
+      ss << "operator+=(accumulation) f0 mismatch of spectrum estimates"<<endl
+        << "right hade side spectrum f0="<<other.f0()<<endl
+        << "left had side spectrum f0="<<this->f0()<<endl;
+      this->elog.log_error("PowerSpectrum::operator+-",
+                     ss.str(),ErrorSeverity::Invalid);
+      this->kill();
+    }
+    else if(this->df() != other.df())
+    {
+      stringstream ss;
+      ss << "operator+=(accumulation) df mismatch of spectrum estimates"<<endl
+        << "right hade side spectrum df="<<other.df()<<endl
+        << "left had side spectrum df="<<this->df()<<endl;
+      this->elog.log_error("PowerSpectrum::operator+-",
+                     ss.str(),ErrorSeverity::Invalid);
+      this->kill();
+    }
+    else
+    {
+      for(int k=0;k<this->nf();++k)
+        spectrum[k] += other.spectrum[k];
+    }
   }
   return *this;
 }

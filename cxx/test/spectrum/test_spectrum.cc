@@ -108,15 +108,29 @@ int main(int argc, char **argv)
     << "Trying default constructor for MTPowerSpectrumEngine"<<endl;
   MTPowerSpectrumEngine mtemp;
   cout << "Trying main constructor for 3 TBP values"<<endl;
-  MTPowerSpectrumEngine mtpse2(512,2.5,4);
-  MTPowerSpectrumEngine mtpse4(512,4,8);
-  MTPowerSpectrumEngine mtpse5(512,5,10);
+  MTPowerSpectrumEngine mtpse2(512,2.5,4,1024,0.01);
+  MTPowerSpectrumEngine mtpse4(512,4,8,1024,0.01);
+  /* explicit test of nondefault value for arg3 */
+  MTPowerSpectrumEngine mtpse5(512,5,10,1024,0.01);
+  assert(mtpse2.dt()==0.01);
+  assert(mtpse4.dt()==0.01);
+  assert(mtpse5.dt()==0.01);
+  cout << "df="<<mtpse2.df()<<endl;
+  /* for this test assume if this works for one it works for all */
+  double testdf = 50.0/static_cast<double>(mtpse2.nf()-1);
+  assert(mtpse5.df()==testdf);
   double *gtmp,*rtmp;
   gtmp=gaussian(10.0,1.0,512);
   rtmp=rickerwavelet(5.0,0.01,512);
   vector<double> g,r;
-  int i,nfft(512);
-  for(i=0;i<nfft;++i)
+  int i,nfft;
+  nfft=mtpse2.fftsize();
+  assert(nfft==1024);
+  nfft=mtpse4.fftsize();
+  assert(nfft==1024);
+  nfft=mtpse5.fftsize();
+  assert(nfft==1024);
+  for(i=0;i<512;++i)
   {
     g.push_back(gtmp[i]);
     r.push_back(rtmp[i]);
@@ -140,13 +154,16 @@ int main(int argc, char **argv)
   ts.s=g;
   PowerSpectrum ps2,ps4,ps5;
   ps2=mtpse2.apply(ts);
+  assert(ps2.live());
   ps4=mtpse4.apply(ts);
+  assert(ps4.live());
   ps5=mtpse5.apply(ts);
+  assert(ps5.live());
   f=mtpse2.frequencies();
   cout << "Results f,tbp25,tbp4,tbp5"<<endl;
   for(i=0;i<f.size();++i)
   {
-    cout << ps2.f0()+i*ps2.df()<<" "<<ps2.spectrum[i]
+    cout << ps2.frequency(i)<<" "<<ps2.spectrum[i]
       << " "<<ps4.spectrum[i]
       << " "<<ps5.spectrum[i]<<endl;
   }
@@ -162,11 +179,15 @@ int main(int argc, char **argv)
   /*  New test for orthogonality of slepian functions for range of
   vector sizes */
   cout << "Verifying slepian function (dpss) library"<<endl;
-  cout << "Test for 10000 sample window"<<endl;
+  cout << "Test for 50000 sample window"<<endl;
   /* run these tests with a fixed tbp and numbe of tapers */
   const double tbp(5.0);
   const int ntapers(8);
-  test_dpss_othogonality(10000,tbp,ntapers);
-  /* Now 1 million sample window */
-  //test_dpss_othogonality(1000000,tbp,ntapers);
+  //test_dpss_othogonality(10000,tbp,ntapers);
+  /* Ran this test for 10000, 50000, 10000, and 1000000.  100,000 and 
+  1,000,000 gave garbage tapers.  50000 seems ok so we use that as the 
+  ceiling in the MsPASS power spectrum estimator using the dpss library.
+  Prieto uses scipy's implementation that seems to do like his old f90 
+  code and use a different algorithm for long time series*/
+  test_dpss_othogonality(50000,tbp,ntapers);
 }

@@ -12,12 +12,44 @@ class PowerSpectrum : public mspass::seismic::BasicSpectrum,
                       public mspass::utility::Metadata
 {
 public:
+  /*! Descriptive name assigned by creator of algorithm used to generate it.
+
+  There are a number of different algorithms to generate power spectra.  this
+  name field should be used to set a unique name for a given algorithm.
+  */
   std::string spectrum_type;
+  /*! Vector of spectral estimates.  spectrum[0] == estimate at f0. */
   std::vector<double> spectrum;
+  /*! MsPASS Error logging class.
+
+  MsPASS uses an error logger to allow posting of error messages that
+  go with the data.  That approach is needed in map reduce to allow the
+  error messages to be cleanly preserved. */
   mspass::utility::ErrorLogger elog;
+  /*! Default constructor.   Makes am empty, dead datum. */
   PowerSpectrum();
+  /*! Standard constructor template.
+
+  This constructor is a template largely to allow vectors of data other than
+  double as inputs.   If the input is not double it is converted on input
+  to an std::vector<double> container stored in the spectrum attribute.
+
+  \param md contents of this Metadata container are copied to the result.
+  \param d vector of sample data to load into spectrum array.
+  \param dfin frequency bin size (sample interval)
+  \param nm name defining algorithm used to constuct this spectral estimate.
+  \param f0in frequency of component 0 of input (default is 0.0).
+  \param fNy frequency to assign as Nyquist for these data.  Default is -1.0.
+    Negative frquencies are used as a signal to compute the value from
+    f0in, dfin, and vector size.
+  */
+
   template <class T> PowerSpectrum(const mspass::utility::Metadata& md,
-    const std::vector<T>& d,const double dfin, const std::string nm);
+    const std::vector<T>& d,
+      const double dfin,
+        const std::string nm,
+          const double f0in=0.0,
+            const double fNy=-1.0);
   PowerSpectrum(const PowerSpectrum& parent);
   PowerSpectrum& operator=(const PowerSpectrum& parent);
   /*! \brief Standard accumulation operator.
@@ -28,7 +60,7 @@ public:
   the usual way.  Add spectral elements sample by sample.
 
   \exception will throw a MsPaSSError if the left and right side
-  are not equal length. */
+  are not equal length of have different f0 of df values.*/
   PowerSpectrum& operator+=(const PowerSpectrum& other);
   /*! \brief Compute amplitude spectrum from power spectrum.
 
@@ -58,19 +90,29 @@ public:
   };
   std::vector<double> frequencies() const;
   size_t nf()const{return spectrum.size();};
-  double Nyquist() const {return nyquist_frequency;};
+  double Nyquist() const {
+    return nyquist_frequency;
+  };
 private:
+  /* Stored internally to allow an implementation to not return the full
+  vector of spectra estimates from an fft.   The need to store this is
+  similar to needing to store f0 in BasicSpectrum. */
   double nyquist_frequency;
 };
 template <class T> PowerSpectrum::PowerSpectrum(const mspass::utility::Metadata& md,
-    const std::vector<T>& d,const double dfin,const std::string nm)
+    const std::vector<T>& d,const double dfin,const std::string nm,
+      const double f0in, const double fNy)
       : BasicSpectrum(dfin,0.0),mspass::utility::Metadata(md),elog()
 {
+  this->f0val=f0in;
+  if(fNy<=0.0)
+    this->nyquist_frequency = f0in + dfin*d.size();
+  else
+    this->nyquist_frequency = fNy;
   spectrum_type=nm;
   spectrum.reserve(d.size());
   for(size_t k=0;k<d.size();++k)
     spectrum.push_back(static_cast<double>(d[k]));
-  nyquist_frequency=dfin*static_cast<double>(d.size());
 };
 }  //end namespace
 #endif
