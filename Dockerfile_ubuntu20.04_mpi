@@ -135,8 +135,11 @@ RUN wget -qO - ${SPARK_URL} | tar -xz -C /usr/local/ \
     && cd /usr/local && ln -s spark-${SPARK_VERSION}-bin-hadoop2.7 spark \
 	&& docker-clean
 RUN ln -s /usr/local/spark/bin/pyspark /usr/bin/pyspark
-RUN ln -s /usr/local/spark/python/pyspark /usr/local/lib/python3.8/dist-packages/pyspark
-RUN unzip /usr/local/spark/python/lib/py4j-0.10.9-src.zip -d /usr/local/lib/python3.8/dist-packages/
+RUN python3 -c "import site; print(site.getsitepackages()[0])" > site_packages_path.txt && \
+	PYTHON_SITE_PACKAGES_PATH=$(cat site_packages_path.txt) && \
+	ln -s /usr/local/spark/python/pyspark ${PYTHON_SITE_PACKAGES_PATH}/pyspark && \
+	unzip /usr/local/spark/python/lib/py4j-0.10.9-src.zip -d ${PYTHON_SITE_PACKAGES_PATH}/  \
+	&& docker-clean
 
 # Patch pyspark for machines don't have localhost defined in /etc/hosts
 RUN sed -i 's/localhost/127.0.0.1/' /usr/local/spark/python/pyspark/accumulators.py
@@ -195,10 +198,14 @@ ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
-RUN sed -i 's/localhost:27020,/127.0.0.1:27020,/g' /usr/local/lib/python3.8/dist-packages/pymongo/encryption_options.py && \
-	sed -i 's/HOST = "localhost"/HOST = "127.0.0.1"/g' /usr/local/lib/python3.8/dist-packages/pymongo/mongo_client.py && \
-	sed -i "s/'localhost'/'127.0.0.1'/g" /usr/local/lib/python3.8/dist-packages/pymongo/settings.py && \
-	sed -i "s/'localhost'/'127.0.0.1'/g" /usr/local/lib/python3.8/dist-packages/pymongo/pool.py
+
+# replace localhost to 127.0.0.1 in pymongo to run on HPC
+RUN python3 -c "import site; print(site.getsitepackages()[0])" > site_packages_path.txt && \
+	PYTHON_SITE_PACKAGES_PATH=$(cat site_packages_path.txt) && \
+	sed -i "s/localhost:27020,/127.0.0.1:27020,/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/encryption_options.py" && \
+	sed -i 's/HOST = "localhost"/HOST = "127.0.0.1"/g' "${PYTHON_SITE_PACKAGES_PATH}/pymongo/mongo_client.py" && \
+	sed -i "s/'localhost'/'127.0.0.1'/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/settings.py" && \
+	sed -i "s/'localhost'/'127.0.0.1'/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/pool.py"
 
 # Set the default behavior of this container
 ENV SPARK_MASTER_PORT 7077
