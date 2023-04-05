@@ -83,6 +83,7 @@ ENV MONGO_VERSION 5.0.15
 RUN set -x \
 # installing "mongodb-enterprise" pulls in "tzdata" which prompts for input
 	&& export DEBIAN_FRONTEND=noninteractive \
+	&& echo "deb http://security.ubuntu.com/ubuntu focal-security main" | sudo tee /etc/apt/sources.list.d/focal-security.list \
 	&& apt-get update \
 	&& apt-get install -y \
 		${MONGO_PACKAGE}=$MONGO_VERSION \
@@ -91,6 +92,7 @@ RUN set -x \
 		${MONGO_PACKAGE}-mongos=$MONGO_VERSION \
 		${MONGO_PACKAGE}-tools=$MONGO_VERSION \
 	&& rm -rf /var/lib/apt/lists/* \
+	&& rm /etc/apt/sources.list.d/focal-security.list \
 	&& rm -rf /var/lib/mongodb \
 	&& mv /etc/mongod.conf /etc/mongod.conf.orig \
 	&& docker-clean
@@ -211,6 +213,8 @@ RUN python -c "import site; print(site.getsitepackages()[0])" > site_packages_pa
 	sed -i 's/HOST = "localhost"/HOST = "127.0.0.1"/g' "${PYTHON_SITE_PACKAGES_PATH}/pymongo/mongo_client.py" && \
 	sed -i "s/'localhost'/'127.0.0.1'/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/settings.py" && \
 	sed -i "s/'localhost'/'127.0.0.1'/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/pool.py"
+ENV PYTHONPATH="${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.9-src.zip:${PYTHONPATH}"
+ENV PATH="${SPARK_HOME}/bin:${SPARK_HOME}/python:${PATH}"
 
 # Set the default behavior of this container
 ENV SPARK_MASTER_PORT 7077
