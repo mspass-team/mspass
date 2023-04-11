@@ -87,6 +87,7 @@ long int fwrite_to_file(Seismogram& d, const string dir,const string dfile)
 std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>& d, const std::string dir,const std::string dfile)
 {
 	try{
+		if(d.dead()) return(0L);
 		FILE *fp;
 		vector<long int> foffs;
 		string fname;
@@ -101,6 +102,8 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 		  /* use the name of the overloaded parent instead of the actual function - intentional*/
 			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
 		for (int i = 0; i < d.member.size(); ++i) {
+			/* Silenetly skip dead data */
+			if(d.member[i].dead()) continue;
 			long int foff = ftell(fp);
 			foffs.push_back(foff);
 			TimeSeries& t = d.member[i];
@@ -124,6 +127,7 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram>& d, const std::string dir,const std::string dfile)
 {
 	try{
+		if(d.dead()) return(0L);
 		FILE *fp;
 		vector<long int> foffs;
 		string fname;
@@ -138,6 +142,8 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 		  /* use the name of the overloaded parent instead of the actual function - intentional*/
 			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
 		for (int i = 0; i < d.member.size(); ++i) {
+			/* Silently skip dead data */
+			if(d.member[i].dead()) continue;
 			long int foff = ftell(fp);
 			foffs.push_back(foff);
 			Seismogram& t = d.member[i];
