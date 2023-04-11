@@ -87,9 +87,11 @@ long int fwrite_to_file(Seismogram& d, const string dir,const string dfile)
 std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>& d, const std::string dir,const std::string dfile)
 {
 	try{
-		if(d.dead()) return(0L);
 		FILE *fp;
 		vector<long int> foffs;
+		/* This will return an empty vector if the ensemble is marked dead - callers should handle this condition
+		but they normally shouldn't be calling this function if the entire ensemble is marked dead anyway.*/
+		if(d.dead()) return(foffs);
 		string fname;
 		if(dir.length()>0)
 		  /* for expected context for use in python we will assume dir does not
