@@ -469,7 +469,7 @@ def FD_snr_estimator(
         N = nengine.apply(n)
         S = sengine.apply(s)
         bwd = EstimateBandwidth(
-            S.df, S, N, band_cutoff_snr, tbp, high_frequency_search_start, fix_high_edge
+            S.df(), S, N, band_cutoff_snr, tbp, high_frequency_search_start, fix_high_edge
         )
 
         # here we return empty result if the bandwidth is too low
