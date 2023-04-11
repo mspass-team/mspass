@@ -3361,7 +3361,7 @@ class Database(pymongo.database.Database):
             foffs = _fwrite_to_file(ensemble_object, dir, dfile)
 
         except MsPASSError as merr:
-            mspass_object.elog.log_error(merr)
+            ensemble_object.elog.log_error(merr)
             if kill_on_failure:
                 ensemble_object.kill()
 
