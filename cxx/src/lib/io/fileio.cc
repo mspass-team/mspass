@@ -129,9 +129,9 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram>& d, const std::string dir,const std::string dfile)
 {
 	try{
-		if(d.dead()) return(0L);
 		FILE *fp;
 		vector<long int> foffs;
+		if(d.dead()) return(foffs);
 		string fname;
 		if(dir.length()>0)
 		  /* for expected context for use in python we will assume dir does not
