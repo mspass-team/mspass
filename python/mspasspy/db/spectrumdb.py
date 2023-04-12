@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from mspasspy.ccore.seismic import PowerSpectrum
 from mspasspy.ccore.utility import MsPASSError,ErrorSeverity
+from mspasspy.db.schema import DatabaseSchema,MetadataSchema
 import pymongo
 from bson import ObjectId
 import pickle
@@ -34,6 +35,8 @@ class BasicDatabase(ABC):
                  name,
                  type_list,
                  *args,
+                 db_schema=None, 
+                 md_schema=None, 
                  **kwargs,
                  ):
         """
@@ -43,7 +46,6 @@ class BasicDatabase(ABC):
         defines a particular instance of a database stored in that system.  
         Subclasses should call this constructor to set that name. 
         :type name:  string
-        
         :parm type_list:  Because this class is aimed at supporting 
         management of one or more data types we neee a clean way to define 
         what those types are.  This argument serves that purpose.  It should 
@@ -51,10 +53,71 @@ class BasicDatabase(ABC):
         to verify data being handled are of the right type. 
         :type type_list:  list of python types that will work in a loop of 
         isinstance tests.  
+        :param db_schema:   A concrete instance of this class may want to 
+        impose a specific schema on the attributes to be stored in the 
+        database.  This defines the schema to use for attributes stored 
+        externally in the database.  It sets the class variable 
+        self.database_schema.  Note a schema is considered optional and 
+        can be turned off by setting this argument to the magic string 
+        "DO_NOT_LOAD".
+        :type db_schema:  Can be one of three type:
+            1.  mspasspy.db.schema.DatabaseSchema - in this case the class 
+                content is copied to self.db_schema.
+            2.  A string defining a specific schema by a keyword name.  
+                That name is assume to match a yaml file name in the 
+                mspass data/yaml directory.  e.g. the default mspass 
+                schema is "mspass" defined with the file data/yaml/mspass.yaml.
+                A special case is the magic name "DO_NOT_LOAD".  If 
+                that name appears no schema is loaded and self.db_schema is 
+                set to None.
+            3.  None - this is the default and used to load the default 
+                schema file ("mspass")/
+        :param md_schema:  A concrete instance of this class may want to 
+        impose a schema on attributes loaded as Metadata to a MsPASS 
+        data object.   Most useful for type enforcement.   It defines 
+        the contents of the class attribute self.metadata_schema.
+        Note a schema is considered optional and 
+        can be turned off by setting this argument to the magic string 
+        "DO_NOT_LOAD".
+        type md_schema:  Can be one of three type:
+            1.  mspasspy.db.schema.DatabaseSchema - in this case the class 
+                content is copied to self.db_schema.
+            2.  A string defining a specific schema by a keyword name.  
+                That name is assume to match a yaml file name in the 
+                mspass data/yaml directory.  e.g. the default mspass 
+                schema is "mspass" defined with the file data/yaml/mspass.yaml.
+                A special case is the magic name "DO_NOT_LOAD".  If 
+                that name appears no schema is loaded and self.db_schema is 
+                set to None.
+            3.  None - this is the default and used to load the default 
+                schema file ("mspass")/
         
         """
+        do_not_load_keyword="DO_NOT_LOAD"
         self.name = name
         self.type_list = type_list
+        if isinstance(db_schema, DatabaseSchema):
+            self.database_schema = db_schema
+        elif isinstance(db_schema, str):
+            if db_schema == do_not_load_keyword:
+                self.database_schema = None
+            else:
+                self.database_schema = DatabaseSchema(db_schema)
+        else:
+            self.database_schema = DatabaseSchema()
+
+        if isinstance(md_schema, MetadataSchema):
+            self.metadata_schema = md_schema
+        elif isinstance(md_schema, str):
+            if md_schema == do_not_load_keyword:
+                self.metadata_schema = None
+            else:
+                self.metadata_schema = MetadataSchema(md_schema)
+        else:
+            self.metadata_schema = MetadataSchema()        
+        
+        
+        
     def data_valid(self,d)->bool:
         """
         Tests if input datum d has a type supported by this handle.   
@@ -105,19 +168,67 @@ class BasicDatabase(ABC):
         pass
     
 class SpectrumDatabase(BasicDatabase,pymongo.database.Database):
+    """
+    Specialized database handle to manage PowerSpectrum data. 
+    
+    Use this handle to read and write PowerSpectrum objects to a 
+    MongoDB database.  This interface is much simpler than the 
+    standard MsPASS database.  The class has only a basic reader and writer 
+    and a simple verify method required by the abstract base class it 
+    inherits.  
+    """
     def __init__(self,
                  name,
                  *args,
-                 type_list=[PowerSpectrum],
                  collection="PowerSpectrum",
                  **kwargs,
                  ):
-        BasicDatabase.__init__(name,type_list)
+        """
+        Constructor for this database handle.   Note because this class 
+        inherits pymongo.database.Database.   You can pass arguments 
+        to this constructor recognized by the base class constructor 
+        for pymongo's handle like  "read_concern" or "write_concern" and 
+        they will be passed to the pymongo constructor by the standard 
+        python mechanism of *args and **kwargs.
+        
+        :param name:  MongoDB database name to use.
+        :type name:  string
+        :param collection:  optional alternative collection name to 
+        use for reads and writes (default is "PowerSpectrum")
+        :type collection:  string
+        """
+        type_list = [PowerSpectrum]
+        BasicDatabase.__init__(name,
+                               type_list,
+                               db_schema="DO_NOT_LOAD",
+                               md_schema="DO_NOT_LOAD")
         super(SpectrumDatabase, self).__init__(*args, **kwargs)
         self.collection = self[collection]
         
     def save_data(self,datum,exclude=None,metadata2save=None,format="pickle"):
+        """
+        Saves a single PowerSpectrum object defined through arg0.   Default 
+        dumps all metadata elements to PowerSpectrum collection document 
+        and saves pickled version of datum with the key "serialized_data".   
+        
+        :param datum:  PowerSpectrum to save.  The method will throw a 
+        MsPASSError if this is not a PowerSpectrum object.   If the datum 
+        is marked dead it will be silently skipped.  
+        :param exclude:  list of Metadata keys to not save to the saved 
+        document.  Default is None which means all attributes will be saved.
+        :param metadata2save: list Metadata keys to be saved.  If not None 
+        (default) only the data fetched with these keys will be saved to 
+        the document created for this object.   If the key is not actually
+        found in the Metadata area of datum it will be silently ignored.
+        :param format:  output format of the object.  Currently the only 
+        accepted value is the default of "pickle".  The default format 
+        pickles datum as saves the result with the key "serialized_data". 
+        """
+        if format!="pickle":
+            raise MsPASSError("SpectrumDatabase.save_data:  format can currently only be pickle",ErrorSeverity.Fatal)
         if self.data_valid():
+            if datum.dead():
+                return None
             if metadata2save:
                 doc=dict()
                 for key in metadata2save:
