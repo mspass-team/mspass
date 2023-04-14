@@ -204,7 +204,7 @@ jobs:
           rm -rf /tmp/.buildx-cache-dev 
           mv /tmp/.buildx-cache-dev-new /tmp/.buildx-cache-dev
 
-  build-ubuntu_jupyterlab:
+  build-mpi:
 
     if: ${{ github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
@@ -227,10 +227,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            /tmp/.buildx-cache-ubuntu_jupyterlab
-          key: ${{ runner.os }}-buildx.ubuntu_jupyterlab-${{ github.sha }}
+            /tmp/.buildx-cache-mpi
+          key: ${{ runner.os }}-buildx.mpi-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx.ubuntu_jupyterlab-
+            ${{ runner.os }}-buildx.mpi-
 
       # Login against a Docker registry
       # https://github.com/docker/login-action
@@ -259,8 +259,8 @@ jobs:
             mspass/mspass
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      # Build and push ubuntu_jupyterlab image
-      - name: Build and push ubuntu_jupyterlab image (amd64 only)
+      # Build and push mpi image
+      - name: Build and push mpi image (amd64 only)
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
@@ -268,13 +268,13 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            mspass/mspass:ubuntu_jupyterlab
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:ubuntu_jupyterlab
+            mspass/mspass:mpi
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:mpi
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache-ubuntu_jupyterlab
-          cache-to: type=local,dest=/tmp/.buildx-cache-ubuntu_jupyterlab-new
+          cache-from: type=local,src=/tmp/.buildx-cache-mpi
+          cache-to: type=local,dest=/tmp/.buildx-cache-mpi-new
           
-      - name: Build and push ubuntu_jupyterlab image (amd64 amd arm64)
+      - name: Build and push mpi image (amd64 amd arm64)
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
@@ -282,16 +282,16 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            mspass/mspass:ubuntu_jupyterlab
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:ubuntu_jupyterlab
+            mspass/mspass:mpi
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:mpi
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache-ubuntu_jupyterlab
-          cache-to: type=local,dest=/tmp/.buildx-cache-ubuntu_jupyterlab-new
+          cache-from: type=local,src=/tmp/.buildx-cache-mpi
+          cache-to: type=local,dest=/tmp/.buildx-cache-mpi-new
 
       # Temp fix
       # https://github.com/docker/build-push-action/issues/252
       # https://github.com/moby/buildkit/issues/1896
       - name: Move cache
         run: |
-          rm -rf /tmp/.buildx-cache-ubuntu_jupyterlab 
-          mv /tmp/.buildx-cache-ubuntu_jupyterlab-new /tmp/.buildx-cache-ubuntu_jupyterlab
+          rm -rf /tmp/.buildx-cache-mpi 
+          mv /tmp/.buildx-cache-mpi-new /tmp/.buildx-cache-mpi

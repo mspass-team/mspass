@@ -1,7 +1,7 @@
 #Image: mspass/mspass
 #Version: 0.0.1
 
-FROM ghcr.io/seisscoped/container-base:latest
+FROM ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
 
 LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
 
@@ -10,7 +10,8 @@ RUN set -eux; \
 	groupadd --gid 999 --system mongodb; \
 	useradd --uid 999 --system --gid mongodb --home-dir /data/db mongodb; \
 	mkdir -p /data/db /data/configdb; \
-	chown -R mongodb:mongodb /data/db /data/configdb
+	chown -R mongodb:mongodb /data/db /data/configdb \
+	&& docker-clean
 
 RUN set -eux; \
 	apt-get update; \
@@ -54,7 +55,7 @@ RUN mkdir /docker-entrypoint-initdb.d
 
 RUN set -ex; \
 	export GNUPGHOME="$(mktemp -d)"; \
-	set -- 'F5679A222C647C87527C2F8CB00A0BD1E2C63C11'; \
+	set -- '39BD841E4BE5FB195A65400E6A26B1AE64C3C388'; \
 	for key; do \
 		gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
 	done; \
@@ -72,18 +73,16 @@ ARG MONGO_PACKAGE=mongodb-org
 ARG MONGO_REPO=repo.mongodb.org
 ENV MONGO_PACKAGE=${MONGO_PACKAGE} MONGO_REPO=${MONGO_REPO}
 
-ENV MONGO_MAJOR 5.0
-RUN echo "deb [ signed-by=/etc/apt/keyrings/mongodb.gpg ] http://$MONGO_REPO/apt/ubuntu focal/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list"  \
-	&& docker-clean
+ENV MONGO_MAJOR 6.0
+RUN echo "deb [ signed-by=/etc/apt/keyrings/mongodb.gpg ] http://$MONGO_REPO/apt/ubuntu jammy/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list"
 
-# https://docs.mongodb.org/master/release-notes/5.0/
-ENV MONGO_VERSION 5.0.15
-# 02/23/2023, https://github.com/mongodb/mongo/tree/935639beed3d0c19c2551c93854b831107c0b118
+# https://docs.mongodb.org/master/release-notes/6.0/
+ENV MONGO_VERSION 6.0.5
+# 03/08/2023, https://github.com/mongodb/mongo/tree/c9a99c120371d4d4c52cbb15dac34a36ce8d3b1d
 
 RUN set -x \
 # installing "mongodb-enterprise" pulls in "tzdata" which prompts for input
 	&& export DEBIAN_FRONTEND=noninteractive \
-	&& echo "deb http://security.ubuntu.com/ubuntu focal-security main" | sudo tee /etc/apt/sources.list.d/focal-security.list \
 	&& apt-get update \
 	&& apt-get install -y \
 		${MONGO_PACKAGE}=$MONGO_VERSION \
@@ -92,7 +91,6 @@ RUN set -x \
 		${MONGO_PACKAGE}-mongos=$MONGO_VERSION \
 		${MONGO_PACKAGE}-tools=$MONGO_VERSION \
 	&& rm -rf /var/lib/apt/lists/* \
-	&& rm /etc/apt/sources.list.d/focal-security.list \
 	&& rm -rf /var/lib/mongodb \
 	&& mv /etc/mongod.conf /etc/mongod.conf.orig \
 	&& docker-clean
@@ -147,9 +145,13 @@ RUN sed -i 's/localhost/127.0.0.1/' /usr/local/spark/python/pyspark/accumulators
 RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && sed -i 's/localhost/127.0.0.1/' ./pyspark/accumulators.py \
     && zip /usr/local/spark/python/lib/pyspark.zip pyspark/accumulators.py \
-    && rm -r ./pyspark
+    && rm -r ./pyspark \
+	&& docker-clean
 
 # Install Python dependencies through pip
+ENV DISABLE_NUMCODECS_SSE2 true
+ENV DISABLE_NUMCODECS_AVX2 true
+ENV CFLAGS -g
 ADD requirements.txt requirements.txt
 RUN pip3 --no-cache-dir install --upgrade pip \
 	&& docker-clean
@@ -172,7 +174,7 @@ RUN pip3 --no-cache-dir install --upgrade setuptools \
 
 # Add cxx library
 ADD cxx /mspass/cxx
-RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
+RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && unset CFLAGS && cd /mspass/cxx \
     && mkdir build && cd build \
     && cmake .. \
     && make \
@@ -187,7 +189,7 @@ ENV MSPASS_HOME /mspass
 # Add setup.py to install python components
 ADD setup.py /mspass/setup.py
 ADD python /mspass/python
-RUN pip3 install /mspass -v \
+RUN unset CFLAGS && pip3 install /mspass -v \
 	&& docker-clean
 
 # Install jedi
@@ -195,8 +197,6 @@ RUN pip3 --no-cache-dir install jedi==0.17.2 && docker-clean
 
 # Tini operates as a process subreaper for jupyter.
 ARG TINI_VERSION=v0.19.0
-ARG TARGETARCH=amd64
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-${TARGETARCH}
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${TARGETARCH} /usr/sbin/tini
 RUN chmod +x /usr/sbin/tini
 
