@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/clipboard.min.js"></script>
@@ -3185,7 +3184,7 @@
         <span class="c1"># check that matcher has the find_doc method  implemented - it is</span>
         <span class="c1"># not defined in the BasicMatcher interface and is required</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-            <span class="nb">hasattr</span><span class="p">(</span><span class="n">matcher</span><span class="p">,</span> <span class="s2">&quot;find_doc&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">matcher</span><span class="p">,</span> <span class="s2">&quot;find_doc&quot;</span><span class="p">))</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="n">matcher</span><span class="p">,</span> <span class="s2">&quot;find_doc&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">matcher</span><span class="p">,</span> <span class="s2">&quot;find_doc&quot;</span><span class="p">))</span>
         <span class="p">):</span>
             <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;matcher_list contains class=</span><span class="si">{classname}</span><span class="s2"> that does not have an implementation of the find_doc method required by this function - try using it in a map operator&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">classname</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">matcher</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
