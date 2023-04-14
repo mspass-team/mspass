@@ -672,7 +672,7 @@ class TestManager:
             d[i].t0 = -5
 
         # parameters string
-        pfPath = "python/mspasspy/data/pf/RFdeconProcessor.pf"
+        pfPath = "./data/pf/RFdeconProcessor.pf"
         pf = AntelopePf(pfPath)
         pf_dict = AntelopePf2dict(pf)
         parameter_dict = collections.OrderedDict()
