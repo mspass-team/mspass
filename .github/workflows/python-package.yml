@@ -47,7 +47,7 @@ jobs:
         echo "SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7" >> $GITHUB_ENV
         export PATH=$PATH:/opt/spark-3.0.0-bin-hadoop2.7/bin
         echo "/opt/spark-3.0.0-bin-hadoop2.7/bin" >> $GITHUB_PATH
-        python -m pip install --upgrade --upgrade-strategy eager pyspark pytest-spark pybind11
+        python -m pip install --upgrade --upgrade-strategy eager pyspark pytest-spark pybind11[global]
     - name: Install
       run: python -m pip install --global-option=build --global-option=--debug .
     - name: Test with pytest
