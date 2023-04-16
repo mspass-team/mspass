@@ -504,6 +504,20 @@ class TestDatabase:
             and seis_ensemble_metadata["key2"] == "value2"
         )
 
+        # not support miniseed or other formats
+        dir = "python/tests/data/"
+        dfile = "3channels.mseed"
+        fname = os.path.join(dir, dfile)
+        self.db.index_mseed_file(fname, collection="wf_miniseed")
+        assert self.db["wf_miniseed"].count_documents({}) == 3
+
+        cursor=self.db.wf_miniseed.find({})
+        pattern = r'read_ensemble_data_group\(\) only support reading from binary files, please use read_ensemble_data\(\) for other formats'
+        with pytest.raises(MsPASSError, match=pattern):
+            ensemble=self.db.read_ensemble_data_group(cursor,collection='wf_miniseed')
+        
+        self.db.wf_miniseed.delete_many({})
+
     def mock_urlopen(*args):
         response = Mock()
         with open("python/tests/data/read_data_from_url.pickle", "rb") as handle:
