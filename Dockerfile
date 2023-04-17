@@ -187,6 +187,7 @@ ENV MSPASS_HOME /mspass
 
 # Add setup.py to install python components
 ADD setup.py /mspass/setup.py
+ADD pyproject.toml /mspass/pyproject.toml
 ADD python /mspass/python
 RUN pip3 install /mspass -v \
 	&& docker-clean
