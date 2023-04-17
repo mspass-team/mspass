@@ -1459,10 +1459,22 @@ def test_PowerSpectrum():
     ts.live = True
     engine = MTPowerSpectrumEngine(100, 5, 10)
     spec = engine.apply(ts)
-    assert spec.Nyquist() == spec.f0 + spec.df * spec.nf()
+    # Depends upon MTPowerSpectrumEngine default which is to double
+    # length as a zero pad.
+    assert spec.nf() == 101
+    assert np.isclose(spec.df(),0.005)
+    assert spec.Nyquist() == spec.f0() + spec.df() * spec.nf()
+    assert spec.f0() == 0.0
+    # Repeat with nfft specified adding new capability
+    engine = MTPowerSpectrumEngine(100,5,10,512)
+    spec = engine.apply(ts)
+    assert spec.nf() == 257   # half 512 + 1
+    assert np.isclose(1.0/512.0,spec.df()) # ts.dt is 1.0
+    print("nf=",spec.nf(),", df=",spec.df())
 
     spec_copy = pickle.loads(pickle.dumps(spec))
-    assert spec.df == spec_copy.df
-    assert spec.f0 == spec_copy.f0
+    assert spec.df() == spec_copy.df()
+    assert spec.f0() == spec_copy.f0()
     assert spec.spectrum_type == spec_copy.spectrum_type
     assert np.allclose(spec.spectrum, spec_copy.spectrum)
+
