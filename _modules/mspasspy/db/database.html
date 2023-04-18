@@ -2925,23 +2925,21 @@
         <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf&quot;</span><span class="p">,</span>
         <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;read_ensemble_data&quot;</span><span class="p">,</span>
+        <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;read_ensemble_data_group&quot;</span><span class="p">,</span>
         <span class="n">alg_id</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Reads an subset of a dataset with some logical grouping into an Ensemble container. Groups</span>
-<span class="sd">        the files firstly to avoid duplicate open for the same file. Open and close the file only</span>
-<span class="sd">        when the dir or dfile change.</span>
+<span class="sd">        Reads an subset of a dataset with some logical grouping into an Ensemble container.</span>
+<span class="sd">        It has the same fucntion as read_ensemble_data(), but is more efficient in reading binary files.</span>
+<span class="sd">        The improvement is achieved by avoiding duplicate open and close for the same file.</span>
+<span class="sd">        MsPASS Objects are grouped firstly by files they are in. If two objects are in the same file, </span>
+<span class="sd">        with the same directory and filename, they will be in the same file group. For each group,</span>
+<span class="sd">        there will be only one open and close. For objects stored in the same file, their foffs </span>
+<span class="sd">        will be collected and passed to fread_from_file(). Then open the file once, and sequentially </span>
+<span class="sd">        read the data according to the foffs.</span>
 
-<span class="sd">        Ensembles are a core concept in MsPASS that are a generalization of</span>
-<span class="sd">        fixed &quot;gather&quot; types frozen into every seismic reflection processing</span>
-<span class="sd">        system we know of.  This reader is driven by a python list of</span>
-<span class="sd">        MongoDB object ids.  The method calls the atomic read_data</span>
-<span class="sd">        method for object_id to assemble the members of the ensemble.</span>
-<span class="sd">        All arguments except the objectid_list and ensemble_metadata are</span>
-<span class="sd">        passed directly to the read_data method in that loop.  The read_data</span>
-<span class="sd">        method and the User&#39;s manual have more information about how those</span>
-<span class="sd">        common arguments are used.</span>
+<span class="sd">        This function only supports binary file format (format=None), as the optimization will not </span>
+<span class="sd">        work in other formats.</span>
 
 <span class="sd">        :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`,</span>
 <span class="sd">          of the ids defining the ensemble members or a :class:`pymongo.cursor.Cursor`</span>
@@ -3024,6 +3022,12 @@
             <span class="n">object_doc</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">oid</span><span class="p">})</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">object_doc</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="s2">&quot;format&quot;</span> <span class="ow">in</span> <span class="n">object_doc</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">object_doc</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                        <span class="s2">&quot;read_ensemble_data_group() only support reading from binary files, please use read_ensemble_data() for other formats&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid&quot;</span>
+                    <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">data_tag</span><span class="p">:</span>
                 <span class="k">if</span> <span class="s2">&quot;data_tag&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">object_doc</span> <span class="ow">or</span> <span class="n">object_doc</span><span class="p">[</span><span class="s2">&quot;data_tag&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">data_tag</span><span class="p">:</span>

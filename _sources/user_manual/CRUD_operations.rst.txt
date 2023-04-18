@@ -342,7 +342,7 @@ reader to the sphinx documentation for full usage.
     duplicate open for the same file. Open and close the file only when the dir or dfile change.
     When multiple objects store in the same file, this function will group the files first
     and collect their foffs in that file. Then open the file once, and sequentially read the data 
-    according to the foffs.
+    according to the foffs. This function only supports reading from binary files.
 
 3.  A workflow that needs to read and process a large data sets in
     a parallel environment should use
