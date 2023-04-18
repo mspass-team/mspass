@@ -2814,23 +2814,21 @@ class Database(pymongo.database.Database):
         exclude_keys=None,
         collection="wf",
         data_tag=None,
-        alg_name="read_ensemble_data",
+        alg_name="read_ensemble_data_group",
         alg_id="0",
     ):
         """
-        Reads an subset of a dataset with some logical grouping into an Ensemble container. Groups
-        the files firstly to avoid duplicate open for the same file. Open and close the file only
-        when the dir or dfile change.
+        Reads an subset of a dataset with some logical grouping into an Ensemble container.
+        It has the same fucntion as read_ensemble_data(), but is more efficient in reading binary files.
+        The improvement is achieved by avoiding duplicate open and close for the same file.
+        MsPASS Objects are grouped firstly by files they are in. If two objects are in the same file, 
+        with the same directory and filename, they will be in the same file group. For each group,
+        there will be only one open and close. For objects stored in the same file, their foffs 
+        will be collected and passed to fread_from_file(). Then open the file once, and sequentially 
+        read the data according to the foffs.
 
-        Ensembles are a core concept in MsPASS that are a generalization of
-        fixed "gather" types frozen into every seismic reflection processing
-        system we know of.  This reader is driven by a python list of
-        MongoDB object ids.  The method calls the atomic read_data
-        method for object_id to assemble the members of the ensemble.
-        All arguments except the objectid_list and ensemble_metadata are
-        passed directly to the read_data method in that loop.  The read_data
-        method and the User's manual have more information about how those
-        common arguments are used.
+        This function only supports binary file format (format=None), as the optimization will not 
+        work in other formats.
 
         :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`,
           of the ids defining the ensemble members or a :class:`pymongo.cursor.Cursor`
@@ -2913,6 +2911,12 @@ class Database(pymongo.database.Database):
             object_doc = col.find_one({"_id": oid})
             if not object_doc:
                 return None
+
+            if "format" in object_doc:
+                if object_doc["format"] != None:
+                    raise MsPASSError(
+                        "read_ensemble_data_group() only support reading from binary files, please use read_ensemble_data() for other formats", "Invalid"
+                    )
 
             if data_tag:
                 if "data_tag" not in object_doc or object_doc["data_tag"] != data_tag:
