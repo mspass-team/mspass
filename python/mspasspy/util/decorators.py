@@ -395,8 +395,7 @@ def is_input_dead(*args, **kwargs):
 
 
 def timeseries_copy_helper(ts1, ts2):
-    """
-    """
+    """ """
     # keys in this list are ignored - for now only one but made a list
     # to simplify additions later
     metadata_to_ignore = ["CONVERTER_ENSEMBLE_KEYS"]
@@ -418,7 +417,6 @@ def timeseries_copy_helper(ts1, ts2):
 
 
 def timeseries_ensemble_copy_helper(es1, es2):
-
     for i in range(len(es1.member)):
         timeseries_copy_helper(es1.member[i], es2.member[i])
     # fixme: not sure in what algorithm the length of es1 and es2 would be different
