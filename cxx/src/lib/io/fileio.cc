@@ -89,6 +89,9 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 	try{
 		FILE *fp;
 		vector<long int> foffs;
+		/* This will return an empty vector if the ensemble is marked dead - callers should handle this condition
+		but they normally shouldn't be calling this function if the entire ensemble is marked dead anyway.*/
+		if(d.dead()) return(foffs);
 		string fname;
 		if(dir.length()>0)
 		  /* for expected context for use in python we will assume dir does not
@@ -101,6 +104,8 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 		  /* use the name of the overloaded parent instead of the actual function - intentional*/
 			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
 		for (int i = 0; i < d.member.size(); ++i) {
+			/* Silenetly skip dead data */
+			if(d.member[i].dead()) continue;
 			long int foff = ftell(fp);
 			foffs.push_back(foff);
 			TimeSeries& t = d.member[i];
@@ -126,6 +131,7 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 	try{
 		FILE *fp;
 		vector<long int> foffs;
+		if(d.dead()) return(foffs);
 		string fname;
 		if(dir.length()>0)
 		  /* for expected context for use in python we will assume dir does not
@@ -138,6 +144,8 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 		  /* use the name of the overloaded parent instead of the actual function - intentional*/
 			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
 		for (int i = 0; i < d.member.size(); ++i) {
+			/* Silently skip dead data */
+			if(d.member[i].dead()) continue;
 			long int foff = ftell(fp);
 			foffs.push_back(foff);
 			Seismogram& t = d.member[i];
