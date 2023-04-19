@@ -2821,13 +2821,13 @@ class Database(pymongo.database.Database):
         Reads an subset of a dataset with some logical grouping into an Ensemble container.
         It has the same fucntion as read_ensemble_data(), but is more efficient in reading binary files.
         The improvement is achieved by avoiding duplicate open and close for the same file.
-        MsPASS Objects are grouped firstly by files they are in. If two objects are in the same file, 
+        MsPASS Objects are grouped firstly by files they are in. If two objects are in the same file,
         with the same directory and filename, they will be in the same file group. For each group,
-        there will be only one open and close. For objects stored in the same file, their foffs 
-        will be collected and passed to fread_from_file(). Then open the file once, and sequentially 
+        there will be only one open and close. For objects stored in the same file, their foffs
+        will be collected and passed to fread_from_file(). Then open the file once, and sequentially
         read the data according to the foffs.
 
-        This function only supports binary file format (format=None), as the optimization will not 
+        This function only supports binary file format (format=None), as the optimization will not
         work in other formats.
 
         :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`,
@@ -2915,7 +2915,8 @@ class Database(pymongo.database.Database):
             if "format" in object_doc:
                 if object_doc["format"] != None:
                     raise MsPASSError(
-                        "read_ensemble_data_group() only support reading from binary files, please use read_ensemble_data() for other formats", "Invalid"
+                        "read_ensemble_data_group() only support reading from binary files, please use read_ensemble_data() for other formats",
+                        "Invalid",
                     )
 
             if data_tag:
@@ -5590,7 +5591,7 @@ class Database(pymongo.database.Database):
         dfile,
         dir=None,
         collection="wf_miniseed",
-        segment_time_tears=False,
+        segment_time_tears=True,
         elog_collection="elog",
         return_ids=False,
         normalize_channel=False,
@@ -5625,7 +5626,7 @@ class Database(pymongo.database.Database):
         ways: (1) dropped packets from telemetry issues, or (2) instrument
         timing jumps when a clock loses external lock to gps or some
         other standard and the rock is restored.  The behavior is this
-        function in gap handling is controlled by the input parameter
+        function is controlled by the input parameter
         segment_time_tears.  When true a new index entry is created
         any time the start time of a packet differs from that computed
         from the endtime of the last packet by more than one sample
@@ -5666,7 +5667,7 @@ class Database(pymongo.database.Database):
         :param segment_time_tears: boolean controlling handling of data gaps
           defined by constant net, sta, chan, and loc but a discontinuity
           in time tags for successive packets.  See above for a more extensive
-          discussion of how to use this parameter.  Default is False.
+          discussion of how to use this parameter.  Default is True.
         :param elog_collection:  name to write any error logs messages
           from the miniseed reader.  Default is "elog", which is the
           same as for TimeSeries and Seismogram data, but the cross reference

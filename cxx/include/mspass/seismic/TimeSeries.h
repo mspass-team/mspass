@@ -10,7 +10,7 @@ namespace mspass::seismic{
   in the MsPASS framework.   It extends CoreTimeSeries by adding
   common MsPASS components (ProcessingHistory).  It may evolve with additional
   special features.  */
-class TimeSeries : virtual public mspass::seismic::CoreTimeSeries,
+class TimeSeries : public mspass::seismic::CoreTimeSeries,
    public mspass::utility::ProcessingHistory
 {
 public:
@@ -73,7 +73,7 @@ public:
   are
     t0_shift - sets amount t0 has been shiftee when originally utc but set
       to relative with the shift method.  Ignored if time is UTC or it is
-      not defined.  
+      not defined.
 
   */
   TimeSeries(const Metadata& md);
