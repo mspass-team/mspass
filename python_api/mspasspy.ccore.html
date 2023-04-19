@@ -114,6 +114,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.ccore.seismic">seismic</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.CoreSeismogramEnsemble"><code class="docutils literal notranslate"><span class="pre">CoreSeismogramEnsemble</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble"><code class="docutils literal notranslate"><span class="pre">CoreTimeSeriesEnsemble</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.DataGap"><code class="docutils literal notranslate"><span class="pre">DataGap</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.DoubleVector"><code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum"><code class="docutils literal notranslate"><span class="pre">PowerSpectrum</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.Seismogram"><code class="docutils literal notranslate"><span class="pre">Seismogram</span></code></a></li>
@@ -124,6 +125,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries"><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesVector"><code class="docutils literal notranslate"><span class="pre">TimeSeriesVector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesWGaps"><code class="docutils literal notranslate"><span class="pre">TimeSeriesWGaps</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#algorithms">algorithms</a><ul>
@@ -1321,6 +1323,51 @@ is usually not necessay.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.DataGap">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">DataGap</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DataGap" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Base class for lightweight definition of data gaps</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.DataGap.add_gap">
+<span class="sig-name descname"><span class="pre">add_gap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">mspasspy.ccore.seismic.DataGap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0:</span> <span class="pre">mspass::algorithms::TimeWindow</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DataGap.add_gap" title="Permalink to this definition"></a></dt>
+<dd><p>Define a specified time range as a data gap</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.DataGap.clear_gaps">
+<span class="sig-name descname"><span class="pre">clear_gaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">mspasspy.ccore.seismic.DataGap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0:</span> <span class="pre">mspass::algorithms::TimeWindow</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DataGap.clear_gaps" title="Permalink to this definition"></a></dt>
+<dd><p>Flush the entire gaps container</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.DataGap.get_gaps">
+<span class="sig-name descname"><span class="pre">get_gaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.DataGap" title="mspasspy.ccore.seismic.DataGap"><span class="pre">mspasspy.ccore.seismic.DataGap</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List[mspass::algorithms::TimeWindow]</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DataGap.get_gaps" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of TimeWindows marked as gaps</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.DataGap.has_gap">
+<span class="sig-name descname"><span class="pre">has_gap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.seismic.DataGap.has_gap" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>has_gap(self: mspasspy.ccore.seismic.DataGap) -&gt; bool</p></li>
+</ol>
+<p>Test if datum has any gaps defined</p>
+<ol class="arabic simple" start="2">
+<li><p>has_gap(self: mspasspy.ccore.seismic.DataGap, arg0: mspass::algorithms::TimeWindow) -&gt; bool</p></li>
+</ol>
+<p>Test if there is a gap inside a specified time range (defined with TimeWindow object)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.DataGap.is_gap">
+<span class="sig-name descname"><span class="pre">is_gap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.DataGap" title="mspasspy.ccore.seismic.DataGap"><span class="pre">mspasspy.ccore.seismic.DataGap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DataGap.is_gap" title="Permalink to this definition"></a></dt>
+<dd><p>Return true if arg0 time is inside a data gap</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.DoubleVector">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">DoubleVector</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DoubleVector" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
@@ -1823,6 +1870,45 @@ stored in the ensemble’s metadata.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeSeriesWGaps">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">TimeSeriesWGaps</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesWGaps" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>, <a class="reference internal" href="#mspasspy.ccore.seismic.DataGap" title="mspasspy.ccore.seismic.DataGap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataGap</span></code></a></p>
+<p>TimeSeries object with gap handling methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeSeriesWGaps.ator">
+<span class="sig-name descname"><span class="pre">ator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesWGaps" title="mspasspy.ccore.seismic.TimeSeriesWGaps"><span class="pre">mspasspy.ccore.seismic.TimeSeriesWGaps</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesWGaps.ator" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to relative time shifting gaps to match</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeSeriesWGaps.rtoa">
+<span class="sig-name descname"><span class="pre">rtoa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesWGaps.rtoa" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>rtoa(self: mspasspy.ccore.seismic.TimeSeriesWGaps) -&gt; None</p></li>
+</ol>
+<p>Return to UTC time using time shift defined in earlier ator call</p>
+<ol class="arabic simple" start="2">
+<li><p>rtoa(self: mspasspy.ccore.seismic.TimeSeriesWGaps, arg0: float) -&gt; None</p></li>
+</ol>
+<p>Return to UTC time using a specified time shift</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeSeriesWGaps.shift">
+<span class="sig-name descname"><span class="pre">shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesWGaps" title="mspasspy.ccore.seismic.TimeSeriesWGaps"><span class="pre">mspasspy.ccore.seismic.TimeSeriesWGaps</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesWGaps.shift" title="Permalink to this definition"></a></dt>
+<dd><p>Shift the time reference by a specified constant</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeSeriesWGaps.zero_gaps">
+<span class="sig-name descname"><span class="pre">zero_gaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesWGaps" title="mspasspy.ccore.seismic.TimeSeriesWGaps"><span class="pre">mspasspy.ccore.seismic.TimeSeriesWGaps</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesWGaps.zero_gaps" title="Permalink to this definition"></a></dt>
+<dd><p>Zero the data vector for all sections defined as a gap</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="algorithms">
 <h2>algorithms<a class="headerlink" href="#algorithms" title="Permalink to this heading"></a></h2>
@@ -2080,6 +2166,12 @@ stored in the ensemble’s metadata.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.repair_overlaps">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">repair_overlaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.repair_overlaps" title="Permalink to this definition"></a></dt>
+<dd><p>Attempt to remove redundant, matching overlapping data segments</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.seed_ensemble_sort">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">seed_ensemble_sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.seed_ensemble_sort" title="Permalink to this definition"></a></dt>
 <dd><p>Sort a TimeSeriesEnsemble with a natural order with seed name codes.</p>
@@ -2105,6 +2197,12 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dd class="field-odd"><p><strong>d</strong> – is the ensemble to be sorted.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.basic.splice_segments">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">splice_segments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesWGaps" title="mspasspy.ccore.seismic.TimeSeriesWGaps"><span class="pre">mspasspy.ccore.seismic.TimeSeriesWGaps</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.splice_segments" title="Permalink to this definition"></a></dt>
+<dd><p>Splice a time sorted list of TimeSeries data into a continuous block</p>
 </dd></dl>
 
 </section>

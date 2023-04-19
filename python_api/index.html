@@ -344,6 +344,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData"><code class="docutils literal notranslate"><span class="pre">WindowData()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData_with_duration"><code class="docutils literal notranslate"><span class="pre">WindowData_with_duration()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.window.ensemble_error_post"><code class="docutils literal notranslate"><span class="pre">ensemble_error_post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.window.merge"><code class="docutils literal notranslate"><span class="pre">merge()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.window.scale"><code class="docutils literal notranslate"><span class="pre">scale()</span></code></a></li>
 </ul>
 </li>
@@ -570,6 +571,14 @@
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble.update_metadata"><code class="docutils literal notranslate"><span class="pre">CoreTimeSeriesEnsemble.update_metadata()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.DataGap"><code class="docutils literal notranslate"><span class="pre">DataGap</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.DataGap.add_gap"><code class="docutils literal notranslate"><span class="pre">DataGap.add_gap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.DataGap.clear_gaps"><code class="docutils literal notranslate"><span class="pre">DataGap.clear_gaps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.DataGap.get_gaps"><code class="docutils literal notranslate"><span class="pre">DataGap.get_gaps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.DataGap.has_gap"><code class="docutils literal notranslate"><span class="pre">DataGap.has_gap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.DataGap.is_gap"><code class="docutils literal notranslate"><span class="pre">DataGap.is_gap()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.DoubleVector"><code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.DoubleVector.append"><code class="docutils literal notranslate"><span class="pre">DoubleVector.append()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.DoubleVector.clear"><code class="docutils literal notranslate"><span class="pre">DoubleVector.clear()</span></code></a></li>
@@ -653,6 +662,13 @@
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesVector.pop"><code class="docutils literal notranslate"><span class="pre">TimeSeriesVector.pop()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesWGaps"><code class="docutils literal notranslate"><span class="pre">TimeSeriesWGaps</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesWGaps.ator"><code class="docutils literal notranslate"><span class="pre">TimeSeriesWGaps.ator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesWGaps.rtoa"><code class="docutils literal notranslate"><span class="pre">TimeSeriesWGaps.rtoa()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesWGaps.shift"><code class="docutils literal notranslate"><span class="pre">TimeSeriesWGaps.shift()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesWGaps.zero_gaps"><code class="docutils literal notranslate"><span class="pre">TimeSeriesWGaps.zero_gaps()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.ccore.html#algorithms">algorithms</a><ul>
@@ -701,7 +717,9 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.agc"><code class="docutils literal notranslate"><span class="pre">agc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.repair_overlaps"><code class="docutils literal notranslate"><span class="pre">repair_overlaps()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.seed_ensemble_sort"><code class="docutils literal notranslate"><span class="pre">seed_ensemble_sort()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.splice_segments"><code class="docutils literal notranslate"><span class="pre">splice_segments()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.ccore.html#module-mspasspy.ccore.algorithms.amplitudes">amplitudes</a><ul>

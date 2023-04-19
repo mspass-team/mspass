@@ -19,6 +19,7 @@
     <includedby refid="bundle_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc</includedby>
     <includedby refid="_c_n_r3_c_decon_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc</includedby>
     <includedby refid="slice__and__dice_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc</includedby>
+    <includedby refid="splicing_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc</includedby>
     <includedby refid="tseries__helpers_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/tseries_helpers.cc</includedby>
     <includedby refid="fileio_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc</includedby>
     <includedby refid="_time_series_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc</includedby>
@@ -268,6 +269,8 @@
       <node id="11">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</label>
         <link refid="_time_series_w_gaps_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
       </node>
       <node id="8">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h</label>
@@ -312,7 +315,7 @@
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/ProcessingHistory.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/ErrorLogger.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref>{</highlight></codeline>
-<codeline lineno="13" refid="classmspass_1_1seismic_1_1_time_series" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref><sp/>:<sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref>,</highlight></codeline>
+<codeline lineno="13" refid="classmspass_1_1seismic_1_1_time_series" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref>,</highlight></codeline>
 <codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">mspass::utility::ProcessingHistory</ref></highlight></codeline>
 <codeline lineno="15"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>

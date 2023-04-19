@@ -120,12 +120,15 @@
     <span class="n">TimeSeries</span><span class="p">,</span>
     <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
     <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+    <span class="n">TimeSeriesVector</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">TimeWindow</span><span class="p">,</span>
     <span class="n">_TopMute</span><span class="p">,</span>
     <span class="n">_WindowData</span><span class="p">,</span>
     <span class="n">_WindowData3C</span><span class="p">,</span>
+    <span class="n">repair_overlaps</span><span class="p">,</span>
+    <span class="n">splice_segments</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.amplitudes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_scale</span><span class="p">,</span>
@@ -539,6 +542,261 @@
         <span class="n">d</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">d</span></div>
+
+
+<span class="c1"># @mspass_func_wrapper</span>
+<div class="viewcode-block" id="merge"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge">[docs]</a><span class="k">def</span> <span class="nf">merge</span><span class="p">(</span>
+    <span class="n">tsvector</span><span class="p">,</span>
+    <span class="n">starttime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">endtime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fix_overlaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">zero_gaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Splices a vector of TimeSeries objects together and optionally carves</span>
+<span class="sd">    out a specified time window.  It acts a bit like an obspy function</span>
+<span class="sd">    with the same name, but has completely different options and works</span>
+<span class="sd">    with native MsPASS TimeSeries objects.</span>
+
+<span class="sd">    This function is a workhorse for handling continuous data that are</span>
+<span class="sd">    universally stored today as a series of files.   The input to this</span>
+<span class="sd">    function is an array of TimeSeries objects that are assummed to be</span>
+<span class="sd">    created from a set of data stored in such files.   The data are assumed</span>
+<span class="sd">    to be from a common stream of a single channel and sorted so the</span>
+<span class="sd">    array index defines a time order.  The algorithm attempts to glue the</span>
+<span class="sd">    segments together into a single time series that is returned.</span>
+<span class="sd">    The algorithm by default assumes the input is &quot;clean&quot; which means</span>
+<span class="sd">    the endtime of each input TimeSeries is 1 sample ahead of the start time</span>
+<span class="sd">    of the next segment (i.e. (segment[i+1].t0()-segment[i].endtime()) == dt).</span>
+<span class="sd">    The actual test is that the time difference is less than dt/2.</span>
+
+<span class="sd">    This algorithm treats two conditions as a fatal error and will throw</span>
+<span class="sd">    a MsPASSError when the condition occurs:</span>
+<span class="sd">        1.   It checks that the input array of TimeSeries data are in</span>
+<span class="sd">             time order.</span>
+<span class="sd">        2.   It checks that the inputs all have the same sample rate.</span>
+<span class="sd">        3.   If fix_overlaps is False if an overlap is found it</span>
+<span class="sd">             is considered an exception.</span>
+<span class="sd">    Either of these conditions will cause the function to throw an</span>
+<span class="sd">    exception.  The assumption is that either is a user error created</span>
+<span class="sd">    by failing to reading the directions that emphasize this requirement</span>
+<span class="sd">    for the input.</span>
+
+<span class="sd">    Other conditions can cause the output to be marked dead with an</span>
+<span class="sd">    error message posted to the output&#39;s elog attribute.  These are:</span>
+<span class="sd">        1.  This algorithm aims to produce an output with data stored in</span>
+<span class="sd">            a continuous vector with a length defined by the total time</span>
+<span class="sd">            span of the input.  Naive use can create enormously long</span>
+<span class="sd">            vectors that would mostly be empty.   (e.g. two random</span>
+<span class="sd">            day files with a 5 year difference in start time)  The</span>
+<span class="sd">            algorithm refuses to try to merge data when the span exceeds</span>
+<span class="sd">            an internal threshold of 10^8 samples.</span>
+<span class="sd">        2.  If fix_overlaps is false any overlap of successive endtime to</span>
+<span class="sd">            the next starttime of more than 0.5 samples will cause the</span>
+<span class="sd">            output to be killed.   The assumption is such data have a</span>
+<span class="sd">            serious timing problem retained even after any cleaning.</span>
+
+<span class="sd">    The above illustrates that this function behaves differently and makes</span>
+<span class="sd">    different assumption if the argument check_overlaps is True or False.</span>
+<span class="sd">    False is faster because it bypasses the algorithm used to fix overlaps,</span>
+<span class="sd">    but is safer if your data is not perfectly clean in the sense of</span>
+<span class="sd">    lacking any timing issues or problem with duplicates.   If the</span>
+<span class="sd">    fix_overlaps boolean is set True, the mspass overlap handler is</span>
+<span class="sd">    involked that is a C++ function with the name &quot;repair_overlaps&quot;.</span>
+<span class="sd">    The function was designed only to handle the following common</span>
+<span class="sd">    situations.  How they are handled is different for each situation.</span>
+<span class="sd">        1.  Duplicate waveform segments spanning a common time interval</span>
+<span class="sd">            can exist in raw data and accidentally by indexing two copies</span>
+<span class="sd">            the same data.   If the samples in the overlapping section</span>
+<span class="sd">            match the algorithm will attempt to remove the overlapping</span>
+<span class="sd">            section.   The algorithm is known to work only for a pair of</span>
+<span class="sd">            pure duplicates and a smaller segment with a start time after</span>
+<span class="sd">            a more complete segment.   It may fail if there are more than</span>
+<span class="sd">            three or more copies of the same waveform in the input or</span>
+<span class="sd">            one of the waveforms spans a smaller time range than the other</span>
+<span class="sd">            but has the same start time.   The first is a gross user error.</span>
+<span class="sd">            The second should be rare an is conceivable only with raw</span>
+<span class="sd">            data where a packet or two was randomly saved twice - something</span>
+<span class="sd">            that shouldn&#39;t happen but could with flakey hardware.</span>
+<span class="sd">        2.  If an overlap is detected AND the sample data in the overlap</span>
+<span class="sd">            are different the algorithm assumes the data have a timing</span>
+<span class="sd">            problem that created this situation.   Our experience is this</span>
+<span class="sd">            situation only happens when an instrument has a timing problem.</span>
+<span class="sd">            All continuous data generating digitizers we know of use a</span>
+<span class="sd">            timing system slaved to an external reference (usually GPS time).</span>
+<span class="sd">            If the external signal is lost the clock drifts.  When the</span>
+<span class="sd">            signal is restored if the digitizer detects a large time</span>
+<span class="sd">            jump it may reset (time jerk) to tag the next packet of data</span>
+<span class="sd">            with the updated time based on the standard.  If that time</span>
+<span class="sd">            jump is forward it will leave an apparent gap in the data, which</span>
+<span class="sd">            we discuss below, but if the jump is backward it will leave an</span>
+<span class="sd">            apparent overlap with inconsistent samples.   The</span>
+<span class="sd">            repair_overlaps function assumes that is the cause of all overlaps</span>
+<span class="sd">            it detects.</span>
+
+<span class="sd">    The final common situation this function needs to handle is gaps.  A</span>
+<span class="sd">    gap is defined in this algorithm as any section where the endtime of</span>
+<span class="sd">    one segment is followed by a start time of the next segment that is</span>
+<span class="sd">    more than 1 sample in duration.  Specifically when</span>
+<span class="sd">       (segment[i+1].t0()-segment[i].endtime()) &gt; 1.5*dt</span>
+<span class="sd">    The result depends on values of the (optional) windowing arguments</span>
+<span class="sd">    starttime and endtime and the boolean &quot;zero_gaps&quot; argument.</span>
+<span class="sd">    If windowing is enabled (done by changing</span>
+<span class="sd">    default None values of starttime and endtime) any gap will be harmless</span>
+<span class="sd">    unless it is present inside the specified time time range.  In all</span>
+<span class="sd">    cases what happens to the output depends upon the boolean zero_gaps.</span>
+<span class="sd">    When zero_gaps is False any gaps detected within the output range of</span>
+<span class="sd">    the result (windowed range if specified but the full time of the input otherwise)</span>
+<span class="sd">    When set True gap sections will be zeroed in the output data vector.</span>
+<span class="sd">    All outputs with gaps that have been zeroed will have the boolean</span>
+<span class="sd">    Metadata attribute &quot;has_gaps&quot; set True and undefined otherwise.</span>
+<span class="sd">    When the has_data attribute is set true the tap windows will be</span>
+<span class="sd">    stored as a list of &quot;TimeWindow&quot; objects with the Metadata key &quot;gaps&quot;.</span>
+
+<span class="sd">    :param tsvector:  array of TimeSeries data that are to be spliced</span>
+<span class="sd">      together to create a single output.   The contents must all have</span>
+<span class="sd">      the same sample rate and be sorted by starttime.</span>
+<span class="sd">    :type tsvector:  expected to be a TimeSeriesVector, which is the name</span>
+<span class="sd">      we give in the pybind11 code to a C++ std:vector&lt;TimeSeries&gt; container.</span>
+<span class="sd">      Any iterable container of TimeSeries data will be accepted, however,</span>
+<span class="sd">      with a loss of efficiency.  e.g. it could be a list of TimeSeries</span>
+<span class="sd">      data but if so another copy of the created internally and passed</span>
+<span class="sd">      to the ccore function that does the work.  We recommend custom</span>
+<span class="sd">      applications use the TimeSeriesVector container directly but</span>
+<span class="sd">      many may find it more convenient to bundle data into a TimeSeriesEnsemble</span>
+<span class="sd">      and use the member attribute of the ensemble as the input.</span>
+<span class="sd">      i.e. if ens is a TimeSeriesEnsemble use something like this:</span>
+<span class="sd">           outdata = merge(ens.member)</span>
+<span class="sd">    :param starttime: (optional) start time to apply for windowing the</span>
+<span class="sd">      output.  Default is None which means the output will be created</span>
+<span class="sd">      as the merge of all the inputs.  When set WindowData is applied</span>
+<span class="sd">      with this start time.   Note if endtime is defined but starttime</span>
+<span class="sd">      is None windowing is enabled with starttime = earliest segment start time.</span>
+<span class="sd">    :type starttime:  double - assumed to be a UTC time expressed as a unix</span>
+<span class="sd">      epoch time.</span>
+<span class="sd">    :param endtime: (optional) end time to apply for windowing the</span>
+<span class="sd">      output.  Default is None which means the output will be created</span>
+<span class="sd">      as the merge of all the inputs.  When set WindowData is applied</span>
+<span class="sd">      with this end time.   Note if starttime is defined but endtime</span>
+<span class="sd">      is None windowing is enabled with endtime = latest end time of</span>
+<span class="sd">      all segments.</span>
+<span class="sd">    :type endtime:  double - assumed to be a UTC time expressed as a unix</span>
+<span class="sd">      epoch time.</span>
+<span class="sd">    :param fix_overlaps:  when set True (default is False) if an overlap</span>
+<span class="sd">      is detected the algorithm will attempt to repair the overlap</span>
+<span class="sd">      to yield a continuous time series vectgor if it determined to have</span>
+<span class="sd">      matching data.  See description above for more details.</span>
+<span class="sd">    :type fix_overlaps:  boolean</span>
+<span class="sd">    :param zero_gaps:  When set False, which is the default, any gaps</span>
+<span class="sd">      detected in the output window will cause the return to be marked</span>
+<span class="sd">      dead.  When set True, gaps will be zeroed and with a record of</span>
+<span class="sd">      gap positions posted to the Metadata of the output.  See above</span>
+<span class="sd">      for details.</span>
+<span class="sd">    :param zero_gaps:  boolean</span>
+<span class="sd">    :param object_history: boolean to enable or disable saving object</span>
+<span class="sd">      level history.  Default is False.  Note this functionality is</span>
+<span class="sd">      implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">    :param alg_name:   When history is enabled this is the algorithm name</span>
+<span class="sd">      assigned to the stamp for applying this algorithm.</span>
+<span class="sd">      Default (&quot;WindowData&quot;) should normally be just used.</span>
+<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">    :param ald_id:  algorithm id to assign to history record (used only if</span>
+<span class="sd">      object_history is set True.)</span>
+<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">    :param dryrun:</span>
+<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">    :param dryrun:</span>
+<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+
+<span class="sd">    :return: TimeSeries in the range defined by the time span of the input</span>
+<span class="sd">      vector of segments or if starttime or endtime are specified a reduced</span>
+<span class="sd">      time range.  The result may be marked dead for a variety of reasons</span>
+<span class="sd">      with error messages explaining why in the return elog attribute.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tsvector</span><span class="p">,</span> <span class="n">TimeSeriesVector</span><span class="p">):</span>
+        <span class="c1"># We assume this will throw an exception if tsvector is not iterable</span>
+        <span class="c1"># or doesn&#39;t contain TimeSeries objects</span>
+        <span class="n">dvector</span> <span class="o">=</span> <span class="n">TimeSeriesVector</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tsvector</span><span class="p">:</span>
+            <span class="n">dvector</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dvector</span> <span class="o">=</span> <span class="n">tsvector</span>
+    <span class="k">if</span> <span class="n">fix_overlaps</span><span class="p">:</span>
+        <span class="n">dvector</span> <span class="o">=</span> <span class="n">repair_overlaps</span><span class="p">(</span><span class="n">dvector</span><span class="p">)</span>
+    <span class="n">spliced_data</span> <span class="o">=</span> <span class="n">splice_segments</span><span class="p">(</span><span class="n">dvector</span><span class="p">,</span> <span class="n">object_history</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">spliced_data</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="c1"># the contents of spliced_data could be huge so best to</span>
+        <span class="c1"># do this to effectively clear the data vector</span>
+        <span class="n">spliced_data</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">spliced_data</span><span class="p">)</span>
+    <span class="n">window_data</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">output_window</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">starttime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">output_window</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">spliced_data</span><span class="o">.</span><span class="n">t0</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">output_window</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">starttime</span>
+        <span class="n">window_data</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">endtime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">output_window</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">spliced_data</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">output_window</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">endtime</span>
+        <span class="n">window_data</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">window_data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">spliced_data</span><span class="o">.</span><span class="n">has_gap</span><span class="p">(</span><span class="n">output_window</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">zero_gaps</span><span class="p">:</span>
+                <span class="n">spliced_data</span><span class="o">.</span><span class="n">zero_gaps</span><span class="p">()</span>
+                <span class="n">spliced_data</span> <span class="o">=</span> <span class="n">_post_gap_data</span><span class="p">(</span><span class="n">spliced_data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">spliced_data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="n">spliced_data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="s2">&quot;merge&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Data have gaps in output range; will be killed&quot;</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">WindowData</span><span class="p">(</span>
+            <span class="n">spliced_data</span><span class="p">,</span>
+            <span class="n">output_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="n">output_window</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
+            <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">spliced_data</span><span class="o">.</span><span class="n">has_gaps</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">zero_gaps</span><span class="p">:</span>
+                <span class="n">spliced_data</span><span class="o">.</span><span class="n">zero_gaps</span><span class="p">()</span>
+                <span class="n">spliced_data</span> <span class="o">=</span> <span class="n">_post_gap_data</span><span class="p">(</span><span class="n">spliced_data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">spliced_data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="n">spliced_data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="s2">&quot;merge&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;merged data have gaps; output will be killed&quot;</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">spliced_data</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_post_gap_data</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Private function used by merge immediately above.   Takes an input</span>
+<span class="sd">    d that is assumed (no testing is done here) to be a TimeSeriesWGaps</span>
+<span class="sd">    object.  It pulls gap data from d and posts the gap data to d.</span>
+<span class="sd">    It then returns d.  It silently does nothing if d has not gaps defined.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">has_gap</span><span class="p">():</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;has_gaps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">twlist</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_gaps</span><span class="p">()</span>
+        <span class="c1"># to allow the result to more cleanly stored to MongoDB we</span>
+        <span class="c1"># convert the window data to list of python dictionaries which</span>
+        <span class="c1"># mongo will use to create subdocuments</span>
+        <span class="n">gaps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">tw</span> <span class="ow">in</span> <span class="n">twlist</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;starttime&quot;</span><span class="p">:</span> <span class="n">tw</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="s2">&quot;endtime&quot;</span><span class="p">:</span> <span class="n">tw</span><span class="o">.</span><span class="n">end</span><span class="p">}</span>
+            <span class="n">gaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;gaps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gaps</span>
+    <span class="k">return</span> <span class="n">d</span>
 
 
 <div class="viewcode-block" id="TopMute"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.TopMute">[docs]</a><span class="k">class</span> <span class="nc">TopMute</span><span class="p">:</span>

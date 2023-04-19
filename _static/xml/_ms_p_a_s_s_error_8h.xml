@@ -25,11 +25,13 @@
     <includedby refid="seismogram__helpers_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc</includedby>
     <includedby refid="slice__and__dice_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc</includedby>
     <includedby refid="sparse__convolve_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc</includedby>
+    <includedby refid="splicing_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc</includedby>
     <includedby refid="tseries__helpers_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/tseries_helpers.cc</includedby>
     <includedby refid="fileio_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc</includedby>
     <includedby refid="_basic_time_series_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc</includedby>
     <includedby refid="_core_seismogram_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc</includedby>
     <includedby refid="_core_time_series_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc</includedby>
+    <includedby refid="_time_series_w_gaps_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc</includedby>
     <includedby refid="_antelope_pf_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc</includedby>
     <includedby refid="data__directory_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/data_directory.cc</includedby>
     <includedby refid="_metadata_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc</includedby>
@@ -257,6 +259,8 @@
       <node id="23">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</label>
         <link refid="_time_series_w_gaps_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
       </node>
       <node id="27">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h</label>

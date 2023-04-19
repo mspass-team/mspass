@@ -681,7 +681,7 @@ you want to reduce the log size.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.index_mseed_file">
-<span class="sig-name descname"><span class="pre">index_mseed_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_miniseed'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_time_tears</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elog_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'elog'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_file" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">index_mseed_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_miniseed'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_time_tears</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elog_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'elog'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_file" title="Permalink to this definition"></a></dt>
 <dd><p>This is the first stage import function for handling the import of
 miniseed data.  This function scans a data file defined by a directory
 (dir arg) and dfile (file name) argument.  I builds an index
@@ -708,7 +708,7 @@ That can happen at the instrument level in at least two common
 ways: (1) dropped packets from telemetry issues, or (2) instrument
 timing jumps when a clock loses external lock to gps or some
 other standard and the rock is restored.  The behavior is this
-function in gap handling is controlled by the input parameter
+function is controlled by the input parameter
 segment_time_tears.  When true a new index entry is created
 any time the start time of a packet differs from that computed
 from the endtime of the last packet by more than one sample
@@ -749,7 +749,7 @@ to use anything but the default.</p></li>
 <li><p><strong>segment_time_tears</strong> – boolean controlling handling of data gaps
 defined by constant net, sta, chan, and loc but a discontinuity
 in time tags for successive packets.  See above for a more extensive
-discussion of how to use this parameter.  Default is False.</p></li>
+discussion of how to use this parameter.  Default is True.</p></li>
 <li><p><strong>elog_collection</strong> – name to write any error logs messages
 from the miniseed reader.  Default is “elog”, which is the
 same as for TimeSeries and Seismogram data, but the cross reference
@@ -1084,12 +1084,12 @@ is an empty dict which translates to an empty ensemble metadata container.</p></
 <dd><p>Reads an subset of a dataset with some logical grouping into an Ensemble container.
 It has the same fucntion as read_ensemble_data(), but is more efficient in reading binary files.
 The improvement is achieved by avoiding duplicate open and close for the same file.
-MsPASS Objects are grouped firstly by files they are in. If two objects are in the same file, 
+MsPASS Objects are grouped firstly by files they are in. If two objects are in the same file,
 with the same directory and filename, they will be in the same file group. For each group,
-there will be only one open and close. For objects stored in the same file, their foffs 
-will be collected and passed to fread_from_file(). Then open the file once, and sequentially 
+there will be only one open and close. For objects stored in the same file, their foffs
+will be collected and passed to fread_from_file(). Then open the file once, and sequentially
 read the data according to the foffs.</p>
-<p>This function only supports binary file format (format=None), as the optimization will not 
+<p>This function only supports binary file format (format=None), as the optimization will not
 work in other formats.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

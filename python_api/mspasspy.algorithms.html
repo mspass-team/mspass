@@ -163,6 +163,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.WindowData"><code class="docutils literal notranslate"><span class="pre">WindowData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.WindowData_with_duration"><code class="docutils literal notranslate"><span class="pre">WindowData_with_duration()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.ensemble_error_post"><code class="docutils literal notranslate"><span class="pre">ensemble_error_post()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.merge"><code class="docutils literal notranslate"><span class="pre">merge()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.scale"><code class="docutils literal notranslate"><span class="pre">scale()</span></code></a></li>
 </ul>
 </li>
@@ -3400,6 +3401,169 @@ objects.</p>
 <li><p><strong>message</strong> – is the string posted to all members</p></li>
 <li><p><strong>severity</strong> – is the error severity level</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.window.merge">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.window.</span></span><span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsvector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starttime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fix_overlaps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_gaps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'merge'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">TimeSeries</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#merge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.window.merge" title="Permalink to this definition"></a></dt>
+<dd><p>Splices a vector of TimeSeries objects together and optionally carves
+out a specified time window.  It acts a bit like an obspy function
+with the same name, but has completely different options and works
+with native MsPASS TimeSeries objects.</p>
+<p>This function is a workhorse for handling continuous data that are
+universally stored today as a series of files.   The input to this
+function is an array of TimeSeries objects that are assummed to be
+created from a set of data stored in such files.   The data are assumed
+to be from a common stream of a single channel and sorted so the
+array index defines a time order.  The algorithm attempts to glue the
+segments together into a single time series that is returned.
+The algorithm by default assumes the input is “clean” which means
+the endtime of each input TimeSeries is 1 sample ahead of the start time
+of the next segment (i.e. (segment[i+1].t0()-segment[i].endtime()) == dt).
+The actual test is that the time difference is less than dt/2.</p>
+<p>This algorithm treats two conditions as a fatal error and will throw
+a MsPASSError when the condition occurs:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>It checks that the input array of TimeSeries data are in
+time order.</p></li>
+<li><p>It checks that the inputs all have the same sample rate.</p></li>
+<li><p>If fix_overlaps is False if an overlap is found it
+is considered an exception.</p></li>
+</ol>
+</div></blockquote>
+<p>Either of these conditions will cause the function to throw an
+exception.  The assumption is that either is a user error created
+by failing to reading the directions that emphasize this requirement
+for the input.</p>
+<p>Other conditions can cause the output to be marked dead with an
+error message posted to the output’s elog attribute.  These are:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>This algorithm aims to produce an output with data stored in
+a continuous vector with a length defined by the total time
+span of the input.  Naive use can create enormously long
+vectors that would mostly be empty.   (e.g. two random
+day files with a 5 year difference in start time)  The
+algorithm refuses to try to merge data when the span exceeds
+an internal threshold of 10^8 samples.</p></li>
+<li><p>If fix_overlaps is false any overlap of successive endtime to
+the next starttime of more than 0.5 samples will cause the
+output to be killed.   The assumption is such data have a
+serious timing problem retained even after any cleaning.</p></li>
+</ol>
+</div></blockquote>
+<p>The above illustrates that this function behaves differently and makes
+different assumption if the argument check_overlaps is True or False.
+False is faster because it bypasses the algorithm used to fix overlaps,
+but is safer if your data is not perfectly clean in the sense of
+lacking any timing issues or problem with duplicates.   If the
+fix_overlaps boolean is set True, the mspass overlap handler is
+involked that is a C++ function with the name “repair_overlaps”.
+The function was designed only to handle the following common
+situations.  How they are handled is different for each situation.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Duplicate waveform segments spanning a common time interval
+can exist in raw data and accidentally by indexing two copies
+the same data.   If the samples in the overlapping section
+match the algorithm will attempt to remove the overlapping
+section.   The algorithm is known to work only for a pair of
+pure duplicates and a smaller segment with a start time after
+a more complete segment.   It may fail if there are more than
+three or more copies of the same waveform in the input or
+one of the waveforms spans a smaller time range than the other
+but has the same start time.   The first is a gross user error.
+The second should be rare an is conceivable only with raw
+data where a packet or two was randomly saved twice - something
+that shouldn’t happen but could with flakey hardware.</p></li>
+<li><p>If an overlap is detected AND the sample data in the overlap
+are different the algorithm assumes the data have a timing
+problem that created this situation.   Our experience is this
+situation only happens when an instrument has a timing problem.
+All continuous data generating digitizers we know of use a
+timing system slaved to an external reference (usually GPS time).
+If the external signal is lost the clock drifts.  When the
+signal is restored if the digitizer detects a large time
+jump it may reset (time jerk) to tag the next packet of data
+with the updated time based on the standard.  If that time
+jump is forward it will leave an apparent gap in the data, which
+we discuss below, but if the jump is backward it will leave an
+apparent overlap with inconsistent samples.   The
+repair_overlaps function assumes that is the cause of all overlaps
+it detects.</p></li>
+</ol>
+</div></blockquote>
+<p>The final common situation this function needs to handle is gaps.  A
+gap is defined in this algorithm as any section where the endtime of
+one segment is followed by a start time of the next segment that is
+more than 1 sample in duration.  Specifically when</p>
+<blockquote>
+<div><p>(segment[i+1].t0()-segment[i].endtime()) &gt; 1.5*dt</p>
+</div></blockquote>
+<p>The result depends on values of the (optional) windowing arguments
+starttime and endtime and the boolean “zero_gaps” argument.
+If windowing is enabled (done by changing
+default None values of starttime and endtime) any gap will be harmless
+unless it is present inside the specified time time range.  In all
+cases what happens to the output depends upon the boolean zero_gaps.
+When zero_gaps is False any gaps detected within the output range of
+the result (windowed range if specified but the full time of the input otherwise)
+When set True gap sections will be zeroed in the output data vector.
+All outputs with gaps that have been zeroed will have the boolean
+Metadata attribute “has_gaps” set True and undefined otherwise.
+When the has_data attribute is set true the tap windows will be
+stored as a list of “TimeWindow” objects with the Metadata key “gaps”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tsvector</strong> – array of TimeSeries data that are to be spliced
+together to create a single output.   The contents must all have
+the same sample rate and be sorted by starttime.</p></li>
+<li><p><strong>starttime</strong> (<em>double - assumed to be a UTC time expressed as a unix
+epoch time.</em>) – (optional) start time to apply for windowing the
+output.  Default is None which means the output will be created
+as the merge of all the inputs.  When set WindowData is applied
+with this start time.   Note if endtime is defined but starttime
+is None windowing is enabled with starttime = earliest segment start time.</p></li>
+<li><p><strong>endtime</strong> (<em>double - assumed to be a UTC time expressed as a unix
+epoch time.</em>) – (optional) end time to apply for windowing the
+output.  Default is None which means the output will be created
+as the merge of all the inputs.  When set WindowData is applied
+with this end time.   Note if starttime is defined but endtime
+is None windowing is enabled with endtime = latest end time of
+all segments.</p></li>
+<li><p><strong>fix_overlaps</strong> (<em>boolean</em>) – when set True (default is False) if an overlap
+is detected the algorithm will attempt to repair the overlap
+to yield a continuous time series vectgor if it determined to have
+matching data.  See description above for more details.</p></li>
+<li><p><strong>zero_gaps</strong> – When set False, which is the default, any gaps
+detected in the output window will cause the return to be marked
+dead.  When set True, gaps will be zeroed and with a record of
+gap positions posted to the Metadata of the output.  See above
+for details.</p></li>
+<li><p><strong>zero_gaps</strong> – boolean</p></li>
+<li><p><strong>object_history</strong> – boolean to enable or disable saving object
+level history.  Default is False.  Note this functionality is
+implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>alg_name</strong> – When history is enabled this is the algorithm name
+assigned to the stamp for applying this algorithm.
+Default (“WindowData”) should normally be just used.
+Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>ald_id</strong> – algorithm id to assign to history record (used only if
+object_history is set True.)
+Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>dryrun</strong> – Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>dryrun</strong> – Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TimeSeries in the range defined by the time span of the input
+vector of segments or if starttime or endtime are specified a reduced
+time range.  The result may be marked dead for a variety of reasons
+with error messages explaining why in the return elog attribute.</p>
 </dd>
 </dl>
 </dd></dl>

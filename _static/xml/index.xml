@@ -366,6 +366,7 @@
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" kind="variable"><name>s</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" kind="function"><name>CoreTimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1a0cb99b254e48280ff9fd674976e53c4e" kind="function"><name>CoreTimeSeries</name></member>
+    <member refid="classmspass_1_1seismic_1_1_core_time_series_1a89c257008450ceb6d96e0cdb95e24673" kind="function"><name>~CoreTimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1ae44860d32e7ca37a66eca974546a62ea" kind="function"><name>CoreTimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1a4a8b98447f31911e6e18079541ab7b0d" kind="function"><name>CoreTimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841" kind="function"><name>set_dt</name></member>
@@ -397,12 +398,15 @@
     <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1a00dd57ac593ed8b0af27e55e48eaa1cc" kind="function"><name>serialize</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_data_gap" kind="class"><name>mspass::seismic::DataGap</name>
-    <member refid="classmspass_1_1seismic_1_1_data_gap_1ab83ccd2842b4d16b437cae78f41a1502" kind="variable"><name>gaps</name></member>
-    <member refid="classmspass_1_1seismic_1_1_data_gap_1a2d3e9e782c3422fcde7a022179aadce1" kind="function"><name>is_gap</name></member>
+    <member refid="classmspass_1_1seismic_1_1_data_gap_1a29c06c530f6b02c7d94c21b08af9c384" kind="variable"><name>gaps</name></member>
+    <member refid="classmspass_1_1seismic_1_1_data_gap_1aa2a1e74ae7bf6ef9f3ff79153b890146" kind="function"><name>DataGap</name></member>
+    <member refid="classmspass_1_1seismic_1_1_data_gap_1a2a6b612559664dc5634cd34eb8182227" kind="function"><name>DataGap</name></member>
+    <member refid="classmspass_1_1seismic_1_1_data_gap_1af79b8d0091f6b5dce87cc8086b268b27" kind="function"><name>~DataGap</name></member>
     <member refid="classmspass_1_1seismic_1_1_data_gap_1adf3621238e5e44ac3c8fb014b24420b4" kind="function"><name>is_gap</name></member>
-    <member refid="classmspass_1_1seismic_1_1_data_gap_1a52dcbddf4937cb18da6e3486ce8cf84c" kind="function"><name>is_gap</name></member>
+    <member refid="classmspass_1_1seismic_1_1_data_gap_1a794ed8d8f2d1e3bb3b7923bb133fa916" kind="function"><name>has_gap</name></member>
     <member refid="classmspass_1_1seismic_1_1_data_gap_1a965fe5d75c39296d2ea32641d7d8db69" kind="function"><name>has_gap</name></member>
-    <member refid="classmspass_1_1seismic_1_1_data_gap_1afa1ba5dff45194cf4889131a67640392" kind="function"><name>add_gap</name></member>
+    <member refid="classmspass_1_1seismic_1_1_data_gap_1a29bd754c4f58ce811c4e6e1e4056927c" kind="function"><name>add_gap</name></member>
+    <member refid="classmspass_1_1seismic_1_1_data_gap_1ac1a5133f17e4e741f8b7560c46d1d204" kind="function"><name>get_gaps</name></member>
     <member refid="classmspass_1_1seismic_1_1_data_gap_1a8a5b2919df07147fe740a5d4f2af1908" kind="function"><name>clear_gaps</name></member>
     <member refid="classmspass_1_1seismic_1_1_data_gap_1ad57272fa5685b99efb01bd4c740900d6" kind="function"><name>zero_gaps</name></member>
   </compound>
@@ -973,6 +977,22 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9adc0519d5435d686edb32066f9f697a" kind="function"><name>inverse_wavelet</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1af683c2f25e91155c2bc1f81f9b62bbb1" kind="function"><name>QCMetrics</name></member>
   </compound>
+  <compound refid="classmspass_1_1algorithms_1_1_segment_vector_properties" kind="class"><name>mspass::algorithms::SegmentVectorProperties</name>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab2541bbec22bf326e62ccd5ce218218a" kind="variable"><name>dt_constant</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a991e4f3870196d6120b832786853cbf4" kind="variable"><name>has_dead_components</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1affb1d954686717fd246d0a5e67f5d76d" kind="variable"><name>is_sorted</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a180e3eff3e8d5b85dbefa73a8ea12eb2" kind="variable"><name>has_overlaps</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1aa090679005192b1d0ac6479eb4c9e5f1" kind="variable"><name>number_live</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab6a08a067593409fc701a307b6a978df" kind="variable"><name>first_live</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2fa190c700e90a501cf2f31814269a46" kind="variable"><name>t0</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1af4e8c8f8ec47c4e63f45df256b246530" kind="variable"><name>endtime</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2b0312aadcb6326acc13d4388025be1b" kind="variable"><name>dt</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a0397981ece5e2617a4fa923e2a0cc8c5" kind="variable"><name>spliced_nsamp</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ae84e80d9ae19c01605198feed3e4baa9" kind="variable"><name>elog</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a6b3f53aecc3c06d1ccdf4ef9f9661030" kind="function"><name>SegmentVectorProperties</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ac375821d246ee015b58170f005dd8abe" kind="function"><name>SegmentVectorProperties</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab0f2b4e03ef418a5158f12a442d74082" kind="function"><name>SegmentVectorProperties</name></member>
+  </compound>
   <compound refid="classmspass_1_1seismic_1_1_seismogram" kind="class"><name>mspass::seismic::Seismogram</name>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1a427934e69f38a6e5d195fe6a8563021c" kind="function"><name>Seismogram</name></member>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1ad590dfa3a949494f55a93a567e785f51" kind="function"><name>Seismogram</name></member>
@@ -983,6 +1003,7 @@
     <member refid="classmspass_1_1seismic_1_1_seismogram_1acbb2f19850e7f5d4e9452ed3728b2b32" kind="function"><name>Seismogram</name></member>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1afaaac8777afb9a25b91b1b4b09b3652d" kind="function"><name>Seismogram</name></member>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1a275d43464679a4cb963fba217d9383c0" kind="function"><name>Seismogram</name></member>
+    <member refid="classmspass_1_1seismic_1_1_seismogram_1a78a4e2bc62921e3f81a211cb8ec8f460" kind="function"><name>~Seismogram</name></member>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1a68ddfc28edecdb64a007d5163adb9292" kind="function"><name>operator=</name></member>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1a6a08b90222beaf43809a3691f80b61c6" kind="function"><name>load_history</name></member>
   </compound>
@@ -1063,9 +1084,10 @@
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kind="class"><name>mspass::seismic::TimeSeriesWGaps</name>
     <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a6a4b2b0864ba62341790fc16d6aa222c" kind="function"><name>TimeSeriesWGaps</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1af337b3275f34adc06dcb1cead3fece20" kind="function"><name>TimeSeriesWGaps</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a2499cb34652f342028785384117d2ecb" kind="function"><name>TimeSeriesWGaps</name></member>
-    <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1ad60b9b5ef539e354d48ba7abc01409b7" kind="function"><name>operator=</name></member>
-    <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a364cc91f8c6943a99720fd220a0afb14" kind="function"><name>~TimeSeriesWGaps</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1ab3e0fde691c59a13ae4220a8001e3ea3" kind="function"><name>operator=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1a6ba0f20ec3b6d6a1b7050a1e8b73e7" kind="function"><name>~TimeSeriesWGaps</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1ac0738e8e0441f49d3c03b504dc7e44b9" kind="function"><name>ator</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a94b8dec417673158de0d68b31b353d49" kind="function"><name>rtoa</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a51eefbc8e6a034148da8f36e21870fe2" kind="function"><name>rtoa</name></member>
@@ -1086,7 +1108,7 @@
     <member refid="classmspass_1_1algorithms_1_1_time_window_cmp_1af53d9c42a7e611e473fa1d344c32519b" kind="function"><name>operator()</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_time_window_cmp" kind="class"><name>mspass::seismic::TimeWindowCmp</name>
-    <member refid="classmspass_1_1seismic_1_1_time_window_cmp_1a43e94f3187b592b7ad076676f2d3b413" kind="function"><name>operator()</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_window_cmp_1ad4907b066765551fa19bbf0d4c8a6e31" kind="function"><name>operator()</name></member>
   </compound>
   <compound refid="classmspass_1_1algorithms_1_1_top_mute" kind="class"><name>mspass::algorithms::TopMute</name>
     <member refid="classmspass_1_1algorithms_1_1_top_mute_1aecea2d8a3d79cb361e89c52b34136baa" kind="variable"><name>taper</name></member>
@@ -1168,6 +1190,8 @@
     <member refid="algorithms_8h_1a4ca98cd4433001b2c71ba46c221f6048" kind="function"><name>BundleSEEDGroup</name></member>
     <member refid="algorithms_8h_1aae4dea09147e0259fc6acf53dd5a88f9" kind="function"><name>bundle_seed_data</name></member>
     <member refid="algorithms_8h_1a307e1b2136eb6f253ef95b980c433db4" kind="function"><name>seed_ensemble_sort</name></member>
+    <member refid="algorithms_8h_1ae6f459805aed9f8e1012cf999ee3513e" kind="function"><name>splice_segments</name></member>
+    <member refid="algorithms_8h_1a90149f49eb7d56bb1395173f5d1cfabd" kind="function"><name>repair_overlaps</name></member>
     <member refid="bundle_8cc_1af7ec3c6143ab2b7f3a31655943070506" kind="function"><name>cautious_compare</name></member>
     <member refid="bundle_8cc_1a3b1619dbb3915f557aca6ed169fe008b" kind="function"><name>dogtag</name></member>
     <member refid="bundle_8cc_1a1fbb4b5c74c1f7e015c64ac807d5e254" kind="function"><name>BundleSEEDGroup</name></member>
@@ -1176,6 +1200,9 @@
     <member refid="seismogram__helpers_8cc_1aa5fee528b7b72e0ad47786869fdb3630" kind="function"><name>ArrivalTimeReference</name></member>
     <member refid="seismogram__helpers_8cc_1aa87c23638933c414c340a20893d81a27" kind="function"><name>ArrivalTimeReference</name></member>
     <member refid="seismogram__helpers_8cc_1a5989a2f816a058b5a8b94a67dea74ac3" kind="function"><name>HorizontalRotation</name></member>
+    <member refid="splicing_8cc_1ae512ac20f0a5fd8185dc8e9efac3503a" kind="function"><name>splice_segments</name></member>
+    <member refid="splicing_8cc_1a6b792528a77eac3ed19d8159fde853ae" kind="function"><name>samples_match</name></member>
+    <member refid="splicing_8cc_1a8a5bc3ba8f1972af801958ab572b17db" kind="function"><name>repair_overlaps</name></member>
     <member refid="_taper_8cc_1ab043d6b598f13edb61af41804bf6e9ad" kind="function"><name>headcos</name></member>
     <member refid="_taper_8cc_1ad0d3aa1bb569186de00c2c67afba6a3b" kind="function"><name>tailcos</name></member>
     <member refid="tseries__helpers_8cc_1acfbeb2b441c657883388adfa3afa3577" kind="function"><name>ArrivalTimeReference</name></member>
@@ -1412,7 +1439,7 @@
   <compound refid="src_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
   </compound>
   <compound refid="src_2lib_2algorithms_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
-    <member refid="src_2lib_2algorithms_2_c_make_lists_8txt_1a2673cdb7b080c7d0f14a8174b261dec6" kind="function"><name>FILE</name></member>
+    <member refid="src_2lib_2algorithms_2_c_make_lists_8txt_1a8e5824e79656875817730bd9215e1009" kind="function"><name>FILE</name></member>
   </compound>
   <compound refid="src_2lib_2algorithms_2deconvolution_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
     <member refid="src_2lib_2algorithms_2deconvolution_2_c_make_lists_8txt_1aeed155f496986432c2eee0c9572b25a3" kind="function"><name>include_directories</name></member>
@@ -1596,6 +1623,8 @@
   </compound>
   <compound refid="sparse__convolve_8cc" kind="file"><name>sparse_convolve.cc</name>
   </compound>
+  <compound refid="splicing_8cc" kind="file"><name>splicing.cc</name>
+  </compound>
   <compound refid="_taper_8cc" kind="file"><name>Taper.cc</name>
   </compound>
   <compound refid="tseries__helpers_8cc" kind="file"><name>tseries_helpers.cc</name>
@@ -1612,6 +1641,8 @@
   </compound>
   <compound refid="_core_time_series_8cc" kind="file"><name>CoreTimeSeries.cc</name>
   </compound>
+  <compound refid="_data_gap_8cc" kind="file"><name>DataGap.cc</name>
+  </compound>
   <compound refid="_power_spectrum_8cc" kind="file"><name>PowerSpectrum.cc</name>
   </compound>
   <compound refid="_seismogram_8cc" kind="file"><name>Seismogram.cc</name>
@@ -1619,6 +1650,8 @@
   <compound refid="_slowness_vector_8cc" kind="file"><name>SlownessVector.cc</name>
   </compound>
   <compound refid="_time_series_8cc" kind="file"><name>TimeSeries.cc</name>
+  </compound>
+  <compound refid="_time_series_w_gaps_8cc" kind="file"><name>TimeSeriesWGaps.cc</name>
   </compound>
   <compound refid="_antelope_pf_8cc" kind="file"><name>AntelopePf.cc</name>
   </compound>

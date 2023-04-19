@@ -4,7 +4,7 @@
     <compoundname>mspass::seismic::CoreSeismogram</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_basic_time_series" prot="public" virt="non-virtual">mspass::seismic::BasicTimeSeries</basecompoundref>
     <basecompoundref refid="classmspass_1_1utility_1_1_metadata" prot="public" virt="non-virtual">mspass::utility::Metadata</basecompoundref>
-    <derivedcompoundref refid="classmspass_1_1seismic_1_1_seismogram" prot="public" virt="virtual">mspass::seismic::Seismogram</derivedcompoundref>
+    <derivedcompoundref refid="classmspass_1_1seismic_1_1_seismogram" prot="public" virt="non-virtual">mspass::seismic::Seismogram</derivedcompoundref>
     <includes refid="_core_seismogram_8h" local="no">CoreSeismogram.h</includes>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" prot="public" static="no" mutable="no">

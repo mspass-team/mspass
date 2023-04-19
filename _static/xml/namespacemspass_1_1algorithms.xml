@@ -11,6 +11,7 @@
     <innerclass refid="classmspass_1_1algorithms_1_1_time_window" prot="public">mspass::algorithms::TimeWindow</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1_time_window_cmp" prot="public">mspass::algorithms::TimeWindowCmp</innerclass>
     <innerclass refid="structmspass_1_1algorithms_1_1greater__seedorder" prot="public">mspass::algorithms::greater_seedorder</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_segment_vector_properties" prot="public">mspass::algorithms::SegmentVectorProperties</innerclass>
     <innernamespace refid="namespacemspass_1_1algorithms_1_1amplitudes">mspass::algorithms::amplitudes</innernamespace>
     <innernamespace refid="namespacemspass_1_1algorithms_1_1deconvolution">mspass::algorithms::deconvolution</innernamespace>
       <sectiondef kind="func">
@@ -33,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/agc.cc" line="22" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/agc.cc" bodystart="22" bodyend="163" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="35" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/agc.cc" line="22" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/agc.cc" bodystart="22" bodyend="163" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="36" declcolumn="29"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a284b2feb1d76ac68476d7e3065a6b714" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref></type>
@@ -107,7 +108,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="136" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="136" bodyend="206" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="54" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="136" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="136" bodyend="206" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="55" declcolumn="29"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a1fac5643ae6b685a2f75ce6614fe1531" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
@@ -189,7 +190,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="28" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="28" bodyend="65" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="73" declcolumn="35"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="28" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="28" bodyend="65" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="74" declcolumn="35"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a13a1140230c63d16c000bd23b400ee37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
@@ -262,7 +263,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="222" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="222" bodyend="280" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="93" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="222" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="222" bodyend="280" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="94" declcolumn="29"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1ac6dcc4234af86fe3a7f7ca584b52b011" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
@@ -343,7 +344,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="81" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="81" bodyend="115" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="111" declcolumn="35"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="81" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="81" bodyend="115" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="112" declcolumn="35"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1af8a67b73e9e7380165e52ac6d084de74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt;</type>
@@ -405,7 +406,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="136" column="17" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="136" declcolumn="17"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="137" column="17" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="137" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a19d44e8cfc241d0d36787df6decc7832" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
@@ -457,7 +458,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="190" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="190" bodyend="257" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="159" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="190" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="190" bodyend="257" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="160" declcolumn="29"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1aeec9c9f728fd909f3c438b78124a22fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::shared_ptr&lt; <ref refid="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" kindref="member">mspass::seismic::ThreeComponentEnsemble</ref> &gt;</type>
@@ -519,7 +520,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="175" column="17" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="175" declcolumn="17"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="176" column="17" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="176" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a70e2a2142a48a9c0b0a95df605624356" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt;</type>
@@ -571,7 +572,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="258" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="258" bodyend="278" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="197" declcolumn="27"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="258" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="258" bodyend="278" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="198" declcolumn="27"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a34f711f7891ca198eb7cbef44bbd6a18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
@@ -611,7 +612,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" line="12" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" bodystart="12" bodyend="53" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="214" declcolumn="33"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" line="12" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" bodystart="12" bodyend="53" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="215" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a4ca98cd4433001b2c71ba46c221f6048" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref></type>
@@ -688,7 +689,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="279" column="29" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="279" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="280" column="29" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="280" declcolumn="29"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1aae4dea09147e0259fc6acf53dd5a88f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">mspass::seismic::LoggingEnsemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt;</type>
@@ -728,7 +729,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="390" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="390" bodyend="579" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="319" declcolumn="34"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="390" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="390" bodyend="579" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="320" declcolumn="34"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a307e1b2136eb6f253ef95b980c433db4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -759,7 +760,45 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="582" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="582" bodyend="587" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="345" declcolumn="6"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="582" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="582" bodyend="587" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="346" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1ae6f459805aed9f8e1012cf999ee3513e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kindref="compound">mspass::seismic::TimeSeriesWGaps</ref></type>
+        <definition>mspass::seismic::TimeSeriesWGaps mspass::algorithms::splice_segments</definition>
+        <argsstring>(std::vector&lt; mspass::seismic::TimeSeries &gt; &amp;segments, bool save_history)</argsstring>
+        <name>splice_segments</name>
+        <param>
+          <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
+          <declname>segments</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>save_history</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="347" column="34" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="347" declcolumn="34"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1a90149f49eb7d56bb1395173f5d1cfabd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt;</type>
+        <definition>std::vector&lt;mspass::seismic::TimeSeries&gt; mspass::algorithms::repair_overlaps</definition>
+        <argsstring>(std::vector&lt; mspass::seismic::TimeSeries &gt; &amp;segments)</argsstring>
+        <name>repair_overlaps</name>
+        <param>
+          <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
+          <declname>segments</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="348" column="13" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="348" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="bundle_8cc_1af7ec3c6143ab2b7f3a31655943070506" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -937,6 +976,69 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="172" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="172" bodyend="188"/>
       </memberdef>
+      <memberdef kind="function" id="splicing_8cc_1ae512ac20f0a5fd8185dc8e9efac3503a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kindref="compound">TimeSeriesWGaps</ref></type>
+        <definition>TimeSeriesWGaps mspass::algorithms::splice_segments</definition>
+        <argsstring>(std::vector&lt; TimeSeries &gt; &amp;segments, bool save_history)</argsstring>
+        <name>splice_segments</name>
+        <param>
+          <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt; &amp;</type>
+          <declname>segments</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>save_history</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="202" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="202" bodyend="352"/>
+      </memberdef>
+      <memberdef kind="function" id="splicing_8cc_1a6b792528a77eac3ed19d8159fde853ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::samples_match</definition>
+        <argsstring>(std::vector&lt; double &gt; &amp;v1, std::vector&lt; double &gt; &amp;v2)</argsstring>
+        <name>samples_match</name>
+        <param>
+          <type>std::vector&lt; double &gt; &amp;</type>
+          <declname>v1</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; double &gt; &amp;</type>
+          <declname>v2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="354" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="354" bodyend="372"/>
+      </memberdef>
+      <memberdef kind="function" id="splicing_8cc_1a8a5bc3ba8f1972af801958ab572b17db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt;</type>
+        <definition>std::vector&lt;TimeSeries&gt; mspass::algorithms::repair_overlaps</definition>
+        <argsstring>(std::vector&lt; TimeSeries &gt; &amp;segments)</argsstring>
+        <name>repair_overlaps</name>
+        <param>
+          <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt; &amp;</type>
+          <declname>segments</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Function to handle overlapping data segments.</para>
+<para>Overlapping data is a common raw data issue. Data retrieved from data centers has normally been purged from archives, but overlaps can still occur. The most common example is two miniseed files may contain the same data and the user did not realize that data was present in the files.</para>
+<para>The approach of this algorithm is to try to repair overlaps that have matching sample data. It looks for matches in a way that should work even if the data have been scaled AS LONG AS the scaling is the same for the two overlappign sections. Whenever an overlap is found the first segment of the pair is truncated and the second is retained. If the overlapping segment data do not compare sample for sample the first segmet of the pair (in time order) is killed, and error message is posted, and the killed datum is pushed to the output. The first is always killed because with current generation data that situation always means there has been a time jump backward to create the apparent overlap. It is assumed that the segment killed had a timing problem.</para>
+<para>TODO; need to handle exact duplicate more cleanly. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="394" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="394" bodyend="517"/>
+      </memberdef>
       <memberdef kind="function" id="_taper_8cc_1ab043d6b598f13edb61af41804bf6e9ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
         <definition>double mspass::algorithms::headcos</definition>
@@ -1042,6 +1144,6 @@ It is common to need to extract a smaller segment of data from a larger time win
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="11" column="1"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="12" column="1"/>
   </compounddef>
 </doxygen>

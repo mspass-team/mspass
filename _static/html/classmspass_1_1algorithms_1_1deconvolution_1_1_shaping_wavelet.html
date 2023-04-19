@@ -222,7 +222,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> ()</t
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;          <span class="keywordtype">int</span> npoles_lo,npoles_hi;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;          npoles_lo=md.<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">get_int</a>(<span class="stringliteral">&quot;npoles_lo&quot;</span>);</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;          npoles_hi=md.<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">get_int</a>(<span class="stringliteral">&quot;npoles_hi&quot;</span>);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;          Butterworth bwf(<span class="keyword">true</span>,<span class="keyword">true</span>,<span class="keyword">true</span>,npoles_lo,f3db_lo,npoles_hi,f3db_hi,</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;          <a class="code" href="classmspass_1_1algorithms_1_1_butterworth.html">Butterworth</a> bwf(<span class="keyword">true</span>,<span class="keyword">true</span>,<span class="keyword">true</span>,npoles_lo,f3db_lo,npoles_hi,f3db_hi,</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;              this-&gt;dt);</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;          w=bwf.transfer_function(this-&gt;nfft);</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        }</div>
@@ -312,6 +312,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> ()</t
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        <span class="keywordflow">throw</span>;</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    }</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1_butterworth_html"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_butterworth.html">mspass::algorithms::Butterworth</a></div><div class="ttdoc">MsPASS implementation of Butterworth filter as processing object.</div><div class="ttdef"><b>Definition:</b> Butterworth.h:36</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_get_error_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_get_error.html">mspass::utility::MetadataGetError</a></div><div class="ttdoc">Error thrown when get operators fail.</div><div class="ttdef"><b>Definition:</b> Metadata.h:23</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a78f3a01e1b1deccd84a0833bea4ef462"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">mspass::utility::Metadata::get_int</a></div><div class="ttdeci">int get_int(const std::string key) const override</div><div class="ttdef"><b>Definition:</b> Metadata.h:159</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_aa56da98a52f03babd67bf9fb55c40f3a"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">mspass::utility::Metadata::get_string</a></div><div class="ttdeci">std::string get_string(const std::string key) const override</div><div class="ttdef"><b>Definition:</b> Metadata.h:213</div></div>
@@ -439,7 +440,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> ()</t
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  nfft=n;</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  dt=dtin;</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  df=1.0/(dt*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(n));</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  Butterworth bwf(<span class="keyword">true</span>,<span class="keyword">true</span>,<span class="keyword">true</span>,npolelo,f3dblo,npolehi,f3dbhi,dtin);</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <a class="code" href="classmspass_1_1algorithms_1_1_butterworth.html">Butterworth</a> bwf(<span class="keyword">true</span>,<span class="keyword">true</span>,<span class="keyword">true</span>,npolelo,f3dblo,npolehi,f3dbhi,dtin);</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  w=bwf.transfer_function(nfft);</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;}</div>
 </div><!-- fragment -->

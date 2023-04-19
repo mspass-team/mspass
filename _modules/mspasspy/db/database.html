@@ -2932,13 +2932,13 @@
 <span class="sd">        Reads an subset of a dataset with some logical grouping into an Ensemble container.</span>
 <span class="sd">        It has the same fucntion as read_ensemble_data(), but is more efficient in reading binary files.</span>
 <span class="sd">        The improvement is achieved by avoiding duplicate open and close for the same file.</span>
-<span class="sd">        MsPASS Objects are grouped firstly by files they are in. If two objects are in the same file, </span>
+<span class="sd">        MsPASS Objects are grouped firstly by files they are in. If two objects are in the same file,</span>
 <span class="sd">        with the same directory and filename, they will be in the same file group. For each group,</span>
-<span class="sd">        there will be only one open and close. For objects stored in the same file, their foffs </span>
-<span class="sd">        will be collected and passed to fread_from_file(). Then open the file once, and sequentially </span>
+<span class="sd">        there will be only one open and close. For objects stored in the same file, their foffs</span>
+<span class="sd">        will be collected and passed to fread_from_file(). Then open the file once, and sequentially</span>
 <span class="sd">        read the data according to the foffs.</span>
 
-<span class="sd">        This function only supports binary file format (format=None), as the optimization will not </span>
+<span class="sd">        This function only supports binary file format (format=None), as the optimization will not</span>
 <span class="sd">        work in other formats.</span>
 
 <span class="sd">        :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`,</span>
@@ -3026,7 +3026,8 @@
             <span class="k">if</span> <span class="s2">&quot;format&quot;</span> <span class="ow">in</span> <span class="n">object_doc</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">object_doc</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                        <span class="s2">&quot;read_ensemble_data_group() only support reading from binary files, please use read_ensemble_data() for other formats&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid&quot;</span>
+                        <span class="s2">&quot;read_ensemble_data_group() only support reading from binary files, please use read_ensemble_data() for other formats&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;Invalid&quot;</span><span class="p">,</span>
                     <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">data_tag</span><span class="p">:</span>
@@ -5701,7 +5702,7 @@
         <span class="n">dfile</span><span class="p">,</span>
         <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
-        <span class="n">segment_time_tears</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">segment_time_tears</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">elog_collection</span><span class="o">=</span><span class="s2">&quot;elog&quot;</span><span class="p">,</span>
         <span class="n">return_ids</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">normalize_channel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -5736,7 +5737,7 @@
 <span class="sd">        ways: (1) dropped packets from telemetry issues, or (2) instrument</span>
 <span class="sd">        timing jumps when a clock loses external lock to gps or some</span>
 <span class="sd">        other standard and the rock is restored.  The behavior is this</span>
-<span class="sd">        function in gap handling is controlled by the input parameter</span>
+<span class="sd">        function is controlled by the input parameter</span>
 <span class="sd">        segment_time_tears.  When true a new index entry is created</span>
 <span class="sd">        any time the start time of a packet differs from that computed</span>
 <span class="sd">        from the endtime of the last packet by more than one sample</span>
@@ -5777,7 +5778,7 @@
 <span class="sd">        :param segment_time_tears: boolean controlling handling of data gaps</span>
 <span class="sd">          defined by constant net, sta, chan, and loc but a discontinuity</span>
 <span class="sd">          in time tags for successive packets.  See above for a more extensive</span>
-<span class="sd">          discussion of how to use this parameter.  Default is False.</span>
+<span class="sd">          discussion of how to use this parameter.  Default is True.</span>
 <span class="sd">        :param elog_collection:  name to write any error logs messages</span>
 <span class="sd">          from the miniseed reader.  Default is &quot;elog&quot;, which is the</span>
 <span class="sd">          same as for TimeSeries and Seismogram data, but the cross reference</span>

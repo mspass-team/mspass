@@ -166,6 +166,8 @@
         </childnode>
         <childnode refid="45" relation="include">
         </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
       </node>
       <node id="41">
         <label>boost/archive/binary_oarchive.hpp</label>
@@ -221,6 +223,14 @@
       </node>
       <node id="33">
         <label>unistd.h</label>
+      </node>
+      <node id="48">
+        <label>mspass/seismic/TimeSeriesWGaps.h</label>
+        <link refid="_time_series_w_gaps_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
       </node>
       <node id="10">
         <label>vector</label>
@@ -290,6 +300,16 @@
       </node>
       <node id="27">
         <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="49">
+        <label>mspass/seismic/DataGap.h</label>
+        <link refid="_data_gap_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
       </node>
       <node id="3">
         <label>algorithm</label>
@@ -738,7 +758,7 @@
 <codeline lineno="391"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="392"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>algname(</highlight><highlight class="stringliteral">&quot;bundle_seed_data&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="393"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="394"><highlight class="normal"><sp/><sp/><sp/><sp/>std::sort(d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.begin(),d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.end(),greater_seedorder());</highlight></codeline>
+<codeline lineno="394"><highlight class="normal"><sp/><sp/><sp/><sp/>std::sort(d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.begin(),d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.end(),<ref refid="structmspass_1_1algorithms_1_1greater__seedorder" kindref="compound">greater_seedorder</ref>());</highlight></codeline>
 <codeline lineno="395"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>this<sp/>constructor<sp/>clones<sp/>the<sp/>ensemble<sp/>metadata<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="396"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">LoggingEnsemble&lt;Seismogram&gt;</ref><sp/>ens3c(</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(d),d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.size()/3);</highlight></codeline>
 <codeline lineno="397"><highlight class="normal"><sp/><sp/><sp/><sp/>vector&lt;TimeSeries&gt;::iterator<sp/>dptr;</highlight></codeline>
@@ -929,7 +949,7 @@
 <codeline lineno="582"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>seed_ensemble_sort(<ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">LoggingEnsemble&lt;TimeSeries&gt;</ref>&amp;<sp/>d)</highlight></codeline>
 <codeline lineno="583"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="584"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="585"><highlight class="normal"><sp/><sp/><sp/><sp/>std::sort(d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.begin(),d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.end(),greater_seedorder());</highlight></codeline>
+<codeline lineno="585"><highlight class="normal"><sp/><sp/><sp/><sp/>std::sort(d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.begin(),d.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.end(),<ref refid="structmspass_1_1algorithms_1_1greater__seedorder" kindref="compound">greater_seedorder</ref>());</highlight></codeline>
 <codeline lineno="586"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
 <codeline lineno="587"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="588"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>End<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>

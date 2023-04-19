@@ -2,7 +2,7 @@ var searchData=
 [
   ['data_5fnoise_5fspectrum_68',['data_noise_spectrum',['../classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a3db168e04d8869485f1b9b9307a016e1',1,'mspass::algorithms::deconvolution::CNR3CDecon']]],
   ['data_5fspectrum_69',['data_spectrum',['../classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a15a1bb3390af0283e0a57949248f971c',1,'mspass::algorithms::deconvolution::CNR3CDecon']]],
-  ['datagap_70',['DataGap',['../classmspass_1_1seismic_1_1_data_gap.html',1,'mspass::seismic']]],
+  ['datagap_70',['DataGap',['../classmspass_1_1seismic_1_1_data_gap.html#aa2a1e74ae7bf6ef9f3ff79153b890146',1,'mspass::seismic::DataGap::DataGap()'],['../classmspass_1_1seismic_1_1_data_gap.html#a2a6b612559664dc5634cd34eb8182227',1,'mspass::seismic::DataGap::DataGap(const std::list&lt; mspass::algorithms::TimeWindow &gt; &amp;twlist)'],['../classmspass_1_1seismic_1_1_data_gap.html',1,'mspass::seismic::DataGap']]],
   ['db_5fattribute_5fname_71',['db_attribute_name',['../classmspass_1_1utility_1_1_attribute_properties.html#a12f02918df43099193132f8ac213926c',1,'mspass::utility::AttributeProperties']]],
   ['db_5ftable_5fname_72',['db_table_name',['../classmspass_1_1utility_1_1_attribute_properties.html#a1484220177f25b1c735b9fe5ff4f5211',1,'mspass::utility::AttributeProperties']]],
   ['dead_73',['dead',['../classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d',1,'mspass::seismic::BasicTimeSeries::dead()'],['../classmspass_1_1seismic_1_1_logging_ensemble.html#af51f2767027498eea2e29a6eee70bb52',1,'mspass::seismic::LoggingEnsemble::dead()']]],
