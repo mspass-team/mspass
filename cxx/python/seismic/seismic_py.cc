@@ -844,10 +844,15 @@ PYBIND11_MODULE(seismic, m) {
     .def("f0",&BasicSpectrum::f0,
       "Return frequency of first sample of the vector holding the spectrum (normally 0 but interface allow it to be nonzero)")
     .def("sample_number",&BasicSpectrum::sample_number,"Return vector index position of a specified frequency")
+    .def("dt",&BasicSpectrum::dt,"Return parent data sample interval")
+    .def("rayleigh",&BasicSpectrum::rayleigh,"Return Rayleigh bin size")
     .def("set_df",&BasicSpectrum::set_df,"Set the frequency bin interval")
     .def("set_f0",&BasicSpectrum::set_f0,
       "Set the frequency defined for first component of vector holding spectrum")
+    .def("set_dt",&BasicSpectrum::set_dt,"Set the parent data sample interval")
+    .def("set_npts",&BasicSpectrum::set_npts,"Set the number of points of the parent spectrum")
   ;
+
 
   py::class_<PowerSpectrum,BasicSpectrum,Metadata>(m,"PowerSpectrum",
                   "Container for power spectrum estimates")
@@ -860,8 +865,10 @@ PYBIND11_MODULE(seismic, m) {
         "Return power at a specified frequency using linear interpolation between gridded values")
       .def("frequency",&PowerSpectrum::frequency,"Return frequency linked to given sample number")
       .def("frequencies",&PowerSpectrum::frequencies,"Return an std::vector of ")
-      .def("nf",&PowerSpectrum::nf,"Return number of frequencies in this spectral estimate")
-      .def("Nyquist",&PowerSpectrum::Nyquist,"Return Nyquist frequency of this powewr spectrum estimate")
+      .def("nf",&PowerSpectrum::nf,
+        "Return number of frequencies in this spectral estimate")
+      .def("Nyquist",&PowerSpectrum::Nyquist,
+        "Return Nyquist frequency of this powewr spectrum estimate")
       .def_readwrite("spectrum_type",&PowerSpectrum::spectrum_type,
           "Descriptive name of method used to generate spectrum")
       .def_readwrite("spectrum",&PowerSpectrum::spectrum,

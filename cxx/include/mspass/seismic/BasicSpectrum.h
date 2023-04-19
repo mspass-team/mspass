@@ -69,12 +69,29 @@ public:
   */
   void set_live(){is_live=true;};
   /*! Return the (fixed) frequemcy bin size.*/
-  double df() const{return dfval;};
+  double df() const{return this->dfval;};
   /*! Return the frequency of the first (0) component of the spectrum vector.
   This value is normally 0 but the api allows it to be nonzero.  That is useful
   for windowing to store only data in a limited passband.
   */
-  double f0() const{return f0val;};
+  double f0() const{return this->f0val;};
+  /*! \brief Return the original sample interval of data used to generate spectrum.
+
+  When zero padding is used the original sample interval of data cannot be
+  known without additional data.   In this implementation we require the
+  user to store that information with a protected attribute within the object.
+  This retrieves that stored value. */
+  double dt() const{return this->parent_dt;};
+  /*! \brief Return the Rayleigh bin size for this spectrum.
+
+  The Rayleigh bin size of a spectrum is 1/T where T is the length of the
+  original time series.  This method returns that attribute of this spectrum.
+  Note the rayleigh and df methods will return the same number only when
+  a spectrum is computed with no zero padding.
+  */
+  double rayleigh() const{
+    return 1.0/(this->parent_dt*static_cast<double>(this->parent_npts));
+  };
   /*! Return the integer sample number of the closest sample to the specified
   frequency.   Uses rounding.   Will throw a MsPASSError object if the
   specified frequency is not within the range of the data.
@@ -103,6 +120,12 @@ public:
   void set_df(const double dfin){dfval=dfin;};
   /*! Setter for the initial frequency value. */
   void set_f0(const double f0in){f0val=f0in;};
+  /*! Setter for internally stored parent data sample interval. */
+  void set_dt(const double dtin){parent_dt=dtin;};
+  /*! Setter for internal parent number of data points (need by rayleigh method).
+  Note one should only use this in constructors and when creating an instance
+  from pieces.*/
+  void set_npts(const int npts_in){parent_npts=npts_in;};
   /*! Return an std::vector container containing the frequency of each
   sample in the spectrum vector.  Commonly necessary for plotting.
   Made virtual because nf method needs to be virtual.*/
@@ -119,6 +142,8 @@ public:
 protected:
   double dfval;
   double f0val;
+  double parent_dt;
+  double parent_npts;
   bool is_live;
 };
 }  //End namspace
