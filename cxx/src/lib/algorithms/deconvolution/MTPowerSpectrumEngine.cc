@@ -156,7 +156,7 @@ PowerSpectrum MTPowerSpectrumEngine::apply(const TimeSeries& d)
     frequency that many sources use. */
     for(auto sptr=spec.begin();sptr!=spec.end();++sptr) *sptr *= d.dt();
     result=PowerSpectrum(dynamic_cast<const Metadata&>(d),
-       spec,deltaf,string("Multitaper"));
+       spec,deltaf,string("Multitaper"),0.0,d.dt(),d.npts());
     /* We post these to metadata for the generic PowerSpectrum object. */
     result.put<double>("time_bandwidth_product",tbp);
     result.put<long>("number_tapers",ntapers);

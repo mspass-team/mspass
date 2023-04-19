@@ -15,6 +15,7 @@ a base class is that power spectra and complex spectra have many
 common concpets shared by this base class.  Classic use of inheritance to
 avoid redundant code.
 */
+
 class BasicSpectrum
 {
 public:
@@ -23,12 +24,21 @@ public:
   /*! Parameterized constructor.
 
   \param dfin frequency bin size
-  \param f0in frequency of first component of data vector of regular frequency grid. */
-  BasicSpectrum(const double dfin, const double f0in)
+  \param f0in frequency of first component of data vector of regular frequency grid.
+  \param dtin parent sample interval of spectrum estimate.
+  \param npts_in number of actual samples of parent time series (may not be
+     the same as spectrum link when zero padding is used. subclasses should
+     provide a way to handle zero padding */
+  BasicSpectrum(const double dfin,
+    const double f0in,
+      const double dtin,
+        const int npts_in)
   {
     is_live=false;
     dfval=dfin;
     f0val=f0in;
+    parent_dt=dtin;
+    parent_npts=npts_in;
   };
   /*! Standard copy constructor */
   BasicSpectrum(const BasicSpectrum& parent)
@@ -36,6 +46,20 @@ public:
     is_live=parent.is_live;
     dfval=parent.dfval;
     f0val=parent.f0val;
+    parent_dt=parent.parent_dt;
+    parent_npts=parent.parent_npts;
+  };
+  BasicSpectrum& operator=(const BasicSpectrum& parent)
+  {
+    if(this!=(&parent))
+    {
+      is_live=parent.is_live;
+      dfval=parent.dfval;
+      f0val=parent.f0val;
+      parent_dt=parent.parent_dt;
+      parent_npts=parent.parent_npts;
+    }
+    return *this;
   };
   /*~ Destructor.*/
   virtual ~BasicSpectrum(){};
@@ -92,6 +116,11 @@ public:
   double rayleigh() const{
     return 1.0/(this->parent_dt*static_cast<double>(this->parent_npts));
   };
+  /*! Return number of points in parent time series.  Of use mostly internally.*/
+  int timeseries_npts() const
+  {
+    return parent_npts;
+  }
   /*! Return the integer sample number of the closest sample to the specified
   frequency.   Uses rounding.   Will throw a MsPASSError object if the
   specified frequency is not within the range of the data.

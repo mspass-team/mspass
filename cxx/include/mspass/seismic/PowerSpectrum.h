@@ -39,17 +39,18 @@ public:
   \param dfin frequency bin size (sample interval)
   \param nm name defining algorithm used to constuct this spectral estimate.
   \param f0in frequency of component 0 of input (default is 0.0).
-  \param fNy frequency to assign as Nyquist for these data.  Default is -1.0.
-    Negative frquencies are used as a signal to compute the value from
-    f0in, dfin, and vector size.
+  \param dtin parent sampell interval of data used to make this estimate
+  \param npts_in number of points in parent time series used to compute
+    this estimate.
   */
 
   template <class T> PowerSpectrum(const mspass::utility::Metadata& md,
     const std::vector<T>& d,
       const double dfin,
         const std::string nm,
-          const double f0in=0.0,
-            const double fNy=-1.0);
+          const double f0in,
+            const double dtin,
+              const int npts_in);
   PowerSpectrum(const PowerSpectrum& parent);
   PowerSpectrum& operator=(const PowerSpectrum& parent);
   /*! \brief Standard accumulation operator.
@@ -89,30 +90,34 @@ public:
     return this->f0()+sample_number*this->df();
   };
   std::vector<double> frequencies() const;
+  /* \brief Return number of frequencies in estimate (size of spectrum vector).
+
+  Users should be aware that when zero padding is used the size of the
+  spectrum vector will be larger than half the number of time series samples.*/
   size_t nf()const{return spectrum.size();};
+  /*! Return the nyquist frequency for this estimate. */
   double Nyquist() const {
-    return nyquist_frequency;
+    return 1.0/(2.0*this->parent_dt);
   };
-private:
-  /* Stored internally to allow an implementation to not return the full
-  vector of spectra estimates from an fft.   The need to store this is
-  similar to needing to store f0 in BasicSpectrum. */
-  double nyquist_frequency;
 };
+/*! Fully parameterized constructor template.
+
+See class definition of PowerSpectrum for usage.  Template to allow
+data vector of multiple types.
+*/
+
 template <class T> PowerSpectrum::PowerSpectrum(const mspass::utility::Metadata& md,
     const std::vector<T>& d,const double dfin,const std::string nm,
-      const double f0in, const double fNy)
-      : BasicSpectrum(dfin,0.0),mspass::utility::Metadata(md),elog()
+      const double f0in, const double dtin, const int npts_in)
+      : BasicSpectrum(dfin,f0in,dtin,npts_in),
+          mspass::utility::Metadata(md),
+            elog()
 {
-  this->f0val=f0in;
-  if(fNy<=0.0)
-    this->nyquist_frequency = f0in + dfin*d.size();
-  else
-    this->nyquist_frequency = fNy;
   spectrum_type=nm;
   spectrum.reserve(d.size());
   for(size_t k=0;k<d.size();++k)
     spectrum.push_back(static_cast<double>(d[k]));
+  this->set_live();
 };
 }  //end namespace
 #endif

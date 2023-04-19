@@ -18,7 +18,6 @@ PowerSpectrum::PowerSpectrum(const PowerSpectrum& parent)
   spectrum_type=parent.spectrum_type;
   spectrum_type=parent.spectrum_type;
   spectrum=parent.spectrum;
-  nyquist_frequency=parent.nyquist_frequency;
   elog=parent.elog;
 }
 PowerSpectrum& PowerSpectrum::operator=(const PowerSpectrum& parent)
@@ -26,13 +25,9 @@ PowerSpectrum& PowerSpectrum::operator=(const PowerSpectrum& parent)
   if(this!=(&parent))
   {
     this->Metadata::operator=(parent);
-    /* the next two are in BasicSpectrum but BasicSpectrum currently does
-    not have operator= defined. */
-    dfval=parent.dfval;
-    f0val=parent.f0val;
+    this->BasicSpectrum::operator=(parent);
     spectrum_type=parent.spectrum_type;
     spectrum=parent.spectrum;
-    nyquist_frequency=parent.nyquist_frequency;
     elog=parent.elog;
   }
   return *this;

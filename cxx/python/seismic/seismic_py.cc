@@ -857,7 +857,8 @@ PYBIND11_MODULE(seismic, m) {
   py::class_<PowerSpectrum,BasicSpectrum,Metadata>(m,"PowerSpectrum",
                   "Container for power spectrum estimates")
       .def(py::init<>())
-      .def(py::init<const Metadata&,const vector<double>&,const double,const string>())
+      .def(py::init<const Metadata&,const vector<double>&,const double,
+        const string,const double, const double, const int>())
       .def(py::init<const PowerSpectrum&>())
       .def("amplitude",&PowerSpectrum::amplitude,
         "Return an std::vector of amplitude values (sqrt of power)")
@@ -887,7 +888,7 @@ PYBIND11_MODULE(seismic, m) {
           boost::archive::text_oarchive ar(ss_elog);
           ar << self.elog;
           return py::make_tuple(sbuf,self.df(),self.f0(),self.spectrum_type,
-              ss_elog.str(),darr);
+              ss_elog.str(),darr,self.dt(),self.timeseries_npts());
         },
         [](py::tuple t)
         {
@@ -907,8 +908,9 @@ PYBIND11_MODULE(seismic, m) {
           std::vector<double> d;
           d.resize(info.shape[0]);
           memcpy(d.data(), info.ptr, sizeof(double) * d.size());
-          PowerSpectrum restored(md,d,df,spectrum_type);
-          restored.set_f0(f0);
+          double dt=t[6].cast<double>();
+          double parent_npts=t[7].cast<double>();
+          PowerSpectrum restored(md,d,df,spectrum_type,f0,dt,parent_npts);
           restored.elog=elog;
           return restored;
         }
