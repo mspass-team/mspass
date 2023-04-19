@@ -2821,13 +2821,13 @@ class Database(pymongo.database.Database):
         Reads an subset of a dataset with some logical grouping into an Ensemble container.
         It has the same fucntion as read_ensemble_data(), but is more efficient in reading binary files.
         The improvement is achieved by avoiding duplicate open and close for the same file.
-        MsPASS Objects are grouped firstly by files they are in. If two objects are in the same file, 
+        MsPASS Objects are grouped firstly by files they are in. If two objects are in the same file,
         with the same directory and filename, they will be in the same file group. For each group,
-        there will be only one open and close. For objects stored in the same file, their foffs 
-        will be collected and passed to fread_from_file(). Then open the file once, and sequentially 
+        there will be only one open and close. For objects stored in the same file, their foffs
+        will be collected and passed to fread_from_file(). Then open the file once, and sequentially
         read the data according to the foffs.
 
-        This function only supports binary file format (format=None), as the optimization will not 
+        This function only supports binary file format (format=None), as the optimization will not
         work in other formats.
 
         :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`,
@@ -2915,7 +2915,8 @@ class Database(pymongo.database.Database):
             if "format" in object_doc:
                 if object_doc["format"] != None:
                     raise MsPASSError(
-                        "read_ensemble_data_group() only support reading from binary files, please use read_ensemble_data() for other formats", "Invalid"
+                        "read_ensemble_data_group() only support reading from binary files, please use read_ensemble_data() for other formats",
+                        "Invalid",
                     )
 
             if data_tag:
