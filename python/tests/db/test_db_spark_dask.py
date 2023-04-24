@@ -53,7 +53,7 @@ from datetime import datetime
 
 sys.path.append("python/tests")
 
-from mspasspy.db.database import Database
+from mspasspy.db.database import Database, index_mseed_file_parallel
 from mspasspy.io.distributed import read_distributed_data
 from mspasspy.db.client import DBClient
 from helper import (
@@ -452,8 +452,7 @@ class TestDatabase:
         # test with cursor
         cursor = self.db["wf_TimeSeries"].find({})
         res = self.db.read_ensemble_data_group(
-            cursor,
-            ensemble_metadata={"key1": "value1", "key2": "value2"},
+            cursor, ensemble_metadata={"key1": "value1", "key2": "value2"}
         )
 
         assert len(res.member) == 3
@@ -1507,6 +1506,20 @@ class TestDatabase:
             0
         ].message == "Attribute lat is required in collection site, but is missing in the document with id={}.".format(
             str(missing_lat_site_id)
+        )
+
+    def test_index_mseed_file_parallel(self):
+        dir = "python/tests/data/"
+        dfile = "3channels.mseed"
+        fake_dfile = "Fake3channels.mseed"
+        fname = os.path.join(dir, dfile)
+        fake_fname = os.path.join(dir, fake_dfile)
+        assert (
+            index_mseed_file_parallel(self.db, fname, collection="wf_miniseed") is None
+        )
+        assert (
+            index_mseed_file_parallel(self.db, fake_fname, collection="wf_miniseed")
+            is not None
         )
 
     def test_index_mseed_file(self):
