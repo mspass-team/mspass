@@ -5988,7 +5988,9 @@ class Database(pymongo.database.Database):
             aws_secret_access_key=aws_secret_access_key,
         )
         s3_input_bucket = "scedc-pds"
-        s3_output_bucket = "mspass-scedcdata"  #   The output file can be saved to this bucket, user might want to change it into their own bucket
+        s3_output_bucket = (
+            "mspass-scedcdata"
+        )  #   The output file can be saved to this bucket, user might want to change it into their own bucket
         year = str(year)
         day_of_year = str(day_of_year)
         if len(day_of_year) < 3:
@@ -6317,3 +6319,25 @@ class Database(pymongo.database.Database):
         temp_uuid = str(uuid.uuid4())
         dfile = temp_uuid + "-" + format
         return dfile
+
+
+def index_mseed_file_parallel(db, *arg, **kwargs):
+    """
+    A parallel wrapper for the index_mseed_file method in the Database class.
+    We use this wrapper to handle the possible error in the original method,
+    where the file dir and name are pointing to a file that doesn't exist.
+    User could use this wrapper when they want to run the task in parallel,
+    result will then be an RDD/bag of either None or error message strings. 
+    User would need to scan the RDD/bag to search for thing not None for errors.
+
+    :param db: The MsPass core database handle that we want to index into
+    :param arg: All the arguments that users pass into the original 
+    index_mseed_file method
+    :return: None or error message string
+    """
+    ret = None
+    try:
+        db.index_mseed_file(*arg, **kwargs)
+    except FileNotFoundError as e:
+        ret = str(e)
+    return ret
