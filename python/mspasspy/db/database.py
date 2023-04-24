@@ -5718,6 +5718,10 @@ class Database(pymongo.database.Database):
             dfile = self._get_dfile_uuid("mseed")
         fname = os.path.join(odir, dfile)
         (ind, elog) = _mseed_file_indexer(fname)
+        if len(elog.get_error_log()) > 0 and "No such file or directory" in str(
+            elog.get_error_log()
+        ):
+            raise FileNotFoundError(str(elog.get_error_log()))
         ids_affected = []
         for i in ind:
             doc = self._convert_mseed_index(i)

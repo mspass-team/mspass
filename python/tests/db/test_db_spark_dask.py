@@ -1513,21 +1513,26 @@ class TestDatabase:
         dfile = "3channels.mseed"
         fake_dfile = "Fake3channels.mseed"
         fname = os.path.join(dir, dfile)
-        fake_fname = os.path.join(dir, fake_dfile)
         assert (
-            index_mseed_file_parallel(self.db, fname, collection="wf_miniseed") is None
+            index_mseed_file_parallel(
+                self.db, dfile=dfile, dir=dir, collection="wf_miniseed"
+            )
+            is None
         )
         assert (
-            index_mseed_file_parallel(self.db, fake_fname, collection="wf_miniseed")
+            index_mseed_file_parallel(
+                self.db, dfile=fake_dfile, dir=dir, collection="wf_miniseed"
+            )
             is not None
         )
 
     def test_index_mseed_file(self):
+        old_cnt = self.db["wf_miniseed"].count_documents({})
         dir = "python/tests/data/"
         dfile = "3channels.mseed"
         fname = os.path.join(dir, dfile)
         self.db.index_mseed_file(fname, collection="wf_miniseed")
-        assert self.db["wf_miniseed"].count_documents({}) == 3
+        assert self.db["wf_miniseed"].count_documents({}) - old_cnt == 3
 
         for doc in self.db["wf_miniseed"].find():
             ts = self.db.read_data(doc, collection="wf_miniseed")
