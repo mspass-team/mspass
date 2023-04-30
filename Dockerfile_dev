@@ -152,7 +152,8 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
 ADD requirements.txt requirements.txt
 RUN pip3 --no-cache-dir install --upgrade pip \
 	&& docker-clean
-RUN export CFLAGS="-g" && export DISABLE_NUMCODECS_SSE2=true && export DISABLE_NUMCODECS_AVX2=true\
+RUN if [ "$TARGETARCH" == "arm64" ]; then export CFLAGS="-g" \
+	&& export DISABLE_NUMCODECS_SSE2=true && export DISABLE_NUMCODECS_AVX2=true; fi\
 	&& pip3 --no-cache-dir install numpy \
     && pip3 --no-cache-dir install -r requirements.txt \
     && rm -f requirements.txt \
