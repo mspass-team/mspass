@@ -91,6 +91,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.db.database">database</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.index_mseed_file_parallel"><code class="docutils literal notranslate"><span class="pre">index_mseed_file_parallel()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.db.normalize">normalize</a><ul>
@@ -1811,6 +1812,27 @@ ids found after query and the ids should then always be valid.</p>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.db.database.index_mseed_file_parallel">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">index_mseed_file_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#index_mseed_file_parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.index_mseed_file_parallel" title="Permalink to this definition"></a></dt>
+<dd><p>A parallel wrapper for the index_mseed_file method in the Database class.
+We use this wrapper to handle the possible error in the original method,
+where the file dir and name are pointing to a file that doesn’t exist.
+User could use this wrapper when they want to run the task in parallel,
+result will then be an RDD/bag of either None or error message strings. 
+User would need to scan the RDD/bag to search for thing not None for errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – The MsPass core database handle that we want to index into</p></li>
+<li><p><strong>arg</strong> – All the arguments that users pass into the original</p></li>
+</ul>
+</dd>
+</dl>
+<p>index_mseed_file method
+:return: None or error message string</p>
 </dd></dl>
 
 </section>
