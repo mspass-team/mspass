@@ -8,29 +8,29 @@ cmake-build = "setup:CMakeBuild"
 
 [tool.poetry]
 name = "mspasspy"
-version = "0.0.1"
+version = "1.0.0"
 description = "Massive Parallel Analysis System for Seismologists"
 authors = ["Ian Wang <yinzhi.wang.cug@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
 pyyaml = "*"
-pymongo = "<=3.12.1"
-numpy = "<=1.22"
+pymongo = "*"
+numpy = "*"
 obspy = "*"
 dill = "*"
-click = "==7.1.2"
+click = "*"
 dask = { extras = ["complete"], version = "*" }
 schema = "*"
-decorator = "<=4.4.2"
+decorator = "*"
 boto3 = "*"
 botocore = "*"
 moto = "*"
-requests = "==2.27.1"
-setuptools = "<=65.5.1"
+requests = "*"
+setuptools = "*"
 xarray = "*"
 zarr = "*"
-pandas = "==1.5.3"
+pandas = "*"
 
 [tool.poetry.extras]
 complete = ["numpy", "pandas", "scipy", "matplotlib"]
