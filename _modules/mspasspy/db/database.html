@@ -6103,9 +6103,7 @@
             <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">s3_input_bucket</span> <span class="o">=</span> <span class="s2">&quot;scedc-pds&quot;</span>
-        <span class="n">s3_output_bucket</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;mspass-scedcdata&quot;</span>
-        <span class="p">)</span>  <span class="c1">#   The output file can be saved to this bucket, user might want to change it into their own bucket</span>
+        <span class="n">s3_output_bucket</span> <span class="o">=</span> <span class="s2">&quot;mspass-scedcdata&quot;</span>  <span class="c1">#   The output file can be saved to this bucket, user might want to change it into their own bucket</span>
         <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
         <span class="n">day_of_year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">day_of_year</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
@@ -6442,11 +6440,11 @@
 <span class="sd">    We use this wrapper to handle the possible error in the original method,</span>
 <span class="sd">    where the file dir and name are pointing to a file that doesn&#39;t exist.</span>
 <span class="sd">    User could use this wrapper when they want to run the task in parallel,</span>
-<span class="sd">    result will then be an RDD/bag of either None or error message strings. </span>
+<span class="sd">    result will then be an RDD/bag of either None or error message strings.</span>
 <span class="sd">    User would need to scan the RDD/bag to search for thing not None for errors.</span>
 
 <span class="sd">    :param db: The MsPass core database handle that we want to index into</span>
-<span class="sd">    :param arg: All the arguments that users pass into the original </span>
+<span class="sd">    :param arg: All the arguments that users pass into the original</span>
 <span class="sd">    index_mseed_file method</span>
 <span class="sd">    :return: None or error message string</span>
 <span class="sd">    &quot;&quot;&quot;</span>
