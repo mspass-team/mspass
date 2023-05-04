@@ -69,7 +69,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
   function clean_up_single_node {
     # ---------------------- clean up workflow -------------------------
     # stop mongodb
-    mongo --port $MONGODB_PORT admin --eval "db.shutdownServer({force:true})"
+    mongosh --port $MONGODB_PORT admin --eval "db.shutdownServer({force:true})"
     sleep 5
     # copy shard data to scratch
     if [ "$MSPASS_DB_PATH" = "tmp" ]; then
@@ -85,7 +85,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
   function clean_up_multiple_nodes {
     # ---------------------- clean up workflow -------------------------
     # stop mongos routers
-    mongo --port $MONGODB_PORT admin --eval "db.shutdownServer({force:true})"
+    mongosh --port $MONGODB_PORT admin --eval "db.shutdownServer({force:true})"
     sleep 5
     # stop each shard replica set
     for i in ${MSPASS_SHARD_ADDRESS[@]}; do
@@ -93,7 +93,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
         sleep 5
     done
     # stop config servers
-    mongo --port $(($MONGODB_PORT+1)) admin --eval "db.shutdownServer({force:true})"
+    mongosh --port $(($MONGODB_PORT+1)) admin --eval "db.shutdownServer({force:true})"
 
     # copy the shard data to scratch if the shards are deployed in /tmp
     if [ "$MSPASS_DB_PATH" = "tmp" ]; then
@@ -158,7 +158,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
       sleep ${MSPASS_SLEEP_TIME}
       # drop the local database
       echo "drop local database for config server $HOSTNAME"
-      mongo --port $MONGODB_CONFIG_PORT local --eval "db.dropDatabase()"
+      mongosh --port $MONGODB_CONFIG_PORT local --eval "db.dropDatabase()"
       sleep ${MSPASS_SLEEP_TIME}
       # update config.shards collections
       echo "update shard host names for config server $HOSTNAME"
@@ -166,18 +166,18 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
       ITER=0
       for i in ${MSPASS_SHARD_LIST[@]}; do
         echo "update rs${ITER} with host ${i}"
-        mongo --port $MONGODB_CONFIG_PORT config --eval "db.shards.updateOne({\"_id\": \"rs${ITER}\"}, {\$set: {\"host\": \"${i}\"}})"
+        mongosh --port $MONGODB_CONFIG_PORT config --eval "db.shards.updateOne({\"_id\": \"rs${ITER}\"}, {\$set: {\"host\": \"${i}\"}})"
         ((ITER++))
         sleep ${MSPASS_SLEEP_TIME}
       done
       echo "restart the config server $HOSTNAME as a replica set"
       # restart the mongod as a new single-node replica set
-      mongo --port $MONGODB_CONFIG_PORT admin --eval "db.shutdownServer()"
+      mongosh --port $MONGODB_CONFIG_PORT admin --eval "db.shutdownServer()"
       sleep ${MSPASS_SLEEP_TIME}
       mongod --port $MONGODB_CONFIG_PORT --configsvr --replSet configserver --dbpath ${MONGO_DATA}_config --logpath ${MONGO_LOG}_config --bind_ip_all &
       sleep ${MSPASS_SLEEP_TIME}
       # initiate the new replica set
-      mongo --port $MONGODB_CONFIG_PORT --eval \
+      mongosh --port $MONGODB_CONFIG_PORT --eval \
         "rs.initiate({_id: \"configserver\", configsvr: true, version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_CONFIG_PORT\" }]})"
       sleep ${MSPASS_SLEEP_TIME}
 
@@ -191,7 +191,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
       # start a config server
       mongod --port $MONGODB_CONFIG_PORT --configsvr --replSet configserver --dbpath ${MONGO_DATA}_config --logpath ${MONGO_LOG}_config --bind_ip_all &
       sleep ${MSPASS_SLEEP_TIME}
-      mongo --port $MONGODB_CONFIG_PORT --eval \
+      mongosh --port $MONGODB_CONFIG_PORT --eval \
         "rs.initiate({_id: \"configserver\", configsvr: true, version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_CONFIG_PORT\" }]})"
       sleep ${MSPASS_SLEEP_TIME}
 
@@ -201,18 +201,18 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
       for i in ${MSPASS_SHARD_LIST[@]}; do
         echo "add shard with host ${i}"
         sleep ${MSPASS_SLEEP_TIME}
-        mongo --host $HOSTNAME --port $MONGODB_PORT --eval "sh.addShard(\"${i}\")"
+        mongosh --host $HOSTNAME --port $MONGODB_PORT --eval "sh.addShard(\"${i}\")"
       done
     fi
 
     # enable database sharding
     echo "enable database $MSPASS_SHARD_DATABASE sharding"
-    mongo --host $HOSTNAME --port $MONGODB_PORT --eval "sh.enableSharding(\"${MSPASS_SHARD_DATABASE}\")"
+    mongosh --host $HOSTNAME --port $MONGODB_PORT --eval "sh.enableSharding(\"${MSPASS_SHARD_DATABASE}\")"
     sleep ${MSPASS_SLEEP_TIME}
     # shard collection(using hashed)
     for i in ${MSPASS_SHARD_COLLECTIONS[@]}; do
       echo "shard collection $MSPASS_SHARD_DATABASE.${i%%:*} and shard key is ${i##*:}"
-      mongo --host $HOSTNAME --port $MONGODB_PORT --eval "sh.shardCollection(\"$MSPASS_SHARD_DATABASE.${i%%:*}\", {${i##*:}: \"hashed\"})"
+      mongosh --host $HOSTNAME --port $MONGODB_PORT --eval "sh.shardCollection(\"$MSPASS_SHARD_DATABASE.${i%%:*}\", {${i##*:}: \"hashed\"})"
       sleep ${MSPASS_SLEEP_TIME}
     done
     tail -f /dev/null
@@ -239,15 +239,15 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
         sleep ${MSPASS_SLEEP_TIME}
         # drop local database
         echo "drop local database for shard server $HOSTNAME"
-        mongo --port $MONGODB_PORT local --eval "db.dropDatabase()"
+        mongosh --port $MONGODB_PORT local --eval "db.dropDatabase()"
         sleep ${MSPASS_SLEEP_TIME}
         # update shard metadata in each shard's identity document
         echo "update config server host names for shard server $HOSTNAME"
-        mongo --port $MONGODB_PORT admin --eval "db.system.version.updateOne({\"_id\": \"shardIdentity\"}, {\$set: {\"configsvrConnectionString\": \"${MSPASS_CONFIG_SERVER_ADDR}\"}})"
+        mongosh --port $MONGODB_PORT admin --eval "db.system.version.updateOne({\"_id\": \"shardIdentity\"}, {\$set: {\"configsvrConnectionString\": \"${MSPASS_CONFIG_SERVER_ADDR}\"}})"
         sleep ${MSPASS_SLEEP_TIME}
         # restart the mongod as a new single-node replica set
         echo "restart the shard server $HOSTNAME as a replica set"
-        mongo --port $MONGODB_PORT admin --eval "db.shutdownServer()"
+        mongosh --port $MONGODB_PORT admin --eval "db.shutdownServer()"
         sleep ${MSPASS_SLEEP_TIME}
         mongod --port $MONGODB_PORT --shardsvr --replSet "rs${MSPASS_SHARD_ID}" --dbpath /tmp/db/data_shard_${MSPASS_SHARD_ID} --logpath /tmp/logs/mongo_log_shard_${MSPASS_SHARD_ID} --bind_ip_all &
       else
@@ -262,15 +262,15 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
         sleep ${MSPASS_SLEEP_TIME}
         # drop local database
         echo "drop local database for shard server $HOSTNAME"
-        mongo --port $MONGODB_PORT local --eval "db.dropDatabase()"
+        mongosh --port $MONGODB_PORT local --eval "db.dropDatabase()"
         sleep ${MSPASS_SLEEP_TIME}
         # update shard metadata in each shard's identity document
         echo "update config server host names for shard server $HOSTNAME"
-        mongo --port $MONGODB_PORT admin --eval "db.system.version.updateOne({\"_id\": \"shardIdentity\"}, {\$set: {\"configsvrConnectionString\": \"${MSPASS_CONFIG_SERVER_ADDR}\"}})"
+        mongosh --port $MONGODB_PORT admin --eval "db.system.version.updateOne({\"_id\": \"shardIdentity\"}, {\$set: {\"configsvrConnectionString\": \"${MSPASS_CONFIG_SERVER_ADDR}\"}})"
         sleep ${MSPASS_SLEEP_TIME}
         # restart the mongod as a new single-node replica set
         echo "restart the shard server $HOSTNAME as a replica set"
-        mongo --port $MONGODB_PORT admin --eval "db.shutdownServer()"
+        mongosh --port $MONGODB_PORT admin --eval "db.shutdownServer()"
         sleep ${MSPASS_SLEEP_TIME}
         mongod --port $MONGODB_PORT --shardsvr --replSet "rs${MSPASS_SHARD_ID}" --dbpath ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} --logpath ${MONGO_LOG}_shard_${MSPASS_SHARD_ID} --bind_ip_all &
       else
@@ -283,7 +283,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
 
     # shard server configuration
     echo "shard server $HOSTNAME replicaSet is initialized"
-    mongo --port $MONGODB_PORT --eval \
+    mongosh --port $MONGODB_PORT --eval \
       "rs.initiate({_id: \"rs${MSPASS_SHARD_ID}\", version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_PORT\" }]})"
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "scheduler" ]; then
