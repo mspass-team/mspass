@@ -3,6 +3,8 @@
 #include <vector>
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
+#include "mspass/utility/memory_constants.h"
+
 namespace mspass::seismic{
 template <typename Tdata> class Ensemble : public mspass::utility::Metadata
 {
@@ -112,6 +114,7 @@ public:
       (*mdmember) += sync_md;
     }
   };
+
 };
 
 
@@ -240,6 +243,23 @@ public:
       ensemble_is_live=parent.ensemble_is_live;
     }
     return *this;
+  };
+  size_t memory_use() const
+  {
+    size_t memuse;
+    memuse = sizeof(*this);
+    for(auto p=this->member.begin();p!=this->member.end();++p)
+    {
+      memuse += p->memory_use();
+    }
+    /* Account for ensemble metadata */
+    /* We can only estimate the size of the Metadata container.
+    These constants are defined in memory_constants.h */
+    memuse += mspass::utility::memory_constants::MD_AVERAGE_SIZE*this->md.size();
+    memuse += mspass::utility::memory_constants::KEY_AVERAGE_SIZE*this->changed_or_set.size();
+    /* Account for error log size */
+    memuse += mspass::utility::memory_constants::ELOG_AVERAGE_SIZE*this->elog.size();
+    return memuse;
   };
 private:
 

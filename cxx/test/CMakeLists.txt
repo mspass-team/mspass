@@ -10,6 +10,7 @@ if(BUILD_TESTING)
   add_subdirectory(tswgaps)
   add_subdirectory(history)
   add_subdirectory(bundle)
+  add_subdirectory(memory)
 
   add_test(NAME test_dmatrix COMMAND ${PROJECT_BINARY_DIR}/test/dmatrix/test_dmatrix)
 #  add_test(NAME test_Metadata COMMAND ${PROJECT_BINARY_DIR}/test/md/test_md)

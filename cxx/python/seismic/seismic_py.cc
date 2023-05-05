@@ -381,6 +381,7 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>())
     .def("load_history",&Seismogram::load_history,
        "Load ProcessingHistory from another data object that contains relevant history")
+    .def("__sizeof__",[](const Seismogram& self){return self.memory_use();})
     .def(py::pickle(
       [](const Seismogram &self) {
         pybind11::object sbuf;
@@ -492,6 +493,7 @@ PYBIND11_MODULE(seismic, m) {
       }))
       .def("load_history",&TimeSeries::load_history,
          "Load ProcessingHistory from another data object that contains relevant history")
+      .def("__sizeof__",[](const TimeSeries& self){return self.memory_use();})
       // Not sure this constructor needs to be exposed to python
       /*
       .def(py::init<const BasicTimeSeries&,const Metadata&,
@@ -654,6 +656,7 @@ PYBIND11_MODULE(seismic, m) {
     .def("dead",&LoggingEnsemble<Seismogram>::dead,"Return true if the entire ensemble is marked dead")
     .def("validate",&LoggingEnsemble<Seismogram>::validate,"Test to see if the ensemble has any live members - return true of it does")
     .def("set_live",&LoggingEnsemble<Seismogram>::set_live,"Mark ensemble live but use a validate test first")
+    .def("__sizeof__",[](const LoggingEnsemble<Seismogram>& self){return self.memory_use();})
     .def_readwrite("elog",&LoggingEnsemble<Seismogram>::elog,"Error log attached to the ensemble - not the same as member error logs")
     .def(py::pickle(
       [](const LoggingEnsemble<Seismogram> &self) {
@@ -722,6 +725,7 @@ PYBIND11_MODULE(seismic, m) {
     .def("dead",&LoggingEnsemble<TimeSeries>::dead,"Return true if the entire ensemble is marked dead")
     .def("validate",&LoggingEnsemble<TimeSeries>::validate,"Test to see if the ensemble has any live members - return true of it does")
     .def("set_live",&LoggingEnsemble<TimeSeries>::set_live,"Mark ensemble live but use a validate test first")
+    .def("__sizeof__",[](const LoggingEnsemble<TimeSeries>& self){return self.memory_use();})
     .def_readwrite("elog",&LoggingEnsemble<TimeSeries>::elog,"Error log attached to the ensemble - not the same as member error logs")
     /* This is exactly parallel to the version for a SeismogramEnsemble.
     Only changed Seismogram to TimeSeries everywhere in this section.
@@ -870,6 +874,7 @@ PYBIND11_MODULE(seismic, m) {
                  "Return to UTC time using a specified time shift")
       .def("shift",&TimeSeriesWGaps::shift,"Shift the time reference by a specified constant")
       .def("zero_gaps",&TimeSeriesWGaps::zero_gaps,"Zero the data vector for all sections defined as a gap")
+      .def("__sizeof__",[](const TimeSeriesWGaps& self){return self.memory_use();})
     ;
 
 }
