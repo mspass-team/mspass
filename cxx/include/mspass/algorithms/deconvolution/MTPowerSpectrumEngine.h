@@ -140,10 +140,15 @@ public:
   /*! Return tne number of frequency bins in estimates the operator will compute. */
   int nf()
   {
+    /* This is what prieto's python code uses that is based on numpy.
+    We use gsl which requires handles the even-odd problem differently.
     if(this->nfft%2 == 0)
       return (this->nfft)/2 - 1;
-    else
+    else`
       return (this->nfft - 1)/2;
+    */
+    // This is the gsl form for nf computation
+    return (this->nfft)/2 + 1;
   };
 private:
   int taperlen;
