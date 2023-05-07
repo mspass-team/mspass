@@ -1452,6 +1452,7 @@ def test_MsPASSError():
         d.transform(tm)
         d.rotate_to_standard()
 
+
 def test_PowerSpectrum():
     ts = TimeSeries(100)
     ts.data[0] = 1.0  # delta function - spectrum will be flat
@@ -1473,8 +1474,8 @@ def test_PowerSpectrum():
     # Depends upon MTPowerSpectrumEngine default which is to double
     # length as a zero pad.
     spec_copy = PowerSpectrum(spec)
-    df_expected = 1.0/(2.0*(spec.nf()-1))
-    assert np.isclose(spec.df(),df_expected)
+    df_expected = 1.0 / (2.0 * (spec.nf() - 1))
+    assert np.isclose(spec.df(), df_expected)
     spec = PowerSpectrum(spec_copy)
     # test setters
     spec.set_f0(1.0)
@@ -1482,18 +1483,16 @@ def test_PowerSpectrum():
     spec = PowerSpectrum(spec_copy)
     spec.set_dt(2.0)
     assert spec.dt() == 2.0
-    
-    
+
     # Repeat with nfft specified adding new capability
-    engine = MTPowerSpectrumEngine(100,5,10,512)
+    engine = MTPowerSpectrumEngine(100, 5, 10, 512)
     spec = engine.apply(ts)
-    assert spec.nf() == int(512/2) + 1
-    df_expected = 1.0/(2.0*(spec.nf()-1))
-    assert np.isclose(spec.df(),df_expected)
+    assert spec.nf() == int(512 / 2) + 1
+    df_expected = 1.0 / (2.0 * (spec.nf() - 1))
+    assert np.isclose(spec.df(), df_expected)
 
     spec_copy = pickle.loads(pickle.dumps(spec))
     assert spec.df() == spec_copy.df()
     assert spec.f0() == spec_copy.f0()
     assert spec.spectrum_type == spec_copy.spectrum_type
     assert np.allclose(spec.spectrum, spec_copy.spectrum)
-
