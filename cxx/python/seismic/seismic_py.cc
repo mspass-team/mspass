@@ -836,8 +836,8 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const double, const double>())
     .def(py::init<const BasicSpectrum&>())
     */
-    .def("live",&BasicSpectrum::live,"Return True of marked ok, False if data are bad")
-    .def("dead",&BasicSpectrum::live,"Return True of marked bad, False if data are good - negation of live method")
+    .def("live",&BasicSpectrum::live,"Return True if marked ok, False if data are bad")
+    .def("dead",&BasicSpectrum::dead,"Return True if marked bad, False if data are good - negation of live method")
     .def("kill",&BasicSpectrum::kill,"Mark this datum bad (dead)")
     .def("set_live",&BasicSpectrum::set_live,"Mark this datum as good (not dead)")
     .def("df",&BasicSpectrum::df,"Return the frequency bin sample interval")
