@@ -1452,25 +1452,44 @@ def test_MsPASSError():
         d.transform(tm)
         d.rotate_to_standard()
 
-
 def test_PowerSpectrum():
     ts = TimeSeries(100)
     ts.data[0] = 1.0  # delta function - spectrum will be flat
     ts.live = True
     engine = MTPowerSpectrumEngine(100, 5, 10)
     spec = engine.apply(ts)
+    # these are BasicSpectrum methods we test
+    assert spec.nf() == 101
+    assert spec.live()
+    spec.kill()
+    assert spec.dead()
+    spec.set_live()
+    assert spec.Nyquist() == 0.5
+    assert spec.f0() == 0.0
+    assert spec.dt() == 1.0
+    assert spec.rayleigh() == 0.01
+
+    # needed tests for set_df, set_f0, set_dt, set_npts, sample_number
     # Depends upon MTPowerSpectrumEngine default which is to double
     # length as a zero pad.
-    assert spec.nf() == 101
-    assert np.isclose(spec.df(),0.005)
-    assert spec.Nyquist() == spec.f0() + spec.df() * spec.nf()
-    assert spec.f0() == 0.0
+    spec_copy = PowerSpectrum(spec)
+    df_expected = 1.0/(2.0*(spec.nf()-1))
+    assert np.isclose(spec.df(),df_expected)
+    spec = PowerSpectrum(spec_copy)
+    # test setters
+    spec.set_f0(1.0)
+    assert spec.f0() == 1.0
+    spec = PowerSpectrum(spec_copy)
+    spec.set_dt(2.0)
+    assert spec.dt() == 2.0
+    
+    
     # Repeat with nfft specified adding new capability
     engine = MTPowerSpectrumEngine(100,5,10,512)
     spec = engine.apply(ts)
-    assert spec.nf() == 257   # half 512 + 1
-    assert np.isclose(1.0/512.0,spec.df()) # ts.dt is 1.0
-    print("nf=",spec.nf(),", df=",spec.df())
+    assert spec.nf() == int(512/2) + 1
+    df_expected = 1.0/(2.0*(spec.nf()-1))
+    assert np.isclose(spec.df(),df_expected)
 
     spec_copy = pickle.loads(pickle.dumps(spec))
     assert spec.df() == spec_copy.df()
