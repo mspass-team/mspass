@@ -1,6 +1,7 @@
 #include <set>
 #include <sstream>
 #include "mspass/utility/MsPASSError.h"
+#include "mspass/utility/memory_constants.h"
 #include "mspass/seismic/DataGap.h"
 #include "mspass/seismic/TimeSeriesWGaps.h"
 
@@ -8,6 +9,7 @@
 namespace mspass::seismic{
 
 using namespace mspass::utility;
+using namespace mspass::utility::memory_constants;
 using namespace mspass::seismic;
 using namespace mspass::algorithms;
 
@@ -157,6 +159,13 @@ TimeSeriesWGaps& TimeSeriesWGaps::operator=(const TimeSeriesWGaps& parent)
       this->gaps = parent.gaps;
   }
   return *this;
+}
+size_t TimeSeriesWGaps::memory_use() const
+{
+  size_t memory_estimate;
+  memory_estimate = TimeSeries::memory_use();
+  memory_estimate += DATA_GAP_AVERAGE_SIZE*gaps.size();
+  return memory_estimate;
 }
 
 }//End namespace mspass::seismic

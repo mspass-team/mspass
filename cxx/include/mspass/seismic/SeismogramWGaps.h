@@ -21,5 +21,5 @@ public:
 **/
   void zero_gaps();
 };
-} //end mspass::seismic namespace 
+} //end mspass::seismic namespace
 #endif //end guard

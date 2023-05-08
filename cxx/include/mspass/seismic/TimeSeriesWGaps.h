@@ -72,7 +72,16 @@ public:
 /*! Force all data inside data gaps to zero.
 **/
   void zero_gaps();
+  /*! Return an estimate of the memmory use by the data in this object.
 
+  Memory consumed by a TimeSeriesWGaps object is needed to implement the
+  __sizeof__ method in python that dask/spark use to manage memory.  Without
+  that feature we had memory fault issues.  Note the estimate this
+  method returns should not be expected to be exact.  The MsPASS implementation
+  or any alternative implementation avoids an exact calculation because it
+  requries an (expensive) traversal of multiple map containers.
+  */
+  size_t memory_use() const;
 };
 } //end mspass::seismic namespace
 #endif //end guard

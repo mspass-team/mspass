@@ -1,6 +1,7 @@
 import array
 import copy
 import pickle
+import sys
 
 import numpy as np
 import pytest
@@ -514,6 +515,16 @@ def test_TimeSeries():
     md["npts"] = 100
     ts = TimeSeries(md)
     assert ts.npts == 100
+    # this number is volatile. Changes above will make it invalid
+    expected_size = 1344
+    # we make this test a bit soft by this allowance.  sizeof computation
+    # in parent C function is subject to alignment ambiguity that is
+    # system dependent so we add this fudge factor for stability
+    memory_alignment_allowance = 2
+    memlow = expected_size - memory_alignment_allowance
+    memhigh = expected_size + memory_alignment_allowance
+    memuse = sys.getsizeof(ts)
+    assert memuse >= memlow and memuse <= memhigh
 
 
 def test_CoreSeismogram():
@@ -803,6 +814,16 @@ def test_Seismogram():
     assert uvec_copy.ux == uvec.ux
     assert uvec_copy.uy == uvec.uy
     assert uvec_copy.azimuth() == uvec.azimuth()
+    # test memory use method
+    # we make this test a bit soft by this allowance.  sizeof computation
+    # in parent C function is subject to alignment ambiguity that is
+    # system dependent so we add this fudge factor for stability
+    expected_size = 3080
+    memory_alignment_allowance = 2
+    memlow = expected_size - memory_alignment_allowance
+    memhigh = expected_size + memory_alignment_allowance
+    memuse = sys.getsizeof(seis)
+    assert memuse >= memlow and memuse <= memhigh
 
 
 @pytest.fixture(params=[TimeSeriesEnsemble, SeismogramEnsemble])
