@@ -149,13 +149,12 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
 	&& docker-clean
 
 # Install Python dependencies through pip
-ENV DISABLE_NUMCODECS_SSE2 true
-ENV DISABLE_NUMCODECS_AVX2 true
-ENV CFLAGS -g
 ADD requirements.txt requirements.txt
 RUN pip3 --no-cache-dir install --upgrade pip \
 	&& docker-clean
-RUN pip3 --no-cache-dir install numpy \
+RUN if [ "$TARGETARCH" == "arm64" ]; then export CFLAGS="-O3" \
+	&& export DISABLE_NUMCODECS_SSE2=true && export DISABLE_NUMCODECS_AVX2=true; fi\
+	&& pip3 --no-cache-dir install numpy \
     && pip3 --no-cache-dir install -r requirements.txt \
     && rm -f requirements.txt \
 	&& docker-clean
@@ -174,7 +173,7 @@ RUN pip3 --no-cache-dir install --upgrade setuptools \
 
 # Add cxx library
 ADD cxx /mspass/cxx
-RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && unset CFLAGS && cd /mspass/cxx \
+RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
     && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Debug .. \
     && make \
@@ -189,7 +188,7 @@ ENV MSPASS_HOME /mspass
 # Add setup.py to install python components
 ADD setup.py /mspass/setup.py
 ADD python /mspass/python
-RUN unset CFLAGS && pip3 install --global-option build --global-option --debug /mspass -v \
+RUN pip3 install --global-option build --global-option --debug /mspass -v \
 	&& docker-clean
 
 # Install jedi
