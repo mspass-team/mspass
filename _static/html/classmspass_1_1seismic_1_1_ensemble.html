@@ -272,7 +272,7 @@ template&lt;typename Tdata &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Default constructor. </p>
-<div class="fragment"><div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;{};</div>
+<div class="fragment"><div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -310,8 +310,8 @@ template&lt;typename Tdata &gt; </div>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;{<a class="code" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.reserve(n);};</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_ensemble_html_a50f9947d9209dda797f1b7fe2b4ba81f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">mspass::seismic::Ensemble::member</a></div><div class="ttdeci">std::vector&lt; Tdata &gt; member</div><div class="ttdoc">Container holding data objects.</div><div class="ttdef"><b>Definition:</b> Ensemble.h:19</div></div>
+<div class="fragment"><div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{<a class="code" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.reserve(n);};</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_ensemble_html_a50f9947d9209dda797f1b7fe2b4ba81f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">mspass::seismic::Ensemble::member</a></div><div class="ttdeci">std::vector&lt; Tdata &gt; member</div><div class="ttdoc">Container holding data objects.</div><div class="ttdef"><b>Definition:</b> Ensemble.h:21</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">mspass::seismic::Ensemble&lt; Tdata &gt;::member</a>.</p>
 
@@ -353,10 +353,10 @@ template&lt;typename Tdata &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Partial constructor to clone metadata and set aside n slots but no data </p>
-<div class="fragment"><div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                                                           : <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>(md)</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      <a class="code" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.reserve(n);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  };</div>
+<div class="fragment"><div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                                                           : <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>(md)</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      <a class="code" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.reserve(n);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  };</div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></div><div class="ttdef"><b>Definition:</b> Metadata.h:76</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">mspass::seismic::Ensemble&lt; Tdata &gt;::member</a>.</p>
@@ -389,8 +389,8 @@ template&lt;typename Tdata &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Standard copy constructor. </p>
-<div class="fragment"><div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                                   : <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>(<span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span><a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&amp;<span class="keyword">&gt;</span>(parent)),</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>(parent.member){};</div>
+<div class="fragment"><div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                                   : <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>(<span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span><a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&amp;<span class="keyword">&gt;</span>(parent)),</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>(parent.member){};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -421,14 +421,14 @@ template&lt;typename Tdata &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
-<div class="fragment"><div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=(&amp;parent))</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    {</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">Metadata::operator=</a>(parent);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      <a class="code" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>=parent.member;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    }</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  };</div>
+<div class="fragment"><div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=(&amp;parent))</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">Metadata::operator=</a>(parent);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      <a class="code" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>=parent.member;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  };</div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_aadbae283dfdb87a82832519a9955fdfa"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=</a></div><div class="ttdeci">Metadata &amp; operator=(const Metadata &amp;mdold)</div><div class="ttdef"><b>Definition:</b> Metadata.cc:108</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">mspass::seismic::Ensemble&lt; Tdata &gt;::member</a>, and <a class="el" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=()</a>.</p>
@@ -462,14 +462,14 @@ template&lt;typename Tdata &gt; </div>
 
 <p>copy ensemble metadata to all members. </p>
 <p>An ensemble has global metadata, but each member is required to have a metadata component. This method takes the ensemble metadata and copies it to each of the member objects. The operation will overwrite previous key:value pairs in a member that are also present in the ensemble metadata. </p>
-<div class="fragment"><div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  {</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      <span class="keywordtype">size_t</span> i;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      <span class="keywordflow">for</span>(i=0;i&lt;this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.size();++i)</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;      {</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;          <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> *mdmember=&amp;(this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>[i]);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;          (*mdmember)+=<span class="keyword">dynamic_cast&lt;</span><a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&amp;<span class="keyword">&gt;</span>(*this);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;      }</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  };</div>
+<div class="fragment"><div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  {</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;      <span class="keywordtype">size_t</span> i;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      <span class="keywordflow">for</span>(i=0;i&lt;this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.size();++i)</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;      {</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;          <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> *mdmember=&amp;(this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>[i]);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;          (*mdmember)+=<span class="keyword">dynamic_cast&lt;</span><a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&amp;<span class="keyword">&gt;</span>(*this);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;      }</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -507,11 +507,11 @@ template&lt;typename Tdata &gt; </div>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;     {</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> *md;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    md=<span class="keyword">dynamic_cast&lt;</span><a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>*<span class="keyword">&gt;</span>(<span class="keyword">this</span>);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    (*md) += newmd;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
+<div class="fragment"><div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;     {</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> *md;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    md=<span class="keyword">dynamic_cast&lt;</span><a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>*<span class="keyword">&gt;</span>(<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    (*md) += newmd;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
 </div><!-- fragment -->
 </div>
 </div>

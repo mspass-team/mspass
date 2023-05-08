@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="namespacemspass_1_1utility_1_1memory__constants" kind="namespace" language="C++">
+    <compoundname>mspass::utility::memory_constants</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="memory__constants_8h_1a6221d1d1d18a4093cbbe60433190f87d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const size_t</type>
+        <definition>const size_t mspass::utility::memory_constants::KEY_AVERAGE_SIZE</definition>
+        <argsstring>(8)</argsstring>
+        <name>KEY_AVERAGE_SIZE</name>
+        <param>
+          <type>8</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Average size of key string used for <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" line="18" column="14" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" declline="18" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="memory__constants_8h_1abb12e4ff062f40e0d8ecd75e3493200f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const size_t</type>
+        <definition>const size_t mspass::utility::memory_constants::MD_AVERAGE_SIZE</definition>
+        <argsstring>(KEY_AVERAGE_SIZE+16)</argsstring>
+        <name>MD_AVERAGE_SIZE</name>
+        <param>
+          <type>KEY_AVERAGE_SIZE+</type>
+          <declname>16</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Average <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> entry size. key-value so key size + wag of average size </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" line="20" column="14" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" declline="20" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="memory__constants_8h_1ac5d11aa8e5949ff55313dde581892962" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const size_t</type>
+        <definition>const size_t mspass::utility::memory_constants::HISTORYDATA_AVERAGE_SIZE</definition>
+        <argsstring>(64)</argsstring>
+        <name>HISTORYDATA_AVERAGE_SIZE</name>
+        <param>
+          <type>64</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Average size of history record. History is stored as a multimap of fixed format records. The variable is that the strings in the <ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref> class have variable length. This is a WAG of nominal size that is a bit conservative. Made this more conservative as history is optional and when enabled could cause a memory bloat in some situations. Estimate is per <ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref> entry,. <ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref> has 6 attributes so we round up to nearest power of 2 from 6*10 </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" line="28" column="14" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" declline="28" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="memory__constants_8h_1a83207a8ffbdf2fc13e748fd813007374" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const size_t</type>
+        <definition>const size_t mspass::utility::memory_constants::ELOG_AVERAGE_SIZE</definition>
+        <argsstring>(128)</argsstring>
+        <name>ELOG_AVERAGE_SIZE</name>
+        <param>
+          <type>128</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Average error log entry size.</para>
+<para>The dominant data for an error log entry is the posted error message. This is a power of 2 wag </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" line="33" column="14" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" declline="33" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="memory__constants_8h_1a37d71fca38a3d760b71bc5cf12fb9068" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const size_t</type>
+        <definition>const size_t mspass::utility::memory_constants::DATA_GAP_AVERAGE_SIZE</definition>
+        <argsstring>(2 *sizeof(double)+sizeof(size_t))</argsstring>
+        <name>DATA_GAP_AVERAGE_SIZE</name>
+        <param>
+          <type>2 *</type>
+          <declname>sizeof</declname>
+          <array>double)+sizeof(size_t</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Average size of a data gap set entry. <linebreak/>
+ </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" line="35" column="14" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" declline="35" declcolumn="14"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" line="15" column="1"/>
+  </compounddef>
+</doxygen>

@@ -208,6 +208,13 @@
 <dd><p>Standard assignment operator. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7seismic10TimeSeries10memory_useEv">
+<span id="_CPPv3NK6mspass7seismic10TimeSeries10memory_useEv"></span><span id="_CPPv2NK6mspass7seismic10TimeSeries10memory_useEv"></span><span id="mspass::seismic::TimeSeries::memory_useC"></span><span class="target" id="classmspass_1_1seismic_1_1_time_series_1a0f62a2e87fe26a6d08a978ebdde2b114"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memory_use</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6mspass7seismic10TimeSeries10memory_useEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Return an estimate of the memmory use by the data in this object.</p>
+<p>Memory consumed by a <a class="reference internal" href="#classmspass_1_1seismic_1_1_time_series"><span class="std std-ref">TimeSeries</span></a> object is needed to implement the <strong>sizeof</strong> method in python that dask/spark use to manage memory. Without that feature we had memory fault issues. Note the estimate this method returns should not be expected to be exact. The MsPASS implementation or any alternative implementation avoids an exact calculation because it requries an (expensive) traversal of multiple map containers. </p>
+</dd></dl>
+
 </div>
 </dd></dl>
 

@@ -659,6 +659,7 @@
     <member refid="classmspass_1_1seismic_1_1_logging_ensemble_1a7de59947da7bc5e8e4a4be2fbe01b93b" kind="function"><name>validate</name></member>
     <member refid="classmspass_1_1seismic_1_1_logging_ensemble_1a77c6b189bfb9914583e66d8b0f98d3b8" kind="function"><name>set_live</name></member>
     <member refid="classmspass_1_1seismic_1_1_logging_ensemble_1aef481afd8b831f780707b4b11302dc90" kind="function"><name>operator=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_logging_ensemble_1a3f88e04c5ded5bf7e5225f2d99ce7267" kind="function"><name>memory_use</name></member>
   </compound>
   <compound refid="classmspass_1_1utility_1_1_metadata" kind="class"><name>mspass::utility::Metadata</name>
     <member refid="classmspass_1_1utility_1_1_metadata_1af564bb9ced4cc480d71a1e13c3fa582e" kind="variable"><name>md</name></member>
@@ -1006,6 +1007,7 @@
     <member refid="classmspass_1_1seismic_1_1_seismogram_1a78a4e2bc62921e3f81a211cb8ec8f460" kind="function"><name>~Seismogram</name></member>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1a68ddfc28edecdb64a007d5163adb9292" kind="function"><name>operator=</name></member>
     <member refid="classmspass_1_1seismic_1_1_seismogram_1a6a08b90222beaf43809a3691f80b61c6" kind="function"><name>load_history</name></member>
+    <member refid="classmspass_1_1seismic_1_1_seismogram_1a80ca1e43523f8826e18ac2a656d54ba2" kind="function"><name>memory_use</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_seismogram_w_gaps" kind="class"><name>mspass::seismic::SeismogramWGaps</name>
     <member refid="classmspass_1_1seismic_1_1_seismogram_w_gaps_1adf038f77f4e75979ed1debe1b13d2c5b" kind="function"><name>SeismogramWGaps</name></member>
@@ -1081,6 +1083,7 @@
     <member refid="classmspass_1_1seismic_1_1_time_series_1a293114ec4431687048e5abfe5d6c426e" kind="function"><name>operator*=</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_1a909f903e5a739c4c1bc1af8eadea3e5e" kind="function"><name>operator-=</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_1a7fe9d22283889a1fa68fbbd0c229008d" kind="function"><name>load_history</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_series_1a0f62a2e87fe26a6d08a978ebdde2b114" kind="function"><name>memory_use</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kind="class"><name>mspass::seismic::TimeSeriesWGaps</name>
     <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a6a4b2b0864ba62341790fc16d6aa222c" kind="function"><name>TimeSeriesWGaps</name></member>
@@ -1093,6 +1096,7 @@
     <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a51eefbc8e6a034148da8f36e21870fe2" kind="function"><name>rtoa</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a42f1e02964fb1b689e40bc6e4e3d2ac3" kind="function"><name>shift</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1bc9a6c4ae0b21b8acabd0c3ee240761" kind="function"><name>zero_gaps</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a42a8cb90831e476fdd4c8555abc5ad5a" kind="function"><name>memory_use</name></member>
   </compound>
   <compound refid="classmspass_1_1algorithms_1_1_time_window" kind="class"><name>mspass::algorithms::TimeWindow</name>
     <member refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kind="variable"><name>start</name></member>
@@ -1420,6 +1424,13 @@
     <member refid="_processing_history_8cc_1a62389fcaa5e15291550b690b46b29049" kind="function"><name>status_to_words</name></member>
     <member refid="_processing_history_8cc_1a2f6f8bc035d9b5dea39ab99c2749944f" kind="function"><name>algorithm_outputs</name></member>
   </compound>
+  <compound refid="namespacemspass_1_1utility_1_1memory__constants" kind="namespace"><name>mspass::utility::memory_constants</name>
+    <member refid="memory__constants_8h_1a6221d1d1d18a4093cbbe60433190f87d" kind="function"><name>KEY_AVERAGE_SIZE</name></member>
+    <member refid="memory__constants_8h_1abb12e4ff062f40e0d8ecd75e3493200f" kind="function"><name>MD_AVERAGE_SIZE</name></member>
+    <member refid="memory__constants_8h_1ac5d11aa8e5949ff55313dde581892962" kind="function"><name>HISTORYDATA_AVERAGE_SIZE</name></member>
+    <member refid="memory__constants_8h_1a83207a8ffbdf2fc13e748fd813007374" kind="function"><name>ELOG_AVERAGE_SIZE</name></member>
+    <member refid="memory__constants_8h_1a37d71fca38a3d760b71bc5cf12fb9068" kind="function"><name>DATA_GAP_AVERAGE_SIZE</name></member>
+  </compound>
   <compound refid="namespacestd" kind="namespace"><name>std</name>
   </compound>
   <compound refid="include_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
@@ -1552,6 +1563,8 @@
   <compound refid="dmatrix_8h" kind="file"><name>dmatrix.h</name>
   </compound>
   <compound refid="_error_logger_8h" kind="file"><name>ErrorLogger.h</name>
+  </compound>
+  <compound refid="memory__constants_8h" kind="file"><name>memory_constants.h</name>
   </compound>
   <compound refid="_metadata_8h" kind="file"><name>Metadata.h</name>
   </compound>

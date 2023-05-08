@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="memory__constants_8h" kind="file" language="C++">
+    <compoundname>memory_constants.h</compoundname>
+    <includedby refid="_ensemble_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</includedby>
+    <includedby refid="_seismogram_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc</includedby>
+    <includedby refid="_time_series_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc</includedby>
+    <includedby refid="_time_series_w_gaps_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc</includedby>
+    <invincdepgraph>
+      <node id="3">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</label>
+        <link refid="algorithms_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</label>
+        <link refid="amplitudes_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</label>
+        <link refid="_ensemble_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
+        <link refid="mspass_8h_source"/>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h</label>
+        <link refid="memory__constants_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
+        <link refid="_c_n_r3_c_decon_8h_source"/>
+      </node>
+    </invincdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
+    <innernamespace refid="namespacemspass_1_1utility">mspass::utility</innernamespace>
+    <innernamespace refid="namespacemspass_1_1utility_1_1memory__constants">mspass::utility::memory_constants</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>_MEMORY_CONSTANTS_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_MEMORY_CONSTANTS_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>file<sp/>contains<sp/>constants<sp/>used<sp/>to<sp/>provide<sp/>approximate<sp/>memory<sp/>use</highlight></codeline>
+<codeline lineno="4"><highlight class="comment">estimates<sp/>for<sp/>data<sp/>objects.<sp/><sp/><sp/>For<sp/>arrays<sp/>and<sp/>lists<sp/>of<sp/>simple<sp/>types<sp/>that</highlight></codeline>
+<codeline lineno="5"><highlight class="comment">is<sp/>not<sp/>difficult<sp/>to<sp/>do,<sp/>but<sp/>for<sp/>map,<sp/>multimap,<sp/>and<sp/>set<sp/>containers<sp/>that</highlight></codeline>
+<codeline lineno="6"><highlight class="comment">cannot<sp/>be<sp/>done<sp/>without<sp/>traversing<sp/>the<sp/>entire<sp/>tree.<sp/><sp/><sp/>As<sp/>assumption<sp/>in</highlight></codeline>
+<codeline lineno="7"><highlight class="comment">mspass<sp/>is<sp/>that<sp/>such<sp/>containers<sp/>consume<sp/>small<sp/>amounts<sp/>of<sp/>memory<sp/>relative<sp/>to</highlight></codeline>
+<codeline lineno="8"><highlight class="comment">the<sp/>time<sp/>series<sp/>data<sp/>and<sp/>if<sp/>we<sp/>commit<sp/>a<sp/>small<sp/>error<sp/>in<sp/>estimating<sp/>memory</highlight></codeline>
+<codeline lineno="9"><highlight class="comment">use<sp/>in<sp/>those<sp/>containers<sp/>it<sp/>will<sp/>not<sp/>cause<sp/>issues.<sp/><sp/>These<sp/>constants<sp/>may</highlight></codeline>
+<codeline lineno="10"><highlight class="comment">require<sp/>tuning<sp/>with<sp/>experiences.<sp/><sp/><sp/>Initial<sp/>values<sp/>set<sp/>May<sp/>2023<sp/>by<sp/>glp</highlight></codeline>
+<codeline lineno="11"><highlight class="comment">are<sp/>guesses.</highlight></codeline>
+<codeline lineno="12"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::utility</highlight></codeline>
+<codeline lineno="14"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">memory_constants</highlight></codeline>
+<codeline lineno="16"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>KEY_AVERAGE_SIZE(8);</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>MD_AVERAGE_SIZE(KEY_AVERAGE_SIZE+16);</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>HISTORYDATA_AVERAGE_SIZE(64);</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ELOG_AVERAGE_SIZE(128);</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>DATA_GAP_AVERAGE_SIZE(2*</highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">)+</highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="36"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="37"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h"/>
+  </compounddef>
+</doxygen>

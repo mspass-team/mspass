@@ -93,7 +93,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="79" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc" bodystart="28" bodyend="78"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="79" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc" bodystart="29" bodyend="79"/>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ab87672dc6adffed90b0dc9c144219d44" compoundref="_basic_time_series_8h" startline="115" endline="119">mspass::seismic::BasicTimeSeries::force_t0_shift</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" compoundref="_metadata_8h" startline="135" endline="152">mspass::utility::Metadata::get_double</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a7ace0c05ebb00b3c383cb8cccd225504" compoundref="_metadata_8h" startline="184" endline="202">mspass::utility::Metadata::get_long</references>
@@ -182,7 +182,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="115" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc" bodystart="9" bodyend="18"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="115" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc" bodystart="10" bodyend="19"/>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" compoundref="_processing_history_8cc" startline="700" endline="707">mspass::utility::ProcessingHistory::newid</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a0621aa8adf8ebaab44a375a299c14fd8" compoundref="_processing_history_8cc" startline="161" endline="186">mspass::utility::ProcessingHistory::set_as_origin</references>
       </memberdef>
@@ -251,7 +251,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="132" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc" bodystart="79" bodyend="87"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="132" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc" bodystart="80" bodyend="88"/>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1a49e0add931b008600450413c4e0cbd40" compoundref="_core_time_series_8cc" startline="66" endline="75">mspass::seismic::CoreTimeSeries::operator=</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" compoundref="_processing_history_8cc" startline="741" endline="756">mspass::utility::ProcessingHistory::operator=</references>
       </memberdef>
@@ -321,7 +321,24 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="148" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc" bodystart="88" bodyend="91"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="148" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc" bodystart="89" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_1a0f62a2e87fe26a6d08a978ebdde2b114" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t mspass::seismic::TimeSeries::memory_use</definition>
+        <argsstring>() const</argsstring>
+        <name>memory_use</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return an estimate of the memmory use by the data in this object.</para>
+<para>Memory consumed by a <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> object is needed to implement the <bold>sizeof</bold> method in python that dask/spark use to manage memory. Without that feature we had memory fault issues. Note the estimate this method returns should not be expected to be exact. The MsPASS implementation or any alternative implementation avoids an exact calculation because it requries an (expensive) traversal of multiple map containers. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="158" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc" bodystart="93" bodyend="106"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="183" endline="183">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1seismic_1_1_time_series_1a45c61ee8b73600c3576f8f750f926311" compoundref="_time_series_8h" startline="18" endline="20">TimeSeries</references>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -428,7 +445,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="13" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" bodystart="15" bodyend="149"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="13" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" bodystart="15" bodyend="159"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>accumulate</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a667e046c02eb06959c3632c9157161b6" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>add_many_inputs</name></member>
@@ -487,6 +504,7 @@
       <member refid="classmspass_1_1utility_1_1_processing_history_1ab5152d2f6a4706e635d6ca16e68b9bcc" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>map_as_saved</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1af564bb9ced4cc480d71a1e13c3fa582e" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>md</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aea80df11992ca2c7ff915aab5fcba6f5" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>mdt</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_1a0f62a2e87fe26a6d08a978ebdde2b114" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>memory_use</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a4f2cb1d5af0500a526fa8745aa52db36" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>merge</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>Metadata</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a5255fc3ae6accb650f221c9065a92eff" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>Metadata</name></member>
