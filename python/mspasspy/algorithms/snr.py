@@ -461,11 +461,11 @@ def FD_snr_estimator(
         if noise_spectrum_engine:
             nengine = noise_spectrum_engine
         else:
-            nengine = MTPowerSpectrumEngine(n.npts, tbp, ntapers)
+            nengine = MTPowerSpectrumEngine(n.npts, tbp, ntapers,n.npts*2,n.dt)
         if signal_spectrum_engine:
             sengine = signal_spectrum_engine
         else:
-            sengine = MTPowerSpectrumEngine(s.npts, tbp, ntapers)
+            sengine = MTPowerSpectrumEngine(s.npts, tbp, ntapers,s.npts*2,s.dt)
         N = nengine.apply(n)
         S = sengine.apply(s)
         bwd = EstimateBandwidth(

@@ -222,10 +222,10 @@ PYBIND11_MODULE(deconvolution, m) {
   py::class_<MTPowerSpectrumEngine>(m,"MTPowerSpectrumEngine",
       "Processing object used compute multitaper power spectrum estimates from time series data")
     .def(py::init<>())
-    .def(py::init<const int, const double, const int, int>(),
-      "Parameterized constructor:  nsamples, tbp, ntapers, nfft")
+    .def(py::init<const int, const double, const int, const int, const double>(),
+      "Parameterized constructor:  nsamples, tbp, ntapers, nfft, dt")
     .def(py::init<const int, const double, const int>(),
-        "Parameterized constructor:  nsamples, tbp, ntapers")
+        "Parameterized constructor:  nsamples, tbp, ntapers(nfft=2*nsamples, dt=1.0")
     .def(py::init<const MTPowerSpectrumEngine&>(),"Copy constructor")
     .def("apply",py::overload_cast<const mspass::seismic::TimeSeries&>(&MTPowerSpectrumEngine::apply),
       "Compute from data in a TimeSeries container")
