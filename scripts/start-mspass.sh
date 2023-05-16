@@ -47,7 +47,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
     if [ "$MSPASS_SCHEDULER" = "spark" ]; then
       export PYSPARK_DRIVER_PYTHON=jupyter
       if [ -z $1 ]; then
-        export PYSPARK_DRIVER_PYTHON_OPTS="notebook ${NOTEBOOK_ARGS}"
+        export PYSPARK_DRIVER_PYTHON_OPTS="lab ${NOTEBOOK_ARGS}"
       else
         export PYSPARK_DRIVER_PYTHON_OPTS="nbconvert ${BATCH_MODE_ARGS}"
       fi
@@ -59,7 +59,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
     else # if [ "$MSPASS_SCHEDULER" = "dask" ]
       export DASK_SCHEDULER_ADDRESS=${MSPASS_SCHEDULER_ADDRESS}:${DASK_SCHEDULER_PORT}
       if [ -z $1 ]; then
-        jupyter notebook ${NOTEBOOK_ARGS}
+        jupyter lab ${NOTEBOOK_ARGS}
       else
         jupyter nbconvert ${BATCH_MODE_ARGS}
       fi
