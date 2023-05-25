@@ -140,14 +140,15 @@ public:
   /*! Return tne number of frequency bins in estimates the operator will compute. */
   int nf()
   {
-    /* This is what prieto's python code uses that is based on numpy.
-    We use gsl which requires handles the even-odd problem differently.
-    if(this->nfft%2 == 0)
-      return (this->nfft)/2 - 1;
-    else`
-      return (this->nfft - 1)/2;
+    /* this simple formula depends upon integer truncation when used with
+    nfft as an odd number.   For reference, this is what prieto uses in
+    the python multitaper package:
+    if (nfft%2 == 0):
+        nf = int(nfft/2 + 1)
+    else:
+        nf = int((nfft+1)/2)
+    they will yield the same result but this is simpler and faster
     */
-    // This is the gsl form for nf computation
     return (this->nfft)/2 + 1;
   };
 private:

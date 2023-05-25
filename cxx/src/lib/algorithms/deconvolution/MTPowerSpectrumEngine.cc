@@ -30,7 +30,7 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize,
   tbp=tbpin;
   ntapers=ntpin;
   if(nfftin<winsize)
-      nfft = 2*winsize;
+      nfft = 2*winsize + 1;
   else
       nfft = nfftin;
   /* The call to set_df as implemented makes the initializations below unnecessary
@@ -175,6 +175,8 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
        << "Sizes must match to use this implementation of this algorithm"<<endl;
     throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
   }
+  double var(0.0);   // sum of squares of data - used for psd scaling below
+  for(auto ptr=d.begin();ptr!=d.end();++ptr)var += (*ptr)*(*ptr);
   /* This is the only function in this entire object that does anything
   but housework.   Computes the power spectrum by average DFT of d^*d where
   the average is over the tapes. First taper data and store tapered data in
@@ -215,10 +217,12 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
       result[j] += rp*rp + ip*ip;
     }
   }
-  /* This scaling makes the result power spectral density for nondimensional
-  sampling frequence (i.e. samprate=1).   Note above for time series data
-  we further scale this by dt.  */
-  double scale=1.0/static_cast<double>(ntapers*this->nf());
+  /* Scale using Parseval's theorem - this is adapted from Prieto's
+  multitaper python implementation.   No need with this to correct for
+  summing eigenspecra as sum is aborbed with parseval's theoren scaling*/
+  double specssq(0.0),scale;
+  for(auto p=result.begin();p!=result.end();++p) specssq += (*p);
+  scale = var/(specssq*this->df());
   for(j=0;j<this->nf();++j) result[j] *= scale;
   return result;
 }
