@@ -1,6 +1,12 @@
+[project]
+dynamic = ["dependencies"]
+
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools-extensions]
 cmake-extension = "setup:CMakeExtension"
@@ -14,23 +20,6 @@ authors = ["Ian Wang <yinzhi.wang.cug@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pyyaml = "*"
-pymongo = "*"
-numpy = ">=1.23.2"
-obspy = "*"
-dill = "*"
-click = "*"
-dask = { extras = ["complete"], version = "*" }
-schema = "*"
-decorator = "*"
-boto3 = "*"
-botocore = "*"
-moto = "*"
-requests = "*"
-setuptools = "*"
-xarray = "*"
-zarr = "*"
-pandas = "1.5.3"
 
 [tool.poetry.extras]
 complete = ["numpy", "pandas", "scipy", "matplotlib"]
