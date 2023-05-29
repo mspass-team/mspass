@@ -161,14 +161,14 @@ def test_dmatrix():
     dm = dmatrix(md)
     assert (dm == md).all()
 
-    md = np.zeros((7, 4), dtype=np.int, order="F")
+    md = np.zeros((7, 4), dtype=int, order="F")
     for i in range(7):
         for j in range(4):
             md[i][j] = i * 4 + j
     dm = dmatrix(md)
     assert (dm == md).all()
 
-    md = np.zeros((7, 4), dtype=np.unicode_, order="C")
+    md = np.zeros((7, 4), dtype=str, order="C")
     for i in range(7):
         for j in range(4):
             md[i][j] = i * 4 + j

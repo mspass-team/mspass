@@ -15,7 +15,7 @@ def get_jobid(db):
     :type db:  top level database handle returned by a call to MongoClient.database
     """
     hiscol = db.history
-    hist_size = hiscol.find().count()
+    hist_size = hiscol.count_documents({})
     if hist_size <= 0:
         return 1
     else:
