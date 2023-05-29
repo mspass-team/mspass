@@ -187,7 +187,7 @@ def TimeIntervalReader(
     ]
     cursor = db[collection].find(query).sort(sortlist)
 
-    ndocs = cursor.count()
+    ndocs = db[collection].count_documents(query)
 
     # We create an array of ensembles - one for each unique combination of
     # chan and loc.
