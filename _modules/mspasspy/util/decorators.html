@@ -125,7 +125,7 @@
 <span class="kn">from</span> <span class="nn">mspasspy.util</span> <span class="kn">import</span> <span class="n">logging_helper</span>
 
 
-<div class="viewcode-block" id="mspass_func_wrapper"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper">[docs]</a><span class="nd">@decorator</span>
+<span class="nd">@decorator</span>
 <span class="k">def</span> <span class="nf">mspass_func_wrapper</span><span class="p">(</span>
     <span class="n">func</span><span class="p">,</span>
     <span class="n">data</span><span class="p">,</span>
@@ -241,10 +241,10 @@
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="c1"># some unexpected error happen, if inplace_return is true, we may want to return the original data</span>
         <span class="k">if</span> <span class="n">inplace_return</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">data</span></div>
+            <span class="k">return</span> <span class="n">data</span>
 
 
-<div class="viewcode-block" id="mspass_func_wrapper_multi"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper_multi">[docs]</a><span class="nd">@decorator</span>
+<span class="nd">@decorator</span>
 <span class="k">def</span> <span class="nf">mspass_func_wrapper_multi</span><span class="p">(</span>
     <span class="n">func</span><span class="p">,</span>
     <span class="n">data1</span><span class="p">,</span>
@@ -332,10 +332,10 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
             <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span></div>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="mspass_method_wrapper"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_method_wrapper">[docs]</a><span class="nd">@decorator</span>
+<span class="nd">@decorator</span>
 <span class="k">def</span> <span class="nf">mspass_method_wrapper</span><span class="p">(</span>
     <span class="n">func</span><span class="p">,</span>
     <span class="n">selfarg</span><span class="p">,</span>
@@ -457,7 +457,7 @@
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="c1"># some unexpected error happen, if inplace_return is true, we may want to return the original data</span>
         <span class="k">if</span> <span class="n">inplace_return</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">data</span></div>
+            <span class="k">return</span> <span class="n">data</span>
 
 
 <div class="viewcode-block" id="is_input_dead"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.is_input_dead">[docs]</a><span class="k">def</span> <span class="nf">is_input_dead</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -526,7 +526,7 @@
         <span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="p">:])</span></div>
 
 
-<div class="viewcode-block" id="timeseries_as_trace"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_as_trace">[docs]</a><span class="nd">@decorator</span>
+<span class="nd">@decorator</span>
 <span class="k">def</span> <span class="nf">timeseries_as_trace</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This decorator converts all the mspasspy TimeSeries objects in user inputs (*args and **kargs)</span>
@@ -564,7 +564,7 @@
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
         <span class="n">ts</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
         <span class="n">timeseries_copy_helper</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">ts</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">res</span></div>
+    <span class="k">return</span> <span class="n">res</span>
 
 
 <div class="viewcode-block" id="seismogram_copy_helper"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_copy_helper">[docs]</a><span class="k">def</span> <span class="nf">seismogram_copy_helper</span><span class="p">(</span><span class="n">seis1</span><span class="p">,</span> <span class="n">seis2</span><span class="p">):</span>
@@ -586,7 +586,7 @@
         <span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="p">:])</span></div>
 
 
-<div class="viewcode-block" id="seismogram_as_stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_as_stream">[docs]</a><span class="nd">@decorator</span>
+<span class="nd">@decorator</span>
 <span class="k">def</span> <span class="nf">seismogram_as_stream</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This decorator converts all the mspasspy Seismogram objects in user inputs (*args and **kargs)</span>
@@ -635,10 +635,10 @@
             <span class="c1"># metadata copy</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">seis</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">seis</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">res</span></div>
+    <span class="k">return</span> <span class="n">res</span>
 
 
-<div class="viewcode-block" id="timeseries_ensemble_as_stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_ensemble_as_stream">[docs]</a><span class="nd">@decorator</span>
+<span class="nd">@decorator</span>
 <span class="k">def</span> <span class="nf">timeseries_ensemble_as_stream</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This decorator converts all the mspasspy TimeSeries ensemble objects in user inputs (*args and **kargs)</span>
@@ -679,10 +679,10 @@
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
             <span class="n">tse</span> <span class="o">=</span> <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toTimeSeriesEnsemble</span><span class="p">()</span>
             <span class="n">timeseries_ensemble_copy_helper</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">tse</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">res</span></div>
+    <span class="k">return</span> <span class="n">res</span>
 
 
-<div class="viewcode-block" id="seismogram_ensemble_as_stream"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_ensemble_as_stream">[docs]</a><span class="nd">@decorator</span>
+<span class="nd">@decorator</span>
 <span class="k">def</span> <span class="nf">seismogram_ensemble_as_stream</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This decorator converts all the mspasspy Seismogram ensemble objects in user inputs (*args and **kargs)</span>
@@ -723,10 +723,10 @@
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
             <span class="n">seis_e</span> <span class="o">=</span> <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toSeismogramEnsemble</span><span class="p">()</span>
             <span class="n">seismogram_ensemble_copy_helper</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">seis_e</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">res</span></div>
+    <span class="k">return</span> <span class="n">res</span>
 
 
-<div class="viewcode-block" id="mspass_reduce_func_wrapper"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_reduce_func_wrapper">[docs]</a><span class="nd">@decorator</span>
+<span class="nd">@decorator</span>
 <span class="k">def</span> <span class="nf">mspass_reduce_func_wrapper</span><span class="p">(</span>
     <span class="n">func</span><span class="p">,</span>
     <span class="n">data1</span><span class="p">,</span>
@@ -803,7 +803,7 @@
             <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span></div>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
 
 
 <span class="c1"># @decorator</span>

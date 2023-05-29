@@ -514,7 +514,7 @@ Or a TimeSeriesEnsemble object from a SeismogramEnsemble object</p>
 or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code></a>) – data object to extract from.</p></li>
 <li><p><strong>component</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the index of component that will be extracted, it can only be 0, 1, or 2</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -543,7 +543,7 @@ variable and alters t0 by tshift.</p>
 <li><p><strong>data</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>) – data object to be converted.</p></li>
 <li><p><strong>tshift</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – time shift applied to data before switching data to relative time mode.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -575,7 +575,7 @@ only one sided.</p>
 <li><p><strong>t1tail</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t1 of the tail taper</p></li>
 <li><p><strong>t0tail</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t0 of the tail taper</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -604,7 +604,7 @@ and x3 will be longitudinal.</p>
 <li><p><strong>vp0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Surface P wave velocity</p></li>
 <li><p><strong>vs0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Surface S wave velocity.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -634,7 +634,7 @@ right. Setting t0 == t1 will disable the taper on the specified end (e.g., t0hea
 <li><p><strong>t1tail</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t1 of the tail taper</p></li>
 <li><p><strong>t0tail</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t0 of the tail taper</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -665,7 +665,7 @@ related rotate with it.</p>
 <li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be rotated.</p></li>
 <li><p><strong>rotate_param</strong> (<em>see above for details.</em>) – the parameter that defines the rotation.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -693,7 +693,7 @@ cardinal coordinates.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be rotated.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -726,7 +726,7 @@ internally stored time shift attribute.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be converted.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -752,7 +752,7 @@ transformations to data.</p>
 <li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be transformed.</p></li>
 <li><p><strong>matrix</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>) – a 3x3 matrix that defines the transformation.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -778,7 +778,7 @@ data of the same length as the taper defined in the operator.</p>
 <li><p><strong>data</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be processed.</p></li>
 <li><p><strong>taper_array</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>) – the array that defines the taper</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2453,7 +2453,7 @@ is ignored if the input is an atomic data type.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper_multi" title="mspasspy.util.decorators.mspass_func_wrapper_multi"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2500,7 +2500,7 @@ so the processing history and error logs can be preserved.</p>
 <cite>Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.detrend.html&gt;</cite> for details.</p></li>
 <li><p><strong>args</strong> – extra arguments</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2528,7 +2528,7 @@ history and error logs can be preserved.</p>
 <cite>Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html&gt;</cite> for details.</p></li>
 <li><p><strong>args</strong> – extra arguments</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2554,7 +2554,7 @@ so the processing history and error logs can be preserved.</p>
 <li><p><strong>sampling_rate</strong> – The new sampling rate in Hz.</p></li>
 <li><p><strong>args</strong> – extra arguments.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>

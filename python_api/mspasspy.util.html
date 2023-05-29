@@ -110,17 +110,9 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.decorators">decorators</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.is_input_dead"><code class="docutils literal notranslate"><span class="pre">is_input_dead()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.mspass_func_wrapper"><code class="docutils literal notranslate"><span class="pre">mspass_func_wrapper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.mspass_func_wrapper_multi"><code class="docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.mspass_method_wrapper"><code class="docutils literal notranslate"><span class="pre">mspass_method_wrapper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.mspass_reduce_func_wrapper"><code class="docutils literal notranslate"><span class="pre">mspass_reduce_func_wrapper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.seismogram_as_stream"><code class="docutils literal notranslate"><span class="pre">seismogram_as_stream()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.seismogram_copy_helper"><code class="docutils literal notranslate"><span class="pre">seismogram_copy_helper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.seismogram_ensemble_as_stream"><code class="docutils literal notranslate"><span class="pre">seismogram_ensemble_as_stream()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.seismogram_ensemble_copy_helper"><code class="docutils literal notranslate"><span class="pre">seismogram_ensemble_copy_helper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.timeseries_as_trace"><code class="docutils literal notranslate"><span class="pre">timeseries_as_trace()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.timeseries_copy_helper"><code class="docutils literal notranslate"><span class="pre">timeseries_copy_helper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.timeseries_ensemble_as_stream"><code class="docutils literal notranslate"><span class="pre">timeseries_ensemble_as_stream()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.timeseries_ensemble_copy_helper"><code class="docutils literal notranslate"><span class="pre">timeseries_ensemble_copy_helper()</span></code></a></li>
 </ul>
 </li>
@@ -636,215 +628,9 @@ or all of them are still alive.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.util.decorators.mspass_func_wrapper">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">mspass_func_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#mspass_func_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.mspass_func_wrapper" title="Permalink to this definition"></a></dt>
-<dd><p>Decorator wrapper to adapt a simple function to the mspass parallel processing framework.</p>
-<p>This function serves as a decorator wrapper, which is widely used in mspasspy library. It executes the target
-function on input data. Data are restricted to be mspasspy objects. It also preserves the processing history and
-error logs into the mspasspy objects. By wrapping your function using this decorator, you can save some workload.
-Runtime error won’t be raised in order to be efficient in map-reduce operations. MspassError with a severity Fatal
-will be raised, others won’t be raised.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> – target function</p></li>
-<li><p><strong>data</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
-<li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>object_history</strong> – True to preserve this processing history in the data object, False not to. object_history
-and alg_id are intimately related and control how object level history is handled.
-Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
-as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
-save the history through a new_map operation.   If the history chain is empty this will silently generate
-an error posted to error log on each object.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
-<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
-This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
-but the function returns before attempting any calculations.</p></li>
-<li><p><strong>inplace_return</strong> – when func is an in-place function that doesn’t return anything, but you want to
-return the origin data (for example, in map-reduce), set inplace_return as true.</p></li>
-<li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
-return something that is appropriate to save as Metadata.  If so, use this argument to
-define the key used to set that field in the data that is returned.
-This feature should normally be considered as a way to wrap an existing
-algorithm that you do not wish to alter, but which returns something useful.
-In principle that return can be almost anything, but we recommend this feature
-be limited to only simple types (i.e. int, float, etc.).  The decorator makes
-no type checks so the caller is responsible for assuring what is posted will not cause
-downstream problems.  The default for this parameter is None, which
-is taken to mean any return of the wrapped function will be ignored.  Note
-that when function_return_key is anything but None, it is assumed the
-returned object is the (usually modified) data object.</p></li>
-<li><p><strong>kwargs</strong> – extra kv arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>origin data or the output of func</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.util.decorators.mspass_func_wrapper_multi">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">mspass_func_wrapper_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#mspass_func_wrapper_multi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.mspass_func_wrapper_multi" title="Permalink to this definition"></a></dt>
-<dd><p>This wrapper serves the same functionality as mspass_func_wrapper, but there are a few differences. The first is
-this wrapper accepts two mspasspy data objects as input data. The second is that inplace_return is not implemented
-here. The same processing history and error logs will be duplicated and stored in both of the input.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> – target function</p></li>
-<li><p><strong>data1</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
-<li><p><strong>data2</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
-<li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>object_history</strong> – True to preserve this processing history in the data object, False not to. object_history
-and alg_id are intimately related and control how object level history is handled.
-Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
-as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
-save the history through a new_map operation.   If the history chain is empty this will silently generate
-an error posted to error log on each object.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
-<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
-This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
-but the function returns before attempting any calculations.</p></li>
-<li><p><strong>kwargs</strong> – extra kv arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the output of func</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.util.decorators.mspass_method_wrapper">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">mspass_method_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selfarg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#mspass_method_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.mspass_method_wrapper" title="Permalink to this definition"></a></dt>
-<dd><p>Decorator wrapper to adapt a class method function to the mspass parallel processing framework.</p>
-<p>This function serves as a decorator wrapper, which is widely used in the mspasspy library.
-It is used to wrap class methods which implement a method that does something
-to a mspass data object that is assumed to be passed as arg0 of the method.
-This decorator executes the target method on the input data.  It is used
-mainly to reduce duplicate code to perserve history and error logs
-with mspass object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> – target function</p></li>
-<li><p><strong>selfarg</strong> – the self pointer for the class with which this method is associated</p></li>
-<li><p><strong>data</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
-<li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>object_history</strong> – True to preserve this processing history in the data object, False not to. object_history
-and alg_id are intimately related and control how object level history is handled.
-Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
-as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
-save the history through a new_map operation.   If the history chain is empty this will silently generate
-an error posted to error log on each object.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
-<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
-This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
-but the function returns before attempting any calculations.</p></li>
-<li><p><strong>inplace_return</strong> – when func is an in-place function that doesn’t return anything, but you want to
-return the origin data (for example, in map-reduce), set inplace_return as true.</p></li>
-<li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
-return something that is appropriate to save as Metadata.  If so, use this argument to
-define the key used to set that field in the data that is returned.
-This feature should normally be considered as a way to wrap an existing
-algorithm that you do not wish to alter, but which returns something useful.
-In principle that return can be almost anything, but we recommend this feature
-be limited to only simple types (i.e. int, float, etc.).  The decorator makes
-no type checks so the caller is responsible for assuring what is posted will not cause
-downstream problems.  The default for this parameter is None, which
-is taken to mean any return of the wrapped function will be ignored.  Note
-that when function_return_key is anything but None, it is assumed the
-returned object is the (usually modified) data object.</p></li>
-<li><p><strong>kwargs</strong> – extra kv arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>origin data or the output of func</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.util.decorators.mspass_reduce_func_wrapper">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">mspass_reduce_func_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#mspass_reduce_func_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.mspass_reduce_func_wrapper" title="Permalink to this definition"></a></dt>
-<dd><p>This decorator is designed to wrap functions so that they can be used as reduce operator. It takes two inputs, data1
-and data2, both of them are mspasspy objects. The processing history and error logs will recorded in both data1
-and data2. Other functionalities are the same as mspass_func_wrapper.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> – target function</p></li>
-<li><p><strong>data1</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
-<li><p><strong>data2</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
-<li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>object_history</strong> – True to preserve this processing history in the data object, False not to. object_history
-and alg_id are intimately related and control how object level history is handled.
-Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
-as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
-save the history through a new_reduce operation. If the history chain is empty this will silently generate
-an error posted to error log on each object.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
-<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
-This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
-but the function returns before attempting any calculations.</p></li>
-<li><p><strong>kwargs</strong> – extra kv arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the output of func</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.util.decorators.seismogram_as_stream">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">seismogram_as_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_as_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.seismogram_as_stream" title="Permalink to this definition"></a></dt>
-<dd><p>This decorator converts all the mspasspy Seismogram objects in user inputs (<a href="#id3"><span class="problematic" id="id4">*</span></a>args and <a href="#id5"><span class="problematic" id="id6">**</span></a>kargs)
-to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
-the stream objects will be converted back by overriding the data and metadata of the origin mspasspy objects.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> – target func</p></li>
-<li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>kwargs</strong> – extra kv arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the output of func</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.decorators.seismogram_copy_helper">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">seismogram_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seis1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seis2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.seismogram_copy_helper" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.util.decorators.seismogram_ensemble_as_stream">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">seismogram_ensemble_as_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_ensemble_as_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.seismogram_ensemble_as_stream" title="Permalink to this definition"></a></dt>
-<dd><p>This decorator converts all the mspasspy Seismogram ensemble objects in user inputs (<a href="#id7"><span class="problematic" id="id8">*</span></a>args and <a href="#id9"><span class="problematic" id="id10">**</span></a>kargs)
-to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
-the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> – target func</p></li>
-<li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>kwargs</strong> – extra kv arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the output of func</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.decorators.seismogram_ensemble_copy_helper">
@@ -852,50 +638,9 @@ the stream objects will be converted back by overriding the data and metadata of
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.util.decorators.timeseries_as_trace">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">timeseries_as_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_as_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.timeseries_as_trace" title="Permalink to this definition"></a></dt>
-<dd><p>This decorator converts all the mspasspy TimeSeries objects in user inputs (<a href="#id11"><span class="problematic" id="id12">*</span></a>args and <a href="#id13"><span class="problematic" id="id14">**</span></a>kargs)
-to trace objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
-the trace objects will be converted back by overriding the data and metadata of the origin mspasspy objects. This
-wrapper makes it easy to process mspasspy objects using Obspy methods.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> – target func</p></li>
-<li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>kwargs</strong> – extra kv arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the output of func</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.decorators.timeseries_copy_helper">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">timeseries_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.timeseries_copy_helper" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.util.decorators.timeseries_ensemble_as_stream">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">timeseries_ensemble_as_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_ensemble_as_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.timeseries_ensemble_as_stream" title="Permalink to this definition"></a></dt>
-<dd><p>This decorator converts all the mspasspy TimeSeries ensemble objects in user inputs (<a href="#id15"><span class="problematic" id="id16">*</span></a>args and <a href="#id17"><span class="problematic" id="id18">**</span></a>kargs)
-to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
-the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> – target func</p></li>
-<li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>kwargs</strong> – extra kv arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the output of func</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.decorators.timeseries_ensemble_copy_helper">
