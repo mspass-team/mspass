@@ -1,5 +1,5 @@
 #Image: mspass/mspass
-#Version: 0.0.1
+#Version: 1.0.0
 
 FROM ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
 
@@ -189,8 +189,9 @@ ENV MSPASS_HOME /mspass
 ADD setup.py /mspass/setup.py
 ADD python /mspass/python
 ADD pyproject.toml /mspass/pyproject.toml
-RUN pip3 install --global-option build --global-option --debug /mspass -v \
-	&& docker-clean
+ADD requirements.txt /mspass/requirements.txt
+RUN pip3 install -C--build-option=build -C--build-option=--debug /mspass -v \
+	&& rm -rf /mspass/build && docker-clean
 
 # Install jedi
 RUN pip3 --no-cache-dir install jedi==0.17.2 && docker-clean

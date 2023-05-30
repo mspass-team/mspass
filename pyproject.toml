@@ -1,6 +1,11 @@
 [project]
 name = "mspasspy"
 version = "1.0.0"
+description = "Massive Parallel Analysis System for Seismologists"
+authors = [
+    {name = "Ian Wang", email = "yinzhi.wang.cug@gmail.com"},
+    {name = "Gary Pavlis", email = "pavlis@indiana.edu"},
+]
 dynamic = ["dependencies"]
 
 [build-system]
@@ -13,12 +18,6 @@ dependencies = {file = ["requirements.txt"]}
 [tool.setuptools-extensions]
 cmake-extension = "setup:CMakeExtension"
 cmake-build = "setup:CMakeBuild"
-
-[tool.poetry]
-name = "mspasspy"
-version = "1.0.0"
-description = "Massive Parallel Analysis System for Seismologists"
-authors = ["Ian Wang <yinzhi.wang.cug@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
