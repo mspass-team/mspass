@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from multitaper.mtspec import MTSpec
-from mspasspy.ccore.utility import MsPASSError,ErrorSeverity,Metadata
-from mspasspy.ccore.seismic import TimeSeries,DoubleVector,PowerSpectrum
-class MTPowerSpectrumEngine():
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, Metadata
+from mspasspy.ccore.seismic import TimeSeries, DoubleVector, PowerSpectrum
+
+
+class MTPowerSpectrumEngine:
     """
     Wrapper class to use German Prieto's multitaper package as a plug
     in replacement for the MsPASS class of the same name.   The MsPASS
@@ -37,64 +39,73 @@ class MTPowerSpectrumEngine():
     eigentaper weighting scheme.  See Prieto's MTspect class documentation
     for options.  Default is 0 which enables the adaptive weighting scheme.
     """
-    def __init__(self,winsize,tbp,number_tapers,
-                 nfft=0,
-                 iadapt=0,
-                 ):
 
-        self.winsize=winsize
-        self.tbp=tbp   #nw in multitaper
-        self.number_tapers=number_tapers   #kspec in multitaper
-        self.vn=None  # constructor for MTSpec will set this when passed None
+    def __init__(
+        self, winsize, tbp, number_tapers, nfft=0, iadapt=0,
+    ):
+
+        self.winsize = winsize
+        self.tbp = tbp  # nw in multitaper
+        self.number_tapers = number_tapers  # kspec in multitaper
+        self.vn = None  # constructor for MTSpec will set this when passed None
         if nfft:
-            if nfft<winsize:
+            if nfft < winsize:
                 self.nfft = self.winsize
-                print("Warning:  MTPowerSpectralEngine constructor.  nfft=",nfft,
-                     " size is smaller than winsize=",winsize," Reset nfft to be equal to winsize")
-            self.nfft=nfft
+                print(
+                    "Warning:  MTPowerSpectralEngine constructor.  nfft=",
+                    nfft,
+                    " size is smaller than winsize=",
+                    winsize,
+                    " Reset nfft to be equal to winsize",
+                )
+            self.nfft = nfft
         else:
-            self.nfft = 2*winsize
-        self.idapt=iadapt
-        self.lamb=None # constructor for MTSpec set this
-        self.MTSpec_instance=None
-    def apply(self,d,dt=1.0):
+            self.nfft = 2 * winsize
+        self.idapt = iadapt
+        self.lamb = None  # constructor for MTSpec set this
+        self.MTSpec_instance = None
+
+    def apply(self, d, dt=1.0):
         """
         need to support vector input or a TimeSeries - returns a PowerSpectrum
 
         """
         # All inputs end up filling a numpy array passed to MTSpec below
-        if isinstance(d,TimeSeries):
-            y=np.array(d.data)
+        if isinstance(d, TimeSeries):
+            y = np.array(d.data)
             dt = d.dt
-            md=Metadata(d)
-        elif isinstance(d,DoubleVector):
+            md = Metadata(d)
+        elif isinstance(d, DoubleVector):
             # pybind11 bindings defined std::vector as a DoubleVector
             # This is exactly like the use for TimeSeries where data
             # is a DoubleVector
-            y=np.array(d)
-            md=Metadata()
+            y = np.array(d)
+            md = Metadata()
             # These are mspass schema standard names - could be
             # a future maintenance issue
-            md['npts']=len(d)
-            md['delta']=dt
-        elif isinstance(d,np.ndarray):
-            y=d
-            md=Metadata()
+            md["npts"] = len(d)
+            md["delta"] = dt
+        elif isinstance(d, np.ndarray):
+            y = d
+            md = Metadata()
             # These are mspass schema standard names - could be
             # a future maintenance issue
-            md['npts']=len(d)
-            md['delta']=dt
+            md["npts"] = len(d)
+            md["delta"] = dt
         else:
-            raise TypeError("MTPowerSpectrumEngine.apply:  arg0 has invalid type - must be TimeSeries, DoubleVector, or numpy array")
+            raise TypeError(
+                "MTPowerSpectrumEngine.apply:  arg0 has invalid type - must be TimeSeries, DoubleVector, or numpy array"
+            )
         self.MTSpec_instance = MTSpec(
-                       y,
-                       nw=self.tbp,
-                       kspec=self.number_tapers,
-                       dt=dt,
-                       nfft=self.nfft,
-                       iadapt=self.idapt,
-                       vn=self.vn,
-                       lamb=self.lamb)
+            y,
+            nw=self.tbp,
+            kspec=self.number_tapers,
+            dt=dt,
+            nfft=self.nfft,
+            iadapt=self.idapt,
+            vn=self.vn,
+            lamb=self.lamb,
+        )
         # Set these so they will be automatically reused on a
         # successive call.   May need to trap size mismatch above
         # if these were previously set - this needs some testing
@@ -114,17 +125,13 @@ class MTPowerSpectrumEngine():
         md["time_bandwith_product"] = self.MTSpec_instance.nw
         md["number_tapers"] = self.MTSpec_instance.kspec
         # this is an obnoxious collision with the C++ api DoubleVector
-        npts=self.MTSpec_instance.npts
-        work=DoubleVector()
+        npts = self.MTSpec_instance.npts
+        work = DoubleVector()
         for i in range(npts):
             work.append(self.MTSpec_instance.spec[i])
 
-        result = PowerSpectrum(md,
-                                work,
-                                self.MTSpec_instance.df,
-                               "multitaper.MTSpec")
+        result = PowerSpectrum(md, work, self.MTSpec_instance.df, "multitaper.MTSpec")
         return result
-
 
     def frequencies(self):
         """
@@ -135,9 +142,10 @@ class MTPowerSpectrumEngine():
         else:
             raise MsPASSError(
                 "MTPowerSpectrumEngine.frequencies:   engine has not been initialized.  Method undefined until apply method called",
-                ErrorSeverity.Fatal
-                )
-    def time_bandwidth_product(self)->float:
+                ErrorSeverity.Fatal,
+            )
+
+    def time_bandwidth_product(self) -> float:
         """
         Return time bandwidth product for this operator.
         """
@@ -146,9 +154,10 @@ class MTPowerSpectrumEngine():
         else:
             raise MsPASSError(
                 "MTPowerSpectrumEngine.time_bandwidth_product:   engine has not been initialized.  Method undefined until apply method called",
-                ErrorSeverity.Fatal
-                )
-    def number_tapers(self)->int:
+                ErrorSeverity.Fatal,
+            )
+
+    def number_tapers(self) -> int:
         """
         Return the number of tapers defined for this operator.
         """
@@ -157,10 +166,10 @@ class MTPowerSpectrumEngine():
         else:
             raise MsPASSError(
                 "MTPowerSpectrumEngine.number_tapers:   engine has not been initialized.  Method undefined until apply method called",
-                ErrorSeverity.Fatal
-                )
+                ErrorSeverity.Fatal,
+            )
 
-    def set_df(self,df):
+    def set_df(self, df):
         """
         Explicit setter for frequency bin interval.  Needed when
         changing sample interval for input data. Rarely of use but
@@ -169,4 +178,4 @@ class MTPowerSpectrumEngine():
 
         This maybe should just be pass or throw an error.
         """
-        self.MTSpec_instance.df=df
+        self.MTSpec_instance.df = df

@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 from abc import ABC, abstractmethod
 from mspasspy.ccore.seismic import PowerSpectrum
-from mspasspy.ccore.utility import MsPASSError,ErrorSeverity
-from mspasspy.db.schema import DatabaseSchema,MetadataSchema
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
+from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.db.dbclient import DBClient
 from bson import ObjectId
 import pickle
+
 
 class BasicObjectDatabase(ABC):
     """
@@ -31,14 +32,10 @@ class BasicObjectDatabase(ABC):
     may find this class a useful base to build upon.
 
     """
-    def __init__(self,
-                 name,
-                 type_list,
-                 *args,
-                 db_schema=None,
-                 md_schema=None,
-                 **kwargs,
-                 ):
+
+    def __init__(
+        self, name, type_list, *args, db_schema=None, md_schema=None, **kwargs,
+    ):
         """
         Base class constructor.   Most subclasses should normally
         calls this constructor as part of the __init__ method of the
@@ -107,7 +104,7 @@ class BasicObjectDatabase(ABC):
                 schema file ("mspass")/
 
         """
-        do_not_load_keyword="DO_NOT_LOAD"
+        do_not_load_keyword = "DO_NOT_LOAD"
         self.name = name
         dbclient = DBClient()
         self.db = dbclient.get_database(self.name)
@@ -132,9 +129,7 @@ class BasicObjectDatabase(ABC):
         else:
             self.metadata_schema = MetadataSchema()
 
-
-
-    def data_valid(self,d)->bool:
+    def data_valid(self, d) -> bool:
         """
         Tests if input datum d has a type supported by this handle.
         Returns a True if the answer is yes and false if the answer is no.
@@ -142,9 +137,10 @@ class BasicObjectDatabase(ABC):
         be an error.
         """
         for typ in self.type_list:
-            if isinstance(d,typ):
+            if isinstance(d, typ):
                 return True
         return False
+
     @abstractmethod
     def read_data(self):
         """
@@ -157,8 +153,9 @@ class BasicObjectDatabase(ABC):
         class is associated.
         """
         pass
+
     @abstractmethod
-    def save_data(self,d):
+    def save_data(self, d):
         """
         Save one datum.
 
@@ -166,6 +163,7 @@ class BasicObjectDatabase(ABC):
         datum d by whatever scheme is used for the implementation.
         """
         pass
+
     @abstractmethod
     def verify(self):
         """
@@ -183,6 +181,7 @@ class BasicObjectDatabase(ABC):
         """
         pass
 
+
 class SpectrumDatabase(BasicObjectDatabase):
     """
     Specialized database handle to manage PowerSpectrum data.
@@ -193,12 +192,10 @@ class SpectrumDatabase(BasicObjectDatabase):
     and a simple verify method required by the abstract base class from
     which it is derived.
     """
-    def __init__(self,
-                 name,
-                 *args,
-                 collection="PowerSpectrum",
-                 **kwargs,
-                 ):
+
+    def __init__(
+        self, name, *args, collection="PowerSpectrum", **kwargs,
+    ):
         """
         Constructor for this database handle.   Note because this class
         inherits pymongo.database.Database.   You can pass arguments
@@ -214,13 +211,12 @@ class SpectrumDatabase(BasicObjectDatabase):
         :type collection:  string
         """
         type_list = [PowerSpectrum]
-        BasicObjectDatabase.__init__(name,
-                               type_list,
-                               db_schema="DO_NOT_LOAD",
-                               md_schema="DO_NOT_LOAD")
+        BasicObjectDatabase.__init__(
+            name, type_list, db_schema="DO_NOT_LOAD", md_schema="DO_NOT_LOAD"
+        )
         self.collection = self[collection]
 
-    def save_data(self,datum,exclude=None,metadata2save=None,format="pickle"):
+    def save_data(self, datum, exclude=None, metadata2save=None, format="pickle"):
         """
         Saves a single PowerSpectrum object defined through arg0.   Default
         dumps all metadata elements to PowerSpectrum collection document
@@ -239,13 +235,16 @@ class SpectrumDatabase(BasicObjectDatabase):
         accepted value is the default of "pickle".  The default format
         pickles the input datum and saves the result with the key "serialized_data".
         """
-        if format!="pickle":
-            raise MsPASSError("SpectrumDatabase.save_data:  format can currently only be pickle",ErrorSeverity.Fatal)
+        if format != "pickle":
+            raise MsPASSError(
+                "SpectrumDatabase.save_data:  format can currently only be pickle",
+                ErrorSeverity.Fatal,
+            )
         if self.data_valid():
             if datum.dead():
                 return datum
             if metadata2save:
-                doc=dict()
+                doc = dict()
                 for key in metadata2save:
                     # if running this mode silently ignore any
                     # metadata defined in the keep list but not defined
@@ -254,7 +253,7 @@ class SpectrumDatabase(BasicObjectDatabase):
                         val = datum[key]
                         doc[key] = val
             else:
-                doc=dict(datum)
+                doc = dict(datum)
                 if exclude:
                     for key in exclude:
                         doc.pop(key)
@@ -263,14 +262,14 @@ class SpectrumDatabase(BasicObjectDatabase):
             return recid
 
         else:
-            message = "SpectrumDatabase.save_data:  illegal data type for arg0. Found type={typ} - only support PowerSpectrum".format(typ=type(datum))
-            raise MsPASSError(message,ErrorSeverity.Fatal)
+            message = "SpectrumDatabase.save_data:  illegal data type for arg0. Found type={typ} - only support PowerSpectrum".format(
+                typ=type(datum)
+            )
+            raise MsPASSError(message, ErrorSeverity.Fatal)
 
-    def read_data(self,
-                  id_or_doc,
-                  required=None,
-                  override=None,
-                  ):
+    def read_data(
+        self, id_or_doc, required=None, override=None,
+    ):
         """
         Reads one PowerSpectrum using an object id either directly or
         indirectly via an input MongoDB document.   Because this implementation
@@ -301,13 +300,13 @@ class SpectrumDatabase(BasicObjectDatabase):
         the attribute is treated as optional.  i.e. it a value isn't found
         for a particular key it is simply not posted.
         """
-        if isinstance(id_or_doc,ObjectId):
-            oid=id_or_doc
+        if isinstance(id_or_doc, ObjectId):
+            oid = id_or_doc
         else:
             oid = id_or_doc["_id"]
-        doc = self.collection.find_one({'_id' : oid})
+        doc = self.collection.find_one({"_id": oid})
         if doc:
-            datakey="serialized_data"
+            datakey = "serialized_data"
             if datakey in doc:
                 datum = pickle.loads(doc[datakey])
                 if required:
@@ -319,13 +318,15 @@ class SpectrumDatabase(BasicObjectDatabase):
                             datum[key] = doc[key]
             else:
                 message = "SpectrumDatabase.read_data:  missing required key=serialized_data - expected to contain datum serialized with pickle"
-                raise MsPASSError(message,ErrorSeverity.Fatal)
+                raise MsPASSError(message, ErrorSeverity.Fatal)
             return datum
         else:
-            message="SpectrumDatabase.read_data: no document with ObjectId={oid} was found in PowerSpectrum collection".format(oid=str(oid))
-            raise MsPASSError(message,ErrorSeverity.Invalid)
+            message = "SpectrumDatabase.read_data: no document with ObjectId={oid} was found in PowerSpectrum collection".format(
+                oid=str(oid)
+            )
+            raise MsPASSError(message, ErrorSeverity.Invalid)
 
-    def verify(self,query=None,required=None):
+    def verify(self, query=None, required=None):
         """
         Scans PowerSpectrum collection to verify the contents.  An optional
         MongoDB query can be passed to scan a limited subset.  You can also
@@ -347,9 +348,9 @@ class SpectrumDatabase(BasicObjectDatabase):
         if query:
             cursor = self.collection.find(query)
         else:
-            cursor=self.collection.find[{}]
-        nprocessed=0
-        nvalid=0
+            cursor = self.collection.find[{}]
+        nprocessed = 0
+        nvalid = 0
         testkey = "serialized_data"
         for doc in cursor:
             if testkey in doc:
@@ -366,4 +367,4 @@ class SpectrumDatabase(BasicObjectDatabase):
             nvalid += 1
         nprocessed += 1
 
-        return([nprocessed,nvalid])
+        return [nprocessed, nvalid]
