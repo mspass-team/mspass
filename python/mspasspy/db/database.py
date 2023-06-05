@@ -95,8 +95,8 @@ class Database(pymongo.database.Database):
     Optional parameters are:
 
     :param schema: a :class:`str` of the yaml file name that defines
-      both the database schema and the metadata schema. If this parameter 
-      is set, it will override the following two. 
+      both the database schema and the metadata schema. If this parameter
+      is set, it will override the following two.
     :param db_schema: Set the name for the database schema to use with this
       handle.  Default is the MsPASS schema. (See User's Manual for details)
     :param md_schema:  Set the name for the Metadata schema.   Default is
@@ -290,8 +290,10 @@ class Database(pymongo.database.Database):
             self.metadata_schema = MetadataSchema(schema)
         else:
             raise MsPASSError(
-                "Error: argument schema is of type {}, which is not supported".format(type(schema)),
-                "Fatal"
+                "Error: argument schema is of type {}, which is not supported".format(
+                    type(schema)
+                ),
+                "Fatal",
             )
 
     def set_database_schema(self, schema):
@@ -309,8 +311,10 @@ class Database(pymongo.database.Database):
             self.database_schema = DatabaseSchema(schema)
         else:
             raise MsPASSError(
-                "Error: argument schema is of type {}, which is not supported".format(type(schema)),
-                "Fatal"
+                "Error: argument schema is of type {}, which is not supported".format(
+                    type(schema)
+                ),
+                "Fatal",
             )
 
     def set_schema(self, schema):
@@ -318,7 +322,7 @@ class Database(pymongo.database.Database):
         Use this method to change both the database and metadata schema defined for this
         instance of a database handle.  This method sets the database
         schema (namespace for attributes saved in MongoDB) and the metadata
-        schema (interal namespace). 
+        schema (interal namespace).
 
         :param schema: a :class:`str` of the yaml file name.
         """
