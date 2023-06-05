@@ -33,6 +33,7 @@ class DBClient(pymongo.MongoClient):
     def get_default_database(
         self,
         default=None,
+        schema=None,
         codec_options=None,
         read_preference=None,
         write_concern=None,
@@ -50,11 +51,13 @@ class DBClient(pymongo.MongoClient):
             read_preference,
             write_concern,
             read_concern,
+            schema=schema
         )
 
     def get_database(
         self,
         name=None,
+        schema=None,
         codec_options=None,
         read_preference=None,
         write_concern=None,
@@ -66,5 +69,5 @@ class DBClient(pymongo.MongoClient):
             name = self.__default_database_name
 
         return Database(
-            self, name, codec_options, read_preference, write_concern, read_concern
+            self, name, codec_options, read_preference, write_concern, read_concern, schema=schema
         )
