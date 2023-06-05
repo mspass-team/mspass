@@ -94,6 +94,9 @@ class Database(pymongo.database.Database):
     passed to the MongoDB server that defines your working database.
     Optional parameters are:
 
+    :param schema: a :class:`str` of the yaml file name that defines
+      both the database schema and the metadata schema. If this parameter 
+      is set, it will override the following two. 
     :param db_schema: Set the name for the database schema to use with this
       handle.  Default is the MsPASS schema. (See User's Manual for details)
     :param md_schema:  Set the name for the Metadata schema.   Default is
@@ -103,21 +106,25 @@ class Database(pymongo.database.Database):
     parameters defined for the base class (see pymongo documentation)
     """
 
-    def __init__(self, *args, db_schema=None, md_schema=None, **kwargs):
+    def __init__(self, *args, schema=None, db_schema=None, md_schema=None, **kwargs):
         super(Database, self).__init__(*args, **kwargs)
-        if isinstance(db_schema, DatabaseSchema):
-            self.database_schema = db_schema
-        elif isinstance(db_schema, str):
-            self.database_schema = DatabaseSchema(db_schema)
+        if schema:
+            self.database_schema = DatabaseSchema(schema)
+            self.metadata_schema = MetadataSchema(schema)
         else:
-            self.database_schema = DatabaseSchema()
+            if isinstance(db_schema, DatabaseSchema):
+                self.database_schema = db_schema
+            elif isinstance(db_schema, str):
+                self.database_schema = DatabaseSchema(db_schema)
+            else:
+                self.database_schema = DatabaseSchema()
 
-        if isinstance(md_schema, MetadataSchema):
-            self.metadata_schema = md_schema
-        elif isinstance(md_schema, str):
-            self.metadata_schema = MetadataSchema(md_schema)
-        else:
-            self.metadata_schema = MetadataSchema()
+            if isinstance(md_schema, MetadataSchema):
+                self.metadata_schema = md_schema
+            elif isinstance(md_schema, str):
+                self.metadata_schema = MetadataSchema(md_schema)
+            else:
+                self.metadata_schema = MetadataSchema()
 
     def __getstate__(self):
         ret = self.__dict__.copy()
@@ -275,10 +282,17 @@ class Database(pymongo.database.Database):
         schema (interal namespace).  Use set_database_schema to change
         the stored data schema.
 
-        :param schema: an instance of :class:`mspsspy.db.schema.MetadataSchema.
-          WARNING this is not a name - is a MsPASS object consructed from a name.
+        :param schema: an instance of :class:`mspsspy.db.schema.MetadataSchema` or a :class:`str` of the yaml file name.
         """
-        self.metadata_schema = schema
+        if isinstance(schema, MetadataSchema):
+            self.metadata_schema = schema
+        elif isinstance(schema, str):
+            self.metadata_schema = MetadataSchema(schema)
+        else:
+            raise MsPASSError(
+                "Error: argument schema is of type {}, which is not supported".format(type(schema)),
+                "Fatal"
+            )
 
     def set_database_schema(self, schema):
         """
@@ -287,10 +301,29 @@ class Database(pymongo.database.Database):
         schema (namespace for attributes saved in MongoDB).  Use metadata_schema
         to change the in memory namespace.
 
-        :param schema: an instance of :class:`mspsspy.db.schema.DatabaseSchema.
-          WARNING this is not a name - is a MsPASS object consructed from  aname.
+        :param schema: an instance of :class:`mspsspy.db.schema.DatabaseSchema` or a :class:`str` of the yaml file name.
         """
-        self.database_schema = schema
+        if isinstance(schema, DatabaseSchema):
+            self.database_schema = schema
+        elif isinstance(schema, str):
+            self.database_schema = DatabaseSchema(schema)
+        else:
+            raise MsPASSError(
+                "Error: argument schema is of type {}, which is not supported".format(type(schema)),
+                "Fatal"
+            )
+
+    def set_schema(self, schema):
+        """
+        Use this method to change both the database and metadata schema defined for this
+        instance of a database handle.  This method sets the database
+        schema (namespace for attributes saved in MongoDB) and the metadata
+        schema (interal namespace). 
+
+        :param schema: a :class:`str` of the yaml file name.
+        """
+        self.database_schema = DatabaseSchema(schema)
+        self.metadata_schema = MetadataSchema(schema)
 
     def read_data(
         self,
