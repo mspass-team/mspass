@@ -3,6 +3,12 @@
 #include "mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h"
 #include "mspass/algorithms/deconvolution/dpss.h"
 #include "mspass/algorithms/deconvolution/ComplexArray.h"
+/* This C function is defined in FFTDeconOperator.h but it has a lot of
+other baggage that could create mysterious problems so we just define it
+again here.  Maintenanc issue if the api changes.*/
+extern "C" {
+    unsigned int nextPowerOf2(unsigned int n);
+}
 namespace mspass::algorithms::deconvolution
 {
 using namespace std;
@@ -30,7 +36,10 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize,
   tbp=tbpin;
   ntapers=ntpin;
   if(nfftin<winsize)
-      nfft = 2*winsize + 1;
+  {
+      nfft = nextPowerOf2(winsize);
+      if(nfft==winsize) nfft=2*winsize;
+  }
   else
       nfft = nfftin;
   /* The call to set_df as implemented makes the initializations below unnecessary
