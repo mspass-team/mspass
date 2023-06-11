@@ -100,6 +100,7 @@ class MTPowerSpectrumEngine:
         #  REMOVE ME WHEN VERIFIED
         self.vn = self.MTSpec_instance.vn
         self.lamb = self.MTSpec_instance.lamb
+        self.nfft = self.MTSpec_instance.nfft
         # We copy these attributes to metadata for optional downstream use
         md["MTSpec_dt"] = self.MTSpec_instance.dt
         md["MTSpec_df"] = self.MTSpec_instance.df
@@ -161,11 +162,11 @@ class MTPowerSpectrumEngine:
 
     def set_df(self, df):
         """
-        Explicit setter for frequency bin interval.  Needed when 
-        changing sample interval for input data. Rarely of use but 
-        included for compatibility with the C++ class with the 
+        Explicit setter for frequency bin interval.  Needed when
+        changing sample interval for input data. Rarely of use but
+        included for compatibility with the C++ class with the
         same name.
-        
-        This maybe should just be pass or throw an error. 
+
+        This maybe should just be pass or throw an error.
         """
         self.MTSpec_instance.df = df
