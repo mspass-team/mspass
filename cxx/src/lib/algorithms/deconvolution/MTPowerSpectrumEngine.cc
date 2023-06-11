@@ -149,12 +149,11 @@ PowerSpectrum MTPowerSpectrumEngine::apply(const TimeSeries& d)
       for(k=0;k<taperlen;++k)work.push_back(d.s[k]);
     }
     /* intentionally omit try catch here because the above logic assures Sizes
-    must match here. This overloaded method will throw an exception in that case.*/
+    must match here. This overloaded method will throw an exception in that case.
+    Note in this implementation the result returned by apply is scaled to
+    assumed properly scaled to power spectrum and normalized for multitapers.*/
     vector<double> spec(this->apply(work));
-    /* This scaling is necessary to turn the result into power spectral density
-    in units of 1/Hz. Multiply by dt, of course,  is division by the sampling
-    frequency that many sources use. */
-    for(auto sptr=spec.begin();sptr!=spec.end();++sptr) *sptr *= d.dt();
+
     result=PowerSpectrum(dynamic_cast<const Metadata&>(d),
        spec,deltaf,string("Multitaper"),0.0,d.dt(),d.npts());
     /* We post these to metadata for the generic PowerSpectrum object. */
@@ -175,8 +174,9 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
        << "Sizes must match to use this implementation of this algorithm"<<endl;
     throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
   }
-  double var(0.0);   // sum of squares of data - used for psd scaling below
-  for(auto ptr=d.begin();ptr!=d.end();++ptr)var += (*ptr)*(*ptr);
+  /* Need this for parseval theorem scaling */
+  double ssq(0.0);
+  for(auto ptr=d.begin();ptr!=d.end();++ptr) ssq += (*ptr)*(*ptr);
   /* This is the only function in this entire object that does anything
   but housework.   Computes the power spectrum by average DFT of d^*d where
   the average is over the tapes. First taper data and store tapered data in
@@ -218,11 +218,16 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
     }
   }
   /* Scale using Parseval's theorem - this is adapted from Prieto's
-  multitaper python implementation.   No need with this to correct for
-  summing eigenspecra as sum is aborbed with parseval's theoren scaling*/
+  multitaper python implementation.   We have to explicitly add the
+  divide by nfft that is implicit in Prieto's code because he uses
+  numpy's var function to compoute sum of squares of data that includes a
+  divide by data vector length.  Not sure his formula is right as seems to
+  me it shouild be nfft not npts.
+  */
   double specssq(0.0),scale;
   for(auto p=result.begin();p!=result.end();++p) specssq += (*p);
-  scale = var/(specssq*this->df());
+  scale = ssq/(specssq*this->df());
+  scale /= static_cast<double>(this->nfft);
   for(j=0;j<this->nf();++j) result[j] *= scale;
   return result;
 }
