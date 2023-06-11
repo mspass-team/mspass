@@ -6,70 +6,36 @@ from mspasspy.ccore.utility import MsPASSError,ErrorSeverity,Metadata
 from mspasspy.ccore.seismic import TimeSeries,DoubleVector,PowerSpectrum
 class MTPowerSpectrumEngine():
     """
-    Python plug in replacement for ccore class with the same name.
-    
-    Earlier version of MsPASS had only a C++ implementation of multitaper 
-    spectra found in mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine.
-    This class is a plug in replacement for the C++ class but the actual
-    computational engine uses German Prieto's multitaper module available 
-    from github.  His package is easily installed independently using 
-    "pip install multitaper" or the conda equivalent.
-    
-    To mesh with Preito's library required an anomaly in behavior that 
-    user's must be aware of.  That is, Prieto's MTSpec class does not 
-    use a model where a class instances is constructed from an input 
-    time series (literally a numpy array).   That does not mesh with the 
-    "apply" model of MTPowerSpectrum engine that was designed as 
-    construct once and then pass as an argument through a map operator.   
-    The apply model meshes better with map/reduce and is more efficient for 
-    this particular problem as it avoids the (expensive) operation of 
-    computing the slepian tapers for each data vector it processes.  
-    That feature is simulated here by storing an instance of the 
-    MTSpec class inside this wrapper class.  BUT be aware the MTSpec 
-    class (MTSpec_instance) is not actually instantiated until the 
-    first call to the apply method.  For normal use in map reduce that 
-    detail should be invisible except each worker will incur the overhead
-    of initialization when the first apply method is called.   
-    
-    This class adds some features in Prieto's module not found in the
-    much cruder use in the C++ version.   See the constructor docstring 
-    below for details.   The available class methods are identical to 
-    the C++ version.   Additional features of Prieto's library 
-    can be accessed in a bit if a strange way through the class
-    attribute name.MTSpect_instance where "name" is the symbol used to 
-    define a concrete instance of the class.   MTSpec_instance is a 
-    instance of the MTSpec class in Prieto's library.  See the 
-    docstring for that class found at the following for details of 
-    what is available through that mechanism:
-        https://multitaper.readthedocs.io/en/latest/mtspec.html#mtspec.MTSpec
-        
-    
-    The following code fragment illustrates the use of other features in 
-    Prieto's library not available with the C++ version.   This example 
-    computes the spectrum of the waveform segment in the TimeSeries 
-    object d (assumed defined earlier) with time-bandwidth product 5.0 
-    and 8 tapers.  It then computes the multitaper jackknife errors 
-    using that method of MTSpec.
-    
-        npts=d.npts
-        engine=MTPowerSpectrumEngine(npts,5.0,8)
-        powspec = engine.apply(d)
-        jackknife_errors = engine.MTSpec_instance.jackspec()
-        
+    Wrapper class to use German Prieto's multitaper package as a plug
+    in replacement for the MsPASS class of the same name.   The MsPASS
+    version is in C++ and there are some collisions in concept.  It should
+    be used only in a python script where it might be useful to use
+    features of Prieto's library not available in the cruder implementation
+    in MsPASS.   (e.g. adaptive weights in multitaper power spectrum estimation).
 
-    :param winsize:   expected number of samples per apply call
-    :param tbp:  time-bandwidth product of multitapers to compute (float)
-    :param number_tapers:  number of tapers to use for spectral estimator. 
-    Integer must be < 2*tbp.  Unlike MTSpec there is no default.
-    :param nfft:  number of points to use in fft.  Default uses the winsize. 
-    Be aware of the standard issues about fft algorithms and array sizes.  
-    :param idapt:   MTSpec argument that sets the weighting scheme.  
-    Must be an integer with one of three values:
-        0 - use "adaptive" weighting scheme (default)
-        1 - weight each taper by 1.0 ("unity" weights in matlab equivalent)
-        2 - weight by eigenvalues of each taper. 
-    (Note:  matlab's help files have a good, practical description of how 
-     these choices compare)
+    The biggest collision in concept is that the MsPASS version with this class
+    name was designed to be created and moved around to avoid the overhead of
+    recreating the Slepian tapers on each use.  Prieto's class creates these
+    in the constructor but caches a number of things when first created that
+    allows secondary calls to run faster.  The implementation attempts
+    to overcome this collision by caching an instance of Prieto's mstspec class
+    on the first call to the apply method.   Secondary calls to apply test
+    for consistency with the previous call and only recreate the mtspec
+    instance if something that invalidates the previous call has changed.
+
+    :param winsize:   Number of samples expected for data window.  Note this
+    argument defines the size of the eigentapers so it defines the size of
+    input time series the object expect to process.
+    :param tbp:  multitaper time-bandwidth product
+    :param number_tapers:  number of tapers to use for estimators (See Prieto's)
+    documentation for details)
+    :param nfft:  optional size of the fft work arrays to use.  nfft should be
+    greater than or equal winsize.  When greater zero padding is used in the
+    usual way.  Default is 0 which sets nfft to 2*winsize.  If nfft<winsize
+    a diagnostic message will be printed and nfft will be set equal to winsize.
+    :param iadapt:  integer argument passed to Prieto's MTspec that sets the
+    eigentaper weighting scheme.  See Prieto's MTspect class documentation
+    for options.  Default is 0 which enables the adaptive weighting scheme.
     """
     def __init__(self,winsize,tbp,number_tapers,
                  nfft=0,
@@ -84,39 +50,9 @@ class MTPowerSpectrumEngine():
         self.idapt=iadapt
         self.lamb=None # constructor for MTSpec set this
         self.MTSpec_instance=None
-    def apply(self,d,dt=1.0)->PowerSpectrum:
+    def apply(self,d,dt=1.0):
         """
-        Compute the spectrum of the data contained in d using the 
-        properties defined on construction.  Result is returned as a 
-        MsPASS PowerSpectrum object.  The metadata of the return is 
-        minimal for raw array input but for TimeSeries input the 
-        parent data is cloned for the output. 
-        
-        :param d:  input data containing an array to use to compute the 
-        desired PowerSpectrum.   
-        :type d:  Must be one of the following:
-            TimeSeries - When the input is a MsPASS TimeSeries object the 
-            entire data vector is passed to the engine.  Use WindowData if 
-            you need to use a subset of an input data either in a map 
-            call preceding this or within the argument list 
-            (e.g. instance.apply(WindowData(d,winstart,wineend)))
-        
-           numpy array - expects a 1d vector of length == what the engine expects
-           DoubleVector - a C++ std::vector bound with pybind11 of length 
-           that expected by the engine.   
-           
-        :param dt:  optional sample interval of input data. Ignored for 
-        TimeSeries input but essential if passing a plain numpy or DoubleVector
-        if you need the actual frequency values.  Default is 1.0.  
-        
-        :return:  returns a MsPSS PowerSpectrum object.  The symbol spectrum 
-        contains the computed power spectrum estimate.   The PowerSpectrum 
-        object has a Metadata container.  When the input is TimeSeries 
-        the return will contain a copy of the Metadata form the input.  
-        Be warned that means there may be attributes at odds with the 
-        actual PowerSpectrum contents.  This method posts the following 
-        additional metadata:  npts, delta, MTSpec_dt, MTSpec_df, MTSpec_nw,
-        MTSpec_kspec, MTSpec_nfft, MTSpec_npts
+        need to support vector input or a TimeSeries - returns a PowerSpectrum
 
         """
         # All inputs end up filling a numpy array passed to MTSpec below
@@ -179,14 +115,17 @@ class MTPowerSpectrumEngine():
         result = PowerSpectrum(md,
                                 work,
                                 self.MTSpec_instance.df,
-                               "multitaper.MTSpec")
+                               "multitaper.MTSpec",
+                               0.0,
+                               dt,
+                               md["npts"],
+                               )
         return result
         
         
     def frequencies(self):
         """
-        Return a numpy array of the frequencies associated with each component 
-        of the spectrum vector. 
+        Return a numpy array of the frequencies
         """
         if self.MTSpec_instance:
             return self.MTSpec_instance.freq
