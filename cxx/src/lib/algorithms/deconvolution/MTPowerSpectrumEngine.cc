@@ -236,7 +236,9 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
   double specssq(0.0),scale;
   for(auto p=result.begin();p!=result.end();++p) specssq += (*p);
   scale = ssq/(specssq*this->df());
-  scale /= static_cast<double>(this->nfft);
+  /* Scaling for fft implementation - Established from zero pad tests it has
+  to be this factor */
+  scale /= static_cast<double>(d.size());
   for(j=0;j<this->nf();++j) result[j] *= scale;
   return result;
 }
