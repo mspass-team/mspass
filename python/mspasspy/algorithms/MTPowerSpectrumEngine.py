@@ -113,11 +113,13 @@ class MTPowerSpectrumEngine:
         # even if it is redundamt
         md["time_bandwith_product"] = self.MTSpec_instance.nw
         md["number_tapers"] = self.MTSpec_instance.kspec
+        # This method returns only the positive frequencies and spectra values
+        f,spec = self.MTSpec_instance.rspec()
         # this is an obnoxious collision with the C++ api DoubleVector
         npts = self.MTSpec_instance.npts
         work = DoubleVector()
-        for i in range(npts):
-            work.append(self.MTSpec_instance.spec[i])
+        for i in range(len(spec)):
+            work.append(spec[i])
 
         result = PowerSpectrum(
             md, work, self.MTSpec_instance.df, "multitaper.MTSpec", 0.0, dt, md["npts"],
