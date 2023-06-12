@@ -114,7 +114,7 @@ class MTPowerSpectrumEngine:
         md["time_bandwith_product"] = self.MTSpec_instance.nw
         md["number_tapers"] = self.MTSpec_instance.kspec
         # This method returns only the positive frequencies and spectra values
-        f,spec = self.MTSpec_instance.rspec()
+        f, spec = self.MTSpec_instance.rspec()
         # this is an obnoxious collision with the C++ api DoubleVector
         npts = self.MTSpec_instance.npts
         work = DoubleVector()
