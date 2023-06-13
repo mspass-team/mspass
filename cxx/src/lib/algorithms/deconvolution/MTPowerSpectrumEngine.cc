@@ -72,6 +72,22 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize,
       }
   }
   delete [] work;
+  /* To be consistent with Prieto we use this algorithm to convert to 
+  what he calls the "positive standard".   That means we assure the 
+  center point is positive.
+  */
+  for(i=0;i<ntapers;++i)
+  {
+    int lh;  //matches Prieto algorithm name - see multitaper module
+    if(taperlen%2)
+      lh = static_cast<int>((taperlen+1)/2);
+    else
+      lh = static_cast<int>(taperlen/2);
+    if(tapers(i,lh)<0.0)
+    {
+      for(j=0;j<taperlen;++j) tapers(i,j) = -tapers(i,j);
+    }
+  }
   wavetable=gsl_fft_complex_wavetable_alloc (nfft);
   workspace=gsl_fft_complex_workspace_alloc (nfft);
 }
