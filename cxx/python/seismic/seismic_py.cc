@@ -13,6 +13,10 @@
 #include <mspass/seismic/Seismogram.h>
 #include <mspass/seismic/Ensemble.h>
 #include <mspass/seismic/PowerSpectrum.h>
+#include <mspass/seismic/DataGap.h>
+#include <mspass/seismic/TimeSeriesWGaps.h>
+
+#include <mspass/algorithms/TimeWindow.h>
 
 #include "python/utility/Publicdmatrix_py.h"
 #include "python/utility/boost_any_converter_py.h"
@@ -35,6 +39,7 @@ namespace py=pybind11;
 using namespace std;
 using namespace mspass::utility;
 using namespace mspass::seismic;
+using mspass::algorithms::TimeWindow;
 
 /* Trampoline class for BasicTimeSeries */
 class PyBasicTimeSeries : public BasicTimeSeries
@@ -90,6 +95,23 @@ public:
       BasicTimeSeries,
       set_t0,
       d0in);
+  }
+};
+
+/* Trampoline class for DataGap */
+class PyDataGap : public DataGap
+{
+public:
+  /* BasicTimeSeries has virtual methods that are not pure because
+  forms that contain gap handlers need additional functionality.
+  We thus use a different qualifier to PYBIND11_OVERLOAD macro here.
+  i.e. omit the PURE part of the name*/
+  void zero_gaps()
+  {
+    PYBIND11_OVERLOAD_PURE(
+      void,
+      DataGap,
+      zero_gaps);
   }
 };
 
@@ -359,6 +381,7 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>())
     .def("load_history",&Seismogram::load_history,
        "Load ProcessingHistory from another data object that contains relevant history")
+    .def("__sizeof__",[](const Seismogram& self){return self.memory_use();})
     .def(py::pickle(
       [](const Seismogram &self) {
         pybind11::object sbuf;
@@ -470,6 +493,7 @@ PYBIND11_MODULE(seismic, m) {
       }))
       .def("load_history",&TimeSeries::load_history,
          "Load ProcessingHistory from another data object that contains relevant history")
+      .def("__sizeof__",[](const TimeSeries& self){return self.memory_use();})
       // Not sure this constructor needs to be exposed to python
       /*
       .def(py::init<const BasicTimeSeries&,const Metadata&,
@@ -632,6 +656,7 @@ PYBIND11_MODULE(seismic, m) {
     .def("dead",&LoggingEnsemble<Seismogram>::dead,"Return true if the entire ensemble is marked dead")
     .def("validate",&LoggingEnsemble<Seismogram>::validate,"Test to see if the ensemble has any live members - return true of it does")
     .def("set_live",&LoggingEnsemble<Seismogram>::set_live,"Mark ensemble live but use a validate test first")
+    .def("__sizeof__",[](const LoggingEnsemble<Seismogram>& self){return self.memory_use();})
     .def_readwrite("elog",&LoggingEnsemble<Seismogram>::elog,"Error log attached to the ensemble - not the same as member error logs")
     .def(py::pickle(
       [](const LoggingEnsemble<Seismogram> &self) {
@@ -700,6 +725,7 @@ PYBIND11_MODULE(seismic, m) {
     .def("dead",&LoggingEnsemble<TimeSeries>::dead,"Return true if the entire ensemble is marked dead")
     .def("validate",&LoggingEnsemble<TimeSeries>::validate,"Test to see if the ensemble has any live members - return true of it does")
     .def("set_live",&LoggingEnsemble<TimeSeries>::set_live,"Mark ensemble live but use a validate test first")
+    .def("__sizeof__",[](const LoggingEnsemble<TimeSeries>& self){return self.memory_use();})
     .def_readwrite("elog",&LoggingEnsemble<TimeSeries>::elog,"Error log attached to the ensemble - not the same as member error logs")
     /* This is exactly parallel to the version for a SeismogramEnsemble.
     Only changed Seismogram to TimeSeries everywhere in this section.
@@ -821,6 +847,36 @@ PYBIND11_MODULE(seismic, m) {
         }
       ))
     ;
+
+    py::class_<DataGap,PyDataGap>(m,"DataGap","Base class for lightweight definition of data gaps")
+      .def(py::init<>())
+      /* Cannot get bindings with the next line for this constructor to compile.
+      Disabled as the python interface only uses DataGap as a base class for TimeSeriesWGaps
+      and I see now reason a python code would need this constructor*/
+      //.def(py::init<const std::list<mspass::algorithms::TimeWindow>&>())
+      .def("is_gap",&DataGap::is_gap,"Return true if arg0 time is inside a data gap")
+      .def("has_gap",py::overload_cast<>(&DataGap::has_gap),"Test if datum has any gaps defined")
+      .def("has_gap",py::overload_cast<const mspass::algorithms::TimeWindow>(&DataGap::has_gap),
+                 "Test if there is a gap inside a specified time range (defined with TimeWindow object)")
+      .def("add_gap",&DataGap::add_gap,"Define a specified time range as a data gap")
+      .def("get_gaps",&DataGap::get_gaps,"Return a list of TimeWindows marked as gaps")
+      .def("clear_gaps",&DataGap::add_gap,"Flush the entire gaps container")
+    ;
+
+    py::class_<TimeSeriesWGaps,TimeSeries,DataGap>(m,"TimeSeriesWGaps","TimeSeries object with gap handling methods")
+      .def(py::init<>())
+      .def(py::init<const TimeSeries&>())
+      .def(py::init<const TimeSeriesWGaps&>())
+      .def("ator",&TimeSeriesWGaps::ator,"Convert to relative time shifting gaps to match")
+      .def("rtoa",py::overload_cast<>(&TimeSeriesWGaps::rtoa),
+         "Return to UTC time using time shift defined in earlier ator call")
+      .def("rtoa",py::overload_cast<const double>(&TimeSeriesWGaps::rtoa),
+                 "Return to UTC time using a specified time shift")
+      .def("shift",&TimeSeriesWGaps::shift,"Shift the time reference by a specified constant")
+      .def("zero_gaps",&TimeSeriesWGaps::zero_gaps,"Zero the data vector for all sections defined as a gap")
+      .def("__sizeof__",[](const TimeSeriesWGaps& self){return self.memory_use();})
+    ;
+
 }
 
 } // namespace mspasspy

@@ -153,6 +153,17 @@ PYBIND11_MODULE(basic, m) {
     py::arg("twin") )
   ;
 
+  m.def("splice_segments",&splice_segments,"Splice a time sorted list of TimeSeries data into a continuous block",
+    py::return_value_policy::copy,
+    py::arg("segments"),
+    py::arg("save_history")
+  );
+
+  m.def("repair_overlaps",&repair_overlaps,"Attempt to remove redundant, matching overlapping data segments",
+    py::return_value_policy::copy,
+    py::arg("segments")
+  );
+
   /* The following line is necessary for the Vectors to be recognized. Reference:
      https://pybind11.readthedocs.io/en/stable/advanced/misc.html#partitioning-code-over-multiple-extension-modules
   */

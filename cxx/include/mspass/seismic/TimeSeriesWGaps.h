@@ -10,11 +10,19 @@ public:
 
   Will need a set of conastructors.   Requires some thought as how to
   set gap is an issue. */
-  TimeSeriesWGaps();
+  TimeSeriesWGaps():TimeSeries(),DataGap(){};
+  /*! Partial copy constructor from a plain TimeSeries.
+
+    Sometimes we need to build the skeleton of a gappy TimeSeries from
+    a regular TimeSeries.  This does that and builds makes a copy of the
+    TimeSeries and creates an empty container that defines the gaps. */
+  TimeSeriesWGaps(const TimeSeries& parent) : TimeSeries(parent),DataGap(){};
   /*! Copy constructor. */
-  TimeSeriesWGaps(const TimeSeriesWGaps& parent);
+  TimeSeriesWGaps(const TimeSeriesWGaps& parent)
+      : TimeSeries(dynamic_cast<const TimeSeries&>(parent)),
+              DataGap(dynamic_cast<const DataGap&>(parent)){};;
   TimeSeriesWGaps& operator=(const TimeSeriesWGaps& parent);
-  ~TimeSeriesWGaps();
+  virtual ~TimeSeriesWGaps(){};
   /*!
   Absolute to relative time conversion.
   Sometimes we want to convert data from absolute time (epoch times)
@@ -64,7 +72,16 @@ public:
 /*! Force all data inside data gaps to zero.
 **/
   void zero_gaps();
+  /*! Return an estimate of the memmory use by the data in this object.
 
+  Memory consumed by a TimeSeriesWGaps object is needed to implement the
+  __sizeof__ method in python that dask/spark use to manage memory.  Without
+  that feature we had memory fault issues.  Note the estimate this
+  method returns should not be expected to be exact.  The MsPASS implementation
+  or any alternative implementation avoids an exact calculation because it
+  requries an (expensive) traversal of multiple map containers.
+  */
+  size_t memory_use() const;
 };
-} //end mspass::seismic namespace 
+} //end mspass::seismic namespace
 #endif //end guard

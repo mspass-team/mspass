@@ -578,7 +578,7 @@ def set_netcode_from_site(
                 # for now just log this as an error
                 print("Time key=", time_key, " not found in document for sta=", sta)
         found = dbsite.find(query)
-        nfound = found.count()
+        nfound = dbsite.count_documents(query)
         if nfound == 1:
             x = found.next()
             updaterec.clear()

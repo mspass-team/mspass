@@ -103,7 +103,7 @@ public:
   std::list<LogData> get_error_log()const{return allmessages;};
   int size()const{return allmessages.size();};
   ErrorLogger& operator=(const ErrorLogger& parent);
-  /*! For this object + of += means add the log data from the rhs to 
+  /*! For this object + of += means add the log data from the rhs to
   the lhs.   lhs defines the job_id. */
   ErrorLogger& operator+=(const ErrorLogger& parent);
   /*! Return an std::list container with most serious error level marked. */

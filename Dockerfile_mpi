@@ -1,7 +1,7 @@
 #Image: mspass/mspass
 #Version: 1.0.0
 
-FROM ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
+FROM ghcr.io/seisscoped/container-base:latest
 
 LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
 
@@ -152,12 +152,9 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
 ADD requirements.txt requirements.txt
 RUN pip3 --no-cache-dir install --upgrade pip \
 	&& docker-clean
-RUN if [ "$TARGETARCH" == "arm64" ]; then export CFLAGS="-O3" \
-	&& export DISABLE_NUMCODECS_SSE2=true && export DISABLE_NUMCODECS_AVX2=true; fi\
-	&& pip3 --no-cache-dir install numpy \
+RUN pip3 --no-cache-dir install numpy \
     && pip3 --no-cache-dir install -r requirements.txt \
-    && rm -f requirements.txt \
-	&& docker-clean
+    && rm -f requirements.txt && docker-clean
 
 # Download & install pybind11
 ARG PYBIND11_VERSION=2.6.0
@@ -175,11 +172,10 @@ RUN pip3 --no-cache-dir install --upgrade setuptools \
 ADD cxx /mspass/cxx
 RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
     && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Debug .. \
+    && cmake .. \
     && make \
     && make install \ 
-    && rm -rf ../build \
-	&& docker-clean
+    && rm -rf ../build && docker-clean
 
 # Add data and env variable for the MetadataDefinition class
 ADD data /mspass/data
@@ -190,7 +186,7 @@ ADD setup.py /mspass/setup.py
 ADD python /mspass/python
 ADD pyproject.toml /mspass/pyproject.toml
 ADD requirements.txt /mspass/requirements.txt
-RUN pip3 install -C--build-option=build -C--build-option=--debug /mspass -v \
+RUN pip3 install /mspass -v \
 	&& rm -rf /mspass/build && docker-clean
 
 # Install jedi

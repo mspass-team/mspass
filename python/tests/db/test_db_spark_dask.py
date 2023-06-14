@@ -53,7 +53,7 @@ from datetime import datetime
 
 sys.path.append("python/tests")
 
-from mspasspy.db.database import Database
+from mspasspy.db.database import Database, index_mseed_file_parallel
 from mspasspy.io.distributed import read_distributed_data
 from mspasspy.db.client import DBClient
 from helper import (
@@ -452,8 +452,7 @@ class TestDatabase:
         # test with cursor
         cursor = self.db["wf_TimeSeries"].find({})
         res = self.db.read_ensemble_data_group(
-            cursor,
-            ensemble_metadata={"key1": "value1", "key2": "value2"},
+            cursor, ensemble_metadata={"key1": "value1", "key2": "value2"}
         )
 
         assert len(res.member) == 3
@@ -503,6 +502,22 @@ class TestDatabase:
             "key2" in seis_ensemble_metadata
             and seis_ensemble_metadata["key2"] == "value2"
         )
+
+        # not support miniseed or other formats
+        dir = "python/tests/data/"
+        dfile = "3channels.mseed"
+        fname = os.path.join(dir, dfile)
+        self.db.index_mseed_file(fname, collection="wf_miniseed")
+        assert self.db["wf_miniseed"].count_documents({}) == 3
+
+        cursor = self.db.wf_miniseed.find({})
+        pattern = r"read_ensemble_data_group\(\) only support reading from binary files, please use read_ensemble_data\(\) for other formats"
+        with pytest.raises(MsPASSError, match=pattern):
+            ensemble = self.db.read_ensemble_data_group(
+                cursor, collection="wf_miniseed"
+            )
+
+        self.db.wf_miniseed.delete_many({})
 
     def mock_urlopen(*args):
         response = Mock()
@@ -1493,12 +1508,31 @@ class TestDatabase:
             str(missing_lat_site_id)
         )
 
+    def test_index_mseed_file_parallel(self):
+        dir = "python/tests/data/"
+        dfile = "3channels.mseed"
+        fake_dfile = "Fake3channels.mseed"
+        fname = os.path.join(dir, dfile)
+        assert (
+            index_mseed_file_parallel(
+                self.db, dfile=dfile, dir=dir, collection="wf_miniseed"
+            )
+            is None
+        )
+        assert (
+            index_mseed_file_parallel(
+                self.db, dfile=fake_dfile, dir=dir, collection="wf_miniseed"
+            )
+            is not None
+        )
+
     def test_index_mseed_file(self):
+        old_cnt = self.db["wf_miniseed"].count_documents({})
         dir = "python/tests/data/"
         dfile = "3channels.mseed"
         fname = os.path.join(dir, dfile)
         self.db.index_mseed_file(fname, collection="wf_miniseed")
-        assert self.db["wf_miniseed"].count_documents({}) == 3
+        assert self.db["wf_miniseed"].count_documents({}) - old_cnt == 3
 
         for doc in self.db["wf_miniseed"].find():
             ts = self.db.read_data(doc, collection="wf_miniseed")

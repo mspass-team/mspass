@@ -88,11 +88,6 @@ ENTRY_POINTS = {
 
 setup(
     name="mspasspy",
-    version="0.0.1",
-    author="Ian Wang",
-    author_email="yinzhi.wang.cug@gmail.com",
-    description="Massive Parallel Analysis System for Seismologists",
-    long_description="",
     ext_modules=[CMakeExtension("mspasspy.ccore")],
     cmdclass=dict(build_ext=CMakeBuild),
     entry_points=ENTRY_POINTS,
