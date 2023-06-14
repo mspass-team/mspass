@@ -755,11 +755,8 @@ def Stream2TimeSeriesEnsemble(stream):
     enskeys = _converter_get_ensemble_keys(tse)
     if len(enskeys) > 0:
         post_ensemble_metadata(tse, enskeys)
-        # By default the above leaves copies of the ensemble md in each member
-        # Treat that a ok, but we do need to clear the temporary we posted
-        for d in tse.member:
-            # Depend on the temp being set in all members - watch out in
-            # maintenance if any of the related code changes that may be wrong
+    for d in tse.member:
+        if d.is_defined("CONVERTER_ENSEMBLE_KEYS"):
             d.erase("CONVERTER_ENSEMBLE_KEYS")
 
     return tse
@@ -810,11 +807,10 @@ def Stream2SeismogramEnsemble(stream):
     enskeys = _converter_get_ensemble_keys(res)
     if len(enskeys) > 0:
         post_ensemble_metadata(res, enskeys)
-        # By default the above leaves copies of the ensemble md in each member
-        # Treat that a ok, but we do need to clear the temporary we posted
-        for d in res.member:
-            # Depend on the temp being set in all members - watch out in
-            # maintenance if any of the related code changes that may be wrong
+    # By default the above leaves copies of the ensemble md in each member
+    # Treat that a ok, but we do need to clear the temporary we posted
+    for d in res.member:
+        if d.is_defined("CONVERTER_ENSEMBLE_KEYS"):
             d.erase("CONVERTER_ENSEMBLE_KEYS")
     return res
 

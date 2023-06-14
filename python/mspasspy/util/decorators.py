@@ -395,14 +395,25 @@ def is_input_dead(*args, **kwargs):
 
 
 def timeseries_copy_helper(ts1, ts2):
+    """ """
+    # keys in this list are ignored - for now only one but made a list
+    # to simplify additions later
+    metadata_to_ignore = ["CONVERTER_ENSEMBLE_KEYS"]
     ts1.npts = ts2.npts
     ts1.dt = ts2.dt
     ts1.tref = ts2.tref
     ts1.live = ts2.live
     ts1.t0 = ts2.t0
     for k in ts2.keys():  # other metadata copy
-        ts1[k] = ts2[k]  # override previous metadata is ok, since they are consistent
-    ts1.data = ts2.data
+        if k not in metadata_to_ignore:
+            # because this is used only in decorator we can assure
+            # overrides are consistent
+            ts1[k] = ts2[k]
+    # We need to clear this/these too as if they were already there the
+    # above logic preserves them
+    for k in metadata_to_ignore:
+        if ts1.is_defined(k):
+            ts1.erase(k)
 
 
 def timeseries_ensemble_copy_helper(es1, es2):
@@ -457,14 +468,24 @@ def timeseries_as_trace(func, *args, **kwargs):
 
 
 def seismogram_copy_helper(seis1, seis2):
+    # keys in this list are ignored - for now only one but made a list
+    # to simplify additions later
+    metadata_to_ignore = ["CONVERTER_ENSEMBLE_KEYS"]
     seis1.npts = seis2.npts
     seis1.dt = seis2.dt
     seis1.tref = seis2.tref
     seis1.live = seis2.live
     seis1.t0 = seis2.t0
     for k in seis2.keys():  # other metadata copy
-        # override previous metadata is ok, since they are consistent
-        seis1[k] = seis2[k]
+        if k not in metadata_to_ignore:
+            # because this is used only in decorator we can assure
+            # overrides are consistent
+            seis1[k] = seis2[k]
+    # We need to clear this/these too as if they were already there the
+    # above logic preserves them
+    for k in metadata_to_ignore:
+        if seis1.is_defined(k):
+            seis1.erase(k)
     seis1.data = seis2.data
 
 
