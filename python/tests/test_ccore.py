@@ -1460,7 +1460,8 @@ def test_PowerSpectrum():
     engine = MTPowerSpectrumEngine(100, 5, 10)
     spec = engine.apply(ts)
     # these are BasicSpectrum methods we test
-    assert spec.nf() == 101
+    # nfft goes to next power of 2 for efficiency - with gnu fft 64+1
+    assert spec.nf() == 65
     assert spec.live()
     spec.kill()
     assert spec.dead()
@@ -1484,8 +1485,8 @@ def test_PowerSpectrum():
     spec.set_dt(2.0)
     assert spec.dt() == 2.0
 
-    # Repeat with nfft specified adding new capability
-    engine = MTPowerSpectrumEngine(100, 5, 10, 512)
+    # Repeat with no defaults
+    engine = MTPowerSpectrumEngine(100, 5, 10, 512, ts.dt)
     spec = engine.apply(ts)
     assert spec.nf() == int(512 / 2) + 1
     df_expected = 1.0 / (2.0 * (spec.nf() - 1))
@@ -1496,3 +1497,4 @@ def test_PowerSpectrum():
     assert spec.f0() == spec_copy.f0()
     assert spec.spectrum_type == spec_copy.spectrum_type
     assert np.allclose(spec.spectrum, spec_copy.spectrum)
+
