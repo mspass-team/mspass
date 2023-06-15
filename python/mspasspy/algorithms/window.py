@@ -542,7 +542,7 @@ def merge(
     the result (windowed range if specified but the full time of the input otherwise)
     When set True gap sections will be zeroed in the output data vector.
     All outputs with gaps that have been zeroed will have the boolean
-    Metadata attribute "has_gaps" set True and undefined otherwise.
+    Metadata attribute "has_gap" set True and undefined otherwise.
     When the has_data attribute is set true the tap windows will be
     stored as a list of "TimeWindow" objects with the Metadata key "gaps".
 
@@ -625,7 +625,7 @@ def merge(
     window_data = False
     output_window = TimeWindow()
     if starttime is None:
-        output_window.start = spliced_data.t0()
+        output_window.start = spliced_data.t0
     else:
         output_window.start = starttime
         window_data = True
@@ -653,7 +653,7 @@ def merge(
             object_history=object_history,
         )
     else:
-        if spliced_data.has_gaps():
+        if spliced_data.has_gap():
             if zero_gaps:
                 spliced_data.zero_gaps()
                 spliced_data = _post_gap_data(spliced_data)
@@ -675,7 +675,7 @@ def _post_gap_data(d):
     It then returns d.  It silently does nothing if d has not gaps defined.
     """
     if d.has_gap():
-        d["has_gaps"] = True
+        d["has_gap"] = True
         twlist = d.get_gaps()
         # to allow the result to more cleanly stored to MongoDB we
         # convert the window data to list of python dictionaries which
