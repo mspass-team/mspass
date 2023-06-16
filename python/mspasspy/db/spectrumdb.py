@@ -34,7 +34,13 @@ class BasicObjectDatabase(ABC):
     """
 
     def __init__(
-        self, name, type_list, *args, db_schema=None, md_schema=None, **kwargs,
+        self,
+        name,
+        type_list,
+        *args,
+        db_schema=None,
+        md_schema=None,
+        **kwargs,
     ):
         """
         Base class constructor.   Most subclasses should normally
@@ -194,7 +200,11 @@ class SpectrumDatabase(BasicObjectDatabase):
     """
 
     def __init__(
-        self, name, *args, collection="PowerSpectrum", **kwargs,
+        self,
+        name,
+        *args,
+        collection="PowerSpectrum",
+        **kwargs,
     ):
         """
         Constructor for this database handle.   Note because this class
@@ -268,7 +278,10 @@ class SpectrumDatabase(BasicObjectDatabase):
             raise MsPASSError(message, ErrorSeverity.Fatal)
 
     def read_data(
-        self, id_or_doc, required=None, override=None,
+        self,
+        id_or_doc,
+        required=None,
+        override=None,
     ):
         """
         Reads one PowerSpectrum using an object id either directly or

@@ -128,7 +128,7 @@ def test_snr():
     tval = fd_snr_output[0]["low_f_band_edge_snr"]
     assert np.isclose(tval, 5.139865241663943)
     tval = fd_snr_output[0]["high_f_band_edge_snr"]
-    assert np.isclose(tval,  2.208403126119803)
+    assert np.isclose(tval, 2.208403126119803)
     tval = fd_snr_output[0]["bandwidth_fraction"]
     assert np.isclose(tval, 0.28345275787368773)
     tval = fd_snr_output[0]["bandwidth"]
@@ -274,5 +274,3 @@ def test_snr():
         update_id=idout,
     )
     assert idout2 == idout
-    
-
