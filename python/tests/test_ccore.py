@@ -1497,4 +1497,3 @@ def test_PowerSpectrum():
     assert spec.f0() == spec_copy.f0()
     assert spec.spectrum_type == spec_copy.spectrum_type
     assert np.allclose(spec.spectrum, spec_copy.spectrum)
-

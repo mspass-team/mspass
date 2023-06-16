@@ -41,9 +41,13 @@ class MTPowerSpectrumEngine:
     """
 
     def __init__(
-        self, winsize, tbp, number_tapers, nfft=0, iadapt=0,
+        self,
+        winsize,
+        tbp,
+        number_tapers,
+        nfft=0,
+        iadapt=0,
     ):
-
         self.winsize = winsize
         self.tbp = tbp  # nw in multitaper
         self.number_tapers = number_tapers  # kspec in multitaper
@@ -122,7 +126,13 @@ class MTPowerSpectrumEngine:
             work.append(spec[i])
 
         result = PowerSpectrum(
-            md, work, self.MTSpec_instance.df, "multitaper.MTSpec", 0.0, dt, md["npts"],
+            md,
+            work,
+            self.MTSpec_instance.df,
+            "multitaper.MTSpec",
+            0.0,
+            dt,
+            md["npts"],
         )
         return result
 
