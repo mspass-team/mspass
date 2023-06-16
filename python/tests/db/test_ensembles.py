@@ -189,7 +189,7 @@ def test_ensembles():
     for i in range(2):
         assert enslist[i].live()
         assert len(enslist[i].member) == 1
-        assert enslist[i].member[0]["has_gaps"]
+        assert enslist[i].member[0]["has_gap"]
         gapdata = enslist[i].member[0]["gaps"]
         # These maybe should use isclose
         # gapdata is a list of dict containers definign gaps - only one here
