@@ -291,6 +291,8 @@ TimeSeriesWGaps splice_segments(std::vector<TimeSeries>& segments,
        << "Preprocess your data to remove overlaps.   This algorithm assumes overlaps were repaired previously."
        <<endl;
     result.elog.log_error("splice_segments",ss.str(),ErrorSeverity::Invalid);
+    /* force a clear buffer*/
+    result.set_npts(0);
     result.kill();
   }
   else if(issues.spliced_nsamp > MAX_DATA_VECTOR_LENGTH)
@@ -302,12 +304,17 @@ TimeSeriesWGaps splice_segments(std::vector<TimeSeries>& segments,
        << "This datum will be killed"
        << std::endl;
     result.elog.log_error("splice_segments",ss.str(),ErrorSeverity::Invalid);
+    /* force a clear buffer*/
+    result.set_npts(0);
     result.kill();
   }
   else
   {
     result.set_t0(issues.t0);
     result.set_dt(issues.dt);
+    /* Note the algorithm used here assumes this method initializes the 
+    data vector (symbol s) to spliced_nsamp zeros.  Gaps will then 
+    not need to be zero filled.*/
     result.set_npts(issues.spliced_nsamp);
     double previous_endtime,delta;
     previous_endtime = segments[issues.first_live].endtime();
@@ -315,12 +322,12 @@ TimeSeriesWGaps splice_segments(std::vector<TimeSeries>& segments,
     for(size_t i=issues.first_live;i<segments.size();++i)
     {
       if(segments[i].dead()) continue;
-      for(size_t j=0;j<segments[i].size();++j,++ii)
+      for(size_t j=0;j<segments[i].s.size();++j,++ii)
       {
         double t;
         t = segments[i].time(j);
         ii = result.sample_number(t);
-        if(ii>result.npts())
+        if(ii>=result.npts())
         {
           stringstream ss;
           ss<<"splice_segments:  computed sample index is outside merge data vector"
