@@ -653,7 +653,7 @@
 <span class="sd">    the result (windowed range if specified but the full time of the input otherwise)</span>
 <span class="sd">    When set True gap sections will be zeroed in the output data vector.</span>
 <span class="sd">    All outputs with gaps that have been zeroed will have the boolean</span>
-<span class="sd">    Metadata attribute &quot;has_gaps&quot; set True and undefined otherwise.</span>
+<span class="sd">    Metadata attribute &quot;has_gap&quot; set True and undefined otherwise.</span>
 <span class="sd">    When the has_data attribute is set true the tap windows will be</span>
 <span class="sd">    stored as a list of &quot;TimeWindow&quot; objects with the Metadata key &quot;gaps&quot;.</span>
 
@@ -736,7 +736,7 @@
     <span class="n">window_data</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">output_window</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">starttime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">output_window</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">spliced_data</span><span class="o">.</span><span class="n">t0</span><span class="p">()</span>
+        <span class="n">output_window</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">spliced_data</span><span class="o">.</span><span class="n">t0</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">output_window</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">starttime</span>
         <span class="n">window_data</span> <span class="o">=</span> <span class="kc">True</span>
@@ -764,7 +764,7 @@
             <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">spliced_data</span><span class="o">.</span><span class="n">has_gaps</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">spliced_data</span><span class="o">.</span><span class="n">has_gap</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">zero_gaps</span><span class="p">:</span>
                 <span class="n">spliced_data</span><span class="o">.</span><span class="n">zero_gaps</span><span class="p">()</span>
                 <span class="n">spliced_data</span> <span class="o">=</span> <span class="n">_post_gap_data</span><span class="p">(</span><span class="n">spliced_data</span><span class="p">)</span>
@@ -786,7 +786,7 @@
 <span class="sd">    It then returns d.  It silently does nothing if d has not gaps defined.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">has_gap</span><span class="p">():</span>
-        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;has_gaps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;has_gap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">twlist</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_gaps</span><span class="p">()</span>
         <span class="c1"># to allow the result to more cleanly stored to MongoDB we</span>
         <span class="c1"># convert the window data to list of python dictionaries which</span>

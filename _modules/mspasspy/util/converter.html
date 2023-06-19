@@ -866,11 +866,8 @@
     <span class="n">enskeys</span> <span class="o">=</span> <span class="n">_converter_get_ensemble_keys</span><span class="p">(</span><span class="n">tse</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">enskeys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">post_ensemble_metadata</span><span class="p">(</span><span class="n">tse</span><span class="p">,</span> <span class="n">enskeys</span><span class="p">)</span>
-        <span class="c1"># By default the above leaves copies of the ensemble md in each member</span>
-        <span class="c1"># Treat that a ok, but we do need to clear the temporary we posted</span>
-        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tse</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
-            <span class="c1"># Depend on the temp being set in all members - watch out in</span>
-            <span class="c1"># maintenance if any of the related code changes that may be wrong</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tse</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">):</span>
             <span class="n">d</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">tse</span></div>
@@ -921,11 +918,10 @@
     <span class="n">enskeys</span> <span class="o">=</span> <span class="n">_converter_get_ensemble_keys</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">enskeys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">post_ensemble_metadata</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">enskeys</span><span class="p">)</span>
-        <span class="c1"># By default the above leaves copies of the ensemble md in each member</span>
-        <span class="c1"># Treat that a ok, but we do need to clear the temporary we posted</span>
-        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
-            <span class="c1"># Depend on the temp being set in all members - watch out in</span>
-            <span class="c1"># maintenance if any of the related code changes that may be wrong</span>
+    <span class="c1"># By default the above leaves copies of the ensemble md in each member</span>
+    <span class="c1"># Treat that a ok, but we do need to clear the temporary we posted</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">):</span>
             <span class="n">d</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span></div>
 

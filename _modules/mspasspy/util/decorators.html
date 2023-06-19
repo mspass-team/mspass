@@ -506,13 +506,25 @@
 
 
 <div class="viewcode-block" id="timeseries_copy_helper"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_copy_helper">[docs]</a><span class="k">def</span> <span class="nf">timeseries_copy_helper</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+    <span class="c1"># keys in this list are ignored - for now only one but made a list</span>
+    <span class="c1"># to simplify additions later</span>
+    <span class="n">metadata_to_ignore</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">]</span>
     <span class="n">ts1</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">npts</span>
     <span class="n">ts1</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">dt</span>
     <span class="n">ts1</span><span class="o">.</span><span class="n">tref</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">tref</span>
     <span class="n">ts1</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">live</span>
     <span class="n">ts1</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">t0</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ts2</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># other metadata copy</span>
-        <span class="n">ts1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>  <span class="c1"># override previous metadata is ok, since they are consistent</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata_to_ignore</span><span class="p">:</span>
+            <span class="c1"># because this is used only in decorator we can assure</span>
+            <span class="c1"># overrides are consistent</span>
+            <span class="n">ts1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="c1"># We need to clear this/these too as if they were already there the</span>
+    <span class="c1"># above logic preserves them</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">metadata_to_ignore</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ts1</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="n">ts1</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
     <span class="n">ts1</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">data</span></div>
 
 
@@ -568,14 +580,24 @@
 
 
 <div class="viewcode-block" id="seismogram_copy_helper"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_copy_helper">[docs]</a><span class="k">def</span> <span class="nf">seismogram_copy_helper</span><span class="p">(</span><span class="n">seis1</span><span class="p">,</span> <span class="n">seis2</span><span class="p">):</span>
+    <span class="c1"># keys in this list are ignored - for now only one but made a list</span>
+    <span class="c1"># to simplify additions later</span>
+    <span class="n">metadata_to_ignore</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">]</span>
     <span class="n">seis1</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">npts</span>
     <span class="n">seis1</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">dt</span>
     <span class="n">seis1</span><span class="o">.</span><span class="n">tref</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">tref</span>
     <span class="n">seis1</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">live</span>
     <span class="n">seis1</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">t0</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">seis2</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># other metadata copy</span>
-        <span class="c1"># override previous metadata is ok, since they are consistent</span>
-        <span class="n">seis1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">seis2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata_to_ignore</span><span class="p">:</span>
+            <span class="c1"># because this is used only in decorator we can assure</span>
+            <span class="c1"># overrides are consistent</span>
+            <span class="n">seis1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">seis2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="c1"># We need to clear this/these too as if they were already there the</span>
+    <span class="c1"># above logic preserves them</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">metadata_to_ignore</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">seis1</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="n">seis1</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
     <span class="n">seis1</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">data</span></div>
 
 
