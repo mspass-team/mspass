@@ -415,6 +415,7 @@ def timeseries_copy_helper(ts1, ts2):
     for k in metadata_to_ignore:
         if ts1.is_defined(k):
             ts1.erase(k)
+    ts1.data = ts2.data
 
 
 def timeseries_ensemble_copy_helper(es1, es2):
