@@ -144,6 +144,7 @@
 <div class="viewcode-block" id="DBClient.get_default_database"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.client.DBClient.get_default_database">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_database</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">codec_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">read_preference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">write_concern</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -161,11 +162,13 @@
             <span class="n">read_preference</span><span class="p">,</span>
             <span class="n">write_concern</span><span class="p">,</span>
             <span class="n">read_concern</span><span class="p">,</span>
+            <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DBClient.get_database"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.client.DBClient.get_database">[docs]</a>    <span class="k">def</span> <span class="nf">get_database</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">codec_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">read_preference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">write_concern</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -177,7 +180,13 @@
             <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__default_database_name</span>
 
         <span class="k">return</span> <span class="n">Database</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">codec_options</span><span class="p">,</span> <span class="n">read_preference</span><span class="p">,</span> <span class="n">write_concern</span><span class="p">,</span> <span class="n">read_concern</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">codec_options</span><span class="p">,</span>
+            <span class="n">read_preference</span><span class="p">,</span>
+            <span class="n">write_concern</span><span class="p">,</span>
+            <span class="n">read_concern</span><span class="p">,</span>
+            <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 </pre></div>
 

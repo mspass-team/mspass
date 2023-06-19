@@ -183,7 +183,7 @@ In most cases there is functionally little difference from
 creating a MongoClient or the MsPASS DBClient (this class).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.client.DBClient.get_database">
-<span class="sig-name descname"><span class="pre">get_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codec_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_preference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/client.html#DBClient.get_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.client.DBClient.get_database" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codec_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_preference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/client.html#DBClient.get_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.client.DBClient.get_database" title="Permalink to this definition"></a></dt>
 <dd><p>Get a <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/database.html#pymongo.database.Database" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> with the given name and
 options.</p>
 <p>Useful for creating a <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/database.html#pymongo.database.Database" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> with
@@ -234,7 +234,7 @@ named in the MongoDB connection URI.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.client.DBClient.get_default_database">
-<span class="sig-name descname"><span class="pre">get_default_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codec_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_preference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/client.html#DBClient.get_default_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.client.DBClient.get_default_database" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_default_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codec_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_preference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/client.html#DBClient.get_default_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.client.DBClient.get_default_database" title="Permalink to this definition"></a></dt>
 <dd><p>Get the database named in the MongoDB connection URI.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">uri</span> <span class="o">=</span> <span class="s1">&#39;mongodb://host/my_database&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
@@ -293,7 +293,7 @@ parameters.</p>
 <p>Tools for connecting to MongoDB.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">Database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">Database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/database.html#pymongo.database.Database" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a></p>
 <p>MsPASS core database handle.  All MongoDB database operation in MsPASS
 should utilize this object.  This object is a subclass of the
@@ -324,6 +324,9 @@ Optional parameters are:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>schema</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> of the yaml file name that defines
+both the database schema and the metadata schema. If this parameter
+is set, it will override the following two.</p></li>
 <li><p><strong>db_schema</strong> – Set the name for the database schema to use with this
 handle.  Default is the MsPASS schema. (See User’s Manual for details)</p></li>
 <li><p><strong>md_schema</strong> – Set the name for the Metadata schema.   Default is
@@ -454,10 +457,10 @@ used.</p></li>
 <li><p><cite>session</cite> (optional): a
 <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/client_session.html#pymongo.client_session.ClientSession" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a>.</p></li>
 <li><p><cite>**kwargs</cite> (optional): additional keyword arguments will
-be passed as options for the <a href="#id8"><span class="problematic" id="id9">`create collection command`_</span></a></p></li>
+be passed as options for the <a href="#id4"><span class="problematic" id="id5">`create collection command`_</span></a></p></li>
 </ul>
 </div></blockquote>
-<p>All optional <a href="#id10"><span class="problematic" id="id11">`create collection command`_</span></a> parameters should be passed
+<p>All optional <a href="#id6"><span class="problematic" id="id7">`create collection command`_</span></a> parameters should be passed
 as keyword arguments to this method. Valid options include, but are not
 limited to:</p>
 <blockquote>
@@ -1215,7 +1218,7 @@ all attributes with a key defined as readonly are tested
 with a method in the Metadata container that keeps track of
 any Metadata changes.  If a readonly attribute is found to
 have been changed it will be renamed with the prefix
-“<a href="#id12"><span class="problematic" id="id13">READONLYERROR_</span></a>”, saved, and an error posted (e.g. if you try
+“<a href="#id8"><span class="problematic" id="id9">READONLYERROR_</span></a>”, saved, and an error posted (e.g. if you try
 to alter site_lat (a readonly attribute) in a workflow when
 you save the waveform you will find an entry with the key
 READONERROR_site_lat.)   In the default ‘promiscuous’ mode
@@ -1597,8 +1600,7 @@ schema (namespace for attributes saved in MongoDB).  Use metadata_schema
 to change the in memory namespace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema</strong> – an instance of :class:<a href="#id1"><span class="problematic" id="id2">`</span></a>mspsspy.db.schema.DatabaseSchema.
-WARNING this is not a name - is a MsPASS object consructed from  aname.</p>
+<dd class="field-odd"><p><strong>schema</strong> – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">mspsspy.db.schema.DatabaseSchema</span></code> or a <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> of the yaml file name.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1612,8 +1614,21 @@ schema (interal namespace).  Use set_database_schema to change
 the stored data schema.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema</strong> – an instance of :class:<a href="#id3"><span class="problematic" id="id4">`</span></a>mspsspy.db.schema.MetadataSchema.
-WARNING this is not a name - is a MsPASS object consructed from a name.</p>
+<dd class="field-odd"><p><strong>schema</strong> – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">mspsspy.db.schema.MetadataSchema</span></code> or a <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> of the yaml file name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.database.Database.set_schema">
+<span class="sig-name descname"><span class="pre">set_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.set_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.set_schema" title="Permalink to this definition"></a></dt>
+<dd><p>Use this method to change both the database and metadata schema defined for this
+instance of a database handle.  This method sets the database
+schema (namespace for attributes saved in MongoDB) and the metadata
+schema (interal namespace).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> of the yaml file name.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1738,7 +1753,7 @@ method for handling this as the save_data method.  That is,
 for all “mode” parameters if an key is defined in the schema as
 readonly and it is listed as having been modified, it will
 be save with a new key creating by adding the prefix
-“<a href="#id14"><span class="problematic" id="id15">READONLYERROR_</span></a>” .  e.g. if we had a site_sta read as
+“<a href="#id10"><span class="problematic" id="id11">READONLYERROR_</span></a>” .  e.g. if we had a site_sta read as
 ‘AAK’ but we changed it to ‘XYZ’ in a workflow, when we tried
 to save the data you will find an entry in the document
 of {‘READONLYERROR_site_sta’ : ‘XYZ’}</p>
@@ -2815,7 +2830,7 @@ defined “starttime” and “endtime” attributes.</p>
 A common current issue is that if miniseed data are saved
 to wf_TimeSeries and then read back in a later workflow
 the default schema will alter the keys for net, sta, chan,
-and loc to add the prefix “<a href="#id16"><span class="problematic" id="id17">READONLY_</span></a>” (e.g. READONLY_net).
+and loc to add the prefix “<a href="#id12"><span class="problematic" id="id13">READONLY_</span></a>” (e.g. READONLY_net).
 The query automatically tries to recover any of the
 station name keys using that recipe.</p>
 <dl class="field-list simple">
@@ -2949,11 +2964,11 @@ document would be returned as “channel_lat”.</p></li>
 <dd><p>Concrete implementations of this required method.  The cache_id
 in this algorithm is a composite key made from net, sta, chan, and
 loc with a fixed separator string of “_”.  A typical example
-is <a href="#id18"><span class="problematic" id="id19">IU_AAK_BHZ_00_</span></a>.</p>
+is <a href="#id14"><span class="problematic" id="id15">IU_AAK_BHZ_00_</span></a>.</p>
 <p>An added feature to mesh with MsPASS conventions is a safety
 for attributes that are automatically renamed when saved
 that are marked readonly in the schema.   Such attributes
-have a prepended tag, (at this time “<a href="#id20"><span class="problematic" id="id21">READONLYERROR_</span></a>”).  If
+have a prepended tag, (at this time “<a href="#id16"><span class="problematic" id="id17">READONLYERROR_</span></a>”).  If
 one of the required keys for the index is missing (e.g. “net”)
 the function tries to then fetch the modified name
 (e.g. “READONLYERROR_net”).  If that also fails it returns
@@ -2964,7 +2979,7 @@ a None as specified by the API.</p>
 Must contain net, sta fpr site matching and net, sta, and
 chan for the channel collection. If loc is not defined for
 any case an emtpy string in defined an the key has two
-trailing separator characters (e.g. <a href="#id5"><span class="problematic" id="id6">IU_AAK_BHZ__</span></a>)</p>
+trailing separator characters (e.g. <a href="#id1"><span class="problematic" id="id2">IU_AAK_BHZ__</span></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>normal return is a string that can be used as an index string.
@@ -2979,7 +2994,7 @@ If any of the required keys is missing it will return a None</p>
 <dd><p>Concrete implementations of this required method.  The cache_id
 in this algorithm is a composite key made from net, sta, chan, and
 loc with a fixed separator string of “_”.  A typical example
-is <a href="#id22"><span class="problematic" id="id23">IU_AAK_BHZ_00_</span></a>.  This method creates this string from
+is <a href="#id18"><span class="problematic" id="id19">IU_AAK_BHZ_00_</span></a>.  This method creates this string from
 a MongoDB document assumed passed through a python dictionary
 as argument doc.  Unlike the cache_id method this function
 does not have a safety for readonly errors.  The reason is that
@@ -2991,7 +3006,7 @@ site or channel documents.</p>
 Must contain net, sta fpr site matching and net, sta, and
 chan for the channel collection. If loc is not defined for
 any case an emtpy string in defined an the key has two
-trailing separator characters (e.g. <a href="#id5"><span class="problematic" id="id7">IU_AAK_BHZ__</span></a>)</p>
+trailing separator characters (e.g. <a href="#id1"><span class="problematic" id="id3">IU_AAK_BHZ__</span></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>normal return is a string that can be used as an index string.

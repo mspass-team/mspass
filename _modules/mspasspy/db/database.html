@@ -205,6 +205,9 @@
 <span class="sd">    passed to the MongoDB server that defines your working database.</span>
 <span class="sd">    Optional parameters are:</span>
 
+<span class="sd">    :param schema: a :class:`str` of the yaml file name that defines</span>
+<span class="sd">      both the database schema and the metadata schema. If this parameter</span>
+<span class="sd">      is set, it will override the following two.</span>
 <span class="sd">    :param db_schema: Set the name for the database schema to use with this</span>
 <span class="sd">      handle.  Default is the MsPASS schema. (See User&#39;s Manual for details)</span>
 <span class="sd">    :param md_schema:  Set the name for the Metadata schema.   Default is</span>
@@ -214,21 +217,25 @@
 <span class="sd">    parameters defined for the base class (see pymongo documentation)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">db_schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">md_schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">db_schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">md_schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_schema</span><span class="p">,</span> <span class="n">DatabaseSchema</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">db_schema</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">(</span><span class="n">db_schema</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">schema</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_schema</span><span class="p">,</span> <span class="n">DatabaseSchema</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">db_schema</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">(</span><span class="n">db_schema</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md_schema</span><span class="p">,</span> <span class="n">MetadataSchema</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">md_schema</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md_schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">(</span><span class="n">md_schema</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md_schema</span><span class="p">,</span> <span class="n">MetadataSchema</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">md_schema</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md_schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">(</span><span class="n">md_schema</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -386,10 +393,19 @@
 <span class="sd">        schema (interal namespace).  Use set_database_schema to change</span>
 <span class="sd">        the stored data schema.</span>
 
-<span class="sd">        :param schema: an instance of :class:`mspsspy.db.schema.MetadataSchema.</span>
-<span class="sd">          WARNING this is not a name - is a MsPASS object consructed from a name.</span>
+<span class="sd">        :param schema: an instance of :class:`mspsspy.db.schema.MetadataSchema` or a :class:`str` of the yaml file name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">schema</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">MetadataSchema</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">schema</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;Error: argument schema is of type </span><span class="si">{}</span><span class="s2">, which is not supported&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.set_database_schema"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.set_database_schema">[docs]</a>    <span class="k">def</span> <span class="nf">set_database_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -398,10 +414,31 @@
 <span class="sd">        schema (namespace for attributes saved in MongoDB).  Use metadata_schema</span>
 <span class="sd">        to change the in memory namespace.</span>
 
-<span class="sd">        :param schema: an instance of :class:`mspsspy.db.schema.DatabaseSchema.</span>
-<span class="sd">          WARNING this is not a name - is a MsPASS object consructed from  aname.</span>
+<span class="sd">        :param schema: an instance of :class:`mspsspy.db.schema.DatabaseSchema` or a :class:`str` of the yaml file name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">schema</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">DatabaseSchema</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">schema</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;Error: argument schema is of type </span><span class="si">{}</span><span class="s2">, which is not supported&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Database.set_schema"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.set_schema">[docs]</a>    <span class="k">def</span> <span class="nf">set_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use this method to change both the database and metadata schema defined for this</span>
+<span class="sd">        instance of a database handle.  This method sets the database</span>
+<span class="sd">        schema (namespace for attributes saved in MongoDB) and the metadata</span>
+<span class="sd">        schema (interal namespace).</span>
+
+<span class="sd">        :param schema: a :class:`str` of the yaml file name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.read_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
