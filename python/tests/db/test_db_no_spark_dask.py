@@ -2890,3 +2890,12 @@ with mock.patch.dict(
 
             query = {"pwfid": 3752}
             assert 1 == self.db.testtextfile.count_documents(query)
+
+        def test_set_schema(self):
+            assert self.db.database_schema._attr_dict['site']
+            self.db.set_schema("mspass_lite.yaml")
+            with pytest.raises(
+                KeyError, match="site"
+            ):
+                self.db.database_schema._attr_dict['site']
+

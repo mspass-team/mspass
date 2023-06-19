@@ -22,6 +22,11 @@ class TestDBClient:
             pymongo.errors.ConfigurationError, match="No default database"
         ):
             self.c2.get_default_database()
+        db1 = self.c1.get_default_database(schema="mspass_lite.yaml")
+        with pytest.raises(
+            KeyError, match="site"
+        ):
+            db1.database_schema._attr_dict['site']
 
     def test_get_database(self):
         assert self.c1.get_database().name == "my_database"
@@ -30,3 +35,8 @@ class TestDBClient:
             pymongo.errors.ConfigurationError, match="No default database"
         ):
             self.c2.get_database()
+        db1 = self.c1.get_database(schema="mspass_lite.yaml")
+        with pytest.raises(
+            KeyError, match="site"
+        ):
+            db1.database_schema._attr_dict['site']
