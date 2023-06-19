@@ -92,17 +92,19 @@ Inheritance diagram for mspass::seismic::PowerSpectrum:</div>
  <div class="center">
   <img src="classmspass_1_1seismic_1_1_power_spectrum.png" usemap="#mspass::seismic::PowerSpectrum_map" alt=""/>
   <map id="mspass::seismic::PowerSpectrum_map" name="mspass::seismic::PowerSpectrum_map">
-<area href="classmspass_1_1utility_1_1_metadata.html" alt="mspass::utility::Metadata" shape="rect" coords="0,56,195,80"/>
-<area href="classmspass_1_1utility_1_1_basic_metadata.html" title="Abstract base class for Metadata concept." alt="mspass::utility::BasicMetadata" shape="rect" coords="0,0,195,24"/>
+<area href="classmspass_1_1seismic_1_1_basic_spectrum.html" alt="mspass::seismic::BasicSpectrum" shape="rect" coords="0,56,195,80"/>
+<area href="classmspass_1_1utility_1_1_metadata.html" alt="mspass::utility::Metadata" shape="rect" coords="205,56,400,80"/>
+<area href="classmspass_1_1utility_1_1_basic_metadata.html" title="Abstract base class for Metadata concept." alt="mspass::utility::BasicMetadata" shape="rect" coords="205,0,400,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ace419f03d3d017601e16f6b0287cfaf0"><td class="memTemplParams" colspan="2"><a id="ace419f03d3d017601e16f6b0287cfaf0"></a>
-template&lt;class T &gt; </td></tr>
-<tr class="memitem:ace419f03d3d017601e16f6b0287cfaf0"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>PowerSpectrum</b> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md, const std::vector&lt; T &gt; &amp;d, const double dfin, const std::string nm)</td></tr>
-<tr class="separator:ace419f03d3d017601e16f6b0287cfaf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a787087776cc0ca2b33e24e83cac5f801"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a787087776cc0ca2b33e24e83cac5f801">PowerSpectrum</a> ()</td></tr>
+<tr class="separator:a787087776cc0ca2b33e24e83cac5f801"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a93e1366099327d8b5b02788389e7ee"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a7a93e1366099327d8b5b02788389e7ee"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7a93e1366099327d8b5b02788389e7ee">PowerSpectrum</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md, const std::vector&lt; T &gt; &amp;d, const double dfin, const std::string nm, const double f0in, const double dtin, const int npts_in)</td></tr>
+<tr class="separator:a7a93e1366099327d8b5b02788389e7ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a377c8508a72f2aff53da0d528de12bb7"><td class="memItemLeft" align="right" valign="top"><a id="a377c8508a72f2aff53da0d528de12bb7"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>PowerSpectrum</b> (const <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html">PowerSpectrum</a> &amp;parent)</td></tr>
 <tr class="separator:a377c8508a72f2aff53da0d528de12bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,21 +117,57 @@ template&lt;class T &gt; </td></tr>
 <tr class="memitem:abbfb81f3ad4a3f0a1488b869a60148a2"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#abbfb81f3ad4a3f0a1488b869a60148a2">amplitude</a> () const</td></tr>
 <tr class="memdesc:abbfb81f3ad4a3f0a1488b869a60148a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute amplitude spectrum from power spectrum.  <a href="classmspass_1_1seismic_1_1_power_spectrum.html#abbfb81f3ad4a3f0a1488b869a60148a2">More...</a><br /></td></tr>
 <tr class="separator:abbfb81f3ad4a3f0a1488b869a60148a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8cdc3c59b4e204b1b04d0c1951e73076"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a8cdc3c59b4e204b1b04d0c1951e73076">amplitude</a> (const double f) const</td></tr>
-<tr class="memdesc:a8cdc3c59b4e204b1b04d0c1951e73076"><td class="mdescLeft">&#160;</td><td class="mdescRight">Amplitude at a given frequency.  <a href="classmspass_1_1seismic_1_1_power_spectrum.html#a8cdc3c59b4e204b1b04d0c1951e73076">More...</a><br /></td></tr>
-<tr class="separator:a8cdc3c59b4e204b1b04d0c1951e73076"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4580db0b75a6db419467d2374dfdd80"><td class="memItemLeft" align="right" valign="top"><a id="ae4580db0b75a6db419467d2374dfdd80"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nf</b> () const</td></tr>
-<tr class="separator:ae4580db0b75a6db419467d2374dfdd80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2f979f7662aba3e46f277d9c45fd07d"><td class="memItemLeft" align="right" valign="top"><a id="ad2f979f7662aba3e46f277d9c45fd07d"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>frequency</b> (const int sample_number) const</td></tr>
+<tr class="memitem:a3d1e72618b8e88c5929839c5e8885859"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a3d1e72618b8e88c5929839c5e8885859">power</a> (const double f) const</td></tr>
+<tr class="memdesc:a3d1e72618b8e88c5929839c5e8885859"><td class="mdescLeft">&#160;</td><td class="mdescRight">power at a given frequency.  <a href="classmspass_1_1seismic_1_1_power_spectrum.html#a3d1e72618b8e88c5929839c5e8885859">More...</a><br /></td></tr>
+<tr class="separator:a3d1e72618b8e88c5929839c5e8885859"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2f979f7662aba3e46f277d9c45fd07d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#ad2f979f7662aba3e46f277d9c45fd07d">frequency</a> (const int <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a1cb29c54744c06553765a3966c8b970f">sample_number</a>) const</td></tr>
 <tr class="separator:ad2f979f7662aba3e46f277d9c45fd07d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef0b54806f9e5367df7dfa03804a2f87"><td class="memItemLeft" align="right" valign="top"><a id="aef0b54806f9e5367df7dfa03804a2f87"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>Nyquist</b> () const</td></tr>
+<tr class="memitem:a1ef20f133212a6288e301e5d80f87a85"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a1ef20f133212a6288e301e5d80f87a85">frequencies</a> () const</td></tr>
+<tr class="separator:a1ef20f133212a6288e301e5d80f87a85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7675c66d7f1aa8d7b4e9437564af4beb"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf</a> () const</td></tr>
+<tr class="separator:a7675c66d7f1aa8d7b4e9437564af4beb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef0b54806f9e5367df7dfa03804a2f87"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#aef0b54806f9e5367df7dfa03804a2f87">Nyquist</a> () const</td></tr>
 <tr class="separator:aef0b54806f9e5367df7dfa03804a2f87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf25df63633c262938c7957c70e4df37"><td class="memItemLeft" align="right" valign="top"><a id="abf25df63633c262938c7957c70e4df37"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>sample_number</b> (const double f) const</td></tr>
-<tr class="separator:abf25df63633c262938c7957c70e4df37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmspass_1_1seismic_1_1_basic_spectrum')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html">mspass::seismic::BasicSpectrum</a></td></tr>
+<tr class="memitem:ae2c68571058526795e0424e0a76e4e76 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#ae2c68571058526795e0424e0a76e4e76">BasicSpectrum</a> ()</td></tr>
+<tr class="separator:ae2c68571058526795e0424e0a76e4e76 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6606996a02b573faf65312459352bfc inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#ad6606996a02b573faf65312459352bfc">BasicSpectrum</a> (const double dfin, const double f0in, const double dtin, const int npts_in)</td></tr>
+<tr class="separator:ad6606996a02b573faf65312459352bfc inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33b44b4ba519e94e51af81a407753cf9 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a33b44b4ba519e94e51af81a407753cf9">BasicSpectrum</a> (const <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html">BasicSpectrum</a> &amp;parent)</td></tr>
+<tr class="separator:a33b44b4ba519e94e51af81a407753cf9 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1734200c8081027e340a1078a70512d8 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top"><a id="a1734200c8081027e340a1078a70512d8"></a>
+<a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html">BasicSpectrum</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html">BasicSpectrum</a> &amp;parent)</td></tr>
+<tr class="separator:a1734200c8081027e340a1078a70512d8 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bce24e09412434ec968bed19ec9843d inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a2bce24e09412434ec968bed19ec9843d">live</a> () const</td></tr>
+<tr class="separator:a2bce24e09412434ec968bed19ec9843d inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a331f89b8216f9717ac906e922d7c2cff inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a331f89b8216f9717ac906e922d7c2cff">dead</a> () const</td></tr>
+<tr class="separator:a331f89b8216f9717ac906e922d7c2cff inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7400b002f21460fece1d5519dfbc26c7 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a7400b002f21460fece1d5519dfbc26c7">kill</a> ()</td></tr>
+<tr class="separator:a7400b002f21460fece1d5519dfbc26c7 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2abdea1d94e0ec8753a09eb2cf20a290 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a2abdea1d94e0ec8753a09eb2cf20a290">set_live</a> ()</td></tr>
+<tr class="separator:a2abdea1d94e0ec8753a09eb2cf20a290 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac01289c8a10cc1939f51d51f3c1cdb72 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#ac01289c8a10cc1939f51d51f3c1cdb72">df</a> () const</td></tr>
+<tr class="separator:ac01289c8a10cc1939f51d51f3c1cdb72 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcbe20cedb4c2a1f0ed31466e8f70c13 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#adcbe20cedb4c2a1f0ed31466e8f70c13">f0</a> () const</td></tr>
+<tr class="separator:adcbe20cedb4c2a1f0ed31466e8f70c13 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2155e90cad5c857f326d4399fd276755 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a2155e90cad5c857f326d4399fd276755">dt</a> () const</td></tr>
+<tr class="memdesc:a2155e90cad5c857f326d4399fd276755 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the original sample interval of data used to generate spectrum.  <a href="classmspass_1_1seismic_1_1_basic_spectrum.html#a2155e90cad5c857f326d4399fd276755">More...</a><br /></td></tr>
+<tr class="separator:a2155e90cad5c857f326d4399fd276755 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61c04d4d4a98d4135d3f5e0b59cc85b3 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a61c04d4d4a98d4135d3f5e0b59cc85b3">rayleigh</a> () const</td></tr>
+<tr class="memdesc:a61c04d4d4a98d4135d3f5e0b59cc85b3 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the Rayleigh bin size for this spectrum.  <a href="classmspass_1_1seismic_1_1_basic_spectrum.html#a61c04d4d4a98d4135d3f5e0b59cc85b3">More...</a><br /></td></tr>
+<tr class="separator:a61c04d4d4a98d4135d3f5e0b59cc85b3 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a436535a1b2f05e518fc4dc884da2e512 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a436535a1b2f05e518fc4dc884da2e512">timeseries_npts</a> () const</td></tr>
+<tr class="separator:a436535a1b2f05e518fc4dc884da2e512 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cb29c54744c06553765a3966c8b970f inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a1cb29c54744c06553765a3966c8b970f">sample_number</a> (const double f) const</td></tr>
+<tr class="separator:a1cb29c54744c06553765a3966c8b970f inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af690c2deac6b3c2306c15fee9c452a1b inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#af690c2deac6b3c2306c15fee9c452a1b">set_df</a> (const double dfin)</td></tr>
+<tr class="separator:af690c2deac6b3c2306c15fee9c452a1b inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59236bc56e298b485927defff353de70 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a59236bc56e298b485927defff353de70">set_f0</a> (const double f0in)</td></tr>
+<tr class="separator:a59236bc56e298b485927defff353de70 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73a8f75cf63421c696379f57f207a93f inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a73a8f75cf63421c696379f57f207a93f">set_dt</a> (const double dtin)</td></tr>
+<tr class="separator:a73a8f75cf63421c696379f57f207a93f inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85f411357320b26e22e9d116faa3abe2 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a85f411357320b26e22e9d116faa3abe2">set_npts</a> (const int npts_in)</td></tr>
+<tr class="separator:a85f411357320b26e22e9d116faa3abe2 inherit pub_methods_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmspass_1_1utility_1_1_metadata"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmspass_1_1utility_1_1_metadata')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></td></tr>
 <tr class="memitem:a4a87cd6a6f8fc5cdbee65cb85958cb2c inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">Metadata</a> ()</td></tr>
 <tr class="separator:a4a87cd6a6f8fc5cdbee65cb85958cb2c inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -235,22 +273,31 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>put_long</b> (const s
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:af4023fd0eee89576ca87ce0df394a672"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#af4023fd0eee89576ca87ce0df394a672">df</a></td></tr>
-<tr class="separator:af4023fd0eee89576ca87ce0df394a672"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53bb92009189c7d297b20656cdf820a4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a53bb92009189c7d297b20656cdf820a4">f0</a></td></tr>
-<tr class="separator:a53bb92009189c7d297b20656cdf820a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affca22f42c28a0fe251405b227674ce6"><td class="memItemLeft" align="right" valign="top"><a id="affca22f42c28a0fe251405b227674ce6"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>spectrum_type</b></td></tr>
+<tr class="memitem:affca22f42c28a0fe251405b227674ce6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#affca22f42c28a0fe251405b227674ce6">spectrum_type</a></td></tr>
 <tr class="separator:affca22f42c28a0fe251405b227674ce6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a924f5b005efdeef3f2da34355821e0c0"><td class="memItemLeft" align="right" valign="top"><a id="a924f5b005efdeef3f2da34355821e0c0"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>spectrum</b></td></tr>
+<tr class="memitem:a924f5b005efdeef3f2da34355821e0c0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a></td></tr>
 <tr class="separator:a924f5b005efdeef3f2da34355821e0c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a920cd0761252df4312168f4571165f2b"><td class="memItemLeft" align="right" valign="top"><a id="a920cd0761252df4312168f4571165f2b"></a>
-<a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a>&#160;</td><td class="memItemRight" valign="bottom"><b>elog</b></td></tr>
+<tr class="memitem:a920cd0761252df4312168f4571165f2b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a920cd0761252df4312168f4571165f2b">elog</a></td></tr>
 <tr class="separator:a920cd0761252df4312168f4571165f2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_attribs_classmspass_1_1seismic_1_1_basic_spectrum"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1seismic_1_1_basic_spectrum')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html">mspass::seismic::BasicSpectrum</a></td></tr>
+<tr class="memitem:aa8b09300420826a09dcfd44783cce21b inherit pro_attribs_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top"><a id="aa8b09300420826a09dcfd44783cce21b"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>dfval</b></td></tr>
+<tr class="separator:aa8b09300420826a09dcfd44783cce21b inherit pro_attribs_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3889a47eac3ae9c201f95eb70d9518a4 inherit pro_attribs_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top"><a id="a3889a47eac3ae9c201f95eb70d9518a4"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>f0val</b></td></tr>
+<tr class="separator:a3889a47eac3ae9c201f95eb70d9518a4 inherit pro_attribs_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeba1d53ba50676257c3cb5fec2f691c8 inherit pro_attribs_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top"><a id="aeba1d53ba50676257c3cb5fec2f691c8"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>parent_dt</b></td></tr>
+<tr class="separator:aeba1d53ba50676257c3cb5fec2f691c8 inherit pro_attribs_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f2d159e0b767fac81f7b755e5debbc8 inherit pro_attribs_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top"><a id="a2f2d159e0b767fac81f7b755e5debbc8"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>parent_npts</b></td></tr>
+<tr class="separator:a2f2d159e0b767fac81f7b755e5debbc8 inherit pro_attribs_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a266cf681e4001dffaf775aa223f8438b inherit pro_attribs_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memItemLeft" align="right" valign="top"><a id="a266cf681e4001dffaf775aa223f8438b"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_live</b></td></tr>
+<tr class="separator:a266cf681e4001dffaf775aa223f8438b inherit pro_attribs_classmspass_1_1seismic_1_1_basic_spectrum"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1utility_1_1_metadata"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1utility_1_1_metadata')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></td></tr>
 <tr class="memitem:af564bb9ced4cc480d71a1e13c3fa582e inherit pro_attribs_classmspass_1_1utility_1_1_metadata"><td class="memItemLeft" align="right" valign="top"><a id="af564bb9ced4cc480d71a1e13c3fa582e"></a>
 std::map&lt; std::string, boost::any &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>md</b></td></tr>
@@ -261,9 +308,129 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class defining the concept of a power psectrum. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a787087776cc0ca2b33e24e83cac5f801"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a787087776cc0ca2b33e24e83cac5f801">&#9670;&nbsp;</a></span>PowerSpectrum() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mspass::seismic::PowerSpectrum::PowerSpectrum </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Default constructor. Makes am empty, dead datum. </p>
+<div class="fragment"><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;                            : <a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#ae2c68571058526795e0424e0a76e4e76">BasicSpectrum</a>(),<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">Metadata</a>(), <a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a920cd0761252df4312168f4571165f2b">elog</a>()</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;{</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#affca22f42c28a0fe251405b227674ce6">spectrum_type</a>=string(<span class="stringliteral">&quot;UNDEFINED&quot;</span>);</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_spectrum_html_ae2c68571058526795e0424e0a76e4e76"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_spectrum.html#ae2c68571058526795e0424e0a76e4e76">mspass::seismic::BasicSpectrum::BasicSpectrum</a></div><div class="ttdeci">BasicSpectrum()</div><div class="ttdef"><b>Definition:</b> BasicSpectrum.h:23</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_power_spectrum_html_a920cd0761252df4312168f4571165f2b"><div class="ttname"><a href="classmspass_1_1seismic_1_1_power_spectrum.html#a920cd0761252df4312168f4571165f2b">mspass::seismic::PowerSpectrum::elog</a></div><div class="ttdeci">mspass::utility::ErrorLogger elog</div><div class="ttdef"><b>Definition:</b> PowerSpectrum.h:28</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_power_spectrum_html_affca22f42c28a0fe251405b227674ce6"><div class="ttname"><a href="classmspass_1_1seismic_1_1_power_spectrum.html#affca22f42c28a0fe251405b227674ce6">mspass::seismic::PowerSpectrum::spectrum_type</a></div><div class="ttdeci">std::string spectrum_type</div><div class="ttdef"><b>Definition:</b> PowerSpectrum.h:20</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a4a87cd6a6f8fc5cdbee65cb85958cb2c"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">mspass::utility::Metadata::Metadata</a></div><div class="ttdeci">Metadata()</div><div class="ttdef"><b>Definition:</b> Metadata.h:80</div></div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#affca22f42c28a0fe251405b227674ce6">spectrum_type</a>.</p>
+
+</div>
+</div>
+<a id="a7a93e1366099327d8b5b02788389e7ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a93e1366099327d8b5b02788389e7ee">&#9670;&nbsp;</a></span>PowerSpectrum() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">mspass::seismic::PowerSpectrum::PowerSpectrum </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;&#160;</td>
+          <td class="paramname"><em>md</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>dfin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>nm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>f0in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>dtin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>npts_in</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Standard constructor template.</p>
+<p>This constructor is a template largely to allow vectors of data other than double as inputs. If the input is not double it is converted on input to an std::vector&lt;double&gt; container stored in the spectrum attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">md</td><td>contents of this Metadata container are copied to the result. </td></tr>
+    <tr><td class="paramname">d</td><td>vector of sample data to load into spectrum array. </td></tr>
+    <tr><td class="paramname">dfin</td><td>frequency bin size (sample interval) </td></tr>
+    <tr><td class="paramname">nm</td><td>name defining algorithm used to constuct this spectral estimate. </td></tr>
+    <tr><td class="paramname">f0in</td><td>frequency of component 0 of input (default is 0.0). </td></tr>
+    <tr><td class="paramname">dtin</td><td>parent sampell interval of data used to make this estimate </td></tr>
+    <tr><td class="paramname">npts_in</td><td>number of points in parent time series used to compute this estimate.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Fully parameterized constructor template.</p>
+<p>See class definition of <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html">PowerSpectrum</a> for usage. Template to allow data vector of multiple types. </p>
+<div class="fragment"><div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;      : <a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#ae2c68571058526795e0424e0a76e4e76">BasicSpectrum</a>(dfin,f0in,dtin,npts_in),</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;          <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>(md),</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;            <a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a920cd0761252df4312168f4571165f2b">elog</a>()</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;{</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#affca22f42c28a0fe251405b227674ce6">spectrum_type</a>=nm;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>.reserve(d.size());</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keywordflow">for</span>(<span class="keywordtype">size_t</span> k=0;k&lt;d.size();++k)</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>.push_back(<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[k]));</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a2abdea1d94e0ec8753a09eb2cf20a290">set_live</a>();</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;};</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_spectrum_html_a2abdea1d94e0ec8753a09eb2cf20a290"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_spectrum.html#a2abdea1d94e0ec8753a09eb2cf20a290">mspass::seismic::BasicSpectrum::set_live</a></div><div class="ttdeci">void set_live()</div><div class="ttdef"><b>Definition:</b> BasicSpectrum.h:94</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_power_spectrum_html_a924f5b005efdeef3f2da34355821e0c0"><div class="ttname"><a href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">mspass::seismic::PowerSpectrum::spectrum</a></div><div class="ttdeci">std::vector&lt; double &gt; spectrum</div><div class="ttdef"><b>Definition:</b> PowerSpectrum.h:22</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></div><div class="ttdef"><b>Definition:</b> Metadata.h:76</div></div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a2abdea1d94e0ec8753a09eb2cf20a290">mspass::seismic::BasicSpectrum::set_live()</a>, <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>, and <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#affca22f42c28a0fe251405b227674ce6">spectrum_type</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="abbfb81f3ad4a3f0a1488b869a60148a2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abbfb81f3ad4a3f0a1488b869a60148a2">&#9670;&nbsp;</a></span>amplitude() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#abbfb81f3ad4a3f0a1488b869a60148a2">&#9670;&nbsp;</a></span>amplitude()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -279,64 +446,158 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
 
 <p>Compute amplitude spectrum from power spectrum. </p>
 <p>The amplitude spectrum is sqrt of the power values. This is a convenience class to return the values in that form. </p>
-<div class="fragment"><div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;{</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  vector&lt;double&gt; result;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  result.reserve(spectrum.size());</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;spectrum.size();++k)</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    result.push_back(sqrt(spectrum[k]));</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;{</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  vector&lt;double&gt; result;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  result.reserve(<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>.size());</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>.size();++k)</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    result.push_back(sqrt(<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>[k]));</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>.</p>
+
 </div>
 </div>
-<a id="a8cdc3c59b4e204b1b04d0c1951e73076"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8cdc3c59b4e204b1b04d0c1951e73076">&#9670;&nbsp;</a></span>amplitude() <span class="overload">[2/2]</span></h2>
+<a id="a1ef20f133212a6288e301e5d80f87a85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ef20f133212a6288e301e5d80f87a85">&#9670;&nbsp;</a></span>frequencies()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double mspass::seismic::PowerSpectrum::amplitude </td>
+          <td class="memname">std::vector&lt; double &gt; mspass::seismic::PowerSpectrum::frequencies </td>
           <td>(</td>
-          <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>f</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+<p>Return an std::vector container containing the frequency of each sample in the spectrum vector. Commonly necessary for plotting. Made virtual because nf method needs to be virtual. </p>
 
-<p>Amplitude at a given frequency. </p>
-<p>This is an overloaded method that returns the interpolated amplitude (sqrt(power)) at a requested frequency. If the frequency exceeds the Nyquist the function silently returns 0.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">f</td><td>is the frequency for which amplitude is desired.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">will</td><td>throw a MsPaSSError if f is less than 0. </td></tr>
-  </table>
-  </dd>
-</dl>
-<div class="fragment"><div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;{</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordflow">if</span>(f&lt;0.0) <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(<span class="stringliteral">&quot;PowerSpectrum::amplitude:  requested amplitude for a negative frequency which is assumed to be an erorr&quot;</span>,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                ErrorSeverity::Invalid);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordtype">int</span> filow;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  filow=<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>((f-<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a53bb92009189c7d297b20656cdf820a4">f0</a>)/<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#af4023fd0eee89576ca87ce0df394a672">df</a>);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">/* Force 0 at Nyquist and above - this allows simple interpolation in else */</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordflow">if</span>(filow&gt;=(spectrum.size()-1))</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;     <span class="keywordflow">return</span> 0.0;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  {</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">double</span> slope=(spectrum[filow+1]-spectrum[filow])/<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#af4023fd0eee89576ca87ce0df394a672">df</a>;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordtype">double</span> flow=<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a53bb92009189c7d297b20656cdf820a4">f0</a>+((double)filow)*<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#af4023fd0eee89576ca87ce0df394a672">df</a>;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordflow">return</span> sqrt(spectrum[filow]+slope*(f-flow));</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  }</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_power_spectrum_html_a53bb92009189c7d297b20656cdf820a4"><div class="ttname"><a href="classmspass_1_1seismic_1_1_power_spectrum.html#a53bb92009189c7d297b20656cdf820a4">mspass::seismic::PowerSpectrum::f0</a></div><div class="ttdeci">double f0</div><div class="ttdef"><b>Definition:</b> PowerSpectrum.h:19</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_power_spectrum_html_af4023fd0eee89576ca87ce0df394a672"><div class="ttname"><a href="classmspass_1_1seismic_1_1_power_spectrum.html#af4023fd0eee89576ca87ce0df394a672">mspass::seismic::PowerSpectrum::df</a></div><div class="ttdeci">double df</div><div class="ttdef"><b>Definition:</b> PowerSpectrum.h:15</div></div>
+<p>Implements <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#aec2c5339007e54737bbee643c0f93caf">mspass::seismic::BasicSpectrum</a>.</p>
+<div class="fragment"><div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;{</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  vector&lt;double&gt; f;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  f.reserve(this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf</a>());</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="keywordflow">for</span>(<span class="keyword">auto</span> i=0;i&lt;this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf</a>();++i) f.push_back(this-&gt;f0val+this-&gt;dfval*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i));</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordflow">return</span> f;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_power_spectrum_html_a7675c66d7f1aa8d7b4e9437564af4beb"><div class="ttname"><a href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">mspass::seismic::PowerSpectrum::nf</a></div><div class="ttdeci">size_t nf() const</div><div class="ttdef"><b>Definition:</b> PowerSpectrum.h:97</div></div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf()</a>.</p>
+
+</div>
+</div>
+<a id="ad2f979f7662aba3e46f277d9c45fd07d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2f979f7662aba3e46f277d9c45fd07d">&#9670;&nbsp;</a></span>frequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::seismic::PowerSpectrum::frequency </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>sample_number</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return frequency at a specified sample number. Virtual to allow subclasses to throw an error for illegal value. <br  />
+ </p>
+
+<p>Implements <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a076bd1632ad16165c842115fd2aab6a9">mspass::seismic::BasicSpectrum</a>.</p>
+<div class="fragment"><div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keyword">const</span> std::string base_error(<span class="stringliteral">&quot;PowerSpectrum::frequency:  &quot;</span>);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordflow">if</span>(<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a1cb29c54744c06553765a3966c8b970f">sample_number</a>&lt;0) <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a>(base_error</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        + <span class="stringliteral">&quot;Sample number parameter passed cannot be negative&quot;</span>);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordflow">if</span>(<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a1cb29c54744c06553765a3966c8b970f">sample_number</a>&gt;=(this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf</a>())) <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a>(base_error</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        + <span class="stringliteral">&quot;Sample number parameter passed xceeds range of spectrum array&quot;</span>);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordflow">return</span> this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#adcbe20cedb4c2a1f0ed31466e8f70c13">f0</a>()+<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a1cb29c54744c06553765a3966c8b970f">sample_number</a>*this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#ac01289c8a10cc1939f51d51f3c1cdb72">df</a>();</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  };</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_spectrum_html_a1cb29c54744c06553765a3966c8b970f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_spectrum.html#a1cb29c54744c06553765a3966c8b970f">mspass::seismic::BasicSpectrum::sample_number</a></div><div class="ttdeci">int sample_number(const double f) const</div><div class="ttdef"><b>Definition:</b> BasicSpectrum.h:128</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_spectrum_html_ac01289c8a10cc1939f51d51f3c1cdb72"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_spectrum.html#ac01289c8a10cc1939f51d51f3c1cdb72">mspass::seismic::BasicSpectrum::df</a></div><div class="ttdeci">double df() const</div><div class="ttdef"><b>Definition:</b> BasicSpectrum.h:96</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_spectrum_html_adcbe20cedb4c2a1f0ed31466e8f70c13"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_spectrum.html#adcbe20cedb4c2a1f0ed31466e8f70c13">mspass::seismic::BasicSpectrum::f0</a></div><div class="ttdeci">double f0() const</div><div class="ttdef"><b>Definition:</b> BasicSpectrum.h:101</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a></div><div class="ttdoc">Base class for error object thrown by MsPASS library routines.</div><div class="ttdef"><b>Definition:</b> MsPASSError.h:40</div></div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#ac01289c8a10cc1939f51d51f3c1cdb72">mspass::seismic::BasicSpectrum::df()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#adcbe20cedb4c2a1f0ed31466e8f70c13">mspass::seismic::BasicSpectrum::f0()</a>, <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a1cb29c54744c06553765a3966c8b970f">mspass::seismic::BasicSpectrum::sample_number()</a>.</p>
+
+</div>
+</div>
+<a id="a7675c66d7f1aa8d7b4e9437564af4beb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7675c66d7f1aa8d7b4e9437564af4beb">&#9670;&nbsp;</a></span>nf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t mspass::seismic::PowerSpectrum::nf </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the number of frequency bin. </p>
+
+<p>Implements <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a830fc9c8135253aeae01ffd80746b413">mspass::seismic::BasicSpectrum</a>.</p>
+<div class="fragment"><div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;{<span class="keywordflow">return</span> <a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>.size();};</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>.</p>
+
+</div>
+</div>
+<a id="aef0b54806f9e5367df7dfa03804a2f87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef0b54806f9e5367df7dfa03804a2f87">&#9670;&nbsp;</a></span>Nyquist()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::seismic::PowerSpectrum::Nyquist </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the nyquist frequency for this estimate. </p>
+
+<p>Implements <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#af11c7d672337c3f89c3e063ecf1be4a5">mspass::seismic::BasicSpectrum</a>.</p>
+<div class="fragment"><div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                         {</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordflow">return</span> 1.0/(2.0*this-&gt;parent_dt);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -357,68 +618,161 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
 </div><div class="memdoc">
 
 <p>Standard accumulation operator. </p>
-<p>Sometimes we need to sume power spectra. Type examplel would be total noise amplitude on a 3C seismogram or average noise amplitude in an array of instruments. This can be used to build such sum in the usual way. Add spectral elements sample by sample.</p>
+<p>Sometimes we need to sum power spectra. Type examplel would be total noise amplitude on a 3C seismogram or average noise amplitude in an array of instruments. This can be used to build such sum in the usual way. Add spectral elements sample by sample.</p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">will</td><td>throw a MsPaSSError if the left and right side are not equal length. </td></tr>
+    <tr><td class="paramname">will</td><td>throw a MsPaSSError if the left and right side are not equal length of have different f0 of df values. </td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;{</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="comment">/* Allow self accumulation - double values */</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordflow">if</span>(<span class="keyword">this</span>==(&amp;other))</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;spectrum.size();++k) spectrum[k]*=2.0;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  }</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">if</span>(this-&gt;spectrum.size() != other.spectrum.size())</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      stringstream ss;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      ss &lt;&lt; <span class="stringliteral">&quot;operator+=(accumulation) size mismatch of spectrum arrays&quot;</span>&lt;&lt;endl</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;right hade side spectrum size=&quot;</span>&lt;&lt;spectrum.size()&lt;&lt;endl</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;left had side spectrum size=&quot;</span>&lt;&lt;other.spectrum.size()&lt;&lt;endl;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(ss.str(),ErrorSeverity::Invalid);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    }</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;spectrum.size();++k)</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      spectrum[k] += other.spectrum[k];</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  }</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;{</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="comment">/* Allow self accumulation - double values */</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordflow">if</span>(<span class="keyword">this</span>==(&amp;other))</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf</a>();++k) <a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>[k]*=2.0;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  }</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf</a>() != other.<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf</a>())</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      stringstream ss;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      ss &lt;&lt; <span class="stringliteral">&quot;operator+=(accumulation) size mismatch of spectrum arrays&quot;</span>&lt;&lt;endl</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;right hade side spectrum size=&quot;</span>&lt;&lt;other.<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf</a>()&lt;&lt;endl</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;left had side spectrum size=&quot;</span>&lt;&lt;this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf</a>()&lt;&lt;endl;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a920cd0761252df4312168f4571165f2b">elog</a>.<a class="code" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;PowerSpectrum::operator+-&quot;</span>,</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                     ss.str(),ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a7400b002f21460fece1d5519dfbc26c7">kill</a>();</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    }</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#adcbe20cedb4c2a1f0ed31466e8f70c13">f0</a>() != other.<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#adcbe20cedb4c2a1f0ed31466e8f70c13">f0</a>())</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      stringstream ss;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      ss &lt;&lt; <span class="stringliteral">&quot;operator+=(accumulation) f0 mismatch of spectrum estimates&quot;</span>&lt;&lt;endl</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;right hade side spectrum f0=&quot;</span>&lt;&lt;other.<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#adcbe20cedb4c2a1f0ed31466e8f70c13">f0</a>()&lt;&lt;endl</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;left had side spectrum f0=&quot;</span>&lt;&lt;this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#adcbe20cedb4c2a1f0ed31466e8f70c13">f0</a>()&lt;&lt;endl;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a920cd0761252df4312168f4571165f2b">elog</a>.<a class="code" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;PowerSpectrum::operator+-&quot;</span>,</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                     ss.str(),ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a7400b002f21460fece1d5519dfbc26c7">kill</a>();</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    }</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#ac01289c8a10cc1939f51d51f3c1cdb72">df</a>() != other.<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#ac01289c8a10cc1939f51d51f3c1cdb72">df</a>())</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      stringstream ss;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      ss &lt;&lt; <span class="stringliteral">&quot;operator+=(accumulation) df mismatch of spectrum estimates&quot;</span>&lt;&lt;endl</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;right hade side spectrum df=&quot;</span>&lt;&lt;other.<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#ac01289c8a10cc1939f51d51f3c1cdb72">df</a>()&lt;&lt;endl</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;left had side spectrum df=&quot;</span>&lt;&lt;this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#ac01289c8a10cc1939f51d51f3c1cdb72">df</a>()&lt;&lt;endl;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a920cd0761252df4312168f4571165f2b">elog</a>.<a class="code" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;PowerSpectrum::operator+-&quot;</span>,</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                     ss.str(),ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a7400b002f21460fece1d5519dfbc26c7">kill</a>();</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    {</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf</a>();++k)</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>[k] += other.<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>[k];</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    }</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  }</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_spectrum_html_a7400b002f21460fece1d5519dfbc26c7"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_spectrum.html#a7400b002f21460fece1d5519dfbc26c7">mspass::seismic::BasicSpectrum::kill</a></div><div class="ttdeci">void kill()</div><div class="ttdef"><b>Definition:</b> BasicSpectrum.h:87</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition:</b> ErrorLogger.cc:81</div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a153ca69299a4d70aa0c6e69e8c70a767">mspass::utility::Metadata::size()</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#ac01289c8a10cc1939f51d51f3c1cdb72">mspass::seismic::BasicSpectrum::df()</a>, <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a920cd0761252df4312168f4571165f2b">elog</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#adcbe20cedb4c2a1f0ed31466e8f70c13">mspass::seismic::BasicSpectrum::f0()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a7400b002f21460fece1d5519dfbc26c7">mspass::seismic::BasicSpectrum::kill()</a>, <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>, <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">nf()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>.</p>
+
+</div>
+</div>
+<a id="a3d1e72618b8e88c5929839c5e8885859"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d1e72618b8e88c5929839c5e8885859">&#9670;&nbsp;</a></span>power()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::seismic::PowerSpectrum::power </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>power at a given frequency. </p>
+<p>Returns the power estimate at a specified frequency. Uses a linear interpolation between nearest neighbors. Returns the frequency exceeds the Nyquist silently returns 0.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>is the frequency for which amplitude is desired.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">MsPASSErorr</td><td>object will be throw f f is less than 0. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="fragment"><div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;{</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">if</span>(f&lt;0.0) <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(<span class="stringliteral">&quot;PowerSpectrum::amplitude:  requested amplitude for a negative frequency which is assumed to be an erorr&quot;</span>,</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keywordtype">int</span> filow;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  filow=<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>((f-this-&gt;f0val)/this-&gt;dfval);</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="comment">/* Force 0 at Nyquist and above - this allows simple interpolation in else */</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keywordflow">if</span>(filow&gt;=(<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>.size()-1))</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;     <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  {</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordtype">double</span> slope=(<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>[filow+1]-<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>[filow])/this-&gt;dfval;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordtype">double</span> flow=this-&gt;f0val+((double)filow)*this-&gt;dfval;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>[filow]+slope*(f-flow);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  }</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a924f5b005efdeef3f2da34355821e0c0">spectrum</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="af4023fd0eee89576ca87ce0df394a672"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af4023fd0eee89576ca87ce0df394a672">&#9670;&nbsp;</a></span>df</h2>
+<a id="a920cd0761252df4312168f4571165f2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a920cd0761252df4312168f4571165f2b">&#9670;&nbsp;</a></span>elog</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double mspass::seismic::PowerSpectrum::df</td>
+          <td class="memname"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a> mspass::seismic::PowerSpectrum::elog</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>frequency bin interval. </p>
+<p>MsPASS Error logging class.</p>
+<p>MsPASS uses an error logger to allow posting of error messages that go with the data. That approach is needed in map reduce to allow the error messages to be cleanly preserved. </p>
 
 </div>
 </div>
-<a id="a53bb92009189c7d297b20656cdf820a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a53bb92009189c7d297b20656cdf820a4">&#9670;&nbsp;</a></span>f0</h2>
+<a id="a924f5b005efdeef3f2da34355821e0c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a924f5b005efdeef3f2da34355821e0c0">&#9670;&nbsp;</a></span>spectrum</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double mspass::seismic::PowerSpectrum::f0</td>
+          <td class="memname">std::vector&lt;double&gt; mspass::seismic::PowerSpectrum::spectrum</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Frequencey of first sample of spectrum array (usually 0). Be warned a valid construction of a <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html">PowerSpectrum</a> requires f0+df*nf() be Nyquist. <br  />
- </p>
+<p>Vector of spectral estimates. spectrum[0] == estimate at f0. </p>
+
+</div>
+</div>
+<a id="affca22f42c28a0fe251405b227674ce6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affca22f42c28a0fe251405b227674ce6">&#9670;&nbsp;</a></span>spectrum_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string mspass::seismic::PowerSpectrum::spectrum_type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Descriptive name assigned by creator of algorithm used to generate it.</p>
+<p>There are a number of different algorithms to generate power spectra. this name field should be used to set a unique name for a given algorithm. </p>
 
 </div>
 </div>

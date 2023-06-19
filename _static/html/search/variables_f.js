@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['tag_711',['tag',['../structmspass_1_1utility_1_1_metadata__typedef.html#a7af59256cae2e29c493e0f93345432d2',1,'mspass::utility::Metadata_typedef']]],
-  ['theta_712',['theta',['../structmspass_1_1utility_1_1_spherical_coordinate.html#ae06e9f7deab80ef715e5a3629fbab2f7',1,'mspass::utility::SphericalCoordinate']]],
-  ['tmatrix_713',['tmatrix',['../classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882',1,'mspass::seismic::CoreSeismogram']]],
-  ['tref_714',['tref',['../classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa',1,'mspass::seismic::BasicTimeSeries']]],
-  ['type_715',['type',['../classmspass_1_1utility_1_1_node_data.html#aa7c6f56ceca095d0af31f456d75954a4',1,'mspass::utility::NodeData']]]
+  ['u_742',['u',['../classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4',1,'mspass::algorithms::deconvolution::ThreeCSpike::u()'],['../classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f',1,'mspass::seismic::CoreSeismogram::u()']]],
+  ['uuid_743',['uuid',['../classmspass_1_1utility_1_1_node_data.html#a0f0df95910b9712e36d3a8389c0c9f38',1,'mspass::utility::NodeData']]],
+  ['ux_744',['ux',['../classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9',1,'mspass::seismic::SlownessVector']]],
+  ['uy_745',['uy',['../classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0',1,'mspass::seismic::SlownessVector']]]
 ];

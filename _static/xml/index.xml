@@ -131,6 +131,36 @@
     <member refid="classmspass_1_1utility_1_1_basic_processing_history_1aa9795e245b241b3cf2ad87e91af071c9" kind="function"><name>operator=</name></member>
     <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a915d8583a75022528a2b3463f71b3a1f" kind="function"><name>serialize</name></member>
   </compound>
+  <compound refid="classmspass_1_1seismic_1_1_basic_spectrum" kind="class"><name>mspass::seismic::BasicSpectrum</name>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1aa8b09300420826a09dcfd44783cce21b" kind="variable"><name>dfval</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a3889a47eac3ae9c201f95eb70d9518a4" kind="variable"><name>f0val</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1aeba1d53ba50676257c3cb5fec2f691c8" kind="variable"><name>parent_dt</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2f2d159e0b767fac81f7b755e5debbc8" kind="variable"><name>parent_npts</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a266cf681e4001dffaf775aa223f8438b" kind="variable"><name>is_live</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1ae2c68571058526795e0424e0a76e4e76" kind="function"><name>BasicSpectrum</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1ad6606996a02b573faf65312459352bfc" kind="function"><name>BasicSpectrum</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a33b44b4ba519e94e51af81a407753cf9" kind="function"><name>BasicSpectrum</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a1734200c8081027e340a1078a70512d8" kind="function"><name>operator=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1ac7b01555a28ce9de3630eb24f4dc9173" kind="function"><name>~BasicSpectrum</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2bce24e09412434ec968bed19ec9843d" kind="function"><name>live</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a331f89b8216f9717ac906e922d7c2cff" kind="function"><name>dead</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a7400b002f21460fece1d5519dfbc26c7" kind="function"><name>kill</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2abdea1d94e0ec8753a09eb2cf20a290" kind="function"><name>set_live</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1ac01289c8a10cc1939f51d51f3c1cdb72" kind="function"><name>df</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1adcbe20cedb4c2a1f0ed31466e8f70c13" kind="function"><name>f0</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2155e90cad5c857f326d4399fd276755" kind="function"><name>dt</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a61c04d4d4a98d4135d3f5e0b59cc85b3" kind="function"><name>rayleigh</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a436535a1b2f05e518fc4dc884da2e512" kind="function"><name>timeseries_npts</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a1cb29c54744c06553765a3966c8b970f" kind="function"><name>sample_number</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1af690c2deac6b3c2306c15fee9c452a1b" kind="function"><name>set_df</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a59236bc56e298b485927defff353de70" kind="function"><name>set_f0</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a73a8f75cf63421c696379f57f207a93f" kind="function"><name>set_dt</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a85f411357320b26e22e9d116faa3abe2" kind="function"><name>set_npts</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1aec2c5339007e54737bbee643c0f93caf" kind="function"><name>frequencies</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a076bd1632ad16165c842115fd2aab6a9" kind="function"><name>frequency</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a830fc9c8135253aeae01ffd80746b413" kind="function"><name>nf</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1af11c7d672337c3f89c3e063ecf1be4a5" kind="function"><name>Nyquist</name></member>
+  </compound>
   <compound refid="classmspass_1_1algorithms_1_1_basic_taper" kind="class"><name>mspass::algorithms::BasicTaper</name>
     <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" kind="variable"><name>head</name></member>
     <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" kind="variable"><name>tail</name></member>
@@ -788,13 +818,15 @@
   <compound refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kind="class"><name>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</name>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a8965dd9992bc23686c899416fc01d833" kind="variable"><name>taperlen</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa2184647214f98ca31c9b918ea95cabd" kind="variable"><name>ntapers</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a7c667b205098c106878bcd43d6ee0c08" kind="variable"><name>nfft</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a755509d55edcea79ddea1652d7eb115d" kind="variable"><name>tbp</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1af38cc58cf5f4de6b5a4654c4fa5c4e3c" kind="variable"><name>operator_dt</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a1c890f6d04bf2cb6c276a79d70ba8b33" kind="variable"><name>tapers</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aedb60b87afad3afa660be4e408766e0c" kind="variable"><name>deltaf</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a0986764ea5918f4436d751cd28bea3c6" kind="variable"><name>wavetable</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a7276cdd1dd824732514a05fd8cf3f326" kind="variable"><name>workspace</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a509f3db8c91ae8e97b241bd5da67cd61" kind="function"><name>MTPowerSpectrumEngine</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a7f082a7cca3a74d96b16df852f3ef040" kind="function"><name>MTPowerSpectrumEngine</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1afa0ce9c1b2c9248d46ab794bf01d42b0" kind="function"><name>MTPowerSpectrumEngine</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a678a1167722867cfb20acc0c56932882" kind="function"><name>MTPowerSpectrumEngine</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a8232d61152acbe74c6a890a662f89c63" kind="function"><name>~MTPowerSpectrumEngine</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a51379e47b45995eb44c519c2672de77b" kind="function"><name>operator=</name></member>
@@ -805,7 +837,10 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a114db709279ea8ab275ba69fbdcbec13" kind="function"><name>taper_length</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1accf94d6d1dff859884d9c0aa1719994a" kind="function"><name>time_bandwidth_product</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a10d4b650fdedd815652c1e4e86a0e715" kind="function"><name>number_tapers</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1afaabbb574b28194bde51e45d1cfd2787" kind="function"><name>fftsize</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1af7ea0259803f6cac1c5e8166541b2f51" kind="function"><name>dt</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a1dadcf9ec587fa2d48d04066ba1d55b4" kind="function"><name>set_df</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" kind="function"><name>nf</name></member>
   </compound>
   <compound refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon" kind="class"><name>mspass::algorithms::deconvolution::MultiTaperSpecDivDecon</name>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1a4627a8808deda9b2053dc59f5e180edb" kind="variable"><name>noise</name></member>
@@ -881,22 +916,20 @@
     <member refid="classmspass_1_1utility_1_1_node_data_1adc92573476dc839e02e8d2085401b7aa" kind="function"><name>serialize</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_power_spectrum" kind="class"><name>mspass::seismic::PowerSpectrum</name>
-    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1af4023fd0eee89576ca87ce0df394a672" kind="variable"><name>df</name></member>
-    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a53bb92009189c7d297b20656cdf820a4" kind="variable"><name>f0</name></member>
     <member refid="classmspass_1_1seismic_1_1_power_spectrum_1affca22f42c28a0fe251405b227674ce6" kind="variable"><name>spectrum_type</name></member>
     <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" kind="variable"><name>spectrum</name></member>
     <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a920cd0761252df4312168f4571165f2b" kind="variable"><name>elog</name></member>
     <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a787087776cc0ca2b33e24e83cac5f801" kind="function"><name>PowerSpectrum</name></member>
-    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1ace419f03d3d017601e16f6b0287cfaf0" kind="function"><name>PowerSpectrum</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a7a93e1366099327d8b5b02788389e7ee" kind="function"><name>PowerSpectrum</name></member>
     <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a377c8508a72f2aff53da0d528de12bb7" kind="function"><name>PowerSpectrum</name></member>
     <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a5045c9886a94320a3f351058cd3d6ea3" kind="function"><name>operator=</name></member>
     <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a8306434c52e142797c227fed6f91fd82" kind="function"><name>operator+=</name></member>
     <member refid="classmspass_1_1seismic_1_1_power_spectrum_1abbfb81f3ad4a3f0a1488b869a60148a2" kind="function"><name>amplitude</name></member>
-    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a8cdc3c59b4e204b1b04d0c1951e73076" kind="function"><name>amplitude</name></member>
-    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1ae4580db0b75a6db419467d2374dfdd80" kind="function"><name>nf</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a3d1e72618b8e88c5929839c5e8885859" kind="function"><name>power</name></member>
     <member refid="classmspass_1_1seismic_1_1_power_spectrum_1ad2f979f7662aba3e46f277d9c45fd07d" kind="function"><name>frequency</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a1ef20f133212a6288e301e5d80f87a85" kind="function"><name>frequencies</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a7675c66d7f1aa8d7b4e9437564af4beb" kind="function"><name>nf</name></member>
     <member refid="classmspass_1_1seismic_1_1_power_spectrum_1aef0b54806f9e5367df7dfa03804a2f87" kind="function"><name>Nyquist</name></member>
-    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1abf25df63633c262938c7957c70e4df37" kind="function"><name>sample_number</name></member>
   </compound>
   <compound refid="classmspass_1_1utility_1_1_processing_history" kind="class"><name>mspass::utility::ProcessingHistory</name>
     <member refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" kind="variable"><name>elog</name></member>
@@ -1528,6 +1561,8 @@
   </compound>
   <compound refid="mspass_8h" kind="file"><name>mspass.h</name>
   </compound>
+  <compound refid="_basic_spectrum_8h" kind="file"><name>BasicSpectrum.h</name>
+  </compound>
   <compound refid="_basic_time_series_8h" kind="file"><name>BasicTimeSeries.h</name>
   </compound>
   <compound refid="_core_seismogram_8h" kind="file"><name>CoreSeismogram.h</name>
@@ -1610,6 +1645,7 @@
   <compound refid="_least_square_decon_8cc" kind="file"><name>LeastSquareDecon.cc</name>
   </compound>
   <compound refid="_m_t_power_spectrum_engine_8cc" kind="file"><name>MTPowerSpectrumEngine.cc</name>
+    <member refid="_m_t_power_spectrum_engine_8cc_1a8852c78afc7df9e2e995edc38bb720ff" kind="function"><name>nextPowerOf2</name></member>
   </compound>
   <compound refid="_multi_taper_spec_div_decon_8cc" kind="file"><name>MultiTaperSpecDivDecon.cc</name>
   </compound>

@@ -1434,18 +1434,18 @@ is usually not necessay.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.PowerSpectrum">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.seismic.</span></span><span class="sig-name descname"><span class="pre">PowerSpectrum</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_BasicSpectrum</span></code>, <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code></a></p>
 <p>Container for power spectrum estimates</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.PowerSpectrum.Nyquist">
 <span class="sig-name descname"><span class="pre">Nyquist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum"><span class="pre">mspasspy.ccore.seismic.PowerSpectrum</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum.Nyquist" title="Permalink to this definition"></a></dt>
-<dd><p>Return Nyquist frequency</p>
+<dd><p>Return Nyquist frequency of this powewr spectrum estimate</p>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="mspasspy.ccore.seismic.PowerSpectrum.df">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">df</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum.df" title="Permalink to this definition"></a></dt>
-<dd><p>Frequency bin size</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.PowerSpectrum.amplitude">
+<span class="sig-name descname"><span class="pre">amplitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum"><span class="pre">mspasspy.ccore.seismic.PowerSpectrum</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.seismic.DoubleVector" title="mspasspy.ccore.seismic.DoubleVector"><span class="pre">mspasspy.ccore.seismic.DoubleVector</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum.amplitude" title="Permalink to this definition"></a></dt>
+<dd><p>Return an std::vector of amplitude values (sqrt of power)</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1454,16 +1454,16 @@ is usually not necessay.</p>
 <dd><p>Handle to ErrorLogger</p>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="mspasspy.ccore.seismic.PowerSpectrum.f0">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">f0</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum.f0" title="Permalink to this definition"></a></dt>
-<dd><p>Frequency of sample 0 (This implementation supports only constant frequency bin size)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.PowerSpectrum.frequencies">
+<span class="sig-name descname"><span class="pre">frequencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum"><span class="pre">mspasspy.ccore.seismic.PowerSpectrum</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.seismic.DoubleVector" title="mspasspy.ccore.seismic.DoubleVector"><span class="pre">mspasspy.ccore.seismic.DoubleVector</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum.frequencies" title="Permalink to this definition"></a></dt>
+<dd><p>Return an std::vector of</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.PowerSpectrum.frequency">
 <span class="sig-name descname"><span class="pre">frequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum"><span class="pre">mspasspy.ccore.seismic.PowerSpectrum</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum.frequency" title="Permalink to this definition"></a></dt>
-<dd><p>Return frequency of sample number of spectrum vector</p>
+<dd><p>Return frequency linked to given sample number</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1473,9 +1473,9 @@ is usually not necessay.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mspasspy.ccore.seismic.PowerSpectrum.sample_number">
-<span class="sig-name descname"><span class="pre">sample_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum"><span class="pre">mspasspy.ccore.seismic.PowerSpectrum</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum.sample_number" title="Permalink to this definition"></a></dt>
-<dd><p>Return sample number of a given frequency</p>
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.PowerSpectrum.power">
+<span class="sig-name descname"><span class="pre">power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum"><span class="pre">mspasspy.ccore.seismic.PowerSpectrum</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.PowerSpectrum.power" title="Permalink to this definition"></a></dt>
+<dd><p>Return power at a specified frequency using linear interpolation between gridded values</p>
 </dd></dl>
 
 <dl class="py property">
@@ -2651,6 +2651,18 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine.df">
 <span class="sig-name descname"><span class="pre">df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine" title="mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine.df" title="Permalink to this definition"></a></dt>
 <dd><p>Return frequency bin size</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine.nf">
+<span class="sig-name descname"><span class="pre">nf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine" title="mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine.nf" title="Permalink to this definition"></a></dt>
+<dd><p>Return number of frequency bins in this operator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine.nfft">
+<span class="sig-name descname"><span class="pre">nfft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine" title="mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine.nfft" title="Permalink to this definition"></a></dt>
+<dd><p>Return size of fft workspace in this operator</p>
 </dd></dl>
 
 <dl class="py method">

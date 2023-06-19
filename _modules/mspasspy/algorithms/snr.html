@@ -572,15 +572,21 @@
         <span class="k">if</span> <span class="n">noise_spectrum_engine</span><span class="p">:</span>
             <span class="n">nengine</span> <span class="o">=</span> <span class="n">noise_spectrum_engine</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">nengine</span> <span class="o">=</span> <span class="n">MTPowerSpectrumEngine</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="n">tbp</span><span class="p">,</span> <span class="n">ntapers</span><span class="p">)</span>
+            <span class="n">nengine</span> <span class="o">=</span> <span class="n">MTPowerSpectrumEngine</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="n">tbp</span><span class="p">,</span> <span class="n">ntapers</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">npts</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">signal_spectrum_engine</span><span class="p">:</span>
             <span class="n">sengine</span> <span class="o">=</span> <span class="n">signal_spectrum_engine</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">sengine</span> <span class="o">=</span> <span class="n">MTPowerSpectrumEngine</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="n">tbp</span><span class="p">,</span> <span class="n">ntapers</span><span class="p">)</span>
+            <span class="n">sengine</span> <span class="o">=</span> <span class="n">MTPowerSpectrumEngine</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="n">tbp</span><span class="p">,</span> <span class="n">ntapers</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">npts</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
         <span class="n">N</span> <span class="o">=</span> <span class="n">nengine</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
         <span class="n">S</span> <span class="o">=</span> <span class="n">sengine</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
         <span class="n">bwd</span> <span class="o">=</span> <span class="n">EstimateBandwidth</span><span class="p">(</span>
-            <span class="n">S</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">band_cutoff_snr</span><span class="p">,</span> <span class="n">tbp</span><span class="p">,</span> <span class="n">high_frequency_search_start</span><span class="p">,</span> <span class="n">fix_high_edge</span>
+            <span class="n">S</span><span class="o">.</span><span class="n">df</span><span class="p">(),</span>
+            <span class="n">S</span><span class="p">,</span>
+            <span class="n">N</span><span class="p">,</span>
+            <span class="n">band_cutoff_snr</span><span class="p">,</span>
+            <span class="n">tbp</span><span class="p">,</span>
+            <span class="n">high_frequency_search_start</span><span class="p">,</span>
+            <span class="n">fix_high_edge</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># here we return empty result if the bandwidth is too low</span>

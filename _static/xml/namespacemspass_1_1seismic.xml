@@ -2,6 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="namespacemspass_1_1seismic" kind="namespace" language="C++">
     <compoundname>mspass::seismic</compoundname>
+    <innerclass refid="classmspass_1_1seismic_1_1_basic_spectrum" prot="public">mspass::seismic::BasicSpectrum</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_basic_time_series" prot="public">mspass::seismic::BasicTimeSeries</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_core_seismogram" prot="public">mspass::seismic::CoreSeismogram</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_core_time_series" prot="public">mspass::seismic::CoreTimeSeries</innerclass>
@@ -579,6 +580,6 @@
     <detaileddescription>
 <para>This include file defines a set ofconst std::string values that serve as keys to Metadata get and put calls. They are placed in this one file to easy maintainability of the code base. This is essential because in MsPaSS we need to map Metadata keys to and from MongoDB database key names. If the schema needs to change due to some external constraint like assimilating some external code base we need only change the names here. The comments with each name are roughly the same as the concept line in the yaml file for the mspass schema at the time this file was created. Do not depend on an exact match, but the idea behind each phrase should not change (the concept). </para>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="6" column="1"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="6" column="1"/>
   </compounddef>
 </doxygen>

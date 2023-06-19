@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['gaps_692',['gaps',['../classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384',1,'mspass::seismic::DataGap']]]
+  ['high_5fedge_5ff_717',['high_edge_f',['../classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39',1,'mspass::algorithms::amplitudes::BandwidthData']]],
+  ['high_5fedge_5fsnr_718',['high_edge_snr',['../classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#afb68f33f07a6d38e7ebd24e0a87b7481',1,'mspass::algorithms::amplitudes::BandwidthData']]]
 ];
