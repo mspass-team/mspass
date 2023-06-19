@@ -1459,10 +1459,41 @@ def test_PowerSpectrum():
     ts.live = True
     engine = MTPowerSpectrumEngine(100, 5, 10)
     spec = engine.apply(ts)
-    assert spec.Nyquist() == spec.f0 + spec.df * spec.nf()
+    # these are BasicSpectrum methods we test
+    # nfft goes to next power of 2 for efficiency - with gnu fft 64+1
+    assert spec.nf() == 65
+    assert spec.live()
+    spec.kill()
+    assert spec.dead()
+    spec.set_live()
+    assert spec.Nyquist() == 0.5
+    assert spec.f0() == 0.0
+    assert spec.dt() == 1.0
+    assert spec.rayleigh() == 0.01
+
+    # needed tests for set_df, set_f0, set_dt, set_npts, sample_number
+    # Depends upon MTPowerSpectrumEngine default which is to double
+    # length as a zero pad.
+    spec_copy = PowerSpectrum(spec)
+    df_expected = 1.0 / (2.0 * (spec.nf() - 1))
+    assert np.isclose(spec.df(), df_expected)
+    spec = PowerSpectrum(spec_copy)
+    # test setters
+    spec.set_f0(1.0)
+    assert spec.f0() == 1.0
+    spec = PowerSpectrum(spec_copy)
+    spec.set_dt(2.0)
+    assert spec.dt() == 2.0
+
+    # Repeat with no defaults
+    engine = MTPowerSpectrumEngine(100, 5, 10, 512, ts.dt)
+    spec = engine.apply(ts)
+    assert spec.nf() == int(512 / 2) + 1
+    df_expected = 1.0 / (2.0 * (spec.nf() - 1))
+    assert np.isclose(spec.df(), df_expected)
 
     spec_copy = pickle.loads(pickle.dumps(spec))
-    assert spec.df == spec_copy.df
-    assert spec.f0 == spec_copy.f0
+    assert spec.df() == spec_copy.df()
+    assert spec.f0() == spec_copy.f0()
     assert spec.spectrum_type == spec_copy.spectrum_type
     assert np.allclose(spec.spectrum, spec_copy.spectrum)

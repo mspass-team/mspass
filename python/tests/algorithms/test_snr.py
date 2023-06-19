@@ -122,21 +122,19 @@ def test_snr():
     elog = fd_snr_output[1]
     assert elog.size() == 0
     tval = fd_snr_output[0]["low_f_band_edge"]
-    assert np.isclose(tval, 0.03332777870354941)
+    assert np.isclose(tval, 0.016663889351774704)
     tval = fd_snr_output[0]["high_f_band_edge"]
-    assert np.isclose(tval, 16.563906015664056)
+    assert np.isclose(tval, 14.18930178303616)
     tval = fd_snr_output[0]["low_f_band_edge_snr"]
-    assert np.isclose(tval, 11.458212683258578)
+    assert np.isclose(tval, 5.139865241663943)
     tval = fd_snr_output[0]["high_f_band_edge_snr"]
-    assert np.isclose(tval, 2.0289812704609314)
+    assert np.isclose(tval, 2.208403126119803)
     tval = fd_snr_output[0]["bandwidth_fraction"]
-    assert np.isclose(tval, 0.3306666666666667)
+    assert np.isclose(tval, 0.28345275787368773)
     tval = fd_snr_output[0]["bandwidth"]
-    assert np.isclose(tval, 53.927127774666644)
-    # Note this is not 50 because the signal window npts is an odd number
-    # In that sitaution ffts have last frequecy Nyqust - df/2
+    assert np.isclose(tval, 58.60369304597239)
     tval = fd_snr_output[0]["spectrum_frequency_range"]
-    assert np.isclose(tval, 49.991668053)
+    assert np.isclose(tval, 50.0)
 
     print("Repeat computing optional metrics and fixed high band edge")
     fd_snr_output = FD_snr_estimator(
@@ -157,49 +155,47 @@ def test_snr():
     assert elog.size() == 0
 
     tval = fd_snr_output[0]["low_f_band_edge"]
-    assert np.isclose(tval, 0.03332777870354941)
+    assert np.isclose(tval, 0.016663889351774704)
     tval = fd_snr_output[0]["high_f_band_edge"]
     assert np.isclose(tval, 2.0)
     tval = fd_snr_output[0]["low_f_band_edge_snr"]
-    assert np.isclose(tval, 11.458212683258578)
+    assert np.isclose(tval, 5.139865241663943)
     tval = fd_snr_output[0]["high_f_band_edge_snr"]
-    assert np.isclose(tval, 66.0799403744919)
+    assert np.isclose(tval, 38.93492742182266)
     tval = fd_snr_output[0]["bandwidth_fraction"]
-    assert np.isclose(tval, 0.03934)
+    assert np.isclose(tval, 0.0396667222129645)
     tval = fd_snr_output[0]["bandwidth"]
-    assert np.isclose(tval, 35.564472535321926)
-    # Note this is not 50 because the signal window npts is an odd number
-    # In that sitaution ffts have last frequecy Nyqust - df/2
+    assert np.isclose(tval, 41.58507244860155)
     tval = fd_snr_output[0]["spectrum_frequency_range"]
-    assert np.isclose(tval, 49.991668053)
+    assert np.isclose(tval, 50.0)
 
     # optional metric validation
     tval = fd_snr_output[0]["mean_snr"]
-    assert np.isclose(tval, 75.88331422185868)
+    assert np.isclose(tval, 44.53333678023763)
     tval = fd_snr_output[0]["maximum_snr"]
-    assert np.isclose(tval, 197.29008426129326)
+    assert np.isclose(tval, 116.20203792513574)
     tval = fd_snr_output[0]["median_snr"]
-    assert np.isclose(tval, 76.17635106932579)
+    assert np.isclose(tval, 44.94472248711368)
     tval = fd_snr_output[0]["minimum_snr"]
-    assert np.isclose(tval, 11.458212683258578)
+    assert np.isclose(tval, 5.139865241663943)
     tval = fd_snr_output[0]["q3_4_snr"]
-    assert np.isclose(tval, 86.59300028360848)
+    assert np.isclose(tval, 50.83560657581158)
     tval = fd_snr_output[0]["q1_4_snr"]
-    assert np.isclose(tval, 66.16303805496165)
+    assert np.isclose(tval, 37.67904956081205)
     tval = fd_snr_output[0]["stats_are_valid"]
     assert tval
     tval = fd_snr_output[0]["snr_filtered_envelope_peak"]
-    assert np.isclose(tval, 1542.4144903627769)
+    assert np.isclose(tval, 1554.4362973532727)
     tval = fd_snr_output[0]["snr_filtered_rms"]
-    assert np.isclose(tval, 104.51936727220455)
+    assert np.isclose(tval, 103.68819833856637)
     tval = fd_snr_output[0]["snr_filtered_peak"]
-    assert np.isclose(tval, 925.4437683464602)
+    assert np.isclose(tval, 936.4358549803269)
     tval = fd_snr_output[0]["snr_perc"]
     assert np.isclose(tval, 95.0)
     tval = fd_snr_output[0]["snr_filtered_perc"]
-    assert np.isclose(tval, 108.82699836664096)
+    assert np.isclose(tval, 95.50754573098855)
     tval = fd_snr_output[0]["snr_filtered_mad"]
-    assert np.isclose(tval, 1.5140608428022027)
+    assert np.isclose(tval, 1.5821450295131423)
 
     master = fd_snr_output[0]
 
@@ -215,8 +211,8 @@ def test_snr():
     nspec = pickle.loads(pd)
     # We just validate these are intact.   If this method succeeds assume
     # that worked
-    assert sigspec.nf() == 3000
-    assert nspec.nf() == 7500
+    assert sigspec.nf() == 6002
+    assert nspec.nf() == 15002
 
     print("Testing arrival_snr function with autoshift")
     # Now test arrival_snr.  That function is mainly a front end to

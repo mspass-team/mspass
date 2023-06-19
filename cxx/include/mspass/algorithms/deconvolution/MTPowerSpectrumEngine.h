@@ -40,8 +40,13 @@ public:
   \param ntapers is the number of tapers to actually use for the operator.
     Note the maximum ntapers is always int(tbp*2).  If ntapers is more than
     2*tbp a mesage will be posted to cerr and ntapers set to tbp*2.
+  \param nfftin is the size of the fft workspace to use for computation.
+    When less than the winsize (the default forces this) set to 2*winsize+1.
+  \param dtin sets the operator sample interval stored in the object and used
+    to compute frequency bin size from fft length.
     */
-  MTPowerSpectrumEngine(const int winsize, const double tbp, const int ntapers);
+  MTPowerSpectrumEngine(const int winsize, const double tbp, const int ntapers,
+       const int nfftin=-1,const double dtin=1.0);
   /*! Standard copy constructor*/
   MTPowerSpectrumEngine(const MTPowerSpectrumEngine& parent);
   /*! Destructor.  Not trivial as it has to delete the fft workspace and
@@ -72,7 +77,7 @@ public:
   themselves.   Unlike the TimeSeries method this one will throw an
   exception if the input data size does not match the operator size.  It
   returns power spectral density assuming a sample rate of 1.  i.e. it
-  scales to correct for the gsl fft scaling by of the forward transform by N. 
+  scales to correct for the gsl fft scaling by of the forward transform by N.
 
   \param d is the vector of data to process.  d.size() must this->taperlen() value.
   \return vector containing estimated power spectrum (usual convention with
@@ -80,8 +85,10 @@ public:
   \exception throw a MsPASSError if the size of d does not match operator length
   */
   std::vector<double> apply(const std::vector<double>& d);
+  /*! Return the frquency bin size defined for this operator. */
   double df() const {return deltaf;};
-
+  /*! Return and std::vector of all frequencies for spectral estimates this
+  operator computes. */
   std::vector<double> frequencies();
   /*! Retrieve the taper length.*/
   int taper_length() const
@@ -98,14 +105,25 @@ public:
   {
     return ntapers;
   };
-  /*! \brief PUtter equivalent of df.
+  /*! Return size of fft used by this operator - usually not the same as taper
+  length.*/
+  int fftsize() const {return nfft;};
+  /*! Retrieve the internally cached required data sample interval. */
+  double dt(){return operator_dt;};
+  /*! \brief Putter equivalent of df.
 
-  The computation of the Rayleigh bin size (dt) is actually quote trivial but
-  this convenience functon allows users of the  vector<double> method to
-  handle the comutation easily.  It uses the internal oeprator size, however,
-  to compute the df size it returns because the operator is dogmatic about
-  using that size.  Users wishing to call the frequency method and the apply
-  method on raw vector data need to call this function before calling frequency.
+  The computation of the Rayleigh bin size is complicated a bit by the folding
+  properties of fft algorithms that have to handle odd and even length
+  inputs differently.   This algorithm uses the internally set nfft
+  value to set the frequency bin size for even or odd nfft and the input sample
+  interval.  NOTE POSSIBLE CONFUSION that input is time sample interval
+  NOT the actual frquency bin size.  The reason is that the odd/even issue
+  makes df dependent on if the fft size is even or odd.   We include this
+  method as a convenience as that is an implementation detail for the fft
+  algorithm.
+
+  Note also this method sets not just df but the internally stored sample
+  interval (symbol operator_dt in the source code.)
 
   \param dt is the data sample interval (time domain)
 
@@ -113,13 +131,32 @@ public:
   */
   double set_df(double dt)
   {
-    deltaf=1.0/(dt*static_cast<double>(taperlen));
+    this->operator_dt = dt;
+    int this_nf = this->nf();
+    double fny = 1.0/(2.0*dt);
+    this->deltaf = fny/static_cast<double>(this_nf-1);
     return deltaf;
+  };
+  /*! Return tne number of frequency bins in estimates the operator will compute. */
+  int nf()
+  {
+    /* this simple formula depends upon integer truncation when used with
+    nfft as an odd number.   For reference, this is what prieto uses in
+    the python multitaper package:
+    if (nfft%2 == 0):
+        nf = int(nfft/2 + 1)
+    else:
+        nf = int((nfft+1)/2)
+    they will yield the same result but this is simpler and faster
+    */
+    return (this->nfft)/2 + 1;
   };
 private:
   int taperlen;
   int ntapers;
+  int nfft;
   double tbp;
+  double operator_dt;
   mspass::utility::dmatrix tapers;
   /* Frequency bin interval of last data processed.*/
   double deltaf;
