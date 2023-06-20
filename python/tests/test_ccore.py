@@ -506,6 +506,8 @@ def test_TimeSeries():
     assert ts.data[103] == 8
     assert ts.time(100) == 0.1
     assert ts.sample_number(0.0998) == 100
+    # starttime method is an alias for t0 included as a convenience
+    assert ts.t0 == ts.starttime()
     # These metadata constructor used for cracking miniseed files
     md = Metadata()
     md["delta"] = 0.01

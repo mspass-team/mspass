@@ -294,6 +294,8 @@ PYBIND11_MODULE(seismic, m) {
     .def("time_is_relative",&BasicTimeSeries::time_is_relative,"Return true if t0 is not UTC=some relative time standard like shot time")
     .def("npts",&BasicTimeSeries::npts,"Return the number of time samples in this object")
     .def("t0",&BasicTimeSeries::t0,"Return the time of the first sample of data in this time series")
+    /*Useful alias for t0 method*/
+    .def("starttime",[](const BasicTimeSeries &self){return self.t0();})
     .def("set_dt",&BasicTimeSeries::set_dt,"Set the data time sample interval")
     .def("set_npts",&BasicTimeSeries::set_npts,"Set the number of data samples in this object")
     .def("set_t0",&BasicTimeSeries::set_t0,"Set time of sample 0 (t0) - does not check if consistent with time standard")
