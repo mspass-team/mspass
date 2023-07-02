@@ -19,41 +19,41 @@ incantation at the top of the python job script:
 .. code-block:: python
 
     from mspasspy.db.client import DBClient
-    from mspasspy.db.database import Database
     dbclient = DBClient()
-    db = Database(dbclient, 'database_name')
+    db = dbclient.get_database('database_name')
 
-where the second argument on Database, :code:`'database_name'`,
-is a name you chose for the dataset you are working with.
+where :code:`'database_name'`,
+is, as implied, a name you chose for the dataset you are working with.
 For the remainder of this section we will use the symbol "db" as
 defined, but as in any programming language you need to recognize the
 symbol can be anything you as the user find sensible. "db" is just our
-choice.
+choice.  Some may prefer "dbh" as short for database handle, as a
+somewhat more descriptive name.
 
 Unlike relational database systems, a schema is not required by
 MongoDB.   However, for reasons outlined in the section
 :ref:`data_object_design_concepts` a schema feature
 was added as a component of MsPASS.  We emphasize the
 schema in this design, however, can be thought of as more
-like guidelines than rigid rules.
-The default schema for a Database assumes the data set is a set of
-TimeSeries object.  That implies the dataset is defined in the
-collection we call :code:`wf_TimeSeries`.   If the dataset is already
-assembled into three component bundles (:code:`Seismogram` objects)
-the Database constructor needs to be informed of that through this
-alternative construct:
+like guidelines than rigid rules.  The default schema
+is called :code:`mspass`.   An alternative that is useful in working
+with a workflow reading miniseed files is called :code:`mspass_lite`.
+You can specify an alternative schema, like mspass_lite, with
+this variant of the above:
 
 .. code-block:: python
 
-    from mspasspy.db.client import Client
-    from mspasspy.db.database import Database
-    dbclient = Client()
-    db = Database(dbclient, 'database_name', db_schema='wf_Seismogram')
+    from mspasspy.db.client import DBClient
+    dbclient = DBClient()
+    db = dbclient.get_database('database_name',schema="mspass_lite.yaml")
 
-If your workflow requires reading both TimeSeries and Seismogram
-data, best practice (i.e. it isn't required but a good idea)
-would be to create two handles with one using the wf_TimeSeries
-and the other using the wf_Seismogram schema.
+Users needing an alternative schema can use the existing yaml files as a
+template and load their alternative in the data/yaml directory.
+You would then simply substitute the file name you choose for the
+schema argument.
+
+In normal use the Database class sets the schema based on the
+type of data you ask it to handle.
 
 Create
 ~~~~~~~~~~
@@ -101,9 +101,9 @@ and most up to date usage:
     are copied verbatim to each member.  If previous values existed in any
     of the members they will be silently replaced by the ensemble groups version.
 
-    :py:meth:`save_ensemble_data_binary_file <mspasspy.db.database.Database.save_ensemble_data_binary_file>` 
+    :py:meth:`save_ensemble_data_binary_file <mspasspy.db.database.Database.save_ensemble_data_binary_file>`
     is an optimized version of save_ensemble_data. It saves all objects of the
-    ensemble into one file, and only opens the file once. 
+    ensemble into one file, and only opens the file once.
 
 3.  :py:meth:`save_catalog <mspasspy.db.database.Database.save_catalog>` should be viewed mostly as a convenience method to build
     the :code:`source` collection from QUAKEML data downloaded from FDSN data
@@ -190,39 +190,20 @@ and most up to date usage:
 
     Finally, we note a key feature of the :code:`save_inventory` method:
     it enforces a seed convention to avoid saving duplicate documents.
-    As noted earlier he SEED standard uses the keys we call net, sta, chan,
+    As noted earlier the SEED standard uses the keys we call net, sta, chan,
     and loc along with a time interval to define a unique block of
     receiver metadata.   The :code:`save_inventory` method enforces
     the unique combination of these keys in a save.  It always will
     refuse to add an entry it interprets as a pure duplicate document.
     If you need to modify an existing site or channel
     collection that has invalid documents you will need to write a custom function to override that
-    behaviour or rebuild the collection as needed with web services.
+    behavior or rebuild the collection as needed with web services.
 
-5.  :code:`write_distributed_data` is a parallel equivalent of :code:`save_data` and :code:`save_ensemble_data`.  
-    MsPASS supports two parallel frameworks called SPARK and DASK.   
-    Both abstract the concept of the parallel data set in
-    a container they call an RDD and Bag respectively.   Both are best thought
-    of as a handle to the entire data set that can be passed between
-    processing functions.  The function can be thought of as writing the entire data set 
-    from a parallel container to storage. The input is SPARK RDD or DASK BAG of objects (TimeSeries or Seismogram), and the
-    output is a dataframe of metadata. From the container, it will firstly write to files distributedly 
-    using SPARK or DASK, and then write to the database sequentially. The two parts are done in two 
-    functions: :code:`write_files`, and :code:`write_to_db`. It returns a dataframe of metadata for 
-    each object in the original container. The return value can be used as input for :code:`read_distributed_data`
-    function. 
-    
-    Note that the objects should be written to different files, otherwise it may overwrite each other.
-    dir and dfile should be stored in each object.
-
-    :code:`write_files` is the writer for writing the object to storage. Input is an object (TimeSeries/Seismogram), 
-    output is the metadata of the original object with some more parameters added. This is 
-    the reverse of :code:`read_files`.
-
-    :code:`write_to_db` is to save a list of atomic data objects (TimeSeries or Seismogram)
-    to be managed with MongoDB. It will write to the doc and to the database for every metadata of the
-    target mspass object. Then return a dataframe of the metadata for target mspass objects. 
-    The function is the reverse of :code:`read_to_dataframe`.
+5.  :py:meth:`write_distributed_data <mspasspy.db.database.Database.write_distributed_data>`
+    should be used to save a dataset in a parallel environment.
+    It parallelizes writes by separating database transactions from
+    saving the sample data, which experience has shown improves write
+    performance.
 
 Read
 ~~~~~~~
@@ -230,10 +211,11 @@ Read
 The Read operation is the inverse of save (create).  The core readers were
 designed to simplify the process of reading the core data types of MsPASS:  TimeSeries
 and Seismogram.  There are also convenience functions for reading ensembles.
-As with the save operators we discuss here the key methods, but refer the
+As with the save operators we focus on key methods and refer the
 reader to the sphinx documentation for full usage.
 
-1.  :py:meth:`read_data <mspasspy.db.database.Database.read_data>` is the core method for reading atomic data.  The method has
+1.  :py:meth:`read_data <mspasspy.db.database.Database.read_data>`
+    is the core method for reading atomic data.  The method has
     one required argument.  That argument is an ObjectID for the document used
     to define the read operation OR a MongoDB document (python dict) that
     contains the ObjectID.  The ObjectID is guaranteed to provide a
@@ -338,27 +320,24 @@ reader to the sphinx documentation for full usage.
             ens = db.read_ensemble_data(cursoe)
 
     :py:meth:`read_ensemble_data_group <mspasspy.db.database.Database.read_ensemble_data_group>`
-    is an optimized version of :code:`save_ensemble_data`. It groups the files firstly to avoid 
-    duplicate open for the same file. Open and close the file only when the dir or dfile change.
-    When multiple objects store in the same file, this function will group the files first
-    and collect their foffs in that file. Then open the file once, and sequentially read the data 
-    according to the foffs. This function only supports reading from binary files.
+    is an optimized version of :code:`read_ensemble_data`. It groups the files firstly to avoid
+    duplicate open for the same file.  For each unique file it finds in the list of
+    documents loaded via the cursor, it opens the file, reads and constructs
+    each ensemble member using the :code:`foff` attribute it requires for each
+    documents, and closes file when finished with that group.
+    This function only supports reading from binary files.
 
 3.  A workflow that needs to read and process a large data sets in
     a parallel environment should use
     the parallel equivalent of :code:`read_data` and :code:`read_ensemble_data` called
-    :py:meth:`read_distributed_data <mspasspy.db.database.Database.read_distributed_data>`.  MsPASS supports two parallel frameworks called
+    :py:meth:`read_distributed_data <mspasspy.db.database.Database.read_distributed_data>`.
+    MsPASS supports two parallel frameworks called
     SPARK and DASK.   Both abstract the concept of the parallel data set in
     a container they call an RDD and Bag respectively.   Both are best thought
     of as a handle to the entire data set that can be passed between
     processing functions.   The :code:`read_distributed_data` method is critical
-    to improve performance of a parallel workflow.  The use of storage
-    in MongoDB's gridfs in combination with SPARK or DASK
-    are known to help reduce io bottlenecks
-    in a parallel environment.  SPARK and DASK have internal mechanisms to schedule
-    IO to optimize throughput, particularly with reads made through the gridfs
-    mechanism we use as the default data storage.  :code:`read_distributed_data`
-    provides the mechanism to accomplish that.
+    to improve performance of a parallel workflow.  Always use this function
+    as the read step in a parallel workflow.
 
     :code:`read_distributed_data` has a very different call structure than the
     other seismic data readers.  It is not a method of Database, but a
@@ -371,35 +350,38 @@ reader to the sphinx documentation for full usage.
     .. code-block:: python
 
         from mspasspy.db.client import Client
-        from mspasspy.db.database import Database,read_distributed_data
+        from mspasspy.db.database import read_distributed_data
         dbclient = Client()
         # This is the name used to acccess the database of interest assumed
         # to contain data loaded previously.  Name used would change for user
         dbname = 'distributed_data_example'  # name of db set in MongoDB - example
-        db = Database(dbclient,dbname)
+        db = dbclient.get_database(dbname)
         # This example reads all the data currently stored in this database
         cursor = db.wf_TimeSeries.find({})
         rdd0 = read_distributed_data(dbclient, dbname, cursor)
 
-    The output of the read is the SPARK RDD that we assign the symbol rdd0.
-    If you are using DASK instead of SPARK you would add the optional
-    argument :code:`format='dask'`.
+    The default output of the read is dask bag containing the content defined by
+    the wf_TimeSeries collection. If you are using Spark instead of Dask
+    you would add the optional
+    argument :code:`format='spark'` and you also need to pass a value
+    for the argument :code:`spark_context`.
 
-    :code:`read_distributed_data` divide the process of reading into two parts: 
-    reading from database and reading from file, where reading from database is 
-    done in sequence, and reading from file is done with DASK or SPARK. The two parts 
+    :code:`read_distributed_data` divides the process of reading into two parts:
+    reading from the database and reading from file, where reading from database is
+    done in sequence, and reading from file is done with DASK or SPARK. The two parts
     are done in two functions: :code:`read_to_dataframe`, and :code:`read_files`.
-    The division is to avoid using database in DASK or SPARK to improve efficiency.
+    The division is to done to avoid using database calls in DASK or SPARK to improve
+    parallel performance.
 
     The input can also be a dataframe, which stores the information of the metadata.
     It will read from file/gridfs according to the metadata and construct the objects.
 
-    :code:`read_to_dataframe` firstly construct a list of objects using cursor. 
+    :code:`read_to_dataframe` firstly construct a list of objects using cursor.
     Then for each object, constrcut the metadata and add to the list. Finally it will
-    convert the list to a dataframe. 
+    convert the list to a dataframe.
 
     :code:`read_files` is the reader for constructing the object from storage. Firstly construct the object,
-    either TimeSeries or Seismogram, then read the stored data from a file or in gridfs and 
+    either TimeSeries or Seismogram, then read the stored data from a file or in gridfs and
     loads it into the mspasspy object. It will also load history in metadata. If the object is
     marked dead, it will not read and return an empty object with history. The logic of reading
     is same as :code:`Database.read_data`.
@@ -407,19 +389,23 @@ reader to the sphinx documentation for full usage.
 Update
 ~~~~~~
 
-Because of the way we stored seismic data in MsPASS (see figure above)
+Because of the way seismic data is stored in MsPASS (see figure above)
 the concept of an update makes sense only for Metadata.
-The update concept makes no sense for ProcessingHistory and error log data.
+If the sample data are modified, the assumption is the result
+would be saved as a new instance, not updated.   That constraint is
+necessary for a long list of reasons.  In addition, the concept of an
+update makes no sense for ProcessingHistory and error log data.
 Hence, the history and elog collections, that hold that data, should never
 be updated.   No MsPASS supported algorithms will do that, but we
 emphasize that constraint because you as the owner of the dataset could
 (incorrectly) modify history or elog with calls to MongoDB's api.
 
-As noted elsewhere Metadata loaded with data objects in MsPASS can come
-from one of two places:  (1) attributes loaded directly with the atomic data from
-the unique document in a wf collection with which that data is associated,
-and (2) "normalized" data loaded through a cross reference ID from one of the
-standardized collection in MsPASS (currently :code:`site`, :code:`channel`, and :code:`source`).
+Metadata contained in a data objects in MsPASS can come
+from three places:  (1) attributes loaded directly with the atomic data from
+the unique document in a wf collection with which that data is originated,
+(2) "normalized" data loaded through a cross reference ID from one of the
+standardized collection in MsPASS (currently :code:`site`, :code:`channel`, and :code:`source`)
+and (3) new attributes created during processing.
 In a waveform processing job (i.e. python driver script) the metadata
 extracted from normalized collections should be treated as immutable.
 In fact, when schema validation tests are enabled for save operations
@@ -461,7 +447,7 @@ that has worked with a CSS3.0 relational database schema like Antelope.
 In MsPASS we adopt these rules to keep delete operations under control.
 
 * **Delete Rule 1**:  Normalization collection documents should never be
-  deleted during a processing run.  Creation of these collections should
+  delete any document during a processing run.  Creation of these collections should
   always be treated as a preprocessing step.
 * **Delete Rule 2**:  Any deletions of documents in normalization collections should
   be done through one of the MongoDB APIs.  If such housecleaning is
@@ -518,7 +504,7 @@ other hand, the common old SAC model of one waveform per file is an abomination
 for storing millions of waveforms on any HPC system.   If your application
 requires frequent delete operations for cleanup during a workflow
 we strongly advise you store all your data with the
-gridfs option. 
+gridfs option.
 
 Key IO Concepts
 ~~~~~~~~~~~~~~~~~
@@ -527,7 +513,7 @@ MsPASS Chemistry
 --------------------
 
 In this section we expand on some concepts the user needs to understand
-in interacting with the io system in MsPASS.  If we repeat things it means
+in interacting with the I/O system in MsPASS.  If we repeat things it means
 they are important, not that we were careless in writing this document.
 
 It might be useful to think of data in MsPASS with an analogy from
@@ -602,13 +588,16 @@ that are handled differently through the schema definition:
     :code:`collection_id` where "collection" is a variable and "_id" is literal.
     (e.g. the linking key for the source collection is "source_id").
     We use that approach because in MongoDB an ObjectID is guaranteed to
-    provide a unique index.   That allows the system be more generic.
+    provide a unique index.   That allows the system to be more generic.
     Hence, unlike FDSN data centers that depend upon the SEED format in
     MsPASS net, sta, chan, loc (the core miniseed keys)
-    are baggage for joining the site or channel
-    collections to a set of waveform data.  We have functions for
+    are excess baggage in a processing workflow.  The default aims to
+    only preserve the id that links a datum back to a site and/or channel
+    collection.  We have functions for
     linking seed data with net, sta, chan, and loc keys to build links
-    but the links are still best defined by ObjectIDs.   An example of why this
+    stored in the database or that can be used within a workflow.
+    (See :ref:`Normalization<normalization>`)
+    An example of why the approach we use
     is more generic is to contrast SEED data to something like a CMP
     reflection data set.  In a CMP survey geophone locations are never
     given names but are indexed by something else like a survey flag
@@ -630,7 +619,7 @@ as yet unknown ways data can acquire inconsistencies that are problems of
 varying levels of severity.  Here is the range of outcomes in increasing
 order severity:
 
-1.  No problems equal to complete success.
+1.  No problems equals complete success.
 
 2.  Problems that could be repaired automatically.  Such errors always
     generate error log entries, but the errors are judged to
@@ -647,7 +636,7 @@ order severity:
     At present the only unforgivable sin is changing a cross-referencing id.
     If a writer detects that cross-referencing ObjectID has been altered the
     data will be marked dead and the Metadata document will be written to
-    a special collection called "graveyard".
+    the elog collection as a subdocument with the key  "tombstone".
 
 4.  Unrecoverable (fatal) errors will abort a workflow.   At present that
     should only happen from system generated errors that throw an

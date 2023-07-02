@@ -2,8 +2,9 @@
 
 Time Standard Constraints
 ==========================
-|  The section in the user's manual on BasicTimeSeries concepts
-   (This needs a link back to that section) discusses a novel feature of
+|  The section in the user's manual on
+   :ref:`BasicTimeSeries concepts<_data_object_design_concepts>`
+   discusses a novel feature of
    MsPASS that allows the framework to support both active source and
    passive array data.   This section contains additional implementation
    details that some users may find important.  The most notable example
@@ -93,7 +94,7 @@ Time Standard Constraints
    3.  Synthetic seismograms are a special case that have to be handled with
        care.   The reason is putting synthetic seismogram signals into this
        framework almost always has to be carefully aware of the distinction
-       between UTC and Relative time.  I know of now synthetic seismogram
+       between UTC and Relative time.  I know of no synthetic seismogram
        generator that internally uses anything other than the equivalent of
        a Relative time standard with 0 being source origin time.  Matching
        recorded signals, however, may require shifting either the data to
@@ -166,4 +167,4 @@ Time Standard Constraints
        data that are stored with UTC time.   By calling
        :code:`set_tref(TimeReferenceType.UTC)` followed by a call to :code:`force_t0_shift(t)`
        where t is the origin time of an event being simulated, a synthetic can
-       be compared sample by sample to data.   
+       be compared sample by sample to data.
