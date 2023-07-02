@@ -7,8 +7,8 @@ NonSQL Database
 ------------------------
 
 | MsPASS uses a NonSQL database called MongoDB.   NonSQL is a generic
-  name today for a database system that does not utilize the structure
-  query language (SQL).  SQL is the standard language for interacting
+  name today for a database system that does not utilize the Structured
+  Query Language (SQL).  SQL is the standard language for interacting
   with relational database systems like Oracle, MySQL, PostGRES, etc.
   One type of NonSQL database is a "document database".  MongoDB is
   classified as a document database.   Readers unfamiliar with the
@@ -26,50 +26,50 @@ Schema
 Overview
 ~~~~~~~~
 
-Wikepedia defines a database schema as follow:
+| Wikepedia defines a database schema as follow:
 
-| The term "`schema <https://en.wiktionary.org/wiki/schema>`__"
-  refers to the organization of data as a blueprint of how the database
-  is constructed (divided into database tables in the case of `relational
-  databases <https://en.wikipedia.org/wiki/Relational_databases>`__)
-  the schema defines a set of attributes, tables (relations), and how
-  they can be linked (joined).
+  | The term "`schema <https://en.wiktionary.org/wiki/schema>`__"
+    refers to the organization of data as a blueprint of how the database
+    is constructed (divided into database tables in the case of `relational
+    databases <https://en.wikipedia.org/wiki/Relational_databases>`__)
+    the schema defines a set of attributes, tables (relations), and how
+    they can be linked (joined).
+| As this definition states, in a relational database like CSS3.0 the
+  schema defines a set of attributes, tables (relations), and how they are
+  linked (joined).   MsPASS uses a "nonSQL database", which means the interaction
+  is not with Structured Query Language (SQL).   We use a particular
+  form of nonSQL database called a "document database" as implemented in
+  the open source package `MongoDB <https://www.mongodb.com/>`__.
+  The top-level concept for understanding MongoDB is name-value pairs.
+  One way of thinking of MongoDB is that it only implements each attribute
+  as a name-value pair:  the name is the key that defines the concept and
+  the attribute is the thing that defines a particular instance of that
+  concept.  The contents can
+  be something as simple as an integer number or as elaborate as any python
+  object.  Tables (relations) are synonymous with what is called a *collection*
+  in MongoDB.
 
-As this definition states, in a relational database like CSS3.0 the
-schema defines a set of attributes, tables (relations), and a how they are
-linked (joined).   MsPASS uses a "nonSQL database", which means the interaction
-is not with Structured Query Language (SQL).   We use a particular
-form of nonSQL database called a "document database" as implemented in
-the open source package `MongoDB <https://www.mongodb.com/>`__.
-The top-level concept for understanding MongoDB is name-value pairs.
-One way of thinking of MongoDB is that it only implements each attribute
-as a name-value pair:  the name is the key that defines the concept and
-the attribute is the thing that defines a particular instance of that
-concept.  The contents can
-be something as simple as an integer number or as elaborate as any python
-object.  Tables (relations) are synonymous with what is called a *collection*
-in MongoDB.
-Although a *collection* is conceptually similar to a table
-it is operationally very different.  In MongoDB a *collection* contains
-one or more *documents*, which play the same role as a single tuple in
-a relational database.  In a relational database an attribute has one
-keyword used to define the content that is visualized as a table with
-a header line defining the attribute name.  A MongoDB document, in contrast,
-effectively has the name tag with each entry as a MongoDB document is made
-up of a set of name-value pairs.  For readers already familiar with python
-the name-value pairs map exactly into the concept of a python dict.  The
-python API (pymongo), in fact, retrieves documents into a data structure
-that behaves exactly like a python dict.  One critical point about that
-distinction is that a relational database has to define a mechanism to
-flag a particular cell in a table as null.   In a MongoDB document a null
-is defined a true null;   a key-value pair not defined in the document.
+| Although a *collection* is conceptually similar to a table
+  it is operationally very different.  In MongoDB a *collection* contains
+  one or more *documents*, which play the same role as a single tuple in
+  a relational database.  In a relational database an attribute has one
+  keyword used to define the content that is visualized as a table with
+  a header line defining the attribute name.  A MongoDB document, in contrast,
+  effectively has the name tag with each entry as a MongoDB document is made
+  up of a set of name-value pairs.  For readers already familiar with python
+  the name-value pairs map exactly into the concept of a python dict.  The
+  python API (pymongo), in fact, retrieves documents into a data structure
+  a python dict.  One critical point about that
+  distinction is that a relational database has to define a mechanism to
+  flag a particular cell in a table as null.   In a MongoDB document a null
+  is defined a true null;   a key-value pair not defined in the document.
 
-We close this section by noting that a schema is not required by
-MongoDB. As we discussed in detail in :ref:`data_object_design_concepts`
-MsPASS data objects are implemented in C++.   Strong typing in C++
-makes a schema a necessary evil to make the system more robust.
-A schema also provides a necessary central location to define the
-namespace of what kind of content is expected for a particular key.
+| We close this section by noting that a schema is not required by
+  MongoDB. As we discussed in detail in :ref:`data_object_design_concepts`
+  MsPASS data objects are implemented in C++.   Strong typing in C++
+  makes a schema a necessary evil to make the system more robust.
+  A schema also provides a necessary central location to define the
+  namespace of what kind of content is expected for a particular key.
 
 Design Concepts
 ~~~~~~~~~~~~~~~~~
@@ -182,7 +182,7 @@ to common data like station and source Metadata.
 
 ObjectIds are stored in MongoDB as a binary object we normally store in
 its raw form using pymongo.  Users should be aware that a human readable
-for can be obtain in python by using the str attribute of ObjectId class.  (i.e. if
+form can be obtain in python by using the str attribute of ObjectId class.  (i.e. if
 :code:`myid` is an ObjectId loaded from MongoDB, the readable form is :code:`myid.str`)
 For more on ObjectIds the following site is a good introduction_.
 
@@ -200,7 +200,7 @@ describe can be found here_.
 
 .. _here: https://www.tutorialspoint.com/mongodb/mongodb_data_modeling.htm
 
-At this time there are three sets of Metadata we handle by normalization.
+At this time there are two sets of Metadata we handle by normalization.
 They are familiar concepts to anyone familiar with the relational database
 schema CSS3.0 used, for example, in Antelope.  The concepts involved are:
 
@@ -209,7 +209,7 @@ schema CSS3.0 used, for example, in Antelope.  The concepts involved are:
     distinctions are a bit subtle and better left to the more detailed
     discussion below.
 *   *Source related Metadata.*   Any event driven processing needs information
-    about seismic sources that are aassociated with the signals to be
+    about seismic sources that are associated with the signals to be
     analyzed.  That data is stored in this collection.
 
 A common feature of all "normalized" collection data is that they define a
@@ -219,7 +219,7 @@ related data together.  Readers familiar with relational systems
 understand this same concept as our site, channel, and source collections
 are similar to the CSS3.0 site, sitechan, and origin tables respectively.
 
-A key feature of normalized data is we need a fast index to link the
+A key feature of normalized data is that we need a fast index to link the
 normalized data to our waveform data.  In all cases we use the ObjectId of
 the normalized collection as the index.   As noted above all documents in
 MongoDB automatically are assigned an ObjectId accessible with key
@@ -248,7 +248,9 @@ has millions of documents. Although experience showed that expectation was
 true, we also found there are situations where embedded database operations
 can be a bottleneck in a workflow.   For that reason we developed a set of
 normalization classes in python that cache tables of attributes needed for
-normalization.   That idea is described below in the section :ref:`NEW SUBSECTION TO BE ADDE DTO THIS FILE`
+normalization.
+That idea is described in detail in a related section of
+this User's manual called  :ref:`Normalization<normalization>`.
 
 Waveform Processing
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -272,11 +274,31 @@ unanticipated data problem increase with the size of a dataset.  Never underesti
 universal concept of `Murphy's Law <https://www.dictionary.com/browse/murphy-s-law>`__.
 Although at this writing the functionality is only planned, an
 essential tool is to run a verification tool to validate data before running
-a large job.
+a large job.  For the time being user's are encouraged to implement a
+validation tool customized to known data issues for their data set.
 
-With that background, there are two collections used to manage waveform data.
+With that background, there are two core collections used to manage waveform data.
 They are called :code:`wf_TimeSeries` and :code:`wf_Seismogram`.
 These two collection are the primary work areas to assemble a working data set.
+In addition, because of SEED data is now a universal standard in seismology
+we define the :code:`wf_miniseed` collection.   :code:`wf_miniseed`
+documents are similar to :code:`wf_TimeSeries` documents but have
+deeply embedded miniseed specific content.  The most notable are the
+dogmatic use of station naming codes defined by four standard keys:
+"net", "sta", "chan", and "loc".   In contrast, the related
+:code:`wf_TimeSeries` collection actively discourages use of station
+code keys treating them as normalization attributes.   A simple way
+to distinguish the use of :code:`wf_miniseed` versus is :code:`wf_TimeSeries`
+is that if your workflow is to be initiated from raw, miniseed data
+use the :code:`wf_miniseed` collection.  If you save intermediate results
+that are :code:`TimeSeries` objects they must be saved in :code:`wf_TimeSeries`.
+We would emphasize, however, that saving data to :code:`wf_TimeSeries`
+currently requires more storage than comparable miniseed data.   Most
+miniseed data is compressed and storage is reduced to approximately one byte
+per sample.  :code:`wf_TimeSeries` data are normally stored in the raw
+binary form (Done, in fact with the low-level binary fwrite in C.), which
+expands the data to 8 bytes per sample.
+
 We elected to keep data describing each of the two atomic data types in MsPASS,
 :code:`TimeSeries` and :code:`Seismogram`, in two different collections.  The
 main reason we made the decision to create two collections instead of one
@@ -292,7 +314,7 @@ The key point about the use of the wf collections is that all serial processing
 can be reduced to this pseudocode logic::
 
   1) Create database handle
-  2) Point the handle at wf_Seismogram or wf_TimeSeries as appropriate
+  2) Point the handle at wf_Seismogram, wf_TimeSeries, or wf_miniseed as appropriate
   3) Create a MongoDB cursor (find all or issue a query)
   4) foreach x in cursor:
       1i)  Run a sequnce of functions on x
@@ -305,14 +327,15 @@ simplifies the conversion from a serial to parallel job.  In any case,
 the equivalent parallel pseudocode logic is this::
 
   1) Create database handle
-  2) Point the handle at wf_Seismogram or wf_TimeSeries as appropriate
+  2) Point the handle at wf_Seismogram, wf_TimeSeries, or wf_miniseed as appropriate
   3) Run the Database.read_distributed_data method to build parallel dataset
   4) Run parallel version of each processing function
-  5) Run Database.save_distributed_data method
+  5) Run Database.save_data method in parallel
 
 A simple perspective on the difference is that the loop for the serial
-job becomes is implied in the parallel job.  Spark schedules which
+job becomes is implied in the parallel job.  Spark or dask schedules which
 datum is run through which of a set of parallel jobs.
+(see :ref:`Parallel Processing<parallel_processing>` section of ths manual)
 
 Waveform Data Storage
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -323,8 +346,10 @@ Overview
 All seismogram read operations access one of the wf Collections.
 The default behavior is to read all key-value pairs in a single document
 and insert most of the attributes into the Metadata for one
-TimeSeries or Seismogram objects.  Normalized data (see above) are
-loaded automatically by default.
+TimeSeries or Seismogram objects.  Normalized data can be
+loaded automatically if requested and the wf collection is has the proper
+cross-referencing ids defined.   For more about how to handle
+normalization during read see the section titled :ref:`Normalization<normalization>`.
 
 Writers are more complicated because they may have to deal with any
 newly generated attributes and potentially fundamental changes in the
@@ -333,37 +358,57 @@ completely inconsistent with the concept of a station name and may
 require creation of a different set of attributes like a point
 in space to define what it is.  If the concept matches an existing
 schema attribute that existing key should be used.  If not, the user
-can and should define their own attribute that will automatically be saved.
-The only limitation is that if the key is not defined in the wf schema
+can and should define their own attribute that will automatically be saved
+and defined by the schema.
+Note by default save methods are not dogmatic about enforcing
+a schema definition.   The main advantage of defining an attribute
+in the schema definition is automatic type enforcement is then
+automatic.
+If the key is not defined in the wf schema
 the automatic type conversions will not be feasible.  Similarly, NEVER EVER
 write a new attribute to an datum's Metadata if the key is already defined
-in the schema.  Doing so will guarantee downstream problems.
+in the schema.  Doing so will guarantee downstream problems.  For more
+on schema enforcement see the section titled :ref:`CRUD Operations in MsPASS<_CRUD_operations>`.
 
 Users must also realize that the sample data in Seismogram or TimeSeries objects
-can be constructed from :code:`wf` documents in one of two ways.  First, the sample data
-can be stored in the more conventional method of CSS3.0 based systems
-as external files.   In this case, we use the same construct as CSS3.0 where
-the correct information is defined by three attribures:  :code:`dir`, :code:`dfile`, and
-:code:`foff`.   Unlike CSS3.0 MsPASS currently requires external file data to be
-stored as native 64 bit floating point numbers.   We force that restriction
-for efficiency as the :code:`Seismogram.data` array and the :code:`TimeSeries.data`
-vector can then be read and written with fread and fwrite respectively from
-the raw buffers.  The alternative (second) method for storing sample data
-in MsPASS is through a mechanism called :code:`gridfs` in MongoDB.  When this
-method is used the waveform sample data are managed
-by file system like handles inside MongoDB.  That process is largely hidden
-from the user, but there are two important things to recognize about
-these two models for data storage:
-
-  #.  The :code:`gridfs` method is expected to be superior to file storage for
-      large clusters because it facilitates parallel io operations.  With
-      files two processes can collide trying access a common file, especially
-      with a writer.
-  #.  A limitation of gridfs is that the sample data are stored in the same
-      disk area where MongoDB stores it's other data.  This can be a
-      limitation for system configurations that do not contain a modern
-      large virtual file system or any system without a single disk
-      file system able to store the entire data set and any completed results.
+can be constructed from :code:`wf` documents in multiple ways.
+  #. The sample data
+     can be stored in the more conventional method of CSS3.0 based systems
+     as external files.   In this case, we use the same construct as CSS3.0 where
+     the correct information is defined by three attribures:  :code:`dir`, :code:`dfile`, and
+     :code:`foff`.   The default behavior is to save data as
+     as native 64 bit floating point numbers.   The is the most efficient way
+     write the sample data as the :code:`Seismogram.data` array and the :code:`TimeSeries.data`
+     vector can then be read and written with the C functions fread and fwrite respectively from
+     the raw buffers.  The readers also support a `format` option.
+     We use obspy's readers and writers when a format is defined.   All
+     formats supported by obspy are supported seamlessly.
+  #. A special case for ensembles is to write all the data for the ensembles
+     into a single file.   Similarly, the ensemble reader scans the
+     values of `dir` and `dfile` and reads the data in file order to
+     reduce the number of file open/close delays.   Using that approach for
+     ensembles is known to dramatically improve I/O performance.
+  #. The sample data for MsPASS data objects can also be saved
+     through a mechanism called :code:`gridfs` in MongoDB.  When this
+     method is used the waveform sample data are managed
+     by file system like handles inside MongoDB.  This method is the
+     default for all writers.  Readers determine how they should
+     get the data from the wf collection document used to drive
+     the readers.  We discuss strengths and weaknesses of this approach
+     relative to file I/O below.
+  #. MsPASS has limited support for reading from a network port via
+     a url defined in the wf document.   Most of that code is currently
+     incomplete and is expected to be fleshed out when Earthscope
+     finalizes plans for their upcoming cloud-based data management.
+  #. The :code:`gridfs` method is expected to be superior to file storage for
+     large clusters because it facilitates parallel io operations.  With
+     files two processes can collide trying access a common file, especially
+     with a writer.
+  #. A limitation of gridfs is that the sample data are stored in the same
+     disk area where MongoDB stores it's other data.  This can be a
+     limitation for system configurations that do not contain a modern
+     large virtual file system or any system without a single disk
+     file system able to store the entire data set and any completed results.
 
 gridfs storage
 :::::::::::::::
@@ -381,12 +426,30 @@ for you by maintaining an index in either of the wf collections to
 link to the gridfs collections.   Cross-referencing ids and special
 attributes are defined in the schema documentation.
 
+The biggest strength of using `gridfs` is simplicity.   That is the main
+reason it is currently the default.  A gridfs based write does not
+require any definitions for file management.   It does, however, have
+some serious drawbacks:
+
+ #. We have found that I/O performance of gridfs is slower than
+    most file-based reads and writes.
+ #. Large data sets can present problems as the storage is aggregated into
+    the same file system as database storage.
+ #. Deleting intermediate results at the end of a workflow can be
+    awkward.   Data edits are possible only through MongoDB, which can
+    be both slow and awkward.   In contrast, it is relatively easy to
+    write all intermediate saved data into files in a designated directory.
+    The large waveform data files are then easily, and quickly removed
+    with standard unix shell tools at the end of the job.  Cleaning out
+    wf collection documents for intermediate saves are also easy provided
+    you use appropriate data tags.
+
 File storage
 :::::::::::::
 
-The alternative storage model is external files.  We use the same
+The main alternative storage model is external files.  We use the same
 concepts to manage data in external files as CSS3.0.  Data in file
-storage is managed by four attributes:
+storage is managed by five attributes:
 
    #. :code:`dir` a directory path identifier in a file system.  We assume all
       users are familiar with this concept.
@@ -399,10 +462,18 @@ storage is managed by four attributes:
       values.
    #. :code:`nbytes` or :code:`npts` are attributes closely related to :code:`foff`.   They
       define the size of the block of data that needs to be read from the
-      position of :code:`foff`.
+      position of :code:`foff`.  :code:`nbytes` is used by the things like
+      the miniseed reader, while raw binary reads always utilize
+      :code:`npts` to drive calls to the C function fread.
+   #. :code:`format`, when set, defines a format different from native
+      binary floating point samples.   As noted earlier any format
+      attribute string matching a format supported by obspy should work.
+      (Caution:  the authors have only tested the miniseed reader.)
+      When the format attribute is not defined the data are assumed to
+      be native floating point samples.
 
-Both TimeSeries and Seismograms use a data array that is a contiguous
-memory block.  The default storage mode for external files is a raw
+Both TimeSeries and Seismograms internally use a data array that is a contiguous
+memory block.  As stated above, the default storage mode for external files is a raw
 binary memory image saved by writing the memory buffer to the external
 file (defined by :code:`dir` and :code:`dfile`) using the low level C fwrite function
 that is wrapped in the python standard by the :code:`write` method of
@@ -415,14 +486,22 @@ decades now has implied an 8 byte floating point number stored in the IEEE
 format.  (Note historically that was not true.   In the early days of
 computers there were major differences in binary representations of
 real numbers.   We make an assumption in MsPASS that the machines in the
-cluster used for processing have the same architecture and a doubles are
-idenitical on all machines.)  Similarly, a Seismogram stores data in a
+cluster used for processing have the same architecture and a double is
+identical on all machines.)  Similarly, a Seismogram stores data in a
 contiguous buffer of memory but the memory block is 3 x :code:`npts` doubles.
-The buffer is order in what numpy calls FORTRAN order meaning the matrix is
+The buffer is ordered in what numpy calls FORTRAN order meaning the matrix is
 stored with the row index fastest (also called column order).  In any case,
-key point is that for efficiency the data for a Seismogram is also
+key point is that for efficiency the data for a Seismogram is also normally
 read and written using low level binary :code:`read` and :code:`write` methods of the
-python file handle class.
+python file handle class.  Only if a format is defined is a more complex
+reader involked.   Be warned that all formats come at a cost and are always
+slower than raw fread/fwrite calls for the same array of data.
+
+Finally, we reiterate the point above about how we handle ensemble data.
+In general, I/O for ensembles can be significantly faster with file-based
+I/O than random readers at the atomic data object level.  The reason
+is that when fread and fwrite are used for the time to open and close
+the file is comparable if not larger than the read or write time.
 
 Summary
 :::::::::
@@ -451,9 +530,18 @@ To avoid fatal write errors we emphasize the following as a rule:
      you can create any range of downstream problems and could abort the
      final save of your results.
 
+The final point about the way MsPASS handles readers and writers is that
+we worked hard to abstract the process as much as possible.   A reader
+should just work without the user having to be concerned about what is
+going on under the hood.  Writing is not always automatic.  To extend the
+"under the hood" analogy, you can't drive a car without first starting
+the engine and you can't go until you put the car in gear.  In the same
+way writers usually need more information to get them moving.
+
 elog
 ~~~~~~
 
+The error log information is stored in a MongoDB collection called :code:`elog`.
 The elog collection holds log messages that should
 automatically be posted and saved in a MsPASS workflow.  The elog
 collection saves any entries in ErrorLogger objects that are
@@ -465,17 +553,23 @@ the entire job to run to completion even if the error made the data
 invalid.  More details about this idea can be found in the :ref:`Data
 Objects <data_object_design_concepts>` section.
 
-A special case is data killed during processing.   Any datum from a MsPASS
-processing module that was killed should contain an elog entry that the
-level :code:`Invalid`.   The sample data in killed Seismogram or TimeSeries data
-is not guaranteed to be valid, and may, in fact, be empty.   Hence, killed
-data have to be handled specially.   All elog entries from such data will
-be preserved in this collection.   In addition, the document for killed
+A special case is data killed during processing.  Any datum
+marked dead will have have no entry in any wf collection.
+The evidence it was killed will be found only in the elog collection.
+Any datum killed should contain leave a document in the elo collection
+with an severity level set to
+:code:`Invalid`.  If the error has any other entries they will also
+be saved in the same document.    In addition, the document for killed
 data will contain a dict container with the key "metadata".   That dict is
-an recasting of the Metadata of the datum that was killed.  It is neeed,
+a recasting of the Metadata of the datum that was killed.  The
+metadata "subdocument" is needed,
 in general, to sort out what specific datum to which the error was attached.
 The documents in elog for live data contain an :code:`ObjectId` that is a link back
-to the wf collection where that waveform was saved.
+to the wf collection where that waveform was saved.  For killed data
+the saved :code:`ObjectId` is the id of a datum from which the
+killed datum originated (If the workflow had a reduce operator there could
+be multiple parents.  In that situation the history collection is needed
+to sort out the full ancestory.)
 
 history
 ~~~~~~~
@@ -488,12 +582,10 @@ to produce results stored in the database.  The history collection stores this
 information.   Most users should never need to interact directly with this
 collection so we omit any details of the history collection contents from
 this manual.  Users should, however, understand the concepts described
-in - link to new document in this manual on ProcessingHistory concepts --
-
-TODO:  Leaving this section for now.  Needs to use the figure used in
-our AGU poster.  Main reason to punt for now is to needs to include a
-clear description of how the global and object level history interact.
-Global is under development at this writing.
+in :ref:`Data Object Design Concepts<data_object_design_concepts>`.
+A simple description of the content of this collection is that the
+history collection contains a dump of the :code:`multimap` container
+used in the C++ code base to define the processing history G-tree.
 
 
 Normalized collections
@@ -520,7 +612,8 @@ data center.  We expand on this below, but the following are useful
 summaries for Antelope and obspy users:
 
 * Antelope user's should think of the channel collection as nearly identical
-  to the CSS3.0 sitechan table with response data handled through obspy.
+  to a join of the  CSS3.0 site and sitechan tables with response data handled
+  completely differently through obspy.
 
 * Obspy users can think of both :code:`site` and :code:`sitechan` as a way to
   manage the same information obspy handles with their
@@ -536,9 +629,12 @@ they do not demand it.  We use the :code:`ObjectId` of documents in both
 collections as the primary cross-referencing key.  The :code:`ObjectId` keys are
 referenced in collections outside of :code:`site` and :code:`channel`
 (i.e. wf_TimeSeries and wf_Seismogram) with the keys :code:`site_id` and :code:`chan_id`
-respectively.
+respectively.  :code:`wf_miiseed`, on the other hand, is dogmatic about
+requiring SEED station code attributes.  The reason is that miniseed data has
+the concept of station codes hard wired into the format even though they
+are excess baggage in processing.
 
-Although those :code:`ObjectId` can be thought of as primary keys, we provide
+Although the :code:`ObjectId` can be thought of as primary keys, we provide
 some support for two alternative indexing methods.
 
  * *SEED net, sta, chan, loc keys*.  Any data obtained from FDSN
@@ -581,7 +677,10 @@ some support for two alternative indexing methods.
     in MongoDB can be used as an alternate index.  We note that
     geospatial queries can also be used on :code:`site` and :code:`channel` collections
     created with StationXML files too provided the user constructs the
-    index with (NEEDS A REFERERENCE HERE - We need a database method for this)
+    index with one of MongoDB's Geospatial query constructs.
+    There are numerous tutorials today on this topic.  The
+    MongoDB documentation can be found
+    `here<https://www.mongodb.com/docs/manual/geospatial-queries/>`__.
 
 A spatial query to link anything to a point in the :code:`site` or :code:`channel` collection has
 two complexities:  (1) all spatial queries require a uncertainty
@@ -609,7 +708,7 @@ defining another rule that user's need to recognize and abide by:
     The site and channel collections should only contain metadata relevant to
     the data set.   Used documents are not a problem but waste space.
     Missing metadata is a problem as it will always lead to dropped data.
-    Assembly of a working data set requires linking documents in :code:`site`
+    Assembly of a working data set usually requires linking documents in :code:`site`
     and/or :code:`channel` to wf_Seismogram documents and channel to wf_TimeSeries
     using keys :code:`site_id` and :code:`chan_id` respectively.
 
@@ -619,7 +718,7 @@ obtained from the docstrings for functions in :code:`mspasspy.db.database` and
 :code:`mspass.preprocessing.seed` and tutorials on raw data handling.
 
 As noted earlier :code:`site` is a near match in concept to the css3.0 table
-with the same name, but :code:`channel` is is more than its closes analog in
+with the same name, but :code:`channel` is is more than its closest analog in
 css3.0 called sitechan.   The key difference between :code:`channel` and sitechan
 is that :code:`channel` contains not just orientation information, but **may**
 contain all the metadata needed to define the response characteristics of the
@@ -627,7 +726,7 @@ channel to which it is linked.  We stress **may** because for a generic
 processing system response information must be optional.   Traditional reflection
 processing has, at best, only limited response information (e.g. the
 sensor corner frequency is an optional parameter in SEGY) and a large fraction of
-processing functions have not need for detailed response data.  In contrast,
+processing functions have no need for detailed response data.  In contrast,
 some common applications like moment tensor inversions and surface wave dispersion
 measurements demand detailed response metadata.   We address this problem
 by leaning heavily on the existing infrastructure for handling response data
@@ -635,14 +734,22 @@ in obspy.   That is, obspy defines a python class they call :code:`Inventory`.
 The :code:`Inventory` class is a complicated data structure that is best thought of,
 in fact, as a image of the data structure defined by an FDSN StationXML file.
 Embedded in that mess is the response data, but obspy has build a clean
-api to obtain the response information from the :code:`Inventory`.   In MsPASS
-we handle this problem by storing a pickle image of the :code:`Inventory` object
-related to that channel.   (TO DO:   our current implementation may not
-be correct on this point.  see discussion)
+API to obtain the response information from the :code:`Inventory`.   In MsPASS
+we handle this problem by storing a pickled image of the :code:`Inventory` object
+related to that channel accessible via the key :code:`serialized_inventory`.
 
 Finally, we emphasize that if your final processing workflow requires
-metadata in :code:`site` and/or :code:`channel` you must complete preprocessing to
-define linking ids in wf_Seismogram and/or wf_TimeSeries.  Any incomplete
+metadata in :code:`site` and/or :code:`channel` you should verify
+methods for matching in wf_Seismogram and/or wf_TimeSeries resolve.
+That means, you must either set the attributes `site_id` or
+`channel_id` in each document.
+If you are working with raw miniseed data indexed with documents in
+wf_miniseed, you must either set the values of :code:`channel_id`
+with the function :code:`normalize_mseed` or plan to use the inline
+normalization function called :code:`normalize` in combination with
+a preconstructed instance of :code:`MiniseedMatcher`.
+(see section titled :ref:`Normalization<normalization>`)
+Any incomplete
 entries will be dropped in final processing.  Conversely, if your workflow
 does not require any receiver related Metadata (rare), these collections
 do not need to be dealt with at all.
@@ -655,7 +762,7 @@ has two fundamental differences:  (1) the origin time of each source
 needs to be specified, and (2) multiple estimates are frequently
 available for the same source.
 
-The origin time issue is a more multifaceted problem that it might at
+The origin time issue is a more multifaceted problem than it might at
 first appear.  The first is that MongoDB, like ArcGIS, is map-centric
 and stock geospatial queries lack a depth attribute, let alone a time
 variable.   Hence, associating a waveform to a source position defined
@@ -677,21 +784,22 @@ address this problem in MsPASS through the concept of UTC versus
 Object section <data_object_design_concepts>` on BasicTimeSeries
 for more on this topic.
 
-A final point about the source table is the issue of multiple
-estimates of the same event.   The CSS3.0 has an elaborate mechanism
+A final point about the source collection is the issue of multiple
+estimates of the same event.   The CSS3.0 schema has an elaborate mechanism
 for dealing with this issue involving three closely related tables
 (relations):  event, origin, assoc, and arrival.   The approach we
 take in MsPASS is to treat that issue as somebody else's problem.
-Thus, for the same reason as above we state rule 3 which is very
-similar to rule 2:
+Thus, for the same reason as above we state rule 4 which is very
+similar to rule 3:
 
   Rule 4:
     The source collection should contain any useful source
     positions that define locations in space and time (attributes
     :code:`source_lat`, :code:`source_lon`, :code:`source_depth`, and :code:`source_time`).  Linking
     each document in a wf collection to the desired point in the source
-    collection is a preprocessing step to define a valid dataset.
-    The link should always be done with by inserting the :code:`ObjectId` of
+    collection is a preprocessing step to define a valid dataset
+    when required.
+    The link should normally be done by inserting the :code:`ObjectId` of
     the appropriate document in :code:`source` as in wf_Seismogram or
     wf_TimeSeries with the key :code:`source_id`.
 
@@ -700,32 +808,17 @@ normal behavior should be that there is a one-to-one mapping of a single
 :code:`source` document to a given wf document as defined by the :code:`source_id` key.
 Note MongoDB is flexible enough that it would be possible to support
 multiple event location estimates for each wf document but that is not
-a feature we have elected to support.  As noted other places we consider the
-catalog preparation problem a solved problem with multiple solutions.
+a feature we have elected to support.  As noted elsewhere, we consider the
+catalog preparation problem a solved problem with multiple solutions best
+done by those systems.
 
 A final point about :code:`source` is that we emphasize normalizing :code:`source`
 by defining :code:`source_id` values in wf collections should always be thought of
-as an (optional) preprocessing step.   If your workflow requires source
+as an (optional) preprocessing step.   On the other hand,
+if your workflow requires source
 information, you must complete the association of records in source to
 wf_Seismogram and/or wf_TimeSeries documents before your primary processing.
-Any entries not associated will be dropped.
-
-
-history_object and history_global
-:::::::::::::::::::::::::::::::::::::::::
-An important requirement to create a reproducible result from
-data is a mechanism to create a full history that can be used to recreate
-a workflow.  The same mechanism provides a way for you to know the sequence
-of processing algorithms that have been applied with what tunable parameters
-to produce results stored in the database.  The history collections stores this
-information.   Most users should never need to interact directly with this
-collection so we defer any details of how these are stored and managed to
-the reference manual.   The assumption you as a reader need to understand is
-that the default behavior of all MsPASS modules is to not preserve history.
-The idea is that when you need to retain that information you would rerun
-the workflow with history saving enabled for each processing step.
-Examples where this might be needed are preparing a final dataset to link to
-a publication or as an archive you expect to need to work with at a later date.
+Any entries not associated will be dropped if required.
 
 Summary
 -------
@@ -735,14 +828,14 @@ database in MsPASS does for you and what you must keep in mind to use
 is correctly.
 
 *  All parallel workflows should normally be driven by data assembled into
-   the wf_TimeSeries and/or wf_Seismogram collections.  Subsets (or all) of
+   the wf_miniseed, wf_TimeSeries, and/or wf_Seismogram collections.  Subsets (or all) of
    one of these collections define a parallel dataset that is the
    required input for any parallel job.
-*  The Database api simplifies the processing of reading and writing.
+*  The Database API simplifies reading and writing.
    We abstract the always complex process of reading and writing to :code:`save` and
    :code:`read` methods of the python class Database.  See the reference manual
    for details.
-*  Assembling the wf_Seismogram and/or wf_TimeSeries collection should
+*  Assembling one or more of the wf collections should
    always be viewed as a preprocessing step to build a clean dataset.  That
    model is essential for efficiency because all the complexity of real
    data problems cannot be anticipated and are best treated as a special
@@ -751,170 +844,5 @@ is correctly.
    is also always treated as a preprocessing problem.   Linking of these
    normalized collections to wf_Seismogram and/or wf_TimeSeries is
    required if the associated metadata is needed in your workflow.
-
-Preprocessing/Import collections
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Overview
-:::::::::
-
-We use the MongoDB database to manage waveform data import.  Waveform data
-import should always be understood as another component of preprocessing
-needed to assemble a working data set.   The reason we are dogmatic on that
-principle is that our TimeSeries and Seismogram containers were designed to
-be totally generic, while every single data format we know of has
-implicit assumptions about the nature of the data.   For example,
-has intrinsic assumptions the data are multichannel, seismic-reflection data and
-SEED was designed for archive of permanent observatory data.
-We discuss import methods currently available in MsPASS in separate
-sections below.
-
-SEED and MiniSEED
-:::::::::::::::::::
-
-The Standard for the Exchange of Earthquake Data (SEED) format is the primary
-format used by global data centers in seismology.   It has also become
-a common format for raw data handling from portable earthquake recording
-instruments supplied by the IRIS-PASSCAL program.   The most complete
-support for data import in MsPASS is based on SEED and/or so called
-miniSEED (miniseed) data.  For those unfamiliar with these terms miniseed
-is a subset of SEED data that contains only the minimal metadata required
-to define a set of data contained in package of data.  (We say "package"
-instead of "file" because miniseed can and has been used as a network
-transfer format because the data bundled into a serial string of packets.
-For more details about SEED and miniseed can be found
-`here <https://ds.iris.edu/ds/nodes/dmc/data/formats/seed/>`__ ).
-
-Python modules to handle the import of SEED data are packages found
-under :code:`mspasspy.preprocessing.seed`.   Our current implementation depends
-upon obspy's miniseed reader that imposes some restrictions.
-A fundamental scalability problem in the current version of obspy's reader
-is it makes what we might call the SAC model of data management.  That is,
-SAC and obspy both work best if the data are fragmented loaded with one
-file per Trace object (equivalent in concept to mspasspy.ccore.TimeSeries).
-That model produces a serious scalability problem on large data sets, especially if
-they are stored on large virtual disk arrays common today in HPC centers.
-The authors have seen example where simply deleting a data set with the
-order of a million files can take days to complete on such a system.
-Thus that model is completely at odd with the goal of building a high performance
-parallel system.
-
-To address this problem our current implementation to import miniseed data
-uses a compromise solution where we concatenate logically related miniseed
-files into larger files of data.  Type examples are: (1) "event gathers", which
-means a file of all data related to particular earthquake (event) and (2)
-"receiver gathers" where data are grouped by station.   As a somewhat extreme
-example, a year of USArray data for teleseismic earthquakes is known to
-define of the order of 10^7 files per year if stored using the obspy/sac model.
-(The entire teleseismic data set approaches 10^9 waveform segments.)
-When merged into event files the number reduces to the order of 1000 per year.
-That is known to eliminate the file name management problem at the cost of
-needing to work with potentially very large files that can create memory problems.
-That problem is particularly acute at the present because of a fundamental
-problem with obspy's reader miniseed reader; when given a large file their
-reader will try to eat the whole file and convert the data to a potentially
-large list of Trace objects bundled into a Stream container.  We plan to
-eventually implement a foff index as used in CSS3.0's wfdisc table, but
-that idea is not currently supported.  (For those familiar with raw data
-handling :code:`foff` in css3.0 implementation is used as a argument to the low
-level, C function fseek to position the read pointer to a particular
-position in a file containing multiple waveform segments.  A more efficent
-reader would also need to store the number of bytes to load to know the
-range of data defining data to be uncoded to produce a single Trace/TimeSeries
-object.)
-
-Our current code in the module :code:`mspasspy.preprocessing.seed.ensembles`
-imports data through a two step procedure:
-
-1.  Run the following function on each seed file that is a bundle of
-    multiple channels of data:
-
-    .. code-block:: python
-
-       def dbsave_seed_ensemble_file(db,file,gather_type="event",keys=None):
-
-    where :code:`file` is assumed to be a miniseed file and :code:`db` is a :code:`Database`
-    object, which is our database handle class.  The :code:`dbsave_seed_ensemble_file`
-    function builds only an index of the given file and writes the index to
-    a special collection called :code:`wf_miniseed`.
-
-2.  The same data can be loaded into memory as a MsPASS :code:`TimeSeriesEnsemble`
-    object using the related function with this signature:
-
-    .. code-block:: python
-
-       def load_one_ensemble(doc,
-                  create_history=False,
-                  jobname='Default job',
-                  jobid='99999',
-                  algid='99999',
-                  ensemble_mdkeys=[],
-		              apply_calib=False,
-                  verbose=False):
-
-    where :code:`doc` is a document retrieved from the wf_miniseed collection.
-    For example, the following shows how an entire dataset of miniseed files indexed
-    previously with dbsave_seed_ensemble_file can be read sequentially:
-
-    .. code-block:: python
-
-       from mspasspy.db.client import Client
-       from mspasspy.db.database import Database
-       from mspasspy.preprocessing.seed.ensembles import load_one_ensemble
-
-
-       dbname="mydatabase"   # set to the name of your MongoDB database
-       client=Client()
-       db=Database(client,dbname)
-       dbwf=db.wf_miniseed
-       curs=dbwf.find()   # insert a query dict in the find function to limit number
-       for doc in curs:
-         ensemble=load_one_ensemble(doc)
-         # Save these as TimeSeries objects
-         for d in ensemble.member:
-           db.save_data(d)
-
-The above would produce a bare bones set of documents in the wf_TimeSeries
-collection.   For some processing like noise correlation studies that may
-be enough.   For any event-based processing the data will need to be
-linked to the :code:`channel` and :code:`source` collections.   Current capability is
-limited to ensemble processing and is best understood by examining the
-sphynx generated documentation for the following functions:  *link_source_collection,
-load_hypocenter_data_by_id, load_hypoceter_data_by_time, load_site_data*, and
-:code:`load_channel_data`.   In addition, see our tutorial section for a detailed
-example of how to use these functions.
-
-
-
-Advanced Topics
----------------
-
-
-Customizing the schema
-~~~~~~~~~~~~~~~~~~~~~~
-
-THIS NEEDS TO BE WRITTEN
-
-Importing Data Formats other than miniSEED
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Obspy's generic file reader supports a long list of formats described
-`here <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html>`__.
-Any of these formats are readily imported into MsPASS, but would require
-writing a custom reader.  Our miniseed reader in :code:`mspasspy.preprocessing.seed`
-provides a model to do this.  One version of such a custom algorithm could
-be summarized in the following common steps:
-
-#.  Run the obspy read function on a file.  It will return a Stream container
-    with one or more Trace objects.
-#.  Run the mspass Stream2TimeSeriesEnsemble function found in
-    :code:`mspasspy.util.converter`.
-#.  Run the loop as above containing :code:`db.save(d)` on the output of
-    Stream2TimeSeriesEnsemble
-
-If you need to import a format not on that list, the problem is much harder.
-Our general recommendation is to replace the functionality of obspy's
-reader with a custom python read function designed to crack that particular
-format.  One could either convert the weird format data to an obspy Stream
-object so it was plug compatible in obspy or convert the data directly to
-TimeSeries or TimeSeriesEnemble objects with the mspass ccore api.
+   Linking has many complications and is discussed further in the section
+   titled :ref:`Normalization<normalization>`.
