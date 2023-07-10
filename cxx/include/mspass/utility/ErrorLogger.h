@@ -102,6 +102,8 @@ public:
   int log_verbose(const std::string alg, const std::string mess);
   std::list<LogData> get_error_log()const{return allmessages;};
   int size()const{return allmessages.size();};
+  /*!  Reset error log container to make it empty. */
+  void clear(){allmessages.clear();};
   ErrorLogger& operator=(const ErrorLogger& parent);
   /*! For this object + of += means add the log data from the rhs to
   the lhs.   lhs defines the job_id. */
