@@ -6,8 +6,6 @@ import io
 import copy
 import pathlib
 import pickle
-import struct
-import urllib.request
 from array import array
 import pandas as pd
 
@@ -15,18 +13,12 @@ import gridfs
 import pymongo
 import pymongo.errors
 import numpy as np
-import obspy
-from obspy.clients.fdsn import Client
-from obspy import Inventory
-from obspy import UTCDateTime
-import boto3, botocore
-import json
-import base64
-import uuid
 
-from mspasspy.db.database import Database
-from mspasspy.ccore.io import _mseed_file_indexer, _fwrite_to_file, _fread_from_file
-from mspasspy.util.converter import Trace2TimeSeries, Stream2Seismogram
+
+from mspasspy.db.database import Database,md2doc
+from mspasspy.util.Undertaker import Undertaker
+from mspasspy.db.client import DBClient
+
 
 from mspasspy.ccore.seismic import (
     TimeSeries,
@@ -688,7 +680,24 @@ def _read_data_from_gridfs(gfsh, mspass_object, gridfs_id):
     else:
         raise TypeError("only TimeSeries and Seismogram are supported")
 
-
+def partioned_save_wfdoc(docs,
+                         collection="wf_TimeSeries",
+                         db=None,
+                         dbname=None,
+        ):
+    """
+    Prototype function for use with map_partitions in write_distributed_data. 
+    Uses a bulk insert driven by list created by using map_partitions.
+    That is what "docs" is when called from map_partitions.
+    """
+    if db is None:
+        dbclient = DBClient()
+        # needs to throw an exception of both db and dbname are none
+        db = dbclient.get_database(dbname)
+    dbcol = db[collection]
+    wfids = dbcol.insert_many(docs).inserted_id()
+    return wfids
+        
 def write_distributed_data(
     data,
     db,
@@ -700,6 +709,8 @@ def write_distributed_data(
     exclude_keys=None,
     collection=None,
     data_tag=None,
+    post_elog=True,
+    post_history=False,
     alg_name="write_distributed_data",
     alg_id="0",
 ):
@@ -779,29 +790,33 @@ def write_distributed_data(
         User's manual for guidance on how the use of this option.
     :type data_tag: :class:`str`
     """
-    # 1. write to file system, distributed, get the metadata
-    metadata_container = data.map(
-        lambda cur: write_files(
-            cur, file_format, storage_mode, overwrite, gfsh=gridfs.GridFS(db)
-        )
-    )
-    # 2. write to database, sequential
-    # convert the parallel container to list
+    #TODO  Needs to handle schema and collection based on type of input data
+    # or via args
+    stedronsky=Undertaker(db)
+    # Note although this is a database method it will not refernce 
+    # db at all if writing to files
+    # also note storage_mode allows specifying a parallel file system
+    # dir and dfile set None is assumed to be bombproof.  Current 
+    # implementation tries to extract value form metadata and if it 
+    # isn't defined there it will create something - see docstring 
+    data = data.map(db._save_sample_data,
+                    storage_mode=storage_mode,
+                    dir=None,
+                    dfile=None,
+                    format=format,
+                    overwrite=overwrite,
+                    )
+    data = data.map(stedronsky.mummify,post_elog,post_history)
+    #def mummify(self,mspass_object,post_elog=True,post_history=False):
+    data = data.map(md2doc,save_schema,exclude_keys,mode)
+    data = data.map_partition(partioned_save_wfdoc,db=db,collection=collection)
+
     if format == "spark":
-        md_list = metadata_container.collect()  # rdd -> list
+        data = data.collect()  # rdd -> list
     else:
-        md_list = metadata_container.compute()  # bag -> list
-    return write_to_db(
-        db,
-        md_list,
-        mode=mode,
-        storage_mode=storage_mode,
-        format=file_format,
-        overwrite=overwrite,
-        exclude_keys=exclude_keys,
-        collection=collection,
-        data_tag=data_tag,
-    )
+        data = data.compute()  # bag -> list
+    return data
+
 
 
 def write_to_db(
@@ -954,6 +969,8 @@ def write_to_db(
             else:
                 dir = os.path.abspath(dir)
             if dfile is None:
+                # note although this is a Database member it does not 
+                # reference MongoDB - it uses a uuid module function
                 dfile = db._get_dfile_uuid(
                     format
                 )  #   If dfile name is not given, or defined in mspass_object, a new uuid will be generated
