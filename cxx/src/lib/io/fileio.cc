@@ -2,6 +2,7 @@
 #include <vector>
 #include <stdio.h>
 #include <string>
+#include <sstream>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/keywords.h"
 #include "mspass/seismic/TimeSeries.h"
@@ -15,13 +16,14 @@ using namespace mspass::seismic;
 using mspass::utility::MsPASSError;
 using mspass::utility::ErrorSeverity;
 using namespace std;
-/* This is a file scope function to allow the overlaoded fwrite_to_file
+
+/*This is a file scope function to allow the overlaoded fwrite_to_file
 functions to share this common code to write a contiguous buffer of data.
 to a file.
 
-Note I considered adding an old school call to flock to assure this
+Note I considered adding an old school call to lockf to assure this
 function would be thread safe.   However, the man page for the posix
-function flockfile says that is no longer necessary and stdio is
+function lockffile says that is no longer necessary and stdio is
 now tread safe - fopen creates an intrinsic lock that is not released
 until fclose is called.  That is important for mspass as multiple threads
 writing to the same file can be expected to be common. */
@@ -49,7 +51,7 @@ long int fwrite_sample_data(const string dir, const string dfile, double *dptr, 
 		if( fwrite((void*)dptr,sizeof(double),nd,fp) != nd)
 		{
 			fclose(fp);
-			throw MsPASSError("fwrite_to_file:  fwrite error to file "+fname,ErrorSeverity::Invalid);
+			throw MsPASSError("fwrite_to_file:  fwrite error while writing to file "+fname,ErrorSeverity::Invalid);
 		}
 		fclose(fp);
 		return foff;
@@ -102,7 +104,11 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 			fname=dfile;
 		if((fp=fopen(fname.c_str(),"a")) == NULL)
 		  /* use the name of the overloaded parent instead of the actual function - intentional*/
-			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
+			throw MsPASSError("fwrite_to_file (TimeSeriesEnsemble):  Open failed on file "+fname,ErrorSeverity::Invalid);
+		/* This guarantees appending - not essential since we open in "a" mode but
+		clearer */
+		fseek(fp,0L,2);
+
 		for (int i = 0; i < d.member.size(); ++i) {
 			/* Silenetly skip dead data */
 			if(d.member[i].dead()) continue;
@@ -112,7 +118,10 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 			if (fwrite((void *)t.s.data(), sizeof(double), t.npts(), fp) != t.npts())
 			{
 				fclose(fp);
-				throw MsPASSError("fwrite_to_file:  fwrite error to file " + fname, ErrorSeverity::Invalid);
+				stringstream ss;
+				ss << "fwrite_to_file (TimeSeriesEnsemble):  fwrite error while writing ensemble member "
+				   << i << " to file="<<fname<<endl;
+				throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
 			}
 			/* We always set these 3 attributes in Metadata so they can be properly
 			saved to the database after a successful write.  Repetitious with Seismogram
@@ -120,9 +129,9 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 			t.put_string(SEISMICMD_dir, dir);
 			t.put_string(SEISMICMD_dfile, dfile);
 			t.put_long(SEISMICMD_foff, foff);
-		}	
+		}
 		fclose(fp);
-
+		
 		return foffs;
 	}catch(...){throw;};
 }
@@ -142,7 +151,11 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 			fname=dfile;
 		if((fp=fopen(fname.c_str(),"a")) == NULL)
 		  /* use the name of the overloaded parent instead of the actual function - intentional*/
-			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
+			throw MsPASSError("fwrite_to_file (SeismogramEnsemble):  Open failed on file "+fname,ErrorSeverity::Invalid);
+		/* This guarantees appending - not essential since we open in "a" mode but
+		clearer */
+		fseek(fp,0L,2);
+
 		for (int i = 0; i < d.member.size(); ++i) {
 			/* Silently skip dead data */
 			if(d.member[i].dead()) continue;
@@ -152,7 +165,10 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 			if (fwrite((void *)t.u.get_address(0,0), sizeof(double), 3*t.npts(), fp) != 3*t.npts())
 			{
 				fclose(fp);
-				throw MsPASSError("fwrite_to_file:  fwrite error to file " + fname, ErrorSeverity::Invalid);
+				stringstream ss;
+				ss << "fwrite_to_file (SeismogramEnsemble):  fwrite error while writing ensemble member "
+				   << i << " to file="<<fname<<endl;
+				throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
 			}
 			/* We always set these 3 attributes in Metadata so they can be properly
 			saved to the database after a successful write.  Repetitious with Seismogram
@@ -160,7 +176,7 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 			t.put_string(SEISMICMD_dir, dir);
 			t.put_string(SEISMICMD_dfile, dfile);
 			t.put_long(SEISMICMD_foff, foff);
-		}	
+		}
 		fclose(fp);
 
 		return foffs;
@@ -233,7 +249,7 @@ size_t fread_from_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismog
 		de.elog.log_error(ss.str());
 		return -1;
 	}
-	
+
 	for (int ind = 0; ind < n; ++ind) {
 		size_t ns_read;
 		int i = indexes[ind];
