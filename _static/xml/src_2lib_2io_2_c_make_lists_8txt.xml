@@ -3,13 +3,13 @@
   <compounddef id="src_2lib_2io_2_c_make_lists_8txt" kind="file" language="C++">
     <compoundname>CMakeLists.txt</compoundname>
       <sectiondef kind="func">
-      <memberdef kind="function" id="src_2lib_2io_2_c_make_lists_8txt_1ae6432ccdbf0f7c8c1ed47b5f3acba30b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="src_2lib_2io_2_c_make_lists_8txt_1a1b14900ead3f9e21fcfb5b80c12940c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>include_directories</definition>
-        <argsstring>(${MSEED_INCLUDE_DIR} ${pybind11_INCLUDE_DIR} ${PYTHON_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include) add_library(io OBJECT $</argsstring>
+        <argsstring>(${MSEED_INCLUDE_DIR} ${pybind11_INCLUDE_DIR} ${PYTHON_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include ${Boost_INCLUDE_DIRS}) add_library(io OBJECT $</argsstring>
         <name>include_directories</name>
         <param>
-          <declname>${MSEED_INCLUDE_DIR} ${pybind11_INCLUDE_DIR} ${PYTHON_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/</declname>
+          <declname>${MSEED_INCLUDE_DIR} ${pybind11_INCLUDE_DIR} ${PYTHON_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include ${Boost_INCLUDE_DIRS}</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/CMakeLists.txt" line="2" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/CMakeLists.txt" bodystart="2" bodyend="10"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/CMakeLists.txt" line="2" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/CMakeLists.txt" bodystart="2" bodyend="11"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -32,9 +32,10 @@
 <codeline lineno="5"><highlight class="normal"><sp/><sp/>${PYTHON_INCLUDE_DIRS}</highlight></codeline>
 <codeline lineno="6"><highlight class="normal"><sp/><sp/>${PROJECT_BINARY_DIR}/include</highlight></codeline>
 <codeline lineno="7"><highlight class="normal"><sp/><sp/>${PROJECT_SOURCE_DIR}/include</highlight></codeline>
-<codeline lineno="8"><highlight class="normal">)</highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal">add_library(io<sp/>OBJECT<sp/>${sources_io})</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/>${Boost_INCLUDE_DIRS}</highlight></codeline>
+<codeline lineno="9"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal">add_library(io<sp/>OBJECT<sp/>${sources_io})</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/CMakeLists.txt"/>
   </compounddef>

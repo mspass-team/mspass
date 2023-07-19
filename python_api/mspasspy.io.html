@@ -227,7 +227,7 @@ is same as Database.read_data().</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>md</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.Metadata</span></code></a>.) – the metadata for the object to be read.</p></li>
-<li><p><strong>gfsh</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/gridfs/index.html#gridfs.GridFS" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gridfs.GridFS</span></code></a>) – GridFS object</p></li>
+<li><p><strong>gfsh</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/gridfs/index.html#gridfs.GridFS" title="(in PyMongo v4.4.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gridfs.GridFS</span></code></a>) – GridFS object</p></li>
 <li><p><strong>aws_access_key_id</strong> – A part of the credentials to authenticate the user</p></li>
 <li><p><strong>aws_secret_access_key</strong> – A part of the credentials to authenticate the user</p></li>
 </ul>
@@ -286,7 +286,7 @@ with standard queries.  For this reason we make extensive use of “tags”
 for save and read operations to improve the efficiency and simplify
 read operations.   Default turns this off by setting the tag null (None).</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.4.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>define_as_raw</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – a boolean control whether we would like to set_as_origin when loading processing history</p></li>
 <li><p><strong>retrieve_history_record</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – a boolean control whether we would like to load processing history</p></li>
 </ul>
@@ -394,7 +394,7 @@ the confusion it would cause.   This is most useful for light, stable
 preprocessing with a set of map operators to regularize a data
 set before more extensive processing.  It can only be used when
 storage_mode is set to gridfs.</p></li>
-<li><p><strong>gfsh</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/gridfs/index.html#gridfs.GridFS" title="(in PyMongo v4.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gridfs.GridFS</span></code></a>) – GridFS object</p></li>
+<li><p><strong>gfsh</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/gridfs/index.html#gridfs.GridFS" title="(in PyMongo v4.4.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gridfs.GridFS</span></code></a>) – GridFS object</p></li>
 </ul>
 </dd>
 </dl>
