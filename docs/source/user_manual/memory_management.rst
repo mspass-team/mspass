@@ -12,7 +12,8 @@ are generic packages to implement the map-reduce paradigm of parallel processing
 As generic frameworks Dask and Spark are flexible but not as efficient and
 bombproof as a typical seismic reflection processing package.   One of the
 biggest weaknesses we have found with these packages is default memory management
-can lead to memory faults.   The biggest problem seems to be when the size of
+can lead to poor performance or, in the worst case, memory faults.
+The biggest problem seems to be when the size of
 the data objects considered atomic (Components of the generalized list called
 an RDD by Spark and a bag by Dask) are a significant fraction of any nodes
 memory.
@@ -49,13 +50,14 @@ can be visualized as a black box that takes one or more inputs and
 emits an output.  Since in a programming language that is the same
 thing conceptually as a "function call" map and reduce operators always
 have a function object as one of the arguments.   A "map" operator
-has one main input and one main output (arguments to the function
-are auxliary data).  Reduce operators have many inputs of a common
+has one main input (arguments to the function
+are auxliary data) and a single output (the function return).
+Reduce operators have many inputs of a common
 data type and one output.   Note, however, the restriction that
 they are always considered two at a time. For most MsPASS operators the inputs and
 outputs are seismic data objects.  The only common exception is constructs
-used to provide inputs to readers such as a MongoDB cursor object
-to drive the database read method.
+used to provide inputs to readers such as when `read_distributed_data`
+is used to load ensembles.
 
 Dask and spark both abstract the job they are asked to handle
 as a tree structure called a "Directed Acyclic Graph" (DAG).
@@ -63,7 +65,7 @@ The nodes of the tree are individual "tasks".  It has been our experience
 that most workflows end up being only a sequence of map operators.
 In that case, the DAG reduces to a forest of saplings (sticks with no
 branches) with the first task being a read operation and the last being
-a write operation.
+a write (save) operation.
 
 To clarify that abstract idea consider a concrete example.   The
 code box below is a dask implementation of a simple job with
@@ -96,10 +98,11 @@ figure showing workflow DAG
 
 Now remember that a bag (RDD in spark) can be conceptualized as a
 container that is a list of data objects that doesn't necessarily fit
-into the memory.   Both dask and spark divide the container into
+into memory of the entire set of nodes being used, let alone
+a single node.   Both dask and spark divide the container into
 `partitions` illustrated in the figure.   The partition size can be
 as small as one data object or some larger integer less than or equal to the
-number of data components.   Think of a partiton as the size of a bite
+number of data components.   Think of a partition as the size of a bite
 the system uses to eat the elephant (the whole data set).   That basic
 understanding should help you immediately realize that the partition
 size relative to system memory is a critical tuning component to optimize
@@ -107,17 +110,17 @@ performance and make a workflow feasible.   Setting the number of partitions
 too large can overwhelm the scheduler requiring it to handle a potentially
 massive DAG.  The reasons, as you can see in the figure, is that the DAG
 size for a pure map workflow like this scales by the number of
-partitions (`Npartitions` in the python code).   The effort required to
+partitions (`Npartitions` in the python code above).   The effort required to
 do the bookeeping for a million partitions differs dramatically from
 that required to do a few hundred.
 On the other hand, because the memory
 use for the processing scales with the memory required to load each partition
 small numbers of partitions used with a huge dataset can, at best,
 degrade performance and at worse crash the workflow from a memory fault.
-Using our cutsy eating an elephant, the issue can be stated this way.
+Using our cutsy eating an elephant analogy, the issue can be stated this way.
 If you eat an elephant one atom at a time and then try to
 reassemble the elephant the problem is overwhelming.  On the other hand, if
-you cut the elephant up into chunks that are too bit to handle, you can't
+you cut the elephant up into chunks that are too big to handle, you can't
 do the job at all.   The right size is something you can pick up and chew.
 
 The next concept to understand is how the scheduler
@@ -131,8 +134,8 @@ in this example is this.  The data for the partition are loaded
 by each worker, which in this example means each worker issues a series of
 interactions with MongoDB to construct the input seismic data objects.
 Once that data is loaded in memory, the series of processing steps are
-applied sequentially by the worker.   On the final step after the data
-are saved, the result returned by last step, which in this case is
+applied sequentially by the worker.   On the final step, the result returned
+by the final map call, which in this case is
 the output of the `save_data` method of `Database`, is returned to
 the scheduler node running the master python script (the one shown above
 for this example).
@@ -150,14 +153,23 @@ that are worth mentioning:
    can be optimized easily by running each datum through the same
    worker to avoid serialization.
 -  The scheduler abstracts the concept of what a `worker` is.   In MsPASS
-   workers are run in a containerized environment and the cluster configuration
+   jobs are run in a containerized environment and the cluster configuration
    defines how many workers are run for each physical node assigned to a job.
+   A potential confusion to point out is that we refer to containers running on a compute
+   node as part of a virtual cluster (see :ref:`parallel_processing` section)
+   as a "worker node".   To dask and spark a "worker" is a process/thread
+   the scheduler can send work to.   That means a single "worker node"
+   will normally be running multiple dask/spark "workers".
    There are complexities in how each "worker" interacts with thread pools
-   that the dask or spark can be set up to launch.   This is an unresolved
-   topic that authors have not fully resolved at the time this section of this
-   manual was written.  It matters because optimal performance can be achieved
+   and/or spawned processes
+   that the dask or spark can be set up to launch.   This is a
+   topic that authors have not fully resolved at the time this section
+   was written.  It matters because optimal performance can be achieved
    by defining sufficient worker threads to do computing as fast as possible,
    but defining too many workers can create unintentional memory bloat issues.
+   The default is clear.  For both dask and spark each worker container
+   (running in a node by itself) will use a thread pool with the number of
+   worker threads equal to the number of cores on that node.
 -  Both dask and spark have tunable features for memory management and the
    way scheduling is handled.   In dask they are optional arguments to the
    constructor for the dask client object.   For spark it is defined in
@@ -179,7 +191,7 @@ a memory cache and virtual memory.   Schedulers like dask and spark are fundamen
 designed to provide functionality in a distributed memory cluster of
 computers that define all modern HPC and cloud systems.  Keep in
 mind that in such systems there are two very different definitions of
-system memory:  (1) memory available to a each worker node, and (2) the
+system memory:  (1) memory available to each worker node, and (2) the
 aggregate memory pool of all worker nodes assigned to a job.   Dask and spark
 abstract the cluster and attempt to run a workflow within the physical
 limits of both node and total memory pools.  If they are asked to do
@@ -191,7 +203,7 @@ in MsPASS is a work in progress, but is a possibility all users should be
 aware of when working on huge data sets.  We think the crash problems have been eliminated
 by fixing an issue with earlier version of the C++ code that was
 not properly set up to tell dask, at least, how much memory was being
-consumed.   All of the memory management depends on data objects being
+consumed.  All memory management depends on data objects being
 able to properly report their size and have mechanisms for dask or
 spark to clear memory stored in the data objects when no longer needed.
 If either are not working properly, catastrophic failure is guaranteed
@@ -265,8 +277,8 @@ to get this setting right on all the C++ data objects, but be warned
 residual problems may exist.   If you experience memory bloat problems
 please report this to us we will try to fix the issue as quickly as possible.
 
-Bag Partitions and Pure Map Workflows
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bag/RDD Partitions and Pure Map Workflows
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 It has been our experience that most seismic data processing
 workflows can be reduced to a series of map only operators.
 The example above is a case in point.   For this class of workflow
@@ -275,7 +287,7 @@ the number of partitions defined for the bag/RDD.  In this section
 we summarize what we know about memory use predictions for this
 important subset of possible workflows.
 
-We need to first define some symbols we need to use for formulas we
+We need to first define some symbols we use for formulas we
 develop below:
 
 -  Let :math:`N` denote the number of data objects loaded into the
@@ -295,7 +307,7 @@ develop below:
    object.   However, for most seismic data the size of this "header" is
    small compared to the sample data.  A fair estimate can be obtained
    from the formula:
-   :math:`N_{header} = N_k N_{ks} + 8 ( N_{float} + N_{int} + N_{bool} ) + \bar{s} N_{string} + N_{other}`
+   :math:`S_{header} = N_k N_{ks} + 8 ( N_{float} + N_{int} + N_{bool} ) + \bar{s} N_{string} + N_{other}`
    where :math:`N_k` is the number of keys, :math:`N_{ks}` is an estimate of the
    average (string) key size, :math:`N_{float}, N_{int}` and :math:`N_{bool}`
    are the number of decimal, integer, and boolean attributes respectively.
@@ -303,7 +315,7 @@ develop below:
    (in bytes) of string values.  Finally, :math:`N_{other}` is an estimate of the
    size of other data types that might be stored in each objects Metadata
    container (e.g. serialized obspy response object).
--  Let :math:`N_{worker}` denote the available memory (in bytes) for processing in
+-  Let :math:`S_{worker}` denote the available memory (in bytes) for processing in
    each worker container.   Note that size is always significantly less than
    the total memory size of a single node.   If one worker is allocated
    to each node, the available work space is reduced by some fraction
@@ -316,7 +328,7 @@ develop below:
    `Dask<https://distributed.dask.org/en/stable/memory.html>`__.
    Web searches will also yield many additional documents
    that might be helpful.  With dask, at least, you can also establish the
-   size of :math:`N_{worker}` with the graphical display of
+   size of :math:`S_{worker}` with the graphical display of
    worker memory in the
    `dask dashboard diagnostics<https://docs.dask.org/en/stable/dashboard.html>`__.
 -  Let :math:`N_{partitions}` define the number of partitions defined for
@@ -331,13 +343,13 @@ is:
 
 .. math::
 
-  N_{ts} = 8 N_s + N_{header}
+  S_{ts} = 8 N_s + S_{header}
 
 and for Seismogram objects
 
 .. math::
 
-  N_{seis} = 24 N_s + N_{header}
+  S_{seis} = 24 N_s + S_{header}
 
 For pure map operator jobs we have found dask, at least, always reduces the
 workflow to a pipeline that moves data as illustrated in the figure below.
@@ -360,17 +372,21 @@ to define the following nondimensional number:
 
 .. math::
 
-  K_{map} = \frac{N_{worker} N_{partitions}}{N_{theads} N N_d}
+  K_{map} = \frac{\frac{S_{worker}}{N_{threads}}}{\frac{N S_d}{N_{partitions}}}
+  = \frac{S_{worker} N_{partitions}}{N_{theads} N S_d}
 
-where :math:`N_d` denotes the data object size for each component.
-In MsPASS :math:`N_d` is :math:`N_ts` for TimeSeries data and
-:math:`N_seis` for Seismogram data.
+where :math:`S_d` denotes the data object size for each component.
+In MsPASS :math:`S_d` is :math:`S_{ts}` for TimeSeries data and
+:math:`S_{seis}` for Seismogram data.  In words, :math:`K_{map}`
+is the ratio of memory available per process to the chunk size
+implicit in the data partitioning.
+
 The same formula can be applied to ensembles, but the computation of
-:math:`N_d` requires a different formula given in the section below
+:math:`S_d` requires a different formula given in the section below
 on ensembles.  :math:`K_c` is best thought of as a nondimensional
 number that characterizes the memory requirements for a pure map,
 workflow implemented by a pipeline with :math:`N_{threads}`
-working on blocks of data with size defined by :math:`N_d N_{partitions}`.
+working on blocks of data with size defined by :math:`S_d N_{partitions}`.
 If the ratio is large
 spilling is unlikely.   When the ratio is less than one spilling is
 guaranteed to be an issue.  In the worst case, a job may fail completely with a memory
@@ -463,9 +479,10 @@ the above:
 -  Our example above shows a best practice that would be normal use for
    any stack algorithm.  That is, the final operator is a call to the
    `save_data` method of the database handle (`db` symbol in this example).
-   The default behavior of `save_data` is to return only a small number of
-   attributes.   As a result, on the last line when the `compute` method is
-   called on the bag dask initiates the calculations and arranges to have
+   The default behavior of `save_data` is to return only the ObjectId
+   of the inserted waveform document.
+   As a result, on the last line when the `compute` method is
+   called, dask initiates the calculations and arranges to have
    the output of `save_data` returned to the scheduler node.   That approach
    is useful to reduce memory use in the scheduler node and data traffic
    as calling the output of the `compute` method is the content of the
@@ -480,7 +497,7 @@ the above:
    `ator_by_Ptime` and `WindowData` functions and the `stack` operator.
    With a large number of sources a significant fraction of the `WindowData`
    outputs may need to be moved to a different node running `stack`.
--  The related issue to that immediately above with a `foldby` operation
+-  The related issue with a `foldby` operation to that immediately above
    is the memory requirements.   The intermediate step, in this workflow,
    of creating the bag of `stack` outputs should, ideally, fit in memory
    to reduce the chances of significant "spilling" by workers assigned the
@@ -503,14 +520,14 @@ A `Seismogram`, by definition, is a bundle created by grouping a set of
 three related component `TimeSeries` object.  The MsPASS `bundle` function,
 in fact, requires an input of a `TimeSeriesEnsemble`.  A workflow to do that
 process would be very similar to the example above using `stack`, but the
-`stack` function would be replaced a specialized function that would
+`stack` function would need to be replaced by a specialized function that would
 assemble a `TimeSeriesEnsemble` from the outputs of the `WindowData` function.
 To do this process one could follow that function by a map operator
 to run `bundle`.   We have tried that, but found it is a really bad idea.
 Unless the entire data set is small enough to fit two copies of the data in
 memory that job can run for very long times from massive spilling or abort
-on a memory fault.   We recommend an ensemble approach to run bundle
-as described in the next section.
+on a memory fault.   We recommend an ensemble approach utilizing
+the database to run bundle as described in the next section.
 
 Utilizing Ensembles Effectively
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -528,13 +545,13 @@ nominal data object size:
 
 .. math::
 
-  N_d = \bar{N}_{member} \bar {S}_d + S_{em}
+  S_d = \bar{N}_{member} \bar {S}_d + S_{em}
 
 where :math:`\bar{N}_{member}` is the average number of ensemble
 members, :math:`\bar {S}_d` is the average member size, and
 :math:`S_{em}` is the nominal size of each ensemble Metadata container
 (normally a small factor anyway).   Note :math:`S_d` is the value
-:math:`N_d` defined above for `TimeSeries` or `Seismogram` objects for
+:math:`S_d` defined above for `TimeSeries` or `Seismogram` objects for
 `TimeSeriesEnsemble` and `SeismogramEnsemble` objects respectively.
 An ensemble-based workflow that terminates in a stacking operation
 that reduces an ensemble to an atomic data object will have less
@@ -553,34 +570,42 @@ data logically organized as by source:
 .. code-block:: python
 
   #imports would normally be here - omitted for brevity
-  def query_by_source_id(id,dbcol):
+  def make_source_id_queries(db):
     """
-    Queries database collection (dbcol) for data containing source_id defined by id.
-    Return a MongoDB cursor of the result.
+    Demonstrates how to generate a list of queries to use as
+    input for read_distributed_data to build a bag of ensembles.
     """
-    query = {"source_id": id}
-    return dbcol.find(query)
-
+    srcidlist = db.wf_miniseed.distinct("source_id")
+    querylist = list()
+    for id in srcidlist:
+      query = {"source_id" : id}
+      querylist.append(query)
+    return querylist
 
   # Initialization code for database handle (db) would normally be here
   matcher = MiniseedMatcher(db)
-  srcidlist = db.wf_miniseed.distinct("source_id")
-  mybag = dask.bag.from_sequence(srcidlist,partitions_size=len(srcidlist))
-  mybag = mybag.map(query_by_source_id,db)
-  mybag = mybag.map(db.read_ensemble_data,collection="wf_miniseed")
-  mybag = mybag.map(detrend)  # not required but a prudent choice
+  querylist = make_source_id_queries(db)  # defined above
+  number_partitions = len(querylist)
+  mybag = read_distributed_data(querylist,
+              db,
+              collection="wf_miniseed",
+              npartitions=number_partitions,
+              )
+  mybag = mybag.map(detrend)  # not required but more efficiently done at this stage
   mybag = mybag.map(normalize,matcher)  # needed to define orientation attributes
   mybag = mybag.map(bundle_seed_data)
-  mybag = mybag.map(db.save_ensemble_data)
+  mybag = mybag.map(db.save_data)
   mybag.compute()
+
 
 This algorithm uses only map operators but can be very memory intensive if
 the ensembles are large.  The reason is that the function `bundle_seed_data`
 by necessity has to have two copies of the data in memory; it works through
 the `TimeSeries` and assembles the appropriate group of three such
 objects into `Seismogram` objects.   The example shows the simplest approach
-to reduce memory use.  We create the dask bag with the optional parameter
-`partition_size` set so each enemble is treated as a single partition.
+to reduce memory use.  We create the dask bag with the `read_distributed_data`
+function.  We pass it the optional parameter
+`npartitions` set so each enemble is treated as a single partition.
 If the ensemble size is large (:math:`K_{map}<1`) three approaches can be considered
 to improve performance.
 
@@ -602,12 +627,13 @@ to improve performance.
     last run stopped.   For example, the authors ran a benchmark on
     a desktop system with
     an extended USArray dataset with all lower 48 station broadband stations
-    in 2013.  A job to do the process above alone would have required several
-    weeks for one year of data.   That is a feasible, but awkward calculation
+    in 2013.  A job to do the process above alone would have required of the
+    order of weeks
+    for one year of data.   That is a feasible, but awkward calculation
     by any definition.
 
 There is one final type of ensemble processing worth noting.
-There are many examples where a logical organization is
+There are many examples where a logical organization is to
 read data as atomic data objects, apply some standard tasks like
 windowing and filtering, and then group the data and assemble them into
 ensembles for subsequent processing that requires the data to be grouped
@@ -625,7 +651,8 @@ Users should always keep in mind that the ultimate, scalable solution for
 memory management is the MongoDB database.   If an algorithm applied to
 a dataset is memory intensive one question to consider is if there is a
 solution using MongoDB?  The example immediately above is an example;
-running :code:`BundleSeedGroup`.   With the right incantation sent to
+running the lower-level :code:`BundleSeedGroup` could, in principle, be
+used to break the problem into smaller chunks.   With the right incantation sent to
 MongoDB that algorithm is likely a good alternative way to create
 `Seismogram` objects from single station groups of `TimeSeries` objects.
 

@@ -3,6 +3,8 @@
 Database Concepts
 ========================
 
+NEEDS NEW SECTION ON VERIFY AND CLEAN
+
 NonSQL Database
 ------------------------
 
@@ -55,10 +57,10 @@ Overview
   a relational database.  In a relational database an attribute has one
   keyword used to define the content that is visualized as a table with
   a header line defining the attribute name.  A MongoDB document, in contrast,
-  effectively has the name tag with each entry as a MongoDB document is made
+  effectively has the name tag with each entry.  That is, a MongoDB document is made
   up of a set of name-value pairs.  For readers already familiar with python
   the name-value pairs map exactly into the concept of a python dict.  The
-  python API (pymongo), in fact, retrieves documents into a data structure
+  python API (pymongo), in fact, retrieves documents into
   a python dict.  One critical point about that
   distinction is that a relational database has to define a mechanism to
   flag a particular cell in a table as null.   In a MongoDB document a null
@@ -115,10 +117,11 @@ following design goals:
    Furthermore, because we utilized obspy's web service tools the
    python objects obspy defines for storing source and receiver metadata
    are mostly echoed in the schema.
-#. *Extensible.* A DBMS cannot be too rigid in a research environnment,
-   or it will create barriers to progress.  This is especially important to MsPASS as our
-   objective is to produce a system for seismic research, not a
-   production system for repetitive processing of the similar data.
+#. *Extensible.* We know from previous experience that a relational DBMS
+   tends to be too rigid in a research environnment,
+   and creates barriers to progress.  A primary goal of MsPASS was to
+   produce a framework flexible enough to support the rich variety of
+   processing needs in seismolog.
    Seismic reflection processing and seismic network catalog
    preparation are two examples of repetitive processing in
    seismology.  In both areas traditional relational database management
@@ -221,7 +224,7 @@ are similar to the CSS3.0 site, sitechan, and origin tables respectively.
 
 A key feature of normalized data is that we need a fast index to link the
 normalized data to our waveform data.  In all cases we use the ObjectId of
-the normalized collection as the index.   As noted above all documents in
+the normalized collection as the standard index.   As noted above all documents in
 MongoDB automatically are assigned an ObjectId accessible with key
 :code:`_id`.  For all normalized Metadata we use a convention wherein we
 store the ObjectId of a related document in another collection using
@@ -236,7 +239,7 @@ in the site collection) of the related document in the :code:`site` collection.
 The major motivation for using the normalized data model for handling
 source and receiver metadata is the data involved have two important
 properties.   First, since MsPASS was designed as a system for efficiently
-handling an assembled data set, the data these collections can be treated
+handling an assembled data set, the data these collections hold can be treated
 as static (immutable) within a workflow.   Waveform data readers must thus do
 what is MongoDB's version of a database join between the waveform collection
 and one or more of the normalizing collections.   Second, in every case
@@ -276,6 +279,8 @@ Although at this writing the functionality is only planned, an
 essential tool is to run a verification tool to validate data before running
 a large job.  For the time being user's are encouraged to implement a
 validation tool customized to known data issues for their data set.
+In particular, users should make use of the `verify` and `clean` methods
+that can solve most common metadata problems.
 
 With that background, there are two core collections used to manage waveform data.
 They are called :code:`wf_TimeSeries` and :code:`wf_Seismogram`.
@@ -288,16 +293,21 @@ dogmatic use of station naming codes defined by four standard keys:
 "net", "sta", "chan", and "loc".   In contrast, the related
 :code:`wf_TimeSeries` collection actively discourages use of station
 code keys treating them as normalization attributes.   A simple way
-to distinguish the use of :code:`wf_miniseed` versus is :code:`wf_TimeSeries`
+to distinguish the use of :code:`wf_miniseed` versus :code:`wf_TimeSeries`
 is that if your workflow is to be initiated from raw, miniseed data
 use the :code:`wf_miniseed` collection.  If you save intermediate results
-that are :code:`TimeSeries` objects they must be saved in :code:`wf_TimeSeries`.
+that are :code:`TimeSeries` objects they should be saved in :code:`wf_TimeSeries`.
 We would emphasize, however, that saving data to :code:`wf_TimeSeries`
 currently requires more storage than comparable miniseed data.   Most
 miniseed data is compressed and storage is reduced to approximately one byte
 per sample.  :code:`wf_TimeSeries` data are normally stored in the raw
 binary form (Done, in fact with the low-level binary fwrite in C.), which
-expands the data to 8 bytes per sample.
+expands the data to 8 bytes per sample.  There is a tradeoff in IO performance
+with format.   Miniseed data is slightly slower to read or write because of the
+overhead in cracking the complex format.  Raw fread/fwrite, in the other hand,
+can be very fast even if the volume is 8 times larger.   As usual with
+such issues of extreme performance is needed in your application, produce a
+benchmark to evaluate performance on the actual hardware involved.
 
 We elected to keep data describing each of the two atomic data types in MsPASS,
 :code:`TimeSeries` and :code:`Seismogram`, in two different collections.  The
@@ -322,15 +332,16 @@ can be reduced to this pseudocode logic::
 
 
 Parallel jobs are very similar but require creation of an RDD or Dask bag
-to drive the processing.  Our parallel api, described elsewhere (LINK)
+to drive the processing.  Our parallel api, described
+in the section :ref:`Parallel Processing<parallel_processing>`,
 simplifies the conversion from a serial to parallel job.  In any case,
 the equivalent parallel pseudocode logic is this::
 
   1) Create database handle
   2) Point the handle at wf_Seismogram, wf_TimeSeries, or wf_miniseed as appropriate
-  3) Run the Database.read_distributed_data method to build parallel dataset
+  3) Run the read_distributed_data function to parallelize the input operation
   4) Run parallel version of each processing function
-  5) Run Database.save_data method in parallel
+  5) Run write_distributed_data function to save the result with parallel IO
 
 A simple perspective on the difference is that the loop for the serial
 job becomes is implied in the parallel job.  Spark or dask schedules which
@@ -347,7 +358,7 @@ All seismogram read operations access one of the wf Collections.
 The default behavior is to read all key-value pairs in a single document
 and insert most of the attributes into the Metadata for one
 TimeSeries or Seismogram objects.  Normalized data can be
-loaded automatically if requested and the wf collection is has the proper
+loaded automatically if requested and the wf collection has the proper
 cross-referencing ids defined.   For more about how to handle
 normalization during read see the section titled :ref:`Normalization<normalization>`.
 
@@ -362,13 +373,14 @@ can and should define their own attribute that will automatically be saved
 and defined by the schema.
 Note by default save methods are not dogmatic about enforcing
 a schema definition.   The main advantage of defining an attribute
-in the schema definition is automatic type enforcement is then
+in the schema definition is that automatic type enforcement is then
 automatic.
 If the key is not defined in the wf schema
 the automatic type conversions will not be feasible.  Similarly, NEVER EVER
 write a new attribute to an datum's Metadata if the key is already defined
 in the schema.  Doing so will guarantee downstream problems.  For more
-on schema enforcement see the section titled :ref:`CRUD Operations in MsPASS<_CRUD_operations>`.
+on schema enforcement see the section titled
+:ref:`CRUD Operations in MsPASS<_CRUD_operations>`.
 
 Users must also realize that the sample data in Seismogram or TimeSeries objects
 can be constructed from :code:`wf` documents in multiple ways.
@@ -377,17 +389,19 @@ can be constructed from :code:`wf` documents in multiple ways.
      as external files.   In this case, we use the same construct as CSS3.0 where
      the correct information is defined by three attribures:  :code:`dir`, :code:`dfile`, and
      :code:`foff`.   The default behavior is to save data as
-     as native 64 bit floating point numbers.   The is the most efficient way
+     as native 64 bit floating point numbers.   As noted earlier
+     that is the most efficient way
      write the sample data as the :code:`Seismogram.data` array and the :code:`TimeSeries.data`
      vector can then be read and written with the C functions fread and fwrite respectively from
      the raw buffers.  The readers also support a `format` option.
      We use obspy's readers and writers when a format is defined.   All
-     formats supported by obspy are supported seamlessly.
+     formats supported by obspy are supported seamlessly.  Performance depends
+     completely on the performance of the obspy reader or writer.
   #. A special case for ensembles is to write all the data for the ensembles
      into a single file.   Similarly, the ensemble reader scans the
      values of `dir` and `dfile` and reads the data in file order to
      reduce the number of file open/close delays.   Using that approach for
-     ensembles is known to dramatically improve I/O performance.
+     ensembles is known to signficantly improve I/O performance.
   #. The sample data for MsPASS data objects can also be saved
      through a mechanism called :code:`gridfs` in MongoDB.  When this
      method is used the waveform sample data are managed
@@ -396,19 +410,18 @@ can be constructed from :code:`wf` documents in multiple ways.
      get the data from the wf collection document used to drive
      the readers.  We discuss strengths and weaknesses of this approach
      relative to file I/O below.
-  #. MsPASS has limited support for reading from a network port via
-     a url defined in the wf document.   Most of that code is currently
-     incomplete and is expected to be fleshed out when Earthscope
-     finalizes plans for their upcoming cloud-based data management.
-  #. The :code:`gridfs` method is expected to be superior to file storage for
-     large clusters because it facilitates parallel io operations.  With
-     files two processes can collide trying access a common file, especially
-     with a writer.
   #. A limitation of gridfs is that the sample data are stored in the same
      disk area where MongoDB stores it's other data.  This can be a
      limitation for system configurations that do not contain a modern
      large virtual file system or any system without a single disk
      file system able to store the entire data set and any completed results.
+  #. MsPASS has limited support for reading from a network port via
+     a url defined in the wf document.   Most of that code is currently
+     incomplete and is expected to be fleshed out when Earthscope
+     finalizes plans for their upcoming cloud-based data management.
+  #. MsPASS has a prototype reader for cloud storage in AWS based on
+     SCEC's implementation.   That system is expected to also evolve as
+     Earthscope moves to cloud storage.
 
 gridfs storage
 :::::::::::::::
@@ -432,7 +445,9 @@ require any definitions for file management.   It does, however, have
 some serious drawbacks:
 
  #. We have found that I/O performance of gridfs is slower than
-    most file-based reads and writes.
+    most file-based reads and writes.  The reason is the data all flow
+    through a common, network channel through the (single instance by default)
+    MongoDB server
  #. Large data sets can present problems as the storage is aggregated into
     the same file system as database storage.
  #. Deleting intermediate results at the end of a workflow can be
@@ -477,11 +492,10 @@ memory block.  As stated above, the default storage mode for external files is a
 binary memory image saved by writing the memory buffer to the external
 file (defined by :code:`dir` and :code:`dfile`) using the low level C fwrite function
 that is wrapped in the python standard by the :code:`write` method of
-standard file handles described in many tutorials like this one_.
+standard file handles described in many tutorials like
+`this one<https://docs.python.org/3/tutorial/inputoutput.html>`__.
 
-   .. _one: https://docs.python.org/3/tutorial/inputoutput.html).
-
-TimeSeries stores data as vector of binary "double" values, which for
+TimeSeries objects store data as vector of binary "double" values, which for
 decades now has implied an 8 byte floating point number stored in the IEEE
 format.  (Note historically that was not true.   In the early days of
 computers there were major differences in binary representations of
@@ -526,7 +540,7 @@ To avoid fatal write errors we emphasize the following as a rule:
 
    Rule 2:
      Make sure any custom Metadata keys do not match existing schema keys.
-     If change the meaning or data  type stored with that key,
+     If you change the meaning or data  type stored with that key,
      you can create any range of downstream problems and could abort the
      final save of your results.
 
@@ -555,21 +569,48 @@ Objects <data_object_design_concepts>` section.
 
 A special case is data killed during processing.  Any datum
 marked dead will have have no entry in any wf collection.
-The evidence it was killed will be found only in the elog collection.
-Any datum killed should contain leave a document in the elo collection
-with an severity level set to
-:code:`Invalid`.  If the error has any other entries they will also
-be saved in the same document.    In addition, the document for killed
-data will contain a dict container with the key "metadata".   That dict is
-a recasting of the Metadata of the datum that was killed.  The
-metadata "subdocument" is needed,
-in general, to sort out what specific datum to which the error was attached.
-The documents in elog for live data contain an :code:`ObjectId` that is a link back
-to the wf collection where that waveform was saved.  For killed data
-the saved :code:`ObjectId` is the id of a datum from which the
-killed datum originated (If the workflow had a reduce operator there could
-be multiple parents.  In that situation the history collection is needed
-to sort out the full ancestory.)
+Instead data killed will, by default, generate single document in
+one of two collections with the colorful names `cemetery`
+and `abortions`.   We use two different collections to distinguish
+to fundamentally different ways data can be killed:
+a datum killed during normalprocessing will generate a document in
+the `cemetery` collection, while objects that a
+never born are stored in the `abortions` collections.  That is, a dead
+datum is an abortion only if it was killed before it was fully
+constructed by a reader.
+
+Documents found in the `cemetery` collection store the minimal amount
+of information needed to identify the body.   They contain
+three standard attributes:
+
+#. The `error_log` attribute contains a list of one or more error
+   messages that were posted to the killed datum before it was killed.
+   Retrieving those messages should define why the datum was killed.
+#. The `tombstone` attribute is a subdocument
+   (i.e. the type of x=datum["tombstone"] is a python dict.)
+   containing the Metdata contents of the killed datum.
+#. There is alway an ObjectId that links the docoment
+   to the original waveform read by the workflow.  The name will
+   be of the form `wf_collection` where "collection" is the
+   waveform collection name.  Currently that means one of the
+   following:  wf_TimeSeries, wf_Seismogram, or wf_miniseed.
+
+Entries in the `abortions` collection
+should always be viewed as a serious error that needs to be
+corrected.   Most abortions can be avoided by proper use of the
+`verify` method followed by an appropriate `clean` operation as
+discussed below.  At present the only way an abortion can be defined
+is during a read operation when the document being used to construct
+the datum has a serious problem.  The most common "serious problem"
+is attributes stored with the wrong type or missing attributes
+defined as "required".  The other potential issue is failure of
+the section of the reader loading the waveform sample data.
+That can be caused by a range of possible read errors with files.
+In the future URL-based cloud readers are likely to have their
+own set of issues that could generate "abortions".  The contents of
+an `abortions` document is the same as the `cemetery` collections
+described above for consistency.   They can be distinguished only
+by the collection name.
 
 history
 ~~~~~~~
@@ -588,7 +629,7 @@ history collection contains a dump of the :code:`multimap` container
 used in the C++ code base to define the processing history G-tree.
 
 
-Normalized collections
+Normalizing collections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 site and channel
@@ -820,6 +861,117 @@ information, you must complete the association of records in source to
 wf_Seismogram and/or wf_TimeSeries documents before your primary processing.
 Any entries not associated will be dropped if required.
 
+Database command line tools
+-----------------------------
+
+dbverify
+~~~~~~~~~
+This command line tool should be run on any database before starting
+a long-running workflow.  Usage line is the following:
+
+.. code-block:: bash
+
+    dbverify dbname [-t testname] [-c col ... ]
+          [-n n1 ...] [-r k1 ...][-e n] [-v] [-h | --help]
+
+`dbverify` runs one of set of possible tests (defined by the -t parameter)
+on one or more collections defined via the -c parameter.  The -n and
+-r options are required for some tests as described below.
+
+
+At present the "testname" associated with the -t flag must be one of
+the following:  **normalization**, **required**, or **schema_check**.
+These tests are (see also the docstring for the program):
+
+#. **normalization**.   This test can be used to validate cross-references
+   to standard normalizing collection done via ObjectIds.  When running
+   this test the -n argument is required.  The arguments following -n
+   should be normalizing collection names to be checked.
+   The standard name supported in MsPASS are `channel`, `site`, and `source`
+   but the test does not distinguish these special names.  That is, for
+   the collection defined by an argument like "-n site" each wf collection document is
+   tested for a key with the name `site_id`.   If it is missing it prints
+   an error message saying so.  If found it then checks that id associated
+   with that key is found in the normalizing collection (in this case  `site`).
+   If the id is not found it prints a different message.
+#. **required**.  Certain attributes are often required for a workflow to
+   execute successfully.   Use this to validate that all documents in a wf
+   collection have those keys.  This requires the -r option with a list of
+   keys to be checked for existence.  Any documents lacking an keys defined
+   will generate a print message.
+#. **schema_check**.  This test is designed mainly to check for any attributes
+   that are not consistent with the schema defined for the database.
+   That mainly useful to identify any type mismatches in values associated
+   with one or more keys and missing attributes the schema defines as required.
+
+Running all the tests described above on a database is strongly
+recommended before running any large job.   Few things are more annoying
+that waiting a week to run your job and finding it aborted immediately
+because of a database problem that would have been anticipated by
+running this command line tool.  Note the -e option has a default that
+limits the number of messages logged because often if one document has a
+problem all of them do.  If -e didn't limit output running `dbverify` on
+a collection with a few million documents could generate a very large log file.
+
+dbclean
+~~~~~~~~
+The purpose of the `dbclean` tool is to fix most if not all problems detected
+by `dbverify`.  It's usage line is:
+
+.. code-block:: bash
+
+    dbclean dbname collection [-ft] [-d k1 ...] [-r kold:knew ... ] [-v] [-h]
+
+where "dbname" is the name of the database and "collection" is the
+collection within that database that the fixes are to be applied.
+The problems that `dbclean` currently can fix are:
+
+#.  The `-ft` flag enables type fixing.  That is, it checks the type for
+    each attribute defined in the schema and attempts to correct where
+    possible (e.g. converting integers to an attribute expected to be a float.).
+    The program while print an error if it encounters an attribute that
+    cannot be converted (e.g. some strings cannot be converted to numbers).
+#.  The `-d` flag tells the program to delete all attributes from the
+    list of keys that follow the -d argument.
+#.  The `-r` flag is mnemonic for "rename".  It is expected to be followed by
+    pairs of string key names separated by a ":".  The left string is
+    expected to be the old value and the right the key that is to be used
+    as a replacement.
+
+
+normalize_mseed
+~~~~~~~~~~~~~~~~~~
+Because miniseed format data is currently the standard way to distribute
+earthquake data we supply this special command-line tool to
+efficiently create the cross-referencing id's between `wf_miniseed`
+and the `channel` collection.   An important feature of this tool
+that it can do this operation much faster than a naive use of
+record-by-record matching in a python loop driven by a cursor.
+It uses what MongoDB calls a "buld update" to stage multiple
+updates submitted in blocks to the server.  The record of our design
+work with this tool is on github and shows the approach used here
+can be orders of magnitude faster than the naive algorithm.
+
+The usage line is:
+
+.. code-block:: bash
+
+  python normalize_mseed.py dbname [--normalize_site --blocksize n -wfquery querystring]
+
+where dbname is the MongoDB name of the database to be normalized.
+Default normalizes only "channel" writing a `channel_id` entry for each
+`wf_miniseed` record for which a match was found  Use the
+`-normalize_site` to also create `site_id` entries at the same time.
+If the workflow will ultimately use `Seismogram` objects that option
+is strongly recommended.
+
+`-blocksize` is used to change the default number of updates pushed to
+the MongoDB server per call.  The default should normally be fine.
+
+Finally, `-wfquery` can be used to only run the tool on a subset of the
+documents in `wf_miniseed`.
+
+
 Summary
 -------
 
@@ -832,8 +984,9 @@ is correctly.
    one of these collections define a parallel dataset that is the
    required input for any parallel job.
 *  The Database API simplifies reading and writing.
-   We abstract the always complex process of reading and writing to :code:`save` and
-   :code:`read` methods of the python class Database.  See the reference manual
+   We abstract the always complex process of reading and writing
+   the :code:`save_data` and
+   :code:`read_data` methods of the python class Database.  See the reference manual
    for details.
 *  Assembling one or more of the wf collections should
    always be viewed as a preprocessing step to build a clean dataset.  That
@@ -846,3 +999,5 @@ is correctly.
    required if the associated metadata is needed in your workflow.
    Linking has many complications and is discussed further in the section
    titled :ref:`Normalization<normalization>`.
+*  Use the command tools described above to aid in identifying potential
+   database problems and fixing them.   
