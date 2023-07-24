@@ -63,7 +63,9 @@ the synonymous word "save".   Here we list all save methods with a brief
 description of each method.  Consult the docstring pages for detailed
 and most up to date usage:
 
-1.  :py:meth:`save_data <mspasspy.db.database.Database.save_data>` is probably the most common method you will use.  The
+1.  :py:meth:`save_data <mspasspy.db.database.Database.save_data>` is
+    the most common method you will use for serial jobs.  Parallel
+    workflows should use a different approach described below.  The
     first argument is one of the atomic objects defined in MsPASS
     (Seismogram or TimeSeries) that you wish to save.  Options are
     described in the docstring.  Here is an example usage:
@@ -80,11 +82,14 @@ and most up to date usage:
         d = Trace2TimeSeries(dtr)
         db.save_data(d)
 
-    By default :code:`save_data` stores all Metadata except those linked to
+    By default :py:meth:`save_data<<mspasspy.db.database.Database.save_data>>`
+    stores all Metadata except those linked to
     normalized collections (:code:`source`, :code:`channel`, and/or :code:`site`) with no
     safety checks.  We discuss additional common options in a later section.
 
-2.  :py:meth:`save_ensemble_data <mspasspy.db.database.Database.save_ensemble_data>` is similar to :code:`save_data` except the first argument
+2.  :py:meth:`save_ensemble_data <mspasspy.db.database.Database.save_ensemble_data>`
+    is similar to :py:meth:`save_data<<mspasspy.db.database.Database.save_data>>`
+    except the first argument
     is an Ensemble object.  There are currently two of them:  (1) TimeSeriesEnsemble
     and (2) SeismogramEnsemble.   As discussed in the section
     :ref:`data_object_design_concepts` an Ensemble

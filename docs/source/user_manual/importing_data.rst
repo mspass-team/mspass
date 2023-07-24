@@ -51,7 +51,7 @@ Obspy has two different python functions that can be used to
 fetch miniseed data from one or more FDSN data centers.
 
 #.  The simplest tool obspy provides is their :py:meth:`get_waveform <obspy.clients.fdsn.client.Client.get_waveforms>`
-    method of the fdsn web service client.  
+    method of the fdsn web service client.
     :code:`get_waveform` retrieves a relatively small number of waveform
     at a time using station codes with wildcards and a time range.
     It is suitable only for small datasets or as a custom agent
@@ -61,7 +61,7 @@ fetch miniseed data from one or more FDSN data centers.
     An overview of the concepts of :code:`mass_downloader` are given
     `here <https://docs.obspy.org/tutorial/code_snippets/retrieving_data_from_datacenters.html>`__.
 
-The obspy tools are well documented and relatively easy to use users
+The obspy tools are well documented and relatively easy to use.  Users
 are referred to the above pages and examples to build a workflow to
 retrieve a working data set.   We do, however, think it useful to
 give a few warnings.
@@ -113,7 +113,8 @@ Assembling Receiver Metadata
 
 Receiver metadata from FDSN sources is easily obtained and assimilated
 into MsPASS using a combination of obspy functions and import functions
-that are part of the :py:class:`Database <mspasspy.db.database.Database>` class (MongoDB handle) of MsPASS.
+that are part of the :py:class:`Database <mspasspy.db.database.Database>`
+class (MongoDB handle) of MsPASS.
 
 FDSN receiver metadata is obtainable through one of two fundamentally different
 approaches:  (1) the older "dataless SEED" file format, and (2) the
@@ -131,13 +132,15 @@ We recommend users utilize obspy to assemble receiver metadata from FDSN
 data centers.   There are two different tools obspy provides.  We have found
 both are usually necessary to assemble a complete suite of receiver metadata.
 
-#.  The fdsn client has a method called :py:meth:`get_stations <obspy.clients.fdsn.client.Client.get_stations>` that is
+#.  The fdsn client has a method called
+    :py:meth:`get_stations <obspy.clients.fdsn.client.Client.get_stations>` that is
     directly comparable to :code:`get_waveform`.   It uses web
     services to download metadata for one or more channels of data.  It has
     a set of search parameters used to define what is to be retrieved that
     is usually comprehensive enough to fetch what you need in no more than
     a few calls.   Be warned it retrieves the results into memory into a
-    custom obspy data object they call an :py:class:`Inventory <obspy.core.inventory.inventory.Inventory>`.
+    custom obspy data object they call an
+    :py:class:`Inventory <obspy.core.inventory.inventory.Inventory>`.
     An :code:`Inventory` object can be viewed as more or less a
     StationXML format file translated into a python data structure with a
     few added decorations (e.g. plotting).   We return to this point
@@ -145,28 +148,28 @@ both are usually necessary to assemble a complete suite of receiver metadata.
 #.  When you use the :code:`mass_downloader` you have the option of
     having that function download the station metadata and save the
     actual StationXML data files retrieved from web services.  The resulting
-    files can then be read with their :py:func:`read_inventory <obspy.core.inventory.inventory.read_inventory>` method.
+    files can then be read with their
+    :py:func:`read_inventory <obspy.core.inventory.inventory.read_inventory>` method.
 
 Both of the approaches above can be used to create an obspy
-:code:`Inventory` object in python:  for (1) that is the return of the
-function while for (2) it is the output of a call to :code:`read_inventory`
+:code:`Inventory` object in python:  for (1) above that is the return of the
+function while for (2) above it is the output of a call to :code:`read_inventory`
 with :code:`format="STATIONXML"`.  We use the obspy :code:`Inventory` object
 as an intermediary for storing receiver metadata in a MongoDB database.
 The :code:`Database` class has a method we call :py:mod:`save_inventory <mspasspy.db.database.Database.save_inventory>`.
 That method translates an :code:`Inventory` object into documents stored in
 what we call the :code:`channel` and :code:`site` collections.   As noted
 many other places in our documentation :code:`channel` contains receiver
-metadata from :code:`TimeSeries` data while :code:`site` contains a more
+metadata for :code:`TimeSeries` data while :code:`site` contains a
 subset of the same information more appropriate for :code:`Seismogram`
 data.   A typical application of :code:`save_inventory` can be seen in the
 following code framgment extracted from our tutorials:
 
 .. code-block:: python
 
-  from mspasspy.db.database import Database
   from mspasspy.db.client import DBClient
   dbclient = DBClient()
-  db = Database(dbclient, 'getting_started')
+  db = dbclient.get_database('getting_started')
   inv = client.get_stations(network='TA', starttime=starttime, endtime=endtime,
                       format='xml', channel='BH?', level='response')
   ret = db.save_inventory(inv, verbose=False)
@@ -234,9 +237,9 @@ forms of data seismologists deal with.
      problem we provide only a partial set of tools for associating
      waveforms with source data:  MongoDB normalization described in the section
      of this user's manual titled
-     :ref:`database_normalization`.
+     :ref:`Normalization<normalization>`.
 
-MsPASS currently supports directly only one mechanism for loading source
+MsPASS currently supports only one mechanism for loading source
 metadata.  That method is a similar in approach to the way we handle
 FDSN station data.   That is, we use obspy for the machinery to
 download the data from FDSN web services and translate the obspy python
@@ -246,14 +249,15 @@ MongoDB source documents.
 Like the receiver problem, obspy has two comparable functions for
 retrieving source metadata.
 
-#.  :py:meth:`get_events <obspy.clients.fdsn.client.Client.get_events>` is an obspy function that is very similar to the
+#.  :py:meth:`get_events <obspy.clients.fdsn.client.Client.get_events>`
+    is an obspy function that is very similar to the
     receiver equivalent :code:`get_stations` noted above.
     Like the receiver equivalent it has search criteria to yield a set of source data
     based on some spatial, time, magnitude, and/or other criteria.
     In addition, like :code:`get_stations`, :code:`get_events` returns the
     result in a python data structure that in this case they call a :code:`Catalog`.
     The :code:`Catalog` class is more or less an image of the FDSN standard
-    for web service source data in XML format they call :code:`QuakeML`.
+    for web service source data in XML format called :code:`QuakeML`.
     The biggest issue with this approach for many workflows is that
     it is too easy to create a collection of source data that is much
     larger than the number of events actually in the data set.
@@ -263,6 +267,9 @@ retrieving source metadata.
     :py:mod:`mass_downloader <obspy.clients.fdsn.mass_downloader>` page)
     that function will create QuakeML data files defining the unique source data for
     all the waveforms downloaded with each call to that function.
+    Unfortunately, there is currently no simple way to directly link the
+    source data to the waveforms downloaded as miniseed has no way to
+    provide linking source information.
 
 The procedure to load source data for a MsPASS workflow derived from
 one of the obspy methods is comparable to that described above for FDSN
@@ -274,13 +281,32 @@ obspy function :code:`read_events` described
 `here <https://docs.obspy.org/master/packages/autogen/obspy.core.event.read_events.html>`__.
 A :code:`Catalog` instance can then be saved to a MongoDB source collection
 using the :code:`Database` method called :code:`save_catalog`.
-The following is a fragment of a workflow doing this with the output of
-:code:`mass_downloader`.
+The following is a fragment of the mspass "getting_started" tutorial
+that illustrates this idea:
 
 .. code-block:: python
 
-   FIXME
-   paste in portion of 2012 usarray workflow
+    from obspy import UTCDateTime
+    from obspy.clients.fdsn import Client
+    client=Client("IRIS")
+    t0=UTCDateTime('2011-03-11T05:46:24.0')
+    starttime=t0-3600.0
+    endtime=t0+(7.0)*(24.0)*(3600.0)
+    lat0=38.3
+    lon0=142.5
+    minlat=lat0-3.0
+    maxlat=lat0+3.0
+    minlon=lon0-3.0
+    maxlon=lon0+3.0
+    minmag=6.5
+
+    cat=client.get_events(starttime=starttime,endtime=endtime,
+     minlatitude=minlat,minlongitude=minlon,
+     maxlatitude=maxlat,maxlongitude=maxlon,
+     minmagnitude=minmag)
+   # this appears in a different code block in the tutorial
+   n=db.save_catalog(cat)
+   print('number of event entries saved in source collection=',n)
 
 An alternative for which we provide limited support is importing catalog
 data from an Antelope database.   We have a prototype implementation in
