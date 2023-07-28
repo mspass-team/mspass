@@ -1,21 +1,13 @@
-"""
-Distributed Reader and Writer using DataFrame
-"""
 import os
-import io
-import copy
-import pathlib
-import pickle
-from array import array
 import pandas as pd
-
-import gridfs
-import pymongo
-import pymongo.errors
-import numpy as np
+import json
 
 
-from mspasspy.db.database import Database,md2doc
+from mspasspy.db.database import (Database,
+                                  md2doc,
+                                  elog2doc,
+                                  history2doc,
+                                  )
 from mspasspy.util.Undertaker import Undertaker
 from mspasspy.db.client import DBClient
 
@@ -23,33 +15,67 @@ from mspasspy.db.client import DBClient
 from mspasspy.ccore.seismic import (
     TimeSeries,
     Seismogram,
-    _CoreSeismogram,
-    DoubleVector,
     TimeSeriesEnsemble,
     SeismogramEnsemble,
 )
 from mspasspy.ccore.utility import (
-    Metadata,
     MsPASSError,
-    AtomicType,
+    ErrorLogger,
     ErrorSeverity,
-    dmatrix,
-    ProcessingHistory,
 )
-from mspasspy.db.collection import Collection
-from mspasspy.db.schema import DatabaseSchema, MetadataSchema
-from mspasspy.util.converter import Textfile2Dataframe
+
+
 import dask.bag as daskbag
 from dask.dataframe.core import DataFrame as daskDF
-import dask
-import pyspark
 from pyspark.sql.dataframe import DataFrame as sparkDF
-import pyspark.sql
+
+def read_ensemble_parallel(query,
+                           db,
+                           collection="wf_TimeSeries",
+                           mode="promiscuous",
+                           normalize=None,
+                           load_history=False,
+                           exclude_keys=None,
+                           data_tag=None,
+                           aws_access_key_id=None,
+                           aws_secret_access_key=None,
+                           ):
+    """
+    Special function used in read_distributed_data to handle ensembles. 
+    
+    Ensembles need to be read via a cursor which is not serializable.  
+    Here we query a Database class, which is serializable, and 
+    call it's read_data method to construct an ensemble that it returns. 
+    Defined as a function instead of using a lambda due largely to the 
+    complexity of the argument list passed to  read_data.
+    """
+    cursor = db[collection].find(query)
+    ensemble = db.read_data(cursor,
+                            collection=collection,
+                            mode=mode,
+                            normalize=normalize,
+                            load_history=load_history,
+                            exclude_keys=exclude_keys,
+                            data_tag=data_tag,
+                            aws_access_key_id=aws_access_key_id,
+                            aws_secret_access_key=aws_secret_access_key,
+                            )
+    kill_me = True
+    for d in ensemble.member:
+        if d.live:
+            kill_me = False
+            break
+    if kill_me:
+        ensemble.kill()
+    return ensemble
 
 
 def read_distributed_data(
     data,
-    cursor=None,
+    db=None,
+    query=None,
+    scratchfile=None,
+    collection="wf_TimeSeries",
     mode="promiscuous",
     normalize=None,
     load_history=False,
@@ -62,31 +88,144 @@ def read_distributed_data(
     aws_secret_access_key=None,
 ):
     """
-    This function should be used to read an entire dataset that is to be handled
-    by subsequent parallel operations.  The function can be thought of as
-    loading the entire data set into a parallel container (rdd for spark
-    implementations or bag for a dask implementations).
+    Parallel data reader.
+    
+    In MsPASS seismic data objects need to be loaded into a Spark RDD or 
+    Dask bag for parallel processing. This function abstracts that
+    process parallelizing the read operation where it can do so.   
+    In MsPASS all data objects are created by constructors driven by 
+    one or more documents stored in a MongoDB database collection 
+    we will refer to here as a "waveform collection".  Atomic data 
+    are built from single documents that may or may not be extended 
+    by "normalization" (option defined by normalize parameter).
+    The constructors can get the sample data associated with a 
+    waveform document by a variety of storage methods that 
+    are abstracted to be "under the hood".  That is relevant to understanding
+    this function because absolutely required input is a handle to 
+    the waveform collection OR an image of it in another format.   
+    Furthermore, the other absolute is that the output is ALWAYS a 
+    parallel container;  a spark RDD or a Dask bag.   This reader 
+    is the standard way to load a dataset into one of these parallel 
+    containers.  
+    
+    A complexity arises because of two properties of any database 
+    including MongoDB.  First, queries to any database are almost always
+    very slow compared to processor speed.  Initiating a workflow with 
+    a series of queries is possible, but we have found it ill advised 
+    as it can represent a throttle on speed for many workflows where the 
+    time for the query is large compared to the processing time for a 
+    single object.   Second, in contrast all database engines can 
+    work linearly through a table (collection in MongoDB) very fast 
+    because they cache blocks of records send from the server to the client. 
+    In MongoDB that means a "cursor" returned by a "find" operation 
+    can be iterated very fast compared to one-by-one queries of the 
+    same data.  Why that is relevant is that arg0 if this function is 
+    required to be one of three things to work well within these constraints:
+        1. An instance of a mspass `Database` handle 
+           (:class:`mspasspy.db.database.Database`).  Default for 
+           with this input is to read an entire collection.  Use the 
+           query parameter to limit input.
+        2. One of several implementations of a "Dataframe", that are 
+           an image or a substitute for a MongoDB waveform collection.  
+           A Dataframe, for example, is a natural output from any 
+           sql (or, for seismologists, an Antelope) database.   This 
+           reader supports input through a pandas Dataframe, a Dask 
+           Dataframe, or a pyspark Dataframe.  THE KEY POINT about 
+           dataframe input, however, is that the attribute names 
+           must match schema constraints on the MongoDB database 
+           that is required as an auxiliary input when reading 
+           directly from a dataframe.   Note also that Dataframe input 
+           also only makes sense for Atomic data with each tuple 
+           mapping to one atomic data object to be created by the reader. 
+        3. Ensembles represent a fundamentally different problem in this 
+           context.  An ensemble, by definition, is a group of atomic data 
+           with an optional set of common Metadata.  The data model for this 
+           function for ensembles is it needs to return a RDD/bag 
+           containing a dataset organized into ensembles.  The approach used 
+           here is that a third type of input for arg0 (data) is a list 
+           of python dict containers that are ASSUMED to be a set of 
+           queries that defined the grouping of the ensembles.   
+           For example, a data set you want to process as a set of 
+           common source gathers (ensmebles) might be created 
+           using a list something like this:
+           [{"source_id" : ObjectId('64b917ce9aa746564e8ecbfd')}, 
+            {"source_id" : ObjectId('64b917d69aa746564e8ecbfe')}, 
+            ... ]
+           
+    This function is more-or-less three algorithms that are run for 
+    each of the three cases above.   In the same order as above they are:
+        1. With a Database input the function first iterates through the entire 
+           set of records defined for specified collection 
+           (passed via collection argument) constrained by the 
+           (optional) query argument.  Note that processing is run 
+           serial but fast because it working through a cursor is 
+           optimized in MongoDB and the proceessing is little more than 
+           reformatting the data. 
+        2. The dataframe is passed through a map operator 
+           (dask or spark depending on the setting of the format argument)
+           that constructs the output bag/RDD in parallel.  The atomic 
+           operation is calls to db.read_data, but the output is a bag/RDD
+           of atomic mspass data objects.   
+        3. Ensembles are read in parallel with granularity defined by 
+           a partitioning of the list of queries set by the npartitions 
+           parameter.  Parallelism is achieved by calling the function 
+           interal to this function called `read_ensemble_parallel` 
+           in a map operator.   That function queries the database 
+           using the query derived form arg0 of this function and uses 
+           the return to call the `Database.read_data` method.   
+           
+    A final complexity users need to be aware of is how this reader handles 
+    any errors that happen during construction of all the objects in the 
+    output bag/rdd.  All errors that create invalid data objects produce 
+    what we call "abortions" in the User Manual and docstring for the 
+    :class:`mspasspy.util.Undertaker.Undertaker` class.   Invalid, atomic data 
+    will be the same type as the other bag/rdd components but will have 
+    the following properties that can be used to distinguish them:
+        1.  They will have the Metadata field "is_live" set False.  
+        2.  The data object itself will have the interal attribute "live"
+            set False.
+        3.  The Metadata field with key "is_abortion" will be defined and set True.
+        4.  The sample array will be zero length (datum.npts==0)
+    
+    Ensembles are still ensembles but they may contain dead data with 
+    the properties of atomic data noted above EXCEPT that the "is_live".   
+    attribute will not be set - that is used only inside this function.  
+    An ensemble return will be marked dead only if all its members are found 
+    to be marked dead.
+    
+    Normalization with normalizing collections like source, site, and channel 
+    are possible through the normalize argument.   Normalizers using 
+    data cached to memory can be used but are likely better handled 
+    after a bag/rdd is created with this function via one or more 
+    map calls following this reader.  Database-driven normalizers 
+    are (likely) best done through this function to reduce unnecessary 
+    serialization of the database handle essential to this function
+    (i.e. the handle is already in the workspace of this function).
+    Avoid the form of normalize used prior to version 2.0 that allowed
+    the use of a list of collection names.   It was retained for 
+    backward compatibility but is slow.  
 
-    This function is to divide the process of reading into two parts:
-    reading from database and reading from file, where where reading from database
-    is done in sequence, and reading from file is done with dask/spark. The two parts
-    are done in two functions: read_to_dataframe, and read_files.
 
-    The data param can be database or dataframe. If it is database, the function will
-    firstly read from the database sequentially, and save the metadata to a dataframe.
-    Then we have the dataframe. Use the information in the dataframe to read from files
-    using dask/spark distributedly, and generate the objects to the container. This step
-    uses map in dask/spark to improve efficiency.
-
-    All other arguments are options that change behavior as described below.
-
-    :param data: the data to be read, can be database or dataframe.
+    :param data: variable type arguement used to drive construction as 
+      described above.  See above for how this argument drives the
+      functions behavor.  Note when set as a Database handle the cursor 
+      argument must be set.  Otherwise it is ignored.
     :type data: :class:`mspasspy.db.database.Database` or :class:`pandas.DataFrame`
     or :class:`dask.dataframe.core.DataFrame` or :class:`pyspark.sql.dataframe.DataFrame`
-    :param cursor: mongodb cursor defining what "the dataset" is.  It would
-      normally be the output of the find method with a workflow dependent
-      query.
-    :type cursor: :class:`pymongo.cursor.CursorType`
+    for atomic data.  List of python dicts defining queries to read a 
+    dataset of ensembles.
+    
+    :param db:  Database handle for loading data.   Required input if 
+      reading from a dataframe or with ensemble reading via list of queries. 
+      Ignored if the "data" parameter is a Database handle.  
+    :type db:  :class:`mspasspy.db.Database`.  Can be None (default)
+      only if the data parameter contains the database handle.  Other uses 
+      require this argument to be set.
+      
+    :param collection:  waveform collection name for reading.  Default is 
+      "wf_TimeSeries". 
+    :type collection: string
+
     :param mode: reading mode that controls how the function interacts with
       the schema definition for the data type.   Must be one of
       ['promiscuous','cautious','pedantic'].   See user's manual for a
@@ -94,13 +233,19 @@ def read_distributed_data(
       which turns off all schema checks and loads all attributes defined for
       each object read.
     :type mode: :class:`str`
-    :param normalize: list of collections that are to used for data
-      normalization. (see User's manual and MongoDB documentation for
-      details on this concept)  Briefly normalization means common
-      metadata like source and receiver geometry are defined in separate
-      smaller collections that are linked through this mechanism
-      during reads. Default uses no normalization.
-    :type normalize: a :class:`list` of :class:`str`
+    
+    :param normalize: List of normalizers.   This parameter is passed 
+      directly to the `Database.read_data` method internally.  See the 
+      docstring for that method for how this parameter is handled.  
+    :type normalize: a :class:`list`   The contents of the list are 
+     expected to be one of two things:  (1)  The faster form is 
+     to have the list define one or more subclasses of BasicMatcher, 
+     which is a generic cross-referencing interface.  Examples 
+     include Id matchers and miniseed net:sta:chan:loc:time matching.   
+     Can also be a list of strings defining collection names but be 
+     warned that will be slow as a new matcher will be constructed for 
+     each atomic datum read. 
+    
     :param load_history: boolean (True or False) switch used to enable or
       disable object level history mechanism.   When set True each datum
       will be tagged with its origin id that defines the leaf nodes of a
@@ -110,19 +255,23 @@ def read_distributed_data(
       attributes stored in the database from the data's Metadata (header)
       so they will not cause problems in downstream processing.
     :type exclude_keys: a :class:`list` of :class:`str`
+    
     :param format: Set the format of the parallel container to define the
       dataset.   Must be either "spark" or "dask" or the job will abort
       immediately with an exception
     :type format: :class:`str`
+    
     :param spark_context: If using spark this argument is required.  Spark
       defines the concept of a "context" that is a global control object that
       manages schduling.  See online Spark documentation for details on
       this concept.
     :type spark_context: :class:`pyspark.SparkContext`
+    
     :param npartitions: The number of desired partitions for Dask or the number
       of slices for Spark. By default Dask will use 100 and Spark will determine
       it automatically based on the cluster.
     :type npartitions: :class:`int`
+    
     :param data_tag:  The definition of a dataset can become ambiguous
       when partially processed data are saved within a workflow.   A common
       example would be windowing long time blocks of data to shorter time
@@ -132,575 +281,285 @@ def read_distributed_data(
       for save and read operations to improve the efficiency and simplify
       read operations.   Default turns this off by setting the tag null (None).
     :type data_tag: :class:`str`
+    
     :param aws_access_key_id: A part of the credentials to authenticate the user
     :param aws_secret_access_key: A part of the credentials to authenticate the user
     :return: container defining the parallel dataset.  A spark `RDD` if format
       is "Spark" and a dask 'bag' if format is "dask"
     """
-    if not (
-        isinstance(data, pd.DataFrame)
-        or isinstance(data, Database)
-        or isinstance(data, sparkDF)
-        or isinstance(data, daskDF)
-    ):
-        raise TypeError("Only Database or DataFrame are supported")
-    db = data
-    if isinstance(data, Database):
-        #  first read the metadata from database to a dataframe, and save to data
-        data = read_to_dataframe(
-            data,
-            cursor,
-            mode,
-            normalize,
-            load_history,
-            exclude_keys,
-            data_tag,
-        )
-
-    # convert dask dataframe to pandas dataframe
-    if isinstance(data, daskDF):
-        data = data.compute()
-
-    # convert spark dataframe to spark dataframe
-    elif isinstance(data, sparkDF):
-        data = data.toPandas()
-
-    # now the type of data is a pandas dataframe
-    if format == "spark":
-        list_ = spark_context.parallelize(
-            data.to_dict("records"), numSlices=npartitions
-        )
+    # This is a base error message that is an initialization for 
+    # any throw error.  We first two type checking of arg0
+    message = "read_distributed_data:  "
+    if isinstance(data,list):
+        ensemble_mode=True
+        i = 0
+        for x in list:
+            if not isinstance(x,dict):
+                message += "arg0 is a list, but component {} has illegal type={}\n".format(i,str(type(x)))
+                message += "list must contain only python dict defining queries that define each ensemble to be loaded"
+                raise TypeError(message)
+    elif isinstance(data,Database):
+        ensemble_mode = False
+        dataframe_input = False
+        db = data
+    elif isinstance(data,(pd.Dataframe, sparkDF, daskDF)):
+        ensemble_mode = False
+        dataframe_input = True
+        if isinstance(db,Database):
+            db = db 
+        else:
+            if db:
+                message += "Illegal type={} for db argument - required with dataframe input".format(str(type(db)))
+                raise TypeError(message)
+            else:
+                message += "Usage error. An instance of Database class is required for db argument when input is a dataframe"
+                raise TypeError(message)
     else:
-        list_ = daskbag.from_sequence(data.to_dict("records"), npartitions=npartitions)
-
-    # list_ is a parallel container of dict
-    return list_.map(
-        lambda cur: read_files(
-            Metadata(cur),  # convert dict to metadata
-            gridfs.GridFS(db)
-            if (isinstance(db, Database) and cur["storage_mode"] == "gridfs")
-            else None,
-            # if storage mode is gridfs, pass a GridFS object, it can not be put in the dataframe because rdd/bag
-            # can't pickle _thread.RLock objects
-            aws_access_key_id=aws_access_key_id,
-            aws_secret_access_key=aws_secret_access_key,
-        )
-    )  # does not compute or collect
-
-
-def read_to_dataframe(
-    db,
-    cursor,
-    mode="promiscuous",
-    normalize=None,
-    load_history=False,
-    exclude_keys=None,
-    data_tag=None,
-    alg_name="read_to_dataframe",
-    alg_id="0",
-    define_as_raw=False,
-    retrieve_history_record=False,
-):
-    """
-    This is the MsPASS reader for constructing metadata of Seismogram or TimeSeries
-    objects from data managed with MondoDB through MsPASS. Firstly construct a list
-    of objects using cursor. Then for each object, constrcut the metadata and add to
-    the list. Finally convert the list to a dataframe. The return type is a dataframe
-    of metadata. The logic of constructing metadata is same as Database.read_data().
-
-    :param db: the database from which the data are to be read.
-    :type db: :class:`mspasspy.db.database.Database`.
-    :param object_id: MongoDB object id of the wf document to be constructed from
-        data defined in the database.  The object id is guaranteed unique and provides
-        a unique link to a unique document or nothing.   In the later case the
-        function will return a None.
-    :type cursor: :class:`pymongo.cursor.CursorType`
-    :param mode: reading mode that controls how the function interacts with
-        the schema definition for the data type.   Must be one of
-        ['promiscuous','cautious','pedantic'].   See user's manual for a
-        detailed description of what the modes mean.  Default is 'promiscuous'
-        which turns off all schema checks and loads all attributes defined for
-        each object read.
-    :type mode: :class:`str`
-    :param normalize: list of collections that are to used for data
-        normalization. (see User's manual and MongoDB documentation for
-        details on this concept)  Briefly normalization means common
-        metadata like source and receiver geometry are defined in separate
-        smaller collections that are linked through this mechanism
-        during reads. Default uses no normalization.
-    :type normalize: a :class:`list` of :class:`str`
-    :param load_history: boolean (True or False) switch used to enable or
-        disable object level history mechanism.   When set True each datum
-        will be tagged with its origin id that defines the leaf nodes of a
-        history G-tree.  See the User's manual for additional details of this
-        feature.  Default is False.
-    :param exclude_keys: Sometimes it is helpful to remove one or more
-        attributes stored in the database from the data's Metadata (header)
-        so they will not cause problems in downstream processing.
-    :type exclude_keys: a :class:`list` of :class:`str`
-    :param collection:  Specify an alternate collection name to
-        use for reading the data.  The default sets the collection name
-        based on the data type and automatically loads the correct schema.
-        The collection listed must be defined in the schema and satisfy
-        the expectations of the reader.  This is an advanced option that
-        is indended only to simplify extensions to the reader.
-    :param data_tag:  The definition of a dataset can become ambiguous
-        when partially processed data are saved within a workflow.   A common
-        example would be windowing long time blocks of data to shorter time
-        windows around a particular seismic phase and saving the windowed data.
-        The windowed data can be difficult to distinguish from the original
-        with standard queries.  For this reason we make extensive use of "tags"
-        for save and read operations to improve the efficiency and simplify
-        read operations.   Default turns this off by setting the tag null (None).
-    :type data_tag: :class:`str`
-    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
-    :type alg_name: :class:`str`
-    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
-    :type alg_id: :class:`bson.objectid.ObjectId`
-    :param define_as_raw: a boolean control whether we would like to set_as_origin when loading processing history
-    :type define_as_raw: :class:`bool`
-    :param retrieve_history_record: a boolean control whether we would like to load processing history
-    :type retrieve_history_record: :class:`bool`
-    """
-    # first get the object list
-    obj_list = list(cursor)
-
-    collection = cursor.collection.name
-    try:
-        wf_collection = db.database_schema.default_name(collection)
-    except MsPASSError as err:
-        raise MsPASSError(
-            "collection {} is not defined in database schema".format(collection),
-            "Invalid",
-        ) from err
-    object_type = db.database_schema[wf_collection].data_type()
-
-    if object_type not in [TimeSeries, Seismogram]:
-        raise MsPASSError(
-            "only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.".format(
-                object_type, wf_collection
-            ),
-            "Fatal",
-        )
-
-    if mode not in ["promiscuous", "cautious", "pedantic"]:
-        raise MsPASSError(
-            "only promiscuous, cautious and pedantic are supported, but {} is requested.".format(
-                mode
-            ),
-            "Fatal",
-        )
-
-    if normalize is None:
-        normalize = []
-    if exclude_keys is None:
-        exclude_keys = []
-
-    # This assumes the name of a metadata schema matches the data type it defines.
-    read_metadata_schema = db.metadata_schema[object_type.__name__]
-
-    # We temporarily swap the main collection defined by the metadata schema by
-    # the wf_collection. This ensures the method works consistently for any
-    # user-specified collection argument.
-    metadata_schema_collection = read_metadata_schema.collection("_id")
-    if metadata_schema_collection != wf_collection:
-        temp_metadata_schema = copy.deepcopy(db.metadata_schema)
-        temp_metadata_schema[object_type.__name__].swap_collection(
-            metadata_schema_collection, wf_collection, db.database_schema
-        )
-        read_metadata_schema = temp_metadata_schema[object_type.__name__]
-
-    # find the corresponding document according to object id
-    col = db[wf_collection]
-
-    md_list = []
-
-    # sequentially get all metadata for each object
-    for object_id in obj_list:
-        # the same as read_data() in database.py
-        try:
-            oid = object_id["_id"]
-        except:
-            oid = object_id
-        object_doc = db[wf_collection].find_one({"_id": oid})
-        if not object_doc:
-            md_list.append(None)
-
-        if data_tag:
-            if "data_tag" not in object_doc or object_doc["data_tag"] != data_tag:
-                md_list.append(None)
-
-        # 1. build metadata as dict
-        md = Metadata()
-
-        # 1.1 read in the attributes from the document in the database
-        for k in object_doc:
-            if k in exclude_keys:
-                continue
-            if mode == "promiscuous":
-                md[k] = object_doc[k]
-                continue
-            # FIXME: note that we do not check whether the attributes' type in the database matches the schema's definition.
-            # This may or may not be correct. Should test in practice and get user feedbacks.
-            if read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(
-                k
-            ):
-                md[k] = object_doc[k]
-
-        # 1.2 read the attributes in the metadata schema
-        # col_dict is a hashmap used to store the normalized records by the normalized_id in object_doc
-        col_dict = {}
-        # log_error_msg is used to record all the elog entries generated during the reading process
-        # After the mspass_object is created, we would post every elog entry with the messages in the log_error_msg.
-        log_error_msg = []
-        for k in read_metadata_schema.keys():
-            col = read_metadata_schema.collection(k)
-            # explanation of the 4 conditions in the following if statement
-            # 1.2.1. col is not None and is a normalized collection name
-            # 1.2.2. normalized key id exists in the wf document
-            # 1.2.3. k is not one of the exclude keys
-            # 1.2.4. col is in the normalize list provided by user
-            if (
-                col
-                and col != wf_collection
-                and col + "_id" in object_doc
-                and k not in exclude_keys
-                and col in normalize
-            ):
-                # try to find the corresponding record in the normalized collection from the database
-                if col not in col_dict:
-                    col_dict[col] = db[col].find_one({"_id": object_doc[col + "_id"]})
-                # might unable to find the normalized document by the normalized_id in the object_doc
-                # we skip reading this attribute
-                if not col_dict[col]:
-                    continue
-                # this attribute may be missing in the normalized record we retrieve above
-                # in this case, we skip reading this attribute
-                # however, if it is a required attribute for the normalized collection
-                # we should post an elog entry to the associated wf object created after.
-                unique_k = db.database_schema[col].unique_name(k)
-                if not unique_k in col_dict[col]:
-                    if db.database_schema[col].is_required(unique_k):
-                        log_error_msg.append(
-                            "Attribute {} is required in collection {}, but is missing in the document with id={}.".format(
-                                unique_k, col, object_doc[col + "_id"]
-                            )
-                        )
-                    continue
-                md[k] = col_dict[col][unique_k]
-
-        # 1.3 schema check normalized data according to the read mode
-        is_dead = False
-        fatal_keys = []
-        if mode == "cautious":
-            for k in md:
-                if read_metadata_schema.is_defined(k):
-                    col = read_metadata_schema.collection(k)
-                    unique_key = db.database_schema[col].unique_name(k)
-                    if not isinstance(md[k], read_metadata_schema.type(k)):
-                        # try to convert the mismatch attribute
-                        try:
-                            # convert the attribute to the correct type
-                            md[k] = read_metadata_schema.type(k)(md[k])
-                        except:
-                            if db.database_schema[col].is_required(unique_key):
-                                fatal_keys.append(k)
-                                is_dead = True
-                                log_error_msg.append(
-                                    "cautious mode: Required attribute {} has type {}, forbidden by definition and unable to convert".format(
-                                        k, type(md[k])
-                                    )
+        message += "Illegal type={} for arg0\n".format(str(type(data)))
+        message += "Must be a Dataframe (pandas, spark, or dask), Database, or a list of query dictionaries"
+        raise TypeError(message)
+        
+    # This has a fundamentally different algorithm for handling 
+    # ensembles than atomic data.  Ensembles are driven by a list of 
+    # queries while atomic data are driven by a dataframe.
+    # the dataframe is necessary in this context because MongoDB 
+    # cursors can not be serialized while Database can.
+    if ensemble_mode:
+        if format == "spark":
+            plist = spark_context.parallelize(data, numSlices=npartitions)
+            plist = plist.map(lambda q : read_ensemble_parallel(
+                                        q,
+                                        db,
+                                        collection=collection,
+                                        normalize=normalize,
+                                        load_history=load_history,
+                                        exclude_keys=exclude_keys,
+                                        data_tag=data_tag,
+                                        aws_access_key_id=aws_access_key_id,
+                                        aws_secret_access_key=aws_secret_access_key,
+                                        )
                                 )
-
-        elif mode == "pedantic":
-            for k in md:
-                if read_metadata_schema.is_defined(k):
-                    if not isinstance(md[k], read_metadata_schema.type(k)):
-                        fatal_keys.append(k)
-                        is_dead = True
-                        log_error_msg.append(
-                            "pedantic mode: {} has type {}, forbidden by definition".format(
-                                k, type(md[k])
-                            )
-                        )
-
-        # 1.4 create a mspass object by passing MetaData
-        # if not changing the fatal key values, runtime error in construct a mspass object
-        for k in fatal_keys:
-            if read_metadata_schema.type(k) is str:
-                md[k] = ""
-            elif read_metadata_schema.type(k) is int:
-                md[k] = 0
-            elif read_metadata_schema.type(k) is float:
-                md[k] = 0.0
-            elif read_metadata_schema.type(k) is bool:
-                md[k] = False
-            elif read_metadata_schema.type(k) is dict:
-                md[k] = {}
-            elif read_metadata_schema.type(k) is list:
-                md[k] = []
-            elif read_metadata_schema.type(k) is bytes:
-                md[k] = b"\x00"
-            else:
-                md[k] = None
-
-        # init a ProcessingHistory to store history
-        processing_history_record = ProcessingHistory()
-        # load the history in database
-        elog_col_name = db.database_schema.default_name("elog")
-        elog_id_name = elog_col_name + "_id"
-        if elog_id_name in object_doc:
-            elog_id = object_doc[elog_id_name]
-            elog_doc = db[elog_col_name].find_one({"_id": elog_id})
-            for log in elog_doc["logdata"]:
-                me = MsPASSError(log["error_message"], log["badness"].split(".")[1])
-                processing_history_record.elog.log_error(
-                    log["algorithm"], log["error_message"], me.severity
-                )
-
-        # not continue step 2 & 3 if the mspass object is dead
-        if is_dead:
-            md["is_dead"] = True  # mspass_object.kill()
-            for msg in log_error_msg:
-                processing_history_record.elog.log_error(
-                    "read_data", msg, ErrorSeverity.Invalid
-                )
         else:
-            md["is_dead"] = False  # mspass_object.live = True
-
-            # 3.load history
-            if load_history:
-                history_obj_id_name = (
-                    db.database_schema.default_name("history_object") + "_id"
-                )
-                if history_obj_id_name in object_doc:
-                    # Load (in place) the processing history into h.
-                    history_object_id = object_doc[history_obj_id_name]
-                    # get the atomic type of the mspass object
-                    if object_type is TimeSeries:
-                        atomic_type = AtomicType.TIMESERIES
-                    else:
-                        atomic_type = AtomicType.SEISMOGRAM
-                    if not collection:
-                        collection = db.database_schema.default_name("history_object")
-                    # load history if set True
-                    res = db[collection].find_one({"_id": history_object_id})
-                    # retrieve_history_record
-                    if retrieve_history_record:
-                        processing_history_record = pickle.loads(
-                            res["processing_history"]
-                        )
-                    else:
-                        # set the associated history_object_id as the uuid of the origin
-                        if not alg_name:
-                            alg_name = "0"
-                        if not alg_id:
-                            alg_id = "0"
-                        processing_history_record.set_as_origin(
-                            alg_name,
-                            alg_id,
-                            history_object_id,
-                            atomic_type,
-                            define_as_raw,
-                        )
-
-            md.clear_modified()
-
-            # 4.post complaint elog entries if any
-            for msg in log_error_msg:
-                processing_history_record.elog.log_error(
-                    "read_data", msg, ErrorSeverity.Complaint
-                )
-
-        # save additional params to metadata
-        md["history"] = processing_history_record
-        if object_type is TimeSeries:
-            md["object_type"] = "TimeSeries"
-        else:
-            md["object_type"] = "Seismogram"
-        md["storage_mode"] = object_doc["storage_mode"]
-        # if md["storage_mode"] == "gridfs":
-        #    md["gfsh"] = gridfs.GridFS(db)
-        md["dir"] = object_doc.get("dir")
-        md["dfile"] = object_doc.get("dfile")
-        md["foff"] = object_doc.get("foff")
-        md["nbytes"] = object_doc.get("nbytes")
-        md["format"] = object_doc.get("format")
-        md["gridfs_id"] = object_doc.get("gridfs_id")
-        md["url"] = object_doc.get("url")
-
-        # add metadata for current object to metadata list
-        md_list.append(md)
-
-    # convert the metadata list to a dataframe
-    return pd.json_normalize(map(lambda cur: cur.todict(), md_list))
-
-
-def read_files(
-    md,
-    gfsh=None,
-    aws_access_key_id=None,
-    aws_secret_access_key=None,
-):
-    """
-    This is the reader for constructing the object from storage. Firstly construct the object,
-    either TimeSeries or Seismogram, then read the stored data from a file or in gridfs and
-    loads it into the mspasspy object. It will also load history in metadata. If the object is
-    marked dead, it will not read and return an empty object with history. The logic of reading
-    is same as Database.read_data().
-
-    :param md: the metadata for the object to be read.
-    :type md: :class:`mspasspy.ccore.utility.Metadata`.
-    :param gfsh: GridFS object
-    :type gfsh: :class:`gridfs.GridFS`
-    :param aws_access_key_id: A part of the credentials to authenticate the user
-    :param aws_secret_access_key: A part of the credentials to authenticate the user
-    """
-    try:
-        # Note a CRITICAL feature of the Metadata constructors
-        # for both of these objects is that they allocate the
-        # buffer for the sample data and initialize it to zero.
-        # This allows sample data readers to load the buffer without
-        # having to handle memory management.
-        if md["object_type"] == "TimeSeries":
-            mspass_object = TimeSeries(md)
-        else:
-            # api mismatch here.  This ccore Seismogram constructor
-            # had an ancestor that had an option to read data here.
-            # we never do that here
-            mspass_object = Seismogram(md, False)
-    except MsPASSError as merr:
-        # if the constructor fails mspass_object will be invalid
-        # To preserve the error we have to create a shell to hold the error
-        if md["object_type"] == "TimeSeries":
-            mspass_object = TimeSeries()
-        else:
-            mspass_object = Seismogram()
-        # Default constructors leaves result marked dead so below should work
-        mspass_object.elog.log_error(merr)
-        return mspass_object
-
-    # load history
-    if "history" in md:
-        mspass_object.load_history(md["history"])
-
-    if not md["is_dead"]:
-        mspass_object.set_live()
-        # 2.load data from different modes
-        storage_mode = md["storage_mode"]
-        if storage_mode == "file":
-            if md.is_defined("format"):  # "format" in object_doc:
-                Database._read_data_from_dfile(
-                    mspass_object,
-                    md["dir"],
-                    md["dfile"],
-                    md["foff"],
-                    nbytes=md["nbytes"],
-                    format=md["format"],
-                )
-            else:
-                Database._read_data_from_dfile(
-                    mspass_object,
-                    md["dir"],
-                    md["dfile"],
-                    md["foff"],
-                )
-        elif storage_mode == "gridfs":
-            # tried to store GridFS object in metadata here, but GridFS object in Pandas.DataFrame
-            # can not be converted to RDD or daskbag, it will throw a TypeError: can't pickle _thread.RLock objects.
-            # If the storage mode is gridfs, we have to use the database.
-            # raise TypeError("gridfs storage mode are not supported in distributed read")
-            if gfsh is not None:
-                _read_data_from_gridfs(gfsh, mspass_object, md["gridfs_id"])
-            else:
-                raise TypeError(
-                    "To use gridfs storage mode, must provide database rather than dataframe"
-                )
-        elif storage_mode == "url":
-            Database._read_data_from_url(
-                mspass_object,
-                md["url"],
-                format=md["format"],
-            )
-        elif storage_mode == "s3_continuous":
-            Database._read_data_from_s3_continuous(
-                mspass_object, aws_access_key_id, aws_secret_access_key
-            )
-        elif storage_mode == "s3_lambda":
-            Database._read_data_from_s3_lambda(
-                mspass_object, aws_access_key_id, aws_secret_access_key
-            )
-        elif storage_mode == "fdsn":
-            Database._read_data_from_fdsn(mspass_object)
-        else:  # add another parameter
-            raise TypeError("Unknown storage mode: {}".format(storage_mode))
-
-    # after loading history, the history in metadata can be removed
-    mspass_object.erase("history")
-    return mspass_object
-
-
-def _read_data_from_gridfs(gfsh, mspass_object, gridfs_id):
-    """
-    Read data stored in gridfs and load it into a mspasspy object. This is similar
-    to database._read_data_from_gridfs(), but here we have gfsh as a parameter to
-    avoid using database object.
-
-    :param gfsh: GridFS object
-    :type gfsh: :class:`gridfs.GridFS`
-    :param mspass_object: the target object.
-    :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-    :param gridfs_id: the object id of the data stored in gridfs.
-    :type gridfs_id: :class:`bson.objectid.ObjectId`
-    """
-    fh = gfsh.get(file_id=gridfs_id)
-    if isinstance(mspass_object, TimeSeries):
-        # fh.seek(16)
-        float_array = array("d")
-        if not mspass_object.is_defined("npts"):
-            raise KeyError("npts is not defined")
-        float_array.frombytes(fh.read(mspass_object.get("npts") * 8))
-        mspass_object.data = DoubleVector(float_array)
-    elif isinstance(mspass_object, Seismogram):
-        if not mspass_object.is_defined("npts"):
-            raise KeyError("npts is not defined")
-        npts = mspass_object["npts"]
-        np_arr = np.frombuffer(fh.read(npts * 8 * 3))
-        file_size = fh.tell()
-        if file_size != npts * 8 * 3:
-            # Note we can only detect the cases where given npts is larger than
-            # the number of points in the file
-            emess = (
-                "Size mismatch in sample data. Number of points in gridfs file = %d but expected %d"
-                % (file_size / 8, (3 * mspass_object["npts"]))
-            )
-            raise ValueError(emess)
-        np_arr = np_arr.reshape(npts, 3).transpose()
-        mspass_object.data = dmatrix(np_arr)
+            plist = daskbag.from_sequence(data, npartitions=npartitions)
+            plist = daskbag.map(read_ensemble_parallel,
+                    db,
+                    collection=collection,
+                    normalize=normalize,
+                    load_history=load_history,
+                    exclude_keys=exclude_keys,
+                    data_tag=data_tag,
+                    aws_access_key_id=aws_access_key_id,
+                    aws_secret_access_key=aws_secret_access_key,
+                    )
+        
     else:
-        raise TypeError("only TimeSeries and Seismogram are supported")
+        # Logic here gets a bit complex to handle the multiple inputs 
+        # possible for atomic data.  That is, multiple dataframe 
+        # implementations and a direct database reading mechanism. 
+        # The database instance is assumed to converted to a bag of docs
+        # above.  We use a set of internal variables to control the 
+        # input block used. 
+        # TODO:  clean up symbol - plist is an awful name
+        if dataframe_input:
+            if format == "spark":
+                plist = spark_context.parallelize(
+                    data.to_dict("records"), numSlices=npartitions
+                )
+            else:
+                plist = data.to_bag()
+        else:
+            # logic above should guarantee data is a Database 
+            # object that can be queried and used to generate the bag/rdd
+            # needed to read data in parallel immediately after this block
+            if query:
+                cursor=data[collection].find(query)
+            else:
+                cursor=data[collection].find({})
+            if scratchfile:
+                # here we write the documents all to a scratch file in 
+                # json and immediately read them back to create a bag or RDD
+                with open(scratchfile, "w") as outfile:
+                    for doc in cursor:
+                        json.dump(doc,outfile)
+                if format == "spark":
+                    # the only way I could find to load json data in pyspark 
+                    # is to use an intermediate dataframe.   This should 
+                    # still parallelize, but will probably be slower
+                    # if there is a more direct solution should be done here.
+                    plist = spark_context.read.json(scratchfile)
+                    # this is wrong above also don't see how to do partitions
+                    # this section is broken until I (glp) can get help
+                    #plist = plist.map(to_dict,"records")
+                else:
+                    plist=daskbag.read_text(scratchfile).map(json.loads)
+                # Intentionally omit error handler here.  Assume 
+                # system will throw an error if file open files or write files
+                # that will be sufficient for user to understand the problem.
+                os.remove(scratchfile)
 
-def partioned_save_wfdoc(docs,
+            else:
+                doclist=[]
+                for doc in cursor:
+                    doclist.append(doc)
+                plist = daskbag.from_sequence(doclist)
+                del doclist
+
+        # Earlier logic make list a bag/rdd of docs - above converts dataframe to same     
+        if format == "spark":
+            plist = plist.map(lambda doc : db.read_data(
+                                    doc,
+                                    collection=collection,
+                                    normalize=normalize,
+                                    load_history=load_history,
+                                    exclude_keys=exclude_keys,
+                                    data_tag=data_tag,
+                                    aws_access_key_id=aws_access_key_id,
+                                    aws_secret_access_key=aws_secret_access_key,
+                                )
+                            )
+        else:
+            plist = plist.map(
+                db.read_data,
+                collection=collection,
+                normalize=normalize,
+                load_history=load_history,
+                exclude_keys=exclude_keys,
+                data_tag=data_tag,
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key=aws_secret_access_key,
+                )
+    
+        return plist
+
+
+
+def _partioned_save_wfdoc(doclist,
+                         db,
                          collection="wf_TimeSeries",
-                         db=None,
                          dbname=None,
         ):
     """
-    Prototype function for use with map_partitions in write_distributed_data. 
-    Uses a bulk insert driven by list created by using map_partitions.
-    That is what "docs" is when called from map_partitions.
+    Internal function used to save the core wf document data for mspass 
+    data objects. 
+    
+    This function is intended for internal use only as a component of 
+    the function write_distributed_data.   It uses a bulk write 
+    method (pymongo's insert_many method) to reduce database  
+    transaction delays.   
+    
+    The function has a feature not used at preent, but was preserved here 
+    as an idea.  At present there is a workaround to provide a 
+    mechanism to serialize a mspasspy.db.Database class.   When the 
+    function is called with default parameters it assumes the db 
+    argument will serialize in dask/spark.   If db is set to None 
+    each call to the function will construct a 
+    :class:`mspasspy.db.Database` object for call to the function. 
+    Because it is done by partition the cost scales by the numbe rof 
+    partitions not the numbe of data items to use that algorithm.  
+    
+    :param doclist:  list of python dict containers that are assumed created 
+    by chopping up a bag/rdd of python dictionaries.   No testing is 
+    done on the type as this is considered a low-level function.
+    :type doclist:  list of python dictionaries
+    
+    :param db:   Should normally be a database handle that is to be used to 
+    save the documents stored in doclist.  Set to None if you want to 
+    have the function use the feature of creating a new handle for 
+    each instance to avoid serialization. 
+    :type db:  :class:`mspasspy.db.Database` or None.   Type is not tested
+    for efficiency so the function would likely abort with ambiguous messages 
+    when used in a parallel workflow.
+    
+    :param collection:  wf collection name. Default "wf_TimeSeries".
+    
+    :param dbname:  database name to save data into.  This parameter is 
+    referenced ONLY if db is set to None.   
+    :type dbname:  string
+    
     """
     if db is None:
         dbclient = DBClient()
         # needs to throw an exception of both db and dbname are none
         db = dbclient.get_database(dbname)
     dbcol = db[collection]
-    wfids = dbcol.insert_many(docs).inserted_id()
+    # note plural ids.  insert_one uses "inserted_id".
+    # proper english usage but potentially confusing - beware
+    wfids = dbcol.insert_many(doclist).inserted_ids
     return wfids
-        
-def write_distributed_data(
+
+
+def _save_ensemble_wfdocs(
+        ensemble_data,
+        db,
+        save_schema,
+        exclude_keys,
+        mode,
+        undertaker,
+        cremate=False):
+    if cremate:
+        ensemble_data = undertaker.cremate(ensemble_data)
+    else:
+        ensemble_data, bodies = undertaker.bring_out_your_dead(ensemble_data)
+        undertaker.bury_the_dead(bodies)
+        del bodies
+
+    doclist=[]
+    # we don't have to test for dead data in the loop below above removes 
+    # them so we just use md2doc 
+    for d in ensemble_data.member:
+        doc, aok, elog = md2doc(d,save_schema=save_schema,exclude_keys=exclude_keys,mode=mode)
+        doclist.append(doc)
+    # weird trick to get waveform collection name - borrowed from 
+    # :class:`mspasspy.db.Database` save_data method code
+    wf_collection_name = save_schema.collection("_id")
+    # note plural ids.  insert_one uses "inserted_id".
+    # proper english usage but potentially confusing - beware
+    wfids = db[wf_collection_name].insert_many(doclist).inserted_ids
+    return wfids
+
+def _extract_wfdoc(
+        mspass_object,
+        save_schema,
+        exclude_keys,
+        mode,
+        post_elog=True,
+        elog_key="error_log",
+        post_history=False,
+        history_key="history_data"):
+    """
+    Wrapper for md2doc to handle posting of error log messages that 
+    can be returned by md2doc.  should function correctly with live or dead
+    data.  careful to not duplicate error log entries posted for dead data.
+    before finalizing be sure that logic is right gp
+    """
+    doc, aok, elog_md2doc = md2doc(mspass_object,save_schema=save_schema,exclude_keys=exclude_keys,mode=mode)
+    if post_elog:
+        elog = ErrorLogger()
+        if mspass_object.elog.size() > 0:
+            elog = mspass_object.elog
+            if elog_md2doc.size() > 0:
+                elog += elog_md2doc
+        elif elog_md2doc.size()>0:
+            elog = elog_md2doc
+        if elog.size()>0:
+            elogdoc = elog2doc(elog) 
+            doc[elog_key] = elogdoc
+    if not aok or mspass_object.dead():
+        # may want to handle this differently
+        doc["live"] = False
+    else:
+        doc["live"] = True
+    if post_history:
+        # is_empty is part of ProcessingHistory
+        if not mspass_object.is_empty():
+            doc = history2doc(mspass_object)
+            doc[history_key] = doc
+    return doc
+            
+def write_distributed_data( 
     data,
     db,
+    save_schema,
     mode="promiscuous",
     storage_mode="gridfs",
     format=None,
@@ -711,22 +570,22 @@ def write_distributed_data(
     data_tag=None,
     post_elog=True,
     post_history=False,
+    cremate=False,
     alg_name="write_distributed_data",
     alg_id="0",
 ):
     """
-    This function should be used to write an entire dataset that is to be handled
-    by subsequent parallel operations.  The function can be thought of as
-    writing the entire data set from a parallel container (rdd for spark
-    implementations or bag for a dask implementatio) to storage. From the container,
-    it will write to files distributedly using spark/dask, and then write to the
-    database sequentially. The two parts are done in two functions: write_files,
-    and write_to_db. It returns a dataframe of metadata for each object in the
-    original container. The return value can be used as input for
-    read_distributed_data() function.
+    Parallel save function for data in a dask bag or pyspark rdd.  
+    
+    Saving data from a parallel container (i.e. bag/rdd) is a different 
+    problem from a serial writer.  Bottlenecks are likely with 
+    communication delays talking to the MonboDB server and 
+    complexities of file based io.   This function may evalve but is 
+    intended as the approach one should use for saving data at the end 
+    of a workflow computation.  It currently has no option for 
+    an intermediate save as the bag/rdd are always reduced to list of 
+    ObjectIDs of saved wf documents.  
 
-    Objects should be written to different files, otherwise it may overwrite each other.
-    dir and dfile should be stored in each object.
 
     :param data: the data to be written
     :type data: :class:`dask.bag.Bag` or :class:`pyspark.RDD`.
@@ -790,724 +649,113 @@ def write_distributed_data(
         User's manual for guidance on how the use of this option.
     :type data_tag: :class:`str`
     """
-    #TODO  Needs to handle schema and collection based on type of input data
-    # or via args
+    if not isinstance(db,Database):
+        message = "write_distributed_data:  required arg1 (db) must be an instance of mspasspy.db.Database\n"
+        message += "Type of arg1 received is {}".format(str(type(db)))
+        raise TypeError(message)
+    if storage_mode not in ["file", "gridfs"]:
+        raise TypeError("write_distributed_data:  Unsupported storage_mode={}".format(storage_mode))
+    if mode not in ["promiscuous", "cautious", "pedantic"]:
+        message = "write_distributed_data:  Illegal value of mode={}\n".format(mode)
+        message += "Must be one one of the following:  promiscuous, cautious, or pedantic"
+        raise MsPASSError(message,ErrorSeverity.Fatal)
+    # This uses extracts the first member of the input container and 
+    # interogates its type to establish the collection and schema to use.
+    testval = data.map(lambda x : x).take(1)
+    # take method always returns a list so we need to subscript testval
+    # Note tests show the above does not alter the data container and 
+    # is more or less a read operation of the first element
+
+    if isinstance(testval[0], (TimeSeries, TimeSeriesEnsemble)):
+        save_schema = db.metadata_schema.TimeSeries
+    elif isinstance(testval[0], (Seismogram, SeismogramEnsemble)):
+        save_schema = db.metadata_schema.Seismogram
+    else:
+        message = "parallel container appears to have illegal type={}\n".format(str(type(testval[0])))
+        message += "Must be a MsPASS seismic data object.   Cannot proceed"
+        raise TypeError(message)
+    if isinstance(testval[0],(TimeSeries,Seismogram)):
+        data_are_atomic = True
+    else:
+        data_are_atomic = False
+     # release this memory - testval could be big for some ensembles
+    del testval
+    
+        
     stedronsky=Undertaker(db)
     # Note although this is a database method it will not refernce 
-    # db at all if writing to files
-    # also note storage_mode allows specifying a parallel file system
-    # dir and dfile set None is assumed to be bombproof.  Current 
-    # implementation tries to extract value form metadata and if it 
-    # isn't defined there it will create something - see docstring 
-    data = data.map(db._save_sample_data,
+    # db at all if writing to files.  gridfs, of course, always requries 
+    # the database to be defined
+    if format == "spark":
+        data = data.map(lambda d : db._save_sample_data(
+                    d,
                     storage_mode=storage_mode,
                     dir=None,
                     dfile=None,
                     format=format,
                     overwrite=overwrite,
                     )
-    data = data.map(stedronsky.mummify,post_elog,post_history)
-    #def mummify(self,mspass_object,post_elog=True,post_history=False):
-    data = data.map(md2doc,save_schema,exclude_keys,mode)
-    data = data.map_partition(partioned_save_wfdoc,db=db,collection=collection)
+            )
+        if cremate:
+            data = data.map(lambda d : stedronsky.cremate(d))
+        else:
+            # note we could do bury_the_dead as an option here but it 
+            # seems ill advised as a possible bottleneck
+            # we don't save elog or history here deferring that the next step
+            data = data.map(lambda d : stedronsky.mummify(
+                                d,
+                                post_elog=False,
+                                post_history=False,
+                                )
+                )
 
-    if format == "spark":
-        data = data.collect()  # rdd -> list
+        if data_are_atomic:
+            data = data.map(lambda  d : _extract_wfdoc(
+                            d,save_schema,
+                            exclude_keys,
+                            mode,
+                            post_elog=post_elog,
+                            post_history=post_history,
+                            )
+                )
+            data = data.map_partition(lambda d : _partioned_save_wfdoc(
+                            d,
+                            db,
+                            collection=collection,
+                            )
+                )
+        else:
+            data = data.map(lambda d : _save_ensemble_wfdocs(
+                            d,
+                            db,
+                            save_schema,
+                            exclude_keys,
+                            mode,
+                            cremate=cremate)
+                )
+        data = data.collect()
     else:
-        data = data.compute()  # bag -> list
-    return data
-
-
-
-def write_to_db(
-    db,
-    md_list,
-    mode="promiscuous",
-    storage_mode="file",
-    format=None,
-    overwrite=False,
-    exclude_keys=None,
-    collection=None,
-    data_tag=None,
-    alg_name="write_to_db",
-    alg_id="0",
-):
-    """
-    Use this method to save a list of atomic data objects (TimeSeries or Seismogram)
-    to be managed with MongoDB.  The Metadata are stored as documents in
-    a MongoDB collection.  This method will not write data to file system,
-    it only writes to the doc and to the database for every metadata of the
-    target mspass object. Return type is a dataframe of metadata
-    for the target mspass objects. The logic is same as Database.save_data().
-    The function is the exact reverse of read_to_dataframe().
-
-    Any errors messages held in the object being saved are always
-    written to documents in MongoDB is a special collection defined in
-    the schema.   Saving object level history is optional.
-
-    There are multiple options described below.  One worth emphasizing is
-    "data_tag".   Such a tag is essential for intermediate saves of
-    a dataset if there is no other unique way to distinguish the
-    data in is current state from data saved earlier.  For example,
-    consider a job that did nothing but read waveform segments spanning
-    a long time period (e.g. day files),cutting out a shorter time window,
-    and then saving windowed data.  Crafting an unambiguous query to
-    find only the windowed data in that situation could be challenging
-    or impossible.  Hence, we recommend a data tag always be used for
-    most saves.
-
-    The mode parameter needs to be understood by all users of this
-    function.  All modes enforce a schema constraint for "readonly"
-    attributes.   An immutable (readonly) attribute by definition
-    should not be changed during processing.   During a save
-    all attributes with a key defined as readonly are tested
-    with a method in the Metadata container that keeps track of
-    any Metadata changes.  If a readonly attribute is found to
-    have been changed it will be renamed with the prefix
-    "READONLYERROR_", saved, and an error posted (e.g. if you try
-    to alter site_lat (a readonly attribute) in a workflow when
-    you save the waveform you will find an entry with the key
-    READONERROR_site_lat.)   In the default 'promiscuous' mode
-    all other attributes are blindly saved to the database as
-    name value pairs with no safeties.  In 'cautious' mode we
-    add a type check.  If the actual type of an attribute does not
-    match what the schema expect, this method will try to fix the
-    type error before saving the data.  If the conversion is
-    successful it will be saved with a complaint error posted
-    to elog.  If it fails, the attribute will not be saved, an
-    additional error message will be posted, and the save
-    algorithm continues.  In 'pedantic' mode, in contrast, all
-    type errors are considered to invalidate the data.
-    Similar error messages to that in 'cautious' mode are posted
-    but any type errors will cause the datum passed as arg 0
-    to be killed. The lesson is saves can leave entries that
-    may need to be examined in elog and when really bad will
-    cause the datum to be marked dead after the save.
-
-    This method can throw an exception but only for errors in
-    usage (i.e. arguments defined incorrectly)
-
-    :param db: the database from which the data are to be written.
-    :type db: :class:`mspasspy.db.database.Database`.
-    :param md_list: the metadata list you want to save.
-    :type md_list: :class:`list`
-    :param mode: This parameter defines how attributes defined with
-        key-value pairs in MongoDB documents are to be handled on reading.
-        By "to be handled" we mean how strongly to enforce name and type
-        specification in the schema for the type of object being constructed.
-        Options are ['promiscuous','cautious','pedantic'] with 'promiscuous'
-        being the default.  See the User's manual for more details on
-        the concepts and how to use this option.
-    :type mode: :class:`str`
-    :param storage_mode: Must be either "gridfs" or "file.  When set to
-        "gridfs" the waveform data are stored internally and managed by
-        MongoDB.  If set to "file" the data will be stored in a file system
-        with the dir and dfile arguments defining a file name.   The
-        default is "gridfs".
-    :type storage_mode: :class:`str`
-    :param format: the format of the file. This can be one of the
-        `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__
-        of ObsPy writer. The default the python None which the method
-        assumes means to store the data in its raw binary form.  The default
-        should normally be used for efficiency.  Alternate formats are
-        primarily a simple export mechanism.  See the User's manual for
-        more details on data export.  Used only for "file" storage mode.
-    :type format: :class:`str`
-    :param overwrite:  If true gridfs data linked to the original
-        waveform will be replaced by the sample data from this save.
-        Default is false, and should be the normal use.  This option
-        should never be used after a reduce operator as the parents
-        are not tracked and the space advantage is likely minimal for
-        the confusion it would cause.   This is most useful for light, stable
-        preprocessing with a set of map operators to regularize a data
-        set before more extensive processing.  It can only be used when
-        storage_mode is set to gridfs.
-    :type overwrite:  boolean
-    :param exclude_keys: Metadata can often become contaminated with
-        attributes that are no longer needed or a mismatch with the data.
-        A type example is the bundle algorithm takes three TimeSeries
-        objects and produces a single Seismogram from them.  That process
-        can, and usually does, leave things like seed channel names and
-        orientation attributes (hang and vang) from one of the components
-        as extraneous baggage.   Use this of keys to prevent such attributes
-        from being written to the output documents.  Not if the data being
-        saved lack these keys nothing happens so it is safer, albeit slower,
-        to have the list be as large as necessary to eliminate any potential
-        debris.
-    :type exclude_keys: a :class:`list` of :class:`str`
-    :param collection: The default for this parameter is the python
-        None.  The default should be used for all but data export functions.
-        The normal behavior is for this writer to use the object
-        data type to determine the schema is should use for any type or
-        name enforcement.  This parameter allows an alernate collection to
-        be used with or without some different name and type restrictions.
-        The most common use of anything other than the default is an
-        export to a diffrent format.
-    :param data_tag: a user specified "data_tag" key.  See above and
-        User's manual for guidance on how the use of this option.
-    :type data_tag: :class:`str`
-    """
-    if mode not in ["promiscuous", "cautious", "pedantic"]:
-        raise MsPASSError(
-            "only promiscuous, cautious and pedantic are supported, but {} is requested.".format(
-                mode
-            ),
-            "Fatal",
-        )
-
-    for md in md_list:
-        # below we try to capture permission issue before writing anything to the database.
-        # However, in the case that a storage is almost full, exceptions can still be
-        # thrown, which could mess up the database record.
-        if storage_mode == "file":
-            if ("dir" not in md) or ("dfile" not in md):
-                raise ValueError("dir or dfile is not specified in data object")
-            dir = os.path.abspath(md["dir"])
-            dfile = md["dfile"]
-            if dir is None:
-                dir = os.getcwd()
-            else:
-                dir = os.path.abspath(dir)
-            if dfile is None:
-                # note although this is a Database member it does not 
-                # reference MongoDB - it uses a uuid module function
-                dfile = db._get_dfile_uuid(
-                    format
-                )  #   If dfile name is not given, or defined in mspass_object, a new uuid will be generated
-            fname = os.path.join(dir, dfile)
-            if os.path.exists(fname):
-                if not os.access(fname, os.W_OK):
-                    raise PermissionError(
-                        "No write permission to the save file: {}".format(fname)
+        data = data.map(db._save_sample_data,
+                    storage_mode=storage_mode,
+                    dir=None,
+                    dfile=None,
+                    format=format,
+                    overwrite=overwrite,
                     )
-            else:
-                # the following loop finds the top level of existing parents to fname
-                # and check for write permission to that directory.
-                for path_item in pathlib.PurePath(fname).parents:
-                    if os.path.exists(path_item):
-                        if not os.access(path_item, os.W_OK | os.X_OK):
-                            raise PermissionError(
-                                "No write permission to the save directory: {}".format(
-                                    dir
-                                )
-                            )
-                        break
 
-        schema = db.metadata_schema
-        if md["object_type"] == "TimeSeries":
-            save_schema = schema.TimeSeries
-            atomic_type = AtomicType.TIMESERIES
+        if cremate:
+            data = data.map(stedronsky.cremate)
         else:
-            save_schema = schema.Seismogram
-            atomic_type = AtomicType.SEISMOGRAM
+            # note we could do bury_the_dead as an option here but it 
+            # seems ill advised as a possible bottleneck
+            # we don't save elog or history here deferring that the next step
+            data = data.map(stedronsky.mummify,post_elog=False,post_history=False)
 
-        # should define wf_collection here because if the mspass_object is dead
-        if collection:
-            wf_collection_name = collection
+        if data_are_atomic:
+            data = data.map(_extract_wfdoc,save_schema,exclude_keys,mode,post_elog=post_elog,post_history=post_history)
+            data = data.map_partition(_partioned_save_wfdoc,db,collection=collection)
         else:
-            # This returns a string that is the collection name for this atomic data type
-            # A weird construct
-            wf_collection_name = save_schema.collection("_id")
-        wf_collection = db[wf_collection_name]
-
-        if md["is_dead"] == False:
-            if exclude_keys is None:
-                exclude_keys = []
-
-            # This method of Metadata returns a list of all
-            # attributes that were changed after creation of the
-            # object to which they are attached.
-            changed_key_list = md.modified()
-
-            copied_metadata = md
-
-            # clear all the aliases
-            # TODO  check for potential bug in handling clear_aliases
-            # and modified method - i.e. keys returned by modified may be
-            # aliases
-            save_schema.clear_aliases(copied_metadata)
-
-            # remove any values with only spaces
-            for k in copied_metadata:
-                if not str(copied_metadata[k]).strip():
-                    copied_metadata.erase(k)
-
-            # remove any defined items in exclude list
-            for k in exclude_keys:
-                if k in copied_metadata:
-                    copied_metadata.erase(k)
-            # the special mongodb key _id is currently set readonly in
-            # the mspass schema.  It would be cleard in the following loop
-            # but it is better to not depend on that external constraint.
-            # The reason is the insert_one used below for wf collections
-            # will silently update an existing record if the _id key
-            # is present in the update record.  We want this method
-            # to always save the current copy with a new id and so
-            # we make sure we clear it
-            if "_id" in copied_metadata:
-                copied_metadata.erase("_id")
-            # Now remove any readonly data
-            for k in copied_metadata.keys():
-                if save_schema.is_defined(k):
-                    if save_schema.readonly(k):
-                        if k in changed_key_list:
-                            newkey = "READONLYERROR_" + k
-                            copied_metadata.change_key(k, newkey)
-                            md["history"].elog.log_error(
-                                "Database.save_data",
-                                "readonly attribute with key="
-                                + k
-                                + " was improperly modified.  Saved changed value with key="
-                                + newkey,
-                                ErrorSeverity.Complaint,
-                            )
-                        else:
-                            copied_metadata.erase(k)
-            # Done editing, now we convert copied_metadata to a python dict
-            # using this Metadata method or the long version when in cautious or pedantic mode
-            insertion_dict = dict()
-            if mode == "promiscuous":
-                # A python dictionary can use Metadata as a constructor due to
-                # the way the bindings were defined
-                insertion_dict = dict(copied_metadata)
-            else:
-                # Other modes have to test every key and type of value
-                # before continuing.  pedantic kills data with any problems
-                # Cautious tries to fix the problem first
-                # Note many errors can be posted - one for each problem key-value pair
-                for k in copied_metadata:
-                    if save_schema.is_defined(k):
-                        if isinstance(copied_metadata[k], save_schema.type(k)):
-                            insertion_dict[k] = copied_metadata[k]
-                        else:
-                            if mode == "pedantic":
-                                md["is_dead"] = True
-                                message = "pedantic mode error:  key=" + k
-                                value = copied_metadata[k]
-                                message += (
-                                    " type of stored value="
-                                    + str(type(value))
-                                    + " does not match schema expectation="
-                                    + str(save_schema.type(k))
-                                )
-                                md["history"].elog.log_error(
-                                    "Database.save_data",
-                                    "message",
-                                    ErrorSeverity.Invalid,
-                                )
-                            else:
-                                # Careful if another mode is added here.  else means cautious in this logic
-                                try:
-                                    # The following convert the actual value in a dict to a required type.
-                                    # This is because the return of type() is the class reference.
-                                    insertion_dict[k] = save_schema.type(k)(
-                                        copied_metadata[k]
-                                    )
-                                except Exception as err:
-                                    #  cannot convert required keys -> kill the object
-                                    if save_schema.is_required(k):
-                                        md["is_dead"] = True
-                                        message = "cautious mode error:  key=" + k
-                                        message += (
-                                            " Required key value could not be converted to required type="
-                                            + str(save_schema.type(k))
-                                            + " actual type="
-                                            + str(type(copied_metadata[k]))
-                                        )
-                                        message += (
-                                            "\nPython error exception message caught:\n"
-                                        )
-                                        message += str(err)
-                                        md["history"].elog.log_error(
-                                            "Database.save",
-                                            message,
-                                            ErrorSeverity.Invalid,
-                                        )
-                                    # cannot convert normal keys -> erase the key
-                                    # TODO should we post a Complaint entry to the elog?
-                                    else:
-                                        copied_metadata.erase(k)
-
-        # Note we jump here immediately if mspass_object was marked dead
-        # on entry.  Data can, however, be killed in metadata section
-        # above so we need repeat the test for live
-        if md["is_dead"] == False:
-            insertion_dict["storage_mode"] = storage_mode
-            gridfs_id = None
-
-            if storage_mode == "file":
-                # TODO:  be sure this can't throw an exception
-                """
-                foff, nbytes = self._save_data_to_dfile(
-                    mspass_object, dir, dfile, format=format
-                )
-                """
-                insertion_dict["dir"] = dir
-                insertion_dict["dfile"] = dfile
-                insertion_dict["foff"] = md["foff"]
-                if format:
-                    insertion_dict["nbytes"] = md["nbytes"]
-                    insertion_dict["format"] = format
-            elif storage_mode == "gridfs":
-                insertion_dict["gridfs_id"] = md["gridfs_id"]
-                # TODO will support url mode later
-                # elif storage_mode == "url":
-                #    pass
-
-            # save history if not empty
-            history_obj_id_name = (
-                db.database_schema.default_name("history_object") + "_id"
-            )
-            history_object_id = None
-            if md["history"].is_empty():
-                # Use this trick in update_metadata too. None is needed to
-                # avoid a TypeError exception if the name is not defined.
-                # could do this with a conditional as an alternative
-                insertion_dict.pop(history_obj_id_name, None)
-            else:
-                # optional history save - only done if history container is not empty
-                history_object_id = _save_history(
-                    db, md, save_schema, atomic_type, alg_name, alg_id
-                )
-                insertion_dict[history_obj_id_name] = history_object_id
-
-            # add tag
-            if data_tag:
-                insertion_dict["data_tag"] = data_tag
-            else:
-                # We need to clear data tag if was previously defined in
-                # this case or a the old tag will be saved with this datum
-                if "data_tag" in insertion_dict:
-                    insertion_dict.erase("data_tag")
-            # We don't want an elog_id in the insertion at this point.
-            # A option to consider is if we need an update after _save_elog
-            # section below to post elog_id back.
-
-            # test will fail here because there might be some Complaint elog post to the wf above
-            # we need to save the elog and get the elog_id
-            # then associate with the wf document so that we could insert in the wf_collection
-
-            # save elogs if the size of elog is greater than 0
-            elog_id = None
-            if md["history"].elog.size() > 0:
-                elog_id_name = db.database_schema.default_name("elog") + "_id"
-                # elog ids will be updated in the wf col when saving metadata
-                elog_id = _save_elog(db, md, save_schema, elog_id=None)
-                insertion_dict[elog_id_name] = elog_id
-
-            # history attribute is redundant
-            insertion_dict.pop("history", None)
-            # finally ready to insert the wf doc - keep the id as we'll need
-            # it for tagging any elog entries
-            wfid = wf_collection.insert_one(insertion_dict).inserted_id
-            # Put wfid into the object's meta as the new definition of
-            # the parent of this waveform
-            md["_id"] = wfid
-
-            # we may probably set the gridfs_id field in the mspass_object
-            if gridfs_id:
-                md["gridfs_id"] = gridfs_id
-            # we may probably set the history_object_id field in the mspass_object
-            if history_object_id:
-                md[history_obj_id_name] = history_object_id
-            # we may probably set the elog_id field in the mspass_object
-            if elog_id:
-                md[elog_id_name] = elog_id
-
-            # Empty error logs are skipped.  When nonzero tag them with tid
-            # just returned
-            if md["history"].elog.size() > 0:
-                # elog_id_name = self.database_schema.default_name('elog') + '_id'
-                # _save_elog uses a  null id as a signal to add a new record
-                # When we land here the record must be new since it is
-                # associated with a new wf document.  elog_id=None is default
-                # but set it explicitly for clarity
-
-                # This is comment out becuase we need to save it before inserting into the wf_collection
-                # elog_id = self._save_elog(mspass_object, elog_id=None)
-
-                # cross reference for elog entry, assoicate the wfid to the elog entry
-                elog_col = db[db.database_schema.default_name("elog")]
-                wf_id_name = wf_collection_name + "_id"
-                filter_ = {"_id": insertion_dict[elog_id_name]}
-                elog_col.update_one(filter_, {"$set": {wf_id_name: md["_id"]}})
-            # When history is enable we need to do an update to put the
-            # wf collection id as a cross-reference.    Any value stored
-            # above with saave_history may be incorrect.  We use a
-            # stock test with the is_empty method for know if history data is present
-            if not md["history"].is_empty():
-                history_object_col = db[
-                    db.database_schema.default_name("history_object")
-                ]
-                wf_id_name = wf_collection_name + "_id"
-                filter_ = {"_id": history_object_id}
-                update_dict = {wf_id_name: wfid}
-                history_object_col.update_one(filter_, {"$set": update_dict})
-
-        else:
-            # We land here when the input is dead or was killed during a
-            # cautious or pedantic mode edit of the metadata.
-            elog_id_name = db.database_schema.default_name("elog") + "_id"
-            if elog_id_name in md:
-                old_elog_id = md[elog_id_name]
-            else:
-                old_elog_id = None
-            elog_id = _save_elog(db, md, save_schema, elog_id=old_elog_id)
-        # Both live and dead data land here.
-
-    # convert list of metadata to dataframe
-    return pd.json_normalize(map(lambda cur: cur.todict(), md_list))
-
-
-def write_files(
-    mspass_object,
-    format=None,
-    storage_mode="file",
-    overwrite=False,
-    gfsh=None,
-):
-    """
-    This is the writer for writing the object to storage. Return type is the
-    metadata of the original object with some more parameters added, including
-    storage_mode, history, whether the object is alive. This function is
-    the reverse of read_files().
-
-    :param mspass_object: the object you want to read.
-    :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-    :param object_doc: document of the object in the database
-    :type object_doc: class:`dict`.
-    :type format: :class:`str`
-    :param storage_mode: Must be either "gridfs" or "file.  When set to
-        "gridfs" the waveform data are stored internally and managed by
-        MongoDB.  If set to "file" the data will be stored in a file system
-        with the dir and dfile arguments defining a file name.   The
-        default is "gridfs".
-    :type storage_mode: :class:`str`
-    :param overwrite:  If true gridfs data linked to the original
-        waveform will be replaced by the sample data from this save.
-        Default is false, and should be the normal use.  This option
-        should never be used after a reduce operator as the parents
-        are not tracked and the space advantage is likely minimal for
-        the confusion it would cause.   This is most useful for light, stable
-        preprocessing with a set of map operators to regularize a data
-        set before more extensive processing.  It can only be used when
-        storage_mode is set to gridfs.
-    :type overwrite:  boolean
-    :param gfsh: GridFS object
-    :type gfsh: :class:`gridfs.GridFS`
-
-    """
-    if not isinstance(mspass_object, (TimeSeries, Seismogram)):
-        raise TypeError("only TimeSeries and Seismogram are supported")
-    if storage_mode not in ["file", "gridfs"]:
-        raise TypeError("Unknown storage mode: {}".format(storage_mode))
-
-    mspass_object["storage_mode"] = storage_mode
-
-    if mspass_object.live:
-        mspass_object["is_dead"] = False
-
-        # FIXME starttime will be automatically created in this function
-        Database._sync_metadata_before_update(mspass_object)
-
-        if storage_mode == "file":
-            foff, nbytes = Database._save_data_to_dfile(
-                mspass_object,
-                mspass_object["dir"],
-                mspass_object["dfile"],
-                format=format,
-            )
-
-            mspass_object["foff"] = foff
-            mspass_object["nbytes"] = nbytes
-        elif storage_mode == "gridfs":
-            if overwrite and "gridfs_id" in mspass_object:
-                gridfs_id = _save_data_to_gridfs(
-                    gfsh, mspass_object, mspass_object["gridfs_id"]
-                )
-            else:
-                gridfs_id = _save_data_to_gridfs(gfsh, mspass_object)
-            mspass_object["gridfs_id"] = gridfs_id
-    else:
-        mspass_object["is_dead"] = True
-
-    md = Metadata(mspass_object)
-    md["history"] = ProcessingHistory(mspass_object)
-    if isinstance(mspass_object, TimeSeries):
-        md["object_type"] = "TimeSeries"
-    else:
-        md["object_type"] = "Seismogram"
-    return md
-
-
-def _save_data_to_gridfs(gfsh, mspass_object, gridfs_id=None):
-    """
-    Save a mspasspy object sample data to MongoDB grid file system. We recommend to use this method
-    for saving a mspasspy object inside MongoDB. This is similar to database._save_data_to_gridfs(),
-    but here we have gfsh as a parameter to avoid using database object.
-
-    :param gfsh: GridFS object
-    :type gfsh: :class:`gridfs.GridFS`
-    :param mspass_object: the target object.
-    :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-    :param gridfs_id: if the data is already stored and you want to update it, you should provide the object id
-    of the previous data, which will be deleted. A new document will be inserted instead.
-    :type gridfs_id: :class:`bson.objectid.ObjectId`.
-    :return inserted gridfs object id.
-    """
-    if gridfs_id and gfsh.exists(gridfs_id):
-        gfsh.delete(gridfs_id)
-    if isinstance(mspass_object, Seismogram):
-        ub = bytes(np.array(mspass_object.data).transpose())
-    else:
-        ub = bytes(mspass_object.data)
-    return gfsh.put(ub)
-
-
-def _save_elog(db, md, update_metadata_def, elog_id=None, collection=None):
-    """
-    Save error log for a metadata object, which contains an error log object with key "history" used to post any
-    errors handled by processing functions. This function will delete the old elog entry if `elog_id` is given.
-
-    :param db: the database from which the data are to be written.
-    :type db: :class:`mspasspy.db.database.Database`.
-    :param md: the metadata of the target object.
-    :type md: :class:`mspasspy.ccore.utility.Metadata`.
-    :param update_metadata_def: the metadata schema to save.
-    :type update_metadata_def: :class:`mspasspy.db.schema.MDSchemaDefinition`.
-    :param elog_id: the previous elog object id to be appended with.
-    :type elog_id: :class:`bson.objectid.ObjectId`
-    :param collection: the collection that you want to save the elogs. If not specified, use the defined
-    collection in the schema.
-    :return: updated elog_id.
-    """
-    wf_id_name = update_metadata_def.collection("_id") + "_id"
-
-    if not collection:
-        collection = db.database_schema.default_name("elog")
-
-    # TODO: Need to discuss whether the _id should be linked in a dead elog entry. It
-    # might be confusing to link the dead elog to an alive wf record.
-    oid = None
-    if "_id" in md:
-        oid = md["_id"]
-
-    elog = md["history"].elog
-    n = elog.size()
-    if n != 0:
-        logdata = []
-        docentry = {"logdata": logdata}
-        errs = elog.get_error_log()
-        jobid = elog.get_job_id()
-        for x in errs:
-            logdata.append(
-                {
-                    "job_id": jobid,
-                    "algorithm": x.algorithm,
-                    "badness": str(x.badness),
-                    "error_message": x.message,
-                    "process_id": x.p_id,
-                }
-            )
-        if oid:
-            docentry[wf_id_name] = oid
-
-        if md["is_dead"]:
-            # history attribute is redundant
-            md.erase("history")
-            docentry["tombstone"] = dict(md)
-
-        if elog_id:
-            # append elog
-            elog_doc = db[collection].find_one({"_id": elog_id})
-            # only append when previous elog exists
-            if elog_doc:
-                # if the same object was updated twice, the elog entry will be duplicated
-                # the following list comprehension line removes the duplicates and preserves
-                # the order. May need some practice to see if such a behavior makes sense.
-                [
-                    elog_doc["logdata"].append(x)
-                    for x in logdata
-                    if x not in elog_doc["logdata"]
-                ]
-                docentry["logdata"] = elog_doc["logdata"]
-                db[collection].delete_one({"_id": elog_id})
-            # note that is should be impossible for the old elog to have tombstone entry
-            # so we ignore the handling of that attribute here.
-            ret_elog_id = db[collection].insert_one(docentry).inserted_id
-        else:
-            # new insertion
-            ret_elog_id = db[collection].insert_one(docentry).inserted_id
-        return ret_elog_id
-
-
-def _save_history(
-    db,
-    md,
-    update_metadata_def,
-    atomic_type,
-    alg_name=None,
-    alg_id=None,
-    collection=None,
-):
-    """
-    Save the processing history of a metadata object, which contains a key "history".
-
-    :param db: the database from which the data are to be written.
-    :type db: :class:`mspasspy.db.database.Database`.
-    :param md: the metadata of the target object.
-    :type md: :class:`mspasspy.ccore.utility.Metadata`.
-    :param update_metadata_def: the metadata schema to save.
-    :type update_metadata_def: :class:`mspasspy.db.schema.MDSchemaDefinition`.
-    :param atomic_type: the atomic type of the target object.
-    :type atomic_type: :class:`mspasspy.ccore.utility.AtomicType`.
-    :param collection: the collection that you want to store the history object. If not specified, use the defined
-    collection in the schema.
-    :return: current history_object_id.
-    """
-    # get the wf id name in the schema
-    wf_id_name = update_metadata_def.collection("_id") + "_id"
-
-    # get the wf id in the mspass object
-    oid = None
-    if "_id" in md:
-        oid = md["_id"]
-
-    if not collection:
-        collection = db.database_schema.default_name("history_object")
-    history_col = db[collection]
-
-    proc_history = md["history"]
-    current_uuid = proc_history.id()  # uuid in the current node
-    current_nodedata = proc_history.current_nodedata()
-    # get the alg_name and alg_id of current node
-    if not alg_id:
-        alg_id = current_nodedata.algid
-    if not alg_name:
-        alg_name = current_nodedata.algorithm
-
-    history_binary = pickle.dumps(proc_history)
-    # todo save jobname jobid when global history module is done
-    try:
-        # construct the insert dict for saving into database
-        insert_dict = {
-            "_id": current_uuid,
-            "processing_history": history_binary,
-            "alg_id": alg_id,
-            "alg_name": alg_name,
-        }
-        if oid:
-            insert_dict[wf_id_name] = oid
-        # insert new one
-        history_col.insert_one(insert_dict)
-    except pymongo.errors.DuplicateKeyError as e:
-        raise MsPASSError(
-            "The history object to be saved has a duplicate uuid", "Fatal"
-        ) from e
-
-    # clear the history chain of the mspass object
-    md["history"].clear_history()
-    # set_as_origin with uuid set to the newly generated id
-    md["history"].set_as_origin(alg_name, alg_id, current_uuid, atomic_type)
-
-    return current_uuid
+            data = data.map(_save_ensemble_wfdocs,db,save_schema,exclude_keys,mode,cremate=cremate)
+        data = data.compute()
+        
+    return data
