@@ -7,43 +7,145 @@ from mspasspy.ccore.seismic import (
     TimeSeriesEnsemble, 
     SeismogramEnsemble,
     )
-from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
+from mspasspy.ccore.utility import (
+    ErrorSeverity, 
+    MsPASSError,
+    Metadata,
+    )
 
 """
 This is a class for handling data marked dead.   The method names are a bit
 tongue in cheek but descriptive.
+
+Concepts of this class are:
+1.  Data marked as "dead" in MsPASS are always considered invalid and 
+    should not be used as part of a final product that is the goal of a workflow.
+2.  What made the data invalid cannot be known without additional information. 
+    In MsPASS the way we always handle adding the additional information is 
+    with the ErrorLogger component of all data objects.  Hence, the error
+    log is the way to sort out problems.
+3.  There are two forms of dead data that need to be handled fundamentally 
+    differently.   (1) Most dead data are expected to be "killed" by 
+    some edit function or a processing algorithm that finds something 
+    wrong that won't allow it to do it's task.   (e.g. Seismogram objects
+    cannot be created from TimeSeries objects without the orientation 
+    angles being defined in the Metadata.)  (2)  Errors created during 
+    construction of a data object that cause the construction to fail.   
+    The definitive example is constructing seismogram/timeseries objects
+    from the MongoDB representation or while reading from a file can fail 
+    for a long list of reasons.  We give the later that colorful name 
+    "abortions" since they die before birth.   
+4.  Ensembles have more complexity than atomic objects because they are 
+    by definition a collection of atomic objects with additional components
+    common to the ensemble.   As a result some methods in this class,
+    notably "bring_out_your_dead" only make sense for atomic data.  There is 
+    also the distinction of an ensemble marked dead versus one or more 
+    members.  An ensemble marked dead is always treated as having all 
+    dead members.
+    
+An additional set of concepts relate to how the undertaker should handle 
+the dead bodies.  These are:
+1.  To `bury` a dead datum means to save the elog data and a copy of any 
+    Metadata attributes to MongoDB.  These are stored in special "cemetery"
+    collection that has no schema constraints.   Every dead datum the 
+    undertaker is told to "bury" will produce a document in one of two 
+    location:  (1) if it is a normal datum the body will be saved in "cemetery"
+    (2) if is an "abortion" the body will be saved in "abortions".
+2.  To `mummify` a dead datum means to not save anything but return only 
+    a shell of the original with a minimal memory footprint.  For atomic 
+    data that means to set the sample array to zero length.  For ensembles 
+    it means to mummify all dead members but leave the mummies in the container.
+    An enembled marked dead passed through mummify will have all it's members
+    mummified.
+3.  To `cremate` a dead datum means to make it disappear with little to no 
+    trace.   When an atomic datum is cremated we return a default constructed 
+    version of the object.   We do that instead of a None to streamline 
+    use of the cremate feature in a parallel workflow.   Some but not all 
+    MsPASS processing functions will corretly handle None input so returning
+    the ashes is preferable to just a memory (None type).  Ensembles are 
+    simpler.  When an ensemble is cremated all dead members are vaporized
+    with no trace.
+    
+A datum that is defined as an "abortion" is handled a bit differently 
+by design.   We take a pro life stance in MsPaSS and view abortions as 
+always a bad thing that need to be minimized and monitored.  For that 
+reason they cannot be "cremated" - that makes no sense anyway since 
+in most cases the sample data in an aborted object are invalid anyway.   
+Data found to be "aborted" (regularized throught private method `is_abortion`)
+are always treated differently an buried in a separate area with the 
+name "abortions".  The document contents also differ slightly.   Note 
+the is no such thing, currently, as an aborted ensemble.   Only atomic 
+data can satisfy that concept.  It is easy to generate an ensemble of 
+all aborted data, most notable when reading with 'mode="pedantic"', 
+but the undertaker treats such ensembles as a collection of atomic objects
+and automatically buries all abortions it finds.  
+
+Documents that are the remnants of dead object saved in two collection.  
+by default normal killed data create records in the "cemetery" collection 
+while aborted data objects produce documents in the "abortions" 
+collection.  All contain an optional "data_tag" defined by the 
+Undertaker on construction.  Use a unique "data_tag" for any job 
+to make the source of the document unambiguous.  A common example is 
+that an Undertaker is defined in Database and the data_tag is passed 
+used by writers.  
+ 
 :author: Prof. Gary L. Pavlis, Dept. Earth and Atmos. Sci., Indiana University
 """
 
 
 class Undertaker:
     """
-    Class to handle dead data.  Primarily for ensembles, but has methods to
-    save elog entries for Seismogram or TimeSeries objects marked dead.
-    It also has am mummify method for reducing memory use for any data object.
-    A concept of this class is any thing received that is live is not
-    changed.   It only handles the dead.
+    Class to handle dead data. Results are stored to two spcial 
+    collections defined by default as "cemetery", for regular dead bodies, 
+    and "abortions" for those defined as abortions.  
+    
+    :param regular_data_collection:  collection where we bury regular 
+    dead bodies.  Default "cemetery"
+    :type regular_data_collection:  string
+    
+    :param aborted_data_collection:  collection where aborted data documents 
+    are buried.   Default "abortions"
+    :type aborted_data_collection:  string
+    
+    :param data_tag:   tag to attach to each document.  Normally would 
+    be the same as the data_tag used for a particular save operation 
+    for data not marked dead.
     """
 
-    def __init__(self, dbin):
+    def __init__(self, dbin,
+                 regular_data_collection="cemetery",
+                 aborted_data_collection="abortions",
+                 data_tag=None,
+                 ):
         """
         Constructor takes only one argument.  Expected to be a 
         mspasspy.db.Database object (the mspass database handle) 
         or it will throw an exception.
         """
+        # shared by all error handlers as initialization
+        message = "Undertaker constructor:  "
         if isinstance(dbin,Database):
             self.db = dbin
             self.dbh = self.db.elog
         else:
-            message = "Undertaker constructor:  "
             message += "arg0 must be a MsPASS Database class (mspasspy.db.Database)\n"
             message += "Type of content passed to constructor={}".format(str(type(dbin)))
             raise TypeError(message)
-            
+        if isinstance(regular_data_collection,str):
+            self.regular_data_collection = regular_data_collection
+        if isinstance(aborted_data_collection,str):
+            self.aborted_data_collection = aborted_data_collection
+        if data_tag:
+            if isinstance(data_tag,str):
+                self.data_tag = data_tag
+            else:
+                message += "Illegal type={} for data tag.  Must be str".format(str(type(data_tag)))
+        else:
+            # allow None type to be carried through - data tag not set in this situation
+            self.data_tag = None
         
     def bury(self, 
                       mspass_object,
-                      collection="cemetery",
                       save_history=True,
                       mummify_atomic_data=True,
                       ):
@@ -92,9 +194,6 @@ class Undertaker:
           (TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble)
           or the method will throw a TypeError.
           
-        :param collection:  MongoDB collection name to save results to.  
-          (default is "cemetery")
-        :type collection: string
         
         :param save_history:  If True and a datum has the optional history 
           data stored with it, the history data will be stored in a 
@@ -113,15 +212,24 @@ class Undertaker:
         # value cannot be saved in MongoDB.   
         if isinstance(mspass_object, (TimeSeries, Seismogram)):
             if mspass_object.dead():
-                if save_elog:
-                    self.db._save_elog(mspass_object,collection=collection)
-                if save_history:
-                    self.db._save_history(mspass_object,alg_name="Undertaker.bury")
-                if mummify_atomic_data:
-                    # these are not defaults.  If we saved the elog and history 
-                    # to the database there is no reason to keep it so we clear
-                    # both with this set of options
-                    self.mummify(mspass_object,post_elog=False,post_history=False)
+                if self._is_abortion(mspass_object):
+                    mspass_object = self.handle_abortion(mspass_object)
+                else:
+                    if save_elog:
+                        # Note confusion that _save_elog actually does 
+                        # the burial in this case.  A bit of a maintenance 
+                        # issue so beware
+                        self.db._save_elog(mspass_object,
+                                       collection=self.regular_data_collection,
+                                       data_tag=self.data_tag,
+                                       )
+                    if save_history:
+                        self.db._save_history(mspass_object,alg_name="Undertaker.bury")
+                    if mummify_atomic_data:
+                        # these are not defaults.  If we saved the elog and history 
+                        # to the database there is no reason to keep it so we clear
+                        # both with this set of options
+                        self.mummify(mspass_object,post_elog=False,post_history=False)
                 return mspass_object
         elif isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
             if mspass_object.dead():
@@ -151,7 +259,7 @@ class Undertaker:
                 if x.live:
                     newens.member.append(x)
                 else:
-                    self.bury(x,collection=collection,save_elog=save_elog,save_history=save_history,mummify_atomic_data=False)
+                    self.bury(x,save_elog=save_elog,save_history=save_history,mummify_atomic_data=False)
             if nlive>0:
                 newens.set_live()
             return newens
@@ -163,7 +271,6 @@ class Undertaker:
                     
     def bury_the_dead(self,
                      mspass_object,
-                      collection="cemetery",
                       save_history=True,
                       mummify_atomic_data=True,
                       ):
@@ -175,7 +282,7 @@ class Undertaker:
         """
         print("Undertaker.bury_the_dead:  depricated method.  Use shorter, equivalent bury method instead")
         print("WARNING:  may disappear in future releases")
-        return self.bury(mspass_object,collection,save_history,mummify_atomic_data)
+        return self.bury(mspass_object,save_history,mummify_atomic_data)
        
 
     def cremate(self, mspass_object):
@@ -195,16 +302,23 @@ class Undertaker:
         :param mspass_object:  Seismic data object.   If not a MsPASS 
           seismic data object a TypeError will be thrown.  
         """
-        if isinstance(mspass_object,TimeSeries):
-            return TimeSeries()
-        elif isinstance(mspass_object, Seismogram):
-            return Seismogram()
+        if isinstance(mspass_object,(TimeSeries,Seismogram)):
+            if mspass_object.live:
+                return mspass_object
+            else:
+                if self._is_abortion(mspass_object):
+                    self.bury(mspass_object)
+                # cremation of atomic objects generate default constructed ashes
+                if isinstance(mspass_object,TimeSeries):
+                    return TimeSeries()
+                else:
+                    return Seismogram
         elif isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
             if mspass_object.dead():
                nlive=0
             # Note the indent here so all ensembles pass through this 
-            # loop.  Buries all dead members and returns a copy of the 
-            # ensembles with the bodies removed
+            # loop.  Buries all abortions and returns a copy of the 
+            # ensembles with the all bodies (regular and abortions) removed
             ensmd = mspass_object._get_ensemble_md()
             if mspass_object.live():
                 nlive = 0
@@ -225,6 +339,11 @@ class Undertaker:
                 for x in mspass_object.member:
                     if x.live:
                         newens.member.append(x)
+                    else:
+                        # Not elif to assure kill and abortion definition 
+                        # are cleanly separated
+                        if self._is_abortion(x):
+                            self.bury(x)
                 if nlive>0:
                     newens.set_live()
             return newens
@@ -236,7 +355,6 @@ class Undertaker:
     def bring_out_your_dead(self, 
                             d, 
                             bury=False,
-                            collection="cemetery",
                             save_history=True,
                             mummify_atomic_data=True,
                       ):
@@ -316,6 +434,10 @@ class Undertaker:
             message = "Undertaker.mumify:  arg0 must be a mspass seismic data object.  Actual type received = "
             message += str(type(mspass_object))
             raise TypeError(message)
+        # Note:  this method currently does nothing special for abortions
+        # That should be ok because all ways we create abortions have 
+        # objects constructed far enough that the algorithm below shouldn't 
+        # fail.   Adding ways to abort could invaldate that assumption
         if mspass_object.dead():
             if post_elog:
                 elog_doc=elog2doc(mspass_object.elog)
@@ -330,14 +452,117 @@ class Undertaker:
                     mspass_object.clear_history()
                 mspass_object.set_npts(0)
             elif isinstance(mspass_object,(TimeSeriesEnsemble,SeismogramEnsemble)):
+                # Note this is executed if the entire ensemble is marked 
+                # dead.  We then force a kill of all members and mummify all
                 for d in mspass_object.member:
+                    d.kill()
                     d = self.mummify(d,post_elog,post_history)
-                    d.kill()   # likely usually redundant but better to be safe
         else:
             # only need to do anything if we land here if this is an ensemble
             # i.e. we will silently return an atomnic object marked live
+            # for ensembles we mummify dead members
             if  isinstance(mspass_object,(TimeSeriesEnsemble,SeismogramEnsemble)):
                 for d in mspass_object.member:
                     if d.dead():
                         d = self.mummify(d,post_elog,post_history)
         return mspass_object
+    
+
+    def handle_abortion(self,doc_or_datum,type=None):
+        """
+        Standardized method to handle what we call abortions (see class overview).
+        
+        This method standardizes handling of abortions.  They are always 
+        saved as a document in a collection set by the constructor 
+        (self.aborted_data_collection) that defaults to "abortions".
+        The documents saved have up to 3 key-value pairs:
+            "tombstone" - contents are a subdocument (dict) of the 
+              wf document that was aborted during construction.
+            "logdata" - any error log records left by the reeader that failed.
+            "type" -  string describing the expected type of data object 
+              that a reader was attempting to construct.   In rare 
+              situations it could be set to "unknown" if 
+              Undertaker._handle_abortion is called on a raw document 
+              and type is not set (see parameters below)
+              
+        :param doc_or_datum:  container defining the aborted fetus.
+        :type doc_or_datum:  Must be one of `TimeSeries`, `Seismogram`, `Metadata`,
+        or a python dict.   For the seismic data objects any content in 
+        the ErrorLogger will be saved.   For dict input an application 
+        should post a message to the dict with some appropriate (custom) 
+        key to preserve a cause for the abortion.  
+        
+        :param type: string description of the type of data object 
+        to associate with dict input.  Default for this parameter is None
+        and it is not referenced at all for normal input of TimeSeries 
+        and Seismogram objects.  It is ONLY referenced if arg0 is a 
+        dict. If type is None and the input is a dict the value assigned to 
+        the "type" key in the abortions document is "unknown".   The 
+        escape for "unknown" makes the method bombproof but may make the 
+        saved documents ambiguous. 
+        
+        :exception:  throws a TypeError if arg0 does not obey type 
+        list described above.  
+        """
+        insertion_doc=dict()
+        if self.data_tag:
+            insertion_doc["data_tag"] = self.data_tag
+        if isinstance(doc_or_datum,(dict,Metadata)):
+            if isinstance(doc_or_datum,Metadata):
+                remains=dict(doc_or_datum)
+            else:
+                remains=doc_or_datum
+            # Note made a list to be consistent with ensemble version
+            insertion_doc={"tombstone": [remains]}
+            if type:
+                insertion_doc["type"] = type
+            else:
+                # this should not be entered but is safer to include it
+                insertion_doc["type"] = "unknown"
+        elif isinstance(doc_or_datum,(TimeSeries,Seismogram)):
+            insertion_doc = {"tombstone" : dict(doc_or_datum)}
+            if doc_or_datum.elog.size() > 0:
+                logdata = elog2doc(doc_or_datum)
+                insertion_doc["logdata"] = logdata
+            insertion_doc["type"] = str(type(doc_or_datum))
+        else:
+            message = "Undertaker.handle_abortion:   Illegal type for arg0={}".format(str(type(doc_or_datum)))
+            message += "Must be a TimeSeries, Seismogram, or a dict"
+            raise TypeError(message)
+            
+        if len(insertion_doc) > 0:
+            self.db[self.aborted_data_collection].insert_one(insertion_doc)
+            
+        return doc_or_datum
+    
+    def _is_abortion(d):
+        """
+        Internal method used to standardize test for whether a datum is 
+        wha we call an "abortion".   The test is trivial in this case 
+        because of the use of the "is_abortion" Metadata attribute in 
+        our readers.   Could be more complex so this design assures 
+        separation of the concept from the implementation.
+        :param d:  datum to be tested.
+        :type d: TimeSeries or Seismogram.  We do test for this as the 
+        cost is small and a TypeError will be thrown if d is not either of 
+        these types.  Considered bypassing the test but better to 
+        make the package more robust.
+        
+        :return: boolean True if datum is an abortion, False othewise.
+        """
+        if isinstance(d,(TimeSeries,Seismogram)):
+            if d.is_defined("is_abortion"):
+                if d["is_abortion"]:
+                    return True
+                else:
+                    return False
+            else:
+                message = "Warning:  dead datum has is_abortion attribute undefined - assumed False\n"
+                message += "MsPASS readers should always set this attribute"
+                err = MsPASSError("Undertaker._is_abortion",message,ErrorSeverity.Complaint)
+                d.elog.log_error(err)
+                return True
+        else:
+            message = "Undertaker._is_abortion:  received an input that is an invalid type - must be either a TimeSeries or Seismogram object"
+            raise TypeError(message)
+            
