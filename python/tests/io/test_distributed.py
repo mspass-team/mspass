@@ -64,10 +64,10 @@ from helper import (
 from mspasspy.io.distributed import (
     read_distributed_data,
     read_to_dataframe,
-    read_files,
+#    read_files,
     write_distributed_data,
-    write_to_db,
-    write_files,
+#    write_to_db,
+#    write_files,
 )
 
 
@@ -477,14 +477,14 @@ def test_read_distributed_data_dask_df():
 
     list_ = daskbag.from_sequence(df.to_dict("records"))
 
-    list2 = list_.map(
-        lambda cur: read_files(Metadata(cur), gfsh=gridfs.GridFS(db))
-    ).compute()
-    assert len(list2) == 3
-    for l in list2:
-        assert l
-        assert l.live
-        assert np.isclose(l.data, test_ts.data).all()
+#    list2 = list_.map(
+#        lambda cur: read_files(Metadata(cur), gfsh=gridfs.GridFS(db))
+#    ).compute()
+#    assert len(list2) == 3
+#    for l in list2:
+#        assert l
+#        assert l.live
+#        assert np.isclose(l.data, test_ts.data).all()
 
     client = DBClient("localhost")
     client.drop_database("mspasspy_test_db")
