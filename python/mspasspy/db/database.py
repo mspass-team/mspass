@@ -67,9 +67,9 @@ from mspasspy.ccore.utility import (
 )
 from mspasspy.db.collection import Collection
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
-from mspasspy.db.normalize import BasicMatcher, ObjectIdDBMatcher
+#from mspasspy.db.normalize import BasicMatcher, ObjectIdDBMatcher
 from mspasspy.util.converter import Textfile2Dataframe
-from mspasspy.util.Undertaker import Undertaker
+#from mspasspy.util.Undertaker import Undertaker
 
 
 class Database(pymongo.database.Database):
@@ -130,6 +130,11 @@ class Database(pymongo.database.Database):
                 self.metadata_schema = MetadataSchema(md_schema)
             else:
                 self.metadata_schema = MetadataSchema()
+        # This import has to appear hear to avoid a circular import problem
+        # the name stedronsky is a programming joke - name of funeral director
+        # in the home town of glp
+        from mspasspy.util.Undertaker import Undertaker
+        self.stedronsky = Undertaker(self)
 
     def __getstate__(self):
         ret = self.__dict__.copy()
@@ -679,7 +684,6 @@ class Database(pymongo.database.Database):
         dfile=None,
         format=None,
         overwrite=False,
-        undertaker=None,
         exclude_keys=None,
         collection=None,
         data_tag=None,
@@ -862,24 +866,15 @@ class Database(pymongo.database.Database):
             message = "Database.save_data:  Illegal value of mode={}\n".format(mode)
             message += "Must be one one of the following:  promiscuous, cautious, or pedantic"
             raise MsPASSError(message,"Fatal")
-        # stedronsky is a programming joke - funeral home director from gp childhood
-        if undertaker is None:
-            stedronsky = Undertaker(self.db)
-        else:
-            if isinstance(undertaker,Undertaker):
-                stedronsky = undertaker
-            else:
-                message = "Database.save_data:  illegal type for undertaker arguement of {}\n".format(str(type(undertaker)))
-                message += "Must be None or an instance of mspasspy.util.Undertaker.Undertaker"
         
 
         if mspass_object.live:
             # We remove dead bodies from ensembles to simplify saving 
             # data below.   
             if isinstance(mspass_object,(TimeSeriesEnsemble, SeismogramEnsemble)):
-                mspass_object, bodies = stedronsky.bring_out_your_dead(mspass_object)
+                mspass_object, bodies = self.stedronsky.bring_out_your_dead(mspass_object)
                 if len(bodies.member)>0:
-                    stedronsky.bury_the_dead(bodies)
+                    self.stedronsky.bury_the_dead(bodies)
             # schema isn't needed for handling the dead, but we do need it 
             # for creating wf documents
             schema = self.metadata_schema
@@ -942,7 +937,7 @@ class Database(pymongo.database.Database):
             # to assure there are not values that will cause MongoDB 
             # to throw an exception when the tombstone subdocument 
             # is written.
-            mspass_object = stedronsky.bury_the_dead(mspass_object)
+            mspass_object = self.stedronsky.bury_the_dead(mspass_object)
 
         if self.return_data:
             return mspass_object
@@ -6650,9 +6645,29 @@ def parse_normlist(input_nlist,db)->list:
     """
     Parses a list of multiple accepted types to return a list of Matchers.
     
-    
-
+    This function is more or less a translator to create a list of 
+    subclasses of the BasicMatcher class used for generic normalization. 
+    The input list (input_nlist) can be one of two things.  If the 
+    list is a set of strings the strings are assumed to define 
+    collection names.  It then constructs a database-driven 
+    matcher class using the ObjectId method that is the stock 
+    MongoDB indexing method.   Specifically, for each collection 
+    name it creates an instance of the generic ObjectIdDBMatcher 
+    class pointing to the named collection.   The other allowed 
+    type for the members of the input list are children of the
+    base class called `BasicMatcher` defined in spasspy.db.normalize.  
+    `BasicMatcher` abstracts the task required for normalization 
+    and provides a generic mechanism to load normalization data
+    including data defined outside of MongoDB (e.g. a pandas DataFrame).
+    If the list contains anything but a string or a child of 
+    BasicMatcher the function will abort throwing a TypeError 
+    exception.  On success it returns a list of children of 
+    `BasicMatcher` that can be used to normalize any wf 
+    document retried from MongoDB assuming the matching 
+    algorithm is valid. 
     """
+    # This import has to appear here to avoid a circular import
+    from mspasspy.db.normalize import BasicMatcher, ObjectIdDBMatcher
     normalizer_list = []
     # Need this for backward compatibility for site, channel, and source
     # These lists are more restricitive than original algorithm but 
