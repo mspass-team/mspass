@@ -554,7 +554,7 @@ class Database(pymongo.database.Database):
         
 
         if reading_atomic_data:
-            md, live, elog = doc2md(doc,
+            md, live, elog = doc2md(object_doc,
                                     database_schema,
                                     read_metadata_schema,
                                     wf_collection,
@@ -634,6 +634,8 @@ class Database(pymongo.database.Database):
             if len(abortions)>0:
                 for md in abortions:
                     self.stedronsky.handle_abortion(md)
+            # TODO:   needs a special branch to handle loading ensemble files
+            # That funcionality got lost in the translation for v2
             if live and members_expected>0:
                 for md in mdlist:
                     d = self._construct_atomic_object(md,
@@ -645,7 +647,7 @@ class Database(pymongo.database.Database):
                                                     aws_secret_access_key,
                                                     )
                     if d.live:
-                        ensemble.append(d)
+                        ensemble.member.append(d)
                     else:
                         self.stedronsky.handle_abortion(d)
                 if len(ensemble.member)>0:
@@ -658,8 +660,9 @@ class Database(pymongo.database.Database):
                 if len(ensemble.member)>0:
                     ensemble.set_live()
                     # We use this method to load ensemble metadata
-                    ensmd = Metadata(ensemble_metadata)
-                    mspass_object.update_metadata(ensmd)
+                    if len(ensemble_metadata)>0:
+                        ensmd = Metadata(ensemble_metadata)
+                        ensemble.update_metadata(ensmd)
             else:
                 # Default constructed container assumed marked dead
                 if object_type is TimeSeries:
@@ -939,7 +942,7 @@ class Database(pymongo.database.Database):
             # is written.
             mspass_object = self.stedronsky.bury_the_dead(mspass_object)
 
-        if self.return_data:
+        if return_data:
             return mspass_object
         else:
             retdict=dict()
@@ -3341,6 +3344,7 @@ class Database(pymongo.database.Database):
     ):
         """
         Read the stored data from a file and loads it into a mspasspy object.
+        Sets data live on success.  If dead it failed.
 
         :param mspass_object: the target object.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -3369,6 +3373,9 @@ class Database(pymongo.database.Database):
                         mspass_object.elog.log_error(
                             "_read_data_from_dfile", message, ErrorSeverity.Complaint
                         )
+                        mspass_object.kill()
+                    else:
+                        mspass_object.set_live()
                 except MsPASSError as merr:
                     # Errors thrown must always cause a failure
                     raise MsPASSError(
@@ -3386,6 +3393,9 @@ class Database(pymongo.database.Database):
                         mspass_object.elog.log_error(
                             "_read_data_from_dfile", message, ErrorSeverity.Complaint
                         )
+                        mspass_object.kill()
+                    else:
+                        mspass_object.set_live()
                 except MsPASSError as merr:
                     # Errors thrown must always cause a failure
                     raise MsPASSError(
@@ -3427,6 +3437,10 @@ class Database(pymongo.database.Database):
                     mspass_object.npts = len(tr_data)
                     mspass_object.data = DoubleVector(tr_data)
                     mspass_object = Trace2TimeSeries(tr)
+                    if mspass_object.npts>0:
+                        mspass_object.set_live()
+                    else:
+                        mspass_object.kill()  # probably not necessary but clearer
                 elif isinstance(mspass_object, Seismogram):
                     # This was previous form.   The toSeismogram run as a
                     # method is an unnecessary confusion and I don't think
@@ -3439,6 +3453,10 @@ class Database(pymongo.database.Database):
                     sm = st.toSeismogram(cardinal=True)
                     mspass_object.npts = sm.data.columns()
                     mspass_object.data = sm.data
+                    if mspass_object.npts>0:
+                        mspass_object.set_live()
+                    else:
+                        mspass_object.kill()  # probably not necessary but clearer
 
     @staticmethod
     def _save_data_to_dfile(
@@ -3585,6 +3603,11 @@ class Database(pymongo.database.Database):
             mspass_object.data = dmatrix(np_arr)
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
+        # this is not a error proof test for validity, but best I can do here
+        if mspass_object.npts>0:
+            mspass_object.set_live()
+        else:
+            mspass_object.kill()
 
     @staticmethod
     def _read_data_from_s3_continuous(
@@ -3654,6 +3677,12 @@ class Database(pymongo.database.Database):
                 sm = st.toSeismogram(cardinal=True)
                 mspass_object.npts = sm.data.columns()
                 mspass_object.data = sm.data
+                
+            # this is not a error proof test for validity, but best I can do here
+            if mspass_object.npts>0:
+                mspass_object.set_live()
+            else:
+                mspass_object.kill()
 
         except botocore.exceptions.ClientError as e:
             if e.response["Error"]["Code"] == "404":
@@ -3715,6 +3744,12 @@ class Database(pymongo.database.Database):
                 sm = st.toSeismogram(cardinal=True)
                 mspass_object.npts = sm.data.columns()
                 mspass_object.data = sm.data
+                
+            # this is not a error proof test for validity, but best I can do here
+            if mspass_object.npts>0:
+                mspass_object.set_live()
+            else:
+                mspass_object.kill()
 
         except Exception as e:
             raise MsPASSError("Error while read data from s3_lambda.", "Fatal") from e
@@ -3808,6 +3843,11 @@ class Database(pymongo.database.Database):
                 sm = st.toSeismogram(cardinal=True)
                 mspass_object.npts = sm.data.columns()
                 mspass_object.data = sm.data
+            # this is not a error proof test for validity, but best I can do here
+            if mspass_object.npts>0:
+                mspass_object.set_live()
+            else:
+                mspass_object.kill()
 
     @staticmethod
     def _read_data_from_fdsn(mspass_object):
@@ -3840,6 +3880,11 @@ class Database(pymongo.database.Database):
             sm = st.toSeismogram(cardinal=True)
             mspass_object.npts = sm.data.columns()
             mspass_object.data = sm.data
+        # this is not a error proof test for validity, but best I can do here
+        if mspass_object.npts>0:
+            mspass_object.set_live()
+        else:
+            mspass_object.kill()
 
     @staticmethod
     def _read_data_from_url(mspass_object, url, format=None):
@@ -3883,6 +3928,11 @@ class Database(pymongo.database.Database):
             mspass_object.data = sm.data
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
+        # this is not a error proof test for validity, but best I can do here
+        if mspass_object.npts>0:
+            mspass_object.set_live()
+        else:
+            mspass_object.kill()
 
     @staticmethod
     def _extract_locdata(chanlist):
@@ -5990,6 +6040,97 @@ class Database(pymongo.database.Database):
         temp_uuid = str(uuid.uuid4())
         dfile = temp_uuid + "-" + format
         return dfile
+    
+    def _construct_atomic_object(self, md,object_type,
+                                  merge_method, merge_fill_value, merge_interpolation_samples,
+                                  aws_access_key_id, aws_secret_access_key,
+                                  ):
+        try:
+            # Note a CRITICAL feature of the Metadata constructors
+            # for both of these objects is that they allocate the
+            # buffer for the sample data and initialize it to zero.
+            # This allows sample data readers to load the buffer without
+            # having to handle memory management.
+            if object_type is TimeSeries:
+                mspass_object = TimeSeries(md)
+            else:
+                # api mismatch here.  This ccore Seismogram constructor
+                # had an ancestor that had an option to read data here.
+                # we never do that here
+                mspass_object = Seismogram(md, False)
+        except MsPASSError as merr:
+            # if the constructor fails mspass_object will be invalid
+            # To preserve the error we have to create a shell to hold the error
+            if object_type is TimeSeries:
+                mspass_object = TimeSeries()
+            else:
+                mspass_object = Seismogram()
+            # Default constructors leaves result marked dead so below should work
+            mspass_object.elog.log_error(merr)
+            return mspass_object
+
+        if md.is_defined("storage_mode"):
+            storage_mode = md["storage_mode"]
+        else:
+            # hard code this default
+            storage_mode = "gridfs"
+            
+        if storage_mode == "file":
+            if md.is_defined("format"):
+                format = md["format"]
+            else:
+                # Reader uses this as a signal to use raw binary fread C function
+                format = None
+            #TODO:  really should check for all required md values and 
+            # do a kill with an elog message instead of depending on this to abort
+            if format:
+                self._read_data_from_dfile(
+                            mspass_object,
+                            md["dir"],
+                            md["dfile"],
+                            md["foff"],
+                            nbytes=md["nbytes"],
+                            format=md["format"],
+                            merge_method=merge_method,
+                            merge_fill_value=merge_fill_value,
+                            merge_interpolation_samples=merge_interpolation_samples,
+                    )
+            else:
+                self._read_data_from_dfile(
+                            mspass_object,
+                            md["dir"],
+                            md["dfile"],
+                            md["foff"],
+                            merge_method=merge_method,
+                            merge_fill_value=merge_fill_value,
+                            merge_interpolation_samples=merge_interpolation_samples,
+                        )
+        elif storage_mode == "gridfs":
+            self._read_data_from_gridfs(mspass_object, md["gridfs_id"])
+        elif storage_mode == "url":
+            self._read_data_from_url(
+                        mspass_object,
+                        md["url"],
+                        format=None if "format" not in md else md["format"],
+                    )
+        elif storage_mode == "s3_continuous":
+            self._read_data_from_s3_continuous(
+                        mspass_object, aws_access_key_id, aws_secret_access_key
+                    )
+        elif storage_mode == "s3_lambda":
+            self._read_data_from_s3_lambda(
+                        mspass_object, aws_access_key_id, aws_secret_access_key
+                    )
+        elif storage_mode == "fdsn":
+            self._read_data_from_fdsn(mspass_object)
+        else:
+            raise TypeError("Unknown storage mode: {}".format(storage_mode))
+
+                
+
+        mspass_object.clear_modified()
+        return mspass_object
+
 
 
 def index_mseed_file_parallel(db, *arg, **kwargs):
@@ -6550,97 +6691,6 @@ def doclist2mdlist(doclist,
     return [mdlist, live, ensemble_elog, bodies]
 
 
-def _construct_atomic_object(self, md,object_type,
-                              merge_method, merge_fill_value, merge_interpolation_samples,
-                              aws_access_key_id, aws_secret_access_key,
-                              ):
-    try:
-        # Note a CRITICAL feature of the Metadata constructors
-        # for both of these objects is that they allocate the
-        # buffer for the sample data and initialize it to zero.
-        # This allows sample data readers to load the buffer without
-        # having to handle memory management.
-        if object_type is TimeSeries:
-            mspass_object = TimeSeries(md)
-        else:
-            # api mismatch here.  This ccore Seismogram constructor
-            # had an ancestor that had an option to read data here.
-            # we never do that here
-            mspass_object = Seismogram(md, False)
-    except MsPASSError as merr:
-        # if the constructor fails mspass_object will be invalid
-        # To preserve the error we have to create a shell to hold the error
-        if object_type is TimeSeries:
-            mspass_object = TimeSeries()
-        else:
-            mspass_object = Seismogram()
-        # Default constructors leaves result marked dead so below should work
-        mspass_object.elog.log_error(merr)
-        return mspass_object
-
-    if md.is_defined("storage_mode"):
-        storage_mode = md["storage_mode"]
-    else:
-        # hard code this default
-        storage_mode = "gridfs"
-        
-    if storage_mode == "file":
-        if md.is_defined("format"):
-            format = md["format"]
-        else:
-            # Reader uses this as a signal to use raw binary fread C function
-            format = None
-        #TODO:  really should check for all required md values and 
-        # do a kill with an elog message instead of depending on this to abort
-        if format:
-            self._read_data_from_dfile(
-                        mspass_object,
-                        md["dir"],
-                        md["dfile"],
-                        md["foff"],
-                        nbytes=md["nbytes"],
-                        format=md["format"],
-                        merge_method=merge_method,
-                        merge_fill_value=merge_fill_value,
-                        merge_interpolation_samples=merge_interpolation_samples,
-                )
-        else:
-            self._read_data_from_dfile(
-                        mspass_object,
-                        md["dir"],
-                        md["dfile"],
-                        md["foff"],
-                        merge_method=merge_method,
-                        merge_fill_value=merge_fill_value,
-                        merge_interpolation_samples=merge_interpolation_samples,
-                    )
-    elif storage_mode == "gridfs":
-        self._read_data_from_gridfs(mspass_object, md["gridfs_id"])
-    elif storage_mode == "url":
-        self._read_data_from_url(
-                    mspass_object,
-                    md["url"],
-                    format=None if "format" not in md else md["format"],
-                )
-    elif storage_mode == "s3_continuous":
-        self._read_data_from_s3_continuous(
-                    mspass_object, aws_access_key_id, aws_secret_access_key
-                )
-    elif storage_mode == "s3_lambda":
-        self._read_data_from_s3_lambda(
-                    mspass_object, aws_access_key_id, aws_secret_access_key
-                )
-    elif storage_mode == "fdsn":
-        self._read_data_from_fdsn(mspass_object)
-    else:
-        raise TypeError("Unknown storage mode: {}".format(storage_mode))
-
-            
-
-    mspass_object.clear_modified()
-    return mspass_object
-
-
 def parse_normlist(input_nlist,db)->list:
     """
     Parses a list of multiple accepted types to return a list of Matchers.
@@ -6735,3 +6785,4 @@ def parse_normlist(input_nlist,db)->list:
         normalizer_list.append(this_normalizer)
         
     return normalizer_list
+
