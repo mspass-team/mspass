@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from mspasspy.db import Database, elog2doc, history2doc
+from mspasspy.db.database import Database, elog2doc, history2doc
 from mspasspy.ccore.seismic import (
     TimeSeries,
     Seismogram,

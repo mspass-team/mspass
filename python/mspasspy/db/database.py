@@ -478,10 +478,9 @@ class Database(pymongo.database.Database):
             )
 
         if normalize is None:
-            normalize = []
-            normalizer_list=None
+            normalizer_list=[]
         elif len(normalize)==0:
-            normalizer_list = None
+            normalizer_list = []
         else:
             normalizer_list = parse_normlist(normalize, self.db)
            
@@ -906,7 +905,7 @@ class Database(pymongo.database.Database):
                                     )
             # ensembles need to loop over members to do the atomic operations 
             # remaining.  Hence, this conditional
-            if isinstance(mspass_object,(TimeSeries,Seismogram())):
+            if isinstance(mspass_object,(TimeSeries,Seismogram)):
                 
                 mspass_object = self._atomic_save_all_documents(
                                             mspass_object,
@@ -916,6 +915,7 @@ class Database(pymongo.database.Database):
                                             wf_collection,
                                             save_history,
                                             data_tag,
+                                            storage_mode,
                                             alg_name,
                                             alg_id,
                                     )
@@ -932,6 +932,7 @@ class Database(pymongo.database.Database):
                                             wf_collection,
                                             save_history,
                                             data_tag,
+                                            storage_mode,
                                             alg_name,
                                             alg_id,
                                         )
@@ -3189,6 +3190,12 @@ class Database(pymongo.database.Database):
         history_col = self[collection]
 
         proc_history = ProcessingHistory(mspass_object)
+        current_nodedata = proc_history.current_nodedata()
+        # get the alg_name and alg_id of current node
+        if not alg_id:
+            alg_id = current_nodedata.algid
+        if not alg_name:
+            alg_name = current_nodedata.algorithm
         # Global History implemetnation should allow adding job_name 
         # and job_id to this function call.  For now they are dropped
         insert_dict = history2doc(proc_history,alg_id=alg_id,alg_name=alg_name)
@@ -3208,7 +3215,8 @@ class Database(pymongo.database.Database):
         # clear the history chain of the mspass object
         mspass_object.clear_history()
         # set_as_origin with uuid set to the newly generated id
-        mspass_object.set_as_origin(alg_name, alg_id, current_uuid, atomic_type)
+        # Note we have to convert to a string to match C++ function type
+        mspass_object.set_as_origin(alg_name, alg_id, str(current_uuid), atomic_type)
 
         return current_uuid
 
@@ -5608,6 +5616,7 @@ class Database(pymongo.database.Database):
                                    wf_collection,
                                    save_history,
                                    data_tag,
+                                   storage_mode,
                                    alg_name,
                                    alg_id,
                                    ):
@@ -5641,6 +5650,11 @@ class Database(pymongo.database.Database):
             # this case or a the old tag will be saved with this datum
             if "data_tag" in insertion_dict:
                         insertion_dict.erase("data_tag")
+        if storage_mode:
+            insertion_dict["storage_mode"] = storage_mode
+        else:
+            # gridfs default
+            insertion_dict["storage_mode"] = "gridfs"
         if save_history:       
             history_obj_id_name = (
                     self.database_schema.default_name("history_object") + "_id"
