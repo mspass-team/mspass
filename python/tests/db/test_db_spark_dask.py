@@ -890,7 +890,7 @@ class TestDatabase:
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, "1", "deepcopy")
         # insert ts into the database
-        res_ts = self.db.save_data(ts, mode="cautious", storage_mode="gridfs")
+        res_ts = self.db.save_data(ts, mode="cautious", storage_mode="gridfs", return_data=True)
         assert ts.live
         assert not "storage_mode" in ts
         # change read only attribute to create a elog entry
@@ -949,7 +949,7 @@ class TestDatabase:
         fail_seis = self.db.read_data(
             ObjectId(), mode="cautious", normalize=["site", "source"]
         )
-        assert not fail_seis
+        assert fail_seis.dead()
 
         # tests for Seismogram
         promiscuous_seis = copy.deepcopy(self.test_seis)
@@ -964,6 +964,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         #  old code had this which was used to signal no errors
         # revision returns a valid objectid on success and a live
@@ -989,14 +990,14 @@ class TestDatabase:
 
         cautious_seis.put_string("npts", "xyz")
         res_seis = self.db.save_data(
-            cautious_seis, mode="cautious", storage_mode="gridfs"
+            cautious_seis, mode="cautious", storage_mode="gridfs", return_data=True
         )
         assert not res_seis.live
         assert not cautious_seis.live
 
         pedantic_seis.put_string("sampling_rate", "xyz")
         res_seis = self.db.save_data(
-            pedantic_seis, mode="pedantic", storage_mode="gridfs"
+            pedantic_seis, mode="pedantic", storage_mode="gridfs", return_data=True
         )
         assert not res_seis.live
         assert not pedantic_seis.live
@@ -1037,6 +1038,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert res_seis.live
         assert cautious_seis.live
@@ -1058,7 +1060,7 @@ class TestDatabase:
         cautious_seis.put_string("npts", "255")
         logging_helper.info(cautious_seis, "2", "save_data")
         res_seis = self.db.save_data(
-            cautious_seis, mode="promiscuous", storage_mode="gridfs"
+            cautious_seis, mode="promiscuous", storage_mode="gridfs", return_data=True
         )
         assert res_seis.live
         assert cautious_seis.live
@@ -1072,7 +1074,7 @@ class TestDatabase:
         non_exist_id = ObjectId()
         cautious_seis["_id"] = non_exist_id
         logging_helper.info(cautious_seis, "3", "save_data")
-        res_seis = self.db.save_data(cautious_seis, mode="cautious")
+        res_seis = self.db.save_data(cautious_seis, mode="cautious",return_data=True)
         assert res_seis.live
         assert cautious_seis.live
         assert "_id" in cautious_seis
@@ -1086,6 +1088,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert res_seis.live
         assert pedantic_seis.live
@@ -1105,13 +1108,13 @@ class TestDatabase:
         non_exist_id = ObjectId()
         pedantic_seis["_id"] = non_exist_id
         logging_helper.info(pedantic_seis, "3", "save_data")
-        res_seis = self.db.save_data(pedantic_seis, mode="pedantic")
+        res_seis = self.db.save_data(pedantic_seis, mode="pedantic", return_data=True)
         # save is unsuccessful because sampling_rate has type str
         assert not res_seis.live
         # no attribute errors
         pedantic_seis.put_double("sampling_rate", 1.0)
         pedantic_seis.set_live()
-        save_res = self.db.save_data(pedantic_seis, mode="pedantic")
+        save_res = self.db.save_data(pedantic_seis, mode="pedantic", return_data=True)
         assert pedantic_seis.live
         assert "_id" in pedantic_seis
         assert not pedantic_seis["_id"] == non_exist_id
@@ -1179,6 +1182,7 @@ class TestDatabase:
             storage_mode="gridfs",
             exclude_keys=["extra2"],
             data_tag="tag1",
+            return_data=True,
         )
         self.db.database_schema.set_default("wf_TimeSeries", "wf")
         # test mismatch data_tag
@@ -1204,7 +1208,7 @@ class TestDatabase:
         dummy_ts = copy.deepcopy(self.test_ts)
         logging_helper.info(dummy_ts, "1", "deepcopy")
         self.db.save_data(
-            dummy_ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            dummy_ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert not self.db.read_data(
             dummy_ts["_id"],
@@ -1245,7 +1249,7 @@ class TestDatabase:
         ignore_changed_test_ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ignore_changed_test_ts, "1", "deepcopy")
         ignore_changed_test_ts.clear_modified()
-        self.db.save_data(ignore_changed_test_ts, mode="promiscuous")
+        self.db.save_data(ignore_changed_test_ts, mode="promiscuous", return_data=True)
         ignore_changed_test_ts2 = self.db["wf_TimeSeries"].find_one(
             {"_id": ignore_changed_test_ts["_id"]}
         )
@@ -1259,7 +1263,7 @@ class TestDatabase:
         non_exist_id = ObjectId()
         promiscuous_seis["_id"] = non_exist_id
         logging_helper.info(promiscuous_seis, "3", "save_data")
-        res_seis = self.db.save_data(promiscuous_seis, mode="promiscuous")
+        res_seis = self.db.save_data(promiscuous_seis, mode="promiscuous", return_data=True)
         assert res_seis.live
         assert promiscuous_seis.live
         assert "_id" in promiscuous_seis
@@ -1283,6 +1287,7 @@ class TestDatabase:
             dir="./python/tests/data/",
             dfile="test_db_output",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         self.db.database_schema.set_default("wf_Seismogram", "wf")
         promiscuous_seis2 = self.db.read_data(
@@ -1306,6 +1311,7 @@ class TestDatabase:
             dfile="test_db_output",
             format="mseed",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         self.db.database_schema.set_default("wf_Seismogram", "wf")
         promiscuous_seis2 = self.db.read_data(
@@ -1329,6 +1335,7 @@ class TestDatabase:
             dir="./python/tests/data/",
             format="mseed",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         self.db.database_schema.set_default("wf_Seismogram", "wf")
         promiscuous_seis2 = self.db.read_data(
@@ -1347,7 +1354,7 @@ class TestDatabase:
             ValueError, match="dir or dfile is not specified in data object"
         ):
             self.db.save_data(
-                promiscuous_seis2, mode="promiscuous", storage_mode="file"
+                promiscuous_seis2, mode="promiscuous", storage_mode="file", return_data=True
             )
         promiscuous_seis2["dir"] = "/"
         promiscuous_seis2["dfile"] = "test_db_output"
@@ -1355,7 +1362,7 @@ class TestDatabase:
             PermissionError, match="No write permission to the save directory"
         ):
             self.db.save_data(
-                promiscuous_seis2, mode="promiscuous", storage_mode="file"
+                promiscuous_seis2, mode="promiscuous", storage_mode="file", return_data=True
             )
 
         # url
@@ -1374,7 +1381,7 @@ class TestDatabase:
         # save with a dead object
         promiscuous_seis.live = False
         logging_helper.info(promiscuous_seis, "2", "save_data")
-        self.db.save_data(promiscuous_seis, mode="promiscuous")
+        self.db.save_data(promiscuous_seis, mode="promiscuous", return_data=True)
         elog_doc = self.db["elog"].find_one(
             {
                 "wf_Seismogram_id": promiscuous_seis["_id"],
@@ -1399,6 +1406,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             collection="wf_test",
+            return_data=True,
         )
         promiscuous_seis2 = self.db2.read_data(
             promiscuous_seis["_id"],
@@ -1474,7 +1482,7 @@ class TestDatabase:
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, "1", "deepcopy")
         ts["site_id"] = missing_net_site_id
-        self.db.save_data(ts, mode="promiscuous", storage_mode="gridfs")
+        self.db.save_data(ts, mode="promiscuous", storage_mode="gridfs", return_data=True)
         self.db.database_schema.set_default("wf_TimeSeries", "wf")
         missing_normal_ts = self.db.read_data(ts["_id"], normalize=["site"])
         assert missing_normal_ts.live
@@ -1497,7 +1505,7 @@ class TestDatabase:
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, "1", "deepcopy")
         ts["site_id"] = missing_lat_site_id
-        self.db.save_data(ts, mode="promiscuous", storage_mode="gridfs")
+        self.db.save_data(ts, mode="promiscuous", storage_mode="gridfs", return_data=True)
         missing_required_ts = self.db.read_data(ts["_id"], normalize=["site"])
         assert missing_required_ts.live
         assert "site_lat" not in missing_required_ts
@@ -1545,7 +1553,7 @@ class TestDatabase:
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, "1", "deepcopy")
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
         assert save_res.live
@@ -1590,6 +1598,7 @@ class TestDatabase:
             dir="./python/tests/data/",
             dfile="test_db_output_1",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
 
@@ -1615,6 +1624,7 @@ class TestDatabase:
             dir="./python/tests/data/",
             dfile="test_db_output_1",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         save_res2 = self.db.save_data(
             ts2,
@@ -1623,6 +1633,7 @@ class TestDatabase:
             dir="./python/tests/data/",
             dfile="test_db_output_1",
             exclude_keys=["extra2"],
+            return_data=True,
         )
 
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -1670,11 +1681,11 @@ class TestDatabase:
         ts2["starttime"] = "123"
 
         save_res = self.db.save_data(
-            ts1, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts1, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert save_res.live
         save_res = self.db.save_data(
-            ts2, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts2, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert save_res.live
 
@@ -1710,7 +1721,7 @@ class TestDatabase:
         ts.erase("npts")
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert save_res.live
         assert ts.live
@@ -1753,7 +1764,7 @@ class TestDatabase:
         ts["starttime_shift"] = 1.0
         ts.erase("site_id")
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert save_res.live
         fixes_cnt = self.db.clean(
@@ -1781,7 +1792,7 @@ class TestDatabase:
         ts["npts"] = "123"
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert save_res.live
         fixes_cnt = self.db.clean(ts["_id"], verbose=True)
@@ -1806,7 +1817,7 @@ class TestDatabase:
         ts["npts"] = "xyz"
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         fixes_cnt = self.db.clean(ts["_id"], verbose=True)
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -1851,7 +1862,7 @@ class TestDatabase:
         logging_helper.info(ts, "1", "deepcopy")
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -1870,7 +1881,7 @@ class TestDatabase:
         logging_helper.info(ts, "1", "deepcopy")
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -1914,7 +1925,7 @@ class TestDatabase:
         # mismatch type
         ts["delta"] = "123"
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -1959,6 +1970,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
@@ -1966,6 +1978,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2", "site_id"],
+            return_data=True,
         )
         assert save_res.live
 
@@ -2017,6 +2030,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2", "starttime"],
+            return_data=True,
         )
         assert save_res.live
         self.db["wf_TimeSeries"].update_one({"_id": ts["_id"]}, {"$set": {"t0": 1.0}})
@@ -2040,6 +2054,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2", "starttime"],
+            return_data=True,
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -2056,7 +2071,7 @@ class TestDatabase:
         logging_helper.info(ts, "1", "deepcopy")
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -2081,7 +2096,7 @@ class TestDatabase:
         logging_helper.info(ts, "1", "deepcopy")
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -2117,7 +2132,7 @@ class TestDatabase:
         ts["delta"] = "123"
         ts["sampling_rate"] = "123"
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -2159,6 +2174,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
@@ -2166,6 +2182,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
@@ -2173,6 +2190,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
@@ -2180,6 +2198,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
 
@@ -2249,6 +2268,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
@@ -2256,6 +2276,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
 
@@ -2299,10 +2320,11 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
-            undef_ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            undef_ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
         )
         assert save_res.live
 
@@ -2350,9 +2372,9 @@ class TestDatabase:
         logging_helper.info(ts1, "1", "deepcopy")
         logging_helper.info(ts2, "1", "deepcopy")
         logging_helper.info(ts3, "1", "deepcopy")
-        self.db.save_data(ts1, storage_mode="gridfs")
-        self.db.save_data(ts2, storage_mode="gridfs")
-        self.db.save_data(ts3, storage_mode="gridfs")
+        self.db.save_data(ts1, storage_mode="gridfs", return_data=True)
+        self.db.save_data(ts2, storage_mode="gridfs", return_data=True)
+        self.db.save_data(ts3, storage_mode="gridfs", return_data=True)
 
         time = datetime.utcnow().timestamp()
         ts1.t0 = time
@@ -2413,9 +2435,9 @@ class TestDatabase:
         logging_helper.info(seis1, "1", "deepcopy")
         logging_helper.info(seis2, "1", "deepcopy")
         logging_helper.info(seis3, "1", "deepcopy")
-        self.db.save_data(seis1, storage_mode="gridfs")
-        self.db.save_data(seis2, storage_mode="gridfs")
-        self.db.save_data(seis3, storage_mode="gridfs")
+        self.db.save_data(seis1, storage_mode="gridfs", return_data=True)
+        self.db.save_data(seis2, storage_mode="gridfs", return_data=True)
+        self.db.save_data(seis3, storage_mode="gridfs", return_data=True)
         time = datetime.utcnow().timestamp()
         seis1.t0 = time
         seis1["tst"] = time
@@ -3132,7 +3154,7 @@ def test_read_distributed_data(spark_context):
     ts_list = [ts1, ts2, ts3]
     ts_list_rdd = spark_context.parallelize(ts_list)
     ts_list_rdd.foreach(
-        lambda d, database=db: database.save_data(d, storage_mode="gridfs")
+        lambda d, database=db: database.save_data(d, storage_mode="gridfs", return_data=True)
     )
     cursors = db["wf_TimeSeries"].find({})
 

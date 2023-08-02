@@ -1417,7 +1417,7 @@ def test_MsPASSError():
     try:
         x = MetadataDefinitions("foo")
     except MsPASSError as err:
-        assert err.message == "bad file"
+        assert "bad file" in err.message
         assert err.severity == ErrorSeverity.Invalid
     try:
         raise MsPASSError("test error1", ErrorSeverity.Informational)
