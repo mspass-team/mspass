@@ -320,17 +320,14 @@ size_t fread_from_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismog
 		  continue;
 		}
 		try{
-			if(foff>0)
+			if(fseek(fp,foff,SEEK_SET))
 			{
-				if(fseek(fp,foff,SEEK_SET))
-				{
-					fclose(fp);
-					de.member[i].kill();
-					stringstream ss;
-		  			ss << "can not fseek in " << foff << endl;
-					de.member[i].elog.log_error(ss.str());
-					continue;
-				}
+				fclose(fp);
+				de.member[i].kill();
+				stringstream ss;
+		  		ss << "can not fseek in " << foff << endl;
+				     de.member[i].elog.log_error(ss.str());
+				continue;
 			}
 			ns_read = fread((void*)de.member[i].u.get_address(0, 0), sizeof(double), 3 * de.member[i].npts(), fp);
 			if (ns_read != 3 * de.member[i].npts())
