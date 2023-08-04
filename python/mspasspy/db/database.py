@@ -633,44 +633,38 @@ class Database(pymongo.database.Database):
             if len(abortions)>0:
                 for md in abortions:
                     self.stedronsky.handle_abortion(md)
-            # TODO:   needs a special branch to handle loading ensemble files
-            # That funcionality got lost in the translation for v2
             if live and members_expected>0:
-                for md in mdlist:
-                    d = self._construct_atomic_object(md,
-                                                    object_type,
-                                                    merge_method,
-                                                    merge_fill_value,
-                                                    merge_interpolation_samples,
-                                                    aws_access_key_id,
-                                                    aws_secret_access_key,
-                                                    )
-                    if d.live:
-                        ensemble.member.append(d)
-                    else:
-                        self.stedronsky.handle_abortion(d)
+                # note this function returns a clean ensemble with 
+                # no dead data.  It will be considered bad only if is empty
+                # note it send any datum that failed during construction 
+                # to abortions using the Undertaker method "handle_abortions" 
+                # as done immediatley above.
+                ensemble = self._construct_ensemble(
+                                        mdlist,
+                                        object_type,
+                                        merge_method,
+                                        merge_fill_value,
+                                        merge_interpolation_samples,
+                                        aws_access_key_id,
+                                        aws_secret_access_key,
+                                        )
+                
                 if len(ensemble.member)>0:
                     ensemble.set_live()
-               
-            #for doc in doclist:
-            #    d = self.read_data(doc,read_metadata_schema,collection,mode)
-            #    if d.live:
-            #        ensemble.member.append(d)
-                if len(ensemble.member)>0:
-                    ensemble.set_live()
-                    # We use this method to load ensemble metadata
-                    if len(ensemble_metadata)>0:
-                        ensmd = Metadata(ensemble_metadata)
-                        ensemble.update_metadata(ensmd)
             else:
                 # Default constructed container assumed marked dead
                 if object_type is TimeSeries:
                     ensemble = TimeSeriesEnsemble()
                 else:
                     ensemble = SeismogramEnsemble()
+            if elog.size() < 0:
                 ensemble.elog += elog
-                
-                
+            
+            # We post this even to dead ensmebles
+            if len(ensemble_metadata)>0:
+                ensmd = Metadata(ensemble_metadata)
+                ensemble.update_metadata(ensmd)
+                   
             mspass_object = ensemble   # ths just creates an alias not a copy
                 
         return mspass_object
@@ -6144,8 +6138,379 @@ class Database(pymongo.database.Database):
 
         mspass_object.clear_modified()
         return mspass_object
+    
+    def _group_mdlist(self, mdlist)->dict:
+        """
+        Private method to separate the documents in mdlist into groups 
+        that simplify reading of ensembles.
+        
+        We allow ensembles o be created from data retrieved and constucted
+        by mulitple methods.    Currently that is defined by three concepts
+        we have to separate:
+            1.  The "storage_mode" passed to readers defines the generic 
+                way data are stored.  The list of storage_mode options
+                is fairly long.  The point is that different storage modes 
+                require fundamentally different read strategies.  e.g. reading 
+                from s3 is not remotely at all like reading from gridfs 
+                but both can yield valid data objects. 
+            2.  A "format" can be used to define a format conversion that 
+                needs to be preformed on the fly to convert the data to 
+                mspass atomic data object.
+            3.  A special case with storage mode == "files is when the 
+                data are organized into files already defined for this 
+                enemble being read.  A typical example would be data already 
+                bundled into n ensemble and saved that way with the 
+                Database.save_data method in an earlier run.  Ensemble 
+                files can be read faster by reducing the need for 
+                unnecessary file open/close pairs that are otherwise 
+                needed when reading atomic data.  
+        
+        This function takes the input list of documents converted to 
+        to a list of `mspasspy.ccore.utility.Metadata` objects and sorts 
+        the contents into containers that define data that can be 
+        read by a common method.   We do that by returning a nested 
+        dictionary.  The top level of the dictionary is keyed by 
+        the "storage_mode".   Most inputs are likely to only generate 
+        a single key but this approach allows heterogeous input 
+        definitions in a database.   Each value then defines a second 
+        dictionary with a key defined by the "format" field.   The 
+        leaves of the returned tree of Metadata are then lists with 
+        common values of "storage_mode" and "format".  
+        
+        Item 3 above is handled by a related private method called 
+        `Database._group_by_path`.   It is used in this class to 
+        handle ensemble file reading as noted in concept 3 above.  
+        
+        """
+        smdict = dict()
+        for md in mdlist:
+            if "storage_mode" in md:
+                sm = md["storage_mode"]
+            else:
+                # WARNING:  this default needs to stay consistent internally
+                # perhaps should have it in self but isn't for now
+                sm = "gridfs"
+            if "format" in md:
+                form = md["format"]
+            else:
+                # WARNING:  this is also a default that needs to stay 
+                # in sync with other places in this class it is used
+                form = "binary"
+            if sm in smdict:
+                formdict = smdict[sm]
+                if form in formdict:
+                    vallist = formdict[form]
+                else:
+                    vallist=[]
+                vallist.append(md)
+                smdict[sm][form] = vallist
+            else:
+                # we have to create the secondary dict when we land 
+                # here because it wouldn't have been previously allocated
+                formdict=dict()
+                formdict[form] = [md]
+                smdict[sm] = formdict
+                
+        return smdict
+                    
+                    
+        
+        
+    def _group_by_path(self, mdlist, undefined_key="undefined_filename")->list:
+        """
+        Takes input list of Metadata containers and groups them 
+        by a "path" defined as the string produced by combining 
+        the "dir" and "dfile" attribute in a standard way.   
+        The return is a python dict keyed by path and values being 
+        a list extracted from mdlist of all ehtries defined by the same 
+        file.  
+        
+        We handle the case of mdlist entries missing "dir" or "dfile" by
+        putting them into a list keyed by the string defined by the 
+        "udnefined_key" attribute (see above for default.)   Caller should
+        treat these as abortions. 
+        """
+        pathdict = dict()
+        for md in mdlist:
+            if "dir" in md and "dfile" in md:
+                key = md["dir"] + "/" + md["dfile"]
+                if key in pathdict:
+                    pathdict[key].append(md)
+                else:
+                    pathdict[key] = [md]
+            else:
+                if undefined_key in pathdict:
+                    pathdict[undefined_key].append(md)
+                else:
+                    pathdict[undefined_key] = [md]
+        return pathdict
+    
+    def _load_ensemble_file(self, mdlist, object_type, dir, dfile):
+        """
+        Private method to efficiently load ensembles stored in a file. 
+        
+        When reading a ensemble stored in one or more files it is much 
+        faster to open the file containing multiple records and read 
+        that file sequentially than using an atomic read for each member 
+        that would open, seek, read, and close the file for each member.  
+        This method standardizes reading from a single file when 
+        the data are stored as raw binary samples (C double floating point).
+        It can be used to construct either a SeismogramEnsemble or 
+        TimeSeriesEnsemble driven by an input list of MongoDB 
+        documents convert to list of Metadata containers.   
+        
+        The algorithm runs fast by using a C++ function bound to python 
+        with pybind11 (_fread_from_file).  For that reason this method 
+        must ONLY be called for a list with all the data from a single 
+        file.   The algorithm is designed for speed so it does not verify
+        that each entry in mdlist has the same dir and dfile as that 
+        passed as arguments.   Garbage read or seg faults are nearly 
+        guaranteed if that is violated and this method is used outside 
+        the normal use as a component of the chain of private methods used 
+        by the `Database.read_data` method.  i.e. use this method with 
+        extreme caution if used for a different application than 
+        internal use for the Database class.   
+        
+        The algorithm has to do some fairly weird things to match the 
+        API of _fread_from_file and to handle the range of errors 
+        that can happen in this composite read operation.   Some points 
+        to note for maintenance of this function are:
+            1.  This utilizes the newer concept in MsPASS of abortions. 
+                Any error that invalidates a member ends up putting that 
+                datum into component[1] of the returned tuple (see below).
+                The result is a clean emsembled return in component 0 
+                meaning it has no dead members.  
+            2.  For efficiency the algorithm produces a list of 
+                member index numbers. By that it means the 
+                member[i] has index value i.  What that means is that 
+                the array passed to _fread_from_file is a list of i 
+                values telling the reader in which member slot the 
+                data are to be loaded.   The list is sorted by foff 
+                to allow fread to do it's job efficiently because 
+                buffering makes sequential reads with fread about as fast 
+                as any io operation possible.  The alternative would 
+                have been to have _fread_from_file read in i order 
+                (i.e. a normal loop) but that could involve a lot of 
+                seeks positions outside the buffer.  Future maintainers 
+                are warned of this rather odd algorithm, but note it 
+                was done that way for speed.  
+                
+        :param mdlist: iterable list of Metadata objects.  These are used 
+         to create the ensemble members using a feature of the C++ api that 
+         a skeleton of an atomic object can be created form Metadata alone. 
+         The sample array is allocated and defined from number of points 
+         defined in the Metadata container and that is used by fread to 
+         load the sample data when reading.   Needless to say corrupted 
+         data for npts or foff are guaranteed trouble.  Other Metadata 
+         attributes are copied verbatim to the atomic data. If any 
+         constructors using the Metadata fail the error message is posted
+         and these are pushed to the list of abortions. 
+        :type mslist:  iterable container of Metadata objects (normally a list)
+        :param object_type: used internally to distinguish TimeSeriesEnsemble 
+          and SeismogramEnsemble 
+        :param dir: directory name while for file that is to be openned.
+        :param dfile: file name for file that is to be openned and read.
+        
+        :return:  tuple with two components.
+          0 - ensemble that is the result.  It will be marked dead if no 
+              members were successfully read
+          1 - a list of members (not an ensemble a python list) of 
+              data that failed during construction for one reason or another. 
+              We refer to this type of dead data in MsPASS as an abortion 
+              as it died before it was born.  
+        """
+        # Because this is private method that should only be used 
+        # interally we do no type checking for speed.
+        nmembers=len(mdlist)
+        if object_type is TimeSeriesEnsemble:
+            ensemble = TimeSeriesEnsemble(nmembers) 
+        else:
+            ensemble = SeismogramEnsemble(nmembers)
+        abortions = []
+        for md in mdlist:
+            try:
+                # Note a CRITICAL feature of the Metadata constructors
+                # for both of these objects is that they allocate the
+                # buffer for the sample data and initialize it to zero.
+                # This allows sample data readers to load the buffer without
+                # having to handle memory management.
+                if object_type is TimeSeries:
+                    d = TimeSeries(md)
+                    ensemble.member.append(d)
+                else:
+                    # api mismatch here.  This ccore Seismogram constructor
+                    # had an ancestor that had an option to read data here.
+                    # we never do that here
+                    d = Seismogram(md, False)
+                    ensemble.member.append(d)
+            except MsPASSError as merr:
+                # if the constructor fails mspass_object will be invalid
+                # To preserve the error we have to create a shell to hold the error
+                if object_type is TimeSeriesEnsemble:
+                    d = TimeSeries()
+                else:
+                    d = Seismogram()
+                # Default constructors leaves result marked dead so below should work
+                d.elog.log_error(merr)
+                # there may be a C++ function to copy Metadata like this
+                for k in md:
+                    d[k] = md[k]
+                # We push bad data to the abortions list.  Caller should
+                # handle them specially.
+                abortions.append(d)
+                
+        # this constructs a list of pairs (tuples) with foff and npts 
+        # values.   
+        foff_list=list()
+        for i in range(len(ensemble.member)):
+            # convenient alias only here.  Works because in python this just
+            # sets d as a pointer and doesn't create a copy
+            d = ensemble.member[i]
+            if d.is_defined("foff"):
+                t = tuple(d["foff"],i)
+                foff_list.append(t)
+            else:
+                # These members will not be handled by the 
+                # _fread_from_file C++ function below.  It sets data 
+                # live on success.  Because these don't generate an 
+                # entrty in foff_list they will not be handled.
+                message="Database._load_ensemble_file:  "
+                message+="This datum was missing required foff attribute."
+                d.elog.log_error(message,ErrorSeverity.Invalid)
+                
+        # default for list sort is to use component 0 and sort in ascending
+        # order.  That is waht we want for read efficiency
+        foff_list.sort()
+        # I think pybind11 maps a list of int values to used as 
+        # input to the fread function below requiring an 
+        # input of an std::vector<long int> container.  In C++ a vector 
+        # and list are different concepts but I think that is what pybind11 does
+        index=[]
+        for x in foff_list:
+            index.append(x[1])
+
+        # note _fread_from_file extracs foff from each member using index 
+        # to (potentially) skip around in the container
+        # it never throws an exception but can return a negative 
+        # number used to signal file open error
+        count = _fread_from_file(ensemble,dir,dfile,index)
+        if count > 0:
+            ensemble.set_live()
+        else:
+            message="Database._load_ensemble_file:  "
+            message += "Open failed on dfile={} for dir={}".format(dfile,dir)
+            ensemble.elog.log_error(message,ErrorSeverity.Invalid)
+            
+        # Use this Undertaker method to pull out any data killed during 
+        # the read.  Add them to the abortions list to create a clean 
+        # ensemble to return
+        cleaned_ensemble, bodies = self.stedronsky.bring_out_your_dead(ensemble)
+        if len(bodies)>0:
+            for d in bodies:
+                abortions.append(d)
+        
+        return cleaned_ensemble, abortions
+            
+    
+    def _construct_ensemble(self,
+                            mdlist,
+                            object_type,
+                            merge_method,
+                            merge_fill_value,
+                            merge_interpolation_samples,
+                            aws_access_key_id,
+                            aws_secret_access_key,
+                            ):
+        """
+        Private method to create an ensemble from a list of Metadata 
+        containers. Like the atomic version but for ensembles. 
 
 
+        """
+        # Because this is expected to only be used internally there
+        # is not type checking or arg validation.
+        nmembers=len(mdlist)
+        if object_type is TimeSeriesEnsemble:
+            ensemble = TimeSeriesEnsemble(nmembers) 
+        else:
+            ensemble = SeismogramEnsemble(nmembers)
+        
+        # first group by storage mode 
+        smdict = self._group_mdlist(mdlist)
+        for sm in smdict:
+            if sm=="files":
+                # only binary currently works for ensemble files
+                file_dict = smdict["files"]
+                for form in file_dict:
+                    if form == "binary":
+                        bf_mdlist = file_dict["binary"]
+                        # This method, defined above, groups data by 
+                        # file name
+                        bf_dict = self._group_by_path(bf_mdlist)
+                        for path in bf_dict:
+                            this_mdl = bf_dict[path]
+                            if len(this_mdl)>1:
+                                ens_tmp,abortions = self._load_ensemble_file(this_mdl)
+                                # the above guarantees ens_tmp has no dead dead
+                                for d in ens_tmp.member:
+                                    ensemble.append(d)
+                                for d in abortions:
+                                    self.stedronsky.handle_abortion(d)
+                            elif len(this_mdl) == 1:
+                                d = self._construct_atomic_object(this_mdl[0], 
+                                                          object_type, 
+                                                          merge_method, 
+                                                          merge_fill_value, 
+                                                          merge_interpolation_samples, 
+                                                          aws_access_key_id, 
+                                                          aws_secret_access_key)
+                                if d.live:
+                                    ensemble.append(d)
+                                else:
+                                    self.stedronsky.handle_abortion(d)
+                            else:
+                                message = "Database._construct_ensemble:  "
+                                message = "Reading binary file section retrieved a zero length"
+                                message += " list of Metadata associated with path key={}\n".format(path)
+                                message += "Bug that shouldn't happen but was trapped as a safety"
+                                raise MsPASSError(message,ErrorSeverity.Fatal)
+                    else:
+                        # for all formatted data we currently only use atomic reader
+                        this_mdlist = file_dict[form]
+                        for md in this_mdlist:
+                            d = self._construct_atomic_object(this_mdl[0], 
+                                                      object_type, 
+                                                      merge_method, 
+                                                      merge_fill_value, 
+                                                      merge_interpolation_samples, 
+                                                      aws_access_key_id, 
+                                                      aws_secret_access_key)
+                            if d.live:
+                                ensemble.append(d)
+                            else:
+                                self.stedronsky.handle_abortion(d)
+            else:
+                for form in smdict[sm]:
+                    this_mdlist = smdict[sm][form]
+                    for md in this_mdlist:
+                        d = self._construct_atomic_object(this_mdl[0], 
+                                                  object_type, 
+                                                  merge_method, 
+                                                  merge_fill_value, 
+                                                  merge_interpolation_samples, 
+                                                  aws_access_key_id, 
+                                                  aws_secret_access_key)
+                        if d.live:
+                            ensemble.append(d)
+                        else:
+                            self.stedronsky.handle_abortion(d)
+        if len(ensemble.member)>0:
+            ensemble.set_live()
+        return ensemble
+                            
+    
+                
+                
 
 def index_mseed_file_parallel(db, *arg, **kwargs):
     """
