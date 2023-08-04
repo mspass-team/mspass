@@ -2650,7 +2650,7 @@ class Database(pymongo.database.Database):
         :param data_tag: a user specified "data_tag" key to tag the saved wf document.
         :type data_tag: :class:`str`
         """
-        print("WARNING:  this method has been depricated.")
+        print("WARNING:  save_ensemble_data has been depricated.")
         print("Use save_data method instead.")
         print("This method may disappear in future releases")
         # The new save_data uses dir and dfile from member metadata 
@@ -2659,6 +2659,12 @@ class Database(pymongo.database.Database):
             for i in range(len(ensemble_object.member)):
                 ensemble_object.member[i].put_string("dir",dir_list[i])
                 ensemble_object.member[i].put_string("dfile",dfile_list[i])
+        
+        if exclude_objects:
+            print("Double WARNING:   save_ensemble_data exclude_objects option will disappear in future releases")
+            # we won't do this elegantly since it should not be used
+            for i in exclude_objects:
+                ensemble_object.member.pop(i)
       
         
         ensemble_object = self.save_data(ensemble_object,
@@ -2736,9 +2742,14 @@ class Database(pymongo.database.Database):
           are ignored by this function. )
         :type kill_on_failure: boolean
         """
-        print("WARNING:  this method has been depricated.")
+        print("WARNING:  save_ensemble_data_binary_file has been deprecated.")
         print("Use save_data method instead.")
         print("This method may disappear in future releases")
+        if exclude_objects:
+            print("Double WARNING:   save_ensemble_data_binary_file exclude_objects option will disappear in future releases")
+            # we won't do this elegantly since it should not be used
+            for i in exclude_objects:
+                ensemble_object.member.pop(i)
         ensemble_object = self.save_data(ensemble_object,
                        mode=mode,
                        storage_mode="file",
