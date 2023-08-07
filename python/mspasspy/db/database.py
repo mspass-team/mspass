@@ -112,7 +112,8 @@ class Database(pymongo.database.Database):
     """
 
     def __init__(self, *args, schema=None, db_schema=None, md_schema=None, **kwargs):
-        super(Database, self).__init__(*args, **kwargs)
+        #super(Database, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if schema:
             self.database_schema = DatabaseSchema(schema)
             self.metadata_schema = MetadataSchema(schema)
@@ -130,7 +131,7 @@ class Database(pymongo.database.Database):
                 self.metadata_schema = MetadataSchema(md_schema)
             else:
                 self.metadata_schema = MetadataSchema()
-        # This import has to appear hear to avoid a circular import problem
+        # This import has to appear here to avoid a circular import problem
         # the name stedronsky is a programming joke - name of funeral director
         # in the home town of glp
         from mspasspy.util.Undertaker import Undertaker
@@ -459,6 +460,8 @@ class Database(pymongo.database.Database):
                 "collection {} is not defined in database schema".format(collection),
                 "Invalid",
             ) from err
+        # DEBUG test
+        #import pdb; pdb.set_trace()
         object_type = self.database_schema[wf_collection].data_type()
 
         if object_type not in [TimeSeries, Seismogram]:
@@ -578,6 +581,7 @@ class Database(pymongo.database.Database):
                                                           aws_access_key_id,
                                                           aws_secret_access_key,
                                                           )
+            print("DEBUg:  status after construct_atomic_object=",mspass_object.ilve)
             if elog.size()>0:
                 # Any messages posted here will be out of order if there are 
                 # also messages posted by _construct_atomic_object but 
@@ -638,7 +642,8 @@ class Database(pymongo.database.Database):
                 # no dead data.  It will be considered bad only if is empty
                 # note it send any datum that failed during construction 
                 # to abortions using the Undertaker method "handle_abortions" 
-                # as done immediatley above.
+                # as done immediatley above.  Also set ensemble dead if 
+                # there are no live mebmers
                 ensemble = self._construct_ensemble(
                                         mdlist,
                                         object_type,
@@ -649,8 +654,6 @@ class Database(pymongo.database.Database):
                                         aws_secret_access_key,
                                         )
                 
-                if len(ensemble.member)>0:
-                    ensemble.set_live()
             else:
                 # Default constructed container assumed marked dead
                 if object_type is TimeSeries:
@@ -6096,24 +6099,32 @@ class Database(pymongo.database.Database):
             
         if storage_mode == "file":
             if md.is_defined("format"):
-                format = md["format"]
+                form = md["format"]
             else:
                 # Reader uses this as a signal to use raw binary fread C function
-                format = None
+                form = None
             #TODO:  really should check for all required md values and 
             # do a kill with an elog message instead of depending on this to abort
-            if format:
-                self._read_data_from_dfile(
+            if form:
+                print("DEBUG: formatted reader - nbytes=",md["nbytes"])
+                if md.is_defined("nbytes"):
+                    nbytes_expected=md["nbytes"]
+                    self._read_data_from_dfile(
                             mspass_object,
                             md["dir"],
                             md["dfile"],
                             md["foff"],
-                            nbytes=md["nbytes"],
-                            format=md["format"],
+                            nbytes=nbytes_expected,
+                            format=form,
                             merge_method=merge_method,
                             merge_fill_value=merge_fill_value,
                             merge_interpolation_samples=merge_interpolation_samples,
-                    )
+                        )
+                else:
+                    message="Database._construct_atomic_object:  "
+                    message += "Missing required argument nbytes for formatted read - cannot load this datum"
+                    mspass_object.elog.log_error(message,ErrorSeverity.Invalid)
+                    mspass_object.kill()
             else:
                 self._read_data_from_dfile(
                             mspass_object,
@@ -6143,14 +6154,21 @@ class Database(pymongo.database.Database):
         elif storage_mode == "fdsn":
             self._read_data_from_fdsn(mspass_object)
         else:
-            raise TypeError("Unknown storage mode: {}".format(storage_mode))
+            # Earlier verision raised a TypeError with the line below
+            # Changed after V2 to kill and lot as an error - will be an abortion
+            #raise TypeError("Unknown storage mode: {}".format(storage_mode))
+            message="Database._construct_atomic_object:  "
+            # note logic above assures storage_mode is not a None
+            message += "Illegal storage mode={}\n".format(storage_mode)
+            mspass_object.elog.log_error(message,ErrorSeverity.Invalid)
+            mspass_object.kill()
 
-                
-
-        mspass_object.clear_modified()
+        if mspass_object.live:
+            mspass_object.clear_modified()
         return mspass_object
     
-    def _group_mdlist(self, mdlist)->dict:
+    @staticmethod
+    def _group_mdlist(mdlist)->dict:
         """
         Private method to separate the documents in mdlist into groups 
         that simplify reading of ensembles.
@@ -6226,8 +6244,8 @@ class Database(pymongo.database.Database):
                     
                     
         
-        
-    def _group_by_path(self, mdlist, undefined_key="undefined_filename")->list:
+    @staticmethod 
+    def _group_by_path(mdlist, undefined_key="undefined_filename")->list:
         """
         Takes input list of Metadata containers and groups them 
         by a "path" defined as the string produced by combining 
@@ -6441,7 +6459,7 @@ class Database(pymongo.database.Database):
         # Because this is expected to only be used internally there
         # is not type checking or arg validation.
         nmembers=len(mdlist)
-        if object_type is TimeSeriesEnsemble:
+        if object_type is TimeSeries:
             ensemble = TimeSeriesEnsemble(nmembers) 
         else:
             ensemble = SeismogramEnsemble(nmembers)
@@ -6504,7 +6522,7 @@ class Database(pymongo.database.Database):
                 for form in smdict[sm]:
                     this_mdlist = smdict[sm][form]
                     for md in this_mdlist:
-                        d = self._construct_atomic_object(this_mdl[0], 
+                        d = self._construct_atomic_object(md, 
                                                   object_type, 
                                                   merge_method, 
                                                   merge_fill_value, 
@@ -6512,7 +6530,7 @@ class Database(pymongo.database.Database):
                                                   aws_access_key_id, 
                                                   aws_secret_access_key)
                         if d.live:
-                            ensemble.append(d)
+                            ensemble.member.append(d)
                         else:
                             self.stedronsky.handle_abortion(d)
         if len(ensemble.member)>0:
