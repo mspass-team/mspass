@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from mspasspy.db.database import Database, elog2doc, history2doc
+from mspasspy.db.database import elog2doc, history2doc
+import pymongo
+from mspasspy.db.database import Database
+
 from mspasspy.ccore.seismic import (
     TimeSeries,
     Seismogram,
@@ -124,7 +127,12 @@ class Undertaker:
         """
         # shared by all error handlers as initialization
         message = "Undertaker constructor:  "
-        if isinstance(dbin,Database):
+        # pymongo.database.Database is the base class for 
+        # Database (here meaning mspasspy.db.database.Database) but this 
+        # seems necessary for some contexts.   If given a base class 
+        # instance some class methods here will fail that use mspass 
+        # extensions
+        if isinstance(dbin,(pymongo.database.Database,Database)):
             self.db = dbin
             self.dbh = self.db.elog
         else:
