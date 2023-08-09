@@ -685,8 +685,13 @@ with mock.patch.dict(
             assert not ts["gridfs_id"] == old_gridfs_id
             assert not ts["history_object_id"] == old_history_object_id
             assert not ts["elog_id"] == old_elog_id
+            # Changes for V2 modified the output of this test due to 
+            # an implementation detail.  V1 had the following:
             # should add 3 more elog entries(one in update_metadata, two in update_data)
-            assert len(ts.elog.get_error_log()) == old_elog_size + 3
+            #assert len(ts.elog.get_error_log()) == old_elog_size + 3
+            # Revision for V2 removed use of update_metadata and only 2 errors
+            # are logged by update_data.  Hence the following revision
+            assert len(ts.elog.get_error_log()) == old_elog_size + 2
             # check history_object collection and elog_id collection
             wf_res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
             elog_res = self.db["elog"].find_one({"_id": ts["elog_id"]})
@@ -2922,3 +2927,6 @@ with mock.patch.dict(
             self.db.set_schema("mspass_lite.yaml")
             with pytest.raises(KeyError, match="site"):
                 self.db.database_schema._attr_dict["site"]
+
+x=TestDatabase()
+print(x)

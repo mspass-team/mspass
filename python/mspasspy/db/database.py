@@ -67,9 +67,8 @@ from mspasspy.ccore.utility import (
 )
 from mspasspy.db.collection import Collection
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
-#from mspasspy.db.normalize import BasicMatcher, ObjectIdDBMatcher
 from mspasspy.util.converter import Textfile2Dataframe
-#from mspasspy.util.Undertaker import Undertaker
+
 
 
 class Database(pymongo.database.Database):
@@ -581,7 +580,7 @@ class Database(pymongo.database.Database):
                                                           aws_access_key_id,
                                                           aws_secret_access_key,
                                                           )
-            print("DEBUg:  status after construct_atomic_object=",mspass_object.ilve)
+            print("DEBUg:  status after construct_atomic_object=",mspass_object.live)
             if elog.size()>0:
                 # Any messages posted here will be out of order if there are 
                 # also messages posted by _construct_atomic_object but 
@@ -592,9 +591,14 @@ class Database(pymongo.database.Database):
                 mspass_object["is_abortion"] = False
                 # We normalize after construction to allow use of normalize 
                 # function feature of kill and error logging
+                # this obnoxious import is necessary because of a name 
+                # collsion of the function normalize and the argument 
+                # normalize in this method
+                import mspasspy.db.normalize as normalize_module
                 for matcher in normalizer_list:
                     if mspass_object.live:
-                        mspass_object = normalize(mspass_object,matcher)
+                        # scope qualifier needed to avoid name collsion with normalize argument
+                        mspass_object = normalize_module.normalize(mspass_object,matcher)
                     else:
                         break
                 mspass_object.clear_modified()
@@ -624,20 +628,13 @@ class Database(pymongo.database.Database):
                                     exclude_keys,
                                     mode)
             
-            members_expected = len(mdlist)
-            if object_type is TimeSeries:
-                ensemble = TimeSeriesEnsemble(members_expected)
-            else:
-                ensemble = SeismogramEnsemble(members_expected)
-            if elog.size()>0:
-                ensemble.elog += elog
             # This is a special method of Undertaker to handle the 
             # kind of data returned in the "abortions" list.   
             # See Undertaker docstring or User Manual for concepts
             if len(abortions)>0:
                 for md in abortions:
                     self.stedronsky.handle_abortion(md)
-            if live and members_expected>0:
+            if live and len(mdlist)>0:
                 # note this function returns a clean ensemble with 
                 # no dead data.  It will be considered bad only if is empty
                 # note it send any datum that failed during construction 
@@ -660,6 +657,8 @@ class Database(pymongo.database.Database):
                     ensemble = TimeSeriesEnsemble()
                 else:
                     ensemble = SeismogramEnsemble()
+            # elog referenced here comes from doclist2mdlist - a bit confusing 
+            # but delayed to here to construct ensemble first
             if elog.size() < 0:
                 ensemble.elog += elog
             
@@ -686,7 +685,7 @@ class Database(pymongo.database.Database):
         exclude_keys=None,
         collection=None,
         data_tag=None,
-        save_history=False,
+        save_history=True,
         alg_name="save_data",
         alg_id="0",
     ):
@@ -889,6 +888,14 @@ class Database(pymongo.database.Database):
                 # A weird construct
                 wf_collection_name = save_schema.collection("_id")
             wf_collection = self[wf_collection_name]
+            # We need to make sure storage_mode is set in all live data
+            if isinstance(mspass_object,(TimeSeriesEnsemble, SeismogramEnsemble)):
+                for d in mspass_object.member:
+                    if d.live:
+                        d["storage_mode"] = storage_mode
+            else:
+                # only atomic data can land here
+                mspass_object["storage_mode"]=storage_mode
         
             # Extend this method to add new storge modes 
             # Note this implementation alters metadata in mspass_object 
@@ -2659,9 +2666,42 @@ class Database(pymongo.database.Database):
         # The new save_data uses dir and dfile from member metadata 
         # when sent a None so we just post the list
         if dir_list:
+            num_dl=len(dir_list)
+            nmembers=len(ensemble_object.member)
+            last_valid=nmembers-1
+            if num_dl != nmembers:
+                func = "Database.save_enemble_data"
+                message = "Inconsistence sizes.  Number of ensemble members={} but size of dir_list argument ={}\n".format(nmembers,num_dl)
+                if num_dl < nmembers:
+                    last_valid=num_dl-1
+                    message+="Using dir={} for all members in slots >= {}".format(dir_list[last_valid-1],last_valid)
+                else:
+                    message+="Extra dir entries will be ignored"
+                ensemble_object.elog.log_error(func,message,ErrorSeverity.Complaint)
             for i in range(len(ensemble_object.member)):
-                ensemble_object.member[i].put_string("dir",dir_list[i])
-                ensemble_object.member[i].put_string("dfile",dfile_list[i])
+                if i<=last_valid:
+                    ensemble_object.member[i].put_string("dir",dir_list[i])
+                else:
+                    ensemble_object.member[i].put_string("dir",dir_list[last_valid])
+            
+        if dfile_list:
+            num_dl=len(dfile_list)
+            nmembers=len(ensemble_object.member)
+            last_valid=nmembers-1
+            if num_dl != nmembers:
+                func = "Database.save_enemble_data"
+                message = "Inconsistence sizes.  Number of ensemble members={} but size of dfile_list argument ={}\n".format(nmembers,num_dl)
+                if num_dl < nmembers:
+                    last_valid=num_dl-1
+                    message+="Using dfile={} for all members in slots >= {}".format(dfile_list[last_valid-1],last_valid)
+                else:
+                    message+="Extra dfile entries will be ignored"
+                ensemble_object.elog.log_error(func,message,ErrorSeverity.Complaint)
+            for i in range(len(ensemble_object.member)):
+                if i<=last_valid:
+                    ensemble_object.member[i].put_string("dfile",dfile_list[i])
+                else:
+                    ensemble_object.member[i].put_string("dfile",dfile_list[last_valid])           
         
         if exclude_objects:
             print("Double WARNING:   save_ensemble_data exclude_objects option will disappear in future releases")
@@ -2748,23 +2788,31 @@ class Database(pymongo.database.Database):
         print("WARNING:  save_ensemble_data_binary_file has been deprecated.")
         print("Use save_data method instead.")
         print("This method may disappear in future releases")
+        # This method is now indistinguishable from save_ensemble so 
+        # we just call it
+        
         if exclude_objects:
             print("Double WARNING:   save_ensemble_data_binary_file exclude_objects option will disappear in future releases")
             # we won't do this elegantly since it should not be used
             for i in exclude_objects:
                 ensemble_object.member.pop(i)
-        ensemble_object = self.save_data(ensemble_object,
-                       mode=mode,
-                       storage_mode="file",
-                       dir=dir,
-                       dfile=dfile,
-                       exclude_keys=exclude_keys,
-                       collection=collection,
-                       data_tag=data_tag,
-                       alg_name="save_ensemble_data_binary_file",
-                       alg_id=alg_id,
-                       return_data=True,
-                )
+        if dir:
+            for d in ensemble_object.member:
+                d["dir"] = dir
+        if dfile:
+            for d in ensemble_object.member:
+                d["dfile"] = dfile
+        ensemble_object = self.save_ensemble_data(
+                ensemble_object,
+                mode=mode,
+                storage_mode="file",
+                exclude_keys=exclude_keys,
+                collection=collection,
+                data_tag=data_tag,
+                alg_name="save_ensemble_data_binary_file",
+                alg_id=alg_id,
+            )
+ 
         # original did not have a return_data argument so we always return 
         # a copy of the data
         return ensemble_object
@@ -5275,7 +5323,7 @@ class Database(pymongo.database.Database):
                 # do nothing to any datum marked dead - just return the pointer
                 return mspass_object
             if storage_mode == "file":
-                self._save_sample_data_to_file(
+                mspass_object = self._save_sample_data_to_file(
                     mspass_object,
                     dir,
                     dfile,
@@ -5283,7 +5331,7 @@ class Database(pymongo.database.Database):
                     overwrite,
                 )
             elif storage_mode == "gridfs":
-                self._save_sample_data_to_gridfs(
+                mspass_object = self._save_sample_data_to_gridfs(
                     mspass_object,
                     overwrite,
                 )
@@ -5694,6 +5742,19 @@ class Database(pymongo.database.Database):
         # Put wfid into the object's meta as the new definition of
         # the parent of this waveform
         mspass_object["_id"] = wfid
+        if save_history and mspass_object.live:
+            # When history is enable we need to do an update to put the
+            # wf collection id as a cross-reference.    Any value stored
+            # above with saave_history may be incorrect.  We use a
+            # stock test with the is_empty method for know if history data is present
+            if not mspass_object.is_empty():
+                history_object_col = self[
+                    self.database_schema.default_name("history_object")
+                ]
+                wf_id_name = wf_collection.name + "_id"
+                filter_ = {"_id": history_object_id}
+                update_dict = {wf_id_name: wfid}
+                history_object_col.update_one(filter_, {"$set": update_dict})
         return mspass_object
 
     @staticmethod
@@ -6121,9 +6182,9 @@ class Database(pymongo.database.Database):
                             merge_interpolation_samples=merge_interpolation_samples,
                         )
                 else:
-                    message="Database._construct_atomic_object:  "
-                    message += "Missing required argument nbytes for formatted read - cannot load this datum"
-                    mspass_object.elog.log_error(message,ErrorSeverity.Invalid)
+                    func="Database._construct_atomic_object"
+                    message = "Missing required argument nbytes for formatted read - cannot load this datum"
+                    mspass_object.elog.log_error(func,message,ErrorSeverity.Invalid)
                     mspass_object.kill()
             else:
                 self._read_data_from_dfile(
@@ -6157,10 +6218,9 @@ class Database(pymongo.database.Database):
             # Earlier verision raised a TypeError with the line below
             # Changed after V2 to kill and lot as an error - will be an abortion
             #raise TypeError("Unknown storage mode: {}".format(storage_mode))
-            message="Database._construct_atomic_object:  "
             # note logic above assures storage_mode is not a None
-            message += "Illegal storage mode={}\n".format(storage_mode)
-            mspass_object.elog.log_error(message,ErrorSeverity.Invalid)
+            message = "Illegal storage mode={}\n".format(storage_mode)
+            mspass_object.elog.log_error("Database._construct_atomic_object",message,ErrorSeverity.Invalid)
             mspass_object.kill()
 
         if mspass_object.live:
@@ -6403,9 +6463,8 @@ class Database(pymongo.database.Database):
                 # _fread_from_file C++ function below.  It sets data 
                 # live on success.  Because these don't generate an 
                 # entrty in foff_list they will not be handled.
-                message="Database._load_ensemble_file:  "
-                message+="This datum was missing required foff attribute."
-                d.elog.log_error(message,ErrorSeverity.Invalid)
+                message="This datum was missing required foff attribute."
+                d.elog.log_error("Database._load_enemble_file",message,ErrorSeverity.Invalid)
                 
         # default for list sort is to use component 0 and sort in ascending
         # order.  That is waht we want for read efficiency
@@ -6426,9 +6485,8 @@ class Database(pymongo.database.Database):
         if count > 0:
             ensemble.set_live()
         else:
-            message="Database._load_ensemble_file:  "
-            message += "Open failed on dfile={} for dir={}".format(dfile,dir)
-            ensemble.elog.log_error(message,ErrorSeverity.Invalid)
+            message = "Open failed on dfile={} for dir={}".format(dfile,dir)
+            ensemble.elog.log_error("Database._load_ensemble_file",message,ErrorSeverity.Invalid)
             
         # Use this Undertaker method to pull out any data killed during 
         # the read.  Add them to the abortions list to create a clean 
@@ -6972,7 +7030,7 @@ def doc2md(doc, database_schema, metadata_schema, wfcol, exclude_keys, mode="pro
             for d in dropped_keys:
                 message += d
                 message += " "
-            err = MsPASSError("doc2md",
+            elog.log_error("doc2md",
                               message,
                               ErrorSeverity.Complaint)
         aok = True
@@ -6981,14 +7039,14 @@ def doc2md(doc, database_schema, metadata_schema, wfcol, exclude_keys, mode="pro
         if mode == "cautious":
             for k in md:
                 if metadata_schema.is_defined(k):
-                    unique_key = database_schema[wfcol].unique_name(k)
+                    unique_key = database_schema.unique_name(k)
                     if not isinstance(md[k], metadata_schema.type(k)):
                         # try to convert the mismatch attribute
                         try:
                             # convert the attribute to the correct type
                             md[k] = metadata_schema.type(k)(md[k])
                         except:
-                            if database_schema[wfcol].is_required(unique_key):
+                            if database_schema.is_required(unique_key):
                                 fatal_keys.append(k)
                                 aok = False
                                 message = "cautious mode: Required attribute {} has type {}\n".format(
@@ -7009,6 +7067,8 @@ def doc2md(doc, database_schema, metadata_schema, wfcol, exclude_keys, mode="pro
                     message += " "
                 message += "\nRunning clean_collection method is recommended"
                 elog.log_error("doc2md",message,ErrorSeverity.Informational)
+            if len(fatal_keys) > 0:
+                aok = False
 
         elif mode == "pedantic":
             for k in md:
@@ -7025,6 +7085,8 @@ def doc2md(doc, database_schema, metadata_schema, wfcol, exclude_keys, mode="pro
                         message += "Type mismatches are not allowed in pedantic mode - datum linked to this document will be killed"
                         err = MsPASSError("doc2md",message,ErrorSeverity.Invalid)
                         elog.log_error(err)
+            if len(fatal_keys)>0:
+                aok = False
         else:
             message = "Unrecognized value for mode="+str(mode)
             message += " Must be one of promiscuous, cautious, or pedantic"

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from mspasspy.db.database import elog2doc, history2doc
 import pymongo
-from mspasspy.db.database import Database
 
 from mspasspy.ccore.seismic import (
     TimeSeries,
@@ -102,6 +101,20 @@ class Undertaker:
     collections defined by default as "cemetery", for regular dead bodies, 
     and "abortions" for those defined as abortions.  
     
+    :param dbin:   Should be an instance of  mspasspy.db.Database that is 
+      used to save the remains of any bodies.   
+      
+    :type dbin:  the constructor for this class only tests for that the 
+      handle is an instance of pymongo's Database class.  The MsPASS 
+      version of Database extends the pymongo version.  Thsi particular
+      class references only two methods of Database: (1) the private 
+      method `_save_elog` and (2) the private method `_save_history`.  
+      Technically an alternative extension of pymongo's Database 
+      class that implements those two methods would be plug compatible.  
+      User's who might want to pull MsPASS apart and use this class 
+      separately could do so with an alternative Database extension than 
+      MsPaSs. 
+    
     :param regular_data_collection:  collection where we bury regular 
     dead bodies.  Default "cemetery"
     :type regular_data_collection:  string
@@ -132,7 +145,7 @@ class Undertaker:
         # seems necessary for some contexts.   If given a base class 
         # instance some class methods here will fail that use mspass 
         # extensions
-        if isinstance(dbin,(pymongo.database.Database,Database)):
+        if isinstance(dbin,pymongo.database.Database):
             self.db = dbin
             self.dbh = self.db.elog
         else:
