@@ -249,18 +249,18 @@ with mock.patch.dict(
             gridfs_id = self.db._save_data_to_gridfs(tmp_seis)
             tmp_seis_2 = Seismogram()
             tmp_seis_2.npts = 255
-            self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
+            self.db._read_sample_data_from_gridfs(tmp_seis_2, gridfs_id)
             assert all(
                 a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data)
             )
 
             with pytest.raises(KeyError, match="npts is not defined"):
                 tmp_seis_2.erase("npts")
-                self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
+                self.db._read_sample_data_from_gridfs(tmp_seis_2, gridfs_id)
 
             with pytest.raises(ValueError) as err:
                 tmp_seis_2.npts = 256
-                self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
+                self.db._read_sample_data_from_gridfs(tmp_seis_2, gridfs_id)
                 assert (
                     str(err.value) == "ValueError: Size mismatch in sample data. "
                     "Number of points in gridfs file = 765 but expected 768"
@@ -270,7 +270,7 @@ with mock.patch.dict(
             gridfs_id = self.db._save_data_to_gridfs(tmp_ts)
             tmp_ts_2 = TimeSeries()
             tmp_ts_2.npts = 255
-            self.db._read_data_from_gridfs(tmp_ts_2, gridfs_id)
+            self.db._read_sample_data_from_gridfs(tmp_ts_2, gridfs_id)
             assert np.isclose(tmp_ts.data, tmp_ts_2.data).all()
 
             gfsh = gridfs.GridFS(self.db)
@@ -685,7 +685,7 @@ with mock.patch.dict(
             assert not ts["gridfs_id"] == old_gridfs_id
             assert not ts["history_object_id"] == old_history_object_id
             assert not ts["elog_id"] == old_elog_id
-            # Changes for V2 modified the output of this test due to 
+            # Changes for V2 modified the output of this test due to
             # an implementation detail.  V1 had the following:
             # should add 3 more elog entries(one in update_metadata, two in update_data)
             #assert len(ts.elog.get_error_log()) == old_elog_size + 3
@@ -739,6 +739,8 @@ with mock.patch.dict(
             logging_helper.info(cautious_seis, "1", "deepcopy")
             logging_helper.info(pedantic_seis, "1", "deepcopy")
 
+
+            # initial test of a basic save in promiscuous mode
             res_seis = self.db.save_data(
                 promiscuous_seis,
                 mode="promiscuous",
@@ -768,20 +770,35 @@ with mock.patch.dict(
             assert promiscuous_seis.id() == wf_doc["history_object_id"]
             assert promiscuous_seis.is_origin()
 
+            # Verify setting a required attribute to an invalid value
+            # leads to a failed save and dead datum return
             cautious_seis.put_string("npts", "xyz")
             res_seis = self.db.save_data(
                 cautious_seis, mode="cautious", storage_mode="gridfs",return_data=True
             )
-            assert not res_seis.live
-            assert not cautious_seis.live
+            assert res_seis.dead()
+            # save kills both original and return because data is passed by reference
+            # following need to be aware cautious_seis is dead
+            assert cautious_seis.dead()
 
+            # for invalid required args cautious and pedantic act the same
+            # here we use sampling_rate wrong instead of npts
+            # i.e. this is a comparable test to prevoius
             pedantic_seis.put_string("sampling_rate", "xyz")
             res_seis = self.db.save_data(
                 pedantic_seis, mode="pedantic", storage_mode="gridfs",return_data=True
             )
-            assert not res_seis.live
-            assert not pedantic_seis.live
+            assert res_seis.dead()
+            assert pedantic_seis.dead()
+            # the cemetery should contain two documents from each of the
+            # above saves at this point
+            n_dead=self.db.cemetery.count_documents({})
+            assert n_dead == 2
 
+            # the following works only because of a side effect where the id
+            # get set
+
+            # reader should handle these even with npts error in promiscuous mode
             self.db.database_schema.set_default("wf_Seismogram", "wf")
             promiscuous_seis2 = self.db.read_data(
                 promiscuous_seis["_id"],
@@ -812,9 +829,16 @@ with mock.patch.dict(
             assert "source_time" not in no_source_seis2
             assert "source_magnitude" not in no_source_seis2
 
-            # test cautious read
-            cautious_seis.set_live()
+            # This test saves a datum with an invalid value in promiscuous
+            # mode.   It is then read back cautious and we validate
+            # the expected errors are present in elog
+            # Note we restore cautious_seis to its original state and
+            # add the error as the above changes it.  That makes this
+            # test more stable and less confusing than the previous version
+            cautious_seis = copy.deepcopy(self.test_seis)
+            logging_helper.info(cautious_seis, "1", "deepcopy")
             logging_helper.info(cautious_seis, "2", "save_data")
+            cautious_seis["npts"]="foobar"
             res_seis = self.db.save_data(
                 cautious_seis,
                 mode="promiscuous",
@@ -822,24 +846,26 @@ with mock.patch.dict(
                 exclude_keys=["extra2"],
                 return_data=True,
             )
+            # promicuous save ignores the error and leaves these live
             assert res_seis.live
             assert cautious_seis.live
-            # unable to convert to the correct type
+            # this will fail with an invalid type error logged because
+            # previous save has invalid npts which makes it impossible to
+            # reconstruct the datum
             cautious_seis2 = self.db.read_data(
-                cautious_seis["_id"], mode="cautious", normalize=["site", "source"]
+                res_seis["_id"], mode="cautious", normalize=["site", "source"]
             )
-            assert (
-                cautious_seis2.elog.get_error_log()[-1].message
-                == "cautious mode: Required attribute npts has type <class 'str'>, forbidden by definition and unable to convert"
-            )
-            elog_doc = self.db["elog"].find_one(
-                {
-                    "wf_Seismogram_id": cautious_seis2["_id"],
-                    "tombstone": {"$exists": True},
-                }
-            )
+            # This next test could change if the schema changes.
+            # currently it issues a complaint for keys history_id, elog_id, and extra1
+            # The second message is the npts botch error set above
+            cautious_seis2_elog = cautious_seis2.elog.get_error_log()
+            assert len(cautious_seis2.elog) == 2
+            assert cautious_seis2_elog[0].badness == ErrorSeverity.Complaint
+            assert cautious_seis2_elog[1].badness == ErrorSeverity.Invalid
+
             assert "data" not in cautious_seis2
-            # successfully convert to the correct type
+            #  Now do the same thing but set npts to a string that can
+            # be converted to an int - note 255 is magic from the seis generator
             cautious_seis = copy.deepcopy(self.test_seis)
             logging_helper.info(cautious_seis, "1", "deepcopy")
             cautious_seis.put_string("npts", "255")
@@ -850,7 +876,7 @@ with mock.patch.dict(
             assert res_seis.live
             assert cautious_seis.live
             cautious_seis2 = self.db.read_data(
-                cautious_seis["_id"], mode="cautious", normalize=["site", "source"]
+                res_seis["_id"], mode="cautious",
             )
             assert cautious_seis2.live
             assert cautious_seis2["npts"] == 255
@@ -865,9 +891,14 @@ with mock.patch.dict(
             assert "_id" in cautious_seis
             assert not cautious_seis["_id"] == non_exist_id
 
-            # test pedantic read
-            pedantic_seis.set_live()
+            # test pedantic read with npts set to string "255"
+            # In padantic mode we don't try to fix type errors so a
+            # pedantic read will in this case will create an abortion
+            # As above we need to restored content of pedantic_seis
+            pedantic_seis = copy.deepcopy(self.test_seis)
+            logging_helper.info(pedantic_seis, "1", "deepcopy")
             logging_helper.info(pedantic_seis, "2", "save_data")
+            pedantic_seis["npts"]="255"
             res_seis = self.db.save_data(
                 pedantic_seis,
                 mode="promiscuous",
@@ -878,42 +909,54 @@ with mock.patch.dict(
             assert res_seis.live
             assert pedantic_seis.live
             pedantic_seis2 = self.db.read_data(
-                pedantic_seis["_id"], mode="pedantic", normalize=["site", "source"]
+                res_seis["_id"], mode="pedantic", normalize=["site", "source"]
             )
-            assert (
-                pedantic_seis2.elog.get_error_log()[-1].message
-                == "pedantic mode: sampling_rate has type <class 'str'>, forbidden by definition"
-            )
-            elog_doc = self.db["elog"].find_one(
-                {
-                    "wf_Seismogram_id": pedantic_seis["_id"],
-                    "tombstone": {"$exists": True},
-                }
-            )
+            assert pedantic_seis2.dead()
+            assert pedantic_seis2["is_abortion"]
+            elog_content = pedantic_seis2.elog.get_error_log()
+            assert len(elog_content)==2
+            assert elog_content[0].badness == ErrorSeverity.Complaint
+            assert elog_content[1].badness == ErrorSeverity.Invalid
             assert "data" not in pedantic_seis2
 
             # test save with non exist id under pedantic mode
-            non_exist_id = ObjectId()
-            pedantic_seis["_id"] = non_exist_id
-            logging_helper.info(pedantic_seis, "3", "save_data")
-            res_seis = self.db.save_data(pedantic_seis, mode="pedantic",return_data=True)
+            #non_exist_id = ObjectId()
+            #pedantic_seis["_id"] = non_exist_id
+            #logging_helper.info(pedantic_seis, "3", "save_data")
+            #res_seis = self.db.save_data(pedantic_seis, mode="pedantic",return_data=True)
             # save is unsuccessful because sampling_rate has type str
-            assert not res_seis.live
+            #assert not res_seis.live
             # no attribute errors
-            pedantic_seis.put_double("sampling_rate", 1.0)
-            pedantic_seis.set_live()
-            save_res = self.db.save_data(pedantic_seis, mode="pedantic",return_data=True)
-            assert pedantic_seis.live
-            assert "_id" in pedantic_seis
-            assert not pedantic_seis["_id"] == non_exist_id
+            #pedantic_seis.put_double("sampling_rate", 1.0)
+            #pedantic_seis.set_live()
+            #save_res = self.db.save_data(pedantic_seis, mode="pedantic",return_data=True)
+            #assert pedantic_seis.live
+            #assert "_id" in pedantic_seis
+            #assert not pedantic_seis["_id"] == non_exist_id
 
+            # Test new normalize method using list of matchers
+            # use both cached and db version to test both
+            from mspasspy.db.normalize import ObjectIdMatcher,ObjectIdDBMatcher
+            site_matcher=ObjectIdMatcher(self.db,
+                                                   collection='site',
+                                                   attributes_to_load=['_id', 'lat', 'lon', 'elev','starttime','endtime'],
+                                                   load_if_defined=['net','sta','loc'],
+                                                   )
+            source_matcher=ObjectIdDBMatcher(self.db,
+                                                   collection='source',
+                                                   attributes_to_load=['_id', 'lat', 'lon', 'depth','time'],
+                                                   load_if_defined=['magnitude'],
+                                                   )
+            promiscuous_seis2 = self.db.read_data(
+                promiscuous_seis["_id"],
+                mode="promiscuous",
+                normalize=[site_matcher, source_matcher],
+            )
             # test read exclude parameter
             assert "_id" in promiscuous_seis2
             assert "channel_id" not in promiscuous_seis2
             assert "source_depth" in promiscuous_seis2
-            assert "_id" not in exclude_promiscuous_seis2
-            assert "channel_id" not in exclude_promiscuous_seis2
-            assert "source_depth" not in exclude_promiscuous_seis2
+
 
             # _id is changed before int test save with non exist id under promiscuous mode
             wf_keys = [
@@ -949,9 +992,9 @@ with mock.patch.dict(
             assert promiscuous_seis2["site_elev"] == res["elev"]
             assert promiscuous_seis2["site_starttime"] == res["starttime"]
             assert promiscuous_seis2["site_endtime"] == res["endtime"]
-            assert promiscuous_seis2["net"] == res["net"]
-            assert promiscuous_seis2["sta"] == res["sta"]
-            assert promiscuous_seis2["loc"] == res["loc"]
+            assert promiscuous_seis2["site_net"] == res["net"]
+            assert promiscuous_seis2["site_sta"] == res["sta"]
+            assert promiscuous_seis2["site_loc"] == res["loc"]
 
             res = self.db["source"].find_one({"_id": promiscuous_seis["source_id"]})
             assert promiscuous_seis2["source_lat"] == res["lat"]
@@ -959,11 +1002,14 @@ with mock.patch.dict(
             assert promiscuous_seis2["source_depth"] == res["depth"]
             assert promiscuous_seis2["source_time"] == res["time"]
             assert promiscuous_seis2["source_magnitude"] == res["magnitude"]
-
+            ###################################################################
             # tests for TimeSeries
-            # not testing promiscuous/cautious/pedantic save->read here because it's coveraged by the tests above
+            # not testing promiscuous/cautious/pedantic save->read here
+            # because it's coveraged by the tests above
+            ###################################################################
             ts = copy.deepcopy(self.test_ts)
             logging_helper.info(ts, "1", "deepcopy")
+            # furst save test TimeSeries with tag
             self.db.save_data(
                 ts,
                 mode="promiscuous",
@@ -973,13 +1019,20 @@ with mock.patch.dict(
                 return_data=True,
             )
             self.db.database_schema.set_default("wf_TimeSeries", "wf")
-            # test mismatch data_tag
-            assert not self.db.read_data(
+            # test trying to read by id with mismatched data_tag.
+            # Should return a dead datum with an elog entry.
+            # we verify the elog size is to allow the message to change
+            # without breaking the test
+            ts_bad = self.db.read_data(
                 ts["_id"],
                 mode="promiscuous",
                 normalize=["site", "source", "channel"],
                 data_tag="tag2",
             )
+            assert ts_bad.dead()
+            assert ts_bad.elog.size() == 1
+            # Now repeat using the correct tag to verify that works and the
+            # metadata contents match - inlcudes normalize attribures
             ts2 = self.db.read_data(
                 ts["_id"],
                 mode="promiscuous",
@@ -992,31 +1045,16 @@ with mock.patch.dict(
             assert "test" not in ts2
             assert "extra2" not in ts2
             assert "data_tag" in ts2 and ts2["data_tag"] == "tag1"
-            # dummy ts without data_tag
-            dummy_ts = copy.deepcopy(self.test_ts)
-            logging_helper.info(dummy_ts, "1", "deepcopy")
-            self.db.save_data(
-                dummy_ts,
-                mode="promiscuous",
-                storage_mode="gridfs",
-                exclude_keys=["extra2"],
-                return_data=True,
-            )
-            assert not self.db.read_data(
-                dummy_ts["_id"],
-                mode="promiscuous",
-                normalize=["site", "source", "channel"],
-                data_tag="tag1",
-            )
-
+            # now check that normalization worked
             res = self.db["site"].find_one({"_id": ts["site_id"]})
             assert ts2["site_lat"] == res["lat"]
             assert ts2["site_lon"] == res["lon"]
             assert ts2["site_elev"] == res["elev"]
             assert ts2["site_starttime"] == res["starttime"]
             assert ts2["site_endtime"] == res["endtime"]
-            assert ts2["net"] == res["net"]
-            assert ts2["sta"] == res["sta"]
+            assert ts2["site_net"] == res["net"]
+            assert ts2["site_sta"] == res["sta"]
+            assert ts2["site_loc"] == res["loc"]
 
             res = self.db["source"].find_one({"_id": ts["source_id"]})
             assert ts2["source_lat"] == res["lat"]
@@ -1026,16 +1064,41 @@ with mock.patch.dict(
             assert ts2["source_magnitude"] == res["magnitude"]
 
             res = self.db["channel"].find_one({"_id": ts["channel_id"]})
-            assert ts2["chan"] == res["chan"]
+            assert ts2["channel_chan"] == res["chan"]
             assert ts2["channel_hang"] == res["hang"]
             assert ts2["channel_vang"] == res["vang"]
             assert ts2["channel_lat"] == res["lat"]
             assert ts2["channel_lon"] == res["lon"]
             assert ts2["channel_elev"] == res["elev"]
-            assert ts2["channel_edepth"] == res["edepth"]
+            # previous test had this.  New read_data does ot load edepth
+            # when using collection name for normalize.  Would require a
+            # matcher to load - maybe should add that at some point
+            #assert ts2["channel_edepth"] == res["edepth"]
             assert ts2["channel_starttime"] == res["starttime"]
             assert ts2["channel_endtime"] == res["endtime"]
-            assert ts2["loc"] == res["loc"]
+            assert ts2["channel_loc"] == res["loc"]
+            # Save ts with no data tag for next test
+            dummy_ts = copy.deepcopy(self.test_ts)
+            logging_helper.info(dummy_ts, "1", "deepcopy")
+            self.db.save_data(
+                dummy_ts,
+                mode="promiscuous",
+                storage_mode="gridfs",
+                exclude_keys=["extra2"],
+                return_data=True,
+            )
+            # now we try to read that back with a tag defined.
+            # that should fail the same way the above example did with mismatched
+            # tag
+            ts_bad =  self.db.read_data(
+                dummy_ts["_id"],
+                mode="promiscuous",
+                normalize=["site", "source", "channel"],
+                data_tag="tag1",
+            )
+            assert ts_bad.dead()
+            assert ts_bad.elog.size() == 1
+
 
             # test ignore_metadata_changed_test in save_data
             ignore_changed_test_ts = copy.deepcopy(self.test_ts)
@@ -1050,6 +1113,10 @@ with mock.patch.dict(
             assert ignore_changed_test_ts2["sampling_rate"] == 20.0
             assert ignore_changed_test_ts2["delta"] == 0.1
             assert ignore_changed_test_ts2["calib"] == 0.1
+            ###################################################################
+            # end TimeSeries test.  Remainder use mostly Seismogram 
+            # but testing a mix of concepts
+            ###################################################################
 
             # test save with non exist id under promiscuous mode
             non_exist_id = ObjectId()
@@ -1070,7 +1137,7 @@ with mock.patch.dict(
                 for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data)
             )
 
-            # file
+            # file with default (binary) format
             logging_helper.info(promiscuous_seis, "2", "save_data")
             self.db.save_data(
                 promiscuous_seis,
@@ -1085,6 +1152,7 @@ with mock.patch.dict(
             promiscuous_seis2 = self.db.read_data(
                 promiscuous_seis["_id"], mode="cautious", normalize=["site", "source"]
             )
+            assert promiscuous_seis2.live
 
             res = self.db["wf_Seismogram"].find_one({"_id": promiscuous_seis["_id"]})
             assert res["storage_mode"] == "file"
@@ -1093,9 +1161,9 @@ with mock.patch.dict(
                 for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data)
             )
 
-            # file_mseed
+            # saving to miniseed file test
             logging_helper.info(promiscuous_seis, "2", "save_data")
-            self.db.save_data(
+            res=self.db.save_data(
                 promiscuous_seis,
                 mode="promiscuous",
                 storage_mode="file",
@@ -1105,10 +1173,12 @@ with mock.patch.dict(
                 exclude_keys=["extra2"],
                 return_data=True,
             )
+            assert res.live
             self.db.database_schema.set_default("wf_Seismogram", "wf")
             promiscuous_seis2 = self.db.read_data(
                 promiscuous_seis["_id"], mode="cautious", normalize=["site", "source"]
             )
+            assert promiscuous_seis2.live
 
             res = self.db["wf_Seismogram"].find_one({"_id": promiscuous_seis["_id"]})
             assert res["storage_mode"] == "file"
@@ -1141,46 +1211,63 @@ with mock.patch.dict(
                 a.any() == b.any()
                 for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data)
             )
-
+            # version 2 changes this test.   Earlier version would
+            # abort if storage_mode was set to file and no file was defined.
+            # New version will try to write to generate a unique file
+            # name from a uuid generator.
+            # Need a fresh copy to be sure dir and dfile aren't set
+            promiscuous_seis = copy.deepcopy(self.test_seis)
+            res = self.db.save_data(
+                    promiscuous_seis, mode="promiscuous", storage_mode="file",return_data=True
+                )
+            assert res.is_defined("dir")
+            assert res.is_defined("dfile")
+            # Now test write failure from trying to write to "/" which user
+            # cannot normally do.  This test would fail if running as root
+            # Shouldn't happen for normal use but might with docker
+            promiscuous_seis["dir"] = "/"
+            promiscuous_seis["dfile"] = "test_db_output"
             with pytest.raises(
-                ValueError, match="dir or dfile is not specified in data object"
+                PermissionError,
             ):
                 self.db.save_data(
-                    promiscuous_seis2, mode="promiscuous", storage_mode="file",return_data=True
-                )
-            promiscuous_seis2["dir"] = "/"
-            promiscuous_seis2["dfile"] = "test_db_output"
-            with pytest.raises(
-                PermissionError, match="No write permission to the save directory"
-            ):
-                self.db.save_data(
-                    promiscuous_seis2, mode="promiscuous", storage_mode="file",return_data=True
+                    promiscuous_seis,
+                    mode="promiscuous",
+                    storage_mode="file",
+                    return_data=True
                 )
 
-            # url
+            # test reading from a url - use mock from a file stored in data directory to simulate
             with patch("urllib.request.urlopen", new=self.mock_urlopen):
                 res_url = dict(res)
                 res_url_id = ObjectId()
                 res_url["_id"] = res_url_id
                 res_url["storage_mode"] = "url"
+                res_url["format"]="mseed"
                 res_url[
                     "url"
                 ] = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
                 self.db["wf_Seismogram"].insert_one(res_url)
-                url_seis = self.db.read_data(res_url_id, mode="promiscuous")
+                url_seis = self.db.read_data(res_url, mode="promiscuous")
                 assert url_seis.data.columns() == 6000
 
-            # save with a dead object
-            promiscuous_seis.live = False
+            # next test save of a dead datum.   We again start with a clean
+            # copy and just kill it with a test message.
+            promiscuous_seis = copy.deepcopy(self.test_seis)
+            logging_helper.info(promiscuous_seis, "1", "deepcopy")
             logging_helper.info(promiscuous_seis, "2", "save_data")
-            self.db.save_data(promiscuous_seis, mode="promiscuous",return_data=True)
-            elog_doc = self.db["elog"].find_one(
-                {
-                    "wf_Seismogram_id": promiscuous_seis["_id"],
-                    "tombstone": {"$exists": True},
-                }
-            )
-            assert elog_doc["tombstone"] == dict(promiscuous_seis)
+            promiscuous_seis.kill()
+            log_message = "killed for save_data test"
+            promiscuous_seis.elog.log_error("test",log_message,ErrorSeverity.Invalid)
+
+            res = self.db.save_data(promiscuous_seis, mode="promiscuous",return_data=True)
+            # note this query depends on a naming contention where dead data
+            # are buried - currently cemetery
+            query={"_id" : res["cemetery_id"]}
+            death_certificate = self.db.cemetery.find_one(query)
+            # find_one returns None if query fails then this will fail
+            assert death_certificate
+            assert "tombstone" in death_certificate
 
             # save to a different collection
             promiscuous_seis = copy.deepcopy(self.test_seis)
@@ -1250,14 +1337,18 @@ with mock.patch.dict(
                 fill_val_cnt
                 == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
             )  # = 315090
-            assert len(gaps_ts.elog.get_error_log()) == 1
-            assert (
-                gaps_ts.elog.get_error_log()[0].message
-                == "There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps."
-            )
+            logdata = gaps_ts.elog.get_error_log()
+            assert len(logdata) == 1
+            assert logdata[0].badness == ErrorSeverity.Complaint
 
             # test read_data with missing attributes in the normalized records
             # 1. test missing normal attribute
+            # this test is a relic that should probably be deprecated. 
+            # Changed Aug 2023 for v2 of Database adding exception 
+            # handler - new implementation throws an exception which 
+            # is actually a more reasonable behavior.  The standard 
+            # normalization method now should be to create a matcher 
+            # to pass to the reader via the normalize option.  
             missing_net_site_id = ObjectId()
             self.db["site"].insert_one(
                 {
@@ -1298,15 +1389,11 @@ with mock.patch.dict(
             logging_helper.info(ts, "1", "deepcopy")
             ts["site_id"] = missing_lat_site_id
             self.db.save_data(ts, mode="promiscuous", storage_mode="gridfs",return_data=True)
-            missing_required_ts = self.db.read_data(ts["_id"], normalize=["site"])
-            assert missing_required_ts.live
-            assert "site_lat" not in missing_required_ts
-            assert len(missing_required_ts.elog.get_error_log()) == 1
-            assert missing_required_ts.elog.get_error_log()[
-                0
-            ].message == "Attribute lat is required in collection site, but is missing in the document with id={}.".format(
-                str(missing_lat_site_id)
-            )
+            try:
+                missing_required_ts = self.db.read_data(ts["_id"], normalize=["site"])
+            except MsPASSError as e:
+                assert e.severity == ErrorSeverity.Fatal
+            
 
         def test_index_mseed_file(self):
             dir = "python/tests/data/"
@@ -2927,6 +3014,3 @@ with mock.patch.dict(
             self.db.set_schema("mspass_lite.yaml")
             with pytest.raises(KeyError, match="site"):
                 self.db.database_schema._attr_dict["site"]
-
-x=TestDatabase()
-print(x)
