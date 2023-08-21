@@ -240,10 +240,11 @@ class Undertaker:
                         # Note confusion that _save_elog actually does 
                         # the burial in this case.  A bit of a maintenance 
                         # issue so beware
-                        self.db._save_elog(mspass_object,
+                        cemeteryid = self.db._save_elog(mspass_object,
                                        collection=self.regular_data_collection,
                                        data_tag=self.data_tag,
                                        )
+                        mspass_object[self.regular_data_collection + '_id'] = cemeteryid
                     if save_history:
                         self.db._save_history(mspass_object,alg_name="Undertaker.bury")
                     if mummify_atomic_data:
@@ -556,6 +557,7 @@ class Undertaker:
             
         return doc_or_datum
     
+    @staticmethod
     def _is_abortion(d):
         """
         Internal method used to standardize test for whether a datum is 
@@ -582,7 +584,7 @@ class Undertaker:
                 message += "MsPASS readers should always set this attribute"
                 err = MsPASSError("Undertaker._is_abortion",message,ErrorSeverity.Complaint)
                 d.elog.log_error(err)
-                return True
+                return False
         else:
             message = "Undertaker._is_abortion:  received an input that is an invalid type - must be either a TimeSeries or Seismogram object"
             raise TypeError(message)

@@ -255,7 +255,12 @@ class DatabaseMatcher(BasicMatcher):
                 )
             )
         self.collection = collection
-        self.dbhandle = db[collection]
+        if isinstance(db,pymongo.database.Database):
+            self.dbhandle = db[collection]
+        else:
+            message="DatabaseMatcher constructor:  db argument is not a valid Database handle\n"
+            message += "Actual type of db arg={}".format(str(type(db)))
+            raise TypeError(message)
         self.require_unique_match = require_unique_match
         self.prepend_collection_name = prepend_collection_name
 
@@ -480,17 +485,19 @@ class DictionaryCacheMatcher(BasicMatcher):
 
         # This is a redundant initialization but a minor cost for stability
         self.normcache = dict()
-
-        if isinstance(db_or_df, Database):
+        # Reference the base class to avoid a type error
+        # This seems to be an oddity from using the same name Database 
+        # in mspass as pymongo
+        if isinstance(db_or_df, pymongo.database.Database):
             self._db_load_normalization_cache(db_or_df, collection)
         elif isinstance(db_or_df, (type_ddd, type_pdd)):
             self._df_load_normalization_cache(db_or_df, collection)
         else:
-            raise TypeError(
-                "{} constructor:  required arg0 must be a mspass Database handle".format(
-                    self.__class__.__name__
-                )
+            message="{} constructor:  required arg0 must be a Database handle or panda Dataframe\n".format(
+                self.__class__.__name__
             )
+            message += "Actual type = {}".format(str(type(db_or_df)))
+            raise TypeError(message)
 
     @abstractmethod
     def cache_id(self, mspass_object) -> str:
@@ -856,7 +863,11 @@ class DataFrameCacheMatcher(BasicMatcher):
             raise TypeError(
                 "DataFrameCacheMatcher constructor:   collection argument must be a string type"
             )
-        if not isinstance(db_or_df, (type_pdd, type_ddd, Database)):
+        # We have to reference the base class pymongo.database.Database here because 
+        # the MsPASS subclass name is also Database.  That make this 
+        # conditional fail in some uses.   Using the base class is totally
+        # appropriate here anyway as no MsPASS extension methods are used
+        if not isinstance(db_or_df, (type_pdd, type_ddd, pymongo.database.Database)):
             raise TypeError(
                 "DataFrameCacheMatcher constructor:  required arg0 must be either a pandas, dask Dataframe, or database handle"
             )
@@ -866,7 +877,7 @@ class DataFrameCacheMatcher(BasicMatcher):
                     "DataFrameCacheMatcher constructor:  usage error.  Cannot use default of attributes_to_load (triggers loading all columns) and define a list of names for argument load_if_defined"
                 )
             aload = list()
-            for key in df.columns:
+            for key in db_or_df.columns:
                 aload.append(key)
         else:
             aload = attributes_to_load
