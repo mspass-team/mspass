@@ -43,6 +43,10 @@ Database:
           concept: Number of data samples
           aliases: [nsamp, wfdisc.nsamp]
           constraint: required
+        nbytes:
+          type: int
+          concept: Number of bytes for storage of sample data - required for some formats
+          constaint: optional
         delta:
           type: double
           concept: Data sample interval in seconds
@@ -458,6 +462,27 @@ Metadata:
       source_id:
         collection: wf_TimeSeries
         readonly: false
+      storage_mode:
+        collection: wf_TimeSeries
+        readonly: false
+      gridfs_id:
+        collection: wf_TimeSeries
+        readonly: false
+      dir:
+        collection: wf_TimeSeries
+        readonly: false
+      dfile:
+        collection: wf_TimeSeries
+        readonly: false
+      foff:
+        collection: wf_TimeSeries
+        readonly: false
+      format:
+        collection: wf_TimeSeries
+        readonly: false
+      nbytes:
+        collection: wf_TimeSeries
+        readonly: false
       net:
         collection: site
         readonly: true
@@ -561,6 +586,21 @@ Metadata:
         collection: wf_Seismogram
         readonly: false
       gridfs_id:
+        collection: wf_Seismogram
+        readonly: false
+      dir:
+        collection: wf_Seismogram
+        readonly: false
+      dfile:
+        collection: wf_Seismogram
+        readonly: false
+      foff:
+        collection: wf_Seismogram
+        readonly: false
+      format:
+        collection: wf_Seismogram
+        readonly: false
+      nbytes:
         collection: wf_Seismogram
         readonly: false
       site_id:
