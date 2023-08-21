@@ -1458,11 +1458,9 @@ class TestDatabase:
             fill_val_cnt
             == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
         )  # = 315090
-        assert len(gaps_ts.elog.get_error_log()) == 1
-        assert (
-            gaps_ts.elog.get_error_log()[0].message
-            == "There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps."
-        )
+        logdata = gaps_ts.elog.get_error_log()
+        assert len(logdata) == 1
+        assert logdata[0].badness == ErrorSeverity.Complaint
 
         # test read_data with missing attributes in the normalized records
         # 1. test missing normal attribute

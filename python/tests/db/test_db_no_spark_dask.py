@@ -1389,10 +1389,8 @@ with mock.patch.dict(
             logging_helper.info(ts, "1", "deepcopy")
             ts["site_id"] = missing_lat_site_id
             self.db.save_data(ts, mode="promiscuous", storage_mode="gridfs",return_data=True)
-            try:
-                missing_required_ts = self.db.read_data(ts["_id"], normalize=["site"])
-            except MsPASSError as e:
-                assert e.severity == ErrorSeverity.Fatal
+            with pytest.raises(MsPASSError, match="not found"): 
+                self.db.read_data(ts["_id"], normalize=["site"])
             
 
         def test_index_mseed_file(self):
@@ -1814,9 +1812,7 @@ with mock.patch.dict(
             non_exist_id = ObjectId()
             with pytest.raises(
                 MsPASSError,
-                match="Database.verify:  objectid="
-                + str(non_exist_id)
-                + " has no matching document in wf_TimeSeries",
+                match=" has no matching document",
             ):
                 problematic_keys = self.db.verify(
                     non_exist_id, "wf_TimeSeries", tests=["xref", "type", "undefined"]
@@ -2381,9 +2377,21 @@ with mock.patch.dict(
             ts_ensemble.member.append(ts2)
             ts_ensemble.member.append(ts3)
             ts_ensemble.set_live()
+            # We use this copy below to restore the state of the 
+            # data being tested - avoids confusing dependencies that 
+            # were present in earlier versions of this test script 
+            ts_ensemble0 = copy.deepcopy(ts_ensemble)
+            # First test save in backward compatibility with 
+            # save_ensemble_data using directory list and dfile list.
+            # Note this function may be deprecated in future releases
+            # An anomaly the revision is that exclude_objects edits 
+            # the return deleting the excluded members.  Older version 
+            # just left it unaltered and didn't save it.  
+            # I (glp) judged that the wrong behavior
+            self.db.database_schema.set_default("wf_TimeSeries", "wf")
             dfile_list = ["test_db_output", "test_db_output"]
             dir_list = ["python/tests/data/", "python/tests/data/"]
-            self.db.save_ensemble_data(
+            ts_ensemble = self.db.save_ensemble_data(
                 ts_ensemble,
                 mode="promiscuous",
                 storage_mode="file",
@@ -2391,44 +2399,98 @@ with mock.patch.dict(
                 dir_list=dir_list,
                 exclude_objects=[1],
             )
-            self.db.database_schema.set_default("wf_TimeSeries", "wf")
-            res = self.db.read_data(
-                ts_ensemble.member[0]["_id"],
-                mode="promiscuous",
-                normalize=["site", "source", "channel"],
-            )
-            assert np.isclose(ts_ensemble.member[0].data, res.data).all()
-            res = self.db.read_data(
-                ts_ensemble.member[2]["_id"],
-                mode="promiscuous",
-                normalize=["site", "source", "channel"],
-            )
-            assert np.isclose(ts_ensemble.member[2].data, res.data).all()
-            assert "_id" not in ts_ensemble.member[1]
-
+            assert len(ts_ensemble.member)==2
+            # Test atomic read of members just written
+            # Note exclude_objects now deletes exlcuded from member vector 
+            # so we don't get here without passing the assert immediately above
+            
+            for i in range(len(ts_ensemble.member)):
+                res = self.db.read_data(
+                    ts_ensemble[i]["_id"],
+                    mode="promiscuous",
+                    normalize=["site", "source", "channel"],
+                )
+                assert res.live
+                assert np.isclose(ts_ensemble.member[i].data, res.data).all()
+            
+            
+            # Repeat same test as immediately above using gridfs storage mode
+            # and adding a second history node
+            ts_ensemble = copy.deepcopy(ts_ensemble0)
             logging_helper.info(ts_ensemble.member[0], "2", "save_data")
             logging_helper.info(ts_ensemble.member[1], "2", "save_data")
             logging_helper.info(ts_ensemble.member[2], "2", "save_data")
-            self.db.save_ensemble_data(
+            ts_ensemble = self.db.save_ensemble_data(
                 ts_ensemble,
                 mode="promiscuous",
                 storage_mode="gridfs",
                 exclude_objects=[1],
             )
-            res = self.db.read_data(
-                ts_ensemble.member[0]["_id"],
+            # Test atomic read of members just written
+            # Note exclude_objects use above is why we add the conditional 
+            self.db.database_schema.set_default("wf_TimeSeries", "wf")
+            for i in range(len(ts_ensemble.member)):
+                res = self.db.read_data(
+                        ts_ensemble.member[i]["_id"],
+                        mode="promiscuous",
+                        normalize=["site", "source", "channel"],
+                    )
+                assert res.live
+                assert np.isclose(ts_ensemble.member[i].data, res.data).all()
+            
+            # Now repeat both of the above using the new shorter named 
+            # function save_data (previously only supported atomic data)
+            # we don't use exclude as that is is expected to be deprecated
+            ts_ensemble = copy.deepcopy(ts_ensemble0)
+            dir_list = ["python/tests/data/", "python/tests/data/"]
+            ts_ensemble = self.db.save_data(
+                ts_ensemble,
                 mode="promiscuous",
-                normalize=["site", "source", "channel"],
+                storage_mode="file",
+                dir="python/tests/data/",
+                dfile="test_db_output",
+                dir_list=dir_list,
+                return_data=True,
             )
-            assert np.isclose(ts_ensemble.member[0].data, res.data).all()
-            assert "_id" not in ts_ensemble.member[1]
-            res = self.db.read_data(
-                ts_ensemble.member[2]["_id"],
+            assert len(ts_ensemble.member)==3
+            self.db.database_schema.set_default("wf_TimeSeries", "wf")
+            # using atomic reader for now - ensemble reader is tested 
+            # in test_read_ensemble_data
+            for i in range(len(ts_ensemble.member)):
+                res = self.db.read_data(
+                       ts_ensemble.member[i]["_id"],
+                       mode="promiscuous",
+                       normalize=["site", "source", "channel"],
+                   )
+                assert res.live
+                assert np.isclose(ts_ensemble.member[i].data, res.data).all()
+                
+            
+            # Repeat same test as immediately above using gridfs storage mode
+            # and adding a second history node
+            ts_ensemble = copy.deepcopy(ts_ensemble0)
+            logging_helper.info(ts_ensemble.member[0], "2", "save_data")
+            logging_helper.info(ts_ensemble.member[1], "2", "save_data")
+            logging_helper.info(ts_ensemble.member[2], "2", "save_data")
+            ts_ensemble = self.db.save_data(
+                ts_ensemble,
                 mode="promiscuous",
-                normalize=["site", "source", "channel"],
+                storage_mode="gridfs",
+                return_data=True,
             )
-            assert np.isclose(ts_ensemble.member[2].data, res.data).all()
-
+            assert len(ts_ensemble.member)==3
+            self.db.database_schema.set_default("wf_TimeSeries", "wf")
+            # using atomic reader for now - ensemble reader is tested 
+            # in test_read_ensemble_data
+            for i in range(len(ts_ensemble.member)):
+                res = self.db.read_data(
+                       ts_ensemble.member[i]["_id"],
+                       mode="promiscuous",
+                       normalize=["site", "source", "channel"],
+                   )
+                assert res.live
+                assert np.isclose(ts_ensemble.member[i].data, res.data).all()
+            
             # using seismogram
             seis1 = copy.deepcopy(self.test_seis)
             seis2 = copy.deepcopy(self.test_seis)
