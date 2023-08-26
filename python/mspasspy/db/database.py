@@ -63,6 +63,7 @@ from mspasspy.ccore.utility import (
     ErrorSeverity,
     dmatrix,
     ProcessingHistory,
+    ProcessingStatus,
     ErrorLogger,
 )
 from mspasspy.db.collection import Collection
@@ -662,14 +663,21 @@ class Database(pymongo.database.Database):
                         self.database_schema.default_name("history_object") + "_id"
                         )
                     if history_obj_id_name in object_doc:
-                        self._load_history(
+                        history_id = object_doc[history_obj_id_name]
+                    else:
+                        # None is used as a signal this is the 
+                        # initialization of a workflow so the 
+                        # result will be marked such that the 
+                        # is_origin method returns True
+                        history_id = None
+                    self._load_history(
                             mspass_object,
-                            object_doc[history_obj_id_name],
-                            alg_name,
-                            alg_id,
-                            define_as_raw,
-                            retrieve_history_record,
+                            history_id,
+                            alg_name=alg_name,
+                            alg_id=alg_id,
+                            define_as_raw=define_as_raw,
                             )
+                        
             else:
                 mspass_object["is_abortion"] = True
             
@@ -724,6 +732,23 @@ class Database(pymongo.database.Database):
                                     if d.dead():
                                         d["is_abortion"]=True
                                         break
+                    if load_history:
+                        history_obj_id_name = (
+                            self.database_schema.default_name("history_object") + "_id"
+                            )
+                        for d in ensemble.member:
+                            if d.live:
+                                if d.is_defined(history_obj_id_name):
+                                    history_id = d[history_obj_id_name]
+                                else:
+                                    history_id = None
+                                self._load_history(
+                                        mspass_object,
+                                        history_id,
+                                        alg_name=alg_name,
+                                        alg_id=alg_id,
+                                        define_as_raw=define_as_raw,
+                                        )
                     # make sure we didn't kill all members
                     kill_me=True
                     for d in ensemble.member:
@@ -1035,8 +1060,11 @@ class Database(pymongo.database.Database):
         if return_data:
             return mspass_object
         else:
+            # mpte emsembles with default only return "is_live" because 
+            # ids are only set in members.  
             retdict=dict()
             if mspass_object.live:
+                retdict["is_live"] = True
                 for k in return_list:
                     if mspass_object.is_defined(k):
                         retdict[k] = mspass_object[k]
@@ -3313,20 +3341,11 @@ class Database(pymongo.database.Database):
         :return: current history_object_id.
         """
         if isinstance(mspass_object, TimeSeries):
-            update_metadata_def = self.metadata_schema.TimeSeries
             atomic_type = AtomicType.TIMESERIES
         elif isinstance(mspass_object, Seismogram):
-            update_metadata_def = self.metadata_schema.Seismogram
             atomic_type = AtomicType.SEISMOGRAM
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
-        # get the wf id name in the schema
-        wf_id_name = update_metadata_def.collection("_id") + "_id"
-
-        # get the wf id in the mspass object
-        oid = None
-        if "_id" in mspass_object:
-            oid = mspass_object["_id"]
 
         if not collection:
             collection = self.database_schema.default_name("history_object")
@@ -3344,17 +3363,9 @@ class Database(pymongo.database.Database):
         # and job_id to this function call.  For now they are dropped
         insert_dict = history2doc(proc_history,alg_id=alg_id,alg_name=alg_name)
         # We need this below, but history2doc sets it with the "_id" key
-        current_uuid = insert_dict["_id"]
+        current_uuid = insert_dict["save_uuid"]
+        history_id = history_col.insert_one(insert_dict).inserted_id
 
-        try:
-            if oid:
-                insert_dict[wf_id_name] = oid
-            # insert new one
-            history_col.insert_one(insert_dict)
-        except pymongo.errors.DuplicateKeyError as e:
-            raise MsPASSError(
-                "The history object to be saved has a duplicate uuid", "Fatal"
-            ) from e
 
         # clear the history chain of the mspass object
         mspass_object.clear_history()
@@ -3362,24 +3373,48 @@ class Database(pymongo.database.Database):
         # Note we have to convert to a string to match C++ function type
         mspass_object.set_as_origin(alg_name, alg_id, str(current_uuid), atomic_type)
 
-        return current_uuid
+        return history_id
 
     def _load_history(
         self,
         mspass_object,
-        history_object_id,
-        alg_name=None,
-        alg_id=None,
+        history_object_id=None,
+        alg_name="undefined",
+        alg_id="undefined",
         define_as_raw=False,
-        collection=None,
-        retrieve_history_record=False,
+        collection="history_object",
     ):
         """
-        Load (in place) the processing history into a mspasspy object.
+        Loads processing history into an atomic data object or initializes 
+        history tree if one did not exist. 
+        
+        We store history data on a save in documents in the "history_object"
+        collection.  This private method loads that data when it can. 
+        Top-level behavior is controlled by the history_object_id value. 
+        If it is not None we query the history_object collection using 
+        that value as an objectId.   If that fails the tree is 
+        initialized as an origin but an error message is left on elog 
+        complaining that the history is likely invalid.  
+        
+        When a workflow is initialized by a read, which in ProcessingHistory
+        is wha tis called an "origin", this function should be called with 
+        history_object_id set to None.  In that situation, it initializes 
+        the history tree (set_as_origin) with the id for the start of the 
+        chain as the waveform object id.  That is assumed always in 
+        mspass_object accesible with the key '_id'.  This method will 
+        throw an exception if that is not so.  
 
-        :param mspass_object: the target object.
+        :param mspass_object: the target object - altered in place
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-        :param history_object_id: :class:`bson.ObjectId.ObjectId`
+        :param history_object_id: :class:`bson.ObjectId.ObjectId` or None (see above)
+        :param alg_name:  algorithm name that should be the current node 
+        of the history tree.  this should normaly be the name of th e
+        reader method/function.  
+        :param alg_id:  algorithm id to set for the current node
+        :param define_as_raw:  when True and history_object_id is None 
+          the starting node of the history chain will be tagged as "raw".  
+          Ignored if history_object_id is used for a query.  Note on 
+          failure of such a query the chain will always have raw set false.
         :param collection: the collection that you want to load the processing history. If not specified, use the defined
         collection in the schema.
         """
@@ -3390,20 +3425,47 @@ class Database(pymongo.database.Database):
             atomic_type = AtomicType.SEISMOGRAM
         if not collection:
             collection = self.database_schema.default_name("history_object")
-        # load history if set True
-        res = self[collection].find_one({"_id": history_object_id})
-        # retrieve_history_record
-        if retrieve_history_record:
-            mspass_object.load_history(pickle.loads(res["processing_history"]))
+        if mspass_object.dead():
+            return 
+        if history_object_id:
+            # load history if set True
+            res = self[collection].find_one({"_id": history_object_id})
+            if res:
+                if "processing_history" in res:
+                    mspass_object.load_history(pickle.loads(res["processing_history"]))
+                    mspass_object.new_map(alg_name,alg_id,atomic_type,ProcessingStatus.ORIGIN)
+                else:
+                    message = "Required attribute (processing_history) not found in document retrieved from collection={}\n".format(collection)
+                    message += "Object history chain for this run will be incomplete for this datum"
+                    mspass_object.elog.log_error("Database._load_history",
+                                                 message,
+                                                 ErrorSeverity.Complaint)
+                    mspass_object.set_as_origin(alg_name,
+                                            alg_id,
+                                            str(mspass_object['_id']),
+                                            atomic_type,
+                                            define_as_raw=False,
+                                            )
+            else:
+                message = "No matching document found in history collection={} with id={}\n".format(collection,history_object_id)
+                message += "Object history chain for this run will be incomplete for this datum"
+                mspass_object.elog.log_error("Database._load_history",
+                                             message,
+                                             ErrorSeverity.Complaint)
+                mspass_object.set_as_origin(alg_name,
+                                        alg_id,
+                                        str(mspass_object['_id']),
+                                        atomic_type,
+                                        define_as_raw=False,
+                                        )
         else:
-            # set the associated history_object_id as the uuid of the origin
-            if not alg_name:
-                alg_name = "0"
-            if not alg_id:
-                alg_id = "0"
-            mspass_object.set_as_origin(
-                alg_name, alg_id, history_object_id, atomic_type, define_as_raw
-            )
+            mspass_object.set_as_origin(alg_name,
+                                        alg_id,
+                                        str(mspass_object['_id']),
+                                        atomic_type,
+                                        define_as_raw=define_as_raw,
+                                        )
+
 
     def _save_elog(self, 
                    mspass_object, 
@@ -5684,10 +5746,10 @@ class Database(pymongo.database.Database):
                 except MsPASSError as merr:
                     mspass_object.elog.log_error(merr)
                     mspass_object.kill()
-                    # Use a dead datum to flag failure an already 
-                    # dead datum will be do return the same but good 
-                    # practice would be to not call this method for 
-                    # alread dead ensembles
+                    # Use a dead datum to flag failure.
+                    # An ensemble marked dead on input won't get here 
+                    # but we aim here to make the output in the same 
+                    # state when this error handler is involked.
                     return mspass_object
                 # Update metadata for each memkber
                 for i in range(len(mspass_object.member)):
@@ -5699,10 +5761,6 @@ class Database(pymongo.database.Database):
                         mspass_object.member[i].put_string("storage_mode","file")
                         mspass_object.member[i].put_long("foff",foff_list[i])
                         mspass_object.member[i].put_string("format","binary")
-                        # this could be computed but is baggage anyway for binary
-                        # data.   Note Metadata erase method is harmless
-                        # and silently does nothing if nbytes didn't exist
-                        mspass_object.member.erase("nbytes")
             else:
                 # This probably should have a rejection for some formats
                 # for which the algorithm here is problematic.  SAC is
@@ -5835,6 +5893,14 @@ class Database(pymongo.database.Database):
         """
         self._sync_metadata_before_update(mspass_object)
         insertion_dict, aok, elog = md2doc(mspass_object,save_schema,exclude_keys=exclude_keys,mode=mode)
+        # exclude_keys edits insertion_dict but we need to do the same to mspass_object
+        # to assure whem data is returned it is identical to what would 
+        # come from reading it back 
+        if exclude_keys:
+            for k in exclude_keys:
+                # erase is harmless if k is not defined so we don't 
+                # guard this with an is_defined conditional
+                mspass_object.erase(k)
         if elog.size() > 0:
             mspass_object.elog += elog
         if not aok:
@@ -5870,6 +5936,17 @@ class Database(pymongo.database.Database):
                 insertion_dict.pop(history_obj_id_name, None)
             else:
                 # optional history save - only done if history container is not empty
+                # first we need to push the definition of this algorithm 
+                # to the chain.  Note it is always defined by the special 
+                # save defined with the C++ enum class mapped to python 
+                # vi ProcessingStatus
+                if isinstance(mspass_object, TimeSeries):
+                    atomic_type = AtomicType.TIMESERIES
+                elif isinstance(mspass_object, Seismogram):
+                    atomic_type = AtomicType.SEISMOGRAM
+                else:
+                    raise TypeError("only TimeSeries and Seismogram are supported")
+                mspass_object.new_map(alg_name,alg_id,atomic_type,ProcessingStatus.SAVED)
                 history_object_id = self._save_history(mspass_object, alg_name, alg_id)
                 insertion_dict[history_obj_id_name] = history_object_id
                 mspass_object[history_obj_id_name] = history_object_id
@@ -7071,6 +7148,7 @@ def history2doc(proc_history,
         raise TypeError(message)
     current_uuid = proc_history.id()  # uuid in the current node
     current_nodedata = proc_history.current_nodedata()
+    current_stage = proc_history.stage()
     # get the alg_name and alg_id of current node
     if alg_id is None:
         alg_id = current_nodedata.algid
@@ -7079,7 +7157,8 @@ def history2doc(proc_history,
 
     history_binary = pickle.dumps(proc_history)
     doc = {
-            "_id": current_uuid,
+            "save_uuid" :  current_uuid,
+            "save_stage" : current_stage,
             "processing_history": history_binary,
             "alg_id": alg_id,
             "alg_name": alg_name,
