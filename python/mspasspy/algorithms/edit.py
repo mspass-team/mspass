@@ -87,7 +87,7 @@ class Executioner(ABC):
         subclasses.
 
         """
-        if ensemble.live():
+        if ensemble.live:
             for d in ensemble.member:
                 self.kill_if_true(d)
         return ensemble
@@ -898,14 +898,14 @@ class MetadataOperator(ABC):
 
     def edit_ensemble_members(self, ensemble):
         """
-        Subclasses should call this method if the input data are an 
-        ensemble.   A trick of inheritance allows the algorithm of self 
-        to then be applied to whole ensemble.  Putting this in the 
+        Subclasses should call this method if the input data are an
+        ensemble.   A trick of inheritance allows the algorithm of self
+        to then be applied to whole ensemble.  Putting this in the
         base class avoids the duplication of duplicate code in all \
-        subclasses.  
+        subclasses.
 
         """
-        if ensemble.live():
+        if ensemble.live:
             for d in ensemble.member:
                 self.apply(d)
         return ensemble
