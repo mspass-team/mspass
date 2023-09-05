@@ -203,7 +203,7 @@ RUN chmod +x /usr/sbin/tini
 
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
-ADD scripts/start-mspass.sh /usr/sbin/start-mspass-tacc.sh
+ADD scripts/start-mspass-tacc.sh /usr/sbin/start-mspass-tacc.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
