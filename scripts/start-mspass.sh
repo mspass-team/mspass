@@ -9,23 +9,6 @@ else
   MSPASS_WORKDIR=$MSPASS_WORK_DIR
 fi
 
-#############
-## Creating reverse tunnel port to login nodes
-NODE_HOSTNAME=`hostname -s`
-LOGIN_PORT=`echo $NODE_HOSTNAME | perl -ne 'print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;'`
-STATUS_PORT=`echo "$LOGIN_PORT + 1" | bc -l`
-echo "got login node port $LOGIN_PORT"
-
-# create reverse tunnel port to login nodes.  Make one tunnel for each login so the user can just
-# connect to stampede.tacc
-for i in `seq 4`; do
-    ssh -q -f -g -N -R $LOGIN_PORT:$NODE_HOSTNAME:8888 login$i
-    ssh -q -f -g -N -R $STATUS_PORT:$NODE_HOSTNAME:8787 login$i
-done
-echo "Created reverse ports on Stampede2 logins"
-#############
-
-
 # define SLEEP_TIME
 if [[ -z $MSPASS_SLEEP_TIME ]]; then
   MSPASS_SLEEP_TIME=15
