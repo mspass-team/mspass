@@ -20,8 +20,8 @@ memory.
 
 In this document we discuss pitfalls we are aware of in
 memory management with MsPASS.  This document is focused mainly on dask
-which, in our experience, has better documentation of how it manages memory.
-The main dask document on this topic is found
+because we have more experience using it.
+The main dask document on dask memory management is found
 `here<https://distributed.dask.org/en/stable/memory.html>`__.
 The comparable page for spark is `here<https://spark.apache.org/docs/latest/tuning.html>`__.
 As for most heavily used packages like this there are also numerous pages
@@ -51,7 +51,7 @@ emits an output.  Since in a programming language that is the same
 thing conceptually as a "function call" map and reduce operators always
 have a function object as one of the arguments.   A "map" operator
 has one main input (arguments to the function
-are auxliary data) and a single output (the function return).
+are auxiliary data) and a single output (the function return).
 Reduce operators have many inputs of a common
 data type and one output.   Note, however, the restriction that
 they are always considered two at a time. For most MsPASS operators the inputs and
@@ -94,13 +94,31 @@ This simple workflow consists only of map operators and is terminated by
 a save followed by a compute to initiate the (lazy) computation of the bag.
 The DAG for this workflow is illustrated below
 
-figure showing workflow DAG
+.. _DAG_figure:
+
+.. figure:: ../_static/figures/MapDagFigure.png
+    :width: 600px
+    :align: center
+
+    Block diagram illustration of DAG defined by example workflow.
+    The example shows how work would be partitions with five processors
+    and five partitions.   The labels at the top are function names
+    matching those used in the python code above.   Each box denotes an
+    instance of that function run on one processor (worker).   Data flow
+    is from left to right.  Data enter each pipeline from a reader on the
+    left hand side (`read_distributed_data` but here given the simpler name
+    "reader") and exit in the save operation.   For this simple case where the
+    number of processors match the number of partitions each processor would
+    be assigned 1/5th of the data.  Termination of the workflow with a database
+    save (`save_data`) makes each pipeline largely independent of the others and
+    can improve performance as not processor has to wait for another except in
+    competition for attention from the database server.
 
 Now remember that a bag (RDD in spark) can be conceptualized as a
 container that is a list of data objects that doesn't necessarily fit
-into memory of the entire set of nodes being used, let alone
+into cluster memory, let alone
 a single node.   Both dask and spark divide the container into
-`partitions` illustrated in the figure.   The partition size can be
+`partitions` illustrated in the figure above.   The partition size can be
 as small as one data object or some larger integer less than or equal to the
 number of data components.   Think of a partition as the size of a bite
 the system uses to eat the elephant (the whole data set).   That basic
@@ -126,9 +144,9 @@ do the job at all.   The right size is something you can pick up and chew.
 The next concept to understand is how the scheduler
 needs to move data to workers and between processing steps.
 The figure below illustrates how that might work for
-two workers and a container with 10 partitions.  A run would
-work with two partitions at a time.  The scheduler would assign the data
-in each partition two one of the two workers.  From what we have observed
+the same situation illustrated above but with only two workers (processors).
+As the animation shows, the scheduler would assign the data
+in each partition to one of the two workers.  From what we have observed
 the normal pattern for a job like our simple chain of map operators
 in this example is this.  The data for the partition are loaded
 by each worker, which in this example means each worker issues a series of
@@ -140,7 +158,23 @@ the output of the `save_data` method of `Database`, is returned to
 the scheduler node running the master python script (the one shown above
 for this example).
 
-Figure illustrating processing of 10 partitions by 2 workers.
+.. _TwoProcessorAnimation_figure:
+
+.. figure:: ../_static/figures/MapProcessing.gif
+    :width: 600px
+    :align: center
+
+    Animated gif illustrating data flow for the same five partition
+    data set as illustrated above with only two processors.  The animation
+    illustrates how the scheduler would assign each processor a data partition.
+    Each worker sequentially processes one data object at a time as illustrated
+    by the moving arrow.  When a worker (processor) finishes a partition the
+    scheduler assigns it another until the data set is exhausted.  This
+    example illustrates an inevitable discretization issue that can degrade
+    throughput.  Because 5 is not a multiple of 2 this example requires
+    three passes to process and the last pass will only use one of the
+    workers.
+
 
 There are some important complexities the figure above glosses over
 that are worth mentioning:
@@ -167,19 +201,15 @@ that are worth mentioning:
    was written.  It matters because optimal performance can be achieved
    by defining sufficient worker threads to do computing as fast as possible,
    but defining too many workers can create unintentional memory bloat issues.
-   The default is clear.  For both dask and spark each worker container
+   The default, however, is clear.  For both dask and spark each worker container
    (running in a node by itself) will use a thread pool with the number of
-   worker threads equal to the number of cores on that node.
+   worker threads equal to the number of CPUs assigned to the container.
+   That is normally the number of cores on that physical node.
 -  Both dask and spark have tunable features for memory management and the
    way scheduling is handled.   In dask they are optional arguments to the
    constructor for the dask client object.   For spark it is defined in
    the "context".   See the documentation for the appropriate scheduler
    if you need to do heavy performance tuning.
-
-This figure should be a layered pdf or an animation.   Idea is to show what
-happens when a worker fails - scheduler has to restart with a different worker.
-That idea may belong elsewhere or ignored.  This is just and idea to consider as
-a note to myself.
 
 
 Memory Complexities
@@ -206,7 +236,7 @@ not properly set up to tell dask, at least, how much memory was being
 consumed.  All memory management depends on data objects being
 able to properly report their size and have mechanisms for dask or
 spark to clear memory stored in the data objects when no longer needed.
-If either are not working properly, catastrophic failure is guaranteed
+If either are not working properly, catastrophic failure is likely
 to eventually occur with upscaling of a workflow.
 
 In working with very large data sets there is the added constraint of
@@ -237,7 +267,7 @@ expected for that workflow.  We discuss how to estimate worker
 memory requirements below.
 
 The final generic issue about memory management is a software
-issue that very few seismologists are likely to recognize as an issue.
+issue that many seismologists may not recognize as an issue.
 That is, all modern computer languages (even modern FORTRAN) utilize
 dynamic memory allocation.   In a language like C/C++ memory allocation
 is explicit in the code with calls to the `malloc` family of functions in
@@ -245,12 +275,11 @@ C and `new` in C++.   In object-oriented languages
 like python and java dynamic allocation is implicit.   For instance,
 in python every time a new symbol is introduced and set to a "value"
 an object constructor is called that allocates the space for the data
-the object requires.
-
-A problem that happens in MsPASS is that it uses a mixed language
+the object requires.   A problem that happens
+in MsPASS is that it uses a mixed language
 solution for the framework.   Part of that is implicit in assembling
-most python applications from open-source components as a large fraction
-use numpy or scipy for which a large fraction of the code base are
+most python applications from open-source components.  A large fraction
+of python packages use numpy or scipy for which most of the code base is
 C/C++ and Fortran with python binding.   In MsPASS we used a similar
 approach for efficiency with the core seismic data containers
 implemented in C++.   The problem any mixed language solution faces
@@ -275,7 +304,7 @@ through a feature called `return_value_policy` described
 At the time this manual section was written we were actively working
 to get this setting right on all the C++ data objects, but be warned
 residual problems may exist.   If you experience memory bloat problems
-please report this to us we will try to fix the issue as quickly as possible.
+please report this to us wo we will try to fix the issue as quickly as possible.
 
 bag/RDD Partitions and Pure Map Workflows
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -410,8 +439,8 @@ that most seismic processing workflows are most effectively expressed
 as a chain of map operators applied to a bag/RDD.   There are, however,
 two common algorithms that can be expressed as "reduce" operators:
 (1) one-pass stacking (i.e. an average that does not require an
-interative such as an M-estimator.), and (2) forming ensembles on the
-fly from a bag/RDD of atomic data.  They have fundamentally different
+interative loop such as an M-estimator.), and (2) forming ensembles on the
+fly from a bag/RDD of atomic data.  These two examples have fundamentally different
 memory constraints.
 
 A stacking algorithm that produces a smaller number of output signals
@@ -427,7 +456,7 @@ reduce(fold) operation by the Metadata key `source_id`:
 
   def ator_by_Ptime(d):
     """
-    Smaller helper function needed or alignment by Pime key.
+    Smaller helper function needed for alignment by Ptime key.
     """
     # A more robust version should test for validity - here assume data
     # was preprocessed to be clean
@@ -443,12 +472,11 @@ reduce(fold) operation by the Metadata key `source_id`:
   # Assumes data was preprocessed to be clean and saved with this tag
   query={"data_tag" : "read_to_stack_data"}
   cursor = db.wf_TimeSeries.find({})
-  # assumes npartitions set above - see text for discussion
+  # assumes npartitions is set earlier in the code - see text for discussion
   mybag = read_distributed_data(db,cursor,number_partitions=npartions)
   mybag = mybag.map(ator_by_Ptime)
   mybag = mybag.map(WindowData,-5.0,30.0)
-  # foldby is dask method of bag we use raw here for illustration
-  # Fancier forms with decorators are more appropriate for production workflows
+  # foldby is dask method of bag - pyspark has a different function mame
   mybag = mybag.foldby(keyfunc, stack)
   mybag = mybag.map(db.save_data,data_tag="stacked_data")
   resulst = mybag.compute()
@@ -619,7 +647,9 @@ to improve performance.
     sequence of MongoDB queries that would sort miniseed data appropriately
     and group them into smaller bundles of the order of 3 that could be
     scanned and "bundled" into atomic `Seismogram` objects with the
-    function :code:`BundleSeedGroup`.
+    function :code:`BundleSeedGroup`.  That workflow would be similar to
+    the one above but the list of queries passed to `read_distributed_data`
+    would be more complex.
 #.  If all else fails the workflow can be run as a serial job.
     For small data sets that can be the best alternative.  For very large
     data sets the time required can be problematic and would only be
@@ -628,7 +658,7 @@ to improve performance.
     a desktop system with
     an extended USArray dataset with all lower 48 station broadband stations
     in 2013.  A job to do the process above alone would have required of the
-    order of weeks
+    order of weeks on a desktop machine
     for one year of data.   That is a feasible, but awkward calculation
     by any definition.
 
@@ -686,8 +716,9 @@ can be handled most easily by utilizing MongoDB.
    drastically reduced by removing the dead data.  The cleanest way to do
    that, and preserve the record of what was killed, is to do an intermediate
    save of the data set and then recreate a new bag/RDD for subsequent
-   processing of the edited data.  In our experience, it is generally useful
+   processing of the edited data by reading it back again before continuing.
+   In our experience, it is generally useful
    to treat this as step in processing where the result needs to be reviewed
    before continuing anyway.   The jupyter notebook you create
-   along with records in the database will
+   along with records in the database will then
    preserve your edits.

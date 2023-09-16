@@ -42,11 +42,12 @@ mismatch that is inevitable in dealing with other formats.
 FDSN data
 ~~~~~~~~~~~~~
 
-Importing Miniseed Data
+Downloading Miniseed Data
 ----------------------------
 From the MsPASS perspective,
 at this point in time the best mechanism to obtain data from
-the FDSN confederation of data centers is to use obspy.
+the FDSN confederation of data centers is to use obspy to download
+a copy of the data set you aim to assemble.
 Obspy has two different python functions that can be used to
 fetch miniseed data from one or more FDSN data centers.
 
@@ -107,6 +108,63 @@ can be found `here <https://github.com/mspass-team/mspass/tree/master/scripts/aw
 As the word "prototype" implies that api
 is likely to change.  Check the docstring api for more recent changes if
 you are interested in this capability.
+
+Loading miniseed data for use with MsPASS
+--------------------------------------------
+For standard use at this time with FDSN data centers miniseed must be
+"downloaded" and saved as a set of files.   Miniseed is a (normally)
+compressed format for storing waveform data.  To be useful the data
+need to be organized.  We handle that in a manner similar to
+Antelope and other relational database systems and build an index
+that can be used to assemble data in an order required for an application.
+The tool to do that process in MsPASS is a method of
+:py:class:`Database<mspasspy.db.database.Database>` called
+:py:meth:`index_mseed<mspasspy.db.database.index_mseed_file>`.
+You can follow the above link for the full docstring but it
+is useful to show the def line for the method to facilitate the
+description below:
+
+.. code-block:: python
+
+    def index_mseed_file(
+       self,
+       dfile,
+       dir=None,
+       collection="wf_miniseed",
+       segment_time_tears=True,
+       elog_collection="elog",
+       return_ids=False,
+       normalize_channel=False,
+       verbose=False,
+    ):
+
+This method creates a MongoDB document in a special collection
+called :code:`wf_miniseed` (default defined by the argument "collection").
+This function operates much like the Antelope
+program :code:`miniseed2db`, which may be familiar to some users,
+but it creates "documents in the "wf_miniseed"
+collection instead of "tuples" in a "wfdisc" relation (table).
+One document is created for each independent "waveform segment" in
+a file it asked to process defined by the two (required) arguments
+"dir" and "dfile".   The following is a typical usage from one of our tutorial
+notebooks:
+
+.. code-block:: python
+
+  import os
+  wfdir = "/tmp/wf"   # change this directory as needed
+  with os.scandir(wfdir) as entries:
+    count=0
+    for entry in entries:
+      if entry.is_file():
+        filename= wfdir +'/'+entry.name
+        print("Processing file=",filename)
+        db.index_mseed_file(entry.name, dir=wfdir)
+        count += 1
+  print('Number of files processed=',count)
+
+Noting this code is basically a loop of a set of file names running
+the :code:`index_mseed_file` method on each file in a specified directory.
 
 Assembling Receiver Metadata
 ----------------------------------

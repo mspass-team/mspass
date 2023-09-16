@@ -257,7 +257,7 @@ Best Practices
    data when required attributes are missing.   If your data set has a lot of
    missing metadata required by the operator, the operators will
    kill every datum that is lacking that metadata attribute.
-2. It is far to easy to kill every datum in your data set if you read
+2. It is far too easy to kill every datum in your data set if you read
    data by ensembles and fail to use the `apply_to_members` switch correctly.
    With the default value of False if you mix up the names for fields you
    set in the ensemble container and which you load with each atomic data
