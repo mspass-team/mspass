@@ -47,10 +47,13 @@ package.
    user_manual/header_math
    user_manual/graphics
    user_manual/processing_history_concepts
+   user_manual/signal_to_noise
    user_manual/parallel_processing
    user_manual/normalization
-   user_manual/adapting_algorithms
+   user_manual/memory_management
    user_manual/io
+   user_manual/adapting_algorithms
+   user_manual/FAQ
 
 
 .. toctree::
