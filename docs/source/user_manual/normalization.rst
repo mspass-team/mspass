@@ -20,13 +20,14 @@ a set of tables that are linked to the waveform index (wfdisc)
 using a relational database "join".  MongoDB is not relational
 but handles the same issue by what they call the :code:`normalized`
 versus the :code:`embedded` data model
-(MongoDB's documentation on this topic can be found `here <https://www.mongodb.com/docs/manual/core/data-model-design/>`__).
+(MongoDB's documentation on this topic can be found
+`here <https://www.mongodb.com/docs/manual/core/data-model-design/>`__).
 
 Normalization is conceptually similar to a relational database join, but
 is implemented in a different way that has implications on performance.
 For small datasets these issues can be minor, but for very large
 data sets we have found poorly designed normalization algorithms
-can be serious bottleneck to performance.
+can be a serious bottleneck to performance.
 A key difference all users need to appreciate
 is that with a relational database a "join" is always a global operation done between all
 tuples in two relations (tables or table subsets).  In MongoDB
@@ -58,62 +59,103 @@ waveform index collections (wf_miniseed, wf_TimeSeries, or wf_Seismogram)
 or, in the case of in-line normalization functions, the Metadata container of
 one of the MsPaSS data objects.
 
-Data reader normalization method
+Normalization with readers
 --------------------------------------
 
 Overview
 ++++++++++++++
 
 Almost all workflows begin with a set of initializations.   In a
-production workflow using MsPASS that is normally followed immediately by one of
-two MongoDB constructs:  (1) a query of one of the waveform collections
-that returns a MongoDB :code:`cursor` object, or (2) a function call that
-creates an RDD/bag of query strings.   The first is used if the processing
-is limited to atomic level operations like filtering while the second is
-the norm for ensemble processing.   In either case, :code:`normalization`
-is best done through the readers that particular workflow uses to create the
-working RDD/bag.  In both cases a key argument to the read functions is
-:code:`normalize`.   In all cases :code:`normalize` should contain a
-python list of strings defining mongodb collection names that should be
-used to "normalize" the data being read.
+production workflow using MsPASS initialization
+is normally followed immediately by one of
+two MongoDB constructs:
 
-Normalization during read operation has two important limitations
-users must recognize:
+#.  For serial processing most workflows reduce to an outer loop
+    driven by a MongoDB :code:`Cursor` object.   A
+    :code:`Cursor` is the output of the standard "find" method
+    for the handle to any MongoDB collection.
+#.  Parallel workflows in MsPASS are driven by a call to the
+    :py:function:`read_distributed_data <mspasspy.io.distributed.read_distributed_data>`
+    function.
 
-#.  The cross-reference method to link waveform documents to normalizing
-    data is fixed.   That is, in all cases the cross-reference is always
-    based on the :code:`ObjectId` of the normalizing collection with a
-    frozen naming convention.   For example, if we want to normalize Seismogram data
-    with the :code:`site` collection, all MsPASS readers expect to find the
-    attribute :code:`site_id` in :code:`wf_Seismogram` documents that
-    define the (unique) :code:`ObjectId` of a document in the :code:`site`
-    collection.  If a required id is not defined that datum is silently dropped.
-#.  By default the readers load the entire contents of all documents in the normalizing
-    collection.   That can waste memory.  For example, channel collection
-    documents created from FDSN web service and saved with the
-    :py:meth:`save_inventory <mspasspy.db.database.Database.save_inventory>` method always
-    contain serialized response data that may or may not be needed.  If that
-    is a concern, the easiest solution is to use the :code:`exclude`
-    argument to pass a list of keys of attributes that should not be
-    loaded.   An alternative is to use the inline normalization
-    functions described later in this section.   They can provide more
-    control on what is loaded and should normally be used as an
-    argument to a map operator.
+In either case, :code:`normalization` can always
+be accomplished one of two ways:
+#.  The two core readers in MsPASS
+    (:py:method:`read_data<mspasspy.db.database.read_data` for serial workflows
+    and :py:function:`read_distributed_data <mspasspy.io.distributed.read_distributed_data>`
+    for parallel workflows) both have a :code:`normalize` argument that can
+    contain a list of one of more normalization operators.  When applied this
+    way normalization is more-or-less treated as part of the process of
+    constructing the data object that form the dataset.
+#.  Normalization can be applied within a workflow as illustrated in
+    examples below.
+
+Both approaches utilize the concept of a :code:`normalization operator`
+we discuss in detail in this section.  Readers familiar with relational
+database concept may find it helpful to view a :code:`normalization operator`
+as equivalent the operation used to define a database join.
+
+This section focuses on the first approach.   The second is covered in
+a later section below. The most common operators for normalization while
+reading are those using a cross-referencing id key.  We discuss those
+concepts first before showing examples of normalization during read.
+Note the next section on ids is equally relevant to normalization in
+a workflow, but we include it here because it is more central to
+normalization during reading.
+
 
 Defining Cross-referencing IDs
 ++++++++++++++++++++++++++++++++++
 
-Because the readers use ObjectIds to provide the standard cross-reference
-method for normalization, MsPASS has functions for the common matching
-schemes.   The simplest to use is :py:func:`normalize_mseed <mspasspy.db.normalize.normalize_mseed>`.
+An "id" is a common concept in all database implementations.
+Relational datadata schemas like CSS3.0 have numerous integer ids
+used for join keys between tables.   Integers were traditionally used as
+cross-reference keys as it is relatively easy to maintain uniqueness
+and computers do few operations faster than an integer equality test.
+MongoDB uses a custom data object they call an
+`ObjectId<https://www.mongodb.com/docs/manual/reference/method/ObjectId/>`__.
+Conceptually, however, an ObjectId is simply an alternative way to
+guarantee a unique key for a database document
+(equivalent to a tuple in relational database theory) to the more
+traditional integer keys.
+Note this is in contrast to using integer keys where the set of possible
+values is finite and some mechanism is required to ask the database
+server for a key to assure it is unique.  ObjectIds can be generated by
+a workflow without interaction with the MongoDB server.
+You can learn more about this aspect of ObjectIds
+`here<https://www.mongodb.com/blog/post/generating-globally-unique-identifiers-for-use-with-mongodb>`__.
+
+Using the ObjectId methods provides the fastest normalization methods
+available in MsPASS.  Currently the most common model for
+data processing is a collection of miniseed files downloaded from
+FDSN data services and/or a collection of files created from a
+field experiment.  Once these files are indexed with
+the `:py:meth:<mspasspy.db.database.Database.index_mseed` method
+they can be read directly to initiate a processing workflow.
+Such data can be normalized with the
+operator `:py:class:<mspasspy.db.normalize.MiniseedMatcher`
+without using an Id, but in our experience that is not advised
+for two reasons.   First, the complexity of SEED data makes it challenging
+to know if the :code:`channel` collection is complete.   We have found
+many examples of incomplete or inaccurate station data downloaded
+from FDSN that cause some fraction of waveforms in a large dataset to not have any
+matching :code`channel` entry.  A second, more minor issue, is that
+the complexity of the algorithm used by
+`:py:class:<mspasspy.db.normalize.MiniseedMatcher`
+makes it inevitably slower than the comparable Id-based algorithm
+`py:class:<mspasspy.db.normalize.ObjectIdMatcher>`.
+We suggest that unless you are absolutely certain of the
+completeness of the :code:`channel` collection, you should use the
+Id-based method discussed here for doing normalization while readng.
+
+Because miniseed normalization is so fundamental to modern data
+we created a special python function called
+:py:func:`normalize_mseed <mspasspy.db.normalize.normalize_mseed>`.
 It is used for defining :code:`channel_id`
 (optionally :code:`site_id`) matches in the :code:`wf_miniseed` collection.
-Use this function when your workflow is based on a set of miniseed files.
-The actual matching is done by the using the complicated SEED standard of the
-station name keys commonly called net, sta, chan, and loc codes and
-a time stamp inside a defined time interval.  That complex match is, in fact,
-a case in point for why we use ObjectIds as the default cross-reference.  The
-:py:func:`normalize_mseed <mspasspy.db.normalize.normalize_mseed>`
+This function is implemented with the matcher called
+:py:class:`<mspasspy.db.normalize.MiniseedMatcher>` mentioned earlier.
+The :py:func:`normalize_mseed <mspasspy.db.normalize.normalize_mseed>`
 function efficiently handles the lookup and
 database updates by caching the index in memory and using a bulk update
 method to speed update times.   We strongly recommend use of this function
@@ -159,12 +201,18 @@ from running normalize_mseed in the example above:
 .. code-block:: python
 
   from mspasspy.client import Client
+  from mspasspy.database.normalize import MiniseedMatcher
   dbclient = Client()
   db = dbclient.get_database("mydatabase")
+  # channel is the default collection for this class
+  channel_matcher = MiniseedMatcher(db)
   # loop over all wf_miniseed records
   cursor = db.wf_miniseed.find({})
   for doc in cursor:
-    d = db.read_data(doc,normalize=["channel"])
+    d = db.read_data(doc,
+         normalize=[channel_matcher],
+         collection="wf_miniseed",
+       )
     # processing functions here
     # normally terminated with a save operation or a graphic display
 
@@ -178,43 +226,151 @@ The following does the same operation as above in parallel with dask
 
   from mspasspy.client import Client
   from mspasspy.db.database import read_distributed_data
+  from mspasspy.database.normalize import MiniseedMatcher
+
   dbclient = Client()
   db = dbclient.get_database("mydatabase")
+  channel_matcher = MiniseedMatcher(db)
   # loop over all wf_miniseed records
   cursor = db.wf_miniseed.find({})
-  dataset = read_distributed_data(db,normalize=["channel"])
+  dataset = read_distributed_data(db,normalize=[channel_matcher])
   # porocessing steps as map operators follow
   # normally terminate with a save
   dataset.compute()
 
 Reading ensembles with normalization is similar.   The following is a
 serial job that reads ensembles and normalizes each ensemble with data from
-the source and channel collections.  It assumes not only
-normalize_mseed has been run on the data but some version of bulk_normalize
-was used to set the source_id values for all documents in wf_miniseed.
+the source and channel collections.  It assumes source_id was defined
+previously.
 
 .. code-block:: python
 
   from mspasspy.client import Client
+  from mspasspy.db.normalize import MiniseedMatcher, ObjectIdMatcher
   dbclient = Client()
   db = dbclient.get_database("mydatabase")
+  channel_matcher = MiniseedMatcher(db)
+  source_matcher = ObjectIdMatcher(db,
+      collection="source",
+      attributes_to_load=["lat","lon","depth","time","_id"],
+    )
   # this assumes the returned list is not enormous
   sourceid_list = db.wf_miniseed.distinct("source_id")
   for srcid in sourceid_list:
     cursor = db.wf_miniseed.find({"source_id" : srcid})
-    ensemble = db.read_ensemble_data(cursor,normalize=["channel","source"])
+    ensemble = db.read_ensemble_data(cursor,
+       normalize=[channel_matcher],
+       normalize_ensemble=[source_matcher])
     # processing functions for ensembles to follow here
     # normally would be followed by a save
 
+Note that we used a different option to handle the `source` collection
+in this example.   This is an example of creating a set of
+"common source gathers" (all data from a common source) so it is
+natural to post the source attributes to the ensemble's `Metadata`
+container instead of each enemble "member".   Putting the
+`source_matcher` object as the target for the `normalize_ensemble`
+argument accomplishes that.  For ensembles loading data to members
+is the implied meaning of any target for the `normalize` argument.
 
-Normalization within a Workflow
+.. note::
+  The normalize_ensemble feature was added on version 2 of MsPASS.
+  Older versions did not implement that extension.
+
+Normalization with a workflow
+----------------------------------
+Normalization within a workflow uses the same "Matcher" operators but
+is best done through a function call in a serial job or with a map
+operator in a parallel job.   It is perhaps easiest to demonstrate how
+this is done by rewriting the examples above doing normalization during
+read with the equivalent algorithm for normalization as a separate
+step within the workflow.
+
+First, the serial example:
+
+.. code-block:: python
+
+  from mspasspy.client import Client
+  from mspasspy.database.normalize import MiniseedMatcher,normalize
+  dbclient = Client()
+  db = dbclient.get_database("mydatabase")
+  # channel is the default collection for this class
+  channel_matcher = MiniseedMatcher(db)
+  # loop over all wf_miniseed records
+  cursor = db.wf_miniseed.find({})
+  for doc in cursor:
+    d = db.read_data(doc,collection="wf_miniseed")
+    d = normalize(d,channel_matcher)
+    # processing functions here
+    # normally terminated with a save operation or a graphic display
+
+Next, the parallel version of the job immediately above:
+
+.. code-block:: python
+
+  from mspasspy.client import Client
+  from mspasspy.db.database import read_distributed_data
+  from mspasspy.database.normalize import MiniseedMatcher,normalize
+
+  dbclient = Client()
+  db = dbclient.get_database("mydatabase")
+  channel_matcher = MiniseedMatcher(db)
+  # loop over all wf_miniseed records
+  cursor = db.wf_miniseed.find({})
+  dataset = read_distributed_data(db,collection="wf_miniseed")
+  dataset = dataset.map(normalize,channel_matcher)
+  # processing steps as map operators follow
+  # normally terminate with a save
+  dataset.compute()
+
+Finally, the example for reading ensembles:
+
+.. code-block:: python
+
+  from mspasspy.client import Client
+  from mspasspy.db.normalize import MiniseedMatcher, ObjectIdMatcher, normalize
+  dbclient = Client()
+  db = dbclient.get_database("mydatabase")
+  channel_matcher = MiniseedMatcher(db)
+  source_matcher = ObjectIdMatcher(db,
+      collection="source",
+      attributes_to_load=["lat","lon","depth","time","_id"],
+    )
+  # this assumes the returned list is not enormous
+  sourceid_list = db.wf_miniseed.distinct("source_id")
+  for srcid in sourceid_list:
+    cursor = db.wf_miniseed.find({"source_id" : srcid})
+    ensemble = db.read_ensemble_data(cursor, collection="wf_miniseed")
+    ensemble = normalize(ensemble,channel_matcher,apply_to_members=True)
+    ensemble = normalize(ensemble,source_matcher)
+
+    # processing functions for ensembles to follow here
+    # normally would be followed by a save
+
+Note that we had to set `apply_to_members` True to have the normalize
+function process all enemble members.  Normal behavior for that function
+with ensembles is to normalize the ensemble Metadata container as is
+done with the `source_matcher` line.   Both are necessary to match the
+examples for normalizing during read which the above were designed to
+produce identical result by different paths.
+
+.. note::
+  The `apply_to_members` argument is a feature added in version 2 of MsPASS.
+
+Normalization Operators
 -------------------------------
+Overview
+++++++++++++
+This section covers the available normalization operators in MsPASS.
+It focuses on design concepts and listing the available features.
+See the examples above and following this section for more nuts and bolts
+details.  The examples below all use the normalization within a workflow
+approach.
+
 Concepts
 ++++++++++++++
 
-An alternative to normalization during a read operation is to match records
-in a normalizing collection/table on the fly and load desired attributes
-from that collection.  We abstract that process to two concepts
+Normalization can be abstracted as two concepts
 that need to be implemented to make a concrete normalization procedure:
 
 #.  We need to define an algorithm that provides a match of records in
@@ -226,10 +382,12 @@ that need to be implemented to make a concrete normalization procedure:
     standard normalization operation requires the match be one-to-one.
 
 We abstract both of these operations in a novel way in MsPASS
-described in the two sections below.
+through a standardized API we call a "matcher".
 
 Matchers
 +++++++++++++++
+Normalization requires a rule that defines how documents in
+the normalizing collection match documents in the target.
 A match can be defined by
 something as simple as a single key string match or it
 can be some arbitrarily complex algorithm. For example,
@@ -242,7 +400,7 @@ outcome for each document/tuple/row.   That is, the algorithm returns
 True if there is a match and a False if the match fails.
 In MsPASS we define this abstraction in an object-oriented perspective
 using inheritance and an abstract base class that defines the
-core generic operation.  You can read the docstrings of   
+core generic operation.  You can read the docstrings of
 :py:class:`BasicMatcher <mspasspy.db.normalize.BasicMatcher>`
 for details.
 Note that the API requires a concrete instance of this base class to
@@ -254,7 +412,9 @@ is the primary method for one-to-one matches.
 Note we require even unique matchers to implement :py:meth:`find <mspasspy.db.normalize.BasicMatcher.find>` since one is
 simply a special case of "many".
 
-The choice of those two names (:py:meth:`find <mspasspy.db.normalize.DatabaseMatcher.find>` and :py:meth:`find_one <mspasspy.db.normalize.DatabaseMatcher.find_one>`) was not
+The choice of those two names
+(:py:meth:`find <mspasspy.db.normalize.DatabaseMatcher.find>`
+and :py:meth:`find_one <mspasspy.db.normalize.DatabaseMatcher.find_one>`) was not
 arbitrary.  They are the names used to implement the same concepts in MongoDB
 as methods of their database handle object.  In fact, as a convenience the
 normalize module defines the intermediate class
@@ -300,7 +460,7 @@ collection is large and the matching algorithm can use an effective
 MongoDB index, or (2) the dataset is small enough that the cost of the queries
 is not overwhelming.
 
-When the normalizing collection is small we have found a much efficient way
+When the normalizing collection is small we have found a much faster way
 to implement normalization is via a cacheing algorithm.   That is, we
 load all or part of a collection/table into a data area
 (a python class :code:`self` attribute) "matcher" object
@@ -331,9 +491,10 @@ implemented as two intermediate classes used similarly to
     to store it's internal cache.   The Pandas library is robust and
     has a complete set of logical constructs that can be used to construct
     any query possible with something like SQL and more.  Any custom,
-    concrete implementations of :py:class:`BasicMatcher <mspasspy.db.normalize.BasicMatcher>`
+    concrete implementations of
+    :py:class:`BasicMatcher <mspasspy.db.normalize.BasicMatcher>`
     that match the small normalizing collection assumption would be
-    best advised to utilize this API.
+    best advised to utilize the pandas API.
 
 These two intermediate-level classes have two features in common:
 
@@ -351,7 +512,7 @@ These two intermediate-level classes have two features in common:
 
 These two classes differ mainly in what they require to make them
 concrete.   That is, both have abstract/virtual methods that are required
-to make a concrete implemntation.
+to make a concrete implementation.
 :py:class:`DictionaryCacheMatcher <mspasspy.db.normalize.DictionaryCacheMatcher>`
 requires implementation of
 :py:meth:`cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.cache_id>`
@@ -498,7 +659,7 @@ Example 3:  source normalization
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This example shows an example of how to insert source data into
-a parallel workflow.  As above use the dask syntax for a map operator.
+a parallel workflow.  As above we use the dask syntax for a map operator.
 This example uses the matcher called :code:`OriginTimeMatcher`
 which works only for waveform segments where the start time of the
 signal is a constant offset from the event origin time.
@@ -554,33 +715,33 @@ id for the source collection :code:`source_id`.
 .. code-block:: python
 
   from mspasspy.client import Client
-  from mspasspy.db.normalize import ObjectIdMatcher
-  from mspasspy.db.database import read_ensemble_data
+  from mspasspy.db.normalize import ObjectIdMatcher,MiniseedMatcher
+  from mspasspy.io.distributed import read_distributed_data
 
-  def read_common_source_gather(db,collection,srcid):
+  def srcidlist2querylist(srcidlist):
     """
-    Function needed in map call to translate a single source id (srcid)
-    to a query, run the query, and load the data linked to that source_id
+    Small function used to build query list from a list of source ids.
+    Uses a new feature of read_distribute_data from version 2 forward
+    that allows creation of a bag/rdd from a list of python dict containers
+    assumed to be valid MongoDB queries.
     """
-    dbcol = db[collection]
-    query = {"source_id" : srcid }
-    # note with logic of this use we don't need to test for
-    # no matches because distinct returns only not null source_id values dbcol
-    cursor = dbcol.find(query)
-    ensemble = db.read_ensemble(db, collection=collection)
-    ensemble["source_id"] = srcid
-    return ensemble
+    querylist=list()
+    for srcid in srcidlist:
+      query={'source_id' : srcid}
+      querylist.append(query)
+  return querylist
 
   dbclient = Client()
   db = dbclient.get_database("mydatabase")
+  channel_matcher=MiniseedMatcher(db)
   # Here limit attributes to be loaded to source coordinates
   attribute_list = ['_id,''lat','lon','depth','time']
   source_matcher = ObjectIdMatcher(db,collection="source",
      attributes_to_load=attribute_list,load_if_defined=["magnitude"])
   # MongoDB incantation to find all unique source_id values
   sourceid_list = db.wf_Seismogram.distinct("source_id")
-  dataset = dask.bag.from_sequence(sourceid_list)
-  dataset = dataset.map(lambda srcid : read_common_source_gather(db, "wf_Seismogram", srcid))
+  querylist=srcidlist2querylist(sourceid_list)
+  dataset = read_distributed_data(querylist,normalize=[channel_matcher])
   # dataset here is a bag of SeismogramEnsembles.  The next line applies
   # normalize to the ensemble and loading the attributes into the ensemble's
   # Metadata container.

@@ -3,8 +3,6 @@
 Database Concepts
 ========================
 
-NEEDS NEW SECTION ON VERIFY AND CLEAN
-
 NonSQL Database
 ------------------------
 
@@ -1000,4 +998,4 @@ is correctly.
    Linking has many complications and is discussed further in the section
    titled :ref:`Normalization<normalization>`.
 *  Use the command tools described above to aid in identifying potential
-   database problems and fixing them.   
+   database problems and fixing them.

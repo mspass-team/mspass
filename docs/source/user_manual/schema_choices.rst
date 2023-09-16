@@ -28,7 +28,7 @@ question:  Does my workflow need schema enforcement?   If the answer is no,
 just use the `mspass-lite` schema as illustrated above.
 In most case, however, it is our experience that for large datasets
 schema constraints can provide an important way to avoid mysterious errors.
-For the case with a yes anser there are two options.   For most
+For the case with a yes answer there are two options.   For most
 application the standard `mspass` schema should be sufficient.   It provides
 base functionality for source and receiver metadata.   It also defines
 the `wf_miniseed` collection that is essential when the processing
