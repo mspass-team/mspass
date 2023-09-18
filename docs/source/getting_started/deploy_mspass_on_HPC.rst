@@ -388,15 +388,17 @@ Connection to the jupyter notebook server is then simple via a web browser
 running on top of the gateway.
 
 If running on distributed nodes, when starting the DB Client, the host name
-should be specified. For example:
+should be specified, it is defined as the environment variable MSPASS_SCHEDULER_ADDRESS. 
+For example:
 
 .. code-block:: python
 
     from mspasspy.db.client import DBClient
-    dbclient=DBClient("c205-001")
+    import os
+    dbclient=DBClient(os.environ.get("MSPASS_SCHEDULER_ADDRESS"))
 
-Here the primary node is c205-001, and the frontend is running on the node, 
-so it should be specified.
+Here the primary node is MSPASS_SCHEDULER_ADDRESS, and the frontend is 
+running on the node, it should be specified explicitly.
 
 Setting Up Configuration Files on a new Cluster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
