@@ -387,6 +387,17 @@ which should generate an output similar to that above for the sbatch example.
 Connection to the jupyter notebook server is then simple via a web browser
 running on top of the gateway.
 
+If running on distributed nodes, when starting the DB Client, the host name
+should be specified. For example:
+
+.. code-block:: python
+
+    from mspasspy.db.client import DBClient
+    dbclient=DBClient("c205-001")
+
+Here the primary node is c205-001, and the frontend is running on the node, 
+so it should be specified.
+
 Setting Up Configuration Files on a new Cluster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Overview
