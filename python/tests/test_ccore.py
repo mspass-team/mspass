@@ -869,16 +869,16 @@ def test_Ensemble(Ensemble):
     # define TimeSeriesEnsemble == LoggingEnsemble<TimeSeries> and
     # SeismogramEnsemble == LoggingEnsemble<Seismogram>.
     # Should be initially marked live
-    assert es.live
+    assert es.live()
     es.elog.log_error("test_ensemble", "test complaint", ErrorSeverity.Complaint)
     es.elog.log_error("test_ensemble", "test invalid", ErrorSeverity.Invalid)
     assert es.elog.size() == 2
-    assert es.live
+    assert es.live()
     es.kill()
     assert es.dead()
     # resurrect es
     es.set_live()
-    assert es.live
+    assert es.live()
     # validate checks for for any live members - this tests that feature
     assert es.validate()
     # need this temporary copy for the next test_
@@ -897,7 +897,7 @@ def test_Ensemble(Ensemble):
     assert escopy.is_defined("long")
     assert escopy["double"] == 3.14
     assert escopy["long"] == 7
-    assert escopy.live
+    assert escopy.live()
     assert escopy.elog.size() == 2
     assert escopy.member[0].is_defined("bool")
     assert escopy.member[0]["bool"] == True
