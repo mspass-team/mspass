@@ -354,7 +354,6 @@ class Database(pymongo.database.Database):
         alg_name="read_data",
         alg_id="0",
         define_as_raw=False,
-        retrieve_history_record=False,
         merge_method=0,
         merge_fill_value=None,
         merge_interpolation_samples=0,
@@ -468,8 +467,6 @@ class Database(pymongo.database.Database):
         :type alg_id: :class:`bson.ObjectId.ObjectId`
         :param define_as_raw: a boolean control whether we would like to set_as_origin when loading processing history
         :type define_as_raw: :class:`bool`
-        :param retrieve_history_record: a boolean control whether we would like to load processing history
-        :type retrieve_history_record: :class:`bool`
         :param method: Methodology to handle overlaps/gaps of traces. Defaults to 0.
             See `__add__ <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.__add__.html#obspy.core.trace.Trace.__add__>` for details on methods 0 and 1,
             see `_cleanup <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream._cleanup.html#obspy.core.stream.Stream._cleanup>` for details on method -1.
@@ -2644,7 +2641,7 @@ class Database(pymongo.database.Database):
 
     def read_ensemble_data(
         self,
-        ObjectId_list,
+        cursor,
         ensemble_metadata={},
         mode="promiscuous",
         normalize=None,
@@ -2664,7 +2661,8 @@ class Database(pymongo.database.Database):
         print("DEPRICATED METHOD (read_ensemble_data)")
         print("This method has been superceded by read_data method.  Use it instead.")
         print("Method is backward compatible provided normalize is restricted to channel, site, and/or source")
-        ensemble = self.read_data(ObjectId_list,
+        if isinstance(cursor,pymongo.cursor.Cursor):
+            ensemble = self.read_data(cursor,
                                        ensemble_metadata=ensemble_metadata,
                                        mode=mode,
                                        normalize=normalize,
@@ -2675,12 +2673,17 @@ class Database(pymongo.database.Database):
                                        alg_name=alg_name,
                                        alg_id=alg_id,
                                        )
+        else:
+            message = "Database.read_ensemble_data:  illegal type={} for arg0\n".format(type(cursor))
+            message += "From version 2 foraward only a pymongo cursor is allowed for defining input\n"
+            message += "Fix and use the now standard read_data method instead"
+            raise TypeError(message)
         
         return ensemble
 
     def read_ensemble_data_group(
         self,
-        ObjectId_list,
+        cursor,
         ensemble_metadata={},
         mode="promiscuous",
         normalize=None,
@@ -2700,7 +2703,8 @@ class Database(pymongo.database.Database):
         print("This method has been superceded by read_data method.  Use it instead.")
         print("Method is backward compatible provided normalize is restricted to channel, site, and/or source")
 
-        ensemble = self.read_data(ObjectId_list,
+        if isinstance(cursor,pymongo.cursor.Cursor):
+            ensemble = self.read_data(cursor,
                                        ensemble_metadata=ensemble_metadata,
                                        mode=mode,
                                        normalize=normalize,
@@ -2710,7 +2714,12 @@ class Database(pymongo.database.Database):
                                        data_tag=data_tag,
                                        alg_name=alg_name,
                                        alg_id=alg_id,
-                                       )
+                                )
+        else:
+            message = "Database.read_ensemble_data_group:  illegal type={} for arg0\n".format(type(cursor))
+            message += "From version 2 foraward only a pymongo cursor is allowed for defining input\n"
+            message += "Fix and use the now standard read_data method instead"
+            raise TypeError(message)
         
         return ensemble
  
@@ -3397,7 +3406,7 @@ class Database(pymongo.database.Database):
         complaining that the history is likely invalid.  
         
         When a workflow is initialized by a read, which in ProcessingHistory
-        is wha tis called an "origin", this function should be called with 
+        is what is called an "origin", this function should be called with 
         history_object_id set to None.  In that situation, it initializes 
         the history tree (set_as_origin) with the id for the start of the 
         chain as the waveform object id.  That is assumed always in 
@@ -3558,7 +3567,12 @@ class Database(pymongo.database.Database):
     ):
         """
         Read the stored data from a file and loads it into a mspasspy object.
-        Sets data live on success.  If dead it failed.
+        Sets data live on success.  If dead it failed. Note this 
+        function acts like a fortran subroutine and returns nothing.  
+        Depends on mspass_object being altered inpalce.   Beware 
+        pitfall of resetting mspass_object internal as any changes 
+        made that way will not be returned.  Perhaps should return 
+        mspass_object to avoid this maintenance issue.
 
         :param mspass_object: the target object.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -3591,10 +3605,9 @@ class Database(pymongo.database.Database):
                     else:
                         mspass_object.set_live()
                 except MsPASSError as merr:
-                    # Errors thrown must always cause a failure
-                    raise MsPASSError(
-                        "Error while read data from files.", "Fatal"
-                    ) from merr
+                    message = "Database._read_data_from_dfile:  "
+                    message += "C++ function _fread_from_file failed while reading TimeSeries sample data from file={}".format(dfile)
+                    raise MsPASSError(message.ErrorSeverity.Fatal) from merr
             else:
                 # We can only get here if this is a Seismogram
                 try:
@@ -3611,10 +3624,9 @@ class Database(pymongo.database.Database):
                     else:
                         mspass_object.set_live()
                 except MsPASSError as merr:
-                    # Errors thrown must always cause a failure
-                    raise MsPASSError(
-                        "Error while read data from files.", "Fatal"
-                    ) from merr
+                   message = "Database._read_data_from_dfile:  "
+                   message += "C++ function _fread_from_file failed while reading Seismogram sample data from file={}".format(dfile)
+                   raise MsPASSError(message.ErrorSeverity.Fatal) from merr
 
         else:
             fname = os.path.join(dir, dfile)
@@ -3650,15 +3662,19 @@ class Database(pymongo.database.Database):
                     )  #   Convert the nparray type to double, to match the DoubleVector
                     mspass_object.npts = len(tr_data)
                     mspass_object.data = DoubleVector(tr_data)
-                    mspass_object = Trace2TimeSeries(tr)
+                    #mspass_object = Trace2TimeSeries(tr)
                     if mspass_object.npts>0:
                         mspass_object.set_live()
                     else:
-                        mspass_object.kill()  # probably not necessary but clearer
+                        alg = "Database._read_data_from_dfile:  "
+                        message = "Error during read with format={}\n".format(format)
+                        message += "Unable to reconstruct data vector"
+                        mspass_object.elog.log_error(alg,message,ErrorSeverity.Invalid)
+                        mspass_object.kill()  
                 elif isinstance(mspass_object, Seismogram):
                     # This was previous form.   The toSeismogram run as a
                     # method is an unnecessary confusion and I don't think
-                    # settign npts or data are necessary given the code of
+                    # setting npts or data are necessary given the code of
                     # Stream2Seismogram - st.toSeismogram is an alias for that
                     # This is almost but not quite equivalent to this:
                     # mspass_object = Stream2Seismogram(st,cardinal=True)
@@ -3670,7 +3686,11 @@ class Database(pymongo.database.Database):
                     if mspass_object.npts>0:
                         mspass_object.set_live()
                     else:
-                        mspass_object.kill()  # probably not necessary but clearer
+                        alg = "Database._read_data_from_dfile:  "
+                        message = "Error during read with format={}\n".format(format)
+                        message += "Unable to reconstruct Seismogram data matrix"
+                        mspass_object.elog.log_error(alg,message,ErrorSeverity.Invalid)
+                        mspass_object.kill()  
 
     @staticmethod
     def _save_data_to_dfile(
@@ -3781,7 +3801,7 @@ class Database(pymongo.database.Database):
             ub = bytes(mspass_object.data)
         return gfsh.put(ub)
 
-    def _read_sample_data_from_gridfs(self, mspass_object, gridfs_id):
+    def _read_data_from_gridfs(self, mspass_object, gridfs_id):
         """
         Read data stored in gridfs and load it into a mspasspy object.
 
@@ -6426,7 +6446,7 @@ class Database(pymongo.database.Database):
                             merge_interpolation_samples=merge_interpolation_samples,
                         )
         elif storage_mode == "gridfs":
-            self._read_sample_data_from_gridfs(mspass_object, md["gridfs_id"])
+            self._read_data_from_gridfs(mspass_object, md["gridfs_id"])
         elif storage_mode == "url":
             self._read_data_from_url(
                         mspass_object,
