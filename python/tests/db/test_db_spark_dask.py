@@ -293,7 +293,7 @@ class TestDatabase:
         )
         assert np.isclose(ts_ensemble.member[0].data, res.data).all()
         res = self.db.read_data(
-            ts_ensemble.member[1]["_id"],
+            ts_ensemble.member[2]["_id"],
             mode="promiscuous",
             normalize=["site", "source", "channel"],
         )
