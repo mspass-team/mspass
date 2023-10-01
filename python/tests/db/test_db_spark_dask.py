@@ -273,6 +273,7 @@ class TestDatabase:
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
+        ts2.kill()
         logging_helper.info(ts1, "1", "deepcopy")
         logging_helper.info(ts2, "1", "deepcopy")
         logging_helper.info(ts3, "1", "deepcopy")
@@ -293,12 +294,6 @@ class TestDatabase:
         assert np.isclose(ts_ensemble.member[0].data, res.data).all()
         res = self.db.read_data(
             ts_ensemble.member[1]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-        )
-        assert np.isclose(ts_ensemble.member[1].data, res.data).all()
-        res = self.db.read_data(
-            ts_ensemble.member[2]["_id"],
             mode="promiscuous",
             normalize=["site", "source", "channel"],
         )
