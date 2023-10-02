@@ -12,13 +12,13 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-        <script src="../_static/clipboard.min.js"></script>
-        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -486,6 +486,16 @@ window.  Inside that terminal you can then run:</p>
 <p>which should generate an output similar to that above for the sbatch example.
 Connection to the jupyter notebook server is then simple via a web browser
 running on top of the gateway.</p>
+<p>If running on distributed nodes, when starting the DB Client, the host name
+should be specified, it is defined as the environment variable MSPASS_SCHEDULER_ADDRESS.
+For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">DBClient</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">dbclient</span><span class="o">=</span><span class="n">DBClient</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MSPASS_SCHEDULER_ADDRESS&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Here the primary node is MSPASS_SCHEDULER_ADDRESS, and the frontend is
+running on the node, it should be specified explicitly.</p>
 </section>
 <section id="setting-up-configuration-files-on-a-new-cluster">
 <h3>Setting Up Configuration Files on a new Cluster<a class="headerlink" href="#setting-up-configuration-files-on-a-new-cluster" title="Permalink to this heading"></a></h3>
