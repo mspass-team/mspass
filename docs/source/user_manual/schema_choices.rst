@@ -1,4 +1,4 @@
-.. _schema_choices
+.. _schema_choices:
 
 What database schema should I use?
 =======================================

@@ -258,7 +258,7 @@ Handling Time
   data to an absolute time standard when the true time is not well
   constrained.  Note both of these methods are also available as processing
   functions for use in parallel map operators
-  (see :ref:`user manual section on parallel processing<parallel_processesing>`).
+  (see :ref:`user manual section on parallel processing<parallel_processing>`).
 
 | For an expanded discussion on this topic go :ref:`here<time_standard_constraints>`.
 
@@ -780,7 +780,7 @@ following foundational data is required:
   as an option.   User's interested in adapting their own code to the
   framework will need to learn the social norms (i.e. the API for ProcessingHistory
   and how it can be used to automate the process).   See the sections on
-  :ref:`Processing History Concepts<_processing_history_concepts>` and
+  :ref:`Processing History Concepts<processing_history_concepts>` and
   :ref:`Adapting an Existing Algorithm to MsPASS<adapting_algorithms>`  for details.
 
 Error Logging Concepts

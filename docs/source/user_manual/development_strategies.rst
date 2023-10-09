@@ -1,4 +1,4 @@
-.. _development_stategies:
+.. _development_strategies:
 
 How do I develop a new workflow from scratch?
 ==================================================
@@ -48,9 +48,9 @@ in the standard mspass container.   There are numerous
 tutorials on using pdb to debug a jupyter notebook.  Here are a
 couple we found useful:
 
-- `This<https://notebook.community/tschinz/iPython_Workspace/00_Admin/Features/Jupyter%20Debug>`__
+- `This <https://notebook.community/tschinz/iPython_Workspace/00_Admin/Features/Jupyter%20Debug>`__
   concise but perhaps cryptic introduction for jupyter lab and pdb.
-- `This<https://towardsdatascience.com/debugging-jupyter-notebooks-will-boost-your-productivity-a33387f4fa62>`__
+- `This <https://towardsdatascience.com/debugging-jupyter-notebooks-will-boost-your-productivity-a33387f4fa62>`__
   good overview that discusses a range of strategies for jupyter notebooks.
 
 As always for a topic like this a google search will give you a long
@@ -75,7 +75,7 @@ following:
 #.  Install an IDE of your choice.
     If you are doing extensive python development you are likely already
     familiar with one of the standard Integrated Development Environments
-    and `pycharm<https://www.jetbrains.com/pycharm/>`__, but there are
+    and `pycharm <https://www.jetbrains.com/pycharm/>`__, but there are
     a number of others.   IDEs dramatically improve most people's ability
     to test and debug python applications compared to a simple editor
     and pdb.   If you aren't already using one, choose one and use it.
@@ -85,7 +85,7 @@ following:
     docker or singularity. For this reason you will likely find it necessary
     to install a local copy of mspass on your development desktop.
     The process for doing that is described in a wiki page on github
-    found `here<https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code>`__.
+    found `here <https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code>`__.
 #.  The wiki page referenced above describes how to install dask and/or spark.
     We have found many projects do not require the parallel framework and
     can be reduced to writing and testing an appropriate set of functions
