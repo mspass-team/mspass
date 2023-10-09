@@ -53,6 +53,8 @@ package.
    user_manual/memory_management
    user_manual/io
    user_manual/adapting_algorithms
+   user_manual/schema_choices
+   user_manual/development_strategies
    user_manual/FAQ
 
 
