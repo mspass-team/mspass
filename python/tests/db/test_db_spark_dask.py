@@ -270,6 +270,42 @@ class TestDatabase:
         assert not gfsh.exists(gridfs_id)
 
     def test_save_ensemble_data_binary_file(self):
+        # testing live data
+        ts1 = copy.deepcopy(self.test_ts)
+        ts2 = copy.deepcopy(self.test_ts)
+        ts3 = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts1, "1", "deepcopy")
+        logging_helper.info(ts2, "1", "deepcopy")
+        logging_helper.info(ts3, "1", "deepcopy")
+        ts_ensemble = TimeSeriesEnsemble()
+        ts_ensemble.member.append(ts1)
+        ts_ensemble.member.append(ts2)
+        ts_ensemble.member.append(ts3)
+        ts_ensemble.set_live()
+        dfile = "test_db_output_n"
+        dir = "python/tests/datan/"
+        self.db.save_ensemble_data_binary_file(ts_ensemble, dfile=dfile, dir=dir)
+        self.db.database_schema.set_default("wf_TimeSeries", "wf")
+        res = self.db.read_data(
+            ts_ensemble.member[0]["_id"],
+            mode="promiscuous",
+            normalize=["site", "source", "channel"],
+        )
+        assert np.isclose(ts_ensemble.member[0].data, res.data).all()
+        res = self.db.read_data(
+            ts_ensemble.member[1]["_id"],
+            mode="promiscuous",
+            normalize=["site", "source", "channel"],
+        )
+        assert np.isclose(ts_ensemble.member[1].data, res.data).all()
+        res = self.db.read_data(
+            ts_ensemble.member[2]["_id"],
+            mode="promiscuous",
+            normalize=["site", "source", "channel"],
+        )
+        assert np.isclose(ts_ensemble.member[2].data, res.data).all()
+
+        # testing dead data
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
