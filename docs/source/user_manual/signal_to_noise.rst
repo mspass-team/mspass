@@ -187,7 +187,7 @@ are good choices as they produce
 smoother spectra that produces more stable results.
 Readers unfamiliar with
 multitaper spectral methods may find it useful begin with
-the `matlab help file in their multitaper estimator<https://www.mathworks.com/help/signal/ref/pmtm.html>`__.
+the `matlab help file in their multitaper estimator <https://www.mathworks.com/help/signal/ref/pmtm.html>`__.
 There is also a large literature applying the technique to a range of
 practical problems easily found by any library search engine.
 We chose to use the multitaper because it always produces a more

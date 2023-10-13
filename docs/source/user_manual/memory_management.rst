@@ -1,4 +1,4 @@
-.. _memory_management
+.. _memory_management:
 
 Memory Management
 ======================
@@ -22,8 +22,8 @@ In this document we discuss pitfalls we are aware of in
 memory management with MsPASS.  This document is focused mainly on dask
 because we have more experience using it.
 The main dask document on dask memory management is found
-`here<https://distributed.dask.org/en/stable/memory.html>`__.
-The comparable page for spark is `here<https://spark.apache.org/docs/latest/tuning.html>`__.
+`here <https://distributed.dask.org/en/stable/memory.html>`__.
+The comparable page for spark is `here <https://spark.apache.org/docs/latest/tuning.html>`__.
 As for most heavily used packages like this there are also numerous pages
 on the topic that will quickly bury you with a web search.   We produced this
 document to help you wade through the confusion by focusing on the practical
@@ -96,7 +96,7 @@ The DAG for this workflow is illustrated below
 
 .. _DAG_figure:
 
-.. figure:: ../_static/figures/MapDagFigure.png
+.. figure:: ../_static/figures/MapDAGFigure.png
     :width: 600px
     :align: center
 
@@ -322,7 +322,7 @@ memory may fill and your workflow can abort from a memory fault.
 In MsPASS we use a package called `pybind11` to build the python
 bindings to our C/C++ code base.   Pybind11 handles this problem
 through a feature called `return_value_policy` described
-`here<https://pybind11.readthedocs.io/en/stable/advanced/functions.html>`__.
+`here <https://pybind11.readthedocs.io/en/stable/advanced/functions.html>`__.
 At the time this manual section was written we were actively working
 to get this setting right on all the C++ data objects, but be warned
 residual problems may exist.   If you experience memory bloat problems
@@ -374,14 +374,14 @@ develop below:
    allow for use by the host operating system.   Spark and dask also each
    individually partition up memory for different uses.   The fractions
    involved are discussed in the documentation pages for
-   `Spark<https://spark.apache.org/docs/latest/tuning.html>`__
+   `Spark <https://spark.apache.org/docs/latest/tuning.html>`__
    and
-   `Dask<https://distributed.dask.org/en/stable/memory.html>`__.
+   `Dask <https://distributed.dask.org/en/stable/memory.html>`__.
    Web searches will also yield many additional documents
    that might be helpful.  With dask, at least, you can also establish the
    size of :math:`S_{worker}` with the graphical display of
    worker memory in the
-   `dask dashboard diagnostics<https://docs.dask.org/en/stable/dashboard.html>`__.
+   `dask dashboard diagnostics <https://docs.dask.org/en/stable/dashboard.html>`__.
 -  Let :math:`N_{partitions}` define the number of partitions defined for
    the working bag/RDD.
 -  Let :math:`N_{threads}` denote the number of threads in the thread pool
@@ -535,8 +535,7 @@ the above:
    are to be combined.  The first is the small function we created
    called `keyfunc` that returns the value of the `source_id`.  The second
    is the mspass stack function which will function correctly as a
-   "reduce" operator (For more on that topic see the section titled
-    :ref:`parallel_processesing`.)
+   "reduce" operator (For more on that topic see the section titled :ref:`parallel_processing`.)
 -  In this workflow the left side of the graph is a
    chain of two map operators like the earlier example in this section.
    The difference here is the set of pipelines terminate to foci
