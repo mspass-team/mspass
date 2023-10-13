@@ -227,7 +227,8 @@ abstract the cluster and attempt to run a workflow within the physical
 limits of both node and total memory pools.  If they are asked to do
 something impossible, like unintentionally asking the system to fit an
 entire data set in cluster memory, we have seen them fail and abort.
-Even worse is that when prototyping a workflow on a desktop we have
+Even worse is that when prototyping a workflow on a desktop outside
+of the containerized environement we have seen
 had dask crash the system by overwhelming memory.   How to avoid this
 in MsPASS is a work in progress, but is a possibility all users should be
 aware of when working on huge data sets.  We think the crash problems have been eliminated
@@ -238,6 +239,27 @@ able to properly report their size and have mechanisms for dask or
 spark to clear memory stored in the data objects when no longer needed.
 If either are not working properly, catastrophic failure is likely
 to eventually occur with upscaling of a workflow.
+
+At this point it is worth noting a special issue about memory
+management on a desktop system.   Many to most users will likely want to
+prototype any python scripts on a desktop before porting the code to
+a large cluster.  Furthermore, many research applications
+don't require a giant cluster to be feasible but can profit from
+multicore processing on a current generation desktop.   On a desktop
+"cluster memory" and "system memory" are the same thing.  There are
+a few corollaries to that statement that are worth pointing out
+as warnings for desktop use:
+-  Beware running large memory apps if you are running MsPASS jobs
+   on the same system.  Many common tools today are prone to extreme
+   memory bloat.  It is standard practice today to keep commonly used
+   apps memory resident to provide instantaneous use by "clicking on"
+   an app to make it active.  If you plan to process data with MsPASS
+   on a desktop plan to reduce memory resident apps to a minimum.
+-  Running MsPASS on a desktop can produce unexpected memory faults
+   from other processes that you may not be aware of consuming memory.
+   If your job aborts with a memory fault, first try closing every other
+   application and running the job again with the system memory monitor
+   tool running simultaneously.
 
 In working with very large data sets there is the added constraint of
 what file systems are available to store the starting waveform data,
@@ -381,11 +403,8 @@ and for Seismogram objects
   S_{seis} = 24 N_s + S_{header}
 
 For pure map operator jobs we have found dask, at least, always reduces the
-workflow to a pipeline that moves data as illustrated in the figure below.
-
-New figure on map operator with x objects, 2 workers, and something like 10
-partititons.  TBD by how the figure can be made legible.  May want to use a
-layered graphic??
+workflow to a pipeline that moves data as illustrated in the animated gif
+figure above.
 
 The pipeline structure reduces memory use to a small, integer multiple, which we
 will call :math:`N_c` for number of copies, of the input object size.   i.e. as
@@ -393,7 +412,10 @@ data flows through the pipeline only 2 or 3 copies are held in memory at the
 same time.   However, dask, at least, seems to try to push
 :math:`N_{threads}` objects through the pipeline simultaneously assigning
 one thread per pipeline.  Spark probably does something similar but we have
-no direct experience to confirm or deny that statement.
+no direct experience to confirm or deny that statement.  That means that
+the multiplier is at most about 2.   Actual usage can be dynamic if the
+size of the objects in the pipeline are variable from the very common
+use of one of the time windowing functions.
 
 If we assume
 that model characterizes the memory use of a workflow it is useful
@@ -481,9 +503,28 @@ reduce(fold) operation by the Metadata key `source_id`:
   mybag = mybag.map(db.save_data,data_tag="stacked_data")
   resulst = mybag.compute()
 
-The DAG for this workflow with 2 sources and 10 partitions looks like this:
+The DAG for this workflow with 2 sources and 5 partitions looks like this:
 
-Figure of DAG for above either created with dask or drawn with illustrator.
+.. _Reduce_figure:
+
+.. figure:: ../_static/figures/ReduceFigure.png
+    :width: 600px
+    :align: center
+
+    Data flow diagram for example reduce operation to stack two
+    sources with a bag/rdd made up of atomic TimeSeries data with
+    five partitions.   Dashed lines show concept of how partitions
+    divide up the container of data illustrated as a stack of black
+    rectangles. Each rectangle represents a single TimeSeries object.
+    The arrows illustrate data flow from left to right in the figure.
+    As illustrated earlier the reader loads each partition and then
+    makes that data available for processing by other tasks.   Processing
+    tasks are illustrated by black rectangles with arrows joining them
+    to other tasks that illustrate the DAG for this workflow.
+    Note that in this case each partition has to be linked to each
+    instance of the stack task.   This illustrates why the scheduler has
+    to keep all data in memory before running the stack process as the
+    foldby function has no way of knowing what data is in what partition.
 
 We emphasize the following that are the lessons you should learn from
 the above:
@@ -648,7 +689,7 @@ to improve performance.
     scanned and "bundled" into atomic `Seismogram` objects with the
     function :code:`BundleSeedGroup`.  That workflow would be similar to
     the one above but the list of queries passed to `read_distributed_data`
-    would be more complex.
+    would be more complex and usually much larger.
 #.  If all else fails the workflow can be run as a serial job.
     For small data sets that can be the best alternative.  For very large
     data sets the time required can be problematic and would only be
@@ -685,7 +726,7 @@ used to break the problem into smaller chunks.   With the right incantation sent
 MongoDB that algorithm is likely a good alternative way to create
 `Seismogram` objects from single station groups of `TimeSeries` objects.
 
-There are a number of other common algorithms we know from experience
+There are a number of other common algorithms that we know from experience
 can be handled most easily by utilizing MongoDB.
 
 #. Any algorithm that requires data to be sorted into a specific order
