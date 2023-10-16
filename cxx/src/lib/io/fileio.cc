@@ -105,7 +105,11 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
 		for (int i = 0; i < d.member.size(); ++i) {
 			/* Silenetly skip dead data */
-			if(d.member[i].dead()) continue;
+			if(d.member[i].dead()) {
+				foffs.push_back(0);
+				// place holder
+				continue;
+			}
 			long int foff = ftell(fp);
 			foffs.push_back(foff);
 			TimeSeries& t = d.member[i];
