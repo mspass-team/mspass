@@ -1,0 +1,38 @@
+test_aml program:  testing AttributeMap and AttributeCrossRefence outility classes
+Trying default constructor for AttributeMap
+Success: currently default map is for css3.0
+Trying Trace4.0 - relic but ok for initial testing - change for release version
+Trace4.0 was correctly loaded - testing destructor on the Trace4.0 data just loaded
+Success
+Testing operator=
+Success
+Testing operator[] on a few common attributes
+Note this also tests operator<< for AttributeProperties
+time arrival arrival.time arrival.time real
+evid event event.evid event.evid integer
+Testing is_alias method
+Correctly returned true for attribute sta
+Corrected returned false for invalid key
+Testing aliastable method
+Trying to retrieve table for attribute time
+Success - here is the list of aliases returned
+wfdisc
+wfprocess
+Testing aliases method for attribute phase
+Success - map returned by aliases has 3 entries
+Example arrival.time
+time arrival arrival.time arrival.time real
+
+Starting tests of AttributeCrossReference - trying to read test pf file
+Successfully read test data file
+Trying list container constructor
+Success:   input map size=71
+Testing copy constructor
+Size of copy matches original - assume success
+Testing destructor
+Testing operator=
+Size of copy matches original - assume success
+Testing internal method
+Internal method returned sxTest passed - got result expected
+Testing external method
+Internal method returned sourceLongOrXTest passed - got result expected

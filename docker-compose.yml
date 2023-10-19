@@ -1,0 +1,107 @@
+version: '3'
+
+services:
+
+  mspass-dbmanager:
+    image: mspass/mspass
+    volumes:
+      - "${PWD}:/home"
+    ports:
+      - 27017:27017
+    depends_on:
+      mspass-shard-0:
+        condition: service_healthy
+      mspass-shard-1:
+        condition: service_healthy
+    environment:
+      MSPASS_ROLE: dbmanager
+      MSPASS_SHARD_LIST: mspass-shard-0/mspass-shard-0:27017 mspass-shard-1/mspass-shard-1:27017
+      MONGODB_PORT: 27017
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet 
+      interval: 10s
+      timeout: 60s
+      retries: 5
+      start_period: 5s
+  
+  mspass-shard-0:
+    hostname: mspass-shard-0
+    image: mspass/mspass
+    volumes:
+      - "${PWD}:/home"
+    environment:
+      MSPASS_ROLE: shard
+      MSPASS_SHARD_ID: 0
+      MONGODB_PORT: 27017
+      SHARD_DB_PATH: scratch
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet 
+      interval: 10s
+      timeout: 60s
+      retries: 5
+      start_period: 5s
+  
+  mspass-shard-1:
+    hostname: mspass-shard-1
+    image: mspass/mspass
+    volumes:
+      - "${PWD}:/home"
+    environment:
+      MSPASS_ROLE: shard
+      MSPASS_SHARD_ID: 1
+      MONGODB_PORT: 27017
+      SHARD_DB_PATH: scratch
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      interval: 10s
+      timeout: 60s
+      retries: 5
+      start_period: 5s
+
+  mspass-scheduler:
+    image: mspass/mspass
+    volumes:
+      - "${PWD}:/home"
+    ports:
+      - 8786:8786
+    environment:
+      MSPASS_ROLE: scheduler
+      MSPASS_SCHEDULER: dask
+      DASK_SCHEDULER_PORT: 8786
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8786
+      interval: 10s
+      timeout: 60s
+      retries: 5
+      start_period: 5s
+  
+  mspass-worker:
+    image: mspass/mspass
+    volumes:
+      - "${PWD}:/home"
+    depends_on:
+      mspass-scheduler:
+        condition: service_healthy
+    environment:
+      MSPASS_ROLE: worker
+      MSPASS_SCHEDULER: dask
+      MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
+  
+  mspass-frontend:
+    image: mspass/mspass
+    volumes:
+      - "${PWD}:/home"
+    ports:
+      - 8888:8888
+    depends_on:
+      mspass-dbmanager:
+        condition: service_healthy
+      mspass-scheduler:
+        condition: service_healthy
+    environment:
+      MSPASS_ROLE: frontend
+      MSPASS_SCHEDULER: dask
+      MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
+      MSPASS_DB_ADDRESS: mspass-dbmanager
+      MSPASS_JUPYTER_PWD: mspass
+      JUPYTER_PORT: 8888

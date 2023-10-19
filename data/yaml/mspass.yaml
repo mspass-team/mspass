@@ -1,0 +1,677 @@
+# Notes on the format of this master configuration file
+#
+# The schema of the Database and the Metadata container are defined in
+# corresponding sections.
+#
+# The keys under Database defines the collection names. Each collection
+# should have a schema key. Each entry of the schema should at least have
+# its type defined. The types need to be compatible to BSON. If the
+# optional key is absent, the attribute will be assumed required by default.
+# All required attributes need to be defined in all entries of the collection.
+# The reference key defines an attribute that is referenced from a different
+# collection, it will by default assume the type to be the same unless
+# otherwise specified (probably only as a list type). The default key is used
+# to define the default collection name, which should at least define three
+# collections, wf, history_object, and elog. The data_type key is used in wf
+# collections to specify what type of data is referenced by the collection.
+#
+# The keys under Metadata defines the metadata to be used for each type of
+# MsPASS basic object. The entries under schema should have a collection
+# name defined. The reader will insert the properties of the attributes from
+# the database collections defined above. The "_" pattern of names with its
+# collection name as prefix will be automatically resolved (note that the
+# behavior under the hood is slightly different for the IDs). The readonly
+# key will be used to test whether an attribute in the data object can be
+# saved to the database. All the keys that are defined but without a readonly
+# entry will by default treated as readonly.
+
+Database:
+  wf_TimeSeries:
+    default: wf
+    data_type: TimeSeries
+    schema:
+      channel_id:
+        reference: channel
+        constraint: xref_key
+      <<: &wf_TimeSeries
+        _id:
+          type: ObjectID
+          concept: ObjectId used to define a data object
+          constraint: required
+        npts:
+          type: int
+          concept: Number of data samples
+          aliases: [nsamp, wfdisc.nsamp]
+          constraint: required
+        delta:
+          type: double
+          concept: Data sample interval in seconds
+          aliases: [dt]
+          constraint: required
+        sampling_rate:
+          type: double
+          concept: Data sampling frequency in Hz=1/s
+          constraint: optional
+        starttime:
+          type: double
+          concept: Time of first sample of data (epoch time or relative to some other time mark)
+          aliases: [t0, time]
+          constraint: required
+        starttime_shift:
+          type: double
+          concept:  Time shift applied to define relative time of 0.0
+          aliases:  t0shift
+          constraint: required
+        utc_convertible:
+          type:  bool
+          concept:  When true starttime_shift can be used to convert relative time to UTC.
+          constraint: required
+        time_standard:
+          type: string
+          concept: Defines time standard for meaning of t0 (default should be UTC)
+          constraint: required
+        calib:
+          type: double
+          concept: Nominal conversion factor for changing sample data to ground motion units.
+          constraint: normal
+        storage_mode:
+          type: string
+          concept: The storage mode of the saved data ('file', 'url' or 'gridfs')
+          constraint: required
+        format:
+          type: string
+          concept: The file format of the saved data (e.g., 'MSEED', 'SAC', ...).
+          constraint: optional
+        dir:
+          type: string
+          concept: Directory path to an external file (always used with dfile)
+          aliases: [file.dir, wfdisc.dir, wfprocess.dir]
+          constraint: optional
+        dfile:
+          type: string
+          concept: External data file name.
+          aliases: [file.dfile, wfdisc.dfile, wfprocess.dfile]
+          constraint: optional
+        foff:
+          type: int
+          concept: Offset in bytes from beginning of a file to first data sample.
+          aliases: [file.foff, wfdisc.foff, wfprocess.foff]
+          constraint: optional
+        url:
+          type: string
+          concept: Url to external data file.
+          constraint: optional
+        gridfs_id:
+          type: ObjectID
+          concept: The _id of data file in the fs.files collection.
+          constraint: optional
+        source_id:
+          reference: source
+          constraint: xref_key
+        site_id:
+          reference: site
+          constraint: xref_key
+        history_object_id:
+          reference: history_object
+          constraint: xref_key
+        elog_id:
+          reference: elog
+          constraint: xref_key
+        data_tag:
+          type: string
+          concept: Used as a tag for data at a particular stage of processing. Used in save_data.
+          constraint: optional
+
+
+  wf_Seismogram:
+    data_type: Seismogram
+    schema:
+      <<: *wf_TimeSeries
+      tmatrix:
+        type: list
+        concept: Three-component data's transformation matrix
+        constraint: required
+      cardinal:
+        type: bool
+        concept: When true the data stored are orthogonal and in cardinal (ENZ) geographic directions.
+        constraint: required
+      orthogonal:
+        type: bool
+        concept: When true the transformation matrix is orthogonal (inverse can then be constructed from transpose instead of inversion). 
+        constraint: required
+      site_id:
+        concept: Linking id to site collection
+        reference: site
+        constraint: xref_key
+      channel_id_list:
+        type: list
+        constraint: optional
+
+  wf_miniseed:
+    data_type: TimeSeries
+    schema:
+      <<: *wf_TimeSeries
+      last_packet_time:
+        type: double
+        concept: Time tag on the last packet of a contiguous block of miniseed packets
+        constraint: normal
+      dir:
+        type: string
+        concept: Directory path to an external file (always used with dfile)
+        aliases: [file.dir, wfdisc.dir, wfprocess.dir]
+        constraint: required
+      dfile:
+        type: string
+        concept: External data file name.
+        aliases: [file.dfile, wfdisc.dfile, wfprocess.dfile]
+        constraint: required
+      foff:
+        type: int
+        concept: Offset in bytes from beginning of a file to first data sample.
+        aliases: [file.foff, wfdisc.foff, wfprocess.foff]
+        constraint: required
+      url:
+        # the current reader doesn't support reading from a url but 
+        # if iris web services were faster it would be useful so we stub it here
+        type: string
+        concept: Url to external data file.
+        constraint: optional
+      nbytes:
+        type: int
+        concept: number of bytes in a group of time ordered miniseed packets
+        constaint: required
+      net:
+        reference: site
+        constraint: normal
+      sta:
+        reference: site
+        constraint: normal
+      loc:
+        reference: channel
+        constraint: normal
+      chan:
+        reference: channel
+        constraint: normal
+      channel_id:
+        reference: channel
+        constraint: xref_key
+
+  site:
+    schema:
+      _id:
+        type: ObjectID
+        concept: ObjectId used to define a particular instrument/seismic station
+        constraint: required
+      net:
+        type: string
+        concept: network code (net component of SEED net:sta:chan)
+        aliases: [network, site.net, channel.net, wfdisc.net, site_net]
+        constraint: normal
+      sta:
+        type: string
+        concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
+        aliases: [station, site.sta, channel.sta, wfdisc.sta, KSTNM]
+        constraint: normal
+      loc:
+        reference: channel
+        constraint: normal
+      lat:
+        type: double
+        concept: latitude of a seismic station/instrument in degrees
+        aliases: [STLA, site.lat, site_lat]
+        constraint: required
+      lon:
+        type: double
+        concept: longitude of a seismic station/instrument in degrees
+        aliases: [STLO, stlo, site.lon, site_lon]
+        constraint: required
+      elev:
+        type: double
+        concept: elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
+        aliases: [STEL, stel, site.elev, site_elev]
+        constraint: required
+      starttime:
+        type: double
+        concept: Time of seismic station/instrument starts recording
+        aliases: [site.starttime, site_starttime]
+        constraint: normal
+      endtime:
+        type: double
+        concept: Time of seismic station/instrument ends recording
+        aliases: [site.endtime, site_endtime]
+        constraint: normal
+
+  channel:
+    schema:
+      _id:
+        type: ObjectID
+        concept: ObjectId used to define a particular component of data
+        constraint: required
+      net:
+        reference: site
+        constraint: normal
+      sta:
+        reference: site
+        constraint: normal
+      loc:
+        type: string
+        concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
+        aliases: [location, site.loc, channel.loc]
+        constraint: normal
+      chan:
+        type: string
+        concept: channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
+        aliases: [channel, KCMPNM, channel.chan, wfdisc.chan]
+        constraint: normal
+      lat:
+        type: double
+        concept: latitude of a seismic station/instrument in degrees
+        aliases: [channel_lat]
+        constraint: required
+      lon:
+        type: double
+        concept: longitude of a seismic station/instrument in degrees
+        aliases: [channel_lon]
+        constraint: required
+      elev:
+        type: double
+        concept: elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
+        aliases: [channel_elev]
+        constraint: required
+      edepth:
+        type: double
+        concept: depth of a seismic station/instrument in km
+        aliases: [channel_edepth]
+        constraint: optional
+      hang:
+        type: double
+        concept:  Azimuth (in degree) of a seismometer component - horizontal angle
+        aliases: [CMPAZ, channel_hang]
+        constraint: normal
+      vang:
+        type: double
+        concept: Inclination from +up (in degree) of a seismometer component - vertical angle
+        aliases: [CMPINC, channel_vang]
+        constraint: normal
+      starttime:
+        type: double
+        concept: Time of channel starts recording
+        aliases: [channel_starttime]
+        constraint: normal
+      endtime:
+        type: double
+        concept: Time of channel ends recording
+        aliases: [channel_endtime]
+        constraint: normal
+
+  source:
+    schema:
+      _id:
+        type: ObjectID
+        concept: ObjectId used to define a particular seismic source
+        constraint: required
+      lat:
+        type: double
+        concept: Latitude (in degrees) of the hypocenter of seismic source
+        aliases: [source.lat, EVLA, origin.lat, source_lat]
+        constraint: required
+      lon:
+        type: double
+        concept: Longitude (in degrees) of the hypocenter of seismic source
+        aliases: [source.lon, EVLO, origin.lon, source_lon]
+        constraint: required
+      depth:
+        type: double
+        concept: Depth (in km) of the hypocenter of seismic source
+        aliases: [source.depth, EVDP, origin.depth, source_depth]
+        constraint: required
+      time:
+        type: double
+        concept: Origin time of the hypocenter of seismic source (epoch time)
+        aliases: [source.time, origin.time, source_time]
+        constraint: required
+      magnitude:
+        type: double
+        concept: Generic magnitude attribute
+        aliases: [MAG, source_magnitude]
+        constraint: normal
+
+  history_global:
+    default: history_global
+    schema:
+      _id:
+        type: ObjectID
+        concept: ObjectId used to define a global history object
+        constraint: required
+      job_id:
+        type: ObjectID
+        concept: ObjectId  used to define a job
+        constraint: required
+      job_name:
+        type: string
+        concept: the name of the job
+        constraint: required
+      alg_name:
+        type: string
+        concept: the name of the algorithm
+        constraint: required
+      alg_id:
+        type: ObjectID
+        concept: ObjectId used to define a unique algorithm(alg_name + parameters)
+        constraint: required
+      parameters:
+        type: string
+        concept: the parameters of the algorithm
+        constraint: required
+      time:
+        type: double
+        concept: timestamp when save the global history record
+        constraint: required
+
+  # According to https://docs.mongodb.com/manual/core/document/#the-id-field
+  # UUID should be saved as BSON's BinData type. We should do the conversion 
+  # implicitly. Will need to explore the bson API:
+  # https://pymongo.readthedocs.io/en/stable/api/bson/index.html 
+  history_object:
+    schema:
+      _id:
+        type: string
+        concept: UUID used to define an unique entry in history object collection.
+        constraint: required
+      processing_history:
+        type: bytes
+        concept: serialized content of ProcessingHistory.
+        constraint: required
+      wf_Seismogram_id:
+        reference: wf_Seismogram
+        constraint: xref_key
+      wf_TimeSeries_id:
+        reference: wf_TimeSeries
+        constraint: xref_key
+      alg_id:
+        concept: ObjectId used to define a unique algorithm(alg_name + parameters)
+        reference: history_global
+        constraint: xref_key
+      alg_name:
+        type: string
+        concept: the name of the algorithm
+        constraint: required
+
+  elog:
+    schema:
+      _id:
+        type: ObjectID
+        concept: ObjectID used to define an unique entry in elog collection.
+        constraint: required
+      logdata:
+        type: list
+        concept: a list of LogData.
+        constraint: required
+      wf_Seismogram_id:
+        reference: wf_Seismogram
+        constraint: xref_key
+      wf_TimeSeries_id:
+        reference: wf_TimeSeries
+        constraint: xref_key
+      wf_miniseed_id:
+        reference: wf_miniseed
+        constraint: xref_key
+      tombstone:
+        type: dict
+        concept: a copy of the Metadata of a dead object.
+        constraint: optional
+
+
+Metadata:
+  TimeSeries:
+    schema:
+      _id:
+        collection: wf_TimeSeries
+        readonly: true
+      npts:
+        collection: wf_TimeSeries
+        readonly: false
+      delta:
+        collection: wf_TimeSeries
+        readonly: false
+      sampling_rate:
+        collection: wf_TimeSeries
+        readonly: false
+      starttime:
+        collection: wf_TimeSeries
+        readonly: false
+      time_standard:
+        collection: wf_TimeSeries
+        readonly: false
+      utc_convertible:
+        collection: wf_TimeSeries
+        readonly: false
+      calib:
+        collection: wf_TimeSeries
+        readonly: false
+      site_id:
+        collection: wf_TimeSeries
+        readonly: false
+      channel_id:
+        collection: wf_TimeSeries
+        readonly: false
+      source_id:
+        collection: wf_TimeSeries
+        readonly: false
+      net:
+        collection: site
+        readonly: true
+      sta:
+        collection: site
+        readonly: true
+      site_lat:
+        collection: site
+        readonly: true
+      site_lon:
+        collection: site
+        readonly: true
+      site_elev:
+        collection: site
+        readonly: true
+      site_starttime:
+        collection: site
+        readonly: true
+      site_endtime:
+        collection: site
+        readonly: true
+      loc:
+        collection: channel
+        readonly: true
+      chan:
+        collection: channel
+        readonly: true
+      channel_hang:
+        collection: channel
+        readonly: true
+      channel_vang:
+        collection: channel
+        readonly: true
+      channel_lat:
+        collection: channel
+        readonly: true
+      channel_lon:
+        collection: channel
+        readonly: true
+      channel_elev:
+        collection: channel
+        readonly: true
+      channel_edepth:
+        collection: channel
+        readonly: true
+      channel_starttime:
+        collection: channel
+        readonly: true
+      channel_endtime:
+        collection: channel
+        readonly: true    
+      source_lat:
+        collection: source
+        readonly: true
+      source_lon:
+        collection: source
+        readonly: true
+      source_depth:
+        collection: source
+        readonly: true
+      source_time:
+        collection: source
+        readonly: true
+      source_magnitude:
+        collection: source
+        readonly: true
+      
+  Seismogram:
+    schema:
+      _id:
+        collection: wf_Seismogram
+        readonly: true
+      npts:
+        collection: wf_Seismogram
+        readonly: false
+      delta:
+        collection: wf_Seismogram
+        readonly: false
+      sampling_rate:
+        collection: wf_Seismogram
+        readonly: false
+      starttime:
+        collection: wf_Seismogram
+        readonly: false
+      time_standard:
+        collection: wf_Seismogram
+        readonly: false
+      utc_convertible:
+        collection: wf_Seismogram
+        readonly: false
+      calib:
+        collection: wf_Seismogram
+        readonly: false
+      site_id:
+        collection: wf_Seismogram
+        readonly: false
+      source_id:
+        collection: wf_Seismogram
+        readonly: false
+      tmatrix:
+        collection: wf_Seismogram
+        readonly: false
+      net:
+        collection: site
+        readonly: true
+      sta:
+        collection: site
+        readonly: true
+      loc:
+        collection: site
+        readonly: true 
+      site_lat:
+        collection: site
+        readonly: true
+      site_lon:
+        collection: site
+        readonly: true
+      site_elev:
+        collection: site
+        readonly: true
+      site_starttime:
+        collection: site
+        readonly: true
+      site_endtime:
+        collection: site
+        readonly: true
+      source_lat:
+        collection: source
+        readonly: true
+      source_lon:
+        collection: source
+        readonly: true
+      source_depth:
+        collection: source
+        readonly: true
+      source_time:
+        collection: source
+        readonly: true
+      source_magnitude:
+        collection: source
+        readonly: true
+
+  # These are assorted attributes that can be used in Metadata
+  Other:
+    schema:
+      KEVNM:
+        type: string
+        concept: Event name 
+        readonly: false
+      IEVTYP:
+        type:  int
+        concept: Event type code as used in SAC
+        readonly: false
+      units:
+        type:  string
+        concept: Physical units of sample data (nm/s is normal assumed default)
+        readonly: false
+        aliases: [idep, IDEP]
+      DEPMIN:
+        type: double
+        concept: Maximum amplitude of a signal
+        readonly: false
+        aliases: [depmin]
+      DEPMAX:
+        type: double
+        concept: Minimum amplitude of a signal
+        readonly: false
+        aliases: [depmax]
+      DEPMEN:
+        type: double
+        concept: Mean amplitude of a signal
+        readonly: false
+        aliases: [depmen]
+      jdate:
+        type: int
+        concept: Julian date string as used in CSS3.0
+        readonly: false
+      IZTYPE:
+        type: int
+        concept: Reference time type as used by SAC
+        readonly: false
+        aliases: [TimeReferenceType]
+      dist:
+        type: double
+        concept: Source receiver distance
+        readonly: false
+        aliases: [assoc.delta, GCARC]
+      distance_units:
+        type: string
+        concept: Units of dist attribute
+        readonly: false
+      phase:
+        type: string
+        concept: Phase name assigned by an analyst to a pick
+        readonly: false
+      iphase:
+        type: string
+        concept: Indicated phase (from CSS3.0) - phase name from travel time curve association
+        readonly: false
+      seaz:
+        type: double
+        concept: Station to event azimuth
+        readonly: false
+        aliases: [BAZ]
+      esaz:
+        type: double
+        concept: Event to station azimuth
+        readonly: false
+        aliases: [AZ]
+      ms:
+        type: double
+        concept: Surface wave magnitude
+        readonly: true
+      mb:
+        type: double
+        concept: Body wave magnitude
+        readonly: true

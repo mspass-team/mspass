@@ -1,0 +1,58 @@
+WaterLevel &Arr{
+water_level 1.0
+operator_nfft 1024
+shaping_wavelet_dt 0.05
+# these are appropriate for scalar data defined in test script
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+target_sample_interval 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 1.0
+shaping_wavelet_frequency_for_inverse 1.0
+}
+LeastSquare &Arr{
+damping_factor 1.0
+operator_nfft 1024
+shaping_wavelet_dt 0.05
+# these are appropriate for scalar data defined in test script
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+target_sample_interval 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 1.0
+shaping_wavelet_frequency_for_inverse 0.5
+}
+MultiTaperSpecDiv &Arr{
+damping_factor 0.1
+shaping_wavelet_dt 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 1.0
+shaping_wavelet_frequency_for_inverse 0.5
+target_sample_interval 0.05
+operator_nfft 1024
+#time_bandwidth_product 4.0
+#number_tapers 8
+time_bandwidth_product 2.5
+number_tapers 4
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+noise_window_start -35.0
+noise_window_end -5.0
+}
+MultiTaperXcor &Arr{
+damping_factor 0.05
+shaping_wavelet_dt 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 1.0
+shaping_wavelet_frequency_for_inverse 0.5
+target_sample_interval 0.05
+operator_nfft 1024
+#time_bandwidth_product 4.0
+#number_tapers 8
+time_bandwidth_product 2.5
+number_tapers 4
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+noise_window_start -35.0
+noise_window_end -5.0
+}
