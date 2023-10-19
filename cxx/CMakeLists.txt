@@ -34,6 +34,10 @@ if (NOT YAML_CPP_INCLUDE_DIR)
     ${PROJECT_BINARY_DIR}/yaml-cpp
     )
 endif ()
+# This is to address the change in https://github.com/jbeder/yaml-cpp/commit/97ebcf035ab7a3fb6ceed99e68f02759cff6ef86
+if (YAML_CPP_LIBRARY_DIR)
+  set (YAML_CPP_LIBRARIES ${YAML_CPP_LIBRARY_DIR}/${YAML_CPP_LIBRARIES})
+endif ()
 message (STATUS "YAML_CPP_LIBRARIES   = ${YAML_CPP_LIBRARIES}")
 message (STATUS "YAML_CPP_INCLUDE_DIR = ${YAML_CPP_INCLUDE_DIR}")
 
