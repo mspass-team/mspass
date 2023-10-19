@@ -36,7 +36,7 @@ if (NOT YAML_CPP_INCLUDE_DIR)
 endif ()
 # This is to address the change in https://github.com/jbeder/yaml-cpp/commit/97ebcf035ab7a3fb6ceed99e68f02759cff6ef86
 if (YAML_CPP_LIBRARY_DIR)
-  list(APPEND CMAKE_PREFIX_PATH "${YAML_CPP_LIBRARY_DIR}")
+  link_directories(${YAML_CPP_LIBRARY_DIR})
 endif ()
 message (STATUS "YAML_CPP_LIBRARIES   = ${YAML_CPP_LIBRARIES}")
 message (STATUS "YAML_CPP_INCLUDE_DIR = ${YAML_CPP_INCLUDE_DIR}")
