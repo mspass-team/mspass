@@ -175,13 +175,15 @@ def read_distributed_data(
     elif isinstance(data, sparkDF):
         data = data.toPandas()
 
+    if isinstance(data, daskbag.core.Bag):
+        list_ = data
     # now the type of data is a pandas dataframe
-    if format == "spark":
+    elif format == "spark":
         list_ = spark_context.parallelize(
             data.to_dict("records"), numSlices=npartitions
         )
     else:
-        list_ = data
+        list_ = daskbag.from_sequence(data.to_dict("records"), npartitions=npartitions)
 
     # list_ is a parallel container of dict
     return list_.map(
