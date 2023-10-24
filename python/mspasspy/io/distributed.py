@@ -76,7 +76,7 @@ def read_distributed_data(
     implementations or bag for a dask implementations).
 
     This function is to divide the process of reading into two parts:
-    reading from database and reading from file, where where reading from database
+    reading from database and reading from file, where reading from database
     is done in sequence, and reading from file is done with dask/spark. The two parts
     are done in two functions: read_to_dataframe, and read_files.
 
@@ -158,6 +158,8 @@ def read_distributed_data(
         data = read_to_dataframe(
             data,
             cursor,
+            format,
+            npartitions,
             mode,
             normalize,
             load_history,
@@ -169,7 +171,7 @@ def read_distributed_data(
     if isinstance(data, daskDF):
         data = data.compute()
 
-    # convert spark dataframe to spark dataframe
+    # convert spark dataframe to pandas dataframe
     elif isinstance(data, sparkDF):
         data = data.toPandas()
 
@@ -179,7 +181,7 @@ def read_distributed_data(
             data.to_dict("records"), numSlices=npartitions
         )
     else:
-        list_ = daskbag.from_sequence(data.to_dict("records"), npartitions=npartitions)
+        list_ = data
 
     # list_ is a parallel container of dict
     return list_.map(
@@ -199,6 +201,8 @@ def read_distributed_data(
 def read_to_dataframe(
     db,
     cursor,
+    format=None,
+    npartitions=None,
     mode="promiscuous",
     normalize=None,
     load_history=False,
@@ -540,6 +544,11 @@ def read_to_dataframe(
         # add metadata for current object to metadata list
         md_list.append(md)
 
+    # if format is dask, directly convert result to a daskbag object, not using pandas DataFrame, 
+    # because converting from pandas DataFrame to daskbag will cause efficiency issue
+    if format == 'dask':
+        return daskbag.from_sequence(map(lambda cur: cur.todict(), md_list), npartitions=npartitions)
+    
     # convert the metadata list to a dataframe
     return pd.json_normalize(map(lambda cur: cur.todict(), md_list))
 
