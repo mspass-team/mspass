@@ -5,6 +5,14 @@ from mspasspy.algorithms.window import WindowData, merge
 
 
 class seed_keys:
+    """
+    Small helper class used in this module.   It contains the four magic
+    strings used by FDSN to define a unique channel of seismic data
+    (net, sta, chan, and loc).   The main use is the implementation of
+    the == operator for the class to compare if all keys are equal.
+    The class constructor is desiged to be built from MongoDB documents
+    and cleanly handle the common wart of null loc codes.
+    """
     def __init__(self, doc):
         if "net" in doc:
             self.net = doc["net"]
@@ -54,7 +62,7 @@ def TimeIntervalReader(
     is to carve out fixed time window.   Two common but different uses
     are (1) carving out an interval of time based on an event origin time,
     and (2) extracting a series of windows in a loop for block processing
-    like noise correlation or spectorgrams.   The later demand a lot of
+    like noise correlation or spectorgrams.   The later demands a lot of
     efficiency in this process as that kind of process can repeat an
     algorithm like this thousands of times.   Reading continuous data
     always has to handle two properties of real data that this function
@@ -87,8 +95,11 @@ def TimeIntervalReader(
     attempting to assemble and post an error message that can be used
     for post-mortum analysis of a workflow.  All the complexity of this
     processing is hidden under two layers of code this reader utilizes:
-        1.  The python function mspasspy.algorithms.window.merge
-            is a wrapper that handles some translations from
+        1.  The python function :py:func:`mspasspy.algorithms.window.merge`
+            is a wrapper that handles some translations from the
+            C++ primitives to python.  That function is used to glue
+            waveform segments together while handling gaps and overlaps
+            consistently,  
         2.  The bottom layer, which, is a set of C++ code that does 99% of the
             work.  The base layer was done in C++ for efficiency because,
             as noted above, use of this algorithm can be very time intensive

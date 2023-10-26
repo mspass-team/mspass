@@ -401,7 +401,7 @@ class Database(pymongo.database.Database):
         aws_secret_access_key=None,
     ):
         """
-        Core MsPASS reader for seismic waveform data objects.
+        Top-level MsPASS reader for seismic waveform data objects.
 
         Most MsPASS processing scripts use this method directly
         or indirectly via the parallel version called
@@ -488,6 +488,16 @@ class Database(pymongo.database.Database):
         collisions of Metadata attributes with non-native formats other than
         miniseed.
 
+        There is a special case for working with ensemble data that can
+        be expected to provide the highest performance with a conventional
+        file system.  That is the case of ensembles with the format of
+        "binary" and data saved in files where all the waveforms of each
+        ensemble are in the same file.  That structure is the default for
+        ensembles saved to files with the `save_data` method.  This method
+        is fast because the sample data are read with a C++ function that
+        uses the stock fread function that for conventional file input is
+        about as fast a reader as possible.
+
         An additional critical parameter is "mode".  It must be one of
         "promiscuous", "cautious", or "pedantic".   Default is "promiscuous"
         which more-or-less ignores the schema and loads the entire content
@@ -534,11 +544,14 @@ class Database(pymongo.database.Database):
         -  This reader adds a boolean attribute not stored in the database
            with the key "is_abortion".  That value will be True if the datum
            is returned dead but should be False if it is set live.
-        -  An entire ensemble may be marked dead or only some of its members
-           may be marked dead.   Any members marked dead will also have
-           "is_abortion" set True.  An entire ensemble will be marked dead
-           by this reader only if all the members are marked dead.
-
+        -  An entire ensemble may be marked dead only if reading of all the
+           members defined by a cursor input fail.   Note handling of
+           failures when constructing ensembles is different than atomic
+           data because partial success is assumed to be acceptable.
+           Hence, when a given datum in an ensemble fails the body is not
+           added to the ensemble but processed the body is buried in a
+           special collection called "abortions".   See User's Manual
+           for details.
 
         :param id_doc_or_cursor: required key argument that drives
           what the reader will return.  The type of this argument is a
@@ -589,52 +602,123 @@ class Database(pymongo.database.Database):
           that resolves to an id in the source collection.  With string
           input that always happens only through database transactions.
 
-        :param load_history: boolean (True or False) switch used to enable or
-          disable object level history mechanism.   When set True each datum
-          will be tagged with its origin id that defines the leaf nodes of a
-          history G-tree.  See the User's manual for additional details of this
-          feature.  Default is False.
+        :param load_history: boolean switch controlling handling of the
+          object-level history mechanism.  When True if the data were
+          saved previously with a comparable switch to save the
+          history, this reader will load the history data.   This feature allows
+          preserving a complete object-level history tree in a workflow
+          with an intermediate save.   If no history data are found the
+          history tree is initialized. When this parameter is set False
+          the history tree will be left null.
+
         :param exclude_keys: Sometimes it is helpful to remove one or more
           attributes stored in the database from the data's Metadata (header)
-          so they will not cause problems in downstream processing.
-        :type exclude_keys: a :class:`list` of :class:`str`
-        :param collection:  Specify an alternate collection name to
-          use for reading the data.  The default sets the collection name
-          based on the data type and automatically loads the correct schema.
-          The collection listed must be defined in the schema and satisfy
-          the expectations of the reader.  This is an advanced option that
-          is indended only to simplify extensions to the reader.
+          so they will not cause problems in downstream processing.  Use this
+          argument to supply a list of keys that should be deleted from
+          the datum before it is returned.  With ensembles the editing
+          is applied to all members.   Note this same functionality
+          can be accomplished within a workflow with the trace editing
+          module.
+        :type exclude_keys: a :class:`list` of :class:`str` defining
+          the keys to be cleared.
+
+        :param collection:  Specify the collection name for this read.
+           In MsPASS the equivalent of header attributes are stored in
+           MongoDB documents contained in a "collection".   The assumption
+           is a given collection only contains documents for one of the
+           two atomic types defined in MsPASS:  `TimeSeries` or `Seismogram`.
+           The data type for collections defined by the schema is an
+           attribute that the reader tests to define the type of atomic
+           objects to be constructed (Note ensembles are assembled from
+           atomic objects by recursive calls the this same read method.)
+           The default is "wf_TimeSeries", but we recommend always defining
+           this argument for clarity and stability in the event the default
+           would change.
+         :type collection:   :class:`str` defining a collection that must be
+           defined in the schema.  If not, the function will abort the job.
+
         :param data_tag:  The definition of a dataset can become ambiguous
           when partially processed data are saved within a workflow.   A common
           example would be windowing long time blocks of data to shorter time
           windows around a particular seismic phase and saving the windowed data.
           The windowed data can be difficult to distinguish from the original
           with standard queries.  For this reason we make extensive use of "tags"
-          for save and read operations to improve the efficiency and simplify
-          read operations.   Default turns this off by setting the tag null (None).
-        :type data_tag: :class:`str`
-        :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+          for save operations to avoid such ambiguities.   Reads present
+          a different problem as selection for such a tag is best done with
+          MongoDB queries.   If set this argument provides a cross validation
+          that the data are consistent with a particular tag.  In particular,
+          if a datum does not have the attribute "data_tag" set to the value
+          defined by the argument a null, dead datum will be returned.
+          For ensembles any document defined by the cursor input for which
+          the "data_tag" attribute does not match will be silenetly dropped.
+          The default is None which disables the cross-checking.
+        :type data_tag: :class:`str` used for the filter.  Can be None
+          in which case the cross-check test is disable.
+
+        :param alg_name: optional alternative name to assign for this algorithm
+          as a tag for the origin node of the history tree.   Default is the
+          function's name ("read_data") and should rarely if ever be changed.
+          Ignored unless `load_history` is set True.
         :type alg_name: :class:`str`
-        :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
-        :type alg_id: :class:`bson.ObjectId.ObjectId`
-        :param define_as_raw: a boolean control whether we would like to set_as_origin when loading processing history
-        :type define_as_raw: :class:`bool`
-        :param method: Methodology to handle overlaps/gaps of traces. Defaults to 0.
-            See `__add__ <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.__add__.html#obspy.core.trace.Trace.__add__>` for details on methods 0 and 1,
-            see `_cleanup <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream._cleanup.html#obspy.core.stream.Stream._cleanup>` for details on method -1.
-            Any merge operation performs a cleanup merge as a first step (method -1).
-        :type method: :class:`int`
-        :param fill_value: Fill value for gaps. Defaults to None.
-        :type fill_value: :class:`int`, :class:`float` or None
-        :param interpolation_samples: Used only for method=1. It specifies the number of samples
-            which are used to interpolate between overlapping traces. Default to 0.
-            If set to -1 all overlapping samples are interpolated.
+
+        :param alg_id: The object-level history mechanism uses a string to
+          tag a specific instance of running a particular function in a workflow.
+          If a workflow has multiple instances of read_data with different
+          parameters, for example, one might specify a value of this argument.
+          Ignored unless `load_history` is set True.
+        :type alg_id: :class:`str`
+
+        :param define_as_raw: boolean to control a detail of the object-level
+          history definition of the tree node created for this process.
+          The functions by definition an "origin" but a special case is a
+          "raw" origin meaning the sample data are unaltered (other than type)
+          from the field data.  Most miniseed data, for example, would
+          want to set this argument True.   Ignored unless `load_history` is set True.
+
+        :param merge_method:  when reading miniseed data implied gaps can
+          be present when packets are missing from a sequence of packets
+          having a common net:sta:chan:loc codes.  We use obspy's
+          miniseed reader to crack miniseed data.  It breaks such data into
+          multiple "segments".  We then use their
+          `merge<https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html>`__
+          method of the "Stream" object to glue any such segments together.
+          This parameter is passed as the "method" argument to that function.
+          For detail see
+          `__add__ <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.__add__.html#obspy.core.trace.Trace.__add__>`
+          for details on methods 0 and 1,
+          See `_cleanup <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream._cleanup.html#obspy.core.stream.Stream._cleanup>`
+          for details on method -1.  Note this argument is ignored unless
+          the reader is trying to read miniseed data.
+        :type method: :class:`int` with one of three values: -1, 0, or 1
+
+        :param merge_fill_value: Fill value for gap processing when obspy's merge
+          method is invoked.  (see description for "merge_method" above).
+          The value given here is passed used as the "fill" argument to
+          the obspy merge method.  As with merge_method this argument is
+          relevant only when reading miniseed data.
+        :type merge_fill_value: :class:`int`, :class:`float` or None (default)
+
+        :param merge_interpolation_samples: when merge_method is set to
+          -1 the obspy merge function requires a value for an
+          argument they call "interpolate_samples".  See their documentation
+          for details, but this argument controls how "overlaps", as opposed
+          to gaps, are handled by merge.  See the function documentation
+          `here<https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html>`__
+          for details.
         :type interpolation_samples: :class:`int`
-        :return: either :class:`mspasspy.ccore.seismic.TimeSeries`
-          or :class:`mspasspy.ccore.seismic.Seismogram`
+
+        :return: for ObjectId python dictionary values of arg0 will return
+          either a :class:`mspasspy.ccore.seismic.TimeSeries`
+          or :class:`mspasspy.ccore.seismic.Seismogram` object.
+          If arg0 is a pymongo Cursor the function will return a
+          :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
+          :class:`mspasspy.ccore.seismic.SeismogramEnsemble` object.
+          As noted above failures in reading atomic data will result in
+          an object be marked dead and the Metadata attribute "is_abortion"
+          to be set True.  When reading ensembles any problem members will
+          be excluded from the output and the bodies buried in a special
+          collection called "abortions".
         """
-
-
         try:
             wf_collection = self.database_schema.default_name(collection)
         except MsPASSError as err:
@@ -940,83 +1024,280 @@ class Database(pymongo.database.Database):
         exclude_keys=None,
         collection=None,
         data_tag=None,
+        cremate=False,
         save_history=True,
         alg_name="save_data",
         alg_id="0",
     ):
         """
-        Use this method to save an atomic data object (TimeSeries or Seismogram)
-        to be managed with MongoDB.  The Metadata are stored as documents in
-        a MongoDB collection.  The waveform data can be stored in a conventional
-        file system or in MongoDB's gridfs system.   At the time this docstring
-        was written testing was still in progress to establish the relative
-        performance of file system io versus gridfs, but our working hypothesis
-        is the answer of which is faster will be configuration dependent. In
-        either case the goal of this function is to make a save operation as
-        simple as possible by abstracting the complications involved in
-        the actual save.
+        Standard method to save all seismic data objects to be managed by
+        MongoDB.
 
-        Any errors messages held in the object being saved are always
-        written to documents in MongoDB is a special collection defined in
-        the schema.   Saving object level history is optional.
+        This method provides a unified interface for saving all seismic
+        data objects in MsPASS.   That is, what we call atomic data
+        (:class:`mspasspy.ccore.seismic.TimeSeries` and
+        :class:`mspasspy.ccore.seismic.Seismogram`) and ensembles of the
+        two atomic types ():class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` and
+        :class:`mspasspy.ccore.seismic.SeismogramEnsemble`).  Handling
+        multiple types while simultaneously supporting multiple abstractions
+        of how the data are stored externally has some complexities.
+        1.  All MsPASS data have multiple containers used internally
+            to define different concepts.   In particular atomic data
+            have a Metadata container we map to MongoDB documents directly,
+            sample data that is the largest data component that we handle
+            multiple ways, error log data, and (optional) object-level
+            history data.  Ensembles are groups of atomic data but they also
+            contain a Metadata and error log container common with content
+            common to the group.
+        2.  With seismic data the size is normally dominated by the
+            sample data that are stored internally as a vector container
+            for `TimeSeries` objects and a matrix for `Seismogram` objects.
+            Handling moving that data to storage as fast as possible is thus the
+            key to optimize write performance.  The write process is further
+            complicated, however, by the fact that "write/save" is itself
+            an abstraction that even in FORTRAN days hid a lot of complexity.
+            A call to this function supports multiple save mechanisms we
+            define through the `storage_mode` keyword. At present
+            "storage_mode" can be only one of two options:  "files" and
+            "gridfs".  Note this class has prototype code for reading data
+            in AWS s3 cloud storage that is not yet part of this interface.
+            The API, however, was designed to allow adding one or more
+            "storage_mode" options that allow other mechanisms to save
+            sample data.  The top priority for a new "storage_mode" when
+            the details are finalized is cloud storage of FDSN data by
+            Earthscope and other data centers.  We have also experimented
+            with parallel file containers like HDF5 for improved IO performance
+            but have not yet produced a stable implementation.   In the
+            future look for all such improvements.  What is clear is the
+            API will define these alternatives through the "storage_mode"
+            concept.
+        3.  In MsPASS we make extensive use of the idea from seismic reflection
+            processing of marking problem data "dead".   This method
+            handles all dead data through a standard interface with the
+            memorable/colorful name :py:class:`mspasspy.util.Undertaker`.
+            The default save calls the "bury" method of that class, but
+            there is an optional "cremate" argument that calls that
+            method instead.  The default of "bury" writes error log data
+            to a special collection ("cemetery") while the "cremate" method
+            causes dead data to vanish without a trace on save.
+        4.  There are two types of save concepts this method has to support.
+            That is, sometimes one needs to save intermediate results of
+            a workflow and continue on doing more work on the same data.
+            The more common situation is to terminate a workflow with
+            a call to this method.  The method argument `return_data`
+            is an implicit switch for these two concepts.  When
+            `return_data` is False, which is the default, only the
+            ObjectId(s) of thw wf document(s) are returned by the function.
+            We use that as the default to avoid memory overflow in a
+            final save when the `compute` method is called in dask or the
+            `collect` method is called in pyspark.  Set the `return_data`
+            argument True if you are doing an intermediate save and want
+            to reuse the content of what is returned.
+        5.  There is a long history in seismology of debate on data formats.
+            The fundamental reason for much of the debate has to do with
+            the namespace and concepts captured in data "headers" for
+            different formats seismologists have invented over several
+            decades.   A type example is that two "standard" formats
+            are SEGY that is the universal standard in seismic reflection
+            data exchange and SEED which is now the standard earthquakek
+            data format (Technically most data is now "miniseed" which
+            differs from SEED by defining only minimal header attributes
+            compared to the abomination of SEED that allows pretty much
+            anything stored in an excessively complex data structure.)
+            Further debate occurs regarding how data sets are stored in
+            a particular format.   These range from the atomic level file
+            model of SAC to the opposite extreme of an entire data set
+            stored in one file, which is common for SEGY.   Because of the
+            complexity of multiple formats seismologists have used for
+            the external representation of data, this writer has limits
+            on what it can and cannot do.  Key points about how formatting
+            is handled are:
+            -  The default save is a native format that is fast and efficient.
+               You can select alternative formats for data by setting a valid
+               value (string) for the "format" argument to this method.
+               What is "valid" for the format argument is currently simple
+               to state:   the value received for format is passed directly
+               to obspy's  Stream write method's format argument.  That is,
+               realize that when saving to a nonnative format the first thing
+               this method does is convert the data to a Stream.  It then
+               calls obspy's write method with the format specified.
+            -  Given the above, it follows that if you are writing data to
+               any nonnative format before calling this function you will
+               almost certainly have to edit the Metadata of each datum to
+               match the namespace for the format you want to write.
+               If not, obspy's writer will almost certainly fail.  The only
+               exception is miniseed where if the data being processed originate
+               as miniseed they can often be saved as miniseed without edits.
+            -  This writer only saves atomic data on single ensembles and
+               knows nothing about assumptions a format makes about the
+               larger scale layout of a dataset.  e.g. you could theoretically
+               write an ensemble in SAC format, but the output will be
+               unreadable by SAC because multiple records could easily be written
+               in a single file.  Our perspective is that MsPASS is a framework
+               and we do not have resources to sort out all the complexities of
+               all the formats out there.   We request the user community to
+               share an development for nonstandard formats.   Current the
+               only format options that are not "use at your own risk" are
+               the native "binary" format and miniseed.
 
-        There are multiple options described below.  One worth emphasizing is
-        "data_tag".   Such a tag is essential for intermediate saves of
-        a dataset if there is no other unique way to distinguish the
-        data in is current state from data saved earlier.  For example,
-        consider a job that did nothing but read waveform segments spanning
-        a long time period (e.g. day files),cutting out a shorter time window,
-        and then saving windowed data.  Crafting an unambiguous query to
-        find only the windowed data in that situation could be challenging
-        or impossible.  Hence, we recommend a data tag always be used for
-        most saves.
+        Given the complexity just described, users should not be surprised
+        that there are limits to what this single method can do and that
+        evolution of its capabilities is inevitable as the IT world evolves.
+        We reiterate the entire point of this method (also the related
+        read_data method) is to abstract the save process to make it
+        as simple as possible while providing mechanisms to make it work
+        as efficiently as possible.
 
-        The mode parameter needs to be understood by all users of this
-        function.  All modes enforce a schema constraint for "readonly"
-        attributes.   An immutable (readonly) attribute by definition
-        should not be changed during processing.   During a save
-        all attributes with a key defined as readonly are tested
-        with a method in the Metadata container that keeps track of
-        any Metadata changes.  If a readonly attribute is found to
-        have been changed it will be renamed with the prefix
-        "READONLYERROR_", saved, and an error posted (e.g. if you try
-        to alter site_lat (a readonly attribute) in a workflow when
-        you save the waveform you will find an entry with the key
-        READONERROR_site_lat.)   In the default 'promiscuous' mode
-        all other attributes are blindly saved to the database as
-        name value pairs with no safeties.  In 'cautious' mode we
-        add a type check.  If the actual type of an attribute does not
-        match what the schema expect, this method will try to fix the
-        type error before saving the data.  If the conversion is
-        successful it will be saved with a complaint error posted
-        to elog.  If it fails, the attribute will not be saved, an
-        additional error message will be posted, and the save
-        algorithm continues.  In 'pedantic' mode, in contrast, all
-        type errors are considered to invalidate the data.
-        Similar error messages to that in 'cautious' mode are posted
-        but any type errors will cause the datum passed as arg 0
-        to be killed. The lesson is saves can leave entries that
-        may need to be examined in elog and when really bad will
-        cause the datum to be marked dead after the save.
+        There are some important implementation details related to
+        the points above that are important to understand if you encounter
+        issues using this algorithm.
+        1.  Writing is always atomic.  Saving ensemble data is little more
+            than an enhanced loop over data members.  By "enhanced" we mean
+            two things:  (a)  any ensemble Metadata attributes are copied
+            to the documents saved for each member, and (b) dead data have
+            to be handled differently but the handling is a simple conditional
+            of "if live" with dead data handled the same as atomic bodies.
+        2.  Atomic saves handle four components of the MsPASS data objects
+            differently.   The first thing saved is always the sample data.
+            How that is done depends upon the storage mode and format
+            discussed in more detail below.  The writer then saves the
+            content of the datum's Metadata container returning a copy of
+            the value of the ObjectId of the document saved.   That ObjectID
+            is used as a cross reference for saving the final two fundamentally
+            different components:  (a) any error log entries and (b) object-level
+            history data (optional).
+        3.  As noted above how the sample data is stored is driven by the
+            "storage_mode" argument.  Currently two values are accepted.
+            "gridfs", which is the default, pushes the sample data to a
+            MongoDB managed internal file space the documents refer to with
+            that name.  There are two important caveats about gridfs storage.
+            First, the data saved will use the same file system as that used
+            by the database server.  That can easily cause a file-system full
+            error or a quota error if used naively.   Second, gridfs IO is
+            prone to a serious preformance issue in a parallel workflow as
+            all workers can be shouting at the database server simultaneously
+            filling the network connection and/or overloading the server.
+            For those reasons, "files" should be used for the storage
+            mode for most applications.   It is not the default because
+            storing data in files always requires the user to implement some
+            organizational scheme through the "dir" and "dfile" arguments.
+            There is no one-size-fits-all solution for organizing how a
+            particular project needs to organize the files it produces.
+            Note, however, that one can set storage_mode to "files" and this
+            writer will work.  By default is sets "dir" to the current directory
+            and "dfile" to a random string created with a uuid generator.
+            (For ensembles the default is to write all member data to
+            the file defined explicitly or implicitly by the "dir" and "dfile"
+            arguments.)   An final implementation detail is that if "dir"
+            and "dfile" are left at the default None, the algorithm will
+            attempt to extract the value of "dir" and "dfile" from the
+            Metadata of an atomic datum referenced in the save (i.e. for
+            ensembles each datum will be treated independently.).  That
+            feature allows more complex data organization schemes managed
+            externally from the writer for ensembles.  All of that was
+            designed to make this method as bombproof as possible, but
+            users need to be aware naive usage can create a huge mess.
+            e.g. with "files" and null "dir" and "dfile" saving a million
+            atomic data will create a million files with random names in
+            your current directory.  Good luck cleaning that mess up.
+            Finally, we reiterate that when Earthscope finishes there
+            design work for cloud storage access there will probably be
+            a new storage mode added to support that access.  The "s3"
+            methods in `Database` should be viewed only as prototypes.
+        4.  If any datum has an error log entry it is always saved by
+            this method is a collection called "elog".  That save is not
+            optional as we view all error log entries as significant.
+            Each elog document contains an ObjectId of the wf document
+            with which it is associated.
+        5.  Handling of the bodies of dead data has some complexity.
+            Since v2 of `Database` all dead data are passed through an
+            instance of :py:class:`mspasspy.util.Undertaker`.  By default
+            atomic dead data are passed through the
+            :py:meth:`mspasspy.util.Undertaker.bury` method.
+            If the "cremate" argument is set True the
+            :py:meth:`mspasspy.util.Undertaker.cremate` method will be called.
+            For ensembles the writer calls the
+            :py:meth:`mspasspy.util.Undertaker.bring_out_your_dead`.
+            If cremate is set True the bodies are discarded. Otherwise
+            the `bury` method is called in a loop over all bodies.
+            Note the default `bury` method creates
+            a document for each dead datum in one of two
+            special collections:  (a) data killed by a processing algorithm
+            are saved to the "cemetery" collection, and (b) data killed by
+            a reader are saved to "abortions" (An abortion is a datum
+            that was never successfully constructed - born.)  The documents
+            for the two collections contain the same name-value pairs but
+            we split them because action required by an abortion is
+            very different from a normal kill.   See the User Manual
+            section on "CRUD Operations" for information on this topic.
+        6.  Object-level history is not saved unless the argument
+            "save_history" is set True (default is False).   When enabled
+            the history data (if defined) is saved to a collection called
+            "history".   The document saved, like elog, has the ObjectId of
+            the wf document with which it is associated.  Be aware that there
+            is a signficant added cost to creating a history document entry.
+            Because calling this method is part of the history chain one
+            would want to preserve, an atomic database operation is
+            required for each datum saved.   That is, the algorithm
+            does an update of the wf document with which it it is associated
+            containing the ObjectId of the history document it saved.
+        7.  As noted above saving data with "format" set to anything but
+            the default "binary" or "MSEED" is adventure land.
+            We reiterate saving other formats is a development frontier we
+            hope to come as contributions from users who need writers for a particular
+            format and are intimately familiar with that format's idiosyncracies.
+        8.  The "mode" argument has a number of subtle idiosyncracies
+            that need to be recognized.  In general we recommend always
+            writing data (i.e. calling this method) with the default
+            mode of "promiscuous".  That guarantees you won't mysteriously
+            lose data being saved or abort the workflow when it is finished.
+            In general it is better to use one of the verify methods or the
+            dbverify command line tool to look for problem attributes in
+            any saved documents than try to enforce rules setting
+            mode to "cautious" or "pedantic".   On the other hand, even
+            if running in "promiscuous" mode certain rules are enforced:
+             -  Any aliases defined in the schema are always reset to the
+                key defined for the schema.  e.g. if you used the alias
+                "dt" for the data sample interval this writer will always
+                change it to "delta" (with the standard schema anyway)
+                before saving the document created from that datum.
+             -  All modes enforce a schema constraint for "readonly"
+                attributes.   An immutable (readonly) attribute by definition
+                should not be changed during processing.   During a save
+                all attributes with a key defined as readonly are tested
+                with a method in the Metadata container that keeps track of
+                any Metadata changes.  If a readonly attribute is found to
+                have been changed it will be renamed with the prefix
+                "READONLYERROR_", saved, and an error posted (e.g. if you try
+                to alter site_lat (a readonly attribute) in a workflow when
+                you save the waveform you will find an entry with the key
+                READONERROR_site_lat.)  We emphasize the issue happens if
+                the value associated with such a key was altered after the
+                datum was constructed.  If the attribute does not
+                change it is ERASED and will not appear in the document.
+                The reason for that is this feature exists to handle
+                attributes loaded in normalization.   Be aware this
+                feature can bloat the elog collection if an entire dataset
+                share a problem this algorithm flags as a readonly error.
 
         This method can throw an exception but only for errors in
         usage (i.e. arguments defined incorrectly)
 
-        :param mspass_object: the object you want to save.
-        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries`,
-        class:`mspasspy.ccore.seismic.Seismogram`,
-        class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`, or
-        class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+        :param mspass_object: the seismic object you want to save.
+        :type mspass_object: :class:`mspasspy.ccore.seismic.TimeSeries`,
+          :class:`mspasspy.ccore.seismic.Seismogram`,
+          :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`, or
+          :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
         :param return_data: When True return a (usually edited) copy
         of the data received.   When False, the default, return only
         a requested subset of the attributes in the wf document saved
-        for this datum.
+        for this datum.s
         :param return_list:  list of keys for attributes to extract
-        and set for return python dictionary when return_data is False.
-        Ignored if return_data is True.   Be warned for ensembles the
-        attributes are expected to be ihnt the ensemble Metadata container.
-        Missing attributes will be silentely ignored so an empty dict
-        will be returned if noen of the attributes is this list are defined.
+          and set for return python dictionary when return_data is False.
+          Ignored if return_data is True.   Be warned for ensembles the
+          attributes are expected to be in the ensemble Metadata container.
+          Missing attributes will be silentely ignored so an empty dict
+          will be returned if none of the attributes is this list are defined.
         :param mode: This parameter defines how attributes defined with
           key-value pairs in MongoDB documents are to be handled on reading.
           By "to be handled" we mean how strongly to enforce name and type
@@ -1025,11 +1306,11 @@ class Database(pymongo.database.Database):
           being the default.  See the User's manual for more details on
           the concepts and how to use this option.
         :type mode: :class:`str`
-        :param storage_mode: Must be either "gridfs" or "file.  When set to
+        :param storage_mode: Current must be either "gridfs" or "file.  When set to
           "gridfs" the waveform data are stored internally and managed by
           MongoDB.  If set to "file" the data will be stored in a file system
           with the dir and dfile arguments defining a file name.   The
-          default is "gridfs".
+          default is "gridfs".  See above for more details.
         :type storage_mode: :class:`str`
         :param dir: file directory for storage.  This argument is ignored if
           storage_mode is set to "gridfs".  When storage_mode is "file" it
@@ -1039,16 +1320,26 @@ class Database(pymongo.database.Database):
           path functions to a full path name for storage in the database
           document with the attribute "dir".  As for any io we remind the
           user that you much have write permission in this directory.
-          The writer will also fail if this directory does not already
-          exist.  i.e. we do not attempt to
+          Note if this argument is None (default) and storage_mode is "files"
+          the algorithm will first attempt to extract "dir" from the
+          Metadata of mspass_object.  If that is defined it will be used
+          as the write directory. If it is not defined it will default to
+          the current directory.
         :type dir: :class:`str`
         :param dfile: file name for storage of waveform data.  As with dir
           this parameter is ignored if storage_mode is "gridfs" and is
           required only if storage_mode is "file".   Note that this file
-          name does not have to be unique.  The writer always calls positions
+          name does not have to be unique.  The writer always positions
           the write pointer to the end of the file referenced and sets the
           attribute "foff" to that position. That allows automatic appends to
-          files without concerns about unique names.
+          files without concerns about unique names.  Like the dir argument
+          if this argument is None (default) and storage_mode is "files"
+          the algorithm will first attempt to extract "dfile" from the
+          Metadata of mspass_object.  If that is defined it will be used
+          as the output filename. If it is not defined a uuid generator
+          is used to create a file name with a random string of characters.
+          That usage is never a good idea, but is a feature added to make
+          this method more bombproof.
         :type dfile: :class:`str`
         :param format: the format of the file. This can be one of the
           `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__
@@ -1057,6 +1348,7 @@ class Database(pymongo.database.Database):
           should normally be used for efficiency.  Alternate formats are
           primarily a simple export mechanism.  See the User's manual for
           more details on data export.  Used only for "file" storage mode.
+          A discussion of format caveats can be found above.
         :type format: :class:`str`
         :param overwrite:  If true gridfs data linked to the original
           waveform will be replaced by the sample data from this save.
@@ -1068,17 +1360,7 @@ class Database(pymongo.database.Database):
           set before more extensive processing.  It can only be used when
           storage_mode is set to gridfs.
         :type overwrite:  boolean
-        :param undertaker:   optional class to handle dead data.
-          Currently must be an instance of class:`mspasspy.util.Undertaker.Undertaker`
-          but extensions could abstract this entity.  It is used to
-          handle dead data.   If None (default) an instance is
-          created on each entry to this emthod.   The overhead in that
-          constructor is tiny for the current implementation, but
-          minor speed improvement may be possible passing a global
-          instance.
-        :type undertaker:  currently must be an instance of
-          :class:`mspasspy.util.Undertaker.Undertaker` or None or a TypeError
-          exception will be thrown.
+
         :param exclude_keys: Metadata can often become contaminated with
           attributes that are no longer needed or a mismatch with the data.
           A type example is the bundle algorithm takes three TimeSeries
@@ -1086,7 +1368,7 @@ class Database(pymongo.database.Database):
           can, and usually does, leave things like seed channel names and
           orientation attributes (hang and vang) from one of the components
           as extraneous baggage.   Use this of keys to prevent such attributes
-          from being written to the output documents.  Not if the data being
+          from being written to the output documents.  Note if the data being
           saved lack these keys nothing happens so it is safer, albeit slower,
           to have the list be as large as necessary to eliminate any potential
           debris.
@@ -1102,6 +1384,14 @@ class Database(pymongo.database.Database):
         :param data_tag: a user specified "data_tag" key.  See above and
           User's manual for guidance on how the use of this option.
         :type data_tag: :class:`str`
+        :param cremate:  boolean controlling how dead data are handled.
+          When True a datum marked dead is ignored and the body or a
+          shell of the body (what depends on the return_list value) is
+          returned.  If False (default) the
+          :py:meth:`mspasspy.util.Undertaker.bury` method is called
+          with body as input.  That creates a document for each dead
+          datum either in the "cemetery" or "abortions" collection.
+          See above for more deails.
         :param save_history:   When True the optional history data will
           be saved to the database if it was actually enabled in the workflow.
           If the history container is empty will silently do nothing.
@@ -1127,7 +1417,7 @@ class Database(pymongo.database.Database):
             # data below.
             if isinstance(mspass_object,(TimeSeriesEnsemble, SeismogramEnsemble)):
                 mspass_object, bodies = self.stedronsky.bring_out_your_dead(mspass_object)
-                if len(bodies.member)>0:
+                if not cremate and len(bodies.member)>0:
                     self.stedronsky.bury(bodies)
             # schema isn't needed for handling the dead, but we do need it
             # for creating wf documents
@@ -1204,7 +1494,8 @@ class Database(pymongo.database.Database):
             # to assure there are not values that will cause MongoDB
             # to throw an exception when the tombstone subdocument
             # is written.
-            mspass_object = self.stedronsky.bury(mspass_object,save_history=save_history)
+            if not cremate:
+                mspass_object = self.stedronsky.bury(mspass_object,save_history=save_history)
 
         if return_data:
             return mspass_object
@@ -1239,12 +1530,11 @@ class Database(pymongo.database.Database):
         """
         This method can be used to fix a subset of common database problems
         created during processing that can cause problems if the user tries to
-        read back data saved with such blemishes.   The subset of problems
+        read data saved with such blemishes.   The subset of problems
         are defined as those that are identified by the "dbverify" command
         line tool or it's Database equivalent (the verify method of this class).
-        This method is an alternative to the command line tool dbverify.  Use
-        this method for more surgical fixes that require a query to limit
-        the application of the fix.
+        This method is an alternative to the command line tool dbclean.  Use
+        this method for fixes applied as part of a python script.
 
         :param collection: the collection you would like to clean. If not specified, use the default wf collection
         :type collection: :class:`str`
@@ -1639,7 +1929,8 @@ class Database(pymongo.database.Database):
 
     def _check_xref_key(self, doc, collection, xref_key):
         """
-        This atmoic function checks for a single xref_key in a single document
+        This atomic function checks for a single xref_key in a single document.
+        It used by the verify method.
 
         :param doc:  the wf document, which is a type of dict
         :param collection: the name of collection saving the document.
@@ -1690,7 +1981,8 @@ class Database(pymongo.database.Database):
 
     def _check_undefined_keys(self, doc, collection):
         """
-        This atmoic function checks for if there are undefined required keys in a single document
+        This atmoic function checks for if there are undefined required
+        keys in a single document.  It is used by the verify method.
 
         :param doc:  the wf document, which is a type of dict
         :param collection: the name of collection saving the document.
@@ -2622,6 +2914,12 @@ class Database(pymongo.database.Database):
                this could create a blaat problem with large data sets so
                we do not currently support that type of update.
 
+        A VERY IMPORTANT implicit feature of this method is that
+        if the magic key "gridfs_id" exists the sample data in the
+        input to this method (mspass_object.data) will overwrite any
+        the existing content of gridfs found at the matching id.   This
+        is a somewhat hidden feature so beware.
+
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
@@ -2721,16 +3019,14 @@ class Database(pymongo.database.Database):
                 )
                 mspass_object["storage_mode"] = "gridfs"
                 update_record["storage_mode"] = "gridfs"
-            # This logic depends upon a feature of _save_data_to_gridfs.
-            # if the gridfs_id parameter is defined it does an update
-            # when it is not defined it creates a new gridfs "file". In both
-            # cases the id needed to get the right datum is returned
+            # This logic overwrites the content if the magic key
+            # "gridfs_id" exists in the input.
             if "gridfs_id" in mspass_object:
-                gridfs_id = self._save_data_to_gridfs(
-                    mspass_object, mspass_object["gridfs_id"]
+                gridfs_id = self._save_sample_data_to_gridfs(
+                    mspass_object, overwrite=True,
                 )
             else:
-                gridfs_id = self._save_data_to_gridfs(mspass_object)
+                gridfs_id = self._save_sample_data_to_gridfs(mspass_object)
             mspass_object["gridfs_id"] = gridfs_id
             # There is a possible efficiency gain right here.  Not sure if
             # gridfs_id is altered when the sample data are updated in place.
@@ -3174,7 +3470,12 @@ class Database(pymongo.database.Database):
         disk files the file will be deleted when there are no more references
         in the wf collection for the exact combination of dir and dfile associated
         an atomic deletion.  Error log and history data deletion linked to
-        a datum is optional.
+        a datum is optional.  Note this is an expensive operation as it
+        involves extensive database interactions.   It is best used for
+        surgical solutions.   Deletion of large components of a data set
+        (e.g. all data with a given data_tag value) are best done with
+        custom scripts utilizing file naming conventions and unix shell
+        commands to delete waveform files.
 
 
         :param object_id: the wf object id you want to delete.
@@ -3256,7 +3557,7 @@ class Database(pymongo.database.Database):
         self, mspass_object, exclude_keys, include_undefined=False, collection=None
     ):
         """
-        Master Private Method
+        Master Private Method - DEPRICATED
 
         Reads metadata from a requested collection and loads standard attributes from collection to the data passed as mspass_object.
         The method will only work if mspass_object has the collection_id attribute set to link it to a unique document in source.
@@ -3359,6 +3660,11 @@ class Database(pymongo.database.Database):
         Ensembles will have the source data posted to the ensemble Metadata and not the members.
         This should be the stock way to assemble the generalization of a shot gather.
 
+        This method is DEPRICATED.  It is an slow alternative for normalization
+        and is effectively an alternative to normalization with the
+        Database driven id matcher.   Each call to this function requires
+        a query with find_ond.
+
         :param mspass_object:   data where the metadata is to be loaded
         :type mspass_object:  :class:`mspasspy.ccore.seismic.TimeSeries`,
             :class:`mspasspy.ccore.seismic.Seismogram`,
@@ -3392,6 +3698,11 @@ class Database(pymongo.database.Database):
         or SeismogramEnsemble).
         Ensembles will have the site data posted to the ensemble Metadata and not the members.
         This should be the stock way to assemble the generalization of a common-receiver gather.
+
+        This method is DEPRICATED.  It is an slow alternative for normalization
+        and is effectively an alternative to normalization with the
+        Database driven id matcher.   Each call to this function requires
+        a query with find_ond.
 
         :param mspass_object:   data where the metadata is to be loaded
         :type mspass_object:  :class:`mspasspy.ccore.seismic.TimeSeries`,
@@ -3431,6 +3742,11 @@ class Database(pymongo.database.Database):
         or SeismogramEnsemble).
         Ensembles will have the site data posted to the ensemble Metadata and not the members.
         This should be the stock way to assemble the generalization of a common-receiver gather of TimeSeries data for a common sensor component.
+
+        This method is DEPRICATED.  It is an slow alternative for normalization
+        and is effectively an alternative to normalization with the
+        Database driven id matcher.   Each call to this function requires
+        a query with find_ond.
 
         :param mspass_object:   data where the metadata is to be loaded
         :type mspass_object:  :class:`mspasspy.ccore.seismic.TimeSeries`,
@@ -3718,13 +4034,20 @@ class Database(pymongo.database.Database):
         merge_interpolation_samples=0,
     ):
         """
-        Read the stored data from a file and loads it into a mspasspy object.
-        Sets data live on success.  If dead it failed. Note this
-        function acts like a fortran subroutine and returns nothing.
-        Depends on mspass_object being altered inpalce.   Beware
-        pitfall of resetting mspass_object internal as any changes
-        made that way will not be returned.  Perhaps should return
-        mspass_object to avoid this maintenance issue.
+        Private method to provide generic reader of atomic data from a standard
+        system in any accepted format.
+
+        This method is used by read_data for reading atomic data.   Note
+        ensembles are handled by a different set of private methods
+        for efficiency.   The algorithm is a bit weird as it assumes
+        the skeleton of the datum (mspass_object content received as arg0)
+        has already created the storage arrays from sample data.
+        That is done, in practice, with the C++ api that provides constructors
+        driven by Metadata created from MongoDB documents.   Those constructors
+        allocate and initialize the sample data arrays to zeros.
+
+        Binary (default) format uses a C++ function and fread for loading
+        sample data.  Other formats are passed to obspy's reader.
 
         :param mspass_object: the target object.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -3844,144 +4167,58 @@ class Database(pymongo.database.Database):
                         mspass_object.elog.log_error(alg,message,ErrorSeverity.Invalid)
                         mspass_object.kill()
 
-    @staticmethod
-    def _save_data_to_dfile(
-        mspass_object, dir, dfile, format=None, kill_on_failure=False
-    ):
-        """
-        This is a private method used under the hood to save the sample data
-        of atomic MsPASS data objects.  How the save happens is highly
-        dependent upon the format argument.  When None, which is the
-        default, the data are written to the file specified by dir and dfile
-        using low-level C fwrite calls.  The function used always appends
-        data to eof if the file already exists to allow accumation of data
-        in "gather" files to reduce file name overhead in hpc systems.
-        If format is anything else the function attempts to use one of
-        the obspy formatted writers.  That means the format string must be
-        one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__ of ObsPy reader.
-
-
-        Writing to a file can fail for any number of reasons.   write errors
-        are trapped internally in this function any errors posted to elog of
-        mspass_object.   If the kill_on_failure boolean is set true the
-        function will call the kill method of the data function and the
-        that datum will be marked dead.   That is not normally a good idea
-        if there is any additional work to do on the data so the default
-        for that parameter is false.
-
-        Because we use a stream model for file storage be aware
-        that insertion and deletion in a file are not possible.  If you
-        need lots of editing functionality with files you should use the
-        one file to one object model or (better yet) use gridfs storage.
-
-        :param mspass_object: the target object.
-        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-        :param dir: file directory.
-        :type dir: :class:`str`
-        :param dfile: file name.
-        :type dfile: :class:`str`
-        :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__ of ObsPy reader. By default (``None``), the format will be the binary waveform.
-        :type format: :class:`str`
-        :param kill_on_failure:  When true if an io error occurs the data object's
-          kill method will be invoked.  When false (the default) io errors are
-          logged and left set live.  (Note data already marked dead are return
-          are ignored by this function. )
-        :type kill_on_failure: boolean
-        :return: Position of first data sample (foff) and the size of the saved chunk.
-           If the input is flagged as dead return (-1,0)
-        """
-        if not isinstance(mspass_object, (TimeSeries, Seismogram)):
-            raise TypeError("only TimeSeries and Seismogram are supported")
-        if mspass_object.dead():
-            return -1, 0
-
-        if not format or format == "binary":
-            try:
-                # create directory if not exists
-                dir = os.path.abspath(dir)
-                if not os.path.exists(dir):
-                    os.makedirs(dir)
-                # This function has overloading.  this might not work
-                foff = _fwrite_to_file(mspass_object, dir, dfile)
-            except MsPASSError as merr:
-                mspass_object.elog.log_error(merr)
-                if kill_on_failure:
-                    mspass_object.kill()
-                return 0, 0
-            # we can compute the number of bytes written for this case
-            if isinstance(mspass_object, TimeSeries):
-                nbytes_written = 8 * mspass_object.npts
-            else:
-                # This can only be a Seismogram currently so this is not elif
-                nbytes_written = 24 * mspass_object.npts
-        else:
-            fname = os.path.join(dir, dfile)
-            os.makedirs(os.path.dirname(fname), exist_ok=True)
-            with open(fname, mode="a+b") as fh:
-                foff = fh.seek(0, 2)
-                f_byte = io.BytesIO()
-                if isinstance(mspass_object, TimeSeries):
-                    mspass_object.toTrace().write(f_byte, format=format)
-                elif isinstance(mspass_object, Seismogram):
-                    mspass_object.toStream().write(f_byte, format=format)
-                #FIXME GP:  this does not work and is a dumb algorithm.
-                # call seek to end of file after write and compute nbytes_written
-                f_byte.seek(0)
-                ub = f_byte.read()
-                fh.write(ub)
-                nbytes_written = len(ub)
-        return foff, nbytes_written
-
-    def _save_data_to_gridfs(self, mspass_object, gridfs_id=None):
-        """
-        Save a mspasspy object sample data to MongoDB grid file system. We recommend to use this method
-        for saving a mspasspy object inside MongoDB.
-
-        :param mspass_object: the target object.
-        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-        :param gridfs_id: if the data is already stored and you want to update it, you should provide the object id
-        of the previous data, which will be deleted. A new document will be inserted instead.
-        :type gridfs_id: :class:`bson.ObjectId.ObjectId`.
-        :return inserted gridfs object id.
-        """
-        gfsh = gridfs.GridFS(self)
-        if gridfs_id and gfsh.exists(gridfs_id):
-            gfsh.delete(gridfs_id)
-        if isinstance(mspass_object, Seismogram):
-            ub = bytes(np.array(mspass_object.data).transpose())
-        else:
-            ub = bytes(mspass_object.data)
-        return gfsh.put(ub)
-
     def _read_data_from_gridfs(self, mspass_object, gridfs_id):
         """
-        Read data stored in gridfs and load it into a mspasspy object.
+        Private method used to read sample data from MongoDB's gridfs
+        storage for atomic MsPASS data objects.  Like the
+        comparable "files" reader this method assumes the skeleton of
+        the datum received as mspass_object in arg0 has the array
+        memory storage already constructed and initialized.   This function
+        then simply moves the sample data from gridfs into the data
+        array of mspass_object.   Appropriate behavior for a private
+        method but why this method should not be used externally
+        by anyone but an expert.
 
-        :param mspass_object: the target object.
+        There is a minor sanity check as the method tests for the existence
+        of the (frozen) key "npts" in the Metadata container of mspass_object.
+        It will throw a KeyError if that key-value pair is not defined.
+        It then does a sanity check against the npts attribute of
+        mspass_object.   That safety adds a minor overhead but reduces
+        the odds of a seg fault.
+
+
+        :param mspass_object: skeleton of the data object to load sample
+          data into.   Assumes data array exists and is length consistent
+          with the "npts" Metadata value.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         :param gridfs_id: the object id of the data stored in gridfs.
         :type gridfs_id: :class:`bson.ObjectId.ObjectId`
         """
         gfsh = gridfs.GridFS(self)
         fh = gfsh.get(file_id=gridfs_id)
+        if isinstance(mspass_object,[TimeSeries,Seismogram]):
+            if not mspass_object.is_defined("npts"):
+                raise KeyError("Database._read_data_from_gridfs:  Required key npts is not defined")
+            else:
+                if mspass_object.npts != mspass_object["npts"]:
+                    message = "Database._read_data_from_gridfs: "
+                    message += "Metadata value for npts is {} but datum attribute npts is {}\n".format(mspass_object['npts'],mspass_object.npts)
+                    message += "Illegal inconsistency that should not happen and is a fatal error"
+                    raise ValueError(message)
+            npts = mspass_object.npts
         if isinstance(mspass_object, TimeSeries):
             # fh.seek(16)
             float_array = array("d")
-            if not mspass_object.is_defined("npts"):
-                raise KeyError("npts is not defined")
             float_array.frombytes(fh.read(mspass_object.get("npts") * 8))
             mspass_object.data = DoubleVector(float_array)
         elif isinstance(mspass_object, Seismogram):
-            if not mspass_object.is_defined("npts"):
-                raise KeyError("npts is not defined")
-            npts = mspass_object["npts"]
             np_arr = np.frombuffer(fh.read(npts * 8 * 3))
             file_size = fh.tell()
             if file_size != npts * 8 * 3:
                 # Note we can only detect the cases where given npts is larger than
                 # the number of points in the file
                 emess = (
-                    "Size mismatch in sample data. Number of points in gridfs file = %d but expected %d"
+                    "Database._read_data_from_gridfs: Size mismatch in sample data. Number of points in gridfs file = %d but expected %d"
                     % (file_size / 8, (3 * mspass_object["npts"]))
                 )
                 raise ValueError(emess)
@@ -3991,7 +4228,6 @@ class Database(pymongo.database.Database):
             mspass_object.data = dmatrix(np_arr)
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
-        # this is not a error proof test for validity, but best I can do here
         if mspass_object.npts>0:
             mspass_object.set_live()
         else:
@@ -4327,7 +4563,7 @@ class Database(pymongo.database.Database):
         """
         Parses the list returned by obspy channels attribute
         for a Station object and returns a dict of unique
-        edepth values keyed by loc code.  This algorithm
+        geographic location fields values keyed by loc code.  This algorithm
         would be horribly inefficient for large lists with
         many duplicates, but the assumption here is the list
         will always be small
@@ -4431,6 +4667,11 @@ class Database(pymongo.database.Database):
             return True
 
     def _handle_null_starttime(self, t):
+        """
+        Somewhat trivial standardized private method for handling null
+        (None) starttime values.  Returns UTCDateTime object for 0
+        epoch time to mesh with obspy's times where this method is used.
+        """
         if t == None:
             return UTCDateTime(0.0)
         else:
@@ -4826,6 +5067,10 @@ class Database(pymongo.database.Database):
         for data originating as the SEED format that use net:sta:loc:chan
         as the primary index.
 
+        Note this method may be DEPRICATED in the future as it has been
+        largely superceded by BasicMatcher implementations in the
+        normalize module.
+
         :param net:  network name to match
         :param sta:  station name to match
         :param loc:   optional loc code to made (empty string ok and common)
@@ -4891,6 +5136,10 @@ class Database(pymongo.database.Database):
         is technically option it usually a bad idea to not include
         a time stamp because most stations saved as seed data have
         time variable channel metadata.
+
+        Note this method may be DEPRICATED in the future as it has been
+        largely superceded by BasicMatcher implementations in the
+        normalize module.
 
         :param net:  network name to match
         :param sta:  station name to match
@@ -5382,11 +5631,14 @@ class Database(pymongo.database.Database):
         """
         Tansfer a dataframe into a set of documents, and store them
         in a specified collection. In one_to_one mode every row in the
-        dataframe will be saved into the mongodb, otherwise duplicates
-        would be discarded.
-        The dataframe will first call dropna to eliminate None values stored
-        in it, so that after it is transfered into a document, the memory
-        usage will be reduced.
+        dataframe will be saved in the specified mongodb collection.
+        Otherwise duplicates would be discarded.
+
+        Note we first call the dropna method of DataFrame to eliminate
+        None values to mesh with how MongoDB handles Nulls; not
+        consistent with DataFrame implemenations that mimic relational
+        database tables where nulls are a hole in the table.
+
         :param df: Pandas.Dataframe object, the input to be transfered into mongodb
         documents
         :param collection:  MongoDB collection name to be used to save the
