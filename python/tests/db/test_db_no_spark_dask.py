@@ -262,18 +262,18 @@ with mock.patch.dict(
             gridfs_id = self.db._save_data_to_gridfs(tmp_seis)
             tmp_seis_2 = Seismogram()
             tmp_seis_2.npts = 255
-            self.db._read_sample_data_from_gridfs(tmp_seis_2, gridfs_id)
+            self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
             assert all(
                 a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data)
             )
 
             with pytest.raises(KeyError, match="npts is not defined"):
                 tmp_seis_2.erase("npts")
-                self.db._read_sample_data_from_gridfs(tmp_seis_2, gridfs_id)
+                self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
 
             with pytest.raises(ValueError) as err:
                 tmp_seis_2.npts = 256
-                self.db._read_sample_data_from_gridfs(tmp_seis_2, gridfs_id)
+                self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
                 assert (
                     str(err.value) == "ValueError: Size mismatch in sample data. "
                     "Number of points in gridfs file = 765 but expected 768"
@@ -283,7 +283,7 @@ with mock.patch.dict(
             gridfs_id = self.db._save_data_to_gridfs(tmp_ts)
             tmp_ts_2 = TimeSeries()
             tmp_ts_2.npts = 255
-            self.db._read_sample_data_from_gridfs(tmp_ts_2, gridfs_id)
+            self.db._read_data_from_gridfs(tmp_ts_2, gridfs_id)
             assert np.isclose(tmp_ts.data, tmp_ts_2.data).all()
 
             gfsh = gridfs.GridFS(self.db)
@@ -1129,7 +1129,10 @@ with mock.patch.dict(
 
             res = self.db["channel"].find_one({"_id": promiscuous_ts["channel_id"]})
             for k in chankeylist:
-                k2 = "channel_{}".format(k)
+                if k=="_id":
+                    k2="channel_id"
+                else:
+                    k2 = "channel_{}".format(k)
                 assert promiscuous_ts2[k2]==res[k]
             # TODO:  should handle load_if_defined properly
 
@@ -1139,6 +1142,9 @@ with mock.patch.dict(
             assert promiscuous_ts2["source_depth"] == res["depth"]
             assert promiscuous_ts2["source_time"] == res["time"]
             assert promiscuous_ts2["source_magnitude"] == res["magnitude"]
+            # Necessary to avoid state problems with other tests
+            self.db.drop_collection("cemetery")
+            self.db.drop_collection("abortions")
         def test_save_read_data_seismogram(self):
             """
             This method tests various permutations of read and write
@@ -1473,6 +1479,9 @@ with mock.patch.dict(
             assert promiscuous_seis2["source_depth"] == res["depth"]
             assert promiscuous_seis2["source_time"] == res["time"]
             assert promiscuous_seis2["source_magnitude"] == res["magnitude"]
+            # Necessary to avoid state problems with other tests
+            self.db.drop_collection("cemetery")
+            self.db.drop_collection("abortions")
 
 
         def test_index_mseed_file(self):
@@ -1647,14 +1656,19 @@ with mock.patch.dict(
             assert fixed_cnt == {"npts": 1, "delta": 1}
 
         def test_clean(self, capfd):
-            # clear all the wf collection documents
-            self.db["wf_TimeSeries"].delete_many({})
+            """
+            Collection of several tests of clean method.
+            """
+            # make certain wf_TimeSeries is empty to avoid state problems
+            # from previous tests
+            self.db.drop_collection("wf_TimeSeries")
+
 
             self.db.database_schema.set_default("wf_TimeSeries", "wf")
             ts = copy.deepcopy(self.test_ts)
             logging_helper.info(ts, "1", "deepcopy")
 
-            # invalid parameters
+            # Test 1:  invalid parameters to function
             with pytest.raises(
                 MsPASSError,
                 match="verbose_keys should be a list , but <class 'str'> is requested.",
@@ -1671,7 +1685,10 @@ with mock.patch.dict(
             ):
                 self.db.clean(ObjectId(), required_xref_list="123")
 
-            # erase a required field in TimeSeries
+            # Test 2:
+            # erase a required field in TimeSeries.  In promiscuous mode that 
+            # will work but produce a wf cocument that is invalid
+            # later tests are to handle that problem datum
             ts.erase("npts")
             ts["starttime_shift"] = 1.0
             save_res = self.db.save_data(
@@ -1679,6 +1696,8 @@ with mock.patch.dict(
             )
             assert save_res.live
             assert ts.live
+            # save this for later test
+            bad_datum_id = save_res['_id']
 
             # test nonexist document
             nonexist_id = ObjectId()
@@ -1694,16 +1713,16 @@ with mock.patch.dict(
 
             # test verbose_keys and delete required fields missing document if delete_missing_required is True
             fixes_cnt = self.db.clean(
-                ts["_id"],
+                bad_datum_id,
                 verbose_keys=["delta"],
                 verbose=True,
                 delete_missing_required=True,
             )
             assert len(fixes_cnt) == 0
             # test if it is deleted
-            assert not self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+            assert not self.db["wf_TimeSeries"].find_one({"_id": bad_datum_id})
             assert not self.db["history_object"].find_one(
-                {"wf_TimeSeries_id": ts["_id"]}
+                {"wf_TimeSeries_id": bad_datum_id}
             )
             assert not self.db["elog"].find_one({"wf_TimeSeries_id": ts["_id"]})
             out, err = capfd.readouterr()
@@ -1714,6 +1733,7 @@ with mock.patch.dict(
                 )
             )
 
+            # Test 3:  
             # test check_xref and delete required xref_keys missing document
             ts = copy.deepcopy(self.test_ts)
             logging_helper.info(ts, "1", "deepcopy")
@@ -1723,18 +1743,20 @@ with mock.patch.dict(
                 ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"], return_data=True
             )
             assert save_res.live
+            # The document with this id has the missing site_id value
+            bad_xref_wfid = save_res['_id']
             fixes_cnt = self.db.clean(
-                ts["_id"],
+                bad_xref_wfid,
                 verbose=True,
                 required_xref_list=["site_id"],
                 delete_missing_xref=True,
             )
             assert len(fixes_cnt) == 0
-            assert not self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+            assert not self.db["wf_TimeSeries"].find_one({"_id": bad_xref_wfid})
             assert not self.db["history_object"].find_one(
-                {"wf_TimeSeries_id": ts["_id"]}
+                {"wf_TimeSeries_id": bad_xref_wfid}
             )
-            assert not self.db["elog"].find_one({"wf_TimeSeries_id": ts["_id"]})
+            assert not self.db["elog"].find_one({"wf_TimeSeries_id": bad_xref_wfid})
             out, err = capfd.readouterr()
             assert (
                 out
@@ -1743,7 +1765,7 @@ with mock.patch.dict(
                 )
             )
 
-            # test conversion success
+            # Test 4:  test successful type conversions - not a function option
             ts = copy.deepcopy(self.test_ts)
             logging_helper.info(ts, "1", "deepcopy")
             # npts has type str, should convert to int
@@ -1768,7 +1790,7 @@ with mock.patch.dict(
                 )
             )
 
-            # test conversion fail
+            # Test 5:  test impossible type conversion
             ts = copy.deepcopy(self.test_ts)
             logging_helper.info(ts, "1", "deepcopy")
             # npts has type str, but unable to convert to int
@@ -2449,6 +2471,21 @@ with mock.patch.dict(
             # assert res['starttime'] == time_new
 
         def test_save_ensemble_data(self):
+            """
+            Tests writer for ensembles.   In v1 this was done with 
+            different methods.  From v2 forward the recommended use is 
+            to run with save_data.  These tests were modified to make 
+            that change Sept 2023.  Also cleaned up some internal 
+            state dependencies in earlier version that carried data forward 
+            inside this function in confusing ways that caused maintenance 
+            issues.  
+            
+            Note retained compatibility tests for old api.  If and when 
+            those are completely deprecated those sections will need to be
+            changed.
+            """
+            self.db.drop_collection("wf_TimeSeries")
+            self.db.drop_collection("wf_Seismogram")
             ts1 = copy.deepcopy(self.test_ts)
             ts2 = copy.deepcopy(self.test_ts)
             ts3 = copy.deepcopy(self.test_ts)
@@ -2484,7 +2521,7 @@ with mock.patch.dict(
             )
             assert len(ts_ensemble.member)==2
             # Test atomic read of members just written
-            # Note exclude_objects now deletes exlcuded from member vector
+            # Note exclude_objects now deletes data excluded from member vector
             # so we don't get here without passing the assert immediately above
 
             for i in range(len(ts_ensemble.member)):
@@ -2597,7 +2634,7 @@ with mock.patch.dict(
             # just left it unaltered and didn't save it.
             # I (glp) judged that the wrong behavior
             self.db.database_schema.set_default("wf_Seismogram", "wf")
-            dfile_list = ["test_db_output", "test_db_output"]
+            dfile_list = ["test_db_output_seis", "test_db_output_seis"]
             dir_list = ["python/tests/data/", "python/tests/data/"]
             seis_ensemble = self.db.save_ensemble_data(
                 seis_ensemble,
@@ -2611,15 +2648,15 @@ with mock.patch.dict(
             # Test atomic read of members just written
             # Note exclude_objects now deletes exlcuded from member vector
             # so we don't get here without passing the assert immediately above
-
             for i in range(len(seis_ensemble.member)):
                 res = self.db.read_data(
-                seis_ensemble[i]["_id"],
-                mode="promiscuous",
-                normalize=["site", "source", "channel"],
-            )
-            assert res.live
-            assert np.isclose(seis_ensemble.member[i].data, res.data).all()
+                        seis_ensemble.member[i]["_id"],
+                        mode="promiscuous",
+                        normalize=["site", "source"],
+                        collection="wf_Seismogram",
+                    )
+                assert res.live
+                assert np.isclose(seis_ensemble.member[i].data, res.data).all()
 
             # Repeat same test as immediately above using gridfs storage mode
             # and adding a second history node
@@ -2635,12 +2672,12 @@ with mock.patch.dict(
             )
             # Test atomic read of members just written
             # Note exclude_objects use above is why we add the conditional
-            self.db.database_schema.set_default("wf_TimeSeries", "wf")
+            self.db.database_schema.set_default("wf_Seismogram", "wf")
             for i in range(len(seis_ensemble.member)):
                 res = self.db.read_data(
                     seis_ensemble.member[i]["_id"],
                     mode="promiscuous",
-                    normalize=["site", "source", "channel"],
+                    normalize=["site", "source"],
                 )
             assert res.live
             assert np.isclose(seis_ensemble.member[i].data, res.data).all()
@@ -2659,14 +2696,14 @@ with mock.patch.dict(
             )
             assert seis_ensemble.live
             assert len(seis_ensemble.member)==3
-            self.db.database_schema.set_default("wf_TimeSeries", "wf")
+            self.db.database_schema.set_default("wf_Seismogram", "wf")
             # using atomic reader for now - ensemble reader is tested
             # in test_read_ensemble_data
             for i in range(len(seis_ensemble.member)):
                 res = self.db.read_data(
                     seis_ensemble.member[i]["_id"],
                     mode="promiscuous",
-                    normalize=["site", "source", "channel"],
+                    normalize=["site", "source"],
                 )
             assert res.live
             assert np.isclose(seis_ensemble.member[i].data, res.data).all()
@@ -2685,22 +2722,31 @@ with mock.patch.dict(
                 return_data=True,
             )
             assert len(seis_ensemble.member)==3
-            self.db.database_schema.set_default("wf_TimeSeries", "wf")
+            self.db.database_schema.set_default("wf_Seismogram", "wf")
             # using atomic reader for now - ensemble reader is tested
             # in test_read_ensemble_data
             for i in range(len(seis_ensemble.member)):
                 res = self.db.read_data(
                    seis_ensemble.member[i]["_id"],
                    mode="promiscuous",
-                   normalize=["site", "source", "channel"],
+                   normalize=["site", "source"],
                 )
                 assert res.live
                 assert np.isclose(seis_ensemble.member[i].data, res.data).all()
 
 
         def test_read_ensemble_data(self):
-            # clean wf collection
-            self.db["wf_TimeSeries"].delete_many({})
+            """
+            Test function for reading ensembles.  This file has multiple 
+            tests for different features.  It currently contains 
+            legacy tests of methods that may be depcrecated in the 
+            future when only read_data and read_distributed_data 
+            will be the mspass readers.   Be warned this set of tests
+            will need to be altered when and if the old ensmeble 
+            functions are removed.
+            """
+            self.db.drop_collection("wf_TimeSeries")
+            self.db.drop_collection("wf_Seismogram")
 
             ts1 = copy.deepcopy(self.test_ts)
             ts2 = copy.deepcopy(self.test_ts)
@@ -2713,17 +2759,19 @@ with mock.patch.dict(
             ts_ensemble.member.append(ts2)
             ts_ensemble.member.append(ts3)
             ts_ensemble.set_live()
+            
             self.db.database_schema.set_default("wf_TimeSeries", "wf")
-            self.db.save_ensemble_data(
+            # as a legacy function wrapper for this method sets optional 
+            # return_data True.  
+            ensemble_saved = self.db.save_ensemble_data(
                 ts_ensemble, mode="promiscuous", storage_mode="gridfs"
             )
-            # test with python list
+            # Test legacy reader with cursor
+            # this works because there is only one previous write to 
+            # wf_TimeSeries
+            cursor = self.db.wf_TimeSeries.find({})
             res = self.db.read_ensemble_data(
-                [
-                    ts_ensemble.member[0]["_id"],
-                    ts_ensemble.member[1]["_id"],
-                    ts_ensemble.member[2]["_id"],
-                ],
+                cursor,
                 ensemble_metadata={"key1": "value1", "key2": "value2"},
                 mode="cautious",
                 normalize=["source", "site", "channel"],
@@ -2741,10 +2789,26 @@ with mock.patch.dict(
                 "key2" in ts_ensemble_metadata
                 and ts_ensemble_metadata["key2"] == "value2"
             )
+            # test legacy use of list of ObjectIds.  
+            # That should now generate a TypeError exception we test here
+            with pytest.raises(TypeError,match="for arg0"):
+                res = self.db.read_ensemble_data(
+                    [
+                        ensemble_saved.member[0]["_id"],
+                        ensemble_saved.member[1]["_id"],
+                        ensemble_saved.member[2]["_id"],
+                    ],
+                    ensemble_metadata={"key1": "value1", "key2": "value2"},
+                    mode="cautious",
+                    normalize=["source", "site", "channel"],
+                )
 
-            # test with cursor
+            # test read_data method with cursor which is the read_data signal for ensemble
+            # hence we use read_data not the legacy function
+            # With current implementation this is identical to call 
+            # above with read_ensmble_data
             cursor = self.db["wf_TimeSeries"].find({})
-            res = self.db.read_ensemble_data(
+            res = self.db.read_data(
                 cursor,
                 ensemble_metadata={"key1": "value1", "key2": "value2"},
                 mode="cautious",
@@ -2765,7 +2829,8 @@ with mock.patch.dict(
                 and ts_ensemble_metadata["key2"] == "value2"
             )
 
-            # using seismogram
+            # repeat for Seismogram - these tests are a near copy 
+            # of above for TimeSeries
             seis1 = copy.deepcopy(self.test_seis)
             seis2 = copy.deepcopy(self.test_seis)
             seis3 = copy.deepcopy(self.test_seis)
@@ -2778,22 +2843,24 @@ with mock.patch.dict(
             seis_ensemble.member.append(seis3)
             seis_ensemble.set_live()
             self.db.database_schema.set_default("wf_Seismogram", "wf")
-            self.db.save_ensemble_data(
+            # as a legacy function wrapper for this method sets optional 
+            # return_data True.  
+            ensemble_saved = self.db.save_ensemble_data(
                 seis_ensemble, mode="promiscuous", storage_mode="gridfs"
             )
+            # Test legacy reader with cursor
+            # this works because there is only one previous write to 
+            # wf_TimeSeries
+            cursor = self.db.wf_Seismogram.find({})
             res = self.db.read_ensemble_data(
-                [
-                    seis_ensemble.member[0]["_id"],
-                    seis_ensemble.member[1]["_id"],
-                    seis_ensemble.member[2]["_id"],
-                ],
+                cursor,
                 ensemble_metadata={"key1": "value1", "key2": "value2"},
+                mode="cautious",
+                normalize=["source", "site"],
             )
             assert len(res.member) == 3
             for i in range(3):
-                assert np.isclose(
-                    res.member[i].data, seis_ensemble.member[i].data
-                ).all()
+                assert np.isclose(res.member[i].data, seis_ensemble.member[i].data).all()
             # test ensemble_metadata
             seis_ensemble_metadata = Metadata(res)
             assert (
@@ -2804,6 +2871,47 @@ with mock.patch.dict(
                 "key2" in seis_ensemble_metadata
                 and seis_ensemble_metadata["key2"] == "value2"
             )
+            # test legacy use of list of ObjectIds.  
+            # That should now generate a TypeError exception we test here
+            with pytest.raises(TypeError,match="for arg0"):
+                res = self.db.read_ensemble_data(
+                    [
+                        ensemble_saved.member[0]["_id"],
+                        ensemble_saved.member[1]["_id"],
+                        ensemble_saved.member[2]["_id"],
+                    ],
+                    ensemble_metadata={"key1": "value1", "key2": "value2"},
+                    mode="cautious",
+                    normalize=["source", "site"],
+                )
+
+            # test read_data method with cursor which is the read_data signal for ensemble
+            # hence we use read_data not the legacy function
+            # With current implementation this is identical to call 
+            # above with read_ensmble_data
+            cursor = self.db["wf_Seismogram"].find({})
+            res = self.db.read_data(
+                cursor,
+                ensemble_metadata={"key1": "value1", "key2": "value2"},
+                mode="cautious",
+                normalize=["source", "site"],
+            )
+
+            assert len(res.member) == 3
+            for i in range(3):
+                assert np.isclose(res.member[i].data, seis_ensemble.member[i].data).all()
+            # test ensemble_metadata
+            seis_ensemble_metadata = Metadata(res)
+            assert (
+                "key1" in seis_ensemble_metadata
+                and seis_ensemble_metadata["key1"] == "value1"
+            )
+            assert (
+                "key2" in seis_ensemble_metadata
+                and seis_ensemble_metadata["key2"] == "value2"
+            )
+            
+
 
         def test_get_response(self):
             inv = obspy.read_inventory("python/tests/data/TA.035A.xml")

@@ -281,24 +281,25 @@ class TestDatabase:
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
         ts_ensemble.set_live()
+        ts_ensemble0 = TimeSeriesEnsemble(ts_ensemble)
         dfile = "test_db_output_n"
         dir = "python/tests/datan/"
-        self.db.save_ensemble_data_binary_file(ts_ensemble, dfile=dfile, dir=dir)
+        saved_ensemble = self.db.save_ensemble_data_binary_file(ts_ensemble, dfile=dfile, dir=dir)
         self.db.database_schema.set_default("wf_TimeSeries", "wf")
         res = self.db.read_data(
-            ts_ensemble.member[0]["_id"],
+            saved_ensemble.member[0]["_id"],
             mode="promiscuous",
             normalize=["site", "source", "channel"],
         )
         assert np.isclose(ts_ensemble.member[0].data, res.data).all()
         res = self.db.read_data(
-            ts_ensemble.member[1]["_id"],
+            saved_ensemble.member[1]["_id"],
             mode="promiscuous",
             normalize=["site", "source", "channel"],
         )
         assert np.isclose(ts_ensemble.member[1].data, res.data).all()
         res = self.db.read_data(
-            ts_ensemble.member[2]["_id"],
+            saved_ensemble.member[2]["_id"],
             mode="promiscuous",
             normalize=["site", "source", "channel"],
         )
@@ -316,22 +317,24 @@ class TestDatabase:
         seis_ensemble.member.append(seis2)
         seis_ensemble.member.append(seis3)
         seis_ensemble.set_live()
-        self.db.save_ensemble_data_binary_file(seis_ensemble, dfile=dfile, dir=dir)
+        seis_ensemble0 = SeismogramEnsemble(seis_ensemble)
+        
+        saved_ensemble = self.db.save_ensemble_data_binary_file(seis_ensemble, dfile=dfile, dir=dir)
         self.db.database_schema.set_default("wf_Seismogram", "wf")
         res = self.db.read_data(
-            seis_ensemble.member[2]["_id"],
+            saved_ensemble.member[2]["_id"],
             mode="promiscuous",
             normalize=["site", "source"],
         )
         assert np.isclose(seis_ensemble.member[2].data, res.data).all()
         res = self.db.read_data(
-            seis_ensemble.member[1]["_id"],
+            saved_ensemble.member[1]["_id"],
             mode="promiscuous",
             normalize=["site", "source"],
         )
         assert np.isclose(seis_ensemble.member[1].data, res.data).all()
         res = self.db.read_data(
-            seis_ensemble.member[0]["_id"],
+            saved_ensemble.member[0]["_id"],
             mode="promiscuous",
             normalize=["site", "source"],
         )
@@ -348,69 +351,64 @@ class TestDatabase:
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
         ts_ensemble.set_live()
+        
+        # restore original from copy for next test
+        # write in cautious mode for TimeSeries
+        ts_ensemble=TimeSeriesEnsemble(ts_ensemble0)
         dfile = "test_db_output_n2"
         dir = ""
-        self.db.save_ensemble_data_binary_file(
+        saved_ensemble = self.db.save_ensemble_data_binary_file(
             ts_ensemble, mode="cautious", dfile=dfile, dir=dir
         )
         self.db.database_schema.set_default("wf_TimeSeries", "wf")
         res = self.db.read_data(
-            ts_ensemble.member[0]["_id"],
+            saved_ensemble.member[0]["_id"],
             mode="promiscuous",
             normalize=["site", "source", "channel"],
         )
         assert np.isclose(ts_ensemble.member[0].data, res.data).all()
         res = self.db.read_data(
-            ts_ensemble.member[1]["_id"],
+            saved_ensemble.member[1]["_id"],
             mode="promiscuous",
             normalize=["site", "source", "channel"],
         )
         assert np.isclose(ts_ensemble.member[1].data, res.data).all()
         res = self.db.read_data(
-            ts_ensemble.member[2]["_id"],
+            saved_ensemble.member[2]["_id"],
             mode="promiscuous",
             normalize=["site", "source", "channel"],
         )
         assert np.isclose(ts_ensemble.member[2].data, res.data).all()
 
-        # using seismogram
-        seis1 = copy.deepcopy(self.test_seis)
-        seis2 = copy.deepcopy(self.test_seis)
-        seis3 = copy.deepcopy(self.test_seis)
-        logging_helper.info(seis1, "1", "deepcopy")
-        logging_helper.info(seis2, "1", "deepcopy")
-        logging_helper.info(seis3, "1", "deepcopy")
-        seis_ensemble = SeismogramEnsemble()
-        seis_ensemble.member.append(seis1)
-        seis_ensemble.member.append(seis2)
-        seis_ensemble.member.append(seis3)
-        seis_ensemble.set_live()
-        self.db.save_ensemble_data_binary_file(
+        # similar but use Seismogram and pedantic mode
+        seis_ensemble=SeismogramEnsemble(seis_ensemble0)
+        saved_ensemble =  self.db.save_ensemble_data_binary_file(
             seis_ensemble, mode="pedantic", dfile=dfile, dir=dir
         )
         self.db.database_schema.set_default("wf_Seismogram", "wf")
         res = self.db.read_data(
-            seis_ensemble.member[2]["_id"],
+            saved_ensemble.member[2]["_id"],
             mode="promiscuous",
             normalize=["site", "source"],
         )
         assert np.isclose(seis_ensemble.member[2].data, res.data).all()
         res = self.db.read_data(
-            seis_ensemble.member[1]["_id"],
+            saved_ensemble.member[1]["_id"],
             mode="promiscuous",
             normalize=["site", "source"],
         )
         assert np.isclose(seis_ensemble.member[1].data, res.data).all()
         res = self.db.read_data(
-            seis_ensemble.member[0]["_id"],
+            saved_ensemble.member[0]["_id"],
             mode="promiscuous",
             normalize=["site", "source"],
         )
         assert np.isclose(seis_ensemble.member[0].data, res.data).all()
 
     def test_read_ensemble_data_group(self):
-        # clean wf collection
-        self.db["wf_TimeSeries"].delete_many({})
+        # make sure this collection is empty or this test will fail
+        self.db.drop_collection("wf_TimeSeries")
+
 
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
@@ -426,15 +424,12 @@ class TestDatabase:
         self.db.database_schema.set_default("wf_TimeSeries", "wf")
         dfile = "test_db_output_n"
         dir = "python/tests/datan/"
-        self.db.save_ensemble_data_binary_file(ts_ensemble, dfile=dfile, dir=dir)
+        saved_ensemble = self.db.save_ensemble_data_binary_file(ts_ensemble, dfile=dfile, dir=dir)
 
-        # test with python list
+        # test read with a cursor 
+        cursor = self.db.wf_TimeSeries.find({})
         res = self.db.read_ensemble_data_group(
-            [
-                ts_ensemble.member[0]["_id"],
-                ts_ensemble.member[1]["_id"],
-                ts_ensemble.member[2]["_id"],
-            ],
+            cursor,
             ensemble_metadata={"key1": "value1", "key2": "value2"},
         )
         assert len(res.member) == 3
@@ -448,26 +443,22 @@ class TestDatabase:
         assert (
             "key2" in ts_ensemble_metadata and ts_ensemble_metadata["key2"] == "value2"
         )
+        # test legacy use of list of ObjectIds.  
+        # That should now generate a TypeError exception we test here
+        # this test should be removed when and if that method is deprecated
+        with pytest.raises(TypeError,match="for arg0"):
+            res = self.db.read_ensemble_data(
+                [
+                    saved_ensemble.member[0]["_id"],
+                    saved_ensemble.member[1]["_id"],
+                    saved_ensemble.member[2]["_id"],
+                ],
+                ensemble_metadata={"key1": "value1", "key2": "value2"},
+                mode="cautious",
+                normalize=["source", "site", "channel"],
+            )
 
-        # test with cursor
-        cursor = self.db["wf_TimeSeries"].find({})
-        res = self.db.read_ensemble_data_group(
-            cursor, ensemble_metadata={"key1": "value1", "key2": "value2"}
-        )
-
-        assert len(res.member) == 3
-        for i in range(3):
-            assert np.isclose(res.member[i].data, ts_ensemble.member[i].data).all()
-        # test ensemble_metadata
-        ts_ensemble_metadata = Metadata(res)
-        assert (
-            "key1" in ts_ensemble_metadata and ts_ensemble_metadata["key1"] == "value1"
-        )
-        assert (
-            "key2" in ts_ensemble_metadata and ts_ensemble_metadata["key2"] == "value2"
-        )
-
-        # using seismogram
+        # repeat using seismogram
         seis1 = copy.deepcopy(self.test_seis)
         seis2 = copy.deepcopy(self.test_seis)
         seis3 = copy.deepcopy(self.test_seis)
@@ -480,13 +471,10 @@ class TestDatabase:
         seis_ensemble.member.append(seis3)
         seis_ensemble.set_live()
         self.db.database_schema.set_default("wf_Seismogram", "wf")
-        self.db.save_ensemble_data_binary_file(seis_ensemble, dfile=dfile, dir=dir)
+        saved_ensemble = self.db.save_ensemble_data_binary_file(seis_ensemble, dfile=dfile, dir=dir)
+        cursor = self.db.wf_Seismogram.find({})
         res = self.db.read_ensemble_data_group(
-            [
-                seis_ensemble.member[0]["_id"],
-                seis_ensemble.member[1]["_id"],
-                seis_ensemble.member[2]["_id"],
-            ],
+            cursor,
             ensemble_metadata={"key1": "value1", "key2": "value2"},
         )
         assert len(res.member) == 3
@@ -502,22 +490,21 @@ class TestDatabase:
             "key2" in seis_ensemble_metadata
             and seis_ensemble_metadata["key2"] == "value2"
         )
-
-        # not support miniseed or other formats
-        dir = "python/tests/data/"
-        dfile = "3channels.mseed"
-        fname = os.path.join(dir, dfile)
-        self.db.index_mseed_file(fname, collection="wf_miniseed")
-        assert self.db["wf_miniseed"].count_documents({}) == 3
-
-        cursor = self.db.wf_miniseed.find({})
-        pattern = r"read_ensemble_data_group\(\) only support reading from binary files, please use read_ensemble_data\(\) for other formats"
-        with pytest.raises(MsPASSError, match=pattern):
-            ensemble = self.db.read_ensemble_data_group(
-                cursor, collection="wf_miniseed"
+        # test legacy use of list of ObjectIds.  
+        # That should now generate a TypeError exception we test here
+        # this test should be removed when and if that method is deprecated
+        with pytest.raises(TypeError,match="for arg0"):
+            res = self.db.read_ensemble_data(
+                [
+                    saved_ensemble.member[0]["_id"],
+                    saved_ensemble.member[1]["_id"],
+                    saved_ensemble.member[2]["_id"],
+                ],
+                ensemble_metadata={"key1": "value1", "key2": "value2"},
+                mode="cautious",
+                normalize=["source", "site", "channel"],
             )
 
-        self.db.wf_miniseed.delete_many({})
 
     def mock_urlopen(*args):
         response = Mock()
