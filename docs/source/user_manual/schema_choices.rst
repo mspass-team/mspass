@@ -32,8 +32,10 @@ For the case with a yes answer there are two options.   For most
 application the standard `mspass` schema should be sufficient.   It provides
 base functionality for source and receiver metadata.   It also defines
 the `wf_miniseed` collection that is essential when the processing
-sequence uses miniseed data as the parent data.  If that has issues
-for you look at the `data/yaml` directory for the mspass source code
+sequence uses miniseed data as the parent data.  If the standard schema does not
+work for you, look at the `data/yaml` directory for the mspass source code
 tree for alternatives you may find there.   If none of those work for you
 it is relatively easy to extend any of the existing schema files.
-See related sections in this User's Manual for guidance.
+See related sections in this User's Manual for guidance and the docstring
+for the class :py:class:`mspasspy.db.schema.DatabaseSchema` and
+:py:class:`mspasspy.db.schema.MetadataSchema`.

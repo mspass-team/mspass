@@ -22,7 +22,7 @@ discussed in common tutorials found by searching with the keywords
 #. Inserting simple print statements to display the value of suspected variables.
 #. Inserting matplotlib graphics to visualize data at an intermediate stage of
    processing.
-#. If you have a box that throws a mysterious that is not self-explanatory
+#. If you have a box that throws a mysterious exception that is not self-explanatory
    the `%debug` magic command can be useful.   After the box with the
    exception insert a code box, add the magic command, and execute push
    the run button for the new cell.
@@ -62,7 +62,7 @@ Because MsPASS uses python as the job control language, developing
 a workflow differs little from programming.   Advanced users may decide
 they need to add features not in the framework that are too extensive
 to implement as code blocks in the jupyter format.   Alternatively,
-python is has a wide range of open-source toolkits that you may find the
+python has a wide range of open-source toolkits that you may find the
 need to add to facilitate your custom research code.   Here we provide
 suggestions on basic strategies.
 
@@ -75,7 +75,8 @@ following:
 #.  Install an IDE of your choice.
     If you are doing extensive python development you are likely already
     familiar with one of the standard Integrated Development Environments
-    and `pycharm <https://www.jetbrains.com/pycharm/>`__, but there are
+    like `pycharm <https://www.jetbrains.com/pycharm/>`__ or
+    `spyder<https://www.spyder-ide.org/>`__, but there are
     a number of others.   IDEs dramatically improve most people's ability
     to test and debug python applications compared to a simple editor
     and pdb.   If you aren't already using one, choose one and use it.
@@ -95,11 +96,13 @@ following:
     a map or reduce operator.
 #.  Design a local test of your application that can be tested in serial
     form on a small, test data set.  Move to a massive HPC or cloud system
-    only when needed and you are confident your application is in as well
+    only when needed and you are confident your application is as well
     tested as realistically possible
 #.  Here we assume the tool you are developing can be placed in one or
-    files that can serve as a standard python module; meaning something
-    you can "import" with the right path to the file.
+    more files that can serve as a standard python module; meaning something
+    you can "import" with the right path to the file.  If you don't know how
+    to build a python module file there are huge numbers of internet
+    resources easily found with a web search.
 #.  To test a python function with the mspass container, copy your python
     code to a directory you mount with the appropriate docker or singularity run
     incantation.  When the container is running launch a terminal window with
@@ -119,4 +122,4 @@ following:
     adds your software as an extension of the mspass container.  The docker
     documentation and the examples in the top level directory for the MsPASS
     source code tree should get you started.  It is beyond the scope of this
-    document to give details of that process. 
+    document to give details of that process.
