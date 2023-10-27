@@ -52,6 +52,7 @@ package.
    user_manual/normalization
    user_manual/memory_management
    user_manual/io
+   user_manual/continuous_data
    user_manual/adapting_algorithms
    user_manual/schema_choices
    user_manual/development_strategies
