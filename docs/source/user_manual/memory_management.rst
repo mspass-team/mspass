@@ -41,7 +41,7 @@ DAGs, tasks, and the map-reduce model of processing
 To understand the challenge a scheduler faces in processing a workflow,
 and memory management we need to digress a bit and review the way a scheduler
 operates.
-Dask and spark both abstract processing as sequence of "tasks".
+Dask and spark both abstract processing as a sequence of "tasks".
 A "task" in this context is more-or-less the operation defined in
 a particular call to a "map" or "reduce" operator.
 (If you are unfamiliar with this concept see section :ref:`parallel_processing`
@@ -201,16 +201,39 @@ that are worth mentioning:
    was written.  It matters because optimal performance can be achieved
    by defining sufficient worker threads to do computing as fast as possible,
    but defining too many workers can create unintentional memory bloat issues.
-   The default, however, is clear.  For both dask and spark each worker container
+   There are also more subtle issues with threading related to the python GIL
+   (Global Interpreter Lock).   Pure python function work badly with worker
+   threads because each thread shares a common GIL.
+   The defaults, however, are clear.  For dask each worker container
    (running in a node by itself) will use a thread pool with the number of
    worker threads equal to the number of CPUs assigned to the container.
-   That is normally the number of cores on that physical node.
+   That is normally the number of cores on that physical node.  Pyspark,
+   in contrast, seems to always use one process per worker and default
+   is less subject to the GIL locking problem.
 -  Both dask and spark have tunable features for memory management and the
    way scheduling is handled.   In dask they are optional arguments to the
    constructor for the dask client object.   For spark it is defined in
    the "context".   See the documentation for the appropriate scheduler
    if you need to do heavy performance tuning.
-
+-  An important parameter for memory management we have not been able to
+   ascertain from the documentation or real-time monitoring of jobs is how
+   much dask or spark buffer a pipeline.   The animation above assumes the simplest
+   case to understand where the answer is one.
+   That is, each pipeline processes one thing at a time.
+   i.e. we read one datum, process it through the chain functions in the
+   map operators, and then save the result.  That is an oversimplification.
+   Both schedulers handle some fraction (or all)  of a partition as the
+   chunk of data moving through the pipeline.  That makes actual memory use
+   difficult to predict with much precision.   The formulas we suggest
+   below are best thought of as upper bounds.   That is, the largest memory
+   use will happen if an entire partition is moved through the pipeline
+   sequentially.   That is the opposite approach to the animation above.
+   That is, done by partition all the data from each partition will first
+   be read into memory, that partition will be run through the processing
+   pipelines, and then saved.   Real operation seems to actually be
+   between these extremes with some fraction of each partition being
+   at different stages in the pipeline as data move through the
+   processing chain.
 
 Memory Complexities
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -229,9 +252,12 @@ something impossible, like unintentionally asking the system to fit an
 entire data set in cluster memory, we have seen them fail and abort.
 Even worse is that when prototyping a workflow on a desktop outside
 of the containerized environement we have seen
-had dask crash the system by overwhelming memory.   How to avoid this
+dask crash the system by overwhelming memory.
+(Note this never seems to happen running in a container which is
+a type example of why containers are the norm for cloud systems.)
+How to avoid this
 in MsPASS is a work in progress, but is a possibility all users should be
-aware of when working on huge data sets.  We think the crash problems have been eliminated
+aware of when working on huge data sets.  We think the worst problems have been eliminated
 by fixing an issue with earlier version of the C++ code that was
 not properly set up to tell dask, at least, how much memory was being
 consumed.  All memory management depends on data objects being
@@ -260,6 +286,11 @@ as warnings for desktop use:
    If your job aborts with a memory fault, first try closing every other
    application and running the job again with the system memory monitor
    tool running simultaneously.
+-  Running MsPASS under docker with normal memory parameters should never
+   actually crash your system.   The reason is docker by default will only
+   allow the container to utilize some fraction of system memory.
+   Memory allocation failures are then relative to container size not
+   system memory size.
 
 In working with very large data sets there is the added constraint of
 what file systems are available to store the starting waveform data,
@@ -298,7 +329,7 @@ like python and java dynamic allocation is implicit.   For instance,
 in python every time a new symbol is introduced and set to a "value"
 an object constructor is called that allocates the space for the data
 the object requires.   A problem that happens
-in MsPASS is that it uses a mixed language
+in MsPASS is that we used a mixed language
 solution for the framework.   Part of that is implicit in assembling
 most python applications from open-source components.  A large fraction
 of python packages use numpy or scipy for which most of the code base is
@@ -411,11 +442,13 @@ will call :math:`N_c` for number of copies, of the input object size.   i.e. as
 data flows through the pipeline only 2 or 3 copies are held in memory at the
 same time.   However, dask, at least, seems to try to push
 :math:`N_{threads}` objects through the pipeline simultaneously assigning
-one thread per pipeline.  Spark probably does something similar but we have
-no direct experience to confirm or deny that statement.  That means that
-the multiplier is at most about 2.   Actual usage can be dynamic if the
+one thread per pipeline.  Pyspark seems to do the same thing
+but uses separate processes, by default, for each worker.  That means that
+the multiplier is at least about 2. Actual usage can be dynamic if the
 size of the objects in the pipeline are variable from the very common
-use of one of the time windowing functions.
+use of one of the time windowing functions.    In our experience workflows
+with variable sized objects have rapidly fluctuating memory use as
+data assigned to different workers moves through the pipeline.
 
 If we assume
 that model characterizes the memory use of a workflow it is useful
@@ -440,12 +473,15 @@ workflow implemented by a pipeline with :math:`N_{threads}`
 working on blocks of data with size defined by :math:`S_d N_{partitions}`.
 If the ratio is large
 spilling is unlikely.   When the ratio is less than one spilling is
-guaranteed to be an issue.  In the worst case, a job may fail completely with a memory
+likely.  In the worst case, a job may fail completely with a memory
 fault when :math:`K_c` is small.  As stated repeatedly in this section
 this issue is a work in progress at the time of this writing, but
 from our experience for a typical work flow you should aim to tune the
 workflow to have :math:`K_c` be of the order of 2 or more to avoid
-spilling.
+spilling.  Workflows with highly variable memory requirements within
+a pipeline (e.g. anytime a smaller waveform segment is cut from
+larger ones.) may allow smaller values of :math:`K_c`, particularly if
+the initial read is the throttle on throughput. 
 
 The main way to control :math:`K_c` is to set :math:`N_{partitions}`
 when you create a bag/RDD.   In MsPASS that is normally set by
