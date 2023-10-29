@@ -436,6 +436,8 @@ class Undertaker:
                 # mechanism.
                 if bury:
                     self.bury(d)
+        if len(newens.member)>0:
+            newens.set_live()
         return [newens, bodies]
 
     def mummify(self,mspass_object,post_elog=True,post_history=False):
