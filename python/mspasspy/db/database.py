@@ -3020,21 +3020,22 @@ class Database(pymongo.database.Database):
                 mspass_object["storage_mode"] = "gridfs"
                 update_record["storage_mode"] = "gridfs"
             # This logic overwrites the content if the magic key
-            # "gridfs_id" exists in the input.
+            # "gridfs_id" exists in the input. In both cases gridfs_id is set
+            # in returned 
             if "gridfs_id" in mspass_object:
-                gridfs_id = self._save_sample_data_to_gridfs(
+                mspass_object = self._save_sample_data_to_gridfs(
                     mspass_object, overwrite=True,
                 )
             else:
-                gridfs_id = self._save_sample_data_to_gridfs(mspass_object)
-            mspass_object["gridfs_id"] = gridfs_id
+                mspass_object = self._save_sample_data_to_gridfs(mspass_object,overwrite=False)
+            
             # There is a possible efficiency gain right here.  Not sure if
             # gridfs_id is altered when the sample data are updated in place.
-            # if we can be sure the returned gridfs_id is the same as the
+            # if we can be sure the returned gridfs_id is the same as theresult
             # input in that case, we would omit gridfs_id from the update
             # record and most data would not require the final update
             # transaction below
-            update_record["gridfs_id"] = gridfs_id
+            update_record["gridfs_id"] = mspass_object["gridfs_id"]
             # should define wf_collection here because if the mspass_object is dead
             if collection:
                 wf_collection_name = collection
@@ -4082,7 +4083,7 @@ class Database(pymongo.database.Database):
                 except MsPASSError as merr:
                     message = "Database._read_data_from_dfile:  "
                     message += "C++ function _fread_from_file failed while reading TimeSeries sample data from file={}".format(dfile)
-                    raise MsPASSError(message.ErrorSeverity.Fatal) from merr
+                    raise MsPASSError(message,ErrorSeverity.Fatal) from merr
             else:
                 # We can only get here if this is a Seismogram
                 try:
@@ -4196,7 +4197,7 @@ class Database(pymongo.database.Database):
         """
         gfsh = gridfs.GridFS(self)
         fh = gfsh.get(file_id=gridfs_id)
-        if isinstance(mspass_object,[TimeSeries,Seismogram]):
+        if isinstance(mspass_object,(TimeSeries,Seismogram)):
             if not mspass_object.is_defined("npts"):
                 raise KeyError("Database._read_data_from_gridfs:  Required key npts is not defined")
             else:
@@ -6233,7 +6234,7 @@ class Database(pymongo.database.Database):
 
     def _save_sample_data_to_gridfs(self,
         mspass_object,
-        overwrite,
+        overwrite=False,
     ):
         """
         Saves the sample data array for a mspass seismic data object using
@@ -6258,7 +6259,10 @@ class Database(pymongo.database.Database):
         with a matching id for the attribute "gridfs_id", the existing datum
         will be deleted before the new data is saved.  When False a new
         set of documents will be created to hold the data in the gridfs
-        system.
+        system.  Default is False.
+        
+        :return: edited version of input (mspass_object).  Return changed
+          only by adding metadata attributes "storage_mode" and "gridfs_id"
         """
         if mspass_object.dead():
             return mspass_object
