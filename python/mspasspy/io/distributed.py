@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 import json
+import copy
+import pickle
 
 
 from mspasspy.db.database import (Database,
@@ -19,15 +21,17 @@ from mspasspy.ccore.seismic import (
     SeismogramEnsemble,
 )
 from mspasspy.ccore.utility import (
+    AtomicType,
+    Metadata,
     MsPASSError,
     ErrorLogger,
     ErrorSeverity,
+    ProcessingHistory,
 )
 
+import dask
+import pyspark
 
-import dask.bag as daskbag
-from dask.dataframe.core import DataFrame as daskDF
-from pyspark.sql.dataframe import DataFrame as sparkDF
 
 def read_ensemble_parallel(query,
                            db,
@@ -119,6 +123,7 @@ def read_distributed_data(
     sort_clause=None,
     container_merge_function=post2metadata,
     container_to_merge=None,
+    ensemble_metadata_list=None,
     aws_access_key_id=None,
     aws_secret_access_key=None,
 ):
@@ -465,11 +470,11 @@ def read_distributed_data(
             # TODO - conflicting examples of the type of this clause
             # may have a hidden bug in TimeIntervalReader as it has usage
             # differnt from this restricteion
-            if not isinstance(sort_clause,[list,str])
+            if not isinstance(sort_clause,[list,str]):
                 message += "sort_clause argument is invalid\n"
                 message += "Must be either a list or a single string"
                 raise TypeError(message)
-            if isinstance(sort_clause,list)
+            if isinstance(sort_clause,list):
                 for x in sort_clause:
                     if not isinstance(x,dict):
                         message += "sort_clause value = " + str(sort_clause)
@@ -485,7 +490,11 @@ def read_distributed_data(
         ensemble_mode = False
         dataframe_input = False
         db = data
-    elif isinstance(data,(pd.Dataframe, sparkDF, daskDF)):
+    elif isinstance(data,
+                    (pd.DataFrame, 
+                     pyspark.sql.dataframe.DataFrame, 
+                     dask.dataframe.core.DataFrame),
+                    ):
         ensemble_mode = False
         dataframe_input = True
         if isinstance(db,Database):
@@ -535,8 +544,8 @@ def read_distributed_data(
                                 )
 
         else:
-            plist = daskbag.from_sequence(data, npartitions=npartitions)
-            plist = daskbag.map(read_ensemble_parallel,
+            plist = dask.bag.from_sequence(data, npartitions=npartitions)
+            plist = dask.bag.map(read_ensemble_parallel,
                     db,
                     collection=collection,
                     mode=mode,
@@ -553,7 +562,7 @@ def read_distributed_data(
         # Logic here gets a bit complex to handle the multiple inputs
         # possible for atomic data.  That is, multiple dataframe
         # implementations and a direct database reading mechanism.
-        # The database instance is assumed to converted to a bag of docs
+        # The database instance is assumed to converted to a bag/rdd of docs
         # above.  We use a set of internal variables to control the
         # input block used.
         # TODO:  clean up symbol - plist is an awful name
@@ -563,15 +572,26 @@ def read_distributed_data(
                     data.to_dict("records"), numSlices=npartitions
                 )
             else:
-                plist = data.to_bag()
+                # Seems we ahve to convert a pandas df to a dask 
+                # df to have access to the "to_bag" method of dask 
+                # DataFrame.   It may be better to write a small 
+                # converter run with a map operator row by row
+                if isinstance(data, pd.DataFrame):
+                    data = dask.dataframe.from_pandas(data,npartitions=npartitions)
+                # format arg s essential as default is tuple
+                plist = data.to_bag(format="dict")
         else:
             # logic above should guarantee data is a Database
             # object that can be queried and used to generate the bag/rdd
             # needed to read data in parallel immediately after this block
             if query:
-                cursor=data[collection].find(query)
+                fullquery=query
             else:
-                cursor=data[collection].find({})
+                fullquery=dict()
+            if data_tag:
+                fullquery['data_tag'] = data_tag
+            cursor = data[collection].find(fullquery)
+ 
             if scratchfile:
                 # here we write the documents all to a scratch file in
                 # json and immediately read them back to create a bag or RDD
@@ -588,7 +608,7 @@ def read_distributed_data(
                     # this section is broken until I (glp) can get help
                     #plist = plist.map(to_dict,"records")
                 else:
-                    plist=daskbag.read_text(scratchfile).map(json.loads)
+                    plist=dask.bag.read_text(scratchfile).map(json.loads)
                 # Intentionally omit error handler here.  Assume
                 # system will throw an error if file open files or write files
                 # that will be sufficient for user to understand the problem.
@@ -598,7 +618,10 @@ def read_distributed_data(
                 doclist=[]
                 for doc in cursor:
                     doclist.append(doc)
-                plist = daskbag.from_sequence(doclist)
+                if format == "spark":
+                    plist=foo
+                else:
+                    plist = dask.bag.from_sequence(doclist)
                 del doclist
 
         # Earlier logic make list a bag/rdd of docs - above converts dataframe to same
@@ -615,6 +638,10 @@ def read_distributed_data(
                                 )
                             )
         else:
+            # DEBUG
+            doclist=plist.compute()
+            for doc in doclist:
+                print(doc)
             plist = plist.map(
                 db.read_data,
                 collection=collection,
@@ -631,7 +658,7 @@ def read_distributed_data(
         if format =="spark":
             plist = plist.zip(container_to_merge).map(lambda x: container_merge_function(x[0],x[1]))
         else:
-            plist = daskbag.map(container_merge_function,plist,container_to_merge)
+            plist = dask.bag.map(container_merge_function,plist,container_to_merge)
 
     return plist
 
@@ -699,7 +726,9 @@ def _save_ensemble_wfdocs(
         exclude_keys,
         mode,
         undertaker,
-        cremate=False):
+        cremate=False,
+        data_tag=None,
+        ):
     """
     Equivalent of _save_wfdocs for ensembles.   It is mostly a loop over
     the member data of an input ensemble.  The only difference is the
@@ -719,6 +748,8 @@ def _save_ensemble_wfdocs(
     # them so we just use md2doc
     for d in ensemble_data.member:
         doc, aok, elog = md2doc(d,save_schema=save_schema,exclude_keys=exclude_keys,mode=mode)
+        if data_tag:
+            doc["data_tag"] = data_tag
         doclist.append(doc)
     # weird trick to get waveform collection name - borrowed from
     # :class:`mspasspy.db.Database` save_data method code
@@ -736,7 +767,9 @@ def _extract_wfdoc(
         post_elog=True,
         elog_key="error_log",
         post_history=False,
-        history_key="history_data"):
+        history_key="history_data",
+        data_tag=None,
+        ):
     """
     Wrapper for md2doc to handle posting of error log messages that
     can be returned by md2doc.  It should function correctly with live or dead
@@ -765,12 +798,15 @@ def _extract_wfdoc(
         if not mspass_object.is_empty():
             doc = history2doc(mspass_object)
             doc[history_key] = doc
+    if data_tag:
+        doc["data_tag"] = data_tag
     return doc
 
+#TODO:   update docstring
 def write_distributed_data(
     data,
     db,
-    save_schema,
+    data_are_atomic=True,
     mode="promiscuous",
     storage_mode="gridfs",
     format=None,
@@ -802,16 +838,10 @@ def write_distributed_data(
     container used as input to the save.
 
 
-    :param data: pallel container of data to be written
+    :param data: parallel container of data to be written
     :type data: :class:`dask.bag.Bag` or :class:`pyspark.RDD`.
     :param db: the database from which the data are to be written.
     :type db: :class:`mspasspy.db.database.Database`.
-    :param mspass_object: the MsPASS data object you want to save.
-    :type mspass_object: one of defined MsPASS data objects:
-       :class:`mspasspy.ccore.seismic.TimeSeries`,
-       :class:`mspasspy.ccore.seismic.Seismogram`,
-       :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`, or
-       :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
     :param mode: This parameter defines how attributes defined with
         key-value pairs in MongoDB documents are to be handled for writes.
         By "to be handled" we mean how strongly to enforce name and type
@@ -824,16 +854,19 @@ def write_distributed_data(
         "gridfs" the waveform data are stored internally and managed by
         MongoDB.  If set to "file" the data will be stored in a file system
         with the dir and dfile arguments defining a file name.   The
-        default is "gridfs".
+        default is "gridfs".  Note when using files dir and dfile should 
+        be defined in the metadata container of each object.  Note 
+        for ensembles that can be the ensmeble container and then all 
+        data from each ensemble will be placed in the same file
     :type storage_mode: :class:`str`
-    :param format: the format of the file. This can be one of the
+    :param file_format: the format of the file. This can be one of the
         `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__
         of ObsPy writer. The default the python None which the method
         assumes means to store the data in its raw binary form.  The default
         should normally be used for efficiency.  Alternate formats are
         primarily a simple export mechanism.  See the User's manual for
         more details on data export.  Used only for "file" storage mode.
-    :type format: :class:`str`
+    :type file_format: :class:`str`
     :param overwrite:  If true gridfs data linked to the original
         waveform will be replaced by the sample data from this save.
         Default is false, and should be the normal use.  This option
@@ -878,33 +911,26 @@ def write_distributed_data(
         message = "write_distributed_data:  Illegal value of mode={}\n".format(mode)
         message += "Must be one one of the following:  promiscuous, cautious, or pedantic"
         raise MsPASSError(message,ErrorSeverity.Fatal)
-    # This uses extracts the first member of the input container and
-    # interogates its type to establish the collection and schema to use.
-    testval = data.map(lambda x : x).take(1)
-    # take method always returns a list so we need to subscript testval
-    # Note tests show the above does not alter the data container and
-    # is more or less a read operation of the first element
-
-    if isinstance(testval[0], (TimeSeries, TimeSeriesEnsemble)):
+    # This use of the collection name to establish the schema is 
+    # a bit fragile as it depends upon the mspass schema naming 
+    # convention.  Once tried using take(1) and probing the content of 
+    # the container but that has bad memory consequences at least for pyspark
+    if collection is None or collection=="wf_TimeSeries":
         save_schema = db.metadata_schema.TimeSeries
-    elif isinstance(testval[0], (Seismogram, SeismogramEnsemble)):
+    elif collection=="wf_Seismogram":
         save_schema = db.metadata_schema.Seismogram
     else:
-        message = "parallel container appears to have illegal type={}\n".format(str(type(testval[0])))
-        message += "Must be a MsPASS seismic data object.   Cannot proceed"
-        raise TypeError(message)
-    if isinstance(testval[0],(TimeSeries,Seismogram)):
-        data_are_atomic = True
-    else:
-        data_are_atomic = False
-     # release this memory - testval could be big for some ensembles
-    del testval
+        message = "write_distributed_data:   illegal value of argument collection={}\n".format(collection)
+        message += "Currently must be either wf_TimeSeries, wf_Seismogram, or default that implies wf_TimeSeries"
+        raise ValueError(message)
 
 
     stedronsky=Undertaker(db)
     # Note although this is a database method it will not reference
     # db at all if writing to files.  gridfs, of course, always requries
-    # the database to be defined
+    # the database to be defined.  Assumes if writing to files that 
+    # dir and dfile are defined for each datum.  If not default will 
+    # not fail but will generate a lot of weird file names with uuid generator
     if format == "spark":
         data = data.map(lambda d : db._save_sample_data(
                     d,
@@ -935,9 +961,10 @@ def write_distributed_data(
                             mode,
                             post_elog=post_elog,
                             post_history=post_history,
+                            data_tag=data_tag,
                             )
                 )
-            data = data.map_partition(lambda d : _partioned_save_wfdoc(
+            data = data.map_partitions(lambda d : _partioned_save_wfdoc(
                             d,
                             db,
                             collection=collection,
@@ -950,7 +977,10 @@ def write_distributed_data(
                             save_schema,
                             exclude_keys,
                             mode,
-                            cremate=cremate)
+                            cremate=cremate,
+                            data_tag=data_tag,
+                            )
+                            
                 )
         data = data.collect()
     else:
@@ -971,10 +1001,23 @@ def write_distributed_data(
             data = data.map(stedronsky.mummify,post_elog=False,post_history=False)
 
         if data_are_atomic:
-            data = data.map(_extract_wfdoc,save_schema,exclude_keys,mode,post_elog=post_elog,post_history=post_history)
-            data = data.map_partition(_partioned_save_wfdoc,db,collection=collection)
+            data = data.map(_extract_wfdoc,
+                            save_schema,exclude_keys,
+                            mode,
+                            post_elog=post_elog,
+                            post_history=post_history,
+                            data_tag=data_tag,
+                            )
+            data = data.map_partitions(_partioned_save_wfdoc,db,collection=collection)
         else:
-            data = data.map(_save_ensemble_wfdocs,db,save_schema,exclude_keys,mode,cremate=cremate)
+            data = data.map(_save_ensemble_wfdocs,
+                            db,
+                            save_schema,
+                            exclude_keys,
+                            mode,
+                            cremate=cremate,
+                            data_tag=data_tag,
+                            )
         data = data.compute()
 
     return data
