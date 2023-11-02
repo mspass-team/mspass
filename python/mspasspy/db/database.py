@@ -786,7 +786,7 @@ class Database(pymongo.database.Database):
         if isinstance(id_doc_or_cursor,dict):
             object_doc = id_doc_or_cursor
             if data_tag:
-                if data_tag not in object_doc or object_doc["data_tag"] != data_tag:
+                if "data_tag" not in object_doc or object_doc["data_tag"] != data_tag:
                     if object_type is TimeSeries:
                         return TimeSeries()
                     else:
@@ -7597,7 +7597,7 @@ def history2doc(proc_history,
         doc["job_id"] = job_id
     return doc
 
-def doc2md(doc, database_schema, metadata_schema, wfcol, exclude_keys, mode="promiscuous"):
+def doc2md(doc, database_schema, metadata_schema, wfcol, exclude_keys=None, mode="promiscuous"):
     """
     This function is more or less the inverse of md2doc.   md2doc is
     needed by writers to convert Metadata to a python dict for saving
@@ -7665,17 +7665,19 @@ def doc2md(doc, database_schema, metadata_schema, wfcol, exclude_keys, mode="pro
     elog = ErrorLogger()
     if mode == "promiscuous":
         md = Metadata(doc)
-        for k in exclude_keys:
-            if md.is_defined(k):
-                md.erase(k)
+        if exclude_keys:
+            for k in exclude_keys:
+                if md.is_defined(k):
+                    md.erase(k)
         aok = True
     else:
         md = Metadata()
         dropped_keys=[]
 
         for k in doc:
-            if k in exclude_keys:
-                continue
+            if exclude_keys:
+                if k in exclude_keys:
+                    continue
 
             if metadata_schema.is_defined(k) and not metadata_schema.is_alias(
                 k
