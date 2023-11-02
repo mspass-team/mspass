@@ -1,12 +1,11 @@
 import os
 import pandas as pd
 import json
-import copy
-import pickle
 
 
 from mspasspy.db.database import (Database,
                                   md2doc,
+                                  doc2md,
                                   elog2doc,
                                   history2doc,
                                   )
@@ -517,7 +516,7 @@ def read_distributed_data(
                 message += "container_to_merge must define a pyspark RDD with format==spark"
                 raise TypeError(message)
         else:
-            if not isinstance(container_to_merge,dask.bag):
+            if not isinstance(container_to_merge,dask.bag.core.Bag):
                 message += "container_to_merge must define a dask bag with format==dask"
                 raise TypeError(message)
     # This has a fundamentally different algorithm for handling
@@ -619,7 +618,7 @@ def read_distributed_data(
                 for doc in cursor:
                     doclist.append(doc)
                 if format == "spark":
-                    plist=foo
+                    plist=spark_context.parallelize(doclist)
                 else:
                     plist = dask.bag.from_sequence(doclist)
                 del doclist
@@ -638,10 +637,6 @@ def read_distributed_data(
                                 )
                             )
         else:
-            # DEBUG
-            doclist=plist.compute()
-            for doc in doclist:
-                print(doc)
             plist = plist.map(
                 db.read_data,
                 collection=collection,
@@ -964,7 +959,7 @@ def write_distributed_data(
                             data_tag=data_tag,
                             )
                 )
-            data = data.map_partitions(lambda d : _partioned_save_wfdoc(
+            data = data.mapPartitions(lambda d : _partioned_save_wfdoc(
                             d,
                             db,
                             collection=collection,
@@ -1102,9 +1097,6 @@ def read_to_dataframe(
     :param retrieve_history_record: a boolean control whether we would like to load processing history
     :type retrieve_history_record: :class:`bool`
     """
-    # first get the object list
-    obj_list = list(cursor)
-
     collection = cursor.collection.name
     try:
         wf_collection = db.database_schema.default_name(collection)
@@ -1113,264 +1105,33 @@ def read_to_dataframe(
             "collection {} is not defined in database schema".format(collection),
             "Invalid",
         ) from err
-    object_type = db.database_schema[wf_collection].data_type()
+    dbschema = db.database_schema
+    mdschema = db.metadata_schema
+    this_elog = ErrorLogger()
+    md_list=list()
+    for doc in cursor:
+        # Use the databhase module function doc2md that standardizes 
+        # handling of schema constraints and exlcude_keys
 
-    if object_type not in [TimeSeries, Seismogram]:
-        raise MsPASSError(
-            "only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.".format(
-                object_type, wf_collection
-            ),
-            "Fatal",
-        )
-
-    if mode not in ["promiscuous", "cautious", "pedantic"]:
-        raise MsPASSError(
-            "only promiscuous, cautious and pedantic are supported, but {} is requested.".format(
-                mode
-            ),
-            "Fatal",
-        )
-
-    if normalize is None:
-        normalize = []
-    if exclude_keys is None:
-        exclude_keys = []
-
-    # This assumes the name of a metadata schema matches the data type it defines.
-    read_metadata_schema = db.metadata_schema[object_type.__name__]
-
-    # We temporarily swap the main collection defined by the metadata schema by
-    # the wf_collection. This ensures the method works consistently for any
-    # user-specified collection argument.
-    metadata_schema_collection = read_metadata_schema.collection("_id")
-    if metadata_schema_collection != wf_collection:
-        temp_metadata_schema = copy.deepcopy(db.metadata_schema)
-        temp_metadata_schema[object_type.__name__].swap_collection(
-            metadata_schema_collection, wf_collection, db.database_schema
-        )
-        read_metadata_schema = temp_metadata_schema[object_type.__name__]
-
-    # find the corresponding document according to object id
-    col = db[wf_collection]
-
-    md_list = []
-
-    # sequentially get all metadata for each object
-    for object_id in obj_list:
-        # the same as read_data() in database.py
-        try:
-            oid = object_id["_id"]
-        except:
-            oid = object_id
-        object_doc = db[wf_collection].find_one({"_id": oid})
-        if not object_doc:
-            md_list.append(None)
-
-        if data_tag:
-            if "data_tag" not in object_doc or object_doc["data_tag"] != data_tag:
-                md_list.append(None)
-
-        # 1. build metadata as dict
-        md = Metadata()
-
-        # 1.1 read in the attributes from the document in the database
-        for k in object_doc:
-            if k in exclude_keys:
-                continue
-            if mode == "promiscuous":
-                md[k] = object_doc[k]
-                continue
-            # FIXME: note that we do not check whether the attributes' type in the database matches the schema's definition.
-            # This may or may not be correct. Should test in practice and get user feedbacks.
-            if read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(
-                k
-            ):
-                md[k] = object_doc[k]
-
-        # 1.2 read the attributes in the metadata schema
-        # col_dict is a hashmap used to store the normalized records by the normalized_id in object_doc
-        col_dict = {}
-        # log_error_msg is used to record all the elog entries generated during the reading process
-        # After the mspass_object is created, we would post every elog entry with the messages in the log_error_msg.
-        log_error_msg = []
-        for k in read_metadata_schema.keys():
-            col = read_metadata_schema.collection(k)
-            # explanation of the 4 conditions in the following if statement
-            # 1.2.1. col is not None and is a normalized collection name
-            # 1.2.2. normalized key id exists in the wf document
-            # 1.2.3. k is not one of the exclude keys
-            # 1.2.4. col is in the normalize list provided by user
-            if (
-                col
-                and col != wf_collection
-                and col + "_id" in object_doc
-                and k not in exclude_keys
-                and col in normalize
-            ):
-                # try to find the corresponding record in the normalized collection from the database
-                if col not in col_dict:
-                    col_dict[col] = db[col].find_one({"_id": object_doc[col + "_id"]})
-                # might unable to find the normalized document by the normalized_id in the object_doc
-                # we skip reading this attribute
-                if not col_dict[col]:
-                    continue
-                # this attribute may be missing in the normalized record we retrieve above
-                # in this case, we skip reading this attribute
-                # however, if it is a required attribute for the normalized collection
-                # we should post an elog entry to the associated wf object created after.
-                unique_k = db.database_schema[col].unique_name(k)
-                if not unique_k in col_dict[col]:
-                    if db.database_schema[col].is_required(unique_k):
-                        log_error_msg.append(
-                            "Attribute {} is required in collection {}, but is missing in the document with id={}.".format(
-                                unique_k, col, object_doc[col + "_id"]
-                            )
-                        )
-                    continue
-                md[k] = col_dict[col][unique_k]
-
-        # 1.3 schema check normalized data according to the read mode
-        is_dead = False
-        fatal_keys = []
-        if mode == "cautious":
-            for k in md:
-                if read_metadata_schema.is_defined(k):
-                    col = read_metadata_schema.collection(k)
-                    unique_key = db.database_schema[col].unique_name(k)
-                    if not isinstance(md[k], read_metadata_schema.type(k)):
-                        # try to convert the mismatch attribute
-                        try:
-                            # convert the attribute to the correct type
-                            md[k] = read_metadata_schema.type(k)(md[k])
-                        except:
-                            if db.database_schema[col].is_required(unique_key):
-                                fatal_keys.append(k)
-                                is_dead = True
-                                log_error_msg.append(
-                                    "cautious mode: Required attribute {} has type {}, forbidden by definition and unable to convert".format(
-                                        k, type(md[k])
-                                    )
-                                )
-
-        elif mode == "pedantic":
-            for k in md:
-                if read_metadata_schema.is_defined(k):
-                    if not isinstance(md[k], read_metadata_schema.type(k)):
-                        fatal_keys.append(k)
-                        is_dead = True
-                        log_error_msg.append(
-                            "pedantic mode: {} has type {}, forbidden by definition".format(
-                                k, type(md[k])
-                            )
-                        )
-
-        # 1.4 create a mspass object by passing MetaData
-        # if not changing the fatal key values, runtime error in construct a mspass object
-        for k in fatal_keys:
-            if read_metadata_schema.type(k) is str:
-                md[k] = ""
-            elif read_metadata_schema.type(k) is int:
-                md[k] = 0
-            elif read_metadata_schema.type(k) is float:
-                md[k] = 0.0
-            elif read_metadata_schema.type(k) is bool:
-                md[k] = False
-            elif read_metadata_schema.type(k) is dict:
-                md[k] = {}
-            elif read_metadata_schema.type(k) is list:
-                md[k] = []
-            elif read_metadata_schema.type(k) is bytes:
-                md[k] = b"\x00"
-            else:
-                md[k] = None
-
-        # init a ProcessingHistory to store history
-        processing_history_record = ProcessingHistory()
-        # load the history in database
-        elog_col_name = db.database_schema.default_name("elog")
-        elog_id_name = elog_col_name + "_id"
-        if elog_id_name in object_doc:
-            elog_id = object_doc[elog_id_name]
-            elog_doc = db[elog_col_name].find_one({"_id": elog_id})
-            for log in elog_doc["logdata"]:
-                me = MsPASSError(log["error_message"], log["badness"].split(".")[1])
-                processing_history_record.elog.log_error(
-                    log["algorithm"], log["error_message"], me.severity
-                )
-
-        # not continue step 2 & 3 if the mspass object is dead
-        if is_dead:
-            md["is_dead"] = True  # mspass_object.kill()
-            for msg in log_error_msg:
-                processing_history_record.elog.log_error(
-                    "read_data", msg, ErrorSeverity.Invalid
-                )
+        md,aok,elog = doc2md(doc,
+                  dbschema,
+                  mdschema,
+                  collection,
+                  exclude_keys,
+                  mode,
+                  )
+        if aok:
+            md_list.append(md)
         else:
-            md["is_dead"] = False  # mspass_object.live = True
-
-            # 3.load history
-            if load_history:
-                history_obj_id_name = (
-                    db.database_schema.default_name("history_object") + "_id"
-                )
-                if history_obj_id_name in object_doc:
-                    # Load (in place) the processing history into h.
-                    history_object_id = object_doc[history_obj_id_name]
-                    # get the atomic type of the mspass object
-                    if object_type is TimeSeries:
-                        atomic_type = AtomicType.TIMESERIES
-                    else:
-                        atomic_type = AtomicType.SEISMOGRAM
-                    if not collection:
-                        collection = db.database_schema.default_name("history_object")
-                    # load history if set True
-                    res = db[collection].find_one({"_id": history_object_id})
-                    # retrieve_history_record
-                    if retrieve_history_record:
-                        processing_history_record = pickle.loads(
-                            res["processing_history"]
-                        )
-                    else:
-                        # set the associated history_object_id as the uuid of the origin
-                        if not alg_name:
-                            alg_name = "0"
-                        if not alg_id:
-                            alg_id = "0"
-                        processing_history_record.set_as_origin(
-                            alg_name,
-                            alg_id,
-                            history_object_id,
-                            atomic_type,
-                            define_as_raw,
-                        )
-
-            md.clear_modified()
-
-            # 4.post complaint elog entries if any
-            for msg in log_error_msg:
-                processing_history_record.elog.log_error(
-                    "read_data", msg, ErrorSeverity.Complaint
-                )
-
-        # save additional params to metadata
-        md["history"] = processing_history_record
-        if object_type is TimeSeries:
-            md["object_type"] = "TimeSeries"
-        else:
-            md["object_type"] = "Seismogram"
-        md["storage_mode"] = object_doc["storage_mode"]
-        # if md["storage_mode"] == "gridfs":
-        #    md["gfsh"] = gridfs.GridFS(db)
-        md["dir"] = object_doc.get("dir")
-        md["dfile"] = object_doc.get("dfile")
-        md["foff"] = object_doc.get("foff")
-        md["nbytes"] = object_doc.get("nbytes")
-        md["format"] = object_doc.get("format")
-        md["gridfs_id"] = object_doc.get("gridfs_id")
-        md["url"] = object_doc.get("url")
-
-        # add metadata for current object to metadata list
-        md_list.append(md)
-
+            this_elog += elog
+        
+    if elog.size()>0:
+        print("WARNING(read_to_dataframe): ",
+              elog.size(), 
+              " errors were handled during dataframe construction")
+        print("All data associated with these errors were dropped.   Error log entries from doc2md follow")
+        errorlist=elog.get_error_log()
+        for entry in errorlist:
+            print(entry.algorithm, entry.message, entry.badness)
     # convert the metadata list to a dataframe
     return pd.json_normalize(map(lambda cur: cur.todict(), md_list))
