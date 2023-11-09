@@ -1,9 +1,9 @@
-#Image: mspass/mspass
+#Image: jthet/mspass-tapis
 #Version: 1.0.0
 
 FROM ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
 
-LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
+LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>, Jackson Thetford <j.thetford@utexas.edu>"
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN set -eux; \
@@ -171,8 +171,10 @@ RUN rm -r /usr/local/pybind11-${PYBIND11_VERSION}
 RUN pip3 --no-cache-dir install --upgrade setuptools \
 	&& docker-clean
 
-# Add cxx library
+
+
 RUN apt-get update && apt-get install -y libyaml-cpp-dev
+# Add cxx library
 ADD cxx /mspass/cxx
 RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
     && mkdir build && cd build \
@@ -203,8 +205,7 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${TAR
 RUN chmod +x /usr/sbin/tini
 
 # Add startup script
-ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
-RUN chmod +x /usr/sbin/start-mspass.sh
+ADD scripts/start-mspass-tacc.sh /usr/sbin/start-mspass-tacc.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
 
@@ -225,5 +226,6 @@ ENV DASK_SCHEDULER_PORT 8786
 ENV MONGODB_PORT 27017
 ENV JUPYTER_PORT 8888
 ENV MSPASS_ROLE all
+
 # ENV MSPASS_SCHEDULER dask
-ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
+ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass-tacc.sh"]

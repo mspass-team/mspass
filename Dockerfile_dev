@@ -172,6 +172,7 @@ RUN pip3 --no-cache-dir install --upgrade setuptools \
 	&& docker-clean
 
 # Add cxx library
+RUN apt-get update && apt-get install -y libyaml-cpp-dev
 ADD cxx /mspass/cxx
 RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
     && mkdir build && cd build \
