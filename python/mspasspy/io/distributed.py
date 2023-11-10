@@ -659,7 +659,7 @@ def read_distributed_data(
 
 
 
-def _partioned_save_wfdoc(doclist,
+def _partitioned_save_wfdoc(doclist,
                          db,
                          collection="wf_TimeSeries",
                          dbname=None,
@@ -703,14 +703,52 @@ def _partioned_save_wfdoc(doclist,
     :type dbname:  string
 
     """
+    # This makes the function more bombproof in the event a database 
+    # handle can't be serialized - db should normally be defined
     if db is None:
         dbclient = DBClient()
         # needs to throw an exception of both db and dbname are none
         db = dbclient.get_database(dbname)
     dbcol = db[collection]
-    # note plural ids.  insert_one uses "inserted_id".
-    # proper english usage but potentially confusing - beware
-    wfids = dbcol.insert_many(doclist).inserted_ids
+    # test for the existence of any dead data.  Handle that case specially
+    has_bodies=False
+    docarray=[]
+    for doc in doclist:
+        # clear the wfid if it exists or mongo may overwrite
+        if '_id' in doc:
+            doc.pop('_id')
+        docarray.append(doc)
+        if not doc["live"]:
+            has_bodies=True
+    if has_bodies:
+        lifelist=[]
+        cleaned_doclist=[]
+        for doc in docarray:
+            if doc["live"]:
+                cleaned_doclist.append(doc)
+                lifelist.append(True)
+            else:
+                lifelist.append(False)
+        if len(cleaned_doclist)>0:
+            wfids_inserted = dbcol.insert_many(cleaned_doclist).inserted_ids
+            wfids=[]
+            ii=0
+            for i in range(len(lifelist)):
+                if lifelist[i]:
+                    wfids.append(wfids_inserted[ii])
+                    ii += 1
+                else:
+                    wfids.append(None)
+        else:
+            wfids=[]
+            for i in range(len(doclist)):
+                wfids.append(None)
+                
+    else:
+        # this case is much simpler
+        # note plural ids.  insert_one uses "inserted_id".
+        # proper english usage but potentially confusing - beware
+        wfids = dbcol.insert_many(docarray).inserted_ids
     return wfids
 
 
@@ -723,6 +761,7 @@ def _save_ensemble_wfdocs(
         undertaker,
         cremate=False,
         data_tag=None,
+        return_data=False,
         ):
     """
     Equivalent of _save_wfdocs for ensembles.   It is mostly a loop over
@@ -752,50 +791,137 @@ def _save_ensemble_wfdocs(
     # note plural ids.  insert_one uses "inserted_id".
     # proper english usage but potentially confusing - beware
     wfids = db[wf_collection_name].insert_many(doclist).inserted_ids
-    return wfids
-
-def _extract_wfdoc(
-        mspass_object,
-        save_schema,
-        exclude_keys,
-        mode,
-        post_elog=True,
-        elog_key="error_log",
-        post_history=False,
-        history_key="history_data",
-        data_tag=None,
-        ):
-    """
-    Wrapper for md2doc to handle posting of error log messages that
-    can be returned by md2doc.  It should function correctly with live or dead
-    data.  It contains some additional complexity to
-    avoid duplicate error log entries posted for dead data.
-    """
-    doc, aok, elog_md2doc = md2doc(mspass_object,save_schema=save_schema,exclude_keys=exclude_keys,mode=mode)
-    if post_elog:
-        elog = ErrorLogger()
-        if mspass_object.elog.size() > 0:
-            elog = mspass_object.elog
-            if elog_md2doc.size() > 0:
-                elog += elog_md2doc
-        elif elog_md2doc.size()>0:
-            elog = elog_md2doc
-        if elog.size()>0:
-            elogdoc = elog2doc(elog)
-            doc[elog_key] = elogdoc
-    if not aok or mspass_object.dead():
-        # may want to handle this differently
-        doc["live"] = False
+    if return_data:
+        return ensemble_data
     else:
-        doc["live"] = True
-    if post_history:
-        # is_empty is part of ProcessingHistory
-        if not mspass_object.is_empty():
-            doc = history2doc(mspass_object)
-            doc[history_key] = doc
-    if data_tag:
-        doc["data_tag"] = data_tag
+        return wfids
+
+
+
+def atomic_save_wf_documents(d,
+            db,
+            save_schema,
+            exclude_keys,
+            mode,
+            data_tag=None,
+            undertaker=None,
+            cremate=False,
+            storage_mode=None,
+            save_history=False,
+            ):
+    """
+    """
+    if undertaker:
+        stedronsky = undertaker
+    else:
+        stedronsky = Undertaker(db)
+
+    doc, aok, elog_md2doc = md2doc(d,
+                                      save_schema=save_schema,
+                                      exclude_keys=exclude_keys,
+                                      mode=mode,
+                                      )
+    # cremate or bury dead data. 
+    # both return an edited data object reduced to ashes or a skeleton
+    # doc and elog contents are handled separately.  When cremate is 
+    # true nothing will be saved in the database.  Default will 
+    # bury the body leaving a cemetery record.
+
+    if d.dead() or (not aok):
+        if cremate:
+            d=stedronsky.cremate(d)
+        else:
+            d=stedronsky.bury(d)
+        d.kill()
+    else:
+        # weird trick to get waveform collection name - borrowed from
+        # :class:`mspasspy.db.Database` save_data method code
+        wf_collection_name = save_schema.collection("_id")
+        # Use save_data's method of handling storage_mode if it isn't set
+        #TODO - there are complexities here - sort them out before continuing
+        d = db.save_data(d,
+                     return_data=True,
+                     mode=mode,
+                     storage_mode=storage_mode,
+                     exclude_keys=exclude_keys,
+                     collection=wf_collection_name,
+                     data_tag=data_tag,
+                     cremate=cremate,
+                     save_history=save_history,
+                     alg_name="write_distributed_data",
+                     )
+                     
+    return d
+    
+def atomic_extract_wf_document(d,
+                     db,
+                     save_schema,
+                     exclude_keys,
+                     mode,
+                     post_elog=True,
+                     elog_key="error_log",
+                     post_history=False,
+                     history_key="history_data",
+                     data_tag=None,
+                     undertaker=None,
+                     cremate=False,
+                     ):
+    """
+
+    :return:   Edited copy of mspass_obj_list.   See above for 
+      description of what "edited" means.
+    """
+
+    if undertaker:
+        stedronsky = undertaker
+    else:
+        stedronsky = Undertaker(db)
+
+    doc, aok, elog_md2doc = md2doc(d,
+                                      save_schema=save_schema,
+                                      exclude_keys=exclude_keys,
+                                      mode=mode,
+                                      )
+    # cremate or bury dead data. 
+    # both return an edited data object reduced to ashes or a skeleton
+    # doc and elog contents are handled separately.  When cremate is 
+    # true nothing will be saved in the database.  Default will 
+    # bury the body leaving a cemetery record.
+
+    if d.dead() or (not aok):
+        if cremate:
+            d=stedronsky.cremate(d)
+        else:
+            d=stedronsky.bury(d)
+        # make sure this is set as it is used in logic below
+        # we use this instead of d to handle case with aok False
+        doc['live']=False
+        d.kill()
+    else:
+        doc['live']=True
+        if post_elog:
+            elog = ErrorLogger()
+            if d.elog.size() > 0:
+                elog = d.elog
+                if elog_md2doc.size() > 0:
+                    elog += elog_md2doc
+            elif elog_md2doc.size()>0:
+                elog = elog_md2doc
+            if elog.size()>0:
+                elogdoc = elog2doc(elog)
+                doc[elog_key] = elogdoc
+        if post_history:
+            # is_empty is part of ProcessingHistory
+            if not d.is_empty():
+                doc = history2doc(d)
+                doc[history_key] = doc
+        if data_tag:
+            doc["data_tag"] = data_tag
+            d['data_tag'] = data_tag
     return doc
+   
+        
+
 
 #TODO:   update docstring
 def write_distributed_data(
@@ -813,6 +939,7 @@ def write_distributed_data(
     post_elog=True,
     post_history=False,
     cremate=False,
+    return_data=False,
     alg_name="write_distributed_data",
     alg_id="0",
 ):
@@ -822,20 +949,63 @@ def write_distributed_data(
     Saving data from a parallel container (i.e. bag/rdd) is a different
     problem from a serial writer.  Bottlenecks are likely with
     communication delays talking to the MonboDB server and
-    complexities of file based io.   This function may evolve but is
-    intended as the approach one should use for saving data at the end
-    of a workflow computation.  It currently has no option for
-    an intermediate save as the bag/rdd are always reduced to list of
-    ObjectIDs of saved wf documents.  If your workflow uses an intermediate
-    save just make sure you don't overwrite the input container with the
-    return of this function.   In that situation best practice is to
-    verify the output is valid and do any additional processing with the
-    container used as input to the save.
-
+    complexities of file based io.   Further, there are efficiency issues 
+    in the need to reduce transactions that case delays with the MongoDB 
+    server.   This function tries to address these issues with two 
+    approaches:
+        1.   After v2 it uses single function that handles writing the 
+             sample data for a datum.   For atomic data that means a 
+             single array but for ensembles it is the combination of all
+             arrays in the ensemble "member" containers.   The writing 
+             functions are passed through a map operator
+             so writing is a parallelized per worker.  Note the function 
+             also abstracts how the data are written with different 
+             things done depending on the "storage_mode" argument.  
+        2.   After the sample data are saved we use a MongoDB 
+             "update_many" operator with the "many" defined by the 
+             partition size.  That reduces database transaction delays 
+             by 1/object_per_partition.   
+             
+    The function also handles data marked dead in a standized way 
+    though the use of the :class:`mspasspy.util.Undertaker` now 
+    defined within the Database class handle.   The default will 
+    call the `bury` method on all dead data which leaves a document 
+    containing the datum's Metadata and and error log messages in 
+    a collection called "cemetery".   If the `cremate` argument is 
+    set True dead data will be vaporized and no trace of them will 
+    appear in output.  
+    
+    Normal behavior for this function is to return only a list of 
+    the ObjectIds of the documents saved in the collection defined by 
+    the collection argument.   Set the return_data boolean true 
+    for intermediate saves.  In that case a bag/RDD of data instead of 
+    bag/RDD of ObjectIds will be returned.   Beware memory overflow 
+    problems if you return the data - i.e. don't call the compute(dask)
+    or collect(spark) method on the result unless you know it will fit 
+    in memory.
+    
+    Return has complexity depending upon the input.  Return is always 
+    a bag when format is "dask" and an RDD if format is "spark".  
+    Content is the complexity.   When writing atomic data the 
+    container by default is a list of ObjectIds of saved waveforms.
+    Atomic data marked dead will, by default, be "buried" in the 
+    cemetery collection.  Dead data entries in the returned container 
+    will contain a None that must be handled by caller if you want to 
+    examine the content.  However, when the `return_data` argument is 
+    set True dead data will be returned as "mummies", which means the 
+    Metadata is retained but the sample arrays are cleared to reduce 
+    memory (e.g. TimeSeries are returned as TimeSeries but marked dead and 
+    containing no sample data).  With ensembles the default return is 
+    a bag/RDD of lists of ObjectIds of the ensembled members successfully 
+    saved.   Ensemble members marked dead are always "buried" or 
+    "cremated" (cremate argument set True) before attempting to save the 
+    wf documents.   When return_data is set True, the ensembles returned 
+    will have the dead members removed.  
+ 
 
     :param data: parallel container of data to be written
     :type data: :class:`dask.bag.Bag` or :class:`pyspark.RDD`.
-    :param db: the database from which the data are to be written.
+    :param db: database handle to manage data saved by this function.
     :type db: :class:`mspasspy.db.database.Database`.
     :param mode: This parameter defines how attributes defined with
         key-value pairs in MongoDB documents are to be handled for writes.
@@ -847,13 +1017,13 @@ def write_distributed_data(
     :type mode: :class:`str`
     :param storage_mode: Must be either "gridfs" or "file.  When set to
         "gridfs" the waveform data are stored internally and managed by
-        MongoDB.  If set to "file" the data will be stored in a file system
-        with the dir and dfile arguments defining a file name.   The
-        default is "gridfs".  Note when using files dir and dfile should 
-        be defined in the metadata container of each object.  Note 
-        for ensembles that can be the ensmeble container and then all 
-        data from each ensemble will be placed in the same file
-    :type storage_mode: :class:`str`
+        MongoDB.  If set to "file" the data will be stored in a file system.
+        File names are derived from attributes with the tags "dir" and 
+        "dfile" in the standard way.   Any datum for which dir or dfile 
+        aren't defined will default to the behaviour of the Database 
+        class method `save_data`.  See the docstring for details but the 
+        concept is it will always be bombproof even if not ideal.
+    :type storage_mode: :class:`str` 
     :param file_format: the format of the file. This can be one of the
         `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__
         of ObsPy writer. The default the python None which the method
@@ -884,17 +1054,54 @@ def write_distributed_data(
         to have the list be as large as necessary to eliminate any potential
         debris.
     :type exclude_keys: a :class:`list` of :class:`str`
-    :param collection: The default for this parameter is the python
-        None.  The default should be used for all but data export functions.
-        The normal behavior is for this writer to use the object
-        data type to determine the schema is should use for any type or
-        name enforcement.  This parameter allows an alernate collection to
-        be used with or without some different name and type restrictions.
-        The most common use of anything other than the default is an
-        export to a diffrent format.
+    :param collection: MongoDB collection name where the Metadata component
+        of each datum is to be saved.  It is crucial this name matches 
+        the data type of the input as the name is used to infer what 
+        type of data is being handled.  That means collection for 
+        TimeSeries and TimeSeriesEnsemble data must be wf_TimeSeries and 
+        collection for Seismogram and SeismogramEnsemble data must be 
+        wf_Seismogram.
+    :type collection:  :class:`str`
     :param data_tag: a user specified "data_tag" key.  See above and
         User's manual for guidance on how the use of this option.
     :type data_tag: :class:`str`
+    :param post_elog:   boolean controlling how error log messages are 
+       handled.  When False (default) error log messages get posted in 
+       single transactions with MongoDB to the "elog" collection.   
+       When set true error log entries will be posted to as subdocuments to 
+       the wf collection entry for each datum.   Setting post_elog True 
+       is most useful if you anticipate a run will generate a large number of 
+       error that will throttle with processing with a large number of 
+       one-at-a-time document saves.  For normal use with small number of 
+       errors it is easier to review error issue by inspecting the cemetery 
+       collection than having to query the larger wf collection.
+     :param post_history:  boolean similar to post_elog for handling 
+       object-level history data.   When False (default) all object-level 
+       history data is ignored in the save.   It will effectively be lost 
+       unless return_data is also set True and the something downstream 
+       handles the data.  At present that means the only way to save history 
+       data is in a separate save at a later stage of a workflow 
+       (note it is possible to only save history without a full data save).
+       When set True the object-level history data is posted as a subdocument 
+       to the document saved to the specified  wf collection 
+       (collection argument value). 
+     :param cremate:  boolean controlling handling of dead data.  
+       When True dead data will be passed to the `cremate` 
+       method of :class:`mspasspy.util.Undertaker` which leaves only 
+       ashes to nothing in the return.   When False (default) the 
+       `bury` method will be called instead which saves a skeleton 
+       (error log and Metadata content) of the results in the "cemetery" 
+       collection.
+     :param return_data:  When True a bag/RDD will be returned with a 
+       slightly modified version of the input.   What "modified" means 
+       could change, but at present that means only adding the value of 
+       the data_tag argument if it is defined.  When False (default) the 
+       bag/RDD will contain only the ObjectId of the wf collection 
+       documents saved.  
+     :param alg_name:  do not change
+     :param alg_id:  algorithm id for object-level history.  Normally
+       assigned by global history manager.
+       
     """
     if not isinstance(db,Database):
         message = "write_distributed_data:  required arg1 (db) must be an instance of mspasspy.db.Database\n"
@@ -936,12 +1143,16 @@ def write_distributed_data(
                     overwrite=overwrite,
                     )
             )
+        # Undertaker handles all data types.  Live data are ignored so 
+        # we don't need to test for evidence of life
         if cremate:
             data = data.map(lambda d : stedronsky.cremate(d))
         else:
-            # note we could do bury_the_dead as an option here but it
-            # seems ill advised as a possible bottleneck
-            # we don't save elog or history here deferring that the next step
+            # note we could do bury as an option here but mummify 
+            # has a small cost and can resuce memory footprint for 
+            # following steps.  Note that with we normally still 
+            # call bury later in the database save functions for both 
+            # atomic data and ensembles
             data = data.map(lambda d : stedronsky.mummify(
                                 d,
                                 post_elog=False,
@@ -950,22 +1161,57 @@ def write_distributed_data(
                 )
 
         if data_are_atomic:
-            data = data.map(lambda  d : _extract_wfdoc(
-                            d,save_schema,
-                            exclude_keys,
-                            mode,
-                            post_elog=post_elog,
-                            post_history=post_history,
-                            data_tag=data_tag,
-                            )
-                )
-            data = data.mapPartitions(lambda d : _partioned_save_wfdoc(
-                            d,
-                            db,
-                            collection=collection,
-                            )
-                )
+            # With atomic data dead in this implementation we handle 
+            # any dead datum with the map operators that save the 
+            # wf documents.   Dead data return a None instead of an id 
+            # by default and leave a body in the cemetery collection.
+            # when return_data is True return either ashes from 
+            # cremate (default constructed shell) or the resul of the 
+            # muffify method
+            if return_data:
+                data = data.map(atomic_save_wf_documents,
+                                db,
+                                save_schema, 
+                                exclude_keys, 
+                                mode,
+                                post_elog=post_elog,
+                                post_history=post_history,
+                                data_tag=data_tag,
+                                undertaker=stedronsky,
+                                cremate=cremate,
+                                )
+            else:
+                data = data.map(lambda d : atomic_extract_wf_document(d, 
+                                db, 
+                                save_schema, 
+                                exclude_keys, 
+                                mode,
+                                post_elog=post_elog,
+                                post_history=post_history,
+                                data_tag=data_tag,
+                                undertaker=stedronsky,
+                                cremate=cremate,
+                                ))
+                data = data.mapPartitions(lambda d : _partitioned_save_wfdoc(
+                    d,
+                    db,
+                    collection=collection,
+                    ))
+                data = data.collect()                
         else:
+            # This step adds some minor overhead, but it can reduce 
+            # memory use at a small cost.  Ensembles are particularly 
+            # prone to memory problems so for now view this as worth doing
+            # Note _save_ensemble_wfdocs is assumed to handle the bodies 
+            # cleanly when cremate is False (note when true dead members 
+            # are vaporized with no trace)
+            if cremate:
+                data = data.map(stedronsky.cremate)
+            else:
+                # note we could do bury_the_dead as an option here but it
+                # seems ill advised as a possible bottleneck
+                # we don't save elog or history here deferring that the next step
+                data = data.map(stedronsky.mummify,post_elog=False,post_history=False)
             data = data.map(lambda d : _save_ensemble_wfdocs(
                             d,
                             db,
@@ -974,10 +1220,12 @@ def write_distributed_data(
                             mode,
                             cremate=cremate,
                             data_tag=data_tag,
+                            return_data=return_data,
                             )
                             
                 )
-        data = data.collect()
+            if not return_data:
+                data = data.collect()
     else:
         data = data.map(db._save_sample_data,
                     storage_mode=storage_mode,
@@ -987,24 +1235,56 @@ def write_distributed_data(
                     overwrite=overwrite,
                     )
 
-        if cremate:
-            data = data.map(stedronsky.cremate)
-        else:
-            # note we could do bury_the_dead as an option here but it
-            # seems ill advised as a possible bottleneck
-            # we don't save elog or history here deferring that the next step
-            data = data.map(stedronsky.mummify,post_elog=False,post_history=False)
-
         if data_are_atomic:
-            data = data.map(_extract_wfdoc,
-                            save_schema,exclude_keys,
-                            mode,
-                            post_elog=post_elog,
-                            post_history=post_history,
-                            data_tag=data_tag,
-                            )
-            data = data.map_partitions(_partioned_save_wfdoc,db,collection=collection)
+            # With atomic data dead in this implementation we handle 
+            # any dead datum with the map operators that save the 
+            # wf documents.   Dead data return a None instead of an id 
+            # by default and leave a body in the cemetery collection.
+            # when return_data is True return either ashes from 
+            # cremate (default constructed shell) or the resul of the 
+            # muffify method
+            if return_data:
+                data = data.map(atomic_save_wf_documents,
+                                db,
+                                save_schema, 
+                                exclude_keys, 
+                                mode,
+                                post_elog=post_elog,
+                                post_history=post_history,
+                                data_tag=data_tag,
+                                undertaker=stedronsky,
+                                cremate=cremate,
+                                )
+            else:
+                data = data.map(atomic_extract_wf_document,
+                                db, 
+                                save_schema, 
+                                exclude_keys, 
+                                mode,
+                                post_elog=post_elog,
+                                post_history=post_history,
+                                data_tag=data_tag,
+                                undertaker=stedronsky,
+                                cremate=cremate,
+                                )
+                data = data.map_partitions(_partitioned_save_wfdoc,db,collection=collection)
+                # necessary here or the map_partition function will fail 
+                # because it will receive a DAG structure instead of a list
+                data = data.compute()
         else:
+            # This step adds some minor overhead, but it can reduce 
+            # memory use at a small cost.  Ensembles are particularly 
+            # prone to memory problems so for now view this as worth doing
+            # Note _save_ensemble_wfdocs is assumed to handle the bodies 
+            # cleanly when cremate is False (note when true dead members 
+            # are vaporized with no trace)
+            if cremate:
+                data = data.map(stedronsky.cremate)
+            else:
+                # note we could do bury_the_dead as an option here but it
+                # seems ill advised as a possible bottleneck
+                # we don't save elog or history here deferring that the next step
+                data = data.map(stedronsky.mummify,post_elog=False,post_history=False)
             data = data.map(_save_ensemble_wfdocs,
                             db,
                             save_schema,
@@ -1012,10 +1292,15 @@ def write_distributed_data(
                             mode,
                             cremate=cremate,
                             data_tag=data_tag,
+                            return_data=return_data,
                             )
-        data = data.compute()
-
+            # needed for consistencey with the atomic version when 
+            # return_data is False - returns list of wfids on for each ensemble
+            # returns the bag if return_data is true
+            if not return_data:
+                data = data.compute()
     return data
+
 
 def read_to_dataframe(
     db,
