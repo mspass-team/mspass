@@ -579,7 +579,9 @@ class Database(pymongo.database.Database):
           normally kill any datum for which matching fails.  Note for
           ensembles this parameter defines matching to be applied to all
           enemble members.  Use `normalize_ensemble` to normalize the enemble's
-          `Metadata` container.
+          `Metadata` container.  Member ensemble normalziation can be different 
+          for each member while ensemble Metadata is assume  the same for 
+          all members.
         :type normalize: a :class:`list` of :class:`BasicMatcher` or :class:`str`.
           :class:`BasicMatchers` are applied sequentialy with the
           `normalize` function using this matcher.   When a list of strings is given each
@@ -654,6 +656,16 @@ class Database(pymongo.database.Database):
           The default is None which disables the cross-checking.
         :type data_tag: :class:`str` used for the filter.  Can be None
           in which case the cross-check test is disable.
+        
+        :param ensemble_metadata:  Optional constant attributes to 
+          assign to ensemble Metadata.  Ignored for atomic data.   
+          It is important to stress that the contents of this dict are 
+          applied last.  Use with caution, particularly when using 
+          normalizatoin, to avoid accidentally overwriting some 
+          attribute loaded from the database.
+        :type ensemble_metadata:  python dict.   The contents are copied 
+          verbatim to the ensemble Metadata container with a loop over the 
+          dict keys.
 
         :param alg_name: optional alternative name to assign for this algorithm
           as a tag for the origin node of the history tree.   Default is the
