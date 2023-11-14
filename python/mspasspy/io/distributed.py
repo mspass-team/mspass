@@ -9,6 +9,9 @@ from mspasspy.db.database import (Database,
                                   elog2doc,
                                   history2doc,
                                   )
+from mspasspy.db.normalize import BasicMatcher
+# name collision here requires this alias
+from mspasspy.db.normalize import normalize as normalize_function
 from mspasspy.util.Undertaker import Undertaker
 from mspasspy.db.client import DBClient
 
@@ -56,6 +59,9 @@ def read_ensemble_parallel(query,
     Arguments are all passed directly from values set within
     read_distributed_data.  See that function for parameter descriptions.
     """
+    print("Entered read_ensemble_parallel")
+    print("value of data_tag=",data_tag)
+    print("query=",query)
     if sort_clause:
         cursor = db[collection].find(query).sort(sort_clause)
     else:
@@ -77,6 +83,7 @@ def read_ensemble_parallel(query,
             break
     if kill_me:
         ensemble.kill()
+    print("Number of members in ensemble created by read_ensemble_data=",len(ensemble.member))
     return ensemble
 
 def post2metadata(mspass_object,doc):
@@ -113,6 +120,7 @@ def read_distributed_data(
     collection="wf_TimeSeries",
     mode="promiscuous",
     normalize=None,
+    normalize_ensemble=None,
     load_history=False,
     exclude_keys=None,
     format="dask",
@@ -122,7 +130,6 @@ def read_distributed_data(
     sort_clause=None,
     container_merge_function=post2metadata,
     container_to_merge=None,
-    ensemble_metadata_list=None,
     aws_access_key_id=None,
     aws_secret_access_key=None,
 ):
@@ -338,14 +345,38 @@ def read_distributed_data(
     :param normalize: List of normalizers.   This parameter is passed
       directly to the `Database.read_data` method internally.  See the
       docstring for that method for how this parameter is handled.
-    :type normalize: a :class:`list`   The contents of the list are
-     expected to be one of two things:  (1)  The faster form is
-     to have the list define one or more subclasses of BasicMatcher,
-     which is a generic cross-referencing interface.  Examples
-     include Id matchers and miniseed net:sta:chan:loc:time matching.
-     Can also be a list of strings defining collection names but be
-     warned that will be slow as a new matcher will be constructed for
-     each atomic datum read.
+      For atomic data each component is used with the `normalize`
+      function to apply one or more normalization operations to each 
+      datum.   For ensembles, the same operation is done in a loop 
+      over all ensembles members (i.e. the member objects are atomic 
+      and normalized in a loop.).  Use `normalize_ensemble` to 
+      set values in the ensemble Metadata container.
+    :type normalize: must be a python list of subclasses of 
+      the abstract class :class:`mspasspy.db.normalize.BasicMatcher` 
+      that can be used as the normalization operator in the 
+      `normalize` function.   
+     
+     param normalize_ensemble:  This parameter should be used to
+       apply normalization to ensemble Metadata (attributes common to
+       the entire ensemble.) It will be ignored if reading
+       atomic data.  Otherwise it behaves like normalize and is 
+       assumed to a list of subclasses of :class:`BasicMatcher` objects.
+       If using this option you must also specify a valid value for 
+       the `container_to_merge` argument.  The reason is that currently 
+       the only efficient way to post any Metadata components to 
+       an ensemble's Metadata container is via the algorithm used by 
+       if the `container_to_merge` option is used.  This feature was 
+       designed with ids in mind where the ids would link to a collection 
+       that are contain defining properties for what the ensemble is.  
+       For example, if the ensemble is a "common-source gather" 
+       the `container_to_merge` could be a bag/RDD of ObjectIds defining 
+       the `source_id` attribute.  Then the normalize_ensemble list 
+       could contain an instance of :class:`mspasspy.db.normalize.ObjectIdMatcher`
+       created to match and load source data.  
+     :type normalize_ensemble:  a :class:`list` of :class:`BasicMatcher`.
+       :class:`BasicMatchers` are applied sequentialy with the
+       `normalize` function with the list of attributes loaded defined 
+       by the instance.  
 
     :param load_history: boolean (True or False) switch used to enable or
       disable object level history mechanism.   When set True each datum
@@ -373,7 +404,11 @@ def read_distributed_data(
       of slices for Spark. By default Dask will use 100 and Spark will determine
       it automatically based on the cluster.  If using this parameter and
       a container_to_merge make sure the number used here matches the partitioning
-      of container_to_merge.
+      of container_to_merge.  If specified and container_to_merge 
+      is defined this function will test them for consistency and throw a 
+      ValueError exception if they don't match.  If not set (i.e. left 
+      default of None) that test is not done and the function assumes 
+      container_to_merge also uses default partitioning.
     :type npartitions: :class:`int`
 
     :param data_tag:  The definition of a dataset can become ambiguous
@@ -422,28 +457,6 @@ def read_distributed_data(
       that is not at all a restriction.  The function must simply return
       a (normally modified) copy of the component it receives as arg0.
 
-    :param ensemble_metadata_list:  When reading ensembles in parallel it is
-      often necessary to load global attributes for the ensemble into the
-      ensemble's Metadata container.   That data is often not held in atomic
-      wf collection documents and needs to be supplied externally.   For that
-      reason the Database method called `read_data` has an ensemble_md
-      argument for the same purpose when loading one ensemble at a time.
-      This argument, in fact, is assumed to be an array of containers
-      that can be passed to the "read_data" method
-      :py:meth:`mspasspy.db.database.read_data` called by this function.
-      The contents of each container are then posted as ensemble Metadata
-      for each bag/rdd component returned.  Note this list is assumed to
-      not present a memory or serialization issue as the number of ensembles
-      in a typical data set are not usually that huge and it would be rare
-      to post large objects to ensemble Metadata.  Note this argument is
-      referenced ONLY IF reading ensembles, which means arg0 is a list of
-      queries.
-    :type ensemble_metadata_list:  array-like container (must be subscriptable)
-      of python dict or Metadata containers holding attributes to be posted
-      to each ensemble's Metadata.  Note the length of this array must
-      match the number of components query list or the function will
-      abort immediately with an exception.
-
     :param aws_access_key_id: A part of the credentials to authenticate the user
     :param aws_secret_access_key: A part of the credentials to authenticate the user
     :return: container defining the parallel dataset.  A spark `RDD` if format
@@ -460,7 +473,7 @@ def read_distributed_data(
     if isinstance(data,list):
         ensemble_mode=True
         i = 0
-        for x in list:
+        for x in data:
             if not isinstance(x,dict):
                 message += "arg0 is a list, but component {} has illegal type={}\n".format(i,str(type(x)))
                 message += "list must contain only python dict defining queries that define each ensemble to be loaded"
@@ -479,12 +492,6 @@ def read_distributed_data(
                         message += "sort_clause value = " + str(sort_clause)
                         message += " is invalid input for MongoDB"
                         raise TypeError(message)
-        if ensemble_metadata_list:
-            if len(ensemble_metadata_list) != len(data):
-                message += "Size mismatch in argument received by this function\n"
-                message += "Query list length received as arg0={}\n".format(len(data))
-                message += "ensemble_metadata_list argument array length={}\n".format(len(ensemble_metadata_list))
-                raise MsPASSError(message,ErrorSeverity.Fatal)
     elif isinstance(data,Database):
         ensemble_mode = False
         dataframe_input = False
@@ -509,23 +516,79 @@ def read_distributed_data(
         message += "Illegal type={} for arg0\n".format(str(type(data)))
         message += "Must be a Dataframe (pandas, spark, or dask), Database, or a list of query dictionaries"
         raise TypeError(message)
+    if normalize:
+        if isinstance(normalize,list):
+            i=0
+            for nrm in normalize:
+                if not isinstance(nrm,BasicMatcher):
+                    message += "Illegal type={} for component {} of normalize list\n".format(type(nrm),i)
+                    message += "Must be subclass of BasicMatcher to allow use in normalize function"
+                    raise TypeError(message)
+        else:
+            message += "Illegal type for normalize argument = {}\n".format(type(normalize))
+            message += "Must be a python list of implementations of BasicMatcher"
+            raise TypeError(message)
 
     if container_to_merge:
         if format =="spark":
             if not isinstance(container_to_merge,pyspark.RDD):
                 message += "container_to_merge must define a pyspark RDD with format==spark"
                 raise TypeError(message)
+                container_partitions = container_to_merge.getNumPartitions()
+                
         else:
             if not isinstance(container_to_merge,dask.bag.core.Bag):
                 message += "container_to_merge must define a dask bag with format==dask"
                 raise TypeError(message)
+            container_partitions = container_to_merge.npartitions
+        if npartitions:
+            # This error handler only works if npartitions is set in the 
+            # arg list.  Can't test the data container here as it doesn't 
+            # exist yet and putting it inside the logic below would be awkward
+            # and could slow execution
+            if container_partitions != npartitions:
+                message += "container_to_merge number of partitions={}\n".format(container_partitions)
+                message += "must match value of npartitions passed to function={}".format(npartitions)
+                raise ValueError(message)
+    if normalize_ensemble:
+        if container_merge_function is None:
+            message += "normalize_ensemble option requires specifying a bag/RDD passed via container_to_merge argument\n"
+            message += "Received a (default) None value for container_to_merge argument"
+            raise ValueError(message)
+        if isinstance(normalize_ensemble,list):
+            i=0
+            for nrm in normalize_ensemble:
+                if not isinstance(nrm,BasicMatcher):
+                    message += "Illegal type={} for component {} of normalize_ensemble list\n".format(type(nrm),i)
+                    message += "Must be subclass of BasicMatcher to allow use in normalize function"
+                    raise TypeError(message)
+        else:
+            message += "Illegal type for normalize_ensemble argument = {}\n".format(type(normalize))
+            message += "Must be a python list of implementations of BasicMatcher"
+            raise TypeError(message)
+        
+            
     # This has a fundamentally different algorithm for handling
     # ensembles than atomic data.  Ensembles are driven by a list of
     # queries while atomic data are driven by a dataframe.
     # the dataframe is necessary in this context because MongoDB
     # cursors can not be serialized while Database can.
     if ensemble_mode:
+        if normalize_ensemble:
+            if isinstance(normalize_ensemble,list):
+                i=0
+                for nrm in normalize_ensemble:
+                    if not isinstance(nrm,BasicMatcher):
+                        message += "Illegal type={} for component {} of normalize list\n".format(type(nrm),i)
+                        message += "Must be subclass of BasicMatcher to allow use in normalize function"
+                        raise TypeError(message)
+            else:
+                message += "Illegal type for normallze_ensemble argument = {}\n".format(type(normalize_ensemble))
+                message += "Must be a python list of implementations of BasicMatcher"
+                raise TypeError(message)
         if format == "spark":
+            # note this works only because parallelize treats a None as default
+            # and we use None as our default too - could break with version change
             plist = spark_context.parallelize(data, numSlices=npartitions)
             plist = plist.map(lambda q : read_ensemble_parallel(
                                         q,
@@ -543,8 +606,9 @@ def read_distributed_data(
                                 )
 
         else:
+            # note same maintenance issue as with parallelize above 
             plist = dask.bag.from_sequence(data, npartitions=npartitions)
-            plist = dask.bag.map(read_ensemble_parallel,
+            plist = plist.map(read_ensemble_parallel,
                     db,
                     collection=collection,
                     mode=mode,
@@ -618,9 +682,9 @@ def read_distributed_data(
                 for doc in cursor:
                     doclist.append(doc)
                 if format == "spark":
-                    plist=spark_context.parallelize(doclist)
+                    plist=spark_context.parallelize(doclist,numSlices=npartitions)
                 else:
-                    plist = dask.bag.from_sequence(doclist)
+                    plist = dask.bag.from_sequence(doclist,npartitions=npartitions)
                 del doclist
 
         # Earlier logic make list a bag/rdd of docs - above converts dataframe to same
@@ -654,6 +718,13 @@ def read_distributed_data(
             plist = plist.zip(container_to_merge).map(lambda x: container_merge_function(x[0],x[1]))
         else:
             plist = dask.bag.map(container_merge_function,plist,container_to_merge)
+    if normalize_ensemble:
+        for nrm in normalize_ensemble:
+            if format =="spark":
+                plist = plist.map(lambda d : normalize_function(d,nrm))
+            else:
+                plist = plist.map(normalize_function,nrm)
+            
 
     return plist
 
@@ -721,6 +792,7 @@ def _partitioned_save_wfdoc(doclist,
         if not doc["live"]:
             has_bodies=True
     if has_bodies:
+        print("Entering block for dead data")
         lifelist=[]
         cleaned_doclist=[]
         for doc in docarray:
@@ -729,6 +801,8 @@ def _partitioned_save_wfdoc(doclist,
                 lifelist.append(True)
             else:
                 lifelist.append(False)
+        print("size docarray=",len(docarray))
+        print("size of cleaned=",len(cleaned_doclist))
         if len(cleaned_doclist)>0:
             wfids_inserted = dbcol.insert_many(cleaned_doclist).inserted_ids
             wfids=[]
@@ -741,14 +815,17 @@ def _partitioned_save_wfdoc(doclist,
                     wfids.append(None)
         else:
             wfids=[]
-            for i in range(len(doclist)):
+            for i in range(len(docarray)):
                 wfids.append(None)
                 
     else:
+        print("Entering block for live data")
         # this case is much simpler
         # note plural ids.  insert_one uses "inserted_id".
         # proper english usage but potentially confusing - beware
         wfids = dbcol.insert_many(docarray).inserted_ids
+    print("Type of return value wfid=",type(wfids))
+    print("Length of wfids=",len(wfids))
     return wfids
 
 
@@ -770,27 +847,54 @@ def _save_ensemble_wfdocs(
     handled with the :py:meth:`mspasspy.util.Undertaker.cremate` method.
     See the docstring of that method for the behavior.
     """
+    print("Entered _save_ensemble_wfdocs")
+    print("Number of members in input ensemble = ",len(ensemble_data.member))
     if cremate:
         ensemble_data = undertaker.cremate(ensemble_data)
+        print("Number of members after cremation = ",len(ensemble_data.member))
     else:
         ensemble_data, bodies = undertaker.bring_out_your_dead(ensemble_data)
-        undertaker.bury_the_dead(bodies)
+        undertaker.bury(bodies)
         del bodies
-
-    doclist=[]
-    # we don't have to test for dead data in the loop below above removes
-    # them so we just use md2doc
-    for d in ensemble_data.member:
-        doc, aok, elog = md2doc(d,save_schema=save_schema,exclude_keys=exclude_keys,mode=mode)
-        if data_tag:
-            doc["data_tag"] = data_tag
-        doclist.append(doc)
-    # weird trick to get waveform collection name - borrowed from
-    # :class:`mspasspy.db.Database` save_data method code
-    wf_collection_name = save_schema.collection("_id")
-    # note plural ids.  insert_one uses "inserted_id".
-    # proper english usage but potentially confusing - beware
-    wfids = db[wf_collection_name].insert_many(doclist).inserted_ids
+        
+    
+    # Need to handle empty ensembles.  Undertaker removes dead bodies 
+    # for both bury and cremate from ensembles so we can end up 
+    # with an empty ensemble.  Normal return will be an empty list 
+    # for this case
+    if len(ensemble_data.member)==0:
+        wfids = []
+    else:
+        doclist=[]
+        # we don't have to test for dead data in the loop below above removes
+        # them so we just use md2doc.  We do, however, have to handle 
+        # md2doc failure signaled with aok False
+        for d in ensemble_data.member:
+            doc, aok, elog = md2doc(d,save_schema=save_schema,exclude_keys=exclude_keys,mode=mode)
+            if aok:
+                if data_tag:
+                    doc["data_tag"] = data_tag
+                if '_id' in doc:
+                    doc.pop('_id')
+                doclist.append(doc)
+            else:
+                d.elog += elog
+                d.kill()
+                if cremate:
+                    d = undertaker.cremate(d)
+                else:
+                    d = undertaker.bury(d)
+            
+        # weird trick to get waveform collection name - borrowed from
+        # :class:`mspasspy.db.Database` save_data method code
+        wf_collection_name = save_schema.collection("_id")
+        # note plural ids.  insert_one uses "inserted_id".
+        # proper english usage but potentially confusing - beware
+        if len(doclist)>0:
+            wfids = db[wf_collection_name].insert_many(doclist).inserted_ids
+        else:
+            wfids = []
+    print("Size of returned wfids list=",len(wfids))
     if return_data:
         return ensemble_data
     else:
@@ -871,6 +975,7 @@ def atomic_extract_wf_document(d,
     :return:   Edited copy of mspass_obj_list.   See above for 
       description of what "edited" means.
     """
+    #print("Entered atomic_extract_wf_document")
 
     if undertaker:
         stedronsky = undertaker
@@ -889,6 +994,13 @@ def atomic_extract_wf_document(d,
     # bury the body leaving a cemetery record.
 
     if d.dead() or (not aok):
+        print("found datum marked dead")
+        print(d.live,aok)
+        print(d)
+        # this posts any elog content to error of d so bury will 
+        # save it
+        d.elog += elog_md2doc
+        d.kill()
         if cremate:
             d=stedronsky.cremate(d)
         else:
@@ -896,8 +1008,9 @@ def atomic_extract_wf_document(d,
         # make sure this is set as it is used in logic below
         # we use this instead of d to handle case with aok False
         doc['live']=False
-        d.kill()
+        #d.kill()
     else:
+        #print("Handling live datum for ",doc)
         doc['live']=True
         if post_elog:
             elog = ErrorLogger()
@@ -1103,6 +1216,10 @@ def write_distributed_data(
        assigned by global history manager.
        
     """
+    # We don't do type check on the data argument assuming dask or 
+    # spark will throw errors that make the mistake clear.  
+    # Too awkward to use an isinstance test so for now at least we don't 
+    # test the type of data
     if not isinstance(db,Database):
         message = "write_distributed_data:  required arg1 (db) must be an instance of mspasspy.db.Database\n"
         message += "Type of arg1 received is {}".format(str(type(db)))
@@ -1112,7 +1229,7 @@ def write_distributed_data(
     if mode not in ["promiscuous", "cautious", "pedantic"]:
         message = "write_distributed_data:  Illegal value of mode={}\n".format(mode)
         message += "Must be one one of the following:  promiscuous, cautious, or pedantic"
-        raise MsPASSError(message,ErrorSeverity.Fatal)
+        raise ValueError(message)
     # This use of the collection name to establish the schema is 
     # a bit fragile as it depends upon the mspass schema naming 
     # convention.  Once tried using take(1) and probing the content of 
@@ -1122,7 +1239,7 @@ def write_distributed_data(
     elif collection=="wf_Seismogram":
         save_schema = db.metadata_schema.Seismogram
     else:
-        message = "write_distributed_data:   illegal value of argument collection={}\n".format(collection)
+        message = "write_distributed_data:   Illegal value of collection={}\n".format(collection)
         message += "Currently must be either wf_TimeSeries, wf_Seismogram, or default that implies wf_TimeSeries"
         raise ValueError(message)
 
@@ -1143,23 +1260,6 @@ def write_distributed_data(
                     overwrite=overwrite,
                     )
             )
-        # Undertaker handles all data types.  Live data are ignored so 
-        # we don't need to test for evidence of life
-        if cremate:
-            data = data.map(lambda d : stedronsky.cremate(d))
-        else:
-            # note we could do bury as an option here but mummify 
-            # has a small cost and can resuce memory footprint for 
-            # following steps.  Note that with we normally still 
-            # call bury later in the database save functions for both 
-            # atomic data and ensembles
-            data = data.map(lambda d : stedronsky.mummify(
-                                d,
-                                post_elog=False,
-                                post_history=False,
-                                )
-                )
-
         if data_are_atomic:
             # With atomic data dead in this implementation we handle 
             # any dead datum with the map operators that save the 
@@ -1169,7 +1269,7 @@ def write_distributed_data(
             # cremate (default constructed shell) or the resul of the 
             # muffify method
             if return_data:
-                data = data.map(atomic_save_wf_documents,
+                data = data.map(lambda d : atomic_save_wf_documents(d,
                                 db,
                                 save_schema, 
                                 exclude_keys, 
@@ -1179,7 +1279,7 @@ def write_distributed_data(
                                 data_tag=data_tag,
                                 undertaker=stedronsky,
                                 cremate=cremate,
-                                )
+                                ))
             else:
                 data = data.map(lambda d : atomic_extract_wf_document(d, 
                                 db, 
@@ -1218,6 +1318,7 @@ def write_distributed_data(
                             save_schema,
                             exclude_keys,
                             mode,
+                            stedronsky,
                             cremate=cremate,
                             data_tag=data_tag,
                             return_data=return_data,
@@ -1290,6 +1391,7 @@ def write_distributed_data(
                             save_schema,
                             exclude_keys,
                             mode,
+                            stedronsky,
                             cremate=cremate,
                             data_tag=data_tag,
                             return_data=return_data,
