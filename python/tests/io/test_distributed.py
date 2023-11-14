@@ -20,7 +20,16 @@ from mspasspy.io.distributed import (
     write_distributed_data,
     read_to_dataframe,
 )
-from mspasspy.db.normalize import ObjectIdMatcher
+from mspasspy.db.normalize import ObjectIdMatcher,normalize
+from mspasspy.ccore.utility import ErrorSeverity
+
+# globals for this test module
+number_atomic_wf = 5 # with 3 partitions this intentionally gives uneven sizes
+number_ensemble_wf = 4   # intentionaly not same as number_atomic_wf
+number_ensembles = 3   # ensemble tests create this many ensembles 
+number_partitions=3  # some tests may need to change this one
+testdbname = "mspass_test_db"
+
 
 def make_channel_record(val,net="00",sta="sta",chan="chan",loc="00"):
     """
@@ -82,11 +91,6 @@ def make_source_record(val,time=0.0):
     doc['time']=time
     doc['magnitude']=1.0
     return doc
-# globals for this test module
-number_atomic_wf = 3
-number_ensemble_wf = 4   # intentionaly not same as number_atomic_wf
-number_ensembles = 4   # ensemble tests create this many ensembles 
-testdbname = "mspass_test_db"
 
 
 @pytest.fixture
@@ -256,7 +260,7 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
         context=sc
     else:
         context=None
-    number_partitions=2
+
     if collection=="wf_TimeSeries":
         wfid_list = atomic_time_series_generator
     elif collection=="wf_Seismogram":
@@ -426,7 +430,376 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
     for d in wfdata_list:
         assert d.is_defined("merged_source_id")
         assert d["merged_source_id"] == source_id
-    #client.drop_database(testdbname)
+    #TODO:  needs a test of scratchfile option for reader
+    
+def kill_one(d):
+    """
+    Used in map tests below to kill one dataum.  Frozen for now as 
+    when channel_sta is sta1
+    """
+    print("Entering function kill_one")
+    if d["site_sta"]=="station1": 
+        d.kill()
+        d.elog.log_error("kill_one", "test function killed this datum",ErrorSeverity.Invalid)
+    return d
+
+# functions used for  atomic writer tests
+def massacre(d):
+    """
+    kill all
+    """
+    d.kill()
+    d.elog.log_error("massacre", "test function killed this datum",ErrorSeverity.Invalid)
+    return d
+
+def set_one_invalid(d):
+    if d["site_sta"]=="station1": 
+        d["samplling_rate"]="bad_data"
+    return d
+    
+def count_valid_ids(testlist):
+    count=0
+    for x in testlist:
+        if x:
+            count += 1
+    return count
+# compable functions for testing writer with ensembles
+def kill_one_member(ens):
+    """
+    Kill member of each ensemble in a map call for tests.
+    """
+    ens.member[0].kill()
+    ens.member[0].elog.log_error("kill_one_member", "test function killed this datum",ErrorSeverity.Invalid)
+    return ens
+
+def set_one_invalid_member(ens):
+    ens.member[0]['sampling_rate']='bad_data'
+    return ens
+
+from mspasspy.algorithms.signals import detrend
+@pytest.mark.parametrize("format,collection", 
+                         [("dask","wf_TimeSeries"),
+                          ("dask","wf_Seismogram"),
+                          #("spark","wf_TimeSeries"),
+                          #("spark","wf_Seismogram")
+                          ])
+def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram_generator,format,collection):
+    """
+    Supplement to test_read_distributed_atomic focused more on the 
+    writer than the reader.  Split these tests to reduce risk of 
+    accumulation of dependencies of previous tests.  
+    
+    The writer has several features that are tested independently 
+    in this function.
+    """
+    print("Starting test with format=",format, " and collection=",collection)
+    if format=="spark":
+        context=sc
+    else:
+        context=None
+    # generators create wfid_list but we ignore it in these tests
+    # Deleted to assure not misused below
+    if collection=="wf_TimeSeries":
+        wfid_list = atomic_time_series_generator
+    elif collection=="wf_Seismogram":
+        wfid_list = atomic_seismogram_generator
+    del wfid_list
+    client = DBClient("localhost")
+    db = client.get_database(testdbname)
+    
+    # First test a basic read and write.  This duplicates a test in 
+    # the reader but produces a saved ensemble we will reuse later
+    nrmlist=[]
+    if collection=="wf_TimeSeries":
+        channel_matcher = ObjectIdMatcher(db,
+                            "channel",
+                            attributes_to_load=['net','sta','lat','lon','elev','_id'])
+        nrmlist.append(channel_matcher)
+    source_matcher = ObjectIdMatcher(db,
+                        "source",
+                        attributes_to_load=['lat','lon','depth','time','_id'])
+    nrmlist.append(source_matcher)
+    
+    site_matcher = ObjectIdMatcher(db,
+                        "site",
+                        attributes_to_load=['net','sta','lat','lon','elev','_id'])
+    nrmlist.append(site_matcher)
+    bag_or_rdd = read_distributed_data(db,
+                                  collection=collection,
+                                  format=format,
+                                  normalize=nrmlist,
+                                  spark_context=context,
+                                  )
+    test_wfids = write_distributed_data(bag_or_rdd, 
+                                   db,
+                                   data_are_atomic=True,
+                                   collection=collection,
+                                   data_tag="save_number_1",
+                                   format=format,
+                                   )
+    # Default above is assumed for return_data == False.  In that 
+    # case write_distributed_data should return a list of ObjectIds
+    # of the saved waveforms.  We test that in the assertions below
+    assert len(test_wfids)==number_atomic_wf
+    # write_distributed_data only returns a list of ObjectId written
+    # unless we set return_data True.
+    # verify the ids are valid - i.e. were saved
+    n = db[collection].count_documents({"data_tag" : "save_number_1"})
+    assert n == number_atomic_wf
+    cursor=db[collection].find({"data_tag" : "save_number_1"})
+    for doc in cursor:
+        testid=doc['_id']
+        assert testid in test_wfids
+        
+    # Read that group back in and store the list of data in by 
+    # the symbol dlist0.  That and test_wfids provide the reference for 
+    # writer comparisons in all tests below
+    bag_or_rdd = read_distributed_data(db,
+                                  collection=collection,
+                                  format=format,
+                                  normalize=nrmlist,
+                                  spark_context=context,
+                                  data_tag="save_number_1"
+                                  )
+    if format=="dask":
+        dlist0=bag_or_rdd.compute()
+    elif format=="spark":
+        dlist0=bag_or_rdd.collect()
+    # Sanity check to verify that did what id should have done
+    assert len(dlist0)==number_atomic_wf
+    
+    
+    # Test one explicit kill
+    # set npartition to assure irregular sizes
+    bag_or_rdd = read_distributed_data(db,
+                                  collection=collection,
+                                  format=format,
+                                  normalize=nrmlist,
+                                  npartitions=number_partitions,
+                                  spark_context=context,
+                                  data_tag="save_number_1"
+                                  )
+    #print("partitions in reader output=",bag_or_rdd.npartitions)
+    if format=="dask":
+        bag_or_rdd = bag_or_rdd.map(kill_one)
+    else:
+        # TODO  - kill_one map call here fails while detrend using 
+        # the same synatx does not.  Same function works in spark
+        # mysterious problem I'm punting while I write additional tests
+        #bag_or_rdd = bag_or_rdd.map(lambda d : kill_one(d))
+        bag_or_rdd = bag_or_rdd.map(lambda d : detrend(d))
+    #print("partitions after map operator=",bag_or_rdd.npartitions)
+    newwfidslist = write_distributed_data(bag_or_rdd, 
+                                   db,
+                                   data_are_atomic=True,
+                                   collection=collection,
+                                   data_tag="save_explicit_kill",
+                                   format=format,
+                                   )
+    assert len(newwfidslist)==number_atomic_wf
+    # kills are returned as None - this function counts not none values
+    assert count_valid_ids(newwfidslist)==(number_atomic_wf-1)
+    n = db[collection].count_documents({"data_tag" : "save_explicit_kill"})
+    assert n==(number_atomic_wf-1)
+    n = db["cemetery"].count_documents({})
+    assert n==1
+    doc=db["cemetery"].find_one()
+    #from bson import json_util
+    #print(json_util.dumps(doc,indent=2))
+    assert "tombstone" in doc
+    assert "logdata" in doc
+    # Better to bulldoze the cemetery before continuing
+    db.drop_collection("cemetery")
+    
+    
+    # Exactly the same as above but using cremate option. 
+    # only difference should be that creation leaves no cemetery document.
+    bag_or_rdd = read_distributed_data(db,
+                                  collection=collection,
+                                  format=format,
+                                  normalize=nrmlist,
+                                  npartitions=number_partitions,
+                                  spark_context=context,
+                                  data_tag="save_number_1"
+                                  )
+    #print("partitions in reader output=",bag_or_rdd.npartitions)
+    if format=="dask":
+        bag_or_rdd = bag_or_rdd.map(kill_one)
+    else:
+        # TODO  - kill_one map call here fails while detrend using 
+        # the same synatx does not.  Same function works in spark
+        # mysterious problem I'm punting while I write additional tests
+        #bag_or_rdd = bag_or_rdd.map(lambda d : kill_one(d))
+        bag_or_rdd = bag_or_rdd.map(lambda d : detrend(d))
+    #print("partitions after map operator=",bag_or_rdd.npartitions)
+    newwfidslist = write_distributed_data(bag_or_rdd, 
+                                   db,
+                                   data_are_atomic=True,
+                                   collection=collection,
+                                   data_tag="save_explicit_kill_w_cremation",
+                                   format=format,
+                                   cremate=True,
+                                   )
+    assert len(newwfidslist)==number_atomic_wf
+    # kills are returned as None - this function counts not none values
+    assert count_valid_ids(newwfidslist)==(number_atomic_wf-1)
+    n = db[collection].count_documents({"data_tag" : "save_explicit_kill_w_cremation"})
+    assert n==(number_atomic_wf-1)
+    n = db["cemetery"].count_documents({})
+    assert n==0
+    db.drop_collection("cemetery")
+    
+    # Repeat for end member killing all
+    bag_or_rdd = read_distributed_data(db,
+                                  collection=collection,
+                                  format=format,
+                                  normalize=nrmlist,
+                                  npartitions=number_partitions,
+                                  spark_context=context,
+                                  data_tag="save_number_1"
+                                  )
+    #print("partitions in reader output=",bag_or_rdd.npartitions)
+    if format=="dask":
+        bag_or_rdd = bag_or_rdd.map(massacre)
+    else:
+        bag_or_rdd = bag_or_rdd.map(lambda d : massacre(d))
+    #print("partitions after map operator=",bag_or_rdd.npartitions)
+    newwfidslist = write_distributed_data(bag_or_rdd, 
+                                   db,
+                                   data_are_atomic=True,
+                                   collection=collection,
+                                   data_tag="save_kill_all",
+                                   format=format,
+                                   )
+    assert len(newwfidslist)==number_atomic_wf
+    # kills are returned as None - this function counts not none values
+    assert count_valid_ids(newwfidslist)==0
+    n = db["cemetery"].count_documents({})
+    assert n==number_atomic_wf 
+    # Better to bulldoze the cemetery before continuing
+    db.drop_collection("cemetery")
+    
+    # Now do a kill with pedantic mode and an invalid value
+    bag_or_rdd = read_distributed_data(db,
+                                  collection=collection,
+                                  format=format,
+                                  normalize=nrmlist,
+                                  npartitions=number_partitions,
+                                  spark_context=context,
+                                  data_tag="save_number_1"
+                                  )
+    #print("partitions in reader output=",bag_or_rdd.npartitions)
+    if format=="dask":
+        bag_or_rdd = bag_or_rdd.map(set_one_invalid)
+    else:
+        bag_or_rdd = bag_or_rdd.map(lambda d : set_one_invalid(d))
+    #print("partitions after map operator=",bag_or_rdd.npartitions)
+    newwfidslist = write_distributed_data(bag_or_rdd, 
+                                   db,
+                                   data_are_atomic=True,
+                                   mode="pedantic",
+                                   collection=collection,
+                                   data_tag="save_pedantic_kill",
+                                   format=format,
+                                   )
+    assert len(newwfidslist)==number_atomic_wf
+    # kills are returned as None - this function counts not none values
+    assert count_valid_ids(newwfidslist)==(number_atomic_wf-1)
+    n = db[collection].count_documents({"data_tag" : "save_pedantic_kill"})
+    assert n==(number_atomic_wf-1)
+    n = db["cemetery"].count_documents({})
+    assert n==1
+    doc=db["cemetery"].find_one()
+    #from bson import json_util
+    #print(json_util.dumps(doc,indent=2))
+    assert "tombstone" in doc
+    assert "logdata" in doc
+    # Better to bulldoze the cemetery before continuing
+    db.drop_collection("cemetery")
+    
+    # Repeat with cremate option set True
+    # Only difference should be that it leaves no cemetery document
+    bag_or_rdd = read_distributed_data(db,
+                                  collection=collection,
+                                  format=format,
+                                  normalize=nrmlist,
+                                  npartitions=number_partitions,
+                                  spark_context=context,
+                                  data_tag="save_number_1"
+                                  )
+    #print("partitions in reader output=",bag_or_rdd.npartitions)
+    if format=="dask":
+        bag_or_rdd = bag_or_rdd.map(set_one_invalid)
+    else:
+        bag_or_rdd = bag_or_rdd.map(lambda d : set_one_invalid(d))
+    #print("partitions after map operator=",bag_or_rdd.npartitions)
+    newwfidslist = write_distributed_data(bag_or_rdd, 
+                                   db,
+                                   data_are_atomic=True,
+                                   mode="pedantic",
+                                   collection=collection,
+                                   data_tag="save_pedantic_kill_w_cremation",
+                                   format=format,
+                                   cremate=True,
+                                   )
+    assert len(newwfidslist)==number_atomic_wf
+    # kills are returned as None - this function counts not none values
+    assert count_valid_ids(newwfidslist)==(number_atomic_wf-1)
+    n = db[collection].count_documents({"data_tag" : "save_pedantic_kill_w_cremation"})
+    assert n==(number_atomic_wf-1)
+    n = db["cemetery"].count_documents({})
+    assert n==0
+    db.drop_collection("cemetery")
+    
+    #TODO  Needs additional tests for 
+    # storage_mode="files" - not sure how to do cleanup
+    # post_elog option - not sure we need this feature I added
+    # post_history - not sure how to do this test.  Likely more useful than 
+    #   post_elog as if history is turned on it would speed writes to 
+    #   set this true
+    
+    # Now test return_data True option of reader
+#    bag_or_rdd = read_distributed_data(db,
+#                                  collection=collection,
+#                                  format=format,
+#                                  normalize=nrmlist,
+#                                  spark_context=context,
+#                                  npartitions=number_partitions,
+#                                  data_tag="save_number_1"
+#                                  )
+#    bag_or_rdd = write_distributed_data(bag_or_rdd, 
+#                                   db,
+#                                   data_are_atomic=True,
+#                                   collection=collection,
+#                                   data_tag="save_pedantic_kill",
+#                                   format=format,
+#                                   return_data=True,
+#                                   )
+#    if format=="dask":
+#        dlist=bag_or_rdd.compute()
+#    elif format=="spark":
+#        dlist=bag_or_rdd.collect()
+#    assert len(dlist)==number_atomic_wf
+#    # Order is not preserved so dlist and dlist0 cannot be directly 
+#    # compared.  Hopefully this set of tests are sufficient to 
+#    # reveal most problems that might happen with revisions
+#    # change if a feature is added that might invalidate this test
+#    defined_list=["live","npts","channel_lat","site_lat","source_lat"]
+#    for d in dlist:
+#        wfid = d['_id']
+#        assert wfid not in test_wfids
+#        assert d.live
+#        for k in defined_list:
+#            assert d.is_defined(k)
+#            
+#    # release the memory in dlist - bit huge but also reduces odds of 
+#    # odd behavior later
+#    del dlist
+    
+    
+    
+    
+    
         
 @pytest.mark.parametrize("format,collection", 
                          [("dask","wf_TimeSeries")],
@@ -441,7 +814,6 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
          context=sc
      else:
          context=None
-     number_partitions=2
      if collection=="wf_TimeSeries":
          wfid_list = TimeSeriesEnsemble_generator
      elif collection=="wf_Seismogram":
@@ -450,7 +822,7 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
      db = client.get_database(testdbname)
      # We use source_id in this test to define ensembles.  
      # Used to generate a list of query dictionaries by source_id
-     srcid_list=db.source.distince('_id')
+     srcid_list=db.source.distinct('_id')
      querylist=[]
      for srcid in srcid_list:
          querylist.append({'source_id' : srcid})
@@ -474,27 +846,38 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
          for d in e.member:
              assert d.live
              # appropriate only because we read in default promiscuous mode
-             assert d.is_defined("sta")
+             assert d.is_defined("source_id")
              
      # repeat with normalization to load source info in ensemble metadata
-     # and site data into members
-     nrmlist=[]
+     # and site data into members.  Note this also tests the container_to_merge 
+     # functionality as we need to use it to load source_id values to 
+     # each ensemble - recycle srcid_list - caution
+     # notice we have to convert to a list of dict objects
+     # testing only default partition matching.  Error handlers 
+     # handle case with mismatched parittioning specified explicitly
+     srcdocs=[]
+     for id in srcid_list:
+         srcdocs.append({"source_id" : id})
+     if format=="dask":
+         bag_or_rdd_to_merge = dask.bag.from_sequence(srcdocs)
+     else:
+        bag_or_rdd_to_merge.parallelize(srcid_list)
+
      source_matcher = ObjectIdMatcher(db,
                         "source",
                         attributes_to_load=['lat','lon','depth','time','_id'])
-     nrmlist.append(source_matcher)
     
      site_matcher = ObjectIdMatcher(db,
                         "site",
                         attributes_to_load=['net','sta','lat','lon','elev','_id'])
-     nrmlist.append(site_matcher)
      bag_or_rdd = read_distributed_data(querylist,
                                    db,
                                    collection=collection,
                                    format=format,
                                    spark_context=context,
-                                   normalize=nrmlist,
-                                   ensemble_metadata_list=['source_id'],
+                                   container_to_merge=bag_or_rdd_to_merge,
+                                   normalize=[site_matcher],
+                                   normalize_ensemble=[source_matcher]
                                    )
      if format=="dask":
          wfdata_list=bag_or_rdd.compute()
@@ -509,30 +892,29 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
          assert e.is_defined('source_lat')
          for d in e.member:
              assert d.live
-             # appropriate only because we read in default promiscuous mode
-             assert d.is_defined("sta")
+             assert d.is_defined("npts")
+             assert d.is_defined("time_standard")
              assert d.is_defined("site_id")
              assert d.is_defined("site_lat")
              
-     # now test the same read followed by a basic write
+     # now test the same read followed by a basic write - drop ensemble normalization 
      bag_or_rdd = read_distributed_data(querylist,
                                   db,
                                   collection=collection,
                                   format=format,
                                   spark_context=context,
-                                  normalize=nrmlist,
-                                  ensemble_metadata_list=['source_id'],
+                                  normalize=[site_matcher],
                                   )
      data_tag = "save_number_1"   # made a variable to allow changes to copy code
      wfidlists = write_distributed_data(bag_or_rdd, 
                                     db,
                                     data_are_atomic=False,
                                     collection=collection,
-                                    data_tag="save_number_1",
+                                    data_tag=data_tag,
                                     format=format,
                                     )
-     # check - may be wrong
-     assert len(wfidlists)==number_ensemble_wf
+
+     assert len(wfidlists)==number_ensembles
          
      # default return examined here is a list of ObjectId lists
      # here we verify they match
@@ -542,7 +924,8 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
          assert db[collection].count_documents(query) == number_ensemble_wf
          cursor = db[collection].find(query)
          for doc in cursor:
-             assert 'sta' in doc
+             assert 'time_standard' in doc
+             assert 'site_id' in doc
              assert 'source_id' in doc
              assert doc['source_id']==srcid
              assert 'site_id' in doc
@@ -558,10 +941,287 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
                  if wfid in wfl:
                      number_hits += 1
              assert number_hits==1
+             
+    #TODO  test sort_clause feature
                  
              
-             
+@pytest.mark.parametrize("format,collection", 
+                         [("dask","wf_TimeSeries")],
+                          )
+ #                         ("dask","wf_Seismogram"),
+ #                         ("spark","wf_TimeSeries"),
+ #                         ("spark","wf_Seismogram")
+ #                         ])
+def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,format,collection):
+    """
+    This test is a complement to test_read_distributed_ensemble and 
+    test_write_distributed_atomic.   The tests here focus on handlling 
+    of dead data during writes.   It assumes atomic level features are 
+    covered by test in database and the atomic functions in this file.
+    """
+    print("Starting test with format=",format, " and collection=",collection)
+    if format=="spark":
+         context=sc
+    else:
+         context=None
+    if collection=="wf_TimeSeries":
+         wfid_list = TimeSeriesEnsemble_generator
+    elif collection=="wf_Seismogram":
+         wfid_list = SeismogramEnsemble_generator
+    client = DBClient("localhost")
+    db = client.get_database(testdbname)
+    # We use source_id in this test to define ensembles.  
+    # Used to generate a list of query dictionaries by source_id
+    srcid_list=db.source.distinct('_id')
+    querylist=[]
+    for srcid in srcid_list:
+         querylist.append({'source_id' : srcid,'data_tag' : {'$exists' : False}})
+
+    cursor = db.wf_TimeSeries.find({})
+    for doc in cursor:
+        if 'data_tag' in doc:
+            print(doc['data_tag'])
+        else:
+            print("Undefined")
+    # these matchers are used in some, but not all tests below. 
+    # defining them here as function scope initializations
+    source_matcher = ObjectIdMatcher(db,
+                       "source",
+                       attributes_to_load=['lat','lon','depth','time','_id'])
+   
+    site_matcher = ObjectIdMatcher(db,
+                       "site",
+                       attributes_to_load=['net','sta','lat','lon','elev','_id'])     
      
+    # this first test is comparable to the atomic version killing 
+    # one item.  here, however, the kill is issued to a one member.
+    bag_or_rdd = read_distributed_data(querylist,
+                                 db,
+                                 collection=collection,
+                                 format=format,
+                                 spark_context=context,
+                                 normalize=[site_matcher],
+                                 )
+    if format=="dask":
+        bag_or_rdd = bag_or_rdd.map(kill_one_member)
+    else:
+        bag_or_rdd = bag_or_rdd.map(lambda d : kill_one_member(d))
+    data_tag = "kill_one_test"   # made a variable to allow changes to copy code
+    wfidlists = write_distributed_data(bag_or_rdd, 
+                                   db,
+                                   data_are_atomic=False,
+                                   collection=collection,
+                                   data_tag=data_tag,
+                                   format=format,
+                                   )
+    cursor = db.wf_TimeSeries.find({})
+    for doc in cursor:
+        if 'data_tag' in doc:
+            print(doc['data_tag'])
+        else:
+            print("Undefined")
+    assert len(wfidlists)==number_ensembles
+    # kills should leave one tombstone per ensemble in this test
+    n = db.cemetery.count_documents({})
+    assert n == number_ensembles
+    cursor = db.cemetery.find({})
+    for doc in cursor:
+        assert 'tombstone' in doc
+        assert 'logdata' in doc
+        
+    # default return examined here is a list of ObjectId lists
+    # here we verify they match
+
+    for srcid in srcid_list:
+        query={"source_id" : srcid, "data_tag" : data_tag}
+        # should kill one member per ensemble so all should satisfy this test
+        assert db[collection].count_documents(query) == (number_ensemble_wf-1)
+        cursor = db[collection].find(query)
+        for doc in cursor:
+            assert 'time_standard' in doc
+            assert 'site_id' in doc
+            assert 'source_id' in doc
+            assert doc['source_id']==srcid
+            assert 'site_id' in doc
+            # these should have been dropped on a save as normalization attributes
+            assert 'site_lat' not in doc
+            assert 'source_lat' not in doc
+            assert doc['data_tag']==data_tag
+            # this test is a bit more complex that might be expected
+            # necessary because order is not guaranteed in the id lists
+            number_hits=0
+            for wfl in wfidlists:
+                wfid = doc['_id']
+                if wfid in wfl:
+                    number_hits += 1
+            assert number_hits==1
+    # need to do this to simplify counts for next test
+    db.drop_collection('cemetery')
+    
+    # repeat the same test with cremate option
+    bag_or_rdd = read_distributed_data(querylist,
+                                 db,
+                                 collection=collection,
+                                 format=format,
+                                 spark_context=context,
+                                 normalize=[site_matcher],
+                                 )
+    if format=="dask":
+        bag_or_rdd = bag_or_rdd.map(kill_one_member)
+    else:
+        bag_or_rdd = bag_or_rdd.map(lambda d : kill_one_member(d))
+    data_tag = "kill_one_cremation_test"   # made a variable to allow changes to copy code
+    wfidlists = write_distributed_data(bag_or_rdd, 
+                                   db,
+                                   data_are_atomic=False,
+                                   collection=collection,
+                                   data_tag=data_tag,
+                                   format=format,
+                                   cremate=True,
+                                   )
+    cursor = db.wf_TimeSeries.find({})
+    for doc in cursor:
+        if 'data_tag' in doc:
+            print(doc['data_tag'])
+        else:
+            print("Undefined")
+    assert len(wfidlists)==number_ensembles
+    # kills should leave one tombstone per ensemble in this test
+    n = db.cemetery.count_documents({})
+    assert n == 0
+
+        
+    # default return examined here is a list of ObjectId lists
+    # here we verify they match
+
+    for srcid in srcid_list:
+        query={"source_id" : srcid, "data_tag" : data_tag}
+        # should kill one member per ensemble so all should satisfy this test
+        assert db[collection].count_documents(query) == (number_ensemble_wf-1)
+        cursor = db[collection].find(query)
+        for doc in cursor:
+            assert 'time_standard' in doc
+            assert 'site_id' in doc
+            assert 'source_id' in doc
+            assert doc['source_id']==srcid
+            assert 'site_id' in doc
+            # these should have been dropped on a save as normalization attributes
+            assert 'site_lat' not in doc
+            assert 'source_lat' not in doc
+            assert doc['data_tag']==data_tag
+            # this test is a bit more complex that might be expected
+            # necessary because order is not guaranteed in the id lists
+            number_hits=0
+            for wfl in wfidlists:
+                wfid = doc['_id']
+                if wfid in wfl:
+                    number_hits += 1
+            assert number_hits==1
+    # need to do this to simplify counts for next test
+    db.drop_collection('cemetery')
+            
+    # Now test killing all ensembles - can use the same massacre (kill all) function
+    # because of api consistency
+    bag_or_rdd = read_distributed_data(querylist,
+                                 db,
+                                 collection=collection,
+                                 format=format,
+                                 spark_context=context,
+                                 normalize=[site_matcher],
+                                 )
+    if format=="dask":
+        bag_or_rdd = bag_or_rdd.map(massacre)
+    else:
+        bag_or_rdd = bag_or_rdd.map(lambda d : massacre(d))
+    data_tag = "kill_all_test"   # made a variable to allow changes to copy code
+    wfidlists = write_distributed_data(bag_or_rdd, 
+                                   db,
+                                   data_are_atomic=False,
+                                   collection=collection,
+                                   data_tag=data_tag,
+                                   format=format,
+                                   )
+    assert len(wfidlists)==number_ensembles
+    # kills should leave one tombstone per ensemble in this test
+    n = db.cemetery.count_documents({})
+    assert n == (number_ensembles*number_ensemble_wf)
+    cursor = db.cemetery.find({})
+    for doc in cursor:
+        assert 'tombstone' in doc
+        assert 'logdata' in doc
+        
+    # need to do this to simplify counts for next test
+    db.drop_collection('cemetery')
+    
+    
+    # Now test for schema failure with a mode='pedantic'   
+    # Test ill kill on member and yields and output similar to 
+    # the kill one test
+    bag_or_rdd = read_distributed_data(querylist,
+                                 db,
+                                 collection=collection,
+                                 format=format,
+                                 spark_context=context,
+                                 normalize=[site_matcher],
+                                 )
+    if format=="dask":
+        bag_or_rdd = bag_or_rdd.map(set_one_invalid_member)
+    else:
+        bag_or_rdd = bag_or_rdd.map(lambda d : set_one_invalid_member(d))
+    data_tag = "pedantic_write_kill_test"   # made a variable to allow changes to copy code
+    wfidlists = write_distributed_data(bag_or_rdd, 
+                                   db,
+                                   data_are_atomic=False,
+                                   mode='pedantic',
+                                   collection=collection,
+                                   data_tag=data_tag,
+                                   format=format,
+                                   )
+    cursor = db.wf_TimeSeries.find({})
+    for doc in cursor:
+        if 'data_tag' in doc:
+            print(doc['data_tag'])
+        else:
+            print("Undefined")
+    assert len(wfidlists)==number_ensembles
+    # kills should leave one tombstone per ensemble in this test
+    n = db.cemetery.count_documents({})
+    assert n == number_ensembles # one failure per ensemble
+    cursor = db.cemetery.find({})
+    for doc in cursor:
+        assert 'tombstone' in doc
+        assert 'logdata' in doc
+        
+    # default return examined here is a list of ObjectId lists
+    # here we verify they match
+
+    for srcid in srcid_list:
+        query={"source_id" : srcid, "data_tag" : data_tag}
+        # should kill one member per ensemble so all should satisfy this test
+        assert db[collection].count_documents(query) == (number_ensemble_wf-1)
+        cursor = db[collection].find(query)
+        for doc in cursor:
+            assert 'time_standard' in doc
+            assert 'site_id' in doc
+            assert 'source_id' in doc
+            assert doc['source_id']==srcid
+            assert 'site_id' in doc
+            # these should have been dropped on a save as normalization attributes
+            assert 'site_lat' not in doc
+            assert 'source_lat' not in doc
+            assert doc['data_tag']==data_tag
+            # this test is a bit more complex that might be expected
+            # necessary because order is not guaranteed in the id lists
+            number_hits=0
+            for wfl in wfidlists:
+                wfid = doc['_id']
+                if wfid in wfl:
+                    number_hits += 1
+            assert number_hits==1
+    # need to do this to simplify counts for next test
+    db.drop_collection('cemetery')
+        
+  
 
     
 def test_read_error_handlers(atomic_time_series_generator):
@@ -575,7 +1235,6 @@ def test_read_error_handlers(atomic_time_series_generator):
         mybag = read_distributed_data(db,
                                       collection="wf_TimeSeries",
                                       format="illegal_format",
-                                      data_tag="save_number_1",
                                       )
     # illegal value for db argument when using dataframe input
     cursor=db.wf_TimeSeries.find({})
@@ -585,7 +1244,6 @@ def test_read_error_handlers(atomic_time_series_generator):
                                       db=True,
                                       collection="wf_TimeSeries",
                                       format="dask",
-                                      data_tag="save_number_1",
                                       )
     # Defaulted (none) value for db with dataframe input produces a differnt exeception
     with pytest.raises(TypeError,match="An instance of Database class is required"):
@@ -593,51 +1251,73 @@ def test_read_error_handlers(atomic_time_series_generator):
                                       db=None,
                                       collection="wf_TimeSeries",
                                       format="dask",
-                                      data_tag="save_number_1",
                                       )
     # this is illegal input for arg0 test - message match is a bit cryptic
     with pytest.raises(TypeError,match="Must be a"):
         mybag = read_distributed_data(float(2),
                                       collection="wf_TimeSeries",
                                       format="dask",
-                                      data_tag="save_number_1",
                                       )
-
+    # test error handlers for different normalization options
+    # first values that aren't lists
+    with pytest.raises(TypeError,match="Illegal type for normalize argument"):
+        mybag = read_distributed_data(db,
+                                      collection="wf_TimeSeries",
+                                      normalize="bad normalize type- string",
+                                      )
+    with pytest.raises(TypeError,match="Illegal type for normalize_ensemble argument"):
+        mybag = read_distributed_data(db,
+                                      collection="wf_TimeSeries",
+                                      normalize_ensemble="bad normalize_ensemble",
+                                      )
+    # repeat with bad data in a component of list - using one valid value and a bad value
+    source_matcher = ObjectIdMatcher(db,
+                        "source",
+                        attributes_to_load=['lat','lon','depth','time','_id'])
+    nrmlist = [source_matcher,"foobar"]
+    with pytest.raises(TypeError,match="Must be subclass of BasicMatcher"):
+        mybag = read_distributed_data(db,
+                                      collection="wf_TimeSeries",
+                                      normalize=nrmlist,
+                                      )
+    with pytest.raises(TypeError,match="Must be subclass of BasicMatcher"):
+        mybag = read_distributed_data(db,
+                                      collection="wf_TimeSeries",
+                                      normalize_ensemble=nrmlist,
+                                      )
         
-@pytest.mark.parametrize("format,collection", 
-                         [("dask","wf_TimeSeries"),
-                          ("dask","wf_Seismogram"),
-                          ("spark","wf_TimeSeries"),
-                          ("spark","wf_Seismogram")
-                          ])
-def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,format,collection):
-    """
-    Tests features of write_distributed_data for atomic dara.  
-    """
-    pass
+def test_write_error_handlers(atomic_time_series_generator):
+    atomic_time_series_generator
+    client = DBClient("localhost")
+    db = client.get_database(testdbname)
+    # these two are fixed for these tests for now as all we test 
+    # are argument checks done at the top of the current implementation
+    # if we need to test for exceptions thrown elsewhere would need to 
+    # parameterize this test for spark/dask and maybe also collection
+    collection='wf_TimeSeries'   
+    format='dask' 
+    
+    # Used repeatedly below.  that works for these tests because 
+    # mybag is never altered because we test only handlers in 
+    # argument test section at the top of the function.
+    # if tests for errors returned from inside function are added that
+    # approach will not work
+    mybag = read_distributed_data(db,
+                                  collection=collection,
+                                  format=format,
+                                  )
+    with pytest.raises(TypeError,match="required arg1"):
+        mybag = write_distributed_data(mybag,"wrong type - I should be a Database")
 
-@pytest.mark.parametrize("format,collection", 
-                         [("dask","wf_TimeSeries"),
-                          ("dask","wf_Seismogram"),
-                          ("spark","wf_TimeSeries"),
-                          ("spark","wf_Seismogram")
-                          ])
-def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram_generator,format,collection):
-    """
-    Tests features of write_distributed_data for atomic dara.  
-    """
-    pass
+    with pytest.raises(TypeError,match="Unsupported storage_mode"):
+        mybag = write_distributed_data(mybag,db,storage_mode='illegal_storage_mode')
+        
+    with pytest.raises(ValueError,match="Illegal value of mode"):
+        mybag = write_distributed_data(mybag,db,mode='illegal_mode')
+        
+    with pytest.raises(ValueError,match="Illegal value of collection"):
+        mybag = write_distributed_data(mybag,db,collection='illegal_collection')
 
-@pytest.mark.parametrize("format,collection", 
-                         [("dask","wf_TimeSeries"),
-                          ("dask","wf_Seismogram"),
-                          ("spark","wf_TimeSeries"),
-                          ("spark","wf_Seismogram")
-                          ])
-def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,format,collection):
-    """
-    Tests features of write_distributed_data for atomic dara.  
-    """
-    pass
+
 
     
