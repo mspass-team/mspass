@@ -168,7 +168,7 @@ class Undertaker:
 
     def bury(self,
                       mspass_object,
-                      save_history=True,
+                      save_history=False,
                       mummify_atomic_data=True,
                       ):
         """
@@ -220,7 +220,7 @@ class Undertaker:
         :param save_history:  If True and a datum has the optional history
           data stored with it, the history data will be stored in a
           MongoDB collection hard wired into the _save_history method of
-          Database.
+          Database.  Default is False
 
         :param mummify_atomic_data:  When True (default) atomic data
           marked dead will be passed through self.mummify to reduce
@@ -282,7 +282,7 @@ class Undertaker:
                 if x.live:
                     newens.member.append(x)
                 else:
-                    self.bury(x,save_elog=save_elog,save_history=save_history,mummify_atomic_data=False)
+                    self.bury(x,save_history=save_history,mummify_atomic_data=False)
             if nlive>0:
                 newens.set_live()
             return newens
@@ -343,7 +343,7 @@ class Undertaker:
             # loop.  Buries all abortions and returns a copy of the
             # ensembles with the all bodies (regular and abortions) removed
             ensmd = mspass_object._get_ensemble_md()
-            if mspass_object.live():
+            if mspass_object.live:
                 nlive = 0
                 for x in mspass_object.member:
                     if x.live:
@@ -358,7 +358,7 @@ class Undertaker:
                     "Coding error - newens constructor section has invalid type\nThat cannot happen unless the original code was incorrectly changed",
                     ErrorSeverity.Invalid,
                     )
-            if mspass_object.live():
+            if mspass_object.live:
                 for x in mspass_object.member:
                     if x.live:
                         newens.member.append(x)
