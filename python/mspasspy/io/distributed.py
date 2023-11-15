@@ -838,7 +838,6 @@ def _save_ensemble_wfdocs(
         undertaker,
         cremate=False,
         data_tag=None,
-        return_data=False,
         ):
     """
     Equivalent of _save_wfdocs for ensembles.   It is mostly a loop over
@@ -895,13 +894,12 @@ def _save_ensemble_wfdocs(
         else:
             wfids = []
     print("Size of returned wfids list=",len(wfids))
-    if return_data:
-        return ensemble_data
-    else:
-        return wfids
+    return wfids
 
 
-
+# TODO:  this will eventually be deleted.  Retained for refernce in 
+# case example in docstring needs to cover more complex handling of 
+# dead data
 def atomic_save_wf_documents(d,
             db,
             save_schema,
@@ -1036,7 +1034,7 @@ def atomic_extract_wf_document(d,
         
 
 
-#TODO:   update docstring
+#TODO:   See if this passes tests if we move the compute/collect outside of the function
 def write_distributed_data(
     data,
     db,
@@ -1049,31 +1047,31 @@ def write_distributed_data(
     exclude_keys=None,
     collection=None,
     data_tag=None,
-    post_elog=True,
+    post_elog=False,
     post_history=False,
     cremate=False,
-    return_data=False,
     alg_name="write_distributed_data",
     alg_id="0",
 ):
     """
-    Parallel save function for data in a dask bag or pyspark rdd.
+    Parallel save function for termination of a processing script.
 
     Saving data from a parallel container (i.e. bag/rdd) is a different
     problem from a serial writer.  Bottlenecks are likely with
     communication delays talking to the MonboDB server and
     complexities of file based io.   Further, there are efficiency issues 
-    in the need to reduce transactions that case delays with the MongoDB 
+    in the need to reduce transactions that cause delays with the MongoDB 
     server.   This function tries to address these issues with two 
     approaches:
-        1.   After v2 it uses single function that handles writing the 
+        1.   Since v2 it uses single function that handles writing the 
              sample data for a datum.   For atomic data that means a 
              single array but for ensembles it is the combination of all
              arrays in the ensemble "member" containers.   The writing 
              functions are passed through a map operator
              so writing is a parallelized per worker.  Note the function 
              also abstracts how the data are written with different 
-             things done depending on the "storage_mode" argument.  
+             things done depending on the "storage_mode" attribute 
+             that can optionally be defined for each atomic object.
         2.   After the sample data are saved we use a MongoDB 
              "update_many" operator with the "many" defined by the 
              partition size.  That reduces database transaction delays 
@@ -1088,32 +1086,41 @@ def write_distributed_data(
     set True dead data will be vaporized and no trace of them will 
     appear in output.  
     
-    Normal behavior for this function is to return only a list of 
-    the ObjectIds of the documents saved in the collection defined by 
-    the collection argument.   Set the return_data boolean true 
-    for intermediate saves.  In that case a bag/RDD of data instead of 
-    bag/RDD of ObjectIds will be returned.   Beware memory overflow 
-    problems if you return the data - i.e. don't call the compute(dask)
-    or collect(spark) method on the result unless you know it will fit 
-    in memory.
+    To further reduce database traffic the function has two 
+    (boolean) options called `post_elog` and `post_history`.  
+    When set True the elog and/or object-level history data will 
+    be posted as subdocuments in the output collection instead of 
+    the normal (at least as defined by the Database handle) way 
+    these data are saved (In Database the error log is saved to the 
+    "elog" collection and the history data is saved to "history".)
     
-    Return has complexity depending upon the input.  Return is always 
-    a bag when format is "dask" and an RDD if format is "spark".  
-    Content is the complexity.   When writing atomic data the 
-    container by default is a list of ObjectIds of saved waveforms.
-    Atomic data marked dead will, by default, be "buried" in the 
-    cemetery collection.  Dead data entries in the returned container 
-    will contain a None that must be handled by caller if you want to 
-    examine the content.  However, when the `return_data` argument is 
-    set True dead data will be returned as "mummies", which means the 
-    Metadata is retained but the sample arrays are cleared to reduce 
-    memory (e.g. TimeSeries are returned as TimeSeries but marked dead and 
-    containing no sample data).  With ensembles the default return is 
-    a bag/RDD of lists of ObjectIds of the ensembled members successfully 
-    saved.   Ensemble members marked dead are always "buried" or 
-    "cremated" (cremate argument set True) before attempting to save the 
-    wf documents.   When return_data is set True, the ensembles returned 
-    will have the dead members removed.  
+    ////may change - see TODO above/////
+    This function should normally only be used as the terminal step 
+    of a parallel workflow (i.e. one made up of a string of map/reduce operators).
+    This function will initiate a lazy computation on such a string of 
+    operators because it calls the "compute" method for dask and the 
+    "collect" method of spark before returning.  We found this anomaly 
+    to be a necessary evil to make the parallel features operate properly.
+    
+    If your workflow requires an intermediate save (i.e. saving data 
+    in an intermediate step within a chain of map/reduce opeators)
+    the best approach at present is to use the `save_data` method of 
+    the `Database` class in a variant of the following (dask) example
+    that also illustrates how this function is used as the terminator 
+    of a chain of map-reduce operators.
+        
+    ```
+       mybag = read_distributed_data(db,collection='wf_TimeSeries')
+       mybag = mybag.map(detrend)   # example
+       # intermediate save
+       mybag = mybag.map(db.save_data,collection="wf_TimeSeries")
+       # more processing - trivial example
+       mybag = mybag.map(filter,'lowpass',freq=1.0)
+       # termination with this function
+       wfids = write_distributed_data(mybag,db,collection='wf_TimeSeries')
+    ```
+       
+
  
 
     :param data: parallel container of data to be written
@@ -1181,7 +1188,7 @@ def write_distributed_data(
     :param post_elog:   boolean controlling how error log messages are 
        handled.  When False (default) error log messages get posted in 
        single transactions with MongoDB to the "elog" collection.   
-       When set true error log entries will be posted to as subdocuments to 
+       When set True error log entries will be posted to as subdocuments to 
        the wf collection entry for each datum.   Setting post_elog True 
        is most useful if you anticipate a run will generate a large number of 
        error that will throttle with processing with a large number of 
@@ -1205,12 +1212,6 @@ def write_distributed_data(
        `bury` method will be called instead which saves a skeleton 
        (error log and Metadata content) of the results in the "cemetery" 
        collection.
-     :param return_data:  When True a bag/RDD will be returned with a 
-       slightly modified version of the input.   What "modified" means 
-       could change, but at present that means only adding the value of 
-       the data_tag argument if it is defined.  When False (default) the 
-       bag/RDD will contain only the ObjectId of the wf collection 
-       documents saved.  
      :param alg_name:  do not change
      :param alg_id:  algorithm id for object-level history.  Normally
        assigned by global history manager.
@@ -1230,6 +1231,13 @@ def write_distributed_data(
         message = "write_distributed_data:  Illegal value of mode={}\n".format(mode)
         message += "Must be one one of the following:  promiscuous, cautious, or pedantic"
         raise ValueError(message)
+    if format:
+        if format not in ["dask","spark"]:
+            message = "write_distributed_data:  Illegal value of format={}\n".format(format)
+            message += "Must be either dask or spark"
+            raise ValueError(message)
+    else:
+        format="dask"
     # This use of the collection name to establish the schema is 
     # a bit fragile as it depends upon the mspass schema naming 
     # convention.  Once tried using take(1) and probing the content of 
@@ -1245,11 +1253,12 @@ def write_distributed_data(
 
 
     stedronsky=Undertaker(db)
-    # Note although this is a database method it will not reference
-    # db at all if writing to files.  gridfs, of course, always requries
-    # the database to be defined.  Assumes if writing to files that 
-    # dir and dfile are defined for each datum.  If not default will 
-    # not fail but will generate a lot of weird file names with uuid generator
+    # Note we save sample data first.  That function will refuse to 
+    # save sample data for dead data and not leave junk.  However, 
+    # failures in conversion of Metadata attributes below can leave
+    # orphan sample data in files or on gridfs.   The assumption is 
+    # that that kind of problem will be rare or so common you need to 
+    # clear out everthing and start over
     if format == "spark":
         data = data.map(lambda d : db._save_sample_data(
                     d,
@@ -1262,26 +1271,11 @@ def write_distributed_data(
             )
         if data_are_atomic:
             # With atomic data dead in this implementation we handle 
-            # any dead datum with the map operators that save the 
+            # any dead datum with the map operators that saves the 
             # wf documents.   Dead data return a None instead of an id 
-            # by default and leave a body in the cemetery collection.
-            # when return_data is True return either ashes from 
-            # cremate (default constructed shell) or the resul of the 
-            # muffify method
-            if return_data:
-                data = data.map(lambda d : atomic_save_wf_documents(d,
-                                db,
-                                save_schema, 
-                                exclude_keys, 
-                                mode,
-                                post_elog=post_elog,
-                                post_history=post_history,
-                                data_tag=data_tag,
-                                undertaker=stedronsky,
-                                cremate=cremate,
-                                ))
-            else:
-                data = data.map(lambda d : atomic_extract_wf_document(d, 
+            # by default and leave a body in the cemetery collection
+            # unless cremate is set true
+            data = data.map(lambda d : atomic_extract_wf_document(d, 
                                 db, 
                                 save_schema, 
                                 exclude_keys, 
@@ -1292,12 +1286,12 @@ def write_distributed_data(
                                 undertaker=stedronsky,
                                 cremate=cremate,
                                 ))
-                data = data.mapPartitions(lambda d : _partitioned_save_wfdoc(
+            data = data.mapPartitions(lambda d : _partitioned_save_wfdoc(
                     d,
                     db,
                     collection=collection,
                     ))
-                data = data.collect()                
+            data = data.collect()                
         else:
             # This step adds some minor overhead, but it can reduce 
             # memory use at a small cost.  Ensembles are particularly 
@@ -1321,12 +1315,10 @@ def write_distributed_data(
                             stedronsky,
                             cremate=cremate,
                             data_tag=data_tag,
-                            return_data=return_data,
                             )
                             
                 )
-            if not return_data:
-                data = data.collect()
+            data = data.collect()
     else:
         data = data.map(db._save_sample_data,
                     storage_mode=storage_mode,
@@ -1337,27 +1329,9 @@ def write_distributed_data(
                     )
 
         if data_are_atomic:
-            # With atomic data dead in this implementation we handle 
-            # any dead datum with the map operators that save the 
-            # wf documents.   Dead data return a None instead of an id 
-            # by default and leave a body in the cemetery collection.
-            # when return_data is True return either ashes from 
-            # cremate (default constructed shell) or the resul of the 
-            # muffify method
-            if return_data:
-                data = data.map(atomic_save_wf_documents,
-                                db,
-                                save_schema, 
-                                exclude_keys, 
-                                mode,
-                                post_elog=post_elog,
-                                post_history=post_history,
-                                data_tag=data_tag,
-                                undertaker=stedronsky,
-                                cremate=cremate,
-                                )
-            else:
-                data = data.map(atomic_extract_wf_document,
+            # See comment at top of spark section  - this code is exactly 
+            # the same by in the dask dialect
+            data = data.map(atomic_extract_wf_document,
                                 db, 
                                 save_schema, 
                                 exclude_keys, 
@@ -1368,10 +1342,10 @@ def write_distributed_data(
                                 undertaker=stedronsky,
                                 cremate=cremate,
                                 )
-                data = data.map_partitions(_partitioned_save_wfdoc,db,collection=collection)
-                # necessary here or the map_partition function will fail 
-                # because it will receive a DAG structure instead of a list
-                data = data.compute()
+            data = data.map_partitions(_partitioned_save_wfdoc,db,collection=collection)
+            # necessary here or the map_partition function will fail 
+            # because it will receive a DAG structure instead of a list
+            data = data.compute()
         else:
             # This step adds some minor overhead, but it can reduce 
             # memory use at a small cost.  Ensembles are particularly 
@@ -1394,13 +1368,8 @@ def write_distributed_data(
                             stedronsky,
                             cremate=cremate,
                             data_tag=data_tag,
-                            return_data=return_data,
                             )
-            # needed for consistencey with the atomic version when 
-            # return_data is False - returns list of wfids on for each ensemble
-            # returns the bag if return_data is true
-            if not return_data:
-                data = data.compute()
+            data = data.compute()
     return data
 
 
