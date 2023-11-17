@@ -1,7 +1,11 @@
 import pytest
 
+import os,shutil
+import sys
+
 from mspasspy.db.database import Database
 from mspasspy.db.client import DBClient
+sys.path.append("python/tests")
 from helper import (
     get_live_seismogram,
     get_live_timeseries,
@@ -20,7 +24,7 @@ from mspasspy.io.distributed import (
     write_distributed_data,
     read_to_dataframe,
 )
-from mspasspy.db.normalize import ObjectIdMatcher,normalize
+from mspasspy.db.normalize import ObjectIdMatcher
 from mspasspy.ccore.utility import ErrorSeverity
 
 # globals for this test module
@@ -29,9 +33,26 @@ number_ensemble_wf = 4   # intentionaly not same as number_atomic_wf
 number_ensembles = 3   # ensemble tests create this many ensembles 
 number_partitions=3  # some tests may need to change this one
 testdbname = "mspass_test_db"
+wfdir = "python/tests/data/wf_filetestdata"
+
+@pytest.fixture
+def setup_module_environment():
+    print("Creating directory=",wfdir)
+    if os.path.exists(wfdir):
+        raise Exception("test_distributed setup:  scratch directory={} exists.  Must be empty to run this test".format(wfdir))
+    else:
+        os.makedirs(wfdir)
+        
+    yield
+    
+    print("In module teardown:  destroying contents of directory",wfdir)
+    if os.path.exists(wfdir):
+        shutil.rmtree(wfdir)
+    
 
 
-def make_channel_record(val,net="00",sta="sta",chan="chan",loc="00"):
+# This is a set of small functions at file scope used in this test file.
+def make_channel_record(val,net="00",sta="sta",chan="chan",loc="00",data_tag=None):
     """
     Returns a dict of base attributes needed for default of 
     ObjectIdMatcher for the channel collection.   The value of 
@@ -39,6 +60,11 @@ def make_channel_record(val,net="00",sta="sta",chan="chan",loc="00"):
     net, sta, chan, and loc are defaulted but can be changed with kwargs 
     values if needed.   Having constant values is appropriate for this 
     test file but not for real data.
+    
+    Use the (default None meaning turned off) data_tag value to add a 
+    data_tag attribute to each record.  Needed in some cases when 
+    we need to distinguish recorded added by TimeSeries and Seismogram 
+    generators.  
     """
     doc=dict()
     doc['sta']=sta
@@ -50,9 +76,12 @@ def make_channel_record(val,net="00",sta="sta",chan="chan",loc="00"):
     doc['elev']=val
     doc['starttime']=0.0   # 0 epoch time for universal match
     doc['endtime']=datetime.utcnow().timestamp()
+    if data_tag:
+        doc['data_tag']=data_tag
     return doc
 
-def make_site_record(val,net="00",sta="sta",loc="00"):
+
+def make_site_record(val,net="00",sta="sta",loc="00",data_tag=None):
     """
     Returns a dict of base attributes needed for default of 
     ObjectIdMatcher for the site collection.   The value of 
@@ -60,6 +89,11 @@ def make_site_record(val,net="00",sta="sta",loc="00"):
     net, sta,  and loc are defaulted but can be changed with kwargs 
     values if needed.   Having constant values is appropriate for this 
     test file but not for real data.
+    
+    se the (default None meaning turned off) data_tag value to add a 
+    data_tag attribute to each record.  Needed in some cases when 
+    we need to distinguish recorded added by TimeSeries and Seismogram 
+    generators.  
     """
     doc=dict()
     doc['sta']=sta
@@ -70,9 +104,11 @@ def make_site_record(val,net="00",sta="sta",loc="00"):
     doc['elev']=val
     doc['starttime']=0.0   # 0 epoch time for universal match
     doc['endtime']=datetime.utcnow().timestamp()
+    if data_tag:
+        doc['data_tag']=data_tag
     return doc
 
-def make_source_record(val,time=0.0):
+def make_source_record(val,time=0.0,data_tag=None):
     """
     Returns a dict of base attributes needed for default of 
     ObjectIdMatcher for the source collection.   The value of 
@@ -82,6 +118,11 @@ def make_source_record(val,time=0.0):
     
     time can be changed if desired for each entry to make something unique
     for each source
+    
+    se the (default None meaning turned off) data_tag value to add a 
+    data_tag attribute to each record.  Needed in some cases when 
+    we need to distinguish recorded added by TimeSeries and Seismogram 
+    generators.  
     """
     doc=dict()
 
@@ -90,6 +131,8 @@ def make_source_record(val,time=0.0):
     doc['depth']=val
     doc['time']=time
     doc['magnitude']=1.0
+    if data_tag:
+        doc['data_tag']=data_tag
     return doc
 
 
@@ -193,9 +236,14 @@ def TimeSeriesEnsemble_generator():
     # to test writers handle copying it to all members on save
     # add one site record per atomic datum for simplicity
     wfids = []   # will contain a list of ObjectId lists
+    # tests using source_id need a data tag as the structure used 
+    # with fixtures runs both TimeSeries and Seismogram generators 
+    # for each ensemble test. Not sure how to avoid that so use 
+    # this approach
+    src_data_tag='timeseries'  
     for i in range(number_ensembles):
         e = get_live_timeseries_ensemble(number_ensemble_wf)
-        source_doc = make_source_record(float(i))
+        source_doc = make_source_record(float(i),data_tag=src_data_tag)
         source_id = db.source.insert_one(source_doc).inserted_id
         e["source_id"]=source_id
         # give sta value a name that can be used to infer ensemble number 
@@ -211,6 +259,8 @@ def TimeSeriesEnsemble_generator():
         for d in e.member:
             e_wfids.append(d['_id'])
         wfids.append(e_wfids)
+        n=db.source.count_documents({})
+    print("Exiting TimeSeriesEnsemble_generato:  size of source collection=", n)
     yield wfids
     # this is cleanup code when test using this fixture exits
     # drop_database does almost nothng if name doesn't exist so 
@@ -219,24 +269,65 @@ def TimeSeriesEnsemble_generator():
 
 @pytest.fixture
 def SeismogramEnsemble_generator():
-    pass
+    client = DBClient("localhost")
+    db = client.get_database(testdbname)
+    
+    # tests using source_id need a data tag as the structure used 
+    # with fixtures runs both TimeSeries and Seismogram generators 
+    # for each ensemble test. Not sure how to avoid that so use 
+    # this approach
+    src_data_tag='seismogram'  
+    
+    # create multiple ensembles with different source_ids 
+    # note source_id is only put in ensemble metadata container 
+    # to test writers handle copying it to all members on save
+    # add one site record per atomic datum for simplicity
+    wfids = []   # will contain a list of ObjectId lists
+    for i in range(number_ensembles):
+        e = get_live_seismogram_ensemble(number_ensemble_wf)
+        source_doc = make_source_record(float(i),data_tag=src_data_tag)
+        source_id = db.source.insert_one(source_doc).inserted_id
+        e["source_id"]=source_id
+        # give sta value a name that can be used to infer ensemble number 
+        # and member number
+        for j in range(len(e.member)):
+            sta="sta_{}_{}".format(i,j)
+            site_doc = make_site_record(float(i+j),sta=sta)
+            site_id = db.site.insert_one(site_doc).inserted_id
+            e.member[j]["sta"] = sta
+            e.member[j]["site_id"] = site_id
+        e = db.save_data(e,collection="wf_Seismogram",return_data=True)
+        e_wfids = []
+        for d in e.member:
+            e_wfids.append(d['_id'])
+        wfids.append(e_wfids)
+        n=db.source.count_documents({})
+    print("Exiting SeismogramEnsemble_generato:  size of source collection=", n)
+    yield wfids
+    # this is cleanup code when test using this fixture exits
+    # drop_database does almost nothng if name doesn't exist so 
+    # we don't worry about multiple fixtures calling it
+    client.drop_database(testdbname)
+    
+
+
 
         
-@pytest.mark.parametrize("format,collection", 
+@pytest.mark.parametrize("scheduler,collection", 
                          #[("spark","wf_TimeSeries")])
                          [("dask","wf_TimeSeries"),
                           ("dask","wf_Seismogram"),
                           ("spark","wf_TimeSeries"),
                           ("spark","wf_Seismogram")
                           ])
-def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_generator,format,collection):
+def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_generator,scheduler,collection):
     """
     This function is run with multiple tests to test atomic read (mostly) and 
     limited writes with the io.distributed module. That is, read_distributed_data 
     and its inverse write_distributed_data.   Although it perhaps belongs 
     elsewhere it also tests the standalone function read_to_dataframe.  
-    What it tests is controlled by the two input parameters "format" and 
-    "collection".   format must be either "dask" or "spark" and 
+    What it tests is controlled by the two input parameters "scheduler" and 
+    "collection".   scheduler must be either "dask" or "spark" and 
     collection must be either "wf_TimeSeries" or "wf_Seismgoram" with the 
     default MsPASS schema.   Which combinations are tested are controlled 
     by the pytest decorator (mark_parameterize) with the incantation 
@@ -255,12 +346,11 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
     Normalization tests use new (v2+) feature of list of BasicMatcher
     subclasses.
     """
-    print("Starting test with format=",format, " and collection=",collection)
-    if format=="spark":
+    print("Starting test with scheduler=",scheduler, " and collection=",collection)
+    if scheduler=="spark":
         context=sc
     else:
         context=None
-
     if collection=="wf_TimeSeries":
         wfid_list = atomic_time_series_generator
     elif collection=="wf_Seismogram":
@@ -271,15 +361,15 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
     # data tag used to read copy back below
     bag_or_rdd = read_distributed_data(db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   spark_context=context,
                                   )
-    if format=="dask":
+    if scheduler=="dask":
         wfdata_list=bag_or_rdd.compute()
-    elif format=="spark":
+    elif scheduler=="spark":
         wfdata_list=bag_or_rdd.collect()
     else:
-        raise ValueError("Illegal value format=",format)
+        raise ValueError("Illegal value scheduler=",scheduler)
     assert len(wfdata_list)==number_atomic_wf
     for d in wfdata_list:
         wfid = d["_id"]
@@ -303,16 +393,16 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
     nrmlist.append(site_matcher)
     bag_or_rdd = read_distributed_data(db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   normalize=nrmlist,
                                   spark_context=context,
                                   )
-    if format=="dask":
+    if scheduler=="dask":
         wfdata_list=bag_or_rdd.compute()
-    elif format=="spark":
+    elif scheduler=="spark":
         wfdata_list=bag_or_rdd.collect()
     else:
-        raise ValueError("Illegal value format=",format)
+        raise ValueError("Illegal value scheduler=",scheduler)
     
     assert len(wfdata_list)==number_atomic_wf
     for d in wfdata_list:
@@ -328,7 +418,7 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
     # repeat but this time push the bag into the writer and verify it works
     bag_or_rdd = read_distributed_data(db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   normalize=nrmlist,
                                   spark_context=context,
                                   )
@@ -337,7 +427,7 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
                                    data_are_atomic=True,
                                    collection=collection,
                                    data_tag="save_number_1",
-                                   format=format,
+                                   scheduler=scheduler,
                                    )
     # Default above is assumed for return_data == False.  In that 
     # case write_distributed_data should return a list of ObjectIds
@@ -355,17 +445,17 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
     # nake sure this works with data_tag
     bag_or_rdd = read_distributed_data(db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   normalize=nrmlist,
                                   data_tag="save_number_1",
                                   spark_context=context,
                                   )
-    if format=="dask":
+    if scheduler=="dask":
         wfdata_list=bag_or_rdd.compute()
-    elif format=="spark":
+    elif scheduler=="spark":
         wfdata_list=bag_or_rdd.collect()
     else:
-        raise ValueError("Illegal value format=",format)
+        raise ValueError("Illegal value scheduler=",scheduler)
     assert len(wfdata_list)==number_atomic_wf
     # test basic dataframe input - dataframe converter features are tested 
     # in a different function
@@ -374,18 +464,18 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
     bag_or_rdd = read_distributed_data(df,
                                   db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   normalize=nrmlist,
                                   data_tag="save_number_1",
                                   npartitions=number_partitions,
                                   spark_context=context,
                                   )
-    if format=="dask":
+    if scheduler=="dask":
         wfdata_list=bag_or_rdd.compute()
-    elif format=="spark":
+    elif scheduler=="spark":
         wfdata_list=bag_or_rdd.collect()
     else:
-        raise ValueError("Illegal value format=",format)
+        raise ValueError("Illegal value scheduler=",scheduler)
     # note this dependency on above settign new_wfids - watch out if editing
     assert len(wfdata_list)==number_atomic_wf
     for d in wfdata_list:
@@ -404,7 +494,7 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
     xlist=[]
     for i in range(number_atomic_wf):
         xlist.append(x)
-    if format=="dask":
+    if scheduler=="dask":
         merge_bag = dask.bag.from_sequence(xlist,npartitions=number_partitions)
     else:
         # unclear if specifying number of parittions is required with spark
@@ -413,19 +503,19 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
     bag_or_rdd = read_distributed_data(df,
                                   db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   normalize=nrmlist,
                                   container_to_merge=merge_bag,
                                   npartitions=number_partitions,
                                   data_tag="save_number_1",
                                   spark_context=context,
                                   )
-    if format=="dask":
+    if scheduler=="dask":
         wfdata_list=bag_or_rdd.compute()
-    elif format=="spark":
+    elif scheduler=="spark":
         wfdata_list=bag_or_rdd.collect()
     else:
-        raise ValueError("Illegal value format=",format)
+        raise ValueError("Illegal value scheduler=",scheduler)
     assert len(wfdata_list)==number_atomic_wf
     for d in wfdata_list:
         assert d.is_defined("merged_source_id")
@@ -455,6 +545,8 @@ def massacre(d):
 def set_one_invalid(d):
     if d["site_sta"]=="station1": 
         d["samplling_rate"]="bad_data"
+        d["npts"]="foobar"
+        print("Set bad values for station=",d["site_sta"])
     return d
     
 def count_valid_ids(testlist):
@@ -476,14 +568,28 @@ def set_one_invalid_member(ens):
     ens.member[0]['sampling_rate']='bad_data'
     return ens
 
-from mspasspy.algorithms.signals import detrend
-@pytest.mark.parametrize("format,collection", 
+def set_dir_dfile_atomic(d):
+    dir=wfdir + "/" + "atomicdata"
+    srcid = d['source_id']
+    d['dir'] = dir
+    d['dfile'] = str(srcid) + ".dat"
+    print("path for file set ="+dir+"/"+d['dfile'])
+    return d
+
+def set_dir_dfile_ensemble(d):
+    dir=wfdir + "/" + "ensembledata"
+    srcid = d['source_id']
+    d['dir'] = dir
+    d['dfile'] = str(srcid) + ".dat"
+    return d
+
+@pytest.mark.parametrize("scheduler,collection", 
                          [("dask","wf_TimeSeries"),
                           ("dask","wf_Seismogram"),
                           #("spark","wf_TimeSeries"),
                           #("spark","wf_Seismogram")
                           ])
-def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram_generator,format,collection):
+def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram_generator,scheduler,collection):
     """
     Supplement to test_read_distributed_atomic focused more on the 
     writer than the reader.  Split these tests to reduce risk of 
@@ -492,8 +598,8 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
     The writer has several features that are tested independently 
     in this function.
     """
-    print("Starting test with format=",format, " and collection=",collection)
-    if format=="spark":
+    print("Starting test with scheduler=",scheduler, " and collection=",collection)
+    if scheduler=="spark":
         context=sc
     else:
         context=None
@@ -526,7 +632,7 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
     nrmlist.append(site_matcher)
     bag_or_rdd = read_distributed_data(db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   normalize=nrmlist,
                                   spark_context=context,
                                   )
@@ -535,7 +641,7 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
                                    data_are_atomic=True,
                                    collection=collection,
                                    data_tag="save_number_1",
-                                   format=format,
+                                   scheduler=scheduler,
                                    )
     # Default above is assumed for return_data == False.  In that 
     # case write_distributed_data should return a list of ObjectIds
@@ -556,14 +662,14 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
     # writer comparisons in all tests below
     bag_or_rdd = read_distributed_data(db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   normalize=nrmlist,
                                   spark_context=context,
                                   data_tag="save_number_1"
                                   )
-    if format=="dask":
+    if scheduler=="dask":
         dlist0=bag_or_rdd.compute()
-    elif format=="spark":
+    elif scheduler=="spark":
         dlist0=bag_or_rdd.collect()
     # Sanity check to verify that did what id should have done
     assert len(dlist0)==number_atomic_wf
@@ -573,28 +679,28 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
     # set npartition to assure irregular sizes
     bag_or_rdd = read_distributed_data(db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   normalize=nrmlist,
                                   npartitions=number_partitions,
                                   spark_context=context,
                                   data_tag="save_number_1"
                                   )
     #print("partitions in reader output=",bag_or_rdd.npartitions)
-    if format=="dask":
+    if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(kill_one)
     else:
         # TODO  - kill_one map call here fails while detrend using 
         # the same synatx does not.  Same function works in spark
         # mysterious problem I'm punting while I write additional tests
-        #bag_or_rdd = bag_or_rdd.map(lambda d : kill_one(d))
-        bag_or_rdd = bag_or_rdd.map(lambda d : detrend(d))
+        bag_or_rdd = bag_or_rdd.map(lambda d : kill_one(d))
+        #bag_or_rdd = bag_or_rdd.map(lambda d : detrend(d))
     #print("partitions after map operator=",bag_or_rdd.npartitions)
     newwfidslist = write_distributed_data(bag_or_rdd, 
                                    db,
                                    data_are_atomic=True,
                                    collection=collection,
                                    data_tag="save_explicit_kill",
-                                   format=format,
+                                   scheduler=scheduler,
                                    )
     assert len(newwfidslist)==number_atomic_wf
     # kills are returned as None - this function counts not none values
@@ -616,28 +722,24 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
     # only difference should be that creation leaves no cemetery document.
     bag_or_rdd = read_distributed_data(db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   normalize=nrmlist,
                                   npartitions=number_partitions,
                                   spark_context=context,
                                   data_tag="save_number_1"
                                   )
     #print("partitions in reader output=",bag_or_rdd.npartitions)
-    if format=="dask":
+    if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(kill_one)
     else:
-        # TODO  - kill_one map call here fails while detrend using 
-        # the same synatx does not.  Same function works in spark
-        # mysterious problem I'm punting while I write additional tests
-        #bag_or_rdd = bag_or_rdd.map(lambda d : kill_one(d))
-        bag_or_rdd = bag_or_rdd.map(lambda d : detrend(d))
+        bag_or_rdd = bag_or_rdd.map(lambda d : kill_one(d))
     #print("partitions after map operator=",bag_or_rdd.npartitions)
     newwfidslist = write_distributed_data(bag_or_rdd, 
                                    db,
                                    data_are_atomic=True,
                                    collection=collection,
                                    data_tag="save_explicit_kill_w_cremation",
-                                   format=format,
+                                   scheduler=scheduler,
                                    cremate=True,
                                    )
     assert len(newwfidslist)==number_atomic_wf
@@ -652,14 +754,14 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
     # Repeat for end member killing all
     bag_or_rdd = read_distributed_data(db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   normalize=nrmlist,
                                   npartitions=number_partitions,
                                   spark_context=context,
                                   data_tag="save_number_1"
                                   )
     #print("partitions in reader output=",bag_or_rdd.npartitions)
-    if format=="dask":
+    if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(massacre)
     else:
         bag_or_rdd = bag_or_rdd.map(lambda d : massacre(d))
@@ -669,7 +771,7 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
                                    data_are_atomic=True,
                                    collection=collection,
                                    data_tag="save_kill_all",
-                                   format=format,
+                                   scheduler=scheduler,
                                    )
     assert len(newwfidslist)==number_atomic_wf
     # kills are returned as None - this function counts not none values
@@ -682,14 +784,14 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
     # Now do a kill with pedantic mode and an invalid value
     bag_or_rdd = read_distributed_data(db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   normalize=nrmlist,
                                   npartitions=number_partitions,
                                   spark_context=context,
                                   data_tag="save_number_1"
                                   )
     #print("partitions in reader output=",bag_or_rdd.npartitions)
-    if format=="dask":
+    if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(set_one_invalid)
     else:
         bag_or_rdd = bag_or_rdd.map(lambda d : set_one_invalid(d))
@@ -700,7 +802,7 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
                                    mode="pedantic",
                                    collection=collection,
                                    data_tag="save_pedantic_kill",
-                                   format=format,
+                                   scheduler=scheduler,
                                    )
     assert len(newwfidslist)==number_atomic_wf
     # kills are returned as None - this function counts not none values
@@ -721,14 +823,14 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
     # Only difference should be that it leaves no cemetery document
     bag_or_rdd = read_distributed_data(db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   normalize=nrmlist,
                                   npartitions=number_partitions,
                                   spark_context=context,
                                   data_tag="save_number_1"
                                   )
     #print("partitions in reader output=",bag_or_rdd.npartitions)
-    if format=="dask":
+    if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(set_one_invalid)
     else:
         bag_or_rdd = bag_or_rdd.map(lambda d : set_one_invalid(d))
@@ -739,7 +841,7 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
                                    mode="pedantic",
                                    collection=collection,
                                    data_tag="save_pedantic_kill_w_cremation",
-                                   format=format,
+                                   scheduler=scheduler,
                                    cremate=True,
                                    )
     assert len(newwfidslist)==number_atomic_wf
@@ -749,80 +851,103 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
     assert n==(number_atomic_wf-1)
     n = db["cemetery"].count_documents({})
     assert n==0
-    db.drop_collection("cemetery")
+    db.drop_collection("cemetery")  
     
-    #TODO  Needs additional tests for 
-    # storage_mode="files" - not sure how to do cleanup
-    # post_elog option - not sure we need this feature I added
-    # post_history - not sure how to do this test.  Likely more useful than 
-    #   post_elog as if history is turned on it would speed writes to 
-    #   set this true
-    
-    # Now test return_data True option of reader
-#    bag_or_rdd = read_distributed_data(db,
-#                                  collection=collection,
-#                                  format=format,
-#                                  normalize=nrmlist,
-#                                  spark_context=context,
-#                                  npartitions=number_partitions,
-#                                  data_tag="save_number_1"
-#                                  )
-#    bag_or_rdd = write_distributed_data(bag_or_rdd, 
-#                                   db,
-#                                   data_are_atomic=True,
-#                                   collection=collection,
-#                                   data_tag="save_pedantic_kill",
-#                                   format=format,
-#                                   return_data=True,
-#                                   )
-#    if format=="dask":
-#        dlist=bag_or_rdd.compute()
-#    elif format=="spark":
-#        dlist=bag_or_rdd.collect()
-#    assert len(dlist)==number_atomic_wf
-#    # Order is not preserved so dlist and dlist0 cannot be directly 
-#    # compared.  Hopefully this set of tests are sufficient to 
-#    # reveal most problems that might happen with revisions
-#    # change if a feature is added that might invalidate this test
-#    defined_list=["live","npts","channel_lat","site_lat","source_lat"]
-#    for d in dlist:
-#        wfid = d['_id']
-#        assert wfid not in test_wfids
-#        assert d.live
-#        for k in defined_list:
-#            assert d.is_defined(k)
-#            
-#    # release the memory in dlist - bit huge but also reduces odds of 
-#    # odd behavior later
-#    del dlist
-    
-    
-    
-    
-    
+    # test writing to files.
+    # This implementation uses a new feature where file anmes are 
+    # expected to be defined with dir and dfile.  We do that with a 
+    # map; operator and a small function defined above
+    data_tag = 'atomic_file_save'
+    bag_or_rdd = read_distributed_data(db,
+                                  collection=collection,
+                                  scheduler=scheduler,
+                                  normalize=nrmlist,
+                                  spark_context=context,
+                                  data_tag="save_number_1"
+                                  )
+    if scheduler=="dask":
+        bag_or_rdd = bag_or_rdd.map(set_dir_dfile_atomic)
+    else:
+        bag_or_rdd = bag_or_rdd.map(lambda d : set_dir_dfile_atomic(d))
+    #print("partitions after map operator=",bag_or_rdd.npartitions)
+    newwfidslist = write_distributed_data(bag_or_rdd, 
+                                   db,
+                                   storage_mode="file",
+                                   data_are_atomic=True,
+                                   collection=collection,
+                                   data_tag=data_tag,
+                                   scheduler=scheduler,
+                                   )
+    query = {'data_tag' : data_tag}
+    n = db[collection].count_documents(query)
+    assert n == number_atomic_wf
+    cursor=db[collection].find(query)
+    for doc in cursor:
+        print(doc)  # debug - delete when verified
+        assert 'dir' in doc
+        assert 'dfile' in doc
+        assert 'foff' in doc
+        assert 'storage_mode' in doc
+        assert doc['storage_mode']=='file'
         
-@pytest.mark.parametrize("format,collection", 
-                         [("dask","wf_TimeSeries")],
-                          )
- #                         ("dask","wf_Seismogram"),
+    # verify we can read these back in 
+    bag_or_rdd = read_distributed_data(db,
+                                  collection=collection,
+                                  scheduler=scheduler,
+                                  normalize=nrmlist,
+                                  spark_context=context,
+                                  data_tag=data_tag,
+                                  )
+    if scheduler=="dask":
+        wflist = bag_or_rdd.compute()
+    else:
+        wflist = bag_or_rdd.collect()
+    assert len(wflist)==number_atomic_wf
+    for d in wflist:
+        assert d.live
+    
+    
+def get_srclist_by_tag(db,data_tag)->list:
+    """
+    Small helper used by ensemble test to return list of source_id values
+    defined by a data_tag value.   Used because generators both write 
+    to source collection and we use a tag to define which go with which 
+    type of wf data.
+    """
+    query={'data_tag' : data_tag}
+    cursor=db.source.find(query)
+    srcid_list=[]
+    for doc in cursor:
+        srcid=doc['_id']
+        srcid_list.append(srcid)
+    return srcid_list
+        
+@pytest.mark.parametrize("scheduler,collection", 
+                         [("dask","wf_TimeSeries"),
+                          ("dask","wf_Seismogram"),
  #                         ("spark","wf_TimeSeries"),
  #                         ("spark","wf_Seismogram")
- #                         ])
-def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,format,collection):
-     print("Starting test with format=",format, " and collection=",collection)
-     if format=="spark":
+                          ])
+def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,scheduler,collection):
+     print("Starting test with scheduler=",scheduler, " and collection=",collection)
+     if scheduler=="spark":
          context=sc
      else:
          context=None
+         
+     # warning src_data_list values must match string set in generators
      if collection=="wf_TimeSeries":
          wfid_list = TimeSeriesEnsemble_generator
+         src_data_tag = 'timeseries'
      elif collection=="wf_Seismogram":
          wfid_list = SeismogramEnsemble_generator
+         src_data_tag = 'seismogram'
      client = DBClient("localhost")
      db = client.get_database(testdbname)
      # We use source_id in this test to define ensembles.  
      # Used to generate a list of query dictionaries by source_id
-     srcid_list=db.source.distinct('_id')
+     # This small function fetches that list
+     srcid_list = get_srclist_by_tag(db, src_data_tag)
      querylist=[]
      for srcid in srcid_list:
          querylist.append({'source_id' : srcid})
@@ -831,12 +956,12 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
      bag_or_rdd = read_distributed_data(querylist,
                                    db,
                                    collection=collection,
-                                   format=format,
+                                   scheduler=scheduler,
                                    spark_context=context,
                                    )
-     if format=="dask":
+     if scheduler=="dask":
          wfdata_list=bag_or_rdd.compute()
-     elif format=="spark":
+     elif scheduler=="spark":
          wfdata_list=bag_or_rdd.collect()
     
      assert len(wfdata_list) == number_ensembles
@@ -858,10 +983,10 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
      srcdocs=[]
      for id in srcid_list:
          srcdocs.append({"source_id" : id})
-     if format=="dask":
+     if scheduler=="dask":
          bag_or_rdd_to_merge = dask.bag.from_sequence(srcdocs)
      else:
-        bag_or_rdd_to_merge.parallelize(srcid_list)
+        bag_or_rdd_to_merge.parallelize(srcdocs)
 
      source_matcher = ObjectIdMatcher(db,
                         "source",
@@ -873,15 +998,15 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
      bag_or_rdd = read_distributed_data(querylist,
                                    db,
                                    collection=collection,
-                                   format=format,
+                                   scheduler=scheduler,
                                    spark_context=context,
                                    container_to_merge=bag_or_rdd_to_merge,
                                    normalize=[site_matcher],
                                    normalize_ensemble=[source_matcher]
                                    )
-     if format=="dask":
+     if scheduler=="dask":
          wfdata_list=bag_or_rdd.compute()
-     elif format=="spark":
+     elif scheduler=="spark":
          wfdata_list=bag_or_rdd.collect()
      
      assert len(wfdata_list) == number_ensembles
@@ -901,7 +1026,7 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
      bag_or_rdd = read_distributed_data(querylist,
                                   db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   spark_context=context,
                                   normalize=[site_matcher],
                                   )
@@ -911,7 +1036,7 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
                                     data_are_atomic=False,
                                     collection=collection,
                                     data_tag=data_tag,
-                                    format=format,
+                                    scheduler=scheduler,
                                     )
 
      assert len(wfidlists)==number_ensembles
@@ -945,34 +1070,36 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
     #TODO  test sort_clause feature
                  
              
-@pytest.mark.parametrize("format,collection", 
-                         [("dask","wf_TimeSeries")],
-                          )
- #                         ("dask","wf_Seismogram"),
- #                         ("spark","wf_TimeSeries"),
- #                         ("spark","wf_Seismogram")
- #                         ])
-def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,format,collection):
+@pytest.mark.parametrize("scheduler,collection", 
+                        [ ("dask","wf_TimeSeries"),
+                         ("dask","wf_Seismogram"),
+                         #("spark","wf_TimeSeries"),
+                         #("spark","wf_Seismogram"),
+                     ])
+def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,scheduler,collection):
     """
     This test is a complement to test_read_distributed_ensemble and 
     test_write_distributed_atomic.   The tests here focus on handlling 
     of dead data during writes.   It assumes atomic level features are 
     covered by test in database and the atomic functions in this file.
     """
-    print("Starting test with format=",format, " and collection=",collection)
-    if format=="spark":
+    print("Starting test with scheduler=",scheduler, " and collection=",collection)
+    if scheduler=="spark":
          context=sc
     else:
          context=None
     if collection=="wf_TimeSeries":
          wfid_list = TimeSeriesEnsemble_generator
+         src_data_tag = 'timeseries'
     elif collection=="wf_Seismogram":
          wfid_list = SeismogramEnsemble_generator
+         src_data_tag = 'seismogram'
     client = DBClient("localhost")
     db = client.get_database(testdbname)
     # We use source_id in this test to define ensembles.  
     # Used to generate a list of query dictionaries by source_id
-    srcid_list=db.source.distinct('_id')
+    # This small function fetches that list
+    srcid_list = get_srclist_by_tag(db, src_data_tag)
     querylist=[]
     for srcid in srcid_list:
          querylist.append({'source_id' : srcid,'data_tag' : {'$exists' : False}})
@@ -998,11 +1125,11 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
     bag_or_rdd = read_distributed_data(querylist,
                                  db,
                                  collection=collection,
-                                 format=format,
+                                 scheduler=scheduler,
                                  spark_context=context,
                                  normalize=[site_matcher],
                                  )
-    if format=="dask":
+    if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(kill_one_member)
     else:
         bag_or_rdd = bag_or_rdd.map(lambda d : kill_one_member(d))
@@ -1012,7 +1139,7 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
                                    data_are_atomic=False,
                                    collection=collection,
                                    data_tag=data_tag,
-                                   format=format,
+                                   scheduler=scheduler,
                                    )
     cursor = db.wf_TimeSeries.find({})
     for doc in cursor:
@@ -1062,11 +1189,11 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
     bag_or_rdd = read_distributed_data(querylist,
                                  db,
                                  collection=collection,
-                                 format=format,
+                                 scheduler=scheduler,
                                  spark_context=context,
                                  normalize=[site_matcher],
                                  )
-    if format=="dask":
+    if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(kill_one_member)
     else:
         bag_or_rdd = bag_or_rdd.map(lambda d : kill_one_member(d))
@@ -1076,7 +1203,7 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
                                    data_are_atomic=False,
                                    collection=collection,
                                    data_tag=data_tag,
-                                   format=format,
+                                   scheduler=scheduler,
                                    cremate=True,
                                    )
     cursor = db.wf_TimeSeries.find({})
@@ -1125,11 +1252,11 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
     bag_or_rdd = read_distributed_data(querylist,
                                  db,
                                  collection=collection,
-                                 format=format,
+                                 scheduler=scheduler,
                                  spark_context=context,
                                  normalize=[site_matcher],
                                  )
-    if format=="dask":
+    if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(massacre)
     else:
         bag_or_rdd = bag_or_rdd.map(lambda d : massacre(d))
@@ -1139,7 +1266,7 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
                                    data_are_atomic=False,
                                    collection=collection,
                                    data_tag=data_tag,
-                                   format=format,
+                                   scheduler=scheduler,
                                    )
     assert len(wfidlists)==number_ensembles
     # kills should leave one tombstone per ensemble in this test
@@ -1160,11 +1287,11 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
     bag_or_rdd = read_distributed_data(querylist,
                                  db,
                                  collection=collection,
-                                 format=format,
+                                 scheduler=scheduler,
                                  spark_context=context,
                                  normalize=[site_matcher],
                                  )
-    if format=="dask":
+    if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(set_one_invalid_member)
     else:
         bag_or_rdd = bag_or_rdd.map(lambda d : set_one_invalid_member(d))
@@ -1175,7 +1302,7 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
                                    mode='pedantic',
                                    collection=collection,
                                    data_tag=data_tag,
-                                   format=format,
+                                   scheduler=scheduler,
                                    )
     cursor = db.wf_TimeSeries.find({})
     for doc in cursor:
@@ -1220,21 +1347,130 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
             assert number_hits==1
     # need to do this to simplify counts for next test
     db.drop_collection('cemetery')
-        
-  
-
     
+    # test writing to files.
+    # This implementation uses a new feature where file anmes are 
+    # expected to be defined with dir and dfile.  Note that 
+    # with ensembles the model in parallel processing, which is tested 
+    # here, is to post dir and dfile to the ensemble metadata container.
+    # We do that with a map; operator and the same small function used for 
+    # the comparable atomic data test
+    data_tag = 'ensemble_file_save'
+    srcid_list = get_srclist_by_tag(db, src_data_tag)
+    # Regeneate querylist and matcher definitions with the same code 
+    # as above to reduce state dependency for a small cost
+    querylist=[]
+    ensemble_doclist=[]
+    ensemble_dir = wfdir + "/" + "ensembledata"
+    for srcid in srcid_list:
+         querylist.append({'source_id' : srcid,'data_tag' : {'$exists' : False}})
+         doc=dict()
+         doc['source_id']=srcid
+         doc['dir'] = ensemble_dir
+         doc['dfile'] = str(srcid) + ".dat"
+         ensemble_doclist.append(doc)
+         
+    if scheduler=="dask":
+        bag_or_rdd_to_merge = dask.bag.from_sequence(ensemble_doclist)
+    else:
+        bag_or_rdd_to_merge.parallelize(ensemble_doclist)
+
+    source_matcher = ObjectIdMatcher(db,
+                       "source",
+                       attributes_to_load=['lat','lon','depth','time','_id'])
+   
+    site_matcher = ObjectIdMatcher(db,
+                       "site",
+                       attributes_to_load=['net','sta','lat','lon','elev','_id'])
+    # Note we created bag_or_rdd_to_merge above that contains dir and dfile 
+    # for this test. We also normalize with source_id to make sure the 
+    # two uses do not collide
+    bag_or_rdd = read_distributed_data(querylist,
+                                  db,
+                                  collection=collection,
+                                  scheduler=scheduler,
+                                  spark_context=context,
+                                  container_to_merge=bag_or_rdd_to_merge,
+                                  normalize=[site_matcher],
+                                  normalize_ensemble=[source_matcher],
+                                  )
+
+    newwfidslist = write_distributed_data(bag_or_rdd, 
+                                   db,
+                                   storage_mode="file",
+                                   data_are_atomic=False,
+                                   collection=collection,
+                                   data_tag=data_tag,
+                                   scheduler=scheduler,
+                                   )
+    assert len(newwfidslist) == number_ensembles
+    number_wf_expected = number_ensembles*number_ensemble_wf
+    query = {'data_tag' : data_tag}
+    n = db[collection].count_documents(query)
+    assert n == number_wf_expected
+    cursor=db[collection].find(query)
+    for doc in cursor:
+        print(doc)  # debug - delete when verified
+        # ensemble_dir was set above as a relative path but 
+        # the writer turns it into an full path.  This test 
+        # just verifies the relative path is present in the document
+        assert ensemble_dir in doc['dir']
+        assert 'dfile' in doc
+        assert 'foff' in doc
+        assert 'storage_mode' in doc
+        assert doc['storage_mode']=='file'
+        
+    # verify we can read these back in
+    # have to redefine querylist to do that
+    querylist=[]
+    srcdoclist=[]
+    for srcid in srcid_list:
+         querylist.append({'source_id' : srcid,'data_tag' : data_tag })
+         srcdoclist.append({'source_id' : srcid})
+    # note we change the container to merge because we don't want dir and 
+    # dfile loaded in the ensemble container in this test
+    if scheduler=="dask":
+        bag_or_rdd_to_merge = dask.bag.from_sequence(srcdoclist)
+    else:
+        bag_or_rdd_to_merge.parallelize(srcdoclist)
+    
+    bag_or_rdd = read_distributed_data(querylist,
+                                  db,
+                                  collection=collection,
+                                  scheduler=scheduler,
+                                  spark_context=context,
+                                  container_to_merge=bag_or_rdd_to_merge,
+                                  normalize=[site_matcher],
+                                  normalize_ensemble=[source_matcher],
+                                  )
+    if scheduler=="dask":
+        enslist = bag_or_rdd.compute()
+    else:
+        enslist = bag_or_rdd.collect()
+    assert len(enslist)==number_ensembles
+    for ens in enslist:
+        assert ens.live
+        assert ens['source_id'] in srcid_list
+        assert ens.is_defined('source_lat')
+        assert len(ens.member)==number_ensemble_wf
+        for d in ens.member:
+            assert d.live
+            assert d.is_defined('foff')
+            assert d.is_defined('dir')
+            assert d.is_defined('dfile')
+            assert d['storage_mode']=='file'
+        
 def test_read_error_handlers(atomic_time_series_generator):
     atomic_time_series_generator
     client = DBClient("localhost")
     db = client.get_database(testdbname)
     
     # now test error handlers.  First, test reade error handlers
-    # illegal value for format argument
-    with pytest.raises(ValueError, match="Unsupported value for format"):
+    # illegal value for scheduler argument
+    with pytest.raises(ValueError, match="Unsupported value for scheduler"):
         mybag = read_distributed_data(db,
                                       collection="wf_TimeSeries",
-                                      format="illegal_format",
+                                      scheduler="illegal_scheduler",
                                       )
     # illegal value for db argument when using dataframe input
     cursor=db.wf_TimeSeries.find({})
@@ -1243,20 +1479,20 @@ def test_read_error_handlers(atomic_time_series_generator):
         mybag = read_distributed_data(df,
                                       db=True,
                                       collection="wf_TimeSeries",
-                                      format="dask",
+                                      scheduler="dask",
                                       )
     # Defaulted (none) value for db with dataframe input produces a differnt exeception
     with pytest.raises(TypeError,match="An instance of Database class is required"):
         mybag = read_distributed_data(df,
                                       db=None,
                                       collection="wf_TimeSeries",
-                                      format="dask",
+                                      scheduler="dask",
                                       )
     # this is illegal input for arg0 test - message match is a bit cryptic
     with pytest.raises(TypeError,match="Must be a"):
         mybag = read_distributed_data(float(2),
                                       collection="wf_TimeSeries",
-                                      format="dask",
+                                      scheduler="dask",
                                       )
     # test error handlers for different normalization options
     # first values that aren't lists
@@ -1295,7 +1531,7 @@ def test_write_error_handlers(atomic_time_series_generator):
     # if we need to test for exceptions thrown elsewhere would need to 
     # parameterize this test for spark/dask and maybe also collection
     collection='wf_TimeSeries'   
-    format='dask' 
+    scheduler='dask' 
     
     # Used repeatedly below.  that works for these tests because 
     # mybag is never altered because we test only handlers in 
@@ -1304,7 +1540,7 @@ def test_write_error_handlers(atomic_time_series_generator):
     # approach will not work
     mybag = read_distributed_data(db,
                                   collection=collection,
-                                  format=format,
+                                  scheduler=scheduler,
                                   )
     with pytest.raises(TypeError,match="required arg1"):
         mybag = write_distributed_data(mybag,"wrong type - I should be a Database")
@@ -1315,8 +1551,16 @@ def test_write_error_handlers(atomic_time_series_generator):
     with pytest.raises(ValueError,match="Illegal value of mode"):
         mybag = write_distributed_data(mybag,db,mode='illegal_mode')
         
+    with pytest.raises(ValueError,match="Illegal value of scheduler="):
+        mybag = write_distributed_data(mybag,db,scheduler='illegal_scheduler')
+        
     with pytest.raises(ValueError,match="Illegal value of collection"):
         mybag = write_distributed_data(mybag,db,collection='illegal_collection')
+    
+    with pytest.raises(ValueError,match="overwrite mode is set True with storage_mode="):
+        mybag = write_distributed_data(mybag,db,collection='wf_TimeSeries',overwrite=True,storage_mode="files")
+    
+    
 
 
 
