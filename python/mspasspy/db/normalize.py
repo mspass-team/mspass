@@ -683,13 +683,8 @@ class DictionaryCacheMatcher(BasicMatcher):
         dbhandle = db[collection]
         self.collection_size = dbhandle.count_documents(self.query)
         if self.collection_size <= 0:
-            message = (
-                "Query="
-                + self.query
-                + " of collection="
-                + collection
-                + " yielded 0 documents - cannot construct this object"
-            )
+            message = "Query={} of collection {} yielded no documents\n".format(str(self.query),collection)
+            message += "Cannot construct a zero length object"
             raise MsPASSError(
                 "DictionaryCacheMatcher._load_normalization_cache:  " + message,
                 ErrorSeverity.Fatal,
