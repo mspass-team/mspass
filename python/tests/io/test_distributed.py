@@ -314,7 +314,6 @@ def SeismogramEnsemble_generator():
 
         
 @pytest.mark.parametrize("scheduler,collection", 
-                         #[("spark","wf_TimeSeries")])
                          [("dask","wf_TimeSeries"),
                           ("dask","wf_Seismogram"),
                           ("spark","wf_TimeSeries"),
@@ -586,8 +585,8 @@ def set_dir_dfile_ensemble(d):
 @pytest.mark.parametrize("scheduler,collection", 
                          [("dask","wf_TimeSeries"),
                           ("dask","wf_Seismogram"),
-                          #("spark","wf_TimeSeries"),
-                          #("spark","wf_Seismogram")
+                          ("spark","wf_TimeSeries"),
+                          ("spark","wf_Seismogram")
                           ])
 def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram_generator,scheduler,collection):
     """
@@ -925,8 +924,8 @@ def get_srclist_by_tag(db,data_tag)->list:
 @pytest.mark.parametrize("scheduler,collection", 
                          [("dask","wf_TimeSeries"),
                           ("dask","wf_Seismogram"),
- #                         ("spark","wf_TimeSeries"),
- #                         ("spark","wf_Seismogram")
+                          ("spark","wf_TimeSeries"),
+                          ("spark","wf_Seismogram")
                           ])
 def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,scheduler,collection):
      print("Starting test with scheduler=",scheduler, " and collection=",collection)
@@ -1073,8 +1072,8 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
 @pytest.mark.parametrize("scheduler,collection", 
                         [ ("dask","wf_TimeSeries"),
                          ("dask","wf_Seismogram"),
-                         #("spark","wf_TimeSeries"),
-                         #("spark","wf_Seismogram"),
+                         ("spark","wf_TimeSeries"),
+                         ("spark","wf_Seismogram"),
                      ])
 def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,scheduler,collection):
     """
