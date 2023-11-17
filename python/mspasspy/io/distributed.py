@@ -123,7 +123,7 @@ def read_distributed_data(
     normalize_ensemble=None,
     load_history=False,
     exclude_keys=None,
-    format="dask",
+    scheduler="dask",
     npartitions=None,
     spark_context=None,
     data_tag=None,
@@ -216,7 +216,7 @@ def read_distributed_data(
            optimized in MongoDB and the proceessing is little more than
            reformatting the data.
         2. The dataframe is passed through a map operator
-           (dask or spark depending on the setting of the format argument)
+           (dask or spark depending on the setting of the scheduler argument)
            that constructs the output bag/RDD in parallel.  The atomic
            operation is calls to db.read_data, but the output is a bag/RDD
            of atomic mspass data objects.   That means reads will be
@@ -389,10 +389,10 @@ def read_distributed_data(
       so they will not cause problems in downstream processing.
     :type exclude_keys: a :class:`list` of :class:`str`
 
-    :param format: Set the format of the parallel container to define the
+    :param scheduler: Set the format of the parallel container to define the
       dataset.   Must be either "spark" or "dask" or the job will abort
       immediately with a ValueError exception
-    :type format: :class:`str`
+    :type scheduler: :class:`str`
 
     :param spark_context: If using spark this argument is required.  Spark
       defines the concept of a "context" that is a global control object that
@@ -459,14 +459,14 @@ def read_distributed_data(
 
     :param aws_access_key_id: A part of the credentials to authenticate the user
     :param aws_secret_access_key: A part of the credentials to authenticate the user
-    :return: container defining the parallel dataset.  A spark `RDD` if format
-      is "Spark" and a dask 'bag' if format is "dask"
+    :return: container defining the parallel dataset.  A spark `RDD` if scheduler
+      is "Spark" and a dask 'bag' if scheduler is "dask"
     """
     # This is a base error message that is an initialization for
     # any throw error.  We first two type checking of arg0
     message = "read_distributed_data:  "
-    if not format in ["dask","spark"]:
-        message += "Unsupported value for format={}\n".format(format)
+    if not scheduler in ["dask","spark"]:
+        message += "Unsupported value for scheduler={}\n".format(scheduler)
         message += "Must be either 'dask' or 'spark'"
         raise ValueError(message)
 
@@ -530,18 +530,22 @@ def read_distributed_data(
             raise TypeError(message)
 
     if container_to_merge:
-        if format =="spark":
+        print("Using container_to_merge options")
+        if scheduler =="spark":
             if not isinstance(container_to_merge,pyspark.RDD):
-                message += "container_to_merge must define a pyspark RDD with format==spark"
+                message += "container_to_merge must define a pyspark RDD with scheduler==spark"
                 raise TypeError(message)
-                container_partitions = container_to_merge.getNumPartitions()
+            container_partitions = container_to_merge.getNumPartitions()
+            print("spark - container_partitions=",container_partitions)
                 
         else:
             if not isinstance(container_to_merge,dask.bag.core.Bag):
-                message += "container_to_merge must define a dask bag with format==dask"
+                message += "container_to_merge must define a dask bag with scheduler==dask"
                 raise TypeError(message)
             container_partitions = container_to_merge.npartitions
+            print("dask - container_partitions=",container_partitions)
         if npartitions:
+            print("npartitions=",npartitions," container_partitions=",container_partitions)
             # This error handler only works if npartitions is set in the 
             # arg list.  Can't test the data container here as it doesn't 
             # exist yet and putting it inside the logic below would be awkward
@@ -586,7 +590,7 @@ def read_distributed_data(
                 message += "Illegal type for normallze_ensemble argument = {}\n".format(type(normalize_ensemble))
                 message += "Must be a python list of implementations of BasicMatcher"
                 raise TypeError(message)
-        if format == "spark":
+        if scheduler == "spark":
             # note this works only because parallelize treats a None as default
             # and we use None as our default too - could break with version change
             plist = spark_context.parallelize(data, numSlices=npartitions)
@@ -630,7 +634,7 @@ def read_distributed_data(
         # input block used.
         # TODO:  clean up symbol - plist is an awful name
         if dataframe_input:
-            if format == "spark":
+            if scheduler == "spark":
                 plist = spark_context.parallelize(
                     data.to_dict("records"), numSlices=npartitions
                 )
@@ -661,7 +665,7 @@ def read_distributed_data(
                 with open(scratchfile, "w") as outfile:
                     for doc in cursor:
                         json.dump(doc,outfile)
-                if format == "spark":
+                if scheduler == "spark":
                     # the only way I could find to load json data in pyspark
                     # is to use an intermediate dataframe.   This should
                     # still parallelize, but will probably be slower
@@ -681,14 +685,14 @@ def read_distributed_data(
                 doclist=[]
                 for doc in cursor:
                     doclist.append(doc)
-                if format == "spark":
+                if scheduler == "spark":
                     plist=spark_context.parallelize(doclist,numSlices=npartitions)
                 else:
                     plist = dask.bag.from_sequence(doclist,npartitions=npartitions)
                 del doclist
 
         # Earlier logic make list a bag/rdd of docs - above converts dataframe to same
-        if format == "spark":
+        if scheduler == "spark":
             plist = plist.map(lambda doc : db.read_data(
                                     doc,
                                     collection=collection,
@@ -714,13 +718,13 @@ def read_distributed_data(
     # all cases create plist.   Run the container_merge_function function
     # if requested
     if container_to_merge:
-        if format =="spark":
+        if scheduler =="spark":
             plist = plist.zip(container_to_merge).map(lambda x: container_merge_function(x[0],x[1]))
         else:
             plist = dask.bag.map(container_merge_function,plist,container_to_merge)
     if normalize_ensemble:
         for nrm in normalize_ensemble:
-            if format =="spark":
+            if scheduler =="spark":
                 plist = plist.map(lambda d : normalize_function(d,nrm))
             else:
                 plist = plist.map(normalize_function,nrm)
@@ -828,7 +832,17 @@ def _partitioned_save_wfdoc(doclist,
     print("Length of wfids=",len(wfids))
     return wfids
 
-
+def post_error_log(d,doc,other_elog=None,elog_key="error_log")->dict:
+    elog = ErrorLogger()
+    if d.elog.size() > 0:
+        elog = d.elog
+    elif other_elog:
+        if other_elog.size() > 0:
+            elog += other_elog
+    if elog.size()>0:
+        elogdoc = elog2doc(elog)
+        doc[elog_key] = elogdoc
+    return doc
 def _save_ensemble_wfdocs(
         ensemble_data,
         db,
@@ -836,6 +850,10 @@ def _save_ensemble_wfdocs(
         exclude_keys,
         mode,
         undertaker,
+        post_elog=True,
+        save_history=False,
+        post_history=True,
+        history_key='history_data',
         cremate=False,
         data_tag=None,
         ):
@@ -875,6 +893,26 @@ def _save_ensemble_wfdocs(
                     doc["data_tag"] = data_tag
                 if '_id' in doc:
                     doc.pop('_id')
+                # Handle the error log if it is not empty
+                # Either post it to the doc or push the entry to the database
+                if d.elog.size()>0 or elog.size()>0:
+                    doc=post_error_log(d, doc, other_elog=elog)
+                else:
+                    if elog.size()>0:
+                        d.elog += elog
+                    elog_id = db._save_elog(d)
+                    doc['elog_id'] = elog_id
+                if save_history:
+                    if post_history:
+                        # is_empty is part of ProcessingHistory
+                        if not d.is_empty():
+                            doc = history2doc(d)
+                            doc[history_key] = doc
+                    else:
+                        history_id = db._save_history(d)
+                        doc['history_id'] = history_id
+                if data_tag:
+                    doc["data_tag"] = data_tag
                 doclist.append(doc)
             else:
                 d.elog += elog
@@ -896,66 +934,8 @@ def _save_ensemble_wfdocs(
     print("Size of returned wfids list=",len(wfids))
     return wfids
 
-
-# TODO:  this will eventually be deleted.  Retained for refernce in 
-# case example in docstring needs to cover more complex handling of 
-# dead data
-def atomic_save_wf_documents(d,
-            db,
-            save_schema,
-            exclude_keys,
-            mode,
-            data_tag=None,
-            undertaker=None,
-            cremate=False,
-            storage_mode=None,
-            save_history=False,
-            ):
-    """
-    """
-    if undertaker:
-        stedronsky = undertaker
-    else:
-        stedronsky = Undertaker(db)
-
-    doc, aok, elog_md2doc = md2doc(d,
-                                      save_schema=save_schema,
-                                      exclude_keys=exclude_keys,
-                                      mode=mode,
-                                      )
-    # cremate or bury dead data. 
-    # both return an edited data object reduced to ashes or a skeleton
-    # doc and elog contents are handled separately.  When cremate is 
-    # true nothing will be saved in the database.  Default will 
-    # bury the body leaving a cemetery record.
-
-    if d.dead() or (not aok):
-        if cremate:
-            d=stedronsky.cremate(d)
-        else:
-            d=stedronsky.bury(d)
-        d.kill()
-    else:
-        # weird trick to get waveform collection name - borrowed from
-        # :class:`mspasspy.db.Database` save_data method code
-        wf_collection_name = save_schema.collection("_id")
-        # Use save_data's method of handling storage_mode if it isn't set
-        #TODO - there are complexities here - sort them out before continuing
-        d = db.save_data(d,
-                     return_data=True,
-                     mode=mode,
-                     storage_mode=storage_mode,
-                     exclude_keys=exclude_keys,
-                     collection=wf_collection_name,
-                     data_tag=data_tag,
-                     cremate=cremate,
-                     save_history=save_history,
-                     alg_name="write_distributed_data",
-                     )
-                     
-    return d
     
-def atomic_extract_wf_document(d,
+def _atomic_extract_wf_document(d,
                      db,
                      save_schema,
                      exclude_keys,
@@ -963,6 +943,7 @@ def atomic_extract_wf_document(d,
                      post_elog=True,
                      elog_key="error_log",
                      post_history=False,
+                     save_history=False,
                      history_key="history_data",
                      data_tag=None,
                      undertaker=None,
@@ -973,7 +954,7 @@ def atomic_extract_wf_document(d,
     :return:   Edited copy of mspass_obj_list.   See above for 
       description of what "edited" means.
     """
-    #print("Entered atomic_extract_wf_document")
+    #print("Entered _atomic_extract_wf_document")
 
     if undertaker:
         stedronsky = undertaker
@@ -1011,48 +992,48 @@ def atomic_extract_wf_document(d,
         #print("Handling live datum for ",doc)
         doc['live']=True
         if post_elog:
-            elog = ErrorLogger()
-            if d.elog.size() > 0:
-                elog = d.elog
-                if elog_md2doc.size() > 0:
-                    elog += elog_md2doc
-            elif elog_md2doc.size()>0:
-                elog = elog_md2doc
-            if elog.size()>0:
-                elogdoc = elog2doc(elog)
-                doc[elog_key] = elogdoc
-        if post_history:
-            # is_empty is part of ProcessingHistory
-            if not d.is_empty():
-                doc = history2doc(d)
-                doc[history_key] = doc
+            doc = post_error_log(d, doc,other_elog=elog_md2doc)
+        else:
+            if d.elog.size()>0 or elog_md2doc.size()>0:
+                d.elog += elog_md2doc # does nothing if rhs is empty
+                elog_id = db._save_elog(d)
+                doc['elog_id'] = elog_id
+        if save_history:
+            if post_history:
+                # is_empty is part of ProcessingHistory
+                if not d.is_empty():
+                    doc = history2doc(d)
+                    doc[history_key] = doc
+            else:
+                history_id = db._save_history(d)
+                doc['history_id'] = history_id
         if data_tag:
             doc["data_tag"] = data_tag
-            d['data_tag'] = data_tag
     return doc
    
         
 
 
-#TODO:   See if this passes tests if we move the compute/collect outside of the function
+
 def write_distributed_data(
     data,
     db,
     data_are_atomic=True,
     mode="promiscuous",
     storage_mode="gridfs",
-    format=None,
+    scheduler=None,
     file_format=None,
     overwrite=False,
     exclude_keys=None,
-    collection=None,
+    collection="wf_TimeSeries",
     data_tag=None,
     post_elog=False,
+    save_history=False,
     post_history=False,
     cremate=False,
     alg_name="write_distributed_data",
     alg_id="0",
-):
+)->list:
     """
     Parallel save function for termination of a processing script.
 
@@ -1094,13 +1075,25 @@ def write_distributed_data(
     these data are saved (In Database the error log is saved to the 
     "elog" collection and the history data is saved to "history".)
     
-    ////may change - see TODO above/////
+    A peculiarity that is a consequence of python's "duck typing" is that 
+    the user must give the writer some hints about the type of data objects 
+    it is expected to handle.  Rather than specify a type argument, that
+    the type is inferred from two arguments that are necessary anyway:
+    (1)  the `collection` argument value, and (2) the boolean 
+    `data_are_atomic`.   The idea is that `collection` is used to 
+    determine of the writer is handling TimeSeries or Seismogram 
+    objects ("wf_TimeSeries" or "wf_Seismogram" values respectively)\
+    and the boolean is used, as the name implies, to infer if the 
+    data are atomic or ensembles.  
+    
     This function should normally only be used as the terminal step 
-    of a parallel workflow (i.e. one made up of a string of map/reduce operators).
-    This function will initiate a lazy computation on such a string of 
+    of a parallel workflow (i.e. a chain of map/reduce operators).
+    This function will ALWAYS initiate a lazy computation on such a chain of 
     operators because it calls the "compute" method for dask and the 
-    "collect" method of spark before returning.  We found this anomaly 
-    to be a necessary evil to make the parallel features operate properly.
+    "collect" method of spark before returning.  It then always returns 
+    a list of ObjectIds of  live, saved data.   The function is dogmatic 
+    about that because the return can never be a bag/RDD of the the 
+    data.
     
     If your workflow requires an intermediate save (i.e. saving data 
     in an intermediate step within a chain of map/reduce opeators)
@@ -1118,15 +1111,43 @@ def write_distributed_data(
        mybag = mybag.map(filter,'lowpass',freq=1.0)
        # termination with this function
        wfids = write_distributed_data(mybag,db,collection='wf_TimeSeries')
-    ```
-       
+    ```   
 
- 
+    The `storage_mode` argument is a constant that defines how the 
+    SAMPLE DATA are to be stored.  Currently this can be "files" or 
+    "gridfs", but be aware future evolution may extend the options.  
+    "gridfs" is the default as the only complexity it has is a speed 
+    throttle by requiring the sample data to move through MongoDB and 
+    the potential to overflow the file system where the database is stored. 
+    (See User's Manual for more on this topic.).   Most users, however, 
+    likely want to use the "files" option for that parameter.  There are, 
+    however, some caveats in that use that users MUST be aware of before
+    using that option with large data sets.   Since V2 of MsPASS 
+    the file save process was made more robust by allowing a chain of 
+    options for how the actual file name where data is stored is set.  
+    The algorithm used here is a private method in 
+    :class:`mspasspy.db.Database` called `_save_sample_data_to_file`. 
+    When used here that that function is passed a None type for dir and 
+    dfile.   The EXPECTED use is that you as a user should set the 
+    dir and dfile filed for each datum in the bag/RDD this function is 
+    asked to handle.  That allows each atomic datum to define what the 
+    file destination is.  For ensembles normal behavior is to require the 
+    entire ensemble content to be saved in one file defined by the dir 
+    and dfile values in the ensemble's Metadata container.  
+    THE WARNING is that to be robust the file writer will alway default 
+    a value for dir and dfile.  The default dir is the run directory. 
+    The default dfile (if not set) is a unique name created by a 
+    uuid generator.  Care must be taken in file writes to make sure 
+    you don't create huge numbers of files that overflow directories or 
+    similar file system errors that are all to easy to do with large 
+    data set saves.  
 
     :param data: parallel container of data to be written
     :type data: :class:`dask.bag.Bag` or :class:`pyspark.RDD`.
+    
     :param db: database handle to manage data saved by this function.
     :type db: :class:`mspasspy.db.database.Database`.
+    
     :param mode: This parameter defines how attributes defined with
         key-value pairs in MongoDB documents are to be handled for writes.
         By "to be handled" we mean how strongly to enforce name and type
@@ -1135,6 +1156,7 @@ def write_distributed_data(
         being the default.  See the User's manual for more details on
         the concepts and how to use this option.
     :type mode: :class:`str`
+    
     :param storage_mode: Must be either "gridfs" or "file.  When set to
         "gridfs" the waveform data are stored internally and managed by
         MongoDB.  If set to "file" the data will be stored in a file system.
@@ -1144,6 +1166,17 @@ def write_distributed_data(
         class method `save_data`.  See the docstring for details but the 
         concept is it will always be bombproof even if not ideal.
     :type storage_mode: :class:`str` 
+    
+    :param scheduler:  name of parallel scheduler being used by this writer. 
+      MsPASS currently support pyspark and dask.  If arg0 is an RDD 
+      scheduler must be "spark" and arg0 defines dask bag schduler must 
+      be "dask".   The function will raise a ValueError exception of 
+      scheduler and the type of arg0 are not consistent or if the 
+      value of scheduler is illegal.  Note with spark the context is 
+      not required because of how this algorithm is structured.
+    :type scheduler:  string  Must be either "dask" or "spark".  Default 
+      is None which is is equivalent to the value of "dask".
+    
     :param file_format: the format of the file. This can be one of the
         `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__
         of ObsPy writer. The default the python None which the method
@@ -1152,6 +1185,7 @@ def write_distributed_data(
         primarily a simple export mechanism.  See the User's manual for
         more details on data export.  Used only for "file" storage mode.
     :type file_format: :class:`str`
+    
     :param overwrite:  If true gridfs data linked to the original
         waveform will be replaced by the sample data from this save.
         Default is false, and should be the normal use.  This option
@@ -1162,6 +1196,15 @@ def write_distributed_data(
         set before more extensive processing.  It can only be used when
         storage_mode is set to gridfs.
     :type overwrite:  boolean
+    
+    :param collectiion:   name of wf collection where the documents 
+       derived from the data are to be saved.  Standard values are 
+       "wf_TimeSeries" and "wf_Seismogram" for which a schema is defined in 
+       MsPASS.   Normal use should specify one or the other.   The default is 
+       "wf_TimeSeries"  but normal usage should specify this argument 
+       explicitly for clarity in reuse. 
+    :type collection:  :class:`str`
+    
     :param exclude_keys: Metadata can often become contaminated with
         attributes that are no longer needed or a mismatch with the data.
         A type example is the bundle algorithm takes three TimeSeries
@@ -1174,37 +1217,42 @@ def write_distributed_data(
         to have the list be as large as necessary to eliminate any potential
         debris.
     :type exclude_keys: a :class:`list` of :class:`str`
-    :param collection: MongoDB collection name where the Metadata component
-        of each datum is to be saved.  It is crucial this name matches 
-        the data type of the input as the name is used to infer what 
-        type of data is being handled.  That means collection for 
-        TimeSeries and TimeSeriesEnsemble data must be wf_TimeSeries and 
-        collection for Seismogram and SeismogramEnsemble data must be 
-        wf_Seismogram.
-    :type collection:  :class:`str`
+    
     :param data_tag: a user specified "data_tag" key.  See above and
         User's manual for guidance on how the use of this option.
     :type data_tag: :class:`str`
+    
     :param post_elog:   boolean controlling how error log messages are 
        handled.  When False (default) error log messages get posted in 
        single transactions with MongoDB to the "elog" collection.   
        When set True error log entries will be posted to as subdocuments to 
        the wf collection entry for each datum.   Setting post_elog True 
        is most useful if you anticipate a run will generate a large number of 
-       error that will throttle with processing with a large number of 
+       error that could throttle processing with a large number of 
        one-at-a-time document saves.  For normal use with small number of 
-       errors it is easier to review error issue by inspecting the cemetery 
+       errors it is easier to review error issue by inspecting the elog
        collection than having to query the larger wf collection.
+       
+     :param save_history:  When set True (default is False) write will 
+       save any object-level history data saved within the input data objects.
+       The related boolean (described below) called post_history controls 
+       how such data is saved if this option is enable.  Note post_history 
+       is ignored unless save_history is True.
+       
      :param post_history:  boolean similar to post_elog for handling 
-       object-level history data.   When False (default) all object-level 
-       history data is ignored in the save.   It will effectively be lost 
-       unless return_data is also set True and the something downstream 
-       handles the data.  At present that means the only way to save history 
-       data is in a separate save at a later stage of a workflow 
-       (note it is possible to only save history without a full data save).
-       When set True the object-level history data is posted as a subdocument 
-       to the document saved to the specified  wf collection 
-       (collection argument value). 
+       object-level history data.  It is, however, only handled if the 
+       related boolean "save_history" is set True. When post_history is 
+       set True the history data will be saved as a subdocument in the wf
+       document saved for each live, atomic datum (note for ensembles 
+       that means all live members).   When False each atomic datum 
+       will generate a insert_one transaction with MongoDB and save the 
+       history data in  the "history" collection.  It then sets the 
+       attribute with key "history_id" to the ObjectId of the saved 
+       document.  The default for this argument is True to avoid 
+       accidentally throttling workflows on large data sets.  The default 
+       for save_history is False so overall default behavior is to drop 
+       any history data. 
+       
      :param cremate:  boolean controlling handling of dead data.  
        When True dead data will be passed to the `cremate` 
        method of :class:`mspasspy.util.Undertaker` which leaves only 
@@ -1231,13 +1279,13 @@ def write_distributed_data(
         message = "write_distributed_data:  Illegal value of mode={}\n".format(mode)
         message += "Must be one one of the following:  promiscuous, cautious, or pedantic"
         raise ValueError(message)
-    if format:
-        if format not in ["dask","spark"]:
-            message = "write_distributed_data:  Illegal value of format={}\n".format(format)
+    if scheduler:
+        if scheduler not in ["dask","spark"]:
+            message = "write_distributed_data:  Illegal value of scheduler={}\n".format(scheduler)
             message += "Must be either dask or spark"
             raise ValueError(message)
     else:
-        format="dask"
+        scheduler="dask"
     # This use of the collection name to establish the schema is 
     # a bit fragile as it depends upon the mspass schema naming 
     # convention.  Once tried using take(1) and probing the content of 
@@ -1250,6 +1298,12 @@ def write_distributed_data(
         message = "write_distributed_data:   Illegal value of collection={}\n".format(collection)
         message += "Currently must be either wf_TimeSeries, wf_Seismogram, or default that implies wf_TimeSeries"
         raise ValueError(message)
+        
+    if overwrite:
+        if storage_mode != "gridfs":
+            message = "write_distributed_data:  overwrite mode is set True with storage_mode={}\n".format(storage_mode)
+            message += "overwrite is only allowed with gridfs storage_mode"
+            raise ValueError(message)
 
 
     stedronsky=Undertaker(db)
@@ -1259,13 +1313,13 @@ def write_distributed_data(
     # orphan sample data in files or on gridfs.   The assumption is 
     # that that kind of problem will be rare or so common you need to 
     # clear out everthing and start over
-    if format == "spark":
+    if scheduler == "spark":
         data = data.map(lambda d : db._save_sample_data(
                     d,
                     storage_mode=storage_mode,
                     dir=None,
                     dfile=None,
-                    format=format,
+                    format=file_format,
                     overwrite=overwrite,
                     )
             )
@@ -1275,12 +1329,13 @@ def write_distributed_data(
             # wf documents.   Dead data return a None instead of an id 
             # by default and leave a body in the cemetery collection
             # unless cremate is set true
-            data = data.map(lambda d : atomic_extract_wf_document(d, 
+            data = data.map(lambda d : _atomic_extract_wf_document(d, 
                                 db, 
                                 save_schema, 
                                 exclude_keys, 
                                 mode,
                                 post_elog=post_elog,
+                                save_history=save_history,
                                 post_history=post_history,
                                 data_tag=data_tag,
                                 undertaker=stedronsky,
@@ -1305,7 +1360,7 @@ def write_distributed_data(
                 # note we could do bury_the_dead as an option here but it
                 # seems ill advised as a possible bottleneck
                 # we don't save elog or history here deferring that the next step
-                data = data.map(stedronsky.mummify,post_elog=False,post_history=False)
+                data = data.map(lambda d : stedronsky.mummify(d,post_elog=False,post_history=False))
             data = data.map(lambda d : _save_ensemble_wfdocs(
                             d,
                             db,
@@ -1314,6 +1369,9 @@ def write_distributed_data(
                             mode,
                             stedronsky,
                             cremate=cremate,
+                            post_elog=post_elog,
+                            save_history=save_history,
+                            post_history=post_history,
                             data_tag=data_tag,
                             )
                             
@@ -1324,19 +1382,20 @@ def write_distributed_data(
                     storage_mode=storage_mode,
                     dir=None,
                     dfile=None,
-                    format=format,
+                    format=file_format,
                     overwrite=overwrite,
                     )
 
         if data_are_atomic:
             # See comment at top of spark section  - this code is exactly 
             # the same by in the dask dialect
-            data = data.map(atomic_extract_wf_document,
+            data = data.map(_atomic_extract_wf_document,
                                 db, 
                                 save_schema, 
                                 exclude_keys, 
                                 mode,
                                 post_elog=post_elog,
+                                save_history=save_history,
                                 post_history=post_history,
                                 data_tag=data_tag,
                                 undertaker=stedronsky,
@@ -1367,6 +1426,9 @@ def write_distributed_data(
                             mode,
                             stedronsky,
                             cremate=cremate,
+                            post_elog=post_elog,
+                            save_history=save_history,
+                            post_history=post_history,
                             data_tag=data_tag,
                             )
             data = data.compute()
