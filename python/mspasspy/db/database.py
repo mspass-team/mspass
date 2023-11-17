@@ -1212,7 +1212,7 @@ class Database(pymongo.database.Database):
             e.g. with "files" and null "dir" and "dfile" saving a million
             atomic data will create a million files with random names in
             your current directory.  Good luck cleaning that mess up.
-            Finally, we reiterate that when Earthscope finishes there
+            Finally, we reiterate that when Earthscope finishes their
             design work for cloud storage access there will probably be
             a new storage mode added to support that access.  The "s3"
             methods in `Database` should be viewed only as prototypes.
@@ -5934,10 +5934,11 @@ class Database(pymongo.database.Database):
         # when datum is an ensemble the caller should use bring_out_your dead
         # before calling this method
         if isinstance(mspass_object, (TimeSeries,Seismogram,TimeSeriesEnsemble,SeismogramEnsemble) ):
+            mspass_object = self._kill_zero_length_live(mspass_object)
             if mspass_object.dead():
                 # do nothing to any datum marked dead - just return the pointer
                 return mspass_object
-            mspass_object = self._kill_zero_length_live(mspass_object)
+            
             if storage_mode == "file":
                 mspass_object = self._save_sample_data_to_file(
                     mspass_object,
@@ -6086,7 +6087,17 @@ class Database(pymongo.database.Database):
                 dfile = mspass_object["dfile"]
             else:
                 dfile = self._get_dfile_uuid(format)
-
+                
+        if os.path.exists(dir):
+            if not os.access(dir, os.W_OK):
+                raise PermissionError(
+                    "Database._save_sample_data_file:  "
+                    + "requested directory for saving data {} exists but is write protected (ownership?)".format(dir)
+                )
+        else:
+            # Try to create dir if it doesn't exist
+            newdir=pathlib.Path(dir)
+            newdir.mkdir(parents=True)
         fname = os.path.join(dir, dfile)
         if os.path.exists(fname):
             if not os.access(fname, os.W_OK):
@@ -6094,19 +6105,7 @@ class Database(pymongo.database.Database):
                     "Database._save_sample_data_file:  "
                     + "File {} exists but is write protected (ownership?)".format(fname)
                 )
-        else:
-            # the following loop finds the top level of existing parents to fname
-            # and check for write permission to that directory.
-            for path_item in pathlib.PurePath(fname).parents:
-                if os.path.exists(path_item):
-                    if not os.access(path_item, os.W_OK | os.X_OK):
-                        raise PermissionError(
-                            "Database._save_sample_data_file:  "
-                            + "directory {} is write protected".format(
-                                dir
-                            )
-                        )
-                    break
+                    
         # dir and dfile are now always set if we get here.  Now
         # we write the sample data - different blocks for atomic data
         # and ensembles
