@@ -37,7 +37,6 @@ wfdir = "python/tests/data/wf_filetestdata"
 
 @pytest.fixture
 def setup_module_environment(scope="module"):
-    print("Creating directory=",wfdir)
     if os.path.exists(wfdir):
         raise Exception("test_distributed setup:  scratch directory={} exists.  Must be empty to run this test".format(wfdir))
     else:
@@ -45,11 +44,10 @@ def setup_module_environment(scope="module"):
         
     yield
     
-    print("In module teardown:  destroying contents of directory",wfdir)
     if os.path.exists(wfdir):
         shutil.rmtree(wfdir)
     
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def spark():
     sc = SparkContext("local", "io_distributed_testing")
     yield sc
@@ -278,7 +276,6 @@ def TimeSeriesEnsemble_generator():
             e_wfids.append(d['_id'])
         wfids.append(e_wfids)
         n=db.source.count_documents({})
-    print("Exiting TimeSeriesEnsemble_generato:  size of source collection=", n)
     yield wfids
     # this is cleanup code when test using this fixture exits
     # drop_database does almost nothng if name doesn't exist so 
@@ -320,7 +317,6 @@ def SeismogramEnsemble_generator():
             e_wfids.append(d['_id'])
         wfids.append(e_wfids)
         n=db.source.count_documents({})
-    print("Exiting SeismogramEnsemble_generato:  size of source collection=", n)
     yield wfids
     # this is cleanup code when test using this fixture exits
     # drop_database does almost nothng if name doesn't exist so 
@@ -394,7 +390,6 @@ def define_set_dir_dfile_atomic():
         srcid = d['source_id']
         d['dir'] = dir
         d['dfile'] = str(srcid) + ".dat"
-        print("path for file set ="+dir+"/"+d['dfile'])
         return d
     yield set_dir_dfile_atomic
 
@@ -745,7 +740,7 @@ def test_write_distributed_atomic(scheduler,
                                   spark_context=context,
                                   data_tag="save_number_1"
                                   )
-    #print("partitions in reader output=",bag_or_rdd.npartitions)
+
     if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(kill_one)
     else:
@@ -754,7 +749,7 @@ def test_write_distributed_atomic(scheduler,
         # mysterious problem I'm punting while I write additional tests
         bag_or_rdd = bag_or_rdd.map(lambda d : kill_one(d))
         #from mspasspy.algorithms.signals import detrend
-    #print("partitions after map operator=",bag_or_rdd.npartitions)
+
     newwfidslist = write_distributed_data(bag_or_rdd, 
                                    db,
                                    data_are_atomic=True,
@@ -770,8 +765,7 @@ def test_write_distributed_atomic(scheduler,
     n = db["cemetery"].count_documents({})
     assert n==1
     doc=db["cemetery"].find_one()
-    #from bson import json_util
-    #print(json_util.dumps(doc,indent=2))
+
     assert "tombstone" in doc
     assert "logdata" in doc
     # Better to bulldoze the cemetery before continuing
@@ -788,12 +782,11 @@ def test_write_distributed_atomic(scheduler,
                                   spark_context=context,
                                   data_tag="save_number_1"
                                   )
-    #print("partitions in reader output=",bag_or_rdd.npartitions)
+
     if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(kill_one)
     else:
         bag_or_rdd = bag_or_rdd.map(lambda d : kill_one(d))
-    #print("partitions after map operator=",bag_or_rdd.npartitions)
     newwfidslist = write_distributed_data(bag_or_rdd, 
                                    db,
                                    data_are_atomic=True,
@@ -819,13 +812,12 @@ def test_write_distributed_atomic(scheduler,
                                   npartitions=number_partitions,
                                   spark_context=context,
                                   data_tag="save_number_1"
-                                  )
-    #print("partitions in reader output=",bag_or_rdd.npartitions)
+                                  )    
     if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(massacre)
     else:
         bag_or_rdd = bag_or_rdd.map(lambda d : massacre(d))
-    #print("partitions after map operator=",bag_or_rdd.npartitions)
+
     newwfidslist = write_distributed_data(bag_or_rdd, 
                                    db,
                                    data_are_atomic=True,
@@ -850,12 +842,12 @@ def test_write_distributed_atomic(scheduler,
                                   spark_context=context,
                                   data_tag="save_number_1"
                                   )
-    #print("partitions in reader output=",bag_or_rdd.npartitions)
+
     if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(set_one_invalid)
     else:
         bag_or_rdd = bag_or_rdd.map(lambda d : set_one_invalid(d))
-    #print("partitions after map operator=",bag_or_rdd.npartitions)
+
     newwfidslist = write_distributed_data(bag_or_rdd, 
                                    db,
                                    data_are_atomic=True,
@@ -872,8 +864,6 @@ def test_write_distributed_atomic(scheduler,
     n = db["cemetery"].count_documents({})
     assert n==1
     doc=db["cemetery"].find_one()
-    #from bson import json_util
-    #print(json_util.dumps(doc,indent=2))
     assert "tombstone" in doc
     assert "logdata" in doc
     # Better to bulldoze the cemetery before continuing
@@ -889,12 +879,10 @@ def test_write_distributed_atomic(scheduler,
                                   spark_context=context,
                                   data_tag="save_number_1"
                                   )
-    #print("partitions in reader output=",bag_or_rdd.npartitions)
     if scheduler=="dask":
         bag_or_rdd = bag_or_rdd.map(set_one_invalid)
     else:
         bag_or_rdd = bag_or_rdd.map(lambda d : set_one_invalid(d))
-    #print("partitions after map operator=",bag_or_rdd.npartitions)
     newwfidslist = write_distributed_data(bag_or_rdd, 
                                    db,
                                    data_are_atomic=True,
@@ -929,7 +917,6 @@ def test_write_distributed_atomic(scheduler,
         bag_or_rdd = bag_or_rdd.map(set_dir_dfile_atomic)
     else:
         bag_or_rdd = bag_or_rdd.map(lambda d : set_dir_dfile_atomic(d))
-    #print("partitions after map operator=",bag_or_rdd.npartitions)
     newwfidslist = write_distributed_data(bag_or_rdd, 
                                    db,
                                    storage_mode="file",
@@ -943,7 +930,6 @@ def test_write_distributed_atomic(scheduler,
     assert n == number_atomic_wf
     cursor=db[collection].find(query)
     for doc in cursor:
-        print(doc)  # debug - delete when verified
         assert 'dir' in doc
         assert 'dfile' in doc
         assert 'foff' in doc
@@ -1180,12 +1166,6 @@ def test_write_distributed_ensemble(scheduler,
     for srcid in srcid_list:
          querylist.append({'source_id' : srcid,'data_tag' : {'$exists' : False}})
 
-    cursor = db.wf_TimeSeries.find({})
-    for doc in cursor:
-        if 'data_tag' in doc:
-            print(doc['data_tag'])
-        else:
-            print("Undefined")
     # these matchers are used in some, but not all tests below. 
     # defining them here as function scope initializations
     source_matcher = ObjectIdMatcher(db,
@@ -1217,12 +1197,6 @@ def test_write_distributed_ensemble(scheduler,
                                    data_tag=data_tag,
                                    scheduler=scheduler,
                                    )
-    cursor = db.wf_TimeSeries.find({})
-    for doc in cursor:
-        if 'data_tag' in doc:
-            print(doc['data_tag'])
-        else:
-            print("Undefined")
     assert len(wfidlists)==number_ensembles
     # kills should leave one tombstone per ensemble in this test
     n = db.cemetery.count_documents({})
@@ -1282,12 +1256,7 @@ def test_write_distributed_ensemble(scheduler,
                                    scheduler=scheduler,
                                    cremate=True,
                                    )
-    cursor = db.wf_TimeSeries.find({})
-    for doc in cursor:
-        if 'data_tag' in doc:
-            print(doc['data_tag'])
-        else:
-            print("Undefined")
+
     assert len(wfidlists)==number_ensembles
     # kills should leave one tombstone per ensemble in this test
     n = db.cemetery.count_documents({})
@@ -1380,12 +1349,7 @@ def test_write_distributed_ensemble(scheduler,
                                    data_tag=data_tag,
                                    scheduler=scheduler,
                                    )
-    cursor = db.wf_TimeSeries.find({})
-    for doc in cursor:
-        if 'data_tag' in doc:
-            print(doc['data_tag'])
-        else:
-            print("Undefined")
+
     assert len(wfidlists)==number_ensembles
     # kills should leave one tombstone per ensemble in this test
     n = db.cemetery.count_documents({})
@@ -1486,7 +1450,6 @@ def test_write_distributed_ensemble(scheduler,
     assert n == number_wf_expected
     cursor=db[collection].find(query)
     for doc in cursor:
-        print(doc)  # debug - delete when verified
         # ensemble_dir was set above as a relative path but 
         # the writer turns it into an full path.  This test 
         # just verifies the relative path is present in the document
