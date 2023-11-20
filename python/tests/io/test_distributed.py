@@ -17,7 +17,7 @@ from datetime import datetime
 import copy
 import dask
 from pyspark import SparkContext
-sc = SparkContext("local", "io_distributed_testing")
+
 
 from mspasspy.io.distributed import (
     read_distributed_data,
@@ -36,7 +36,7 @@ testdbname = "mspass_test_db"
 wfdir = "python/tests/data/wf_filetestdata"
 
 @pytest.fixture
-def setup_module_environment():
+def setup_module_environment(scope="module"):
     print("Creating directory=",wfdir)
     if os.path.exists(wfdir):
         raise Exception("test_distributed setup:  scratch directory={} exists.  Must be empty to run this test".format(wfdir))
@@ -49,7 +49,11 @@ def setup_module_environment():
     if os.path.exists(wfdir):
         shutil.rmtree(wfdir)
     
-
+@pytest.fixture(scope="session")
+def spark():
+    sc = SparkContext("local", "io_distributed_testing")
+    yield sc
+    sc.stop()
 
 # This is a set of small functions at file scope used in this test file.
 def make_channel_record(val,net="00",sta="sta",chan="chan",loc="00",data_tag=None):
@@ -135,6 +139,20 @@ def make_source_record(val,time=0.0,data_tag=None):
         doc['data_tag']=data_tag
     return doc
 
+def count_valid_ids(testlist):
+    """
+    Small test function used in tests to handle None use in ObjectId 
+    list return for dead data
+    """
+    count=0
+    for x in testlist:
+        if x:
+            count += 1
+    return count
+
+
+# This is a series of fixtures used in this module. First set are 
+# data generators used for read/write distributed tests
 
 @pytest.fixture
 def atomic_time_series_generator():
@@ -310,6 +328,87 @@ def SeismogramEnsemble_generator():
     client.drop_database(testdbname)
     
 
+# This set of fixures are a necessary evil because pyspark seems to 
+# have trouble serializing functions defined and file scope and 
+# passed to map operators.  The problem doesn't happen with dask.
+# Found that using these fixture provided a way to work around that 
+# problem and provide a clean mechanism to consistently test both 
+# spark and dask implementations
+@pytest.fixture    
+def define_kill_one():
+    def kill_one(d):
+        """
+        Used in map tests below to kill one dataum.  Frozen for now as 
+        when channel_sta is sta1
+        """
+        if d["site_sta"]=="station1": 
+            d.kill()
+            d.elog.log_error("kill_one", "test function killed this datum",ErrorSeverity.Invalid)
+        return d
+    yield kill_one
+
+@pytest.fixture    
+def define_massacre():
+    def massacre(d):
+        """
+        kill all
+        """
+        d.kill()
+        d.elog.log_error("massacre", "test function killed this datum",ErrorSeverity.Invalid)
+        return d
+    yield massacre
+
+@pytest.fixture
+def define_set_one_invalid():
+    def set_one_invalid(d):
+        if d["site_sta"]=="station1": 
+            d["samplling_rate"]="bad_data"
+            d["npts"]="foobar"
+        return d
+    yield set_one_invalid
+    
+
+# compable functions for testing writer with ensembles
+@pytest.fixture
+def define_kill_one_member():
+    def kill_one_member(ens):
+        """
+        Kill member of each ensemble in a map call for tests.
+        """
+        ens.member[0].kill()
+        ens.member[0].elog.log_error("kill_one_member", "test function killed this datum",ErrorSeverity.Invalid)
+        return ens
+    yield kill_one_member
+
+@pytest.fixture
+def define_set_one_invalid_member():
+    def set_one_invalid_member(ens):
+        ens.member[0]['sampling_rate']='bad_data'
+        return ens
+    yield set_one_invalid_member
+
+@pytest.fixture
+def define_set_dir_dfile_atomic():
+    def set_dir_dfile_atomic(d):
+        dir=wfdir + "/" + "atomicdata"
+        srcid = d['source_id']
+        d['dir'] = dir
+        d['dfile'] = str(srcid) + ".dat"
+        print("path for file set ="+dir+"/"+d['dfile'])
+        return d
+    yield set_dir_dfile_atomic
+
+# This fixture is not currently used in this test file, but it 
+# was retained as test could be added that might find it useful
+@pytest.fixture
+def define_set_dir_dfile_ensmble():
+    def set_dir_dfile_ensemble(d):
+        dir=wfdir + "/" + "ensembledata"
+        srcid = d['source_id']
+        d['dir'] = dir
+        d['dfile'] = str(srcid) + ".dat"
+        return d
+    yield set_dir_dfile_ensemble
 
 
         
@@ -319,7 +418,7 @@ def SeismogramEnsemble_generator():
                           ("spark","wf_TimeSeries"),
                           ("spark","wf_Seismogram")
                           ])
-def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_generator,scheduler,collection):
+def test_read_distributed_atomic(spark,atomic_time_series_generator,atomic_seismogram_generator,scheduler,collection):
     """
     This function is run with multiple tests to test atomic read (mostly) and 
     limited writes with the io.distributed module. That is, read_distributed_data 
@@ -347,7 +446,7 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
     """
     print("Starting test with scheduler=",scheduler, " and collection=",collection)
     if scheduler=="spark":
-        context=sc
+        context=spark
     else:
         context=None
     if collection=="wf_TimeSeries":
@@ -520,67 +619,7 @@ def test_read_distributed_atomic(atomic_time_series_generator,atomic_seismogram_
         assert d.is_defined("merged_source_id")
         assert d["merged_source_id"] == source_id
     #TODO:  needs a test of scratchfile option for reader
-    
-def kill_one(d):
-    """
-    Used in map tests below to kill one dataum.  Frozen for now as 
-    when channel_sta is sta1
-    """
-    print("Entering function kill_one")
-    if d["site_sta"]=="station1": 
-        d.kill()
-        d.elog.log_error("kill_one", "test function killed this datum",ErrorSeverity.Invalid)
-    return d
 
-# functions used for  atomic writer tests
-def massacre(d):
-    """
-    kill all
-    """
-    d.kill()
-    d.elog.log_error("massacre", "test function killed this datum",ErrorSeverity.Invalid)
-    return d
-
-def set_one_invalid(d):
-    if d["site_sta"]=="station1": 
-        d["samplling_rate"]="bad_data"
-        d["npts"]="foobar"
-        print("Set bad values for station=",d["site_sta"])
-    return d
-    
-def count_valid_ids(testlist):
-    count=0
-    for x in testlist:
-        if x:
-            count += 1
-    return count
-# compable functions for testing writer with ensembles
-def kill_one_member(ens):
-    """
-    Kill member of each ensemble in a map call for tests.
-    """
-    ens.member[0].kill()
-    ens.member[0].elog.log_error("kill_one_member", "test function killed this datum",ErrorSeverity.Invalid)
-    return ens
-
-def set_one_invalid_member(ens):
-    ens.member[0]['sampling_rate']='bad_data'
-    return ens
-
-def set_dir_dfile_atomic(d):
-    dir=wfdir + "/" + "atomicdata"
-    srcid = d['source_id']
-    d['dir'] = dir
-    d['dfile'] = str(srcid) + ".dat"
-    print("path for file set ="+dir+"/"+d['dfile'])
-    return d
-
-def set_dir_dfile_ensemble(d):
-    dir=wfdir + "/" + "ensembledata"
-    srcid = d['source_id']
-    d['dir'] = dir
-    d['dfile'] = str(srcid) + ".dat"
-    return d
 
 @pytest.mark.parametrize("scheduler,collection", 
                          [("dask","wf_TimeSeries"),
@@ -588,7 +627,16 @@ def set_dir_dfile_ensemble(d):
                           ("spark","wf_TimeSeries"),
                           ("spark","wf_Seismogram")
                           ])
-def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram_generator,scheduler,collection):
+def test_write_distributed_atomic(scheduler,
+                                  collection,
+                                  spark,
+                                  define_kill_one,
+                                  define_massacre,
+                                  define_set_one_invalid,
+                                  define_set_dir_dfile_atomic,
+                                  atomic_time_series_generator,
+                                  atomic_seismogram_generator,
+                                  ):
     """
     Supplement to test_read_distributed_atomic focused more on the 
     writer than the reader.  Split these tests to reduce risk of 
@@ -599,7 +647,7 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
     """
     print("Starting test with scheduler=",scheduler, " and collection=",collection)
     if scheduler=="spark":
-        context=sc
+        context=spark
     else:
         context=None
     # generators create wfid_list but we ignore it in these tests
@@ -609,6 +657,16 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
     elif collection=="wf_Seismogram":
         wfid_list = atomic_seismogram_generator
     del wfid_list
+    # Use fixtures to define map functions
+    # all these test functions are implmented with a yield of the function 
+    # name.  That means the lhs of the assignments below set those symbols
+    # as functions we use in map operators in tests below
+    kill_one = define_kill_one
+    massacre = define_massacre
+    set_one_invalid = define_set_one_invalid
+    set_dir_dfile_atomic = define_set_dir_dfile_atomic
+    
+    # We need a local database handle for these tests
     client = DBClient("localhost")
     db = client.get_database(testdbname)
     
@@ -633,6 +691,7 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
                                   collection=collection,
                                   scheduler=scheduler,
                                   normalize=nrmlist,
+                                  npartitions=2,
                                   spark_context=context,
                                   )
     test_wfids = write_distributed_data(bag_or_rdd, 
@@ -672,6 +731,8 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
         dlist0=bag_or_rdd.collect()
     # Sanity check to verify that did what id should have done
     assert len(dlist0)==number_atomic_wf
+    for d in dlist0:
+        assert d.live
     
     
     # Test one explicit kill
@@ -692,7 +753,7 @@ def test_write_distributed_atomic(atomic_time_series_generator,atomic_seismogram
         # the same synatx does not.  Same function works in spark
         # mysterious problem I'm punting while I write additional tests
         bag_or_rdd = bag_or_rdd.map(lambda d : kill_one(d))
-        #bag_or_rdd = bag_or_rdd.map(lambda d : detrend(d))
+        #from mspasspy.algorithms.signals import detrend
     #print("partitions after map operator=",bag_or_rdd.npartitions)
     newwfidslist = write_distributed_data(bag_or_rdd, 
                                    db,
@@ -927,10 +988,10 @@ def get_srclist_by_tag(db,data_tag)->list:
                           ("spark","wf_TimeSeries"),
                           ("spark","wf_Seismogram")
                           ])
-def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,scheduler,collection):
+def test_read_distributed_ensemble(spark,TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,scheduler,collection):
      print("Starting test with scheduler=",scheduler, " and collection=",collection)
      if scheduler=="spark":
-         context=sc
+         context=spark
      else:
          context=None
          
@@ -985,7 +1046,7 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
      if scheduler=="dask":
          bag_or_rdd_to_merge = dask.bag.from_sequence(srcdocs)
      else:
-        bag_or_rdd_to_merge.parallelize(srcdocs)
+        bag_or_rdd_to_merge = context.parallelize(srcdocs)
 
      source_matcher = ObjectIdMatcher(db,
                         "source",
@@ -1075,7 +1136,15 @@ def test_read_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemb
                          ("spark","wf_TimeSeries"),
                          ("spark","wf_Seismogram"),
                      ])
-def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,scheduler,collection):
+def test_write_distributed_ensemble(scheduler,
+                                    collection,
+                                    spark,
+                                    define_kill_one_member,
+                                    define_massacre,
+                                    define_set_one_invalid_member,
+                                    TimeSeriesEnsemble_generator,
+                                    SeismogramEnsemble_generator,
+                                    ):
     """
     This test is a complement to test_read_distributed_ensemble and 
     test_write_distributed_atomic.   The tests here focus on handlling 
@@ -1084,7 +1153,7 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
     """
     print("Starting test with scheduler=",scheduler, " and collection=",collection)
     if scheduler=="spark":
-         context=sc
+         context=spark
     else:
          context=None
     if collection=="wf_TimeSeries":
@@ -1093,6 +1162,14 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
     elif collection=="wf_Seismogram":
          wfid_list = SeismogramEnsemble_generator
          src_data_tag = 'seismogram'
+         
+    # Use fixtures to define map functions
+    # all these test functions are implmented with a yield of the function 
+    # name.  That means the lhs of the assignments below set those symbols
+    # as functions we use in map operators in tests below
+    kill_one_member = define_kill_one_member
+    massacre = define_massacre
+    set_one_invalid_member = define_set_one_invalid_member
     client = DBClient("localhost")
     db = client.get_database(testdbname)
     # We use source_id in this test to define ensembles.  
@@ -1372,7 +1449,7 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
     if scheduler=="dask":
         bag_or_rdd_to_merge = dask.bag.from_sequence(ensemble_doclist)
     else:
-        bag_or_rdd_to_merge.parallelize(ensemble_doclist)
+        bag_or_rdd_to_merge = context.parallelize(ensemble_doclist)
 
     source_matcher = ObjectIdMatcher(db,
                        "source",
@@ -1431,7 +1508,7 @@ def test_write_distributed_ensemble(TimeSeriesEnsemble_generator,SeismogramEnsem
     if scheduler=="dask":
         bag_or_rdd_to_merge = dask.bag.from_sequence(srcdoclist)
     else:
-        bag_or_rdd_to_merge.parallelize(srcdoclist)
+        bag_or_rdd_to_merge = context.parallelize(srcdoclist)
     
     bag_or_rdd = read_distributed_data(querylist,
                                   db,
@@ -1557,7 +1634,7 @@ def test_write_error_handlers(atomic_time_series_generator):
         mybag = write_distributed_data(mybag,db,collection='illegal_collection')
     
     with pytest.raises(ValueError,match="overwrite mode is set True with storage_mode="):
-        mybag = write_distributed_data(mybag,db,collection='wf_TimeSeries',overwrite=True,storage_mode="files")
+        mybag = write_distributed_data(mybag,db,collection='wf_TimeSeries',overwrite=True,storage_mode="file")
     
     
 

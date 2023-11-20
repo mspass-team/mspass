@@ -778,6 +778,7 @@ def _partitioned_save_wfdoc(doclist,
     :type dbname:  string
 
     """
+    print("Entered _partitioned_save_wfdoc")
     # This makes the function more bombproof in the event a database 
     # handle can't be serialized - db should normally be defined
     if db is None:
@@ -831,6 +832,30 @@ def _partitioned_save_wfdoc(doclist,
     print("Type of return value wfid=",type(wfids))
     print("Length of wfids=",len(wfids))
     return wfids
+
+class pyspark_mappartition_interface():
+    def __init__(self,
+                 db,
+                 collection,
+                 dbname=None,
+                 ):
+        if db is None:
+            if dbname is None:
+                message="pyspark_mappartion_interface constructor:  invalid parameter combination\n"
+                message+="Both db (arg0) and dbname (arg2) values are None.  One or the other must be defined"
+                raise ValueError(message)
+            dbclient = DBClient()
+            self.db = dbclient.get_database(dbname)
+        else:
+            self.db = db
+        self.collection=collection
+        
+    def partitioned_save_wfdoc(self,iterator):
+        wfidlist = _partitioned_save_wfdoc(iterator,
+                             self.db,
+                             collection=self.collection)
+        print("wfidslist returned by method=",wfidlist)
+        return wfidlist
 
 def post_error_log(d,doc,other_elog=None,elog_key="error_log")->dict:
     elog = ErrorLogger()
@@ -1324,6 +1349,7 @@ def write_distributed_data(
                     )
             )
         if data_are_atomic:
+            pyspark_interface = pyspark_mappartition_interface(db,collection)
             # With atomic data dead in this implementation we handle 
             # any dead datum with the map operators that saves the 
             # wf documents.   Dead data return a None instead of an id 
@@ -1341,12 +1367,9 @@ def write_distributed_data(
                                 undertaker=stedronsky,
                                 cremate=cremate,
                                 ))
-            data = data.mapPartitions(lambda d : _partitioned_save_wfdoc(
-                    d,
-                    db,
-                    collection=collection,
-                    ))
-            data = data.collect()                
+            data = data.mapPartitions(pyspark_interface.partitioned_save_wfdoc)
+            data = data.collect()       
+
         else:
             # This step adds some minor overhead, but it can reduce 
             # memory use at a small cost.  Ensembles are particularly 
