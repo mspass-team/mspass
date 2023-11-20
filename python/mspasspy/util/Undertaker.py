@@ -408,6 +408,10 @@ class Undertaker:
             message += "Actual type of arg0={}\n".format(str(type(d)))
             message += "Must be TimeSeriesEnsemble or SeismgoramEnsemble\n"
             raise TypeError(message)
+        # make sure all members are dead if the ensemble is marked dead
+        if d.dead():
+            for x in d.member:
+                x.kill()
         # This is a pybind11 wrapper not defined in C++ but useful here
         ensmd = d._get_ensemble_md()
         nlive = 0
