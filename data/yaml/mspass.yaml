@@ -141,7 +141,7 @@ Database:
         constraint: required
       orthogonal:
         type: bool
-        concept: When true the transformation matrix is orthogonal (inverse can then be constructed from transpose instead of inversion). 
+        concept: When true the transformation matrix is orthogonal (inverse can then be constructed from transpose instead of inversion).
         constraint: required
       site_id:
         concept: Linking id to site collection
@@ -175,7 +175,7 @@ Database:
         aliases: [file.foff, wfdisc.foff, wfprocess.foff]
         constraint: required
       url:
-        # the current reader doesn't support reading from a url but 
+        # the current reader doesn't support reading from a url but
         # if iris web services were faster it would be useful so we stub it here
         type: string
         concept: Url to external data file.
@@ -373,18 +373,26 @@ Database:
         constraint: required
 
   # According to https://docs.mongodb.com/manual/core/document/#the-id-field
-  # UUID should be saved as BSON's BinData type. We should do the conversion 
+  # UUID should be saved as BSON's BinData type. We should do the conversion
   # implicitly. Will need to explore the bson API:
-  # https://pymongo.readthedocs.io/en/stable/api/bson/index.html 
+  # https://pymongo.readthedocs.io/en/stable/api/bson/index.html
   history_object:
     schema:
       _id:
-        type: string
-        concept: UUID used to define an unique entry in history object collection.
+        type: ObjectID
+        concept: ObjectId of this document - standard MongoDB attribute
         constraint: required
+      save_uuid:
+        type: string
+        concept: unique id string (UUID) of save algorithm that generated this document
+        constraint: required
+      save_stage:
+        type: int
+        concept:  Processing stage of save process that generated this document
+        constraint:  required
       processing_history:
         type: bytes
-        concept: serialized content of ProcessingHistory.
+        concept: serialized content of actual ProcessingHistory container defining full history
         constraint: required
       wf_Seismogram_id:
         reference: wf_Seismogram
@@ -400,7 +408,14 @@ Database:
         type: string
         concept: the name of the algorithm
         constraint: required
-
+      job_name:
+        type: string
+        concept:  Name tag assigned to a specific workflow (job)
+        constraint: optional
+      job_id:
+        type:  string
+        concept:   Instance name tag of a specific workflow (job).  Added qualifier for job_name that can be used to tag multiple common runs (e.g. a parameter test set)
+        constraint:  optional
   elog:
     schema:
       _id:
@@ -533,7 +548,7 @@ Metadata:
         readonly: true
       channel_endtime:
         collection: channel
-        readonly: true    
+        readonly: true
       source_lat:
         collection: source
         readonly: true
@@ -549,7 +564,7 @@ Metadata:
       source_magnitude:
         collection: source
         readonly: true
-      
+
   Seismogram:
     schema:
       _id:
@@ -620,7 +635,7 @@ Metadata:
         readonly: true
       loc:
         collection: site
-        readonly: true 
+        readonly: true
       site_lat:
         collection: site
         readonly: true
@@ -657,7 +672,7 @@ Metadata:
     schema:
       KEVNM:
         type: string
-        concept: Event name 
+        concept: Event name
         readonly: false
       IEVTYP:
         type:  int
