@@ -5958,7 +5958,7 @@ class Database(pymongo.database.Database):
             return mspass_object;
         else:
             message = "_save_sample_data:  arg0 must be a MsPASS data object\n"
-            message += "Type arg0 passed=",str(type(mspass_object))
+            message += "Type arg0 passed="+str(type(mspass_object))
             raise TypeError(message)
 
 
