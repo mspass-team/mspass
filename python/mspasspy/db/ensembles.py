@@ -13,6 +13,7 @@ class seed_keys:
     The class constructor is desiged to be built from MongoDB documents
     and cleanly handle the common wart of null loc codes.
     """
+
     def __init__(self, doc):
         if "net" in doc:
             self.net = doc["net"]
@@ -99,7 +100,7 @@ def TimeIntervalReader(
             is a wrapper that handles some translations from the
             C++ primitives to python.  That function is used to glue
             waveform segments together while handling gaps and overlaps
-            consistently,  
+            consistently,
         2.  The bottom layer, which, is a set of C++ code that does 99% of the
             work.  The base layer was done in C++ for efficiency because,
             as noted above, use of this algorithm can be very time intensive

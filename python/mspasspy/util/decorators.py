@@ -25,7 +25,7 @@ def mspass_func_wrapper(
     dryrun=False,
     inplace_return=False,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Decorator wrapper to adapt a simple function to the mspass parallel processing framework.
@@ -143,7 +143,7 @@ def mspass_func_wrapper_multi(
     alg_id=None,
     alg_name=None,
     dryrun=False,
-    **kwargs
+    **kwargs,
 ):
     """
     This wrapper serves the same functionality as mspass_func_wrapper, but there are a few differences. The first is
@@ -236,7 +236,7 @@ def mspass_method_wrapper(
     dryrun=False,
     inplace_return=False,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Decorator wrapper to adapt a class method function to the mspass parallel processing framework.
@@ -647,7 +647,7 @@ def mspass_reduce_func_wrapper(
     alg_id=None,
     alg_name=None,
     dryrun=False,
-    **kwargs
+    **kwargs,
 ):
     """
     This decorator is designed to wrap functions so that they can be used as reduce operator. It takes two inputs, data1

@@ -255,10 +255,10 @@ class DatabaseMatcher(BasicMatcher):
                 )
             )
         self.collection = collection
-        if isinstance(db,pymongo.database.Database):
+        if isinstance(db, pymongo.database.Database):
             self.dbhandle = db[collection]
         else:
-            message="DatabaseMatcher constructor:  db argument is not a valid Database handle\n"
+            message = "DatabaseMatcher constructor:  db argument is not a valid Database handle\n"
             message += "Actual type of db arg={}".format(str(type(db)))
             raise TypeError(message)
         self.require_unique_match = require_unique_match
@@ -486,14 +486,14 @@ class DictionaryCacheMatcher(BasicMatcher):
         # This is a redundant initialization but a minor cost for stability
         self.normcache = dict()
         # Reference the base class to avoid a type error
-        # This seems to be an oddity from using the same name Database 
+        # This seems to be an oddity from using the same name Database
         # in mspass as pymongo
         if isinstance(db_or_df, pymongo.database.Database):
             self._db_load_normalization_cache(db_or_df, collection)
         elif isinstance(db_or_df, (type_ddd, type_pdd)):
             self._df_load_normalization_cache(db_or_df, collection)
         else:
-            message="{} constructor:  required arg0 must be a Database handle or panda Dataframe\n".format(
+            message = "{} constructor:  required arg0 must be a Database handle or panda Dataframe\n".format(
                 self.__class__.__name__
             )
             message += "Actual type = {}".format(str(type(db_or_df)))
@@ -683,7 +683,9 @@ class DictionaryCacheMatcher(BasicMatcher):
         dbhandle = db[collection]
         self.collection_size = dbhandle.count_documents(self.query)
         if self.collection_size <= 0:
-            message = "Query={} of collection {} yielded no documents\n".format(str(self.query),collection)
+            message = "Query={} of collection {} yielded no documents\n".format(
+                str(self.query), collection
+            )
             message += "Cannot construct a zero length object"
             raise MsPASSError(
                 "DictionaryCacheMatcher._load_normalization_cache:  " + message,
@@ -858,8 +860,8 @@ class DataFrameCacheMatcher(BasicMatcher):
             raise TypeError(
                 "DataFrameCacheMatcher constructor:   collection argument must be a string type"
             )
-        # We have to reference the base class pymongo.database.Database here because 
-        # the MsPASS subclass name is also Database.  That make this 
+        # We have to reference the base class pymongo.database.Database here because
+        # the MsPASS subclass name is also Database.  That make this
         # conditional fail in some uses.   Using the base class is totally
         # appropriate here anyway as no MsPASS extension methods are used
         if not isinstance(db_or_df, (type_pdd, type_ddd, pymongo.database.Database)):
