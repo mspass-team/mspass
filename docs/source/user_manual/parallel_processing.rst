@@ -211,11 +211,12 @@ are good starting points.
 
 Both scripts create a final processed data set python associates
 with the symbol :code:`d_compute`.   A potentially confusing issue for
-beginners is that the content of :code:`d_compute` are largely opaque.
+beginners is that the contents of :code:`d_compute` are largely opaque.
 The reason is that both a bag and RDD are designed to handle a data set
 that will not fit in memory.  Dask and Spark have different methods
 for disaggregating the container, but most MsPASS workflows would normally
-terminate with a database save operation.
+terminate with a database save operation that by default returns only a
+minimal representation of each data object in the container.
 
 Reduce/fold operators
 -------------------------
@@ -304,7 +305,7 @@ Schedulers
 As noted previously MsPASS currently supports two different schedulers:
 Dask (the default) and Spark.   Both do very similar things but are known
 to perform differently in different cluster environments.  Users needing to
-push the system to the limits may need to evaluate which perform better in
+push the system to the limits may need to evaluate which performs better in
 their environment.
 
 In MsPASS we use Spark and Dask to implement the "master-worker"
@@ -316,13 +317,13 @@ data between processes by serializing the data and then having the other
 end deserialize it.   How and when that happens is a decision made by
 the scheduler.  That process is one of the primary limits on scalability of
 this framework.   e.g. it is normal for a single worker calculation to be
-much slower than a simple loop implementation because of the serialization
+much slower than a simple loop implementation because of the scheduling and serialization
 overhead.  The default serialization for both PySpark (The native tongue of
-Spark is Scalar.  PySpark is the python api.)
+Spark is Scala.  PySpark is the python api.)
 and Dask (Python is the native tongue of Dask.) is pickle.   It is important
 to recognize that if you write your own application in this framework the
 data object you pass to map and reduce operators must have a pickle operator
-defined.  That function needs to be as fast as possible as it will be
+defined.  That function needs to be as fast as possible as it may be
 called a lot in a parallel environment.
 
 Another limit on scalability of this framework is that before the computations,
@@ -337,9 +338,8 @@ with links between nodes defining how data moves between tasks.
 The task scheduler uses
 this graph in a way that respects these data dependencies and leverages parallelism where
 possible.  Multiple independent tasks can be run simultaneously that are
-are data driven. Usually this scheduling
-overhead is relatively small unless the execution time for
-processing is trivial.
+are data driven. How large the scheduling effort is relative to
+processing is data and workflow dependent.
 
 For more information, the dask documentation found
 `here <https://docs.dask.org/en/latest/scheduling.html>`_ is a good
@@ -385,25 +385,28 @@ a list of sources to be process defined by the :code:`source_id` attribute.
 This example uses a MongoDB incantation to get a list of unique source_id values.
 It then converts the list to a dask bag (:code:`bag.from_sequence` line).
 We then apply the custom function defined at the top of this code block to
-query MongoDB and return a ensemble of all data with that particular source id.
+create a bag of queries (python dict containers) that define each
+ensemble via its unique ObjectId.   These are passed to the
+special function `read_distributed_data` that in the map operation
+returns an ensemble for each query defined by a source_id.
 It then applies a set of signal processing algorithms similar to above noting
 how the MsPASS functions automatically handle the type switch.
 
 .. code:: python
 
-  def read_common_source_gather(db,collection,srcid):
-    dbcol = db[collection]
-    query = {"source_id" : srcid }
-    # note with logic of this use we don't need to test for
-    # no matches because distinct returns only not null source_id values dbcol
-    cursor = dbcol.find(query)
-    ensemble = db.read_ensemble(db, collection=collection)
-    return ensemble
+  def srdid_list_to_queries(id):
+    return {"source_id" : id}
 
+  ens_load_list={"source_id"}
   dbcol = db.wf_Seismogram
   srcidlist = db.wf_Seismogram.distinct("source_id")
   data = dask.bag.from_sequence(srcidlist)
-  data = data.map(lambda srcid : read_common_source_gather(db, "wf_Seismogram", srcid))
+  data = data.map(srcid_list_to_query)
+  data = data.map(read_distributed_data,
+          db,
+          collection="wf_Seismogram",
+          ensemble_metadata=ens_load_list,
+        )
   data = data.map(signals.detrend, 'demean')
   data = data.map(signals.filter, "bandpass", freqmin=0.01, freqmax=2.0)
   # windowing is relative to start time.  300 s window starting at d.t0+200
