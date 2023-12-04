@@ -237,7 +237,7 @@ class Database(pymongo.database.Database):
         write_concern=None,
         read_concern=None,
         session=None,
-        **kwargs,
+        **kwargs
     ):
         """
         Create a new :class:`mspasspy.db.collection.Collection` in this
@@ -304,7 +304,7 @@ class Database(pymongo.database.Database):
                 write_concern,
                 read_concern,
                 session=s,
-                **kwargs,
+                **kwargs
             )
 
     def set_metadata_schema(self, schema):
@@ -6910,6 +6910,7 @@ class Database(pymongo.database.Database):
         aws_access_key_id,
         aws_secret_access_key,
     ):
+        func = "Database._construct_atomic_object"
         try:
             # Note a CRITICAL feature of the Metadata constructors
             # for both of these objects is that they allocate the
@@ -6951,20 +6952,30 @@ class Database(pymongo.database.Database):
             if form and form != "binary":
                 if md.is_defined("nbytes"):
                     nbytes_expected = md["nbytes"]
-                    self._read_data_from_dfile(
-                        mspass_object,
-                        md["dir"],
-                        md["dfile"],
-                        md["foff"],
-                        nbytes=nbytes_expected,
-                        format=form,
-                        merge_method=merge_method,
-                        merge_fill_value=merge_fill_value,
-                        merge_interpolation_samples=merge_interpolation_samples,
-                    )
+                    if nbytes_expected <= 0:
+                        message = "Formatted reader received size attribute nbytes={}\n".format(
+                            nbytes_expected
+                        )
+                        message += "Null file caused this datum to be killed"
+                        mspass_object.elog.log_error(
+                            func, message, ErrorSeverity.Invalid
+                        )
+                        mspass_object.kill()
+                    else:
+                        self._read_data_from_dfile(
+                            mspass_object,
+                            md["dir"],
+                            md["dfile"],
+                            md["foff"],
+                            nbytes=nbytes_expected,
+                            format=form,
+                            merge_method=merge_method,
+                            merge_fill_value=merge_fill_value,
+                            merge_interpolation_samples=merge_interpolation_samples,
+                        )
                 else:
-                    func = "Database._construct_atomic_object"
-                    message = "Missing required argument nbytes for formatted read - cannot load this datum"
+                    message = "Missing required argument nbytes for formatted read"
+                    message += "Cannot construct this datum"
                     mspass_object.elog.log_error(func, message, ErrorSeverity.Invalid)
                     mspass_object.kill()
             else:
@@ -7001,13 +7012,13 @@ class Database(pymongo.database.Database):
             # raise TypeError("Unknown storage mode: {}".format(storage_mode))
             # note logic above assures storage_mode is not a None
             message = "Illegal storage mode={}\n".format(storage_mode)
-            mspass_object.elog.log_error(
-                "Database._construct_atomic_object", message, ErrorSeverity.Invalid
-            )
+            mspass_object.elog.log_error(func, message, ErrorSeverity.Invalid)
             mspass_object.kill()
 
         if mspass_object.live:
             mspass_object.clear_modified()
+        else:
+            mspass_object["is_abortion"] = True
         return mspass_object
 
     @staticmethod
