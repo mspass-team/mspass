@@ -36,7 +36,7 @@ testdbname = "mspass_test_db"
 wfdir = "python/tests/data/wf_filetestdata"
 
 @pytest.fixture
-def setup_module_environment(scope="module"):
+def setup_environment():
     if os.path.exists(wfdir):
         raise Exception("test_distributed setup:  scratch directory={} exists.  Must be empty to run this test".format(wfdir))
     else:
@@ -47,7 +47,7 @@ def setup_module_environment(scope="module"):
     if os.path.exists(wfdir):
         shutil.rmtree(wfdir)
     
-@pytest.fixture(scope="module")
+@pytest.fixture
 def spark():
     sc = SparkContext("local", "io_distributed_testing")
     yield sc
@@ -413,7 +413,7 @@ def define_set_dir_dfile_ensmble():
                           ("spark","wf_TimeSeries"),
                           ("spark","wf_Seismogram")
                           ])
-def test_read_distributed_atomic(spark,atomic_time_series_generator,atomic_seismogram_generator,scheduler,collection):
+def test_read_distributed_atomic(setup_environment,spark,atomic_time_series_generator,atomic_seismogram_generator,scheduler,collection):
     """
     This function is run with multiple tests to test atomic read (mostly) and 
     limited writes with the io.distributed module. That is, read_distributed_data 
@@ -622,7 +622,8 @@ def test_read_distributed_atomic(spark,atomic_time_series_generator,atomic_seism
                           ("spark","wf_TimeSeries"),
                           ("spark","wf_Seismogram")
                           ])
-def test_write_distributed_atomic(scheduler,
+def test_write_distributed_atomic(setup_environment,
+                                  scheduler,
                                   collection,
                                   spark,
                                   define_kill_one,
@@ -974,7 +975,7 @@ def get_srclist_by_tag(db,data_tag)->list:
                           ("spark","wf_TimeSeries"),
                           ("spark","wf_Seismogram")
                           ])
-def test_read_distributed_ensemble(spark,TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,scheduler,collection):
+def test_read_distributed_ensemble(setup_environment,spark,TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,scheduler,collection):
      print("Starting test with scheduler=",scheduler, " and collection=",collection)
      if scheduler=="spark":
          context=spark
@@ -1122,7 +1123,8 @@ def test_read_distributed_ensemble(spark,TimeSeriesEnsemble_generator,Seismogram
                          ("spark","wf_TimeSeries"),
                          ("spark","wf_Seismogram"),
                      ])
-def test_write_distributed_ensemble(scheduler,
+def test_write_distributed_ensemble(setup_environment,
+                                    scheduler,
                                     collection,
                                     spark,
                                     define_kill_one_member,
