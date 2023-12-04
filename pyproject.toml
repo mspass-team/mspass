@@ -6,7 +6,7 @@ authors = [
     {name = "Ian Wang", email = "yinzhi.wang.cug@gmail.com"},
     {name = "Gary Pavlis", email = "pavlis@indiana.edu"},
 ]
-dynamic = ["dependencies"]
+dynamic = ["dependencies", "scripts"]
 
 [build-system]
 requires = ["setuptools", "wheel"]
@@ -28,4 +28,5 @@ complete = ["numpy", "pandas", "scipy", "matplotlib"]
 [tool.poetry.scripts]
 mspass-dbclean = "mspasspy.db.script.dbclean:main"
 mspass-dbverify = "mspasspy.db.script.dbverify:main"
+mspass-normalize_mseed = "mspasspy.db.script.normalize_mseed:main"
 
