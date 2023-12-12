@@ -52,6 +52,7 @@ def spark():
     sc = SparkContext("local", "io_distributed_testing")
     yield sc
     sc.stop()
+    del sc
 
 # This is a set of small functions at file scope used in this test file.
 def make_channel_record(val,net="00",sta="sta",chan="chan",loc="00",data_tag=None):
