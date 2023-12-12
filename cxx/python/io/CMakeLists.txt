@@ -4,7 +4,9 @@ include_directories(
   ${PYTHON_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include
   ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}/include)
+  ${PROJECT_BINARY_DIR}/include
+  ${Boost_INCLUDE_DIRS}
+)
 
 #add_library(mspasspython STATIC ${sources_python})
 #target_link_libraries(mspasspython PRIVATE mspass ${PYTHON_LIBRARIES})
