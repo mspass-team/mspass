@@ -965,7 +965,7 @@ class TestManager:
             assert ts.is_volatile()
 
         save_res = manager_db.save_data(
-            spark_res[0], alg_name="filter", alg_id=str(alg_id)
+            spark_res[0], alg_name="filter", alg_id=str(alg_id), return_data=True,
         )
         # hardcode net, sta, net, loc to avoid serialization problem here, they are readonly metadata keys -> non fatal keys = 4
         assert save_res.live
