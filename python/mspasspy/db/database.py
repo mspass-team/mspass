@@ -166,9 +166,8 @@ class Database(pymongo.database.Database):
         # The following is also needed for this object to be serialized correctly
         # with dask distributed. Otherwise, the deserialized codec_options
         # will become a different type unrecognized by pymongo. Not sure why...
-        # dec 23:  DatetimeConversion seem have moved - commented out for testing
         
-        from bson.codec_options import CodecOptions, TypeRegistry #, DatetimeConversion
+        from bson.codec_options import CodecOptions, TypeRegistry, DatetimeConversion
         from bson.binary import UuidRepresentation
 
         data["_Database__client"] = eval(data["_Database__client"])

@@ -27,8 +27,7 @@ class Collection(pymongo.database.Collection):
         # This import was causing test failures that seem to be a version 
         # problem.  Commenting them out to see if this fixes the problem
         # may cause other problems
-        #from bson.codec_options import CodecOptions, TypeRegistry, DatetimeConversion
-        from bson.codec_options import CodecOptions, TypeRegistry
+        from bson.codec_options import CodecOptions, TypeRegistry, DatetimeConversion
         from bson.binary import UuidRepresentation
 
         data["_BaseObject__codec_options"] = eval(data["_BaseObject__codec_options"])
