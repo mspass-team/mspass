@@ -47,13 +47,6 @@ def setup_environment():
     if os.path.exists(wfdir):
         shutil.rmtree(wfdir)
     
-@pytest.fixture
-def spark():
-    sc = SparkContext("local", "io_distributed_testing")
-    yield sc
-    sc.stop()
-    del sc
-
 # This is a set of small functions at file scope used in this test file.
 def make_channel_record(val,net="00",sta="sta",chan="chan",loc="00",data_tag=None):
     """
@@ -414,7 +407,7 @@ def define_set_dir_dfile_ensmble():
                           ("spark","wf_TimeSeries"),
                           ("spark","wf_Seismogram")
                           ])
-def test_read_distributed_atomic(setup_environment,spark,atomic_time_series_generator,atomic_seismogram_generator,scheduler,collection):
+def test_read_distributed_atomic(setup_environment,spark_context,atomic_time_series_generator,atomic_seismogram_generator,scheduler,collection):
     """
     This function is run with multiple tests to test atomic read (mostly) and 
     limited writes with the io.distributed module. That is, read_distributed_data 
@@ -442,7 +435,7 @@ def test_read_distributed_atomic(setup_environment,spark,atomic_time_series_gene
     """
     print("Starting test with scheduler=",scheduler, " and collection=",collection)
     if scheduler=="spark":
-        context=spark
+        context=spark_context
     else:
         context=None
     if collection=="wf_TimeSeries":
@@ -626,7 +619,7 @@ def test_read_distributed_atomic(setup_environment,spark,atomic_time_series_gene
 def test_write_distributed_atomic(setup_environment,
                                   scheduler,
                                   collection,
-                                  spark,
+                                  spark_context,
                                   define_kill_one,
                                   define_massacre,
                                   define_set_one_invalid,
@@ -644,7 +637,7 @@ def test_write_distributed_atomic(setup_environment,
     """
     print("Starting test with scheduler=",scheduler, " and collection=",collection)
     if scheduler=="spark":
-        context=spark
+        context=spark_context
     else:
         context=None
     # generators create wfid_list but we ignore it in these tests
@@ -976,10 +969,10 @@ def get_srclist_by_tag(db,data_tag)->list:
                           ("spark","wf_TimeSeries"),
                           ("spark","wf_Seismogram")
                           ])
-def test_read_distributed_ensemble(setup_environment,spark,TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,scheduler,collection):
+def test_read_distributed_ensemble(setup_environment,spark_context,TimeSeriesEnsemble_generator,SeismogramEnsemble_generator,scheduler,collection):
      print("Starting test with scheduler=",scheduler, " and collection=",collection)
      if scheduler=="spark":
-         context=spark
+         context=spark_context
      else:
          context=None
          
@@ -1127,7 +1120,7 @@ def test_read_distributed_ensemble(setup_environment,spark,TimeSeriesEnsemble_ge
 def test_write_distributed_ensemble(setup_environment,
                                     scheduler,
                                     collection,
-                                    spark,
+                                    spark_context,
                                     define_kill_one_member,
                                     define_massacre,
                                     define_set_one_invalid_member,
@@ -1142,7 +1135,7 @@ def test_write_distributed_ensemble(setup_environment,
     """
     print("Starting test with scheduler=",scheduler, " and collection=",collection)
     if scheduler=="spark":
-         context=spark
+         context=spark_context
     else:
          context=None
     if collection=="wf_TimeSeries":
