@@ -23,9 +23,7 @@ discussed in common tutorials found by searching with the keywords
 #. Inserting matplotlib graphics to visualize data at an intermediate stage of
    processing.
 #. If you have a box that throws a mysterious exception that is not self-explanatory
-   the `%debug` magic command can be useful.   After the box with the
-   exception insert a code box, add the magic command, and execute push
-   the run button for the new cell.
+   the `%debug` magic command can be useful.
    To use this feature add a new code box after the cell with problems, put
    that command in the box, and push the jupyter run button.  You will get
    an ipython prompt you can use to investigate variables defined where the
@@ -105,20 +103,41 @@ following:
     resources easily found with a web search.
 #.  To test a python function with the mspass container, copy your python
     code to a directory you mount with the appropriate docker or singularity run
-    incantation.  When the container is running launch a terminal window with
-    the jupyter interface and copy the python code to an appropriate
-    directory in the mspass installation file tree in the container file
-    system (currently `/opt/conda/lib/python3.10/site-packages/mspasspy`
-    but not the `python3.10` could change as new python versions appear.)
-    Then you can import your module as within the container using
-    the standard import syntax with the top level, in this case,
-    being defined as `mspasspy`.  To be more concrete if you have a new
-    python module file called `myfancystuff.py` you copy into the `algorithms`
-    directory you could expose a test script in a notebook to the new module with
-    something like this:  `import mspasspy.algorithms.myfancystuff as mystuff`.
-#.  Once you are finished testing you can do one of two things. (a) submit
+    incantation.  The simplest way to do that is to just put your python
+    script in the same directory as your notebook.   In that case, the
+    notebook code need only include a simple `import`.   e.g. if you have
+    your code saved in a file `mymodule.py` and you want to use a function
+    in that module called `myfunction`, in your notebook you would just
+    enter this simple, failry standard command:
+
+    .. code-block:: python
+
+      from mymodule import myfunction
+
+    If `mymodule` is located in a different directory use the
+    docker "--mount" option or apptainer/singularity "-B" options to
+    "bind" that directory to the container.   For example, suppose we have
+    module `mymodule.py` stored in a directory called `/home/myname/python`.
+    With docker this could be mounted on the standard container
+    with the following incantation:
+    .. code-block:: bash
+
+      docker run --mount src=/home/myname/python,target=/mnt,type=bind -p 8888:8888 mspass/mspass
+
+    To make that module accessible with the same import command as above you
+    would need to change the python search path.  For this example, you could
+    use this incanation:
+
+    .. code-block:: python
+
+      import sys
+      sys.path.append('/mnt')
+
+#.  Once you are finished testing you can do one of two things to make
+    it a more durable feature. (a) Assimilante
+    your module into mspass and submit
     you code as a pull request to the github site for mspass.   If accepted it
-    becomes part of mspass.  (b) build a custom docker container that
+    becomes part of mspass.  (b) Build a custom docker container that
     adds your software as an extension of the mspass container.  The docker
     documentation and the examples in the top level directory for the MsPASS
     source code tree should get you started.  It is beyond the scope of this

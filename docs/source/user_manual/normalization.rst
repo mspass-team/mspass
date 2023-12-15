@@ -29,7 +29,7 @@ For small datasets these issues can be minor, but for very large
 data sets we have found poorly designed normalization algorithms
 can be a serious bottleneck to performance.
 A key difference all users need to appreciate
-is that with a relational database a "join" is always a global operation done between all
+is that with a relational database, a "join" is always a global operation done between all
 tuples in two relations (tables or table subsets).  In MongoDB
 normalization is an atomic operation made one document (recall a document
 is analogous to a tuple) at a time.  Because all database operations are
@@ -49,7 +49,7 @@ tables are easily loaded into a Dataframe with one line of python code
 (:code:`read_csv`).  That abstraction is possible because a MongoDB "collection"
 is just an alternative way to represent a table (relation).
 
-Before proceeding it is important to give a pair of definitions we used repeatedly
+Before proceeding it is important to give a pair of definitions we use repeatedly
 in the text below.   We define the :code:`normalizing` collection/table as the
 smaller collection/table holding the repetitious data we aim to cross-reference.
 In addition, when we use the term :code:`target of normalization`
@@ -93,7 +93,7 @@ be accomplished one of two ways:
 Both approaches utilize the concept of a :code:`normalization operator`
 we discuss in detail in this section.  Readers familiar with relational
 database concept may find it helpful to view a :code:`normalization operator`
-as equivalent the operation used to define a database join.
+as equivalent to the operation used to define a database join.
 
 This section focuses on the first approach.   The second is covered in
 a later section below. The most common operators for normalization while
@@ -146,9 +146,9 @@ makes it inevitably slower than the comparable Id-based algorithm
 `py:class:<mspasspy.db.normalize.ObjectIdMatcher>`.
 We suggest that unless you are absolutely certain of the
 completeness of the :code:`channel` collection, you should use the
-Id-based method discussed here for doing normalization while readng.
+Id-based method discussed here for doing normalization while reading.
 
-Because miniseed normalization is so fundamental to modern data
+Because miniseed normalization is so fundamental to modern seismology data,
 we created a special python function called
 :py:func:`normalize_mseed <mspasspy.db.normalize.normalize_mseed>`.
 It is used for defining :code:`channel_id`
@@ -233,13 +233,16 @@ The following does the same operation as above in parallel with dask
   channel_matcher = MiniseedMatcher(db)
   # loop over all wf_miniseed records
   cursor = db.wf_miniseed.find({})
-  dataset = read_distributed_data(db,normalize=[channel_matcher])
+  dataset = read_distributed_data(cursor,
+                   normalize=[channel_matcher],
+                   collection='wf_miniseed',
+                )
   # porocessing steps as map operators follow
   # normally terminate with a save
   dataset.compute()
 
 Reading ensembles with normalization is similar.   The following is a
-serial job that reads ensembles and normalizes each ensemble with data from
+serial job that reads ensembles and normalizes the ensemble with data from
 the source and channel collections.  It assumes source_id was defined
 previously.
 
@@ -258,7 +261,7 @@ previously.
   sourceid_list = db.wf_miniseed.distinct("source_id")
   for srcid in sourceid_list:
     cursor = db.wf_miniseed.find({"source_id" : srcid})
-    ensemble = db.read_ensemble_data(cursor,
+    ensemble = db.read_data(cursor,
        normalize=[channel_matcher],
        normalize_ensemble=[source_matcher])
     # processing functions for ensembles to follow here
@@ -317,7 +320,7 @@ Next, the parallel version of the job immediately above:
   channel_matcher = MiniseedMatcher(db)
   # loop over all wf_miniseed records
   cursor = db.wf_miniseed.find({})
-  dataset = read_distributed_data(db,collection="wf_miniseed")
+  dataset = read_distributed_data(cursor,collection="wf_miniseed")
   dataset = dataset.map(normalize,channel_matcher)
   # processing steps as map operators follow
   # normally terminate with a save
@@ -523,7 +526,7 @@ different keys to access attributes stored in the database and
 the equivalent keys used to access the same data in a workflow.
 In addition, there is a type mismatch between a document/tuple/row
 abstraction in a MongoDB document and the internal use by the matcher
-class family.  That is, pymongo treats represents a "document" as a
+class family.  That is, pymongo represents a "document" as a
 python dictionary while the matchers require posting the same data to
 the MsPASS Metadata container to work more efficiently with the C++
 code base that defines data objects.
@@ -555,7 +558,7 @@ is a hyperlink to the docstring for the class:
    * - :py:class:`OriginTimeMatcher <mspasspy.db.normalize.OriginTimeMatcher>`
      - match data with start time defined by event origin time
 
-Noting currently all of these have database query versions that differ only
+Noting that currently all of these have database query versions that differ only
 by have "DB" embedded in the class name
 (e.g. the MongoDB version of :code:`EqualityMatcher` is :code:`EqualityDBMatcher`.)
 
@@ -581,8 +584,8 @@ idea is most clearly seen by a simple example.
   attribute_list = ['_id','lat','lon','elev']
   matcher = ObjectIdMatcher(db,collection="site",attributes_to_load=attribute_list)
   # This says load the entire dataset presumed staged to MongoDB
-  cursor = db.wf_miniseed.find({})   #handle to entire data set
-  dataset = read_distributed_data(cursor)  # dataset returned is a bag
+  cursor = db.wf_TimeSeries.find({})   #handle to entire data set
+  dataset = read_distributed_data(cursor,collection='wf_TimeSeries')  # dataset returned is a bag
   dataset = dataset.map(normalize,matcher)
   # additional workflow elements and usually ending with a save would be here
   dataset.compute()
@@ -591,10 +594,10 @@ This example loads receiver coordinate information from data that was assumed
 previously loaded into MongoDB in the "site" collection.  It assumes
 matching can be done using the site collection ObjectId loaded with the
 waveform data at read time with the key "site_id".   i.e. this is an
-inline version of what could also be accomplished (more slowly) by
-calling :code:`read_distribute_data` with "site" in the normalize list.
+inline version of what could also be accomplished by
+calling :code:`read_distribute_data` with a matcher for site in the normalize list.
 
-Key things this example demonstrates in common to all in-line
+Key things this example demonstrates common to all in-line
 normalization workflows are:
 
 +  :code:`normalize` appears only as arg0 of a map operation (dask syntax -
@@ -783,7 +786,7 @@ We know of three solutions to that problem:
     :py:class:`DictionaryCacheMatcher <mspasspy.db.normalize.DictionaryCacheMatcher>`,
     and :py:class:`DataFrameCacheMatcher <mspasspy.db.normalize.DataFrameCacheMatcher>`).
     One could also build directly on the base class, but we can think of no
-    example where would be preferable to extending one of the intermediate
+    example where that would be preferable to extending one of the intermediate
     classes.  The remainder of this section focuses only on some hints for
     extending one of the intermediate classes.
 
@@ -862,7 +865,7 @@ intermediate classes you should use to build your custom matcher are:
 -  The :py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher>`
    requires implementing only one method called
    :py:meth:`query_generator <mspasspy.db.normalize.DatabaseMatcher.query_generator>`.
-   Tha method needs to create a python dictionary in pymongo syntax that is to
+   That method needs to create a python dictionary in pymongo syntax that is to
    be applied to the normalizing collection.  That query would normally be
    constructed from one or more Metadata attributes in a data object but
    time queries may also want to use the data start time and endtime available
@@ -878,7 +881,7 @@ intermediate classes you should use to build your custom matcher are:
    The other method,
    :py:meth:`db_make_cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id>`,
    needs to do the same thing and create identical keys.
-   The difference being that
+   The difference between the two is that
    :py:meth:`db_make_cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id>`
    is used as the data loader to create the dictionary-based cache while
    :py:meth:`cache_id <mspasspy.db.normalize.DictionaryCacheMatcher.cache_id>`

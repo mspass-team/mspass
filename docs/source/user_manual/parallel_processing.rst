@@ -8,7 +8,7 @@ One of the primary goals of MsPASS was a framework to make
 parallel processing of seismic data no more difficult than running
 a typical python script on a desktop machine.   In modern IT lingo
 our goals was a "scalable" framework.  The form of parallelism we
-exploit is a one of a large class of problems that can reduced to
+exploit is a one of a large class of problems that can br reduced to
 what is called a directed cyclic graph (DAG) in computer science.
 Any book on "big data" will discuss this concept.
 Chapter 1 of Daniel (2019) has a particularly useful description using
@@ -58,7 +58,7 @@ computer's memory.   Spark refers to this abstraction as a
 Resiliant Distributed Dataset (RDD) while Dask calls the same thing a "bag".
 
 In MsPASS the normal content of a bag/RDD is a dataset made up of *N*
-MsPASS data objects:  TimeSeries, Seismogram, or one of the ensemble of
+MsPASS data objects:  `TimeSeries`, `Seismogram`, or one of the ensemble of
 either of the atomic types.   An implicit assumption in the current
 implementation is that any processing
 was proceeded by a data assembly and validation phase.
