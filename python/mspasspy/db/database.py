@@ -47,7 +47,6 @@ import base64
 import uuid
 
 from mspasspy.ccore.io import _mseed_file_indexer, _fwrite_to_file, _fread_from_file
-from mspasspy.util.converter import Trace2TimeSeries
 
 from mspasspy.ccore.seismic import (
     TimeSeries,
@@ -166,7 +165,7 @@ class Database(pymongo.database.Database):
         # The following is also needed for this object to be serialized correctly
         # with dask distributed. Otherwise, the deserialized codec_options
         # will become a different type unrecognized by pymongo. Not sure why...
-        
+
         from bson.codec_options import CodecOptions, TypeRegistry, DatetimeConversion
         from bson.binary import UuidRepresentation
 
@@ -1053,6 +1052,7 @@ class Database(pymongo.database.Database):
         data_tag=None,
         cremate=False,
         save_history=True,
+        normalizing_collections=["channel", "site", "source"],
         alg_name="save_data",
         alg_id="0",
     ):
@@ -1419,6 +1419,19 @@ class Database(pymongo.database.Database):
           with body as input.  That creates a document for each dead
           datum either in the "cemetery" or "abortions" collection.
           See above for more deails.
+        :param normalizing_collections:  list of collection names dogmatically treated
+          as normalizing collection names.  The keywords in the list are used
+          to always (i.e. for all modes) erase any attribute with a key name
+          of the form `collection_attribute where `collection` is one of the collection
+          names in this list and attribute is any string.  Attribute names with the "_"
+          separator are saved unless the collection field matches one one of the
+          strings (e.g. "channel_vang" will be erased before saving to the
+          wf collection while "foo_bar" will not be erased.)  This list should
+          ONLY be changed if a different schema than the default mspass schema
+          is used and different names are used for normalizing collections.
+          (e.g. if one added a "shot" collection to the schema the list would need
+          to be changed to at least add "shot".)
+        :type normalizing_collection:  list if strings defining collection names.
         :param save_history:   When True the optional history data will
           be saved to the database if it was actually enabled in the workflow.
           If the history container is empty will silently do nothing.
@@ -1506,6 +1519,7 @@ class Database(pymongo.database.Database):
                     save_history,
                     data_tag,
                     storage_mode,
+                    normalizing_collections,
                     alg_name,
                     alg_id,
                 )
@@ -1523,6 +1537,7 @@ class Database(pymongo.database.Database):
                         save_history,
                         data_tag,
                         storage_mode,
+                        normalizing_collections,
                         alg_name,
                         alg_id,
                     )
@@ -2630,6 +2645,7 @@ class Database(pymongo.database.Database):
         mode="cautious",
         exclude_keys=None,
         force_keys=None,
+        normalizing_collections=["channel", "site", "source"],
         alg_name="Database.update_metadata",
     ):
         """
@@ -2768,29 +2784,8 @@ class Database(pymongo.database.Database):
             if not str(copied_metadata[k]).strip():
                 copied_metadata.erase(k)
 
-        # remove any defined items in exclude list
-        for k in exclude_keys:
-            if k in copied_metadata:
-                copied_metadata.erase(k)
-        # Now remove any readonly data
-        for k in copied_metadata.keys():
-            if k == "_id":
-                continue
-            if save_schema.is_defined(k):
-                if save_schema.readonly(k):
-                    if k in changed_key_list:
-                        newkey = "READONLYERROR_" + k
-                        copied_metadata.change_key(k, newkey)
-                        mspass_object.elog.log_error(
-                            "Database.update_metadata",
-                            "readonly attribute with key="
-                            + k
-                            + " was improperly modified.  Saved changed value with key="
-                            + newkey,
-                            ErrorSeverity.Complaint,
-                        )
-                    else:
-                        copied_metadata.erase(k)
+        # always exclude normalization data defined by names like site_lat
+        copied_metadata = _erase_normalized(copied_metadata, normalizing_collections)
         # Done editing, now we convert copied_metadata to a python dict
         # using this Metadata method or the long version when in cautious or pedantic mode
         insertion_dict = dict()
@@ -2801,6 +2796,26 @@ class Database(pymongo.database.Database):
                 if k in copied_metadata:
                     insertion_dict[k] = copied_metadata[k]
         else:
+            # first handle readonly constraints
+            for k in copied_metadata.keys():
+                if k == "_id":
+                    continue
+                if save_schema.is_defined(k):
+                    if save_schema.readonly(k):
+                        if k in changed_key_list:
+                            newkey = "READONLYERROR_" + k
+                            copied_metadata.change_key(k, newkey)
+                            mspass_object.elog.log_error(
+                                "Database.update_metadata",
+                                "readonly attribute with key="
+                                + k
+                                + " was improperly modified.  Saved changed value with key="
+                                + newkey,
+                                ErrorSeverity.Complaint,
+                            )
+                        else:
+                            copied_metadata.erase(k)
+
             # Other modes have to test every key and type of value
             # before continuing.  pedantic logs an error for all problems
             # Both attempt to fix type mismatches before update.  Cautious
@@ -2928,6 +2943,7 @@ class Database(pymongo.database.Database):
         exclude_keys=None,
         force_keys=None,
         data_tag=None,
+        normalizing_collections=["channel", "site", "source"],
         alg_id="0",
         alg_name="Database.update_data",
     ):
@@ -2979,6 +2995,19 @@ class Database(pymongo.database.Database):
           also will drop any key-value pairs where the value cannot be
           converted to the type defined in the schema.
         :type mode: :class:`str`
+        :param normalizing_collections:  list of collection names dogmatically treated
+          as normalizing collection names.  The keywords in the list are used
+          to always (i.e. for all modes) erase any attribute with a key name
+          of the form `collection_attribute where `collection` is one of the collection
+          names in this list and attribute is any string.  Attribute names with the "_"
+          separator are saved unless the collection field matches one one of the
+          strings (e.g. "channel_vang" will be erased before saving to the
+          wf collection while "foo_bar" will not be erased.)  This list should
+          ONLY be changed if a different schema than the default mspass schema
+          is used and different names are used for normalizing collections.
+          (e.g. if one added a "shot" collection to the schema the list would need
+          to be changed to at least add "shot".)
+        :type normalizing_collection:  list if strings defining collection names.
         :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
           (defaults to 'Database.update_data' and should not normally need to be changed)
         :type alg_name: :class:`str`
@@ -3006,6 +3035,7 @@ class Database(pymongo.database.Database):
                 mode=mode,
                 exclude_keys=exclude_keys,
                 force_keys=force_keys,
+                normalizing_collections=normalizing_collections,
                 alg_name=alg_name,
             )
         except:
@@ -6417,6 +6447,7 @@ class Database(pymongo.database.Database):
         save_history,
         data_tag,
         storage_mode,
+        normalizing_collections,
         alg_name,
         alg_id,
     ):
@@ -6434,7 +6465,11 @@ class Database(pymongo.database.Database):
         """
         self._sync_metadata_before_update(mspass_object)
         insertion_dict, aok, elog = md2doc(
-            mspass_object, save_schema, exclude_keys=exclude_keys, mode=mode
+            mspass_object,
+            save_schema,
+            exclude_keys=exclude_keys,
+            mode=mode,
+            normalizing_collections=normalizing_collections,
         )
         # exclude_keys edits insertion_dict but we need to do the same to mspass_object
         # to assure whem data is returned it is identical to what would
@@ -7423,7 +7458,13 @@ def index_mseed_file_parallel(db, *arg, **kwargs):
     return ret
 
 
-def md2doc(md, save_schema, exclude_keys=None, mode="promiscuous") -> []:
+def md2doc(
+    md,
+    save_schema,
+    exclude_keys=None,
+    mode="promiscuous",
+    normalizing_collections=["channel", "site", "source"],
+) -> {}:
     """
     Converts a Metadata container to a python dict applying a schema constraints.
 
@@ -7531,7 +7572,7 @@ def md2doc(md, save_schema, exclude_keys=None, mode="promiscuous") -> []:
         if k in copied_metadata:
             copied_metadata.erase(k)
     # the special mongodb key _id is currently set readonly in
-    # the mspass schema.  It would be cleard in the following loop
+    # the mspass schema.  It would be cleared in the following loop
     # but it is better to not depend on that external constraint.
     # The reason is the insert_one used below for wf collections
     # will silently update an existing record if the _id key
@@ -7540,24 +7581,13 @@ def md2doc(md, save_schema, exclude_keys=None, mode="promiscuous") -> []:
     # we make sure we clear it
     if "_id" in copied_metadata:
         copied_metadata.erase("_id")
-    # Now remove any readonly data
-    for k in copied_metadata.keys():
-        if save_schema.is_defined(k):
-            if save_schema.readonly(k):
-                if k in changed_key_list:
-                    newkey = "READONLYERROR_" + k
-                    copied_metadata.change_key(k, newkey)
-                    elog.log_error(
-                        "Database.save_data",
-                        "readonly attribute with key="
-                        + k
-                        + " was improperly modified.  Saved changed value with key="
-                        + newkey,
-                        ErrorSeverity.Complaint,
-                    )
-                else:
-                    copied_metadata.erase(k)
 
+    # always strip normalizing data from standard collections
+    # Note this usage puts the definition of "standard collection"
+    # to the default of the argument normalizing_collection of this
+    # function.   May want to allow callers to set this and add a
+    # value for the list to args of this function
+    copied_metadata = _erase_normalized(copied_metadata, normalizing_collections)
     # this section creates a python dict from the metadata container.
     # it applies safties based on mode argument (see user's manual)
     if mode == "promiscuous":
@@ -7565,6 +7595,23 @@ def md2doc(md, save_schema, exclude_keys=None, mode="promiscuous") -> []:
         # the way the bindings were defined
         insertion_doc = dict(copied_metadata)
     else:
+        for k in copied_metadata.keys():
+            if save_schema.is_defined(k):
+                if save_schema.readonly(k):
+                    if k in changed_key_list:
+                        newkey = "READONLYERROR_" + k
+                        copied_metadata.change_key(k, newkey)
+                        elog.log_error(
+                            "Database.save_data",
+                            "readonly attribute with key="
+                            + k
+                            + " was improperly modified.  Saved changed value with key="
+                            + newkey,
+                            ErrorSeverity.Complaint,
+                        )
+                    else:
+                        copied_metadata.erase(k)
+
         # Other modes have to test every key and type of value
         # before continuing.  pedantic kills data with any problems
         # Cautious tries to fix the problem first
@@ -8078,3 +8125,45 @@ def parse_normlist(input_nlist, db) -> list:
         normalizer_list.append(this_normalizer)
 
     return normalizer_list
+
+
+def _erase_normalized(
+    md, normalizing_collections=["channel", "site", "source"]
+) -> Metadata:
+    """
+    Erases data from a Metadata container assumed to come from normalization.
+
+    In MsPASS attributes loaded with data from normalizing collections
+    are always of the form collection_key where collection is the name of the
+    normalizing collection and key is a simpler named used to store that
+    attribute in the normalizing collection.   e.g. the "lat" latitude of
+    an entry in the "site" collection would be posted to a waveform
+    Metadata as "site_lat".  One does not normally want to copy such
+    attributes back to the database when saving as it defeats the purpose of
+    normalization and can create confusions about which copy is definitive.
+    For that reason Database such attributes are erased before saving
+    unless overridden.   This simple function standardizes that process.
+
+    This function is mainly for internal use and has no safties.
+
+    :param md:  input Metadata container to use.   Note this can be a
+      MsPASS seismic data object that inherits metadata and the function
+      will work as it copies the content to a Metadata container.
+    :type md:  :class:`mspasspy.ccore.utility.Metadata` or a C++ data
+      object that inherits Metadata (that means all MsPASS seismid data objects)
+    :param normalizing_collection:  list of standard collection names that
+      are defined for normalization.   These are an argument only to put them
+      in a standard place.  They should not be changed unless a new
+      normalizing collection name is added or a different schema is used
+      that has different names.
+    """
+    # make a copy - not essential but small cost for stability
+    # make a copy - not essential but small cost for stability
+    mdout = Metadata(md)
+    for k in mdout.keys():
+        split_list = k.split("_")
+        if len(split_list) >= 2:  # gt allows things like channel_foo_bar
+            if split_list[1] != "id":  # never erase any of the form word_id
+                if split_list[0] in normalizing_collections:
+                    mdout.erase(k)
+    return mdout

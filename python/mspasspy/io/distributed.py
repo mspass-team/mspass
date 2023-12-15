@@ -18,19 +18,8 @@ from mspasspy.util.Undertaker import Undertaker
 from mspasspy.db.client import DBClient
 
 
-from mspasspy.ccore.seismic import (
-    TimeSeries,
-    Seismogram,
-    TimeSeriesEnsemble,
-    SeismogramEnsemble,
-)
 from mspasspy.ccore.utility import (
-    AtomicType,
-    Metadata,
-    MsPASSError,
     ErrorLogger,
-    ErrorSeverity,
-    ProcessingHistory,
 )
 
 import dask
@@ -985,6 +974,7 @@ def _save_ensemble_wfdocs(
     exclude_keys,
     mode,
     undertaker,
+    normalizing_collections,
     cremate=False,
     post_elog=True,
     save_history=False,
@@ -1042,6 +1032,7 @@ def _save_ensemble_wfdocs(
       User's manual for description of this common argument.
     :poram undertaker:  Instance of :class:`mspasspy.util.Undertaker`
       to handle dead data (see above)
+    :param normalizing_collections: see docstring for `write_distributed_data`.
     :param cremate:  tells Undertaker how to handle dead data (see above)
     :param post_elog:  see above
     :param save_history:  see above
@@ -1073,7 +1064,11 @@ def _save_ensemble_wfdocs(
         # md2doc failure signaled with aok False
         for d in ensemble_data.member:
             doc, aok, elog = md2doc(
-                d, save_schema=save_schema, exclude_keys=exclude_keys, mode=mode
+                d,
+                save_schema=save_schema,
+                exclude_keys=exclude_keys,
+                mode=mode,
+                normalizing_collections=normalizing_collections,
             )
             if aok:
                 if data_tag:
@@ -1127,6 +1122,7 @@ def _atomic_extract_wf_document(
     save_schema,
     exclude_keys,
     mode,
+    normalizing_collections,
     post_elog=True,
     elog_key="error_log",
     post_history=False,
@@ -1156,9 +1152,8 @@ def _atomic_extract_wf_document(
 
     Error log and history data handling are as described in the
     docstring for `write_distributed_data` with which this function is
-    intimately linked.
-
-
+    intimately linked.  Similarly all the argument descriptions can
+    be found in that docstring.
 
     :return:   python dict translation of Metadata container of input
     datum d.   Note the return always has a boolean value associated
@@ -1177,6 +1172,7 @@ def _atomic_extract_wf_document(
         save_schema=save_schema,
         exclude_keys=exclude_keys,
         mode=mode,
+        normalizing_collections=normalizing_collections,
     )
     # cremate or bury dead data.
     # both return an edited data object reduced to ashes or a skeleton
@@ -1236,6 +1232,7 @@ def write_distributed_data(
     save_history=False,
     post_history=False,
     cremate=False,
+    normalizing_collections=["channel", "site", "source"],
     alg_name="write_distributed_data",
     alg_id="0",
 ) -> list:
@@ -1470,6 +1467,21 @@ def write_distributed_data(
        `bury` method will be called instead which saves a skeleton 
        (error log and Metadata content) of the results in the "cemetery" 
        collection.
+
+     :param normalizing_collections:  list of collection names dogmatically treated
+          as normalizing collection names.  The keywords in the list are used 
+          to always (i.e. for all modes) erase any attribute with a key name 
+          of the form `collection_attribute where `collection` is one of the collection 
+          names in this list and attribute is any string.  Attribute names with the "_" 
+          separator are saved unless the collection field matches one one of the 
+          strings (e.g. "channel_vang" will be erased before saving to the 
+          wf collection while "foo_bar" will not be erased.)  This list should 
+          ONLY be changed if a different schema than the default mspass schema 
+          is used and different names are used for normalizing collections.  
+          (e.g. if one added a "shot" collection to the schema the list would need 
+          to be changed to at least add "shot".)
+     :type normalizing_collection:  list if strings defining collection names.
+
      :param alg_name:  do not change
      :param alg_id:  algorithm id for object-level history.  Normally
        assigned by global history manager.
@@ -1557,6 +1569,7 @@ def write_distributed_data(
                     save_schema,
                     exclude_keys,
                     mode,
+                    normalizing_collections,
                     post_elog=post_elog,
                     save_history=save_history,
                     post_history=post_history,
@@ -1592,6 +1605,7 @@ def write_distributed_data(
                     exclude_keys,
                     mode,
                     stedronsky,
+                    normalizing_collections,
                     cremate=cremate,
                     post_elog=post_elog,
                     save_history=save_history,
@@ -1619,6 +1633,7 @@ def write_distributed_data(
                 save_schema,
                 exclude_keys,
                 mode,
+                normalizing_collections,
                 post_elog=post_elog,
                 save_history=save_history,
                 post_history=post_history,
@@ -1653,6 +1668,7 @@ def write_distributed_data(
                 exclude_keys,
                 mode,
                 stedronsky,
+                normalizing_collections,
                 cremate=cremate,
                 post_elog=post_elog,
                 save_history=save_history,
@@ -1744,13 +1760,6 @@ def read_to_dataframe(
     :type retrieve_history_record: :class:`bool`
     """
     collection = cursor.collection.name
-    try:
-        wf_collection = db.database_schema.default_name(collection)
-    except MsPASSError as err:
-        raise MsPASSError(
-            "collection {} is not defined in database schema".format(collection),
-            "Invalid",
-        ) from err
     dbschema = db.database_schema
     mdschema = db.metadata_schema
     this_elog = ErrorLogger()
