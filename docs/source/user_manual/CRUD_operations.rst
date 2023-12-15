@@ -202,11 +202,11 @@ and most up to date usage:
     "task".  That means, writes are performed in parallel by ensemble.
 
 Note when saving seismic data, the `save_data` method, by default,
-returns only the `ObjectId` of the document saved.  Similarly, by
-default `write_distributed_data` returns a bag/RDD of `ObjectID`s.
-Both have an option to return a copy of the data saved to allow their
-use for an intermediate save during a workflow, but be warned that is not
-the default.  The default was found to be important to avoid
+returns only the `ObjectId` of the document saved. Returning
+a copy of the data is an option.
+`write_distributed_data` is more dogmatic and always only returns
+a python list of `ObjectID`s.
+The default was found to be important to avoid
 memory faults that can happen when a workflow computation is initiated in
 the standard way (e.g. in dask calling the bag "compute" method.).
 If the last step in the workflow is a save and the bag/RDD contains the
@@ -245,6 +245,23 @@ should recognize:
     in the section on reading data.
 #.  The writers all have a `save_history` to save the object-level history.
     That data is stored in a separate collection called `history`.
+#.  Writers have a `mode` argument that must be one of "promiscuous",
+    "cautious", or "pedantic".   Readers also use this argument, but
+    writing this controls how much a schema is enforced on the output.
+    The default ("promiscuous") does no schema enforcement at all.
+    All modes, however, do dogmatically enforce one rule.  Any attribute
+    key interpreted as loaded by normalization is erased before the save.
+    In MsPASS normalization data are normally loaded by prepending a
+    the name of the collection to the attribute.  e.g. the latitude of
+    a station ("lat" in the MsPASS schema) stored in the channel collection
+    would be loaded with the key "channel_lat".   Attributes with
+    one of the standard collection names ("site", "channel", and "source")
+    will always be erased before the wf document is saved.  When node
+    is set to "cautious" the writer will attempt to correct any time mismatches
+    and log an error if any issues are detected.  In "pedantic" mode any
+    type mismatches will cause the datum to be killed before the save.
+    "pedantic" is rarely advised for writing unless one is writing to a
+    files with a format that is dogmatic about attribute types.
 
 
 Read
