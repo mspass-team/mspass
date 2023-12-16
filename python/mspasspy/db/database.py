@@ -1015,7 +1015,7 @@ class Database(pymongo.database.Database):
                             kill_me = False
                             break
                     if kill_me:
-                        ensemble.kil()
+                        ensemble.kill()
 
             else:
                 # Default constructed container assumed marked dead
@@ -3887,7 +3887,7 @@ class Database(pymongo.database.Database):
         # This will need to be modified if we ever expand time types beyond two
         if mspass_object.time_is_relative():
             if mspass_object.shifted():
-                mspass_object["startime_shift"] = mspass_object.time_reference()
+                mspass_object["starttime_shift"] = mspass_object.time_reference()
                 mspass_object["utc_convertible"] = True
             else:
                 mspass_object["utc_convertible"] = False
