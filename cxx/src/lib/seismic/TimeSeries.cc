@@ -39,8 +39,11 @@ TimeSeries::TimeSeries(const Metadata& md) : ProcessingHistory()
         this->mt0 = this->get_double(SEISMICMD_t0);
         if(this->is_defined(SEISMICMD_time_standard))
         {
-          if(this->get_string(SEISMICMD_time_standard) == "UTC")
+	  string tstd = this->get_string(SEISMICMD_time_standard);
+	  if(tstd == "UTC")
             this->set_tref(TimeReferenceType::UTC);
+	  else if(tstd == "Relative")
+	    this->set_tref(TimeReferenceType::Relative);
           else
           {
             this->set_tref(TimeReferenceType::Relative);
