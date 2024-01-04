@@ -560,7 +560,16 @@ class Database(pymongo.database.Database):
           the following:  (1) MongoDB `ObjectId` of wf document to be
           retrieved to define this read, (2) MongoDB document (python dict)
           of data defining the datum to be constructed, or (3) a pymongo
-          `Cursor` object that can be iterated to load an enemble.
+          `Cursor` object that can be iterated to load an enemble.  Note
+          the "doc" can also be a Metadata subclass.  That means you can
+          use a seismic data object as input and it will be accepted.
+          The read will work, however, only if the contents of the Metadata
+          container are sufficient.  Use of explicit or implicit
+          Metadata container input is not advised even it it might work as it
+          violates an implicit assumption of the function that the input is
+          closely linked to MongoDB.  A doc from a cursor or one retrieved
+          through an ObjectId match that assump0tion but an Metadata
+          container does not.
 
         :param mode: read mode that controls how the function interacts with
           the schema definition.   Must be one of
@@ -795,8 +804,13 @@ class Database(pymongo.database.Database):
         col = self[wf_collection]
         # This logic allows object_id to be either a document or
         # an object id
-        if isinstance(id_doc_or_cursor, dict):
-            object_doc = id_doc_or_cursor
+        if isinstance(id_doc_or_cursor, (dict, Metadata)):
+            # note because all seismic data objects inherit Metadata
+            # this block will be entered if passed a seismic data object.
+            if isinstance(id_doc_or_cursor, Metadata):
+                object_doc = dict(id_doc_or_cursor)
+            else:
+                object_doc = id_doc_or_cursor
             if data_tag:
                 if "data_tag" not in object_doc or object_doc["data_tag"] != data_tag:
                     if object_type is TimeSeries:
