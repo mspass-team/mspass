@@ -24,7 +24,7 @@ class Collection(pymongo.database.Collection):
         # The following is also needed for this object to be serialized correctly
         # with dask distributed. Otherwise, the deserialized codec_options
         # will become a different type unrecognized by pymongo. Not sure why...
-        # This import was causing test failures that seem to be a version 
+        # This import was causing test failures that seem to be a version
         # problem.  Commenting them out to see if this fixes the problem
         # may cause other problems
         from bson.codec_options import CodecOptions, TypeRegistry, DatetimeConversion

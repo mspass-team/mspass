@@ -110,7 +110,11 @@ class TestDBVerify:
         )
         # erase required attributes
         save_res_code = self.db.save_data(
-            ts3, mode="promiscuous", storage_mode="gridfs", exclude_keys=["starttime"], return_data=True
+            ts3,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["starttime"],
+            return_data=True,
         )
         doc1 = self.db["wf_TimeSeries"].find_one({"_id": ts1["_id"]})
         doc2 = self.db["wf_TimeSeries"].find_one({"_id": ts2["_id"]})
