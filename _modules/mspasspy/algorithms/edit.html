@@ -200,7 +200,7 @@
 <span class="sd">        subclasses.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">live</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">kill_if_true</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ensemble</span></div>
@@ -1011,14 +1011,14 @@
 
 <div class="viewcode-block" id="MetadataOperator.edit_ensemble_members"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperator.edit_ensemble_members">[docs]</a>    <span class="k">def</span> <span class="nf">edit_ensemble_members</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Subclasses should call this method if the input data are an </span>
-<span class="sd">        ensemble.   A trick of inheritance allows the algorithm of self </span>
-<span class="sd">        to then be applied to whole ensemble.  Putting this in the </span>
+<span class="sd">        Subclasses should call this method if the input data are an</span>
+<span class="sd">        ensemble.   A trick of inheritance allows the algorithm of self</span>
+<span class="sd">        to then be applied to whole ensemble.  Putting this in the</span>
 <span class="sd">        base class avoids the duplication of duplicate code in all \</span>
-<span class="sd">        subclasses.  </span>
+<span class="sd">        subclasses.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">live</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ensemble</span></div>

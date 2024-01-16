@@ -368,7 +368,12 @@
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;DatabaseMatcher constructor:  db argument is not a valid Database handle</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type of db arg=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">db</span><span class="p">)))</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">require_unique_match</span> <span class="o">=</span> <span class="n">require_unique_match</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span> <span class="o">=</span> <span class="n">prepend_collection_name</span>
 
@@ -593,17 +598,19 @@
 
         <span class="c1"># This is a redundant initialization but a minor cost for stability</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normcache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">,</span> <span class="n">Database</span><span class="p">):</span>
+        <span class="c1"># Reference the base class to avoid a type error</span>
+        <span class="c1"># This seems to be an oddity from using the same name Database</span>
+        <span class="c1"># in mspass as pymongo</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_db_load_normalization_cache</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">,</span> <span class="p">(</span><span class="n">type_ddd</span><span class="p">,</span> <span class="n">type_pdd</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_df_load_normalization_cache</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> constructor:  required arg0 must be a mspass Database handle&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-                <span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> constructor:  required arg0 must be a Database handle or panda Dataframe</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
             <span class="p">)</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">)))</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DictionaryCacheMatcher.cache_id"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DictionaryCacheMatcher.cache_id">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">cache_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -789,13 +796,10 @@
         <span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection_size</span> <span class="o">=</span> <span class="n">dbhandle</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;Query=&quot;</span>
-                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span>
-                <span class="o">+</span> <span class="s2">&quot; of collection=&quot;</span>
-                <span class="o">+</span> <span class="n">collection</span>
-                <span class="o">+</span> <span class="s2">&quot; yielded 0 documents - cannot construct this object&quot;</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Query=</span><span class="si">{}</span><span class="s2"> of collection </span><span class="si">{}</span><span class="s2"> yielded no documents</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">),</span> <span class="n">collection</span>
             <span class="p">)</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Cannot construct a zero length object&quot;</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                 <span class="s2">&quot;DictionaryCacheMatcher._load_normalization_cache:  &quot;</span> <span class="o">+</span> <span class="n">message</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
@@ -969,7 +973,11 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">&quot;DataFrameCacheMatcher constructor:   collection argument must be a string type&quot;</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">,</span> <span class="p">(</span><span class="n">type_pdd</span><span class="p">,</span> <span class="n">type_ddd</span><span class="p">,</span> <span class="n">Database</span><span class="p">)):</span>
+        <span class="c1"># We have to reference the base class pymongo.database.Database here because</span>
+        <span class="c1"># the MsPASS subclass name is also Database.  That make this</span>
+        <span class="c1"># conditional fail in some uses.   Using the base class is totally</span>
+        <span class="c1"># appropriate here anyway as no MsPASS extension methods are used</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">,</span> <span class="p">(</span><span class="n">type_pdd</span><span class="p">,</span> <span class="n">type_ddd</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">&quot;DataFrameCacheMatcher constructor:  required arg0 must be either a pandas, dask Dataframe, or database handle&quot;</span>
             <span class="p">)</span>
@@ -979,7 +987,7 @@
                     <span class="s2">&quot;DataFrameCacheMatcher constructor:  usage error.  Cannot use default of attributes_to_load (triggers loading all columns) and define a list of names for argument load_if_defined&quot;</span>
                 <span class="p">)</span>
             <span class="n">aload</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">db_or_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                 <span class="n">aload</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">aload</span> <span class="o">=</span> <span class="n">attributes_to_load</span>

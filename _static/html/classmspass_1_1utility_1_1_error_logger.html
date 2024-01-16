@@ -116,6 +116,8 @@ std::list&lt; <a class="el" href="classmspass_1_1utility_1_1_log_data.html">LogD
 <tr class="memitem:a13450cb0a04da9b190832a73834fb6cf"><td class="memItemLeft" align="right" valign="top"><a id="a13450cb0a04da9b190832a73834fb6cf"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td></tr>
 <tr class="separator:a13450cb0a04da9b190832a73834fb6cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac98f8e0c684513beb3fc8e2973f08785"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#ac98f8e0c684513beb3fc8e2973f08785">clear</a> ()</td></tr>
+<tr class="separator:ac98f8e0c684513beb3fc8e2973f08785"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1168408b473c80d078bfc2e8bd98bb75"><td class="memItemLeft" align="right" valign="top"><a id="a1168408b473c80d078bfc2e8bd98bb75"></a>
 <a class="el" href="classmspass_1_1utility_1_1_error_logger.html">ErrorLogger</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classmspass_1_1utility_1_1_error_logger.html">ErrorLogger</a> &amp;parent)</td></tr>
 <tr class="separator:a1168408b473c80d078bfc2e8bd98bb75"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -129,6 +131,33 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td>
 <p>This class is intended mainly to be added to data objects in mspass to provide a scalable, thread safe method for logging errors. Atomic mspass data objects (e.g. seismograms and time series objects) all use this class to log errors and mark data with ambiguous states. The log can explain why data is an invalid state, but can also contain debug information normally enabled by something like a verbose option to a program. <br  />
  </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac98f8e0c684513beb3fc8e2973f08785"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac98f8e0c684513beb3fc8e2973f08785">&#9670;&nbsp;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mspass::utility::ErrorLogger::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Reset error log container to make it empty. </p>
+<div class="fragment"><div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;{allmessages.clear();};</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="aa69873ba0aebf67e9ba24d01992c0bcf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa69873ba0aebf67e9ba24d01992c0bcf">&#9670;&nbsp;</a></span>log_error() <span class="overload">[1/2]</span></h2>
 

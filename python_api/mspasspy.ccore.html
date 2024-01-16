@@ -310,6 +310,12 @@ decoding the tbls.
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Used to post any nonfatal errors without aborting a program of family of parallel programs</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.utility.ErrorLogger.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.ErrorLogger" title="mspasspy.ccore.utility.ErrorLogger"><span class="pre">mspasspy.ccore.utility.ErrorLogger</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.utility.ErrorLogger.clear" title="Permalink to this definition"></a></dt>
+<dd><p>Reset log container to zero length destroying any current content</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.utility.ErrorLogger.get_error_log">
 <span class="sig-name descname"><span class="pre">get_error_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.ErrorLogger" title="mspasspy.ccore.utility.ErrorLogger"><span class="pre">mspasspy.ccore.utility.ErrorLogger</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mspasspy.ccore.utility.LogData" title="mspasspy.ccore.utility.LogData"><span class="pre">mspasspy.ccore.utility.LogData</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mspasspy.ccore.utility.ErrorLogger.get_error_log" title="Permalink to this definition"></a></dt>
 <dd><p>Return all posted entries</p>
@@ -1569,10 +1575,10 @@ cardinal directions (see above). It will be empty if sg was marked dead</p>
 <dd><p>Mark the entire ensemble dead</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="py property">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.SeismogramEnsemble.live">
-<span class="sig-name descname"><span class="pre">live</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble.live" title="Permalink to this definition"></a></dt>
-<dd><p>Return true if the ensemble is marked live</p>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">live</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble.live" title="Permalink to this definition"></a></dt>
+<dd><p>True if the ensemble contains any valid data.  False if empty or all invalid.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1783,10 +1789,10 @@ object will be returned if d was marked dead</p>
 <dd><p>Mark the entire ensemble dead</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="py property">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.TimeSeriesEnsemble.live">
-<span class="sig-name descname"><span class="pre">live</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble.live" title="Permalink to this definition"></a></dt>
-<dd><p>Return true if the ensemble is marked live</p>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">live</span></span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble.live" title="Permalink to this definition"></a></dt>
+<dd><p>True if the ensemble contains any valid data.  False if empty or all invalid.</p>
 </dd></dl>
 
 <dl class="py method">

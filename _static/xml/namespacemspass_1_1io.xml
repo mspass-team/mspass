@@ -196,11 +196,40 @@
 </parameterlist>
 <simplesect kind="return"><para>file position in output file of the first byte written. the same number is saved in the &quot;foff&quot; metadata attribute.</para>
 </simplesect>
-\expection This function will throw a MsPASS error for one of several common io related issues. Caller should always include the call to this function in a try block. </para>
+\expection This function will throw a MsPASS error for one of several common io related issues. Caller should always include the call to this function in a try block.</para>
+<para>Write sample data for an Ensemble of TimeSeries to a single file.</para>
+<para>Writing ensemble data with this function is more efficient than writing atomic data one at time. The reason is this function writes all the sample data for the ensemble to a single and only opens and closes the file specfied once. It returns a vector of foff values. Dead members have no sample data written and will generate a -1 entry in the foff vector returned. Caller should handle that condition in some way.</para>
+<para>If entire ensemble is marked dead it will return an empty vector container.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input ensemble to save sample data </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>directory name (if entry use current directory) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dfile</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>file name for write </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="87" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="87" bodyend="132" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="107" declcolumn="13"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="118" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="118" bodyend="171" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="107" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8h_1a176b9e19269b90d1fa7c42f340dbb95d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; long int &gt;</type>
@@ -252,11 +281,40 @@
 </parameterlist>
 <simplesect kind="return"><para>file position in output file of the first byte written. the same number is saved in the &quot;foff&quot; metadata attribute.</para>
 </simplesect>
-\expection This function will throw a MsPASS error for one of several common io related issues. Caller should always include the call to this function in a try block. </para>
+\expection This function will throw a MsPASS error for one of several common io related issues. Caller should always include the call to this function in a try block.</para>
+<para>Write sample data for an Ensemble of Seismogram objects to a single file.</para>
+<para>Writing ensemble data with this function is more efficient than writing atomic data one at time. The reason is this function writes all the sample data for the ensemble to a single and only opens and closes the file specfied once. It returns a vector of foff values. Dead members have no sample data written and will generate a -1 entry in the foff vector returned. Caller should handle that condition in some way.</para>
+<para>If entire ensemble is marked dead it will return an empty vector container.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input ensemble to save sample data </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>directory name (if entry use current directory) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dfile</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>file name for write </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="133" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="133" bodyend="172" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="143" declcolumn="13"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="188" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="188" bodyend="237" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="143" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8h_1aa271a69b12e7c945f1779b07c3157eb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -501,7 +559,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="287" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="287" bodyend="354" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="240" declcolumn="8"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="349" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="349" bodyend="413" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="240" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8h_1a20caa06868a6777ab05715499e81c7c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -594,7 +652,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="219" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="219" bodyend="286" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="273" declcolumn="8"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="284" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="284" bodyend="348" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="273" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="mseed__index_8h_1ae676a44a12bfc4e7a6af21edd7581745" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::pair&lt; std::vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;, <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> &gt;</type>
@@ -685,7 +743,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="28" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="28" bodyend="57"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="30" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="30" bodyend="59"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1ae290073e53ca7d094d152e3a3ee65085" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>long int</type>
@@ -707,10 +765,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Write sample data for a TimeSeries to a file with fwrite. Always appends and returns foff of the position where fwrite wrote these data. Returns -1 if it receives a datum marked dead. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="58" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="58" bodyend="72"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="64" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="64" bodyend="79"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1a5e6fc74e51d5bf9eb393d6abde3518d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>long int</type>
@@ -732,10 +791,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Write sample data for a Seismogram to a file with fwrite. Always appends and returns foff of the position where fwrite wrote these data. Note the data are a raw dump of the contiguous block storing the 3*npts sample matrix.</para>
+<para>Returns -1 if it receives a datum marked dead. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="73" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="73" bodyend="86"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="87" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="87" bodyend="101"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1aa6a536e819148eb66f735ed6ab002e11" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -768,7 +829,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="174" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="174" bodyend="200"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="239" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="239" bodyend="265"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1ae1f3e216145ee0c136324079ebd24b6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -797,7 +858,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="201" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="201" bodyend="209"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="266" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="266" bodyend="274"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1acf03563760e97d0c44fa7f3262264ddf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -826,7 +887,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="210" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="210" bodyend="218"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="275" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="275" bodyend="283"/>
       </memberdef>
       <memberdef kind="function" id="mseed__file__indexer_8cc_1a7ee6e258cc4a7dd22e0f27463228c44a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

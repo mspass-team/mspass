@@ -755,23 +755,66 @@ filebase.ext (Arg 3 defaulting to d3C).</p></li>
 <span id="undertaker"></span><h2>Undertaker<a class="headerlink" href="#module-mspasspy.util.Undertaker" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.Undertaker.</span></span><span class="sig-name descname"><span class="pre">Undertaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a></p>
-<p>Class to handle dead data.  Many for ensembles, but has methods to
-save elog entries for Seismogram or TimeSeries objects marked dead.
-A concept of this class is any thing received that is live is not
-changed.   It only handles the dead.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.Undertaker.</span></span><span class="sig-name descname"><span class="pre">Undertaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regular_data_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cemetery'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aborted_data_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'abortions'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to handle dead data. Results are stored to two spcial
+collections defined by default as “cemetery”, for regular dead bodies,
+and “abortions” for those defined as abortions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbin</strong> (the constructor for this class only tests for that the
+handle is an instance of pymongo’s Database class.  The MsPASS
+version of Database extends the pymongo version.  Thsi particular
+class references only two methods of Database: (1) the private
+method <cite>_save_elog</cite> and (2) the private method <cite>_save_history</cite>.
+Technically an alternative extension of pymongo’s Database
+class that implements those two methods would be plug compatible.
+User’s who might want to pull MsPASS apart and use this class
+separately could do so with an alternative Database extension than
+MsPaSs.) – Should be an instance of  mspasspy.db.Database that is
+used to save the remains of any bodies.</p></li>
+<li><p><strong>regular_data_collection</strong> – collection where we bury regular</p></li>
+</ul>
+</dd>
+</dl>
+<p>dead bodies.  Default “cemetery”
+:type regular_data_collection:  string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>aborted_data_collection</strong> – collection where aborted data documents</p>
+</dd>
+</dl>
+<p>are buried.   Default “abortions”
+:type aborted_data_collection:  string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data_tag</strong> – tag to attach to each document.  Normally would</p>
+</dd>
+</dl>
+<p>be the same as the data_tag used for a particular save operation
+for data not marked dead.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.bring_out_your_dead">
-<span class="sig-name descname"><span class="pre">bring_out_your_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bury</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.bring_out_your_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead" title="Permalink to this definition"></a></dt>
-<dd><p>Seperate an ensemble into live and dead members.</p>
+<span class="sig-name descname"><span class="pre">bring_out_your_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bury</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mummify_atomic_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.bring_out_your_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead" title="Permalink to this definition"></a></dt>
+<dd><p>Seperate an ensemble into live and dead members.  Result is
+returned as a pair (tuple) of two ensembles.   First (0 component)
+is a copy of the input with the dead bodies removed.  The second
+(component 1) has the same ensemble Metadata as the input but only
+contains dead members - like the name implies stolen from a great line in
+the Monty Python movie “Search for the Holy Grail”.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>d</strong> – must be either a TimeSeriesEnsemble or SeismogramEnsemble of
 data to be processed.</p></li>
-<li><p><strong>bury</strong> – if true the bury_the_dead method will be called on the
-ensemble of dead data before returning</p></li>
+<li><p><strong>bury</strong> – if true the bury method will be called on the
+ensemble of dead data before returning.   Note a limitation of
+using this method is there is no way to save the optional
+history data via this method.  If you need to save history
+run this with bury=False and then run bury with save_history
+true on the dead ensemble.   There is also no way to specify
+an alternative to the default collection name of “cemetery”</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -785,17 +828,170 @@ and 1 is ensemble with dead data.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.bury">
+<span class="sig-name descname"><span class="pre">bury</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mummify_atomic_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.bury"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.bury" title="Permalink to this definition"></a></dt>
+<dd><p>Handles dead data by saving a subset of content to database.</p>
+<p>MsPASS makes extensive use of the idea of “killing” data as a
+way to say it is bad and should not be considered further in
+any analysis.   There is a need to record what data was killed
+and it is preferable to do so without saving the entire
+data object.  (That is the norm in seismic reflection processing
+where data marked dead are normally carried through until
+removed through a process like a stack.)  This method
+standardizes the method of how to do that and what is saved
+as the shell of a dead datum.  That “shell” is always a minimum
+of two things:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>All elog entries - essential to understand why datum was killed</p></li>
+<li><p>The content of the Metadata container saved under a
+subdocument called “tombstone”.</p></li>
+</ol>
+</div></blockquote>
+<p>If save_history is set True and the datum has history records
+they will also be saved.</p>
+<p>It is important to realize this method acts like an overloaded
+c++ method in that it accepts multiple data types, but handles
+them differently.
+1.  Atomic data (TimeSeries or Seismogram) marked dead</p>
+<blockquote>
+<div><p>generate a document saved to the specified collection and
+an (optional) history document.   If the mummify_atomic_data
+parameter is set True (the default) the returned copy of the
+data will be processed with the “mummify” method of this class.
+(That means the sample data are discarded and the array is set</p>
+<blockquote>
+<div><p>to zero length).</p>
+</div></blockquote>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Ensembles have to handle two different situations.   If the
+entire ensemble is marked dead, all members are treated as
+dead and then processed through this method by a recursive
+call on each member.   In that situation an empty ensemble
+is returned with only ensemble metadata not empty.  If the
+ensemble is marked live the code loops over members
+calling this method recusively only on dead data.   In
+that situation the ensemble returned is edited with
+all dead data removed.   (e.g. if we started with 20 members
+and two were marked dead, the return would have 18 members.)</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mspass_object</strong> (<em>Must be a MsPASS seismic data object</em><em>
+(</em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><em>TimeSeries</em></a><em>, </em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><em>Seismogram</em></a><em>, </em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><em>TimeSeriesEnsemble</em></a><em>, or </em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><em>SeismogramEnsemble</em></a><em>)
+or </em><em>the method will throw a TypeError.</em>) – datum to be processed</p></li>
+<li><p><strong>save_history</strong> – If True and a datum has the optional history
+data stored with it, the history data will be stored in a
+MongoDB collection hard wired into the _save_history method of
+Database.  Default is False</p></li>
+<li><p><strong>mummify_atomic_data</strong> – When True (default) atomic data
+marked dead will be passed through self.mummify to reduce
+memory use of the remains.   This parameter is ignored for ensembles.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.bury_the_dead">
-<span class="sig-name descname"><span class="pre">bury_the_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.bury_the_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.bury_the_dead" title="Permalink to this definition"></a></dt>
-<dd><p>Clear the contents of an ensemble and optionally save the history and
-error log of the dead.  Return the cleaned ensmble.</p>
+<span class="sig-name descname"><span class="pre">bury_the_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mummify_atomic_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.bury_the_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.bury_the_dead" title="Permalink to this definition"></a></dt>
+<dd><p>Depricated method exactly equivalent to new, and shorter name of
+simply <cite>bury</cite>.   With context as a member of Undertaker the
+long name was redundnant.  Note the call sequence is exactly
+the same as bury.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.cremate">
-<span class="sig-name descname"><span class="pre">cremate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.cremate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.cremate" title="Permalink to this definition"></a></dt>
-<dd><p>Like bury_the_dead but nothing is preserved of the dead.   Functionally equivalent to
-bury_the_dead with save_history False, but with a more memorable name.</p>
+<span class="sig-name descname"><span class="pre">cremate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.cremate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.cremate" title="Permalink to this definition"></a></dt>
+<dd><p>Like bury but nothing is preserved of the dead.</p>
+<p>Fpr atomic data it returns a default constructed (empty)
+copy of the container matching the original type.
+That avoids downstream type collisions if this method is
+called in parallel workflow to release memory.
+This method is most appropriate for ensembles.  In that case, it
+returns a copy of the ensemble with all dead data removed.
+(i.e. they are ommited from the returned copy leaving no trace.)
+If an ensemble is marked dead the return is an empty ensemble
+containing only ensemble Metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mspass_object</strong> – Seismic data object.   If not a MsPASS
+seismic data object a TypeError will be thrown.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.handle_abortion">
+<span class="sig-name descname"><span class="pre">handle_abortion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc_or_datum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.handle_abortion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.handle_abortion" title="Permalink to this definition"></a></dt>
+<dd><p>Standardized method to handle what we call abortions (see class overview).</p>
+<p>This method standardizes handling of abortions.  They are always
+saved as a document in a collection set by the constructor
+(self.aborted_data_collection) that defaults to “abortions”.
+The documents saved have up to 3 key-value pairs:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>“tombstone” - contents are a subdocument (dict) of the</dt><dd><p>wf document that was aborted during construction.</p>
+</dd>
+</dl>
+<p>“logdata” - any error log records left by the reeader that failed.
+“type” -  string describing the expected type of data object</p>
+<blockquote>
+<div><p>that a reader was attempting to construct.   In rare
+situations it could be set to “unknown” if
+Undertaker._handle_abortion is called on a raw document
+and type is not set (see parameters below)</p>
+</div></blockquote>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>doc_or_datum</strong> (Must be one of <cite>TimeSeries</cite>, <cite>Seismogram</cite>, <cite>Metadata</cite>,) – container defining the aborted fetus.</p>
+</dd>
+</dl>
+<p>or a python dict.   For the seismic data objects any content in
+the ErrorLogger will be saved.   For dict input an application
+should post a message to the dict with some appropriate (custom)
+key to preserve a cause for the abortion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>type</strong> – string description of the type of data object</p>
+</dd>
+</dl>
+<p>to associate with dict input.  Default for this parameter is None
+and it is not referenced at all for normal input of TimeSeries
+and Seismogram objects.  It is ONLY referenced if arg0 is a
+dict. If type is None and the input is a dict the value assigned to
+the “type” key in the abortions document is “unknown”.   The
+escape for “unknown” makes the method bombproof but may make the
+saved documents ambiguous.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Exception<span class="colon">:</span></dt>
+<dd class="field-odd"><p>throws a TypeError if arg0 does not obey type</p>
+</dd>
+</dl>
+<p>list described above.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.mummify">
+<span class="sig-name descname"><span class="pre">mummify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_elog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.mummify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.mummify" title="Permalink to this definition"></a></dt>
+<dd><p>Reduce memory use associated with dead data.</p>
+<p>For atomic data objects if they are marked dead
+the data vector/matrix is set to zero length releasing
+the dynamically allocated memory.  For Ensembles if
+the entire ensemble is marked dead all members are
+killed and this method calls itself on each member.
+For normal ensembles with mixed live and dead data
+only the data marked dead are muffified.</p>
+<p>Handling of</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mspass_object</strong> – datum to be processed.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

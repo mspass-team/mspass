@@ -624,44 +624,47 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> = this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">get_double</a>(<a class="code" href="namespacemspass_1_1seismic.html#a1e5b45ce0ed02e9c1d154ea0434138c0">SEISMICMD_t0</a>);</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">is_defined</a>(<a class="code" href="namespacemspass_1_1seismic.html#a88a01d6c4e1838b7bac28931b9cc8c58">SEISMICMD_time_standard</a>))</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;          <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">get_string</a>(<a class="code" href="namespacemspass_1_1seismic.html#a88a01d6c4e1838b7bac28931b9cc8c58">SEISMICMD_time_standard</a>) == <span class="stringliteral">&quot;UTC&quot;</span>)</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">set_tref</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">TimeReferenceType::UTC</a>);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;          <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;          {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">set_tref</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">TimeReferenceType::Relative</a>);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            this-&gt;elog.<a class="code" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;TimeSeries Metadata constructor&quot;</span>,</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;              <a class="code" href="namespacemspass_1_1seismic.html#a88a01d6c4e1838b7bac28931b9cc8c58">SEISMICMD_time_standard</a>+<span class="stringliteral">&quot; attribute is not defined - set to Relative&quot;</span>,</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;              ErrorSeverity::Complaint);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;          }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        }</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keywordflow">if</span>(this-&gt;time_is_relative())</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        {</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;          <span class="comment">/* It is not an error if a t0 shift is not defined and we are</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">          in relative time. That is the norm for active source data. */</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;          <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">is_defined</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0951fef82377e868ee7cfcd4841979cf">SEISMICMD_t0_shift</a>))</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;          {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            <span class="keywordtype">double</span> t0shift=this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">get_double</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0951fef82377e868ee7cfcd4841979cf">SEISMICMD_t0_shift</a>);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#ab87672dc6adffed90b0dc9c144219d44">force_t0_shift</a>(t0shift);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;          }</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="comment">/* this default construct is needed to handle miniseed data in</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">        MsPASS.  It perhaps should generate a log message a information</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment">        but for now we do this silently.   since the constructor returns</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">        a result marked dead in all cases a default of 0 is sensible.*/</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordtype">long</span> <span class="keywordtype">int</span> ns;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="keywordflow">if</span>(md.<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">is_defined</a>(<a class="code" href="namespacemspass_1_1seismic.html#ac848a79911ca1930abf265f01a6d635f">SEISMICMD_npts</a>))</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        {</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;          ns = md.<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a7ace0c05ebb00b3c383cb8cccd225504">get_long</a>(<a class="code" href="namespacemspass_1_1seismic.html#ac848a79911ca1930abf265f01a6d635f">SEISMICMD_npts</a>);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        }</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;          ns = 0;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        }</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="comment">/* this CoreTimeSeries method sets the npts attribute and</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment">        initializes the s buffer to all zeros */</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">set_npts</a>(ns);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    }<span class="keywordflow">catch</span>(...) {<span class="keywordflow">throw</span>;};</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      <span class="keywordtype">string</span> tstd = this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">get_string</a>(<a class="code" href="namespacemspass_1_1seismic.html#a88a01d6c4e1838b7bac28931b9cc8c58">SEISMICMD_time_standard</a>);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      <span class="keywordflow">if</span>(tstd == <span class="stringliteral">&quot;UTC&quot;</span>)</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">set_tref</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">TimeReferenceType::UTC</a>);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      <span class="keywordflow">else</span> <span class="keywordflow">if</span>(tstd == <span class="stringliteral">&quot;Relative&quot;</span>)</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">set_tref</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">TimeReferenceType::Relative</a>);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;          <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;          {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">set_tref</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">TimeReferenceType::Relative</a>);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            this-&gt;elog.<a class="code" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;TimeSeries Metadata constructor&quot;</span>,</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;              <a class="code" href="namespacemspass_1_1seismic.html#a88a01d6c4e1838b7bac28931b9cc8c58">SEISMICMD_time_standard</a>+<span class="stringliteral">&quot; attribute is not defined - set to Relative&quot;</span>,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;              ErrorSeverity::Complaint);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;          }</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordflow">if</span>(this-&gt;time_is_relative())</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;          <span class="comment">/* It is not an error if a t0 shift is not defined and we are</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">          in relative time. That is the norm for active source data. */</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;          <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">is_defined</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0951fef82377e868ee7cfcd4841979cf">SEISMICMD_t0_shift</a>))</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;          {</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            <span class="keywordtype">double</span> t0shift=this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">get_double</a>(<a class="code" href="namespacemspass_1_1seismic.html#a0951fef82377e868ee7cfcd4841979cf">SEISMICMD_t0_shift</a>);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#ab87672dc6adffed90b0dc9c144219d44">force_t0_shift</a>(t0shift);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;          }</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        }</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="comment">/* this default construct is needed to handle miniseed data in</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">        MsPASS.  It perhaps should generate a log message a information</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">        but for now we do this silently.   since the constructor returns</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">        a result marked dead in all cases a default of 0 is sensible.*/</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keywordtype">long</span> <span class="keywordtype">int</span> ns;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keywordflow">if</span>(md.<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">is_defined</a>(<a class="code" href="namespacemspass_1_1seismic.html#ac848a79911ca1930abf265f01a6d635f">SEISMICMD_npts</a>))</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;          ns = md.<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a7ace0c05ebb00b3c383cb8cccd225504">get_long</a>(<a class="code" href="namespacemspass_1_1seismic.html#ac848a79911ca1930abf265f01a6d635f">SEISMICMD_npts</a>);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        {</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;          ns = 0;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        }</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="comment">/* this CoreTimeSeries method sets the npts attribute and</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment">        initializes the s buffer to all zeros */</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">set_npts</a>(ns);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    }<span class="keywordflow">catch</span>(...) {<span class="keywordflow">throw</span>;};</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;}</div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a7b2e9b878959d376790f09194edc51d9"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mspass::seismic::BasicTimeSeries::mlive</a></div><div class="ttdeci">bool mlive</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:256</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_ab87672dc6adffed90b0dc9c144219d44"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#ab87672dc6adffed90b0dc9c144219d44">mspass::seismic::BasicTimeSeries::force_t0_shift</a></div><div class="ttdeci">void force_t0_shift(const double t)</div><div class="ttdoc">Force a t0 shift value on data.</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:115</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_ac3f8c8200710fe0d3ef211c7c758e864"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">mspass::seismic::BasicTimeSeries::set_tref</a></div><div class="ttdeci">void set_tref(const TimeReferenceType newtref)</div><div class="ttdoc">Force the time standard.</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:243</div></div>
@@ -861,19 +864,19 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </div><div class="memdoc">
 <p>Return an estimate of the memmory use by the data in this object.</p>
 <p>Memory consumed by a <a class="el" href="classmspass_1_1seismic_1_1_time_series.html" title="Implemntation of TimeSeries for MsPASS.">TimeSeries</a> object is needed to implement the <b>sizeof</b> method in python that dask/spark use to manage memory. Without that feature we had memory fault issues. Note the estimate this method returns should not be expected to be exact. The MsPASS implementation or any alternative implementation avoids an exact calculation because it requries an (expensive) traversal of multiple map containers. </p>
-<div class="fragment"><div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;{</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordtype">size_t</span> memory_estimate;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  memory_estimate = <span class="keyword">sizeof</span>(<a class="code" href="classmspass_1_1seismic_1_1_time_series.html#a45c61ee8b73600c3576f8f750f926311">TimeSeries</a>);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  memory_estimate += <span class="keyword">sizeof</span>(double)*this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>();</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="comment">/* We can only estimate the size of the Metadata container.</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment">  These constants are defined in memory_constants.h */</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  memory_estimate += memory_constants::MD_AVERAGE_SIZE*this-&gt;md.size();</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  memory_estimate += memory_constants::KEY_AVERAGE_SIZE*this-&gt;changed_or_set.size();</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">/* Similar for history and elog containers */</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  memory_estimate += memory_constants::HISTORYDATA_AVERAGE_SIZE*this-&gt;nodes.size();</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  memory_estimate += memory_constants::ELOG_AVERAGE_SIZE*this-&gt;elog.size();</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keywordflow">return</span> memory_estimate;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;{</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordtype">size_t</span> memory_estimate;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  memory_estimate = <span class="keyword">sizeof</span>(<a class="code" href="classmspass_1_1seismic_1_1_time_series.html#a45c61ee8b73600c3576f8f750f926311">TimeSeries</a>);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  memory_estimate += <span class="keyword">sizeof</span>(double)*this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>();</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="comment">/* We can only estimate the size of the Metadata container.</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment">  These constants are defined in memory_constants.h */</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  memory_estimate += memory_constants::MD_AVERAGE_SIZE*this-&gt;md.size();</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  memory_estimate += memory_constants::KEY_AVERAGE_SIZE*this-&gt;changed_or_set.size();</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="comment">/* Similar for history and elog containers */</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  memory_estimate += memory_constants::HISTORYDATA_AVERAGE_SIZE*this-&gt;nodes.size();</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  memory_estimate += memory_constants::ELOG_AVERAGE_SIZE*this-&gt;elog.size();</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keywordflow">return</span> memory_estimate;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}</div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:183</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_time_series_html_a45c61ee8b73600c3576f8f750f926311"><div class="ttname"><a href="classmspass_1_1seismic_1_1_time_series.html#a45c61ee8b73600c3576f8f750f926311">mspass::seismic::TimeSeries::TimeSeries</a></div><div class="ttdeci">TimeSeries()</div><div class="ttdef"><b>Definition:</b> TimeSeries.h:18</div></div>
 </div><!-- fragment -->
@@ -897,14 +900,14 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
-<div class="fragment"><div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;{</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=(&amp;parent))</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html#a49e0add931b008600450413c4e0cbd40">CoreTimeSeries::operator=</a>(parent);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1utility_1_1_processing_history.html#ab6203063df0564c57f28d76f8d5969ac">ProcessingHistory::operator=</a>(parent);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    }</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;{</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=(&amp;parent))</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html#a49e0add931b008600450413c4e0cbd40">CoreTimeSeries::operator=</a>(parent);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1utility_1_1_processing_history.html#ab6203063df0564c57f28d76f8d5969ac">ProcessingHistory::operator=</a>(parent);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    }</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}</div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_a49e0add931b008600450413c4e0cbd40"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#a49e0add931b008600450413c4e0cbd40">mspass::seismic::CoreTimeSeries::operator=</a></div><div class="ttdeci">CoreTimeSeries &amp; operator=(const CoreTimeSeries &amp;parent)</div><div class="ttdef"><b>Definition:</b> CoreTimeSeries.cc:66</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_ab6203063df0564c57f28d76f8d5969ac"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#ab6203063df0564c57f28d76f8d5969ac">mspass::utility::ProcessingHistory::operator=</a></div><div class="ttdeci">ProcessingHistory &amp; operator=(const ProcessingHistory &amp;parent)</div><div class="ttdef"><b>Definition:</b> ProcessingHistory.cc:741</div></div>
 </div><!-- fragment -->

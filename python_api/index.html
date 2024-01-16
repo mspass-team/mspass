@@ -380,6 +380,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger"><code class="docutils literal notranslate"><span class="pre">ErrorLogger</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger.clear"><code class="docutils literal notranslate"><span class="pre">ErrorLogger.clear()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger.get_error_log"><code class="docutils literal notranslate"><span class="pre">ErrorLogger.get_error_log()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger.get_job_id"><code class="docutils literal notranslate"><span class="pre">ErrorLogger.get_job_id()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger.log_error"><code class="docutils literal notranslate"><span class="pre">ErrorLogger.log_error()</span></code></a></li>
@@ -612,7 +613,7 @@
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble.dead"><code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble.dead()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble.elog"><code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble.elog</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble.kill"><code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble.kill()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble.live"><code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble.live()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble.live"><code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble.live</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble.set_live"><code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble.set_live()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble.toStream"><code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble.toStream()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble.validate"><code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble.validate()</span></code></a></li>
@@ -650,7 +651,7 @@
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble.dead"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble.dead()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble.elog"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble.elog</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble.kill"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble.kill()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble.live"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble.live()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble.live"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble.live</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble.set_live"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble.set_live()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble.toStream"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble.toStream()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble.validate"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble.validate()</span></code></a></li>
@@ -922,7 +923,14 @@
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database.verify"><code class="docutils literal notranslate"><span class="pre">Database.verify()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.doc2md"><code class="docutils literal notranslate"><span class="pre">doc2md()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.doclist2mdlist"><code class="docutils literal notranslate"><span class="pre">doclist2mdlist()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.elog2doc"><code class="docutils literal notranslate"><span class="pre">elog2doc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.geoJSON_doc"><code class="docutils literal notranslate"><span class="pre">geoJSON_doc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.history2doc"><code class="docutils literal notranslate"><span class="pre">history2doc()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.index_mseed_file_parallel"><code class="docutils literal notranslate"><span class="pre">index_mseed_file_parallel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.md2doc"><code class="docutils literal notranslate"><span class="pre">md2doc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.parse_normlist"><code class="docutils literal notranslate"><span class="pre">parse_normlist()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html#module-mspasspy.db.normalize">normalize</a><ul>
@@ -1176,8 +1184,11 @@
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html#module-mspasspy.util.Undertaker">Undertaker</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.Undertaker.Undertaker"><code class="docutils literal notranslate"><span class="pre">Undertaker</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead"><code class="docutils literal notranslate"><span class="pre">Undertaker.bring_out_your_dead()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury"><code class="docutils literal notranslate"><span class="pre">Undertaker.bury()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury_the_dead"><code class="docutils literal notranslate"><span class="pre">Undertaker.bury_the_dead()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.cremate"><code class="docutils literal notranslate"><span class="pre">Undertaker.cremate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.handle_abortion"><code class="docutils literal notranslate"><span class="pre">Undertaker.handle_abortion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.mummify"><code class="docutils literal notranslate"><span class="pre">Undertaker.mummify()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1185,12 +1196,16 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mspasspy.io.html">mspasspy.io</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html#mspasspy.io.distributed.post2metadata"><code class="docutils literal notranslate"><span class="pre">post2metadata()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html#mspasspy.io.distributed.post_error_log"><code class="docutils literal notranslate"><span class="pre">post_error_log()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html#mspasspy.io.distributed.pyspark_mappartition_interface"><code class="docutils literal notranslate"><span class="pre">pyspark_mappartition_interface</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.io.html#mspasspy.io.distributed.pyspark_mappartition_interface.partitioned_save_wfdoc"><code class="docutils literal notranslate"><span class="pre">pyspark_mappartition_interface.partitioned_save_wfdoc()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html#mspasspy.io.distributed.read_distributed_data"><code class="docutils literal notranslate"><span class="pre">read_distributed_data()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html#mspasspy.io.distributed.read_files"><code class="docutils literal notranslate"><span class="pre">read_files()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html#mspasspy.io.distributed.read_ensemble_parallel"><code class="docutils literal notranslate"><span class="pre">read_ensemble_parallel()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html#mspasspy.io.distributed.read_to_dataframe"><code class="docutils literal notranslate"><span class="pre">read_to_dataframe()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html#mspasspy.io.distributed.write_distributed_data"><code class="docutils literal notranslate"><span class="pre">write_distributed_data()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html#mspasspy.io.distributed.write_files"><code class="docutils literal notranslate"><span class="pre">write_files()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html#mspasspy.io.distributed.write_to_db"><code class="docutils literal notranslate"><span class="pre">write_to_db()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -93,7 +93,14 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.db.database">database</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.doc2md"><code class="docutils literal notranslate"><span class="pre">doc2md()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.doclist2mdlist"><code class="docutils literal notranslate"><span class="pre">doclist2mdlist()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.elog2doc"><code class="docutils literal notranslate"><span class="pre">elog2doc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.geoJSON_doc"><code class="docutils literal notranslate"><span class="pre">geoJSON_doc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.history2doc"><code class="docutils literal notranslate"><span class="pre">history2doc()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.index_mseed_file_parallel"><code class="docutils literal notranslate"><span class="pre">index_mseed_file_parallel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.md2doc"><code class="docutils literal notranslate"><span class="pre">md2doc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.db.database.parse_normlist"><code class="docutils literal notranslate"><span class="pre">parse_normlist()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.db.normalize">normalize</a><ul>
@@ -292,13 +299,12 @@ parameters.</p>
 </section>
 <section id="module-mspasspy.db.database">
 <span id="database"></span><h2>database<a class="headerlink" href="#module-mspasspy.db.database" title="Permalink to this heading"></a></h2>
-<p>Tools for connecting to MongoDB.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">Database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/database.html#pymongo.database.Database" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a></p>
 <p>MsPASS core database handle.  All MongoDB database operation in MsPASS
-should utilize this object.  This object is a subclass of the
+should normally utilize this object.  This object is a subclass of the
 Database class of pymongo.  It extends the class in several ways
 fundamental to the MsPASS framework:</p>
 <ol class="arabic simple">
@@ -321,8 +327,20 @@ a variant of the following:</p>
 <p>where dbclient is either a MongoDB database client instance or
 (recommended) the MsPASS DBClient wrapper (a subclass of the
 pymongo client).  The second argument is the database “name”
-passed to the MongoDB server that defines your working database.
-Optional parameters are:</p>
+passed to the MongoDB server that defines your working database.</p>
+<p>The constructor should normally be used only with serial workflows.
+In cluster environments the recommended way to obtain a
+Database handle is via the DBClient method called <cite>get_database</cite>.
+The typical construct is:</p>
+<blockquote>
+<div><p>dbclient = DBClient(“dbhostname”)
+db = dbclient.get_database(“mydatabase”)</p>
+</div></blockquote>
+<p>where <cite>dbhostname</cite> is the hostname of the node running the MongoDB
+server and <cite>mydatabase</cite> is the name you assign your database.
+Serial workflows can and should use a similar construct but can
+normally default construct DBClient.</p>
+<p>Optional parameters are:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -351,7 +369,7 @@ the options are identical.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>document_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the value of the _id field in the document you want to clean</p></li>
+<li><p><strong>document_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.ObjectId.ObjectId</span></code>) – the value of the _id field in the document you want to clean</p></li>
 <li><p><strong>collection</strong> – the name of collection saving the document. If not specified, use the default wf collection</p></li>
 <li><p><strong>rename_undefined</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – Specify a <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code> of <code class="docutils literal notranslate"><span class="pre">{original_key:new_key}</span></code> to rename the undefined keys in the document.</p></li>
 <li><p><strong>delete_undefined</strong> – Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to delete undefined keys in the doc. <code class="docutils literal notranslate"><span class="pre">rename_undefined</span></code> will not work if this is <code class="docutils literal notranslate"><span class="pre">True</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
@@ -376,12 +394,11 @@ the options are identical.</p>
 <span class="sig-name descname"><span class="pre">clean_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_undefined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_undefined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required_xref_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_missing_xref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_missing_required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.clean_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.clean_collection" title="Permalink to this definition"></a></dt>
 <dd><p>This method can be used to fix a subset of common database problems
 created during processing that can cause problems if the user tries to
-read back data saved with such blemishes.   The subset of problems
+read data saved with such blemishes.   The subset of problems
 are defined as those that are identified by the “dbverify” command
 line tool or it’s Database equivalent (the verify method of this class).
-This method is an alternative to the command line tool dbverify.  Use
-this method for more surgical fixes that require a query to limit
-the application of the fix.</p>
+This method is an alternative to the command line tool dbclean.  Use
+this method for fixes applied as part of a python script.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -434,49 +451,71 @@ database.
 Normally collection creation is automatic. This method should
 only be used to specify options on
 creation. <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/errors.html#pymongo.errors.CollectionInvalid" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CollectionInvalid</span></code></a> will be
-raised if the collection already exists.
-:Parameters:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><cite>name</cite>: the name of the collection to create</p></li>
-<li><p><cite>codec_options</cite> (optional): An instance of
+raised if the collection already exists.   Useful mainly for advanced users tuning
+a polished workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="field-list simple">
+<dt class="field-odd">param name<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the name of the collection to create</p>
+</dd>
+<dt class="field-even">param codec_options` (optional)<span class="colon">:</span></dt>
+<dd class="field-even"><p>An instance of
 <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/codec_options.html#bson.codec_options.CodecOptions" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">codec_options</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
-used.</p></li>
-<li><p><cite>read_preference</cite> (optional): The read preference to use. If
+used.</p>
+</dd>
+<dt class="field-odd">param read_preference<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(optional): The read preference to use. If
 <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_preference</span></code> of this
-<a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is used.</p></li>
-<li><p><cite>write_concern</cite> (optional): An instance of
+<a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is used.</p>
+</dd>
+<dt class="field-even">param write_concern<span class="colon">:</span></dt>
+<dd class="field-even"><p>(optional): An instance of
 <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
-used.</p></li>
-<li><p><cite>read_concern</cite> (optional): An instance of
+used.</p>
+</dd>
+<dt class="field-odd">param read_concern<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(optional): An instance of
 <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_concern.html#pymongo.read_concern.ReadConcern" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
-used.</p></li>
-<li><p><cite>collation</cite> (optional): An instance of
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/collation.html#pymongo.collation.Collation" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collation</span></code></a>.</p></li>
-<li><p><cite>session</cite> (optional): a
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/client_session.html#pymongo.client_session.ClientSession" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a>.</p></li>
-<li><p><cite>**kwargs</cite> (optional): additional keyword arguments will
-be passed as options for the <a href="#id4"><span class="problematic" id="id5">`create collection command`_</span></a></p></li>
-</ul>
-</div></blockquote>
-<p>All optional <a href="#id6"><span class="problematic" id="id7">`create collection command`_</span></a> parameters should be passed
+used.</p>
+</dd>
+<dt class="field-even">param collation<span class="colon">:</span></dt>
+<dd class="field-even"><p>(optional): An instance of
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/collation.html#pymongo.collation.Collation" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collation</span></code></a>.</p>
+</dd>
+<dt class="field-odd">param session<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(optional): a
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/client_session.html#pymongo.client_session.ClientSession" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a>.</p>
+</dd>
+<dt class="field-even">param <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs<span class="colon">:</span></dt>
+<dd class="field-even"><p>(optional): additional keyword arguments will
+be passed as options for the <a href="#id8"><span class="problematic" id="id9">`create collection command`_</span></a></p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>All optional <a href="#id10"><span class="problematic" id="id11">`create collection command`_</span></a> parameters should be passed
 as keyword arguments to this method. Valid options include, but are not
 limited to:</p>
 <blockquote>
-<div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: desired initial size for the collection (in
-bytes). For capped collections this size is the max
-size of the collection.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">capped</span></code>: if True, this is a capped collection</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">max</span></code>: maximum number of objects if capped (optional)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">timeseries</span></code>: a document specifying configuration options for
-timeseries collections</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">expireAfterSeconds</span></code>: the number of seconds after which a
-document in a timeseries collection expires</p></li>
-</ul>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">size</span></code>: desired initial size for the collection (in</dt><dd><p>bytes). For capped collections this size is the max
+size of the collection.</p>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">capped</span></code>: if True, this is a capped collection
+<code class="docutils literal notranslate"><span class="pre">max</span></code>: maximum number of objects if capped (optional)
+<code class="docutils literal notranslate"><span class="pre">timeseries</span></code>: a document specifying configuration options for</p>
+<blockquote>
+<div><p>timeseries collections</p>
+</div></blockquote>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">expireAfterSeconds</span></code>: the number of seconds after which a</dt><dd><p>document in a timeseries collection expires</p>
+</dd>
+</dl>
 </div></blockquote>
 </dd></dl>
 
@@ -497,11 +536,16 @@ the waveform data will be immediate.  If the data are stored in
 disk files the file will be deleted when there are no more references
 in the wf collection for the exact combination of dir and dfile associated
 an atomic deletion.  Error log and history data deletion linked to
-a datum is optional.</p>
+a datum is optional.  Note this is an expensive operation as it
+involves extensive database interactions.   It is best used for
+surgical solutions.   Deletion of large components of a data set
+(e.g. all data with a given data_tag value) are best done with
+custom scripts utilizing file naming conventions and unix shell
+commands to delete waveform files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the wf object id you want to delete.</p></li>
+<li><p><strong>object_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.ObjectId.ObjectId</span></code>) – the wf object id you want to delete.</p></li>
 <li><p><strong>object_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the object type you want to delete, must be one of [‘TimeSeries’, ‘Seismogram’]</p></li>
 <li><p><strong>remove_unreferenced_files</strong> – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, we will try to remove the file that no wf data is referencing. Default to be <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 <li><p><strong>clear_history</strong> – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, we will clear the processing history of the associated wf object, default to be <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
@@ -515,32 +559,45 @@ a datum is optional.</p>
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.get_collection">
 <span class="sig-name descname"><span class="pre">get_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codec_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_preference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_concern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_collection" title="Permalink to this definition"></a></dt>
 <dd><p>Get a <code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.collection.Collection</span></code> with the given name
-and options.
-Useful for creating a <code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.collection.Collection</span></code> with
+and options.</p>
+<p>This method is
+useful for creating a <code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.collection.Collection</span></code> with
 different codec options, read preference, and/or write concern from
-this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a>.
-:Parameters:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><cite>name</cite>: The name of the collection - a string.</p></li>
-<li><p><cite>codec_options</cite> (optional): An instance of
+this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a>.  Useful mainly for advanced users tuning
+a polished workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="field-list simple">
+<dt class="field-odd">param name<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The name of the collection - a string.</p>
+</dd>
+<dt class="field-even">param codec_options<span class="colon">:</span></dt>
+<dd class="field-even"><p>(optional): An instance of
 <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/codec_options.html#bson.codec_options.CodecOptions" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.codec_options.CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">codec_options</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
-used.</p></li>
-<li><p><cite>read_preference</cite> (optional): The read preference to use. If
+used.</p>
+</dd>
+<dt class="field-odd">param read_preference<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(optional): The read preference to use. If
 <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_preference</span></code> of this
 <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is used. See <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_preferences.html#module-pymongo.read_preferences" title="(in PyMongo v4.6.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo.read_preferences</span></code></a>
-for options.</p></li>
-<li><p><cite>write_concern</cite> (optional): An instance of
+for options.</p>
+</dd>
+<dt class="field-even">param write_concern<span class="colon">:</span></dt>
+<dd class="field-even"><p>(optional): An instance of
 <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.write_concern.WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
-used.</p></li>
-<li><p><cite>read_concern</cite> (optional): An instance of
+used.</p>
+</dd>
+<dt class="field-odd">param read_concern<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An (optional) instance of
 <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_concern.html#pymongo.read_concern.ReadConcern" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.read_concern.ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
-used.</p></li>
-</ul>
-</div></blockquote>
+used.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -598,32 +655,31 @@ Returns None if there is no match.  Although the time argument
 is technically option it usually a bad idea to not include
 a time stamp because most stations saved as seed data have
 time variable channel metadata.</p>
+<p>Note this method may be DEPRICATED in the future as it has been
+largely superceded by BasicMatcher implementations in the
+normalize module.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>net</strong> – network name to match</p></li>
 <li><p><strong>sta</strong> – station name to match</p></li>
 <li><p><strong>chan</strong> – seed channel code to match</p></li>
-<li><p><strong>loc</strong> – optional loc code to made (empty string ok and common)</p></li>
-</ul>
-</dd>
-</dl>
-<p>default ignores loc in query.
-:param time: epoch time for requested metadata
-:param verbose:  When True (the default) this method will issue a</p>
-<blockquote>
-<div><p>print warning message when the match is ambiguous - multiple
+<li><p><strong>loc</strong> – optional loc code to made (empty string ok and common)
+default ignores loc in query.</p></li>
+<li><p><strong>time</strong> – epoch time for requested metadata</p></li>
+<li><p><strong>verbose</strong> – When True (the default) this method will issue a
+print warning message when the match is ambiguous - multiple
 docs match the specified keys.   When set False such warnings
 will be suppressed.  Use false only if you know the duplicates
 are harmless and you are running on a large data set and
-you want to reduce the log size.</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>handle to query return</p>
+you want to reduce the log size.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>MondoDB Cursor object of query result.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>handle to query return</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MondoDB Cursor object of query result.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -651,6 +707,9 @@ silence such warnings if you know they are harmless.</p>
 <p>The seed modifier in the name is to emphasize this method is
 for data originating as the SEED format that use net:sta:loc:chan
 as the primary index.</p>
+<p>Note this method may be DEPRICATED in the future as it has been
+largely superceded by BasicMatcher implementations in the
+normalize module.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -873,6 +932,10 @@ The method will only work if mspass_object has the site_id attribute set to link
 or SeismogramEnsemble).
 Ensembles will have the site data posted to the ensemble Metadata and not the members.
 This should be the stock way to assemble the generalization of a common-receiver gather of TimeSeries data for a common sensor component.</p>
+<p>This method is DEPRICATED.  It is an slow alternative for normalization
+and is effectively an alternative to normalization with the
+Database driven id matcher.   Each call to this function requires
+a query with find_ond.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -912,6 +975,10 @@ The method will only work if mspass_object has the site_id attribute set to link
 or SeismogramEnsemble).
 Ensembles will have the site data posted to the ensemble Metadata and not the members.
 This should be the stock way to assemble the generalization of a common-receiver gather.</p>
+<p>This method is DEPRICATED.  It is an slow alternative for normalization
+and is effectively an alternative to normalization with the
+Database driven id matcher.   Each call to this function requires
+a query with find_ond.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -939,6 +1006,10 @@ The method will only work if mspass_object has the source_id attribute set to li
 or an ensemble (TimeSeriesEnsemble or SeismogramEnsemble).
 Ensembles will have the source data posted to the ensemble Metadata and not the members.
 This should be the stock way to assemble the generalization of a shot gather.</p>
+<p>This method is DEPRICATED.  It is an slow alternative for normalization
+and is effectively an alternative to normalization with the
+Database driven id matcher.   Each call to this function requires
+a query with find_ond.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -959,178 +1030,344 @@ Default are attributes not normally need that are loaded from QuakeML.  Ignored 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.read_data">
-<span class="sig-name descname"><span class="pre">read_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">define_as_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrieve_history_record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_fill_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_interpolation_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_data" title="Permalink to this definition"></a></dt>
-<dd><p>This is the core MsPASS reader for constructing Seismogram or TimeSeries
-objects from data managed with MondoDB through MsPASS.   It is the
-core reader for serial processing where a typical algorithm would be:</p>
+<span class="sig-name descname"><span class="pre">read_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_doc_or_cursor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_ensemble</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">define_as_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_fill_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_interpolation_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_data" title="Permalink to this definition"></a></dt>
+<dd><p>Top-level MsPASS reader for seismic waveform data objects.</p>
+<p>Most MsPASS processing scripts use this method directly
+or indirectly via the parallel version called
+<cite>read_distributed_data</cite>.  This function will return
+one of four seismic data objects defined in MsPASS:
+<cite>TimeSeries</cite>,`Seismogram`, <cite>TimeSeriesEnsemble</cite>, or <cite>SeismogramEnsemble</cite>.
+What is retrieved is driven by the type of arg0, which in the
+implementation has the symbol <cite>id_doc_or_cursor</cite>.  As the symbol
+name implies it can be one of three things.  Each of the three
+types have implied assumptions:</p>
+<ol class="arabic simple">
+<li><p>If arg0 is a MongoDB <cite>ObjectId</cite> it is presumed to be the ObjectId
+of a document in the collection defined by the <cite>collection</cite>
+argument (see below).  When used in this way a query is
+always required to retrieve the document needed to construct
+the desired datum.  This method always implies you want to
+construct one, atomic datum.  This functionality is not
+recommended as it is the slowest reader due to the implicit
+database query required to implement that approach.</p></li>
+<li><p>If arg0 is a python dictionary (dict) it is assumed to be a
+MongoDB “document” retrieved previously through the pymongo
+interface.  This usage is the best use for serial jobs driven
+by a for loop over a MongoDB cursor returned following a find
+query.   (See User’s manual and tutorials for specific examples)
+The reason is that a cursor is effectively a buffered interface
+into the MongoDB database.  That is a loop over a cursor
+requires communication with the MongoDB server only when the
+buffer drains to a low water mark.   Consequently, cursor
+loops using this interface are much faster than atomic
+reads with ObjectIds.</p></li>
+<li><p>If arg0 is a pymongo <cite>Cursor</cite> object the reader assumes you are
+asking it to construct an ensemble object.  Whether that is a
+<cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite> is dependent upon the
+setting of the “collection” argument.  The entire content of the
+implied list of documents returned by iterating over the cursor
+are used to construct ensembles of the atomic members.  In fact,
+the basic algorithm is to call this method recursively by
+sequentially reading one document at a time, constructing the
+atomic datum, and posting it to the member vector of the ensemble.</p></li>
+</ol>
+<p>As noted above arg0 interacts with the “collection” argument.
+The default of “wf_TimeSeries” can be used where appropriate but
+good practice is to be explicit and specify a value for “collection”
+in all alls to this method.</p>
+<p>This reader accepts data in any mix of what are defined by
+the database attribute tags <cite>storage_mode</cite> and <cite>format</cite>.   If those
+attributes are not defined for a retrieved document they default to
+“storage_mode”==”gridfs” and “format”==”binary”.  The <cite>storage_mode</cite>
+attribute can currently be one of the following:
+- <cite>gridfs</cite> is taken to mean the data are stored in the MongoDB</p>
 <blockquote>
-<div><p>query= { … properly constructed MondoDB query or just ‘{}’}
-cursor=db.collection.find(query)  # collection is wf_TimeSeries or wf_Seismogram
-for doc in cursor:</p>
-<blockquote>
-<div><p>id=doc[‘_id’]
-d=db.read_data(id)</p>
-<blockquote>
-<div><p>…   # additional processing here</p>
+<div><p>gridfs file system.</p>
 </div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<p>The above loop will construct one Seismogram or TimeSeries (depending on
-which collection is referenced) for handling within the for loop.
-Use the read_distributed_data function to read a dataset for
-parallel processing.  This function is designed to handle one atomic
-object at a time.  It is, in fact, called in read_distributed_data
-Optional parameters control read behavior and additional options
-not always needed.  An important one for handling reads from a
-a dataset saved partway through a workflow is data_tag.</p>
+<ul class="simple">
+<li><p>‘files’ implies the data are stored in conventional computer files
+stored with two attributes that are required with this storage
+mode:  “dir” and “dfile”.</p></li>
+<li><p><cite>URL</cite> implies the data can be retrieved by some form of web service
+request through a url defined by other attributes in the document.
+This mode is volatile and currently not recommended due to the very
+slow and unreliable response to FDSN data queries.  It is likely,
+however, to become a major component with FDSN services moving to
+cloud systems.</p></li>
+<li><p>This reader has prototype support for reading SCEC data stored on
+AWS s3.   The two valid values for defining those “storage_mode”s
+are “s3_continuous” and “s3_event”, which map to two different
+areas of SCEC’s storage on AWS.   We emphasize the readers for
+this storage mode are prototypes and subject to change.  A similar
+interface may evolve for handling FDSN cloud data storage depending
+on how that interface is actually implemented.  It was in development
+at the time this docstring was written.</p></li>
+</ul>
+<p>The reader can read data in multiple formats. The actual format
+expected is driven by the database attribute called “format”.
+As noted above it defaults to “binary”, which means the data are
+stored in contiguous binary blocks on files that can be read with
+the low-level C function fread.   That is the fastest reader
+currently available, but comes at storage cast as the data are
+uncompressed doubles.  If the data are in some nonnative format
+(seed is considered not native), the format is cracked using
+obspy.   The list of formats accepted match those defined for
+obspy’s <cite>read</cite> function.   The format value stored in the database
+is passed as the format argument to that function.  The miniseed
+format reader has been heavily exercised.  Other formats will be
+an adventure.  Be aware there will most definitely be namespace
+collisions of Metadata attributes with non-native formats other than
+miniseed.</p>
+<p>There is a special case for working with ensemble data that can
+be expected to provide the highest performance with a conventional
+file system.  That is the case of ensembles with the format of
+“binary” and data saved in files where all the waveforms of each
+ensemble are in the same file.  That structure is the default for
+ensembles saved to files with the <cite>save_data</cite> method.  This method
+is fast because the sample data are read with a C++ function that
+uses the stock fread function that for conventional file input is
+about as fast a reader as possible.</p>
+<p>An additional critical parameter is “mode”.  It must be one of
+“promiscuous”, “cautious”, or “pedantic”.   Default is “promiscuous”
+which more-or-less ignores the schema and loads the entire content
+of the document(s) to Metadata containers.   For ensembles that
+means the Metadata for the ensemble and all members.  See the
+User Manual section on “CRUD Operations” for details.</p>
+<p>This reader also has an option to normalize with one or more sets of
+data during reading.  For backward compatibility with versions of
+MsPASS prior to 2.0 the “normalize” parameter will accept a list of
+strings that are assumed to be collection names containing
+Metadata that is to be “normalized”.    That case, however, invokes the
+slowest algorithm possible to do that operation.  Not only does it
+use a query-based matching algorithm that requires a MongoDB find_one
+query for each datum, but it requires construction of an instance of
+the python class used in MsPASS for each calls and each collection listed.
+Better performance is normally possible with the v2 approach where
+the list passed via “normalize” is a list of subclasses of the
+<a class="reference internal" href="#mspasspy.db.normalize.BasicMatcher" title="mspasspy.db.normalize.BasicMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.normalize.BasicMatcher</span></code></a> class.  That interface
+provides a generic matching functionality and is most useful for
+improving performance when using one of the cache algorithms.
+For more detail see the User Manual section on normalization.</p>
+<p>Finally, this reader has to handle a special case of errors that
+cause the result to be invalid.  We do NOT use the standard
+exception mechanism for this reader because as noted in our User
+Manual throwing exceptions can abort a large parallel job.  Hence,
+we must try to minimize the cases when a single read operation will
+kill a larger workflow.  (That is reserved for truly unrecoverable
+errors like a malloc error.)  Throughout MsPASS we handle this issue
+with the <cite>live</cite> attribute of data objects.   All data objects,
+including ensembles, can be killed (marked data or live==False) as
+a signal they can be moved around but should be ignored in any
+processing workflows.  Reading data in is a special case.  A
+single read may fail for a variety of reasons but killing the entire
+job for something like one document containing an invalid attribute
+is problematic.  For that reason, this reader defines the concept
+of a special type of dead datum it calls an “abortion”.   This
+concept is discussed in greater detail in the User’s Manual section on
+“CRUD Operations”, but for this context there are three key points:</p>
+<ul class="simple">
+<li><p>Any return from this function that is marked dead (live==False)
+is by definition an abortion.</p></li>
+<li><p>This reader adds a boolean attribute not stored in the database
+with the key “is_abortion”.  That value will be True if the datum
+is returned dead but should be False if it is set live.</p></li>
+<li><p>An entire ensemble may be marked dead only if reading of all the
+members defined by a cursor input fail.   Note handling of
+failures when constructing ensembles is different than atomic
+data because partial success is assumed to be acceptable.
+Hence, when a given datum in an ensemble fails the body is not
+added to the ensemble but processed the body is buried in a
+special collection called “abortions”.   See User’s Manual
+for details.</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object_id</strong> – MongoDB object id of the wf document to be constructed from
-data defined in the database.  The object id is guaranteed unique and provides
-a unique link to a unique document or nothing.   In the later case the
-function will return a None.</p></li>
-<li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode that controls how the function interacts with
-the schema definition for the data type.   Must be one of
+<li><p><strong>id_doc_or_cursor</strong> (As the name implies should be one of
+the following:  (1) MongoDB <cite>ObjectId</cite> of wf document to be
+retrieved to define this read, (2) MongoDB document (python dict)
+of data defining the datum to be constructed, or (3) a pymongo
+<cite>Cursor</cite> object that can be iterated to load an enemble.  Note
+the “doc” can also be a Metadata subclass.  That means you can
+use a seismic data object as input and it will be accepted.
+The read will work, however, only if the contents of the Metadata
+container are sufficient.  Use of explicit or implicit
+Metadata container input is not advised even it it might work as it
+violates an implicit assumption of the function that the input is
+closely linked to MongoDB.  A doc from a cursor or one retrieved
+through an ObjectId match that assump0tion but an Metadata
+container does not.) – required key argument that drives
+what the reader will return.  The type of this argument is a
+top-level control on what is read.   See above for details.</p></li>
+<li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – read mode that controls how the function interacts with
+the schema definition.   Must be one of
 [‘promiscuous’,’cautious’,’pedantic’].   See user’s manual for a
 detailed description of what the modes mean.  Default is ‘promiscuous’
 which turns off all schema checks and loads all attributes defined for
 each object read.</p></li>
-<li><p><strong>normalize</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – list of collections that are to used for data
-normalization. (see User’s manual and MongoDB documentation for
-details on this concept)  Briefly normalization means common
-metadata like source and receiver geometry are defined in separate
-smaller collections that are linked through this mechanism
-during reads. Default uses no normalization.</p></li>
-<li><p><strong>load_history</strong> – boolean (True or False) switch used to enable or
-disable object level history mechanism.   When set True each datum
-will be tagged with its origin id that defines the leaf nodes of a
-history G-tree.  See the User’s manual for additional details of this
-feature.  Default is False.</p></li>
-<li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Sometimes it is helpful to remove one or more
+<li><p><strong>normalize</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>.
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatchers</span></code> are applied sequentialy with the
+<cite>normalize</cite> function using this matcher.   When a list of strings is given each
+call to this function initiates construction of a database Id
+matcher using the collection name.   e.g. if the list has “source”
+the wf read is expected to contain the attribute “source_id”
+that resolves to an id in the source collection.  With string
+input that always happens only through database transactions.) – Use this parameter to do normalization during read.
+From version 2 onward the preferred input is a list of
+concrete instances of the base class <code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code>.
+For backward compatibility this parameter may also defined a
+list of collection names defined by a list of strings.
+Note all normalizers will, by default,
+normally kill any datum for which matching fails.  Note for
+ensembles this parameter defines matching to be applied to all
+enemble members.  Use <cite>normalize_ensemble</cite> to normalize the enemble’s
+<cite>Metadata</cite> container.  Member ensemble normalziation can be different
+for each member while ensemble Metadata is assume  the same for
+all members.</p></li>
+<li><p><strong>normalize_ensemble</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>.
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatchers</span></code> are applied sequentialy with the
+<cite>normalize</cite> function.   When a list of strings is given each
+call to this function initiates construction of an database Id
+matcher using the collection name.   e.g. if the list has “source”
+the wf read is expected to contain the attribute “source_id”
+that resolves to an id in the source collection.  With string
+input that always happens only through database transactions.) – This parameter should be used to
+apply normalization to ensemble Metadata (attributes common to
+all ensemble “members”. )  It will be ignored if reading
+atomic data.  Otherwise it behaves like normalize</p></li>
+<li><p><strong>load_history</strong> – boolean switch controlling handling of the
+object-level history mechanism.  When True if the data were
+saved previously with a comparable switch to save the
+history, this reader will load the history data.   This feature allows
+preserving a complete object-level history tree in a workflow
+with an intermediate save.   If no history data are found the
+history tree is initialized. When this parameter is set False
+the history tree will be left null.</p></li>
+<li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> defining
+the keys to be cleared.) – Sometimes it is helpful to remove one or more
 attributes stored in the database from the data’s Metadata (header)
-so they will not cause problems in downstream processing.</p></li>
-<li><p><strong>collection</strong> – Specify an alternate collection name to
-use for reading the data.  The default sets the collection name
-based on the data type and automatically loads the correct schema.
-The collection listed must be defined in the schema and satisfy
-the expectations of the reader.  This is an advanced option that
-is indended only to simplify extensions to the reader.</p></li>
-<li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The definition of a dataset can become ambiguous
+so they will not cause problems in downstream processing.  Use this
+argument to supply a list of keys that should be deleted from
+the datum before it is returned.  With ensembles the editing
+is applied to all members.   Note this same functionality
+can be accomplished within a workflow with the trace editing
+module.</p></li>
+<li><p><strong>collection</strong> – <dl class="simple">
+<dt>Specify the collection name for this read.</dt><dd><p>In MsPASS the equivalent of header attributes are stored in
+MongoDB documents contained in a “collection”.   The assumption
+is a given collection only contains documents for one of the
+two atomic types defined in MsPASS:  <cite>TimeSeries</cite> or <cite>Seismogram</cite>.
+The data type for collections defined by the schema is an
+attribute that the reader tests to define the type of atomic
+objects to be constructed (Note ensembles are assembled from
+atomic objects by recursive calls the this same read method.)
+The default is “wf_TimeSeries”, but we recommend always defining
+this argument for clarity and stability in the event the default
+would change.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">type collection<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> defining a collection that must be
+defined in the schema.  If not, the function will abort the job.</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> used for the filter.  Can be None
+in which case the cross-check test is disable.) – The definition of a dataset can become ambiguous
 when partially processed data are saved within a workflow.   A common
 example would be windowing long time blocks of data to shorter time
 windows around a particular seismic phase and saving the windowed data.
 The windowed data can be difficult to distinguish from the original
 with standard queries.  For this reason we make extensive use of “tags”
-for save and read operations to improve the efficiency and simplify
-read operations.   Default turns this off by setting the tag null (None).</p></li>
-<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
-<li><p><strong>define_as_raw</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – a boolean control whether we would like to set_as_origin when loading processing history</p></li>
-<li><p><strong>retrieve_history_record</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – a boolean control whether we would like to load processing history</p></li>
-<li><p><strong>method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Methodology to handle overlaps/gaps of traces. Defaults to 0.
-See <cite>__add__ &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.__add__.html#obspy.core.trace.Trace.__add__&gt;</cite> for details on methods 0 and 1,
-see <cite>_cleanup &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream._cleanup.html#obspy.core.stream.Stream._cleanup&gt;</cite> for details on method -1.
-Any merge operation performs a cleanup merge as a first step (method -1).</p></li>
-<li><p><strong>fill_value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> or None) – Fill value for gaps. Defaults to None.</p></li>
-<li><p><strong>interpolation_samples</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Used only for method=1. It specifies the number of samples
-which are used to interpolate between overlapping traces. Default to 0.
-If set to -1 all overlapping samples are interpolated.</p></li>
+for save operations to avoid such ambiguities.   Reads present
+a different problem as selection for such a tag is best done with
+MongoDB queries.   If set this argument provides a cross validation
+that the data are consistent with a particular tag.  In particular,
+if a datum does not have the attribute “data_tag” set to the value
+defined by the argument a null, dead datum will be returned.
+For ensembles any document defined by the cursor input for which
+the “data_tag” attribute does not match will be silenetly dropped.
+The default is None which disables the cross-checking.</p></li>
+<li><p><strong>ensemble_metadata</strong> (<em>python dict.   The contents are copied
+verbatim to the ensemble Metadata container with a loop over the
+dict keys.</em>) – Optional constant attributes to
+assign to ensemble Metadata.  Ignored for atomic data.
+It is important to stress that the contents of this dict are
+applied last.  Use with caution, particularly when using
+normalizatoin, to avoid accidentally overwriting some
+attribute loaded from the database.</p></li>
+<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – optional alternative name to assign for this algorithm
+as a tag for the origin node of the history tree.   Default is the
+function’s name (“read_data”) and should rarely if ever be changed.
+Ignored unless <cite>load_history</cite> is set True.</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The object-level history mechanism uses a string to
+tag a specific instance of running a particular function in a workflow.
+If a workflow has multiple instances of read_data with different
+parameters, for example, one might specify a value of this argument.
+Ignored unless <cite>load_history</cite> is set True.</p></li>
+<li><p><strong>define_as_raw</strong> – boolean to control a detail of the object-level
+history definition of the tree node created for this process.
+The functions by definition an “origin” but a special case is a
+“raw” origin meaning the sample data are unaltered (other than type)
+from the field data.  Most miniseed data, for example, would
+want to set this argument True.   Ignored unless <cite>load_history</cite> is set True.</p></li>
+<li><p><strong>merge_method</strong> – when reading miniseed data implied gaps can
+be present when packets are missing from a sequence of packets
+having a common net:sta:chan:loc codes.  We use obspy’s
+miniseed reader to crack miniseed data.  It breaks such data into
+multiple “segments”.  We then use their
+<a href="#id3"><span class="problematic" id="id4">`merge&lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html&gt;`__</span></a>
+method of the “Stream” object to glue any such segments together.
+This parameter is passed as the “method” argument to that function.
+For detail see
+<cite>__add__ &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.__add__.html#obspy.core.trace.Trace.__add__&gt;</cite>
+for details on methods 0 and 1,
+See <cite>_cleanup &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream._cleanup.html#obspy.core.stream.Stream._cleanup&gt;</cite>
+for details on method -1.  Note this argument is ignored unless
+the reader is trying to read miniseed data.</p></li>
+<li><p><strong>merge_fill_value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> or None (default)) – Fill value for gap processing when obspy’s merge
+method is invoked.  (see description for “merge_method” above).
+The value given here is passed used as the “fill” argument to
+the obspy merge method.  As with merge_method this argument is
+relevant only when reading miniseed data.</p></li>
+<li><p><strong>merge_interpolation_samples</strong> – when merge_method is set to
+-1 the obspy merge function requires a value for an
+argument they call “interpolate_samples”.  See their documentation
+for details, but this argument controls how “overlaps”, as opposed
+to gaps, are handled by merge.  See the function documentation
+<a href="#id3"><span class="problematic" id="id5">`here&lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html&gt;`__</span></a>
+for details.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a>
-or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a></p>
+<dd class="field-even"><p>for ObjectId python dictionary values of arg0 will return
+either a <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a>
+or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a> object.
+If arg0 is a pymongo Cursor the function will return a
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a> or
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a> object.
+As noted above failures in reading atomic data will result in
+an object be marked dead and the Metadata attribute “is_abortion”
+to be set True.  When reading ensembles any problem members will
+be excluded from the output and the bodies buried in a special
+collection called “abortions”.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.read_ensemble_data">
-<span class="sig-name descname"><span class="pre">read_ensemble_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objectid_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_ensemble_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_ensemble_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_ensemble_data" title="Permalink to this definition"></a></dt>
-<dd><p>Reads an subset of a dataset with some logical grouping into an Ensemble container.</p>
-<p>Ensembles are a core concept in MsPASS that are a generalization of
-fixed “gather” types frozen into every seismic reflection processing
-system we know of.  This reader is driven by a python list of
-MongoDB object ids.  The method calls the atomic read_data
-method for object_id to assemble the members of the ensemble.
-All arguments except the objectid_list and ensemble_metadata are
-passed directly to the read_data method in that loop.  The read_data
-method and the User’s manual have more information about how those
-common arguments are used.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>objectid_list</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>,
-of the ids defining the ensemble members or a <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/cursor.html#pymongo.cursor.Cursor" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.cursor.Cursor</span></code></a></p></li>
-<li><p><strong>ensemble_metadata</strong> (<em>python dict</em><em> or </em><em>any container that is iterable
-and supports the</em><em> [</em><em>key</em><em>] </em><em>key associative array syntax will work.</em><em>
-(</em><em>Note this means both Metadata containers</em><em> or </em><em>mongodb docs both can
-be used</em><em>) </em><em>The type</em><em> of </em><em>this arg is not tested so you may get a
-mysterious exception if the data the arg defines does no meet the
-two rules.</em>) – is a dict or dict like container containing
-metadata to be stored in the ensemble’s Metadata (common to the group)
-container.  A common choice would be to post the query used to
-define this ensemble, but there are not restictions.  The contents are
-simply copied verbatim to the ensemble metadata container. The default
-is an empty dict which translates to an empty ensemble metadata container.</p></li>
-<li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode regarding schema checks, should be one of [‘promiscuous’,’cautious’,’pedantic’]</p></li>
-<li><p><strong>normalize</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – normalized collection you want to read into a mspass object</p></li>
-<li><p><strong>load_history</strong> – <code class="docutils literal notranslate"><span class="pre">True</span></code> to load object-level history into the mspasspy object.</p></li>
-<li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being read.</p></li>
-<li><p><strong>collection</strong> – the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.</p></li>
-<li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified “data_tag” key to filter the read. If not match, the record will be skipped.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a> or
-<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>.</p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">read_ensemble_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cursor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_ensemble_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_ensemble_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_ensemble_data" title="Permalink to this definition"></a></dt>
+<dd><p>DEPRICATED METHOD:   do not use except for backward compatility
+in short term.  Will go away in a later release</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.read_ensemble_data_group">
-<span class="sig-name descname"><span class="pre">read_ensemble_data_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objectid_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_ensemble_data_group'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_ensemble_data_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_ensemble_data_group" title="Permalink to this definition"></a></dt>
-<dd><p>Reads an subset of a dataset with some logical grouping into an Ensemble container.
-It has the same fucntion as read_ensemble_data(), but is more efficient in reading binary files.
-The improvement is achieved by avoiding duplicate open and close for the same file.
-MsPASS Objects are grouped firstly by files they are in. If two objects are in the same file,
-with the same directory and filename, they will be in the same file group. For each group,
-there will be only one open and close. For objects stored in the same file, their foffs
-will be collected and passed to fread_from_file(). Then open the file once, and sequentially
-read the data according to the foffs.</p>
-<p>This function only supports binary file format (format=None), as the optimization will not
-work in other formats.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>objectid_list</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>,
-of the ids defining the ensemble members or a <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/cursor.html#pymongo.cursor.Cursor" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.cursor.Cursor</span></code></a></p></li>
-<li><p><strong>ensemble_metadata</strong> (<em>python dict</em><em> or </em><em>any container that is iterable
-and supports the</em><em> [</em><em>key</em><em>] </em><em>key associative array syntax will work.</em><em>
-(</em><em>Note this means both Metadata containers</em><em> or </em><em>mongodb docs both can
-be used</em><em>) </em><em>The type</em><em> of </em><em>this arg is not tested so you may get a
-mysterious exception if the data the arg defines does no meet the
-two rules.</em>) – is a dict or dict like container containing
-metadata to be stored in the ensemble’s Metadata (common to the group)
-container.  A common choice would be to post the query used to
-define this ensemble, but there are not restictions.  The contents are
-simply copied verbatim to the ensemble metadata container. The default
-is an empty dict which translates to an empty ensemble metadata container.</p></li>
-<li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode regarding schema checks, should be one of [‘promiscuous’,’cautious’,’pedantic’]</p></li>
-<li><p><strong>normalize</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – normalized collection you want to read into a mspass object</p></li>
-<li><p><strong>load_history</strong> – <code class="docutils literal notranslate"><span class="pre">True</span></code> to load object-level history into the mspasspy object.</p></li>
-<li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being read.</p></li>
-<li><p><strong>collection</strong> – the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.</p></li>
-<li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified “data_tag” key to filter the read. If not match, the record will be skipped.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a> or
-<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>.</p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">read_ensemble_data_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cursor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_ensemble_data_group'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_ensemble_data_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_ensemble_data_group" title="Permalink to this definition"></a></dt>
+<dd><p>DEPRICATED METHOD:   do not use except for backward compatility
+in short term.  Will go away in a later release</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1188,63 +1425,298 @@ will be preformed if duplicates are a major issue.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.save_data">
-<span class="sig-name descname"><span class="pre">save_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gridfs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'save_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_data" title="Permalink to this definition"></a></dt>
-<dd><p>Use this method to save an atomic data object (TimeSeries or Seismogram)
-to be managed with MongoDB.  The Metadata are stored as documents in
-a MongoDB collection.  The waveform data can be stored in a conventional
-file system or in MongoDB’s gridfs system.   At the time this docstring
-was written testing was still in progress to establish the relative
-performance of file system io versus gridfs, but our working hypothesis
-is the answer of which is faster will be configuration dependent. In
-either case the goal of this function is to make a save operation as
-simple as possible by abstracting the complications involved in
-the actual save.</p>
-<p>Any errors messages held in the object being saved are always
-written to documents in MongoDB is a special collection defined in
-the schema.   Saving object level history is optional.</p>
-<p>There are multiple options described below.  One worth emphasizing is
-“data_tag”.   Such a tag is essential for intermediate saves of
-a dataset if there is no other unique way to distinguish the
-data in is current state from data saved earlier.  For example,
-consider a job that did nothing but read waveform segments spanning
-a long time period (e.g. day files),cutting out a shorter time window,
-and then saving windowed data.  Crafting an unambiguous query to
-find only the windowed data in that situation could be challenging
-or impossible.  Hence, we recommend a data tag always be used for
-most saves.</p>
-<p>The mode parameter needs to be understood by all users of this
-function.  All modes enforce a schema constraint for “readonly”
+<span class="sig-name descname"><span class="pre">save_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['_id']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gridfs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cremate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalizing_collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['channel',</span> <span class="pre">'site',</span> <span class="pre">'source']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'save_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_data" title="Permalink to this definition"></a></dt>
+<dd><p>Standard method to save all seismic data objects to be managed by
+MongoDB.</p>
+<p>This method provides a unified interface for saving all seismic
+data objects in MsPASS.   That is, what we call atomic data
+(<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> and
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>) and ensembles of the
+two atomic types ():class:<cite>mspasspy.ccore.seismic.TimeSeriesEnsemble</cite> and
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>).  Handling
+multiple types while simultaneously supporting multiple abstractions
+of how the data are stored externally has some complexities.
+1.  All MsPASS data have multiple containers used internally</p>
+<blockquote>
+<div><p>to define different concepts.   In particular atomic data
+have a Metadata container we map to MongoDB documents directly,
+sample data that is the largest data component that we handle
+multiple ways, error log data, and (optional) object-level
+history data.  Ensembles are groups of atomic data but they also
+contain a Metadata and error log container common with content
+common to the group.</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>With seismic data the size is normally dominated by the
+sample data that are stored internally as a vector container
+for <cite>TimeSeries</cite> objects and a matrix for <cite>Seismogram</cite> objects.
+Handling moving that data to storage as fast as possible is thus the
+key to optimize write performance.  The write process is further
+complicated, however, by the fact that “write/save” is itself
+an abstraction that even in FORTRAN days hid a lot of complexity.
+A call to this function supports multiple save mechanisms we
+define through the <cite>storage_mode</cite> keyword. At present
+“storage_mode” can be only one of two options:  “files” and
+“gridfs”.  Note this class has prototype code for reading data
+in AWS s3 cloud storage that is not yet part of this interface.
+The API, however, was designed to allow adding one or more
+“storage_mode” options that allow other mechanisms to save
+sample data.  The top priority for a new “storage_mode” when
+the details are finalized is cloud storage of FDSN data by
+Earthscope and other data centers.  We have also experimented
+with parallel file containers like HDF5 for improved IO performance
+but have not yet produced a stable implementation.   In the
+future look for all such improvements.  What is clear is the
+API will define these alternatives through the “storage_mode”
+concept.</p></li>
+<li><p>In MsPASS we make extensive use of the idea from seismic reflection
+processing of marking problem data “dead”.   This method
+handles all dead data through a standard interface with the
+memorable/colorful name <a class="reference internal" href="mspasspy.util.html#module-mspasspy.util.Undertaker" title="mspasspy.util.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker</span></code></a>.
+The default save calls the “bury” method of that class, but
+there is an optional “cremate” argument that calls that
+method instead.  The default of “bury” writes error log data
+to a special collection (“cemetery”) while the “cremate” method
+causes dead data to vanish without a trace on save.</p></li>
+<li><p>There are two types of save concepts this method has to support.
+That is, sometimes one needs to save intermediate results of
+a workflow and continue on doing more work on the same data.
+The more common situation is to terminate a workflow with
+a call to this method.  The method argument <cite>return_data</cite>
+is an implicit switch for these two concepts.  When
+<cite>return_data</cite> is False, which is the default, only the
+ObjectId(s) of thw wf document(s) are returned by the function.
+We use that as the default to avoid memory overflow in a
+final save when the <cite>compute</cite> method is called in dask or the
+<cite>collect</cite> method is called in pyspark.  Set the <cite>return_data</cite>
+argument True if you are doing an intermediate save and want
+to reuse the content of what is returned.</p></li>
+<li><p>There is a long history in seismology of debate on data formats.
+The fundamental reason for much of the debate has to do with
+the namespace and concepts captured in data “headers” for
+different formats seismologists have invented over several
+decades.   A type example is that two “standard” formats
+are SEGY that is the universal standard in seismic reflection
+data exchange and SEED which is now the standard earthquakek
+data format (Technically most data is now “miniseed” which
+differs from SEED by defining only minimal header attributes
+compared to the abomination of SEED that allows pretty much
+anything stored in an excessively complex data structure.)
+Further debate occurs regarding how data sets are stored in
+a particular format.   These range from the atomic level file
+model of SAC to the opposite extreme of an entire data set
+stored in one file, which is common for SEGY.   Because of the
+complexity of multiple formats seismologists have used for
+the external representation of data, this writer has limits
+on what it can and cannot do.  Key points about how formatting
+is handled are:
+-  The default save is a native format that is fast and efficient.</p>
+<blockquote>
+<div><p>You can select alternative formats for data by setting a valid
+value (string) for the “format” argument to this method.
+What is “valid” for the format argument is currently simple
+to state:   the value received for format is passed directly
+to obspy’s  Stream write method’s format argument.  That is,
+realize that when saving to a nonnative format the first thing
+this method does is convert the data to a Stream.  It then
+calls obspy’s write method with the format specified.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Given the above, it follows that if you are writing data to
+any nonnative format before calling this function you will
+almost certainly have to edit the Metadata of each datum to
+match the namespace for the format you want to write.
+If not, obspy’s writer will almost certainly fail.  The only
+exception is miniseed where if the data being processed originate
+as miniseed they can often be saved as miniseed without edits.</p></li>
+<li><p>This writer only saves atomic data on single ensembles and
+knows nothing about assumptions a format makes about the
+larger scale layout of a dataset.  e.g. you could theoretically
+write an ensemble in SAC format, but the output will be
+unreadable by SAC because multiple records could easily be written
+in a single file.  Our perspective is that MsPASS is a framework
+and we do not have resources to sort out all the complexities of
+all the formats out there.   We request the user community to
+share an development for nonstandard formats.   Current the
+only format options that are not “use at your own risk” are
+the native “binary” format and miniseed.</p></li>
+</ul>
+</li>
+</ol>
+<p>Given the complexity just described, users should not be surprised
+that there are limits to what this single method can do and that
+evolution of its capabilities is inevitable as the IT world evolves.
+We reiterate the entire point of this method (also the related
+read_data method) is to abstract the save process to make it
+as simple as possible while providing mechanisms to make it work
+as efficiently as possible.</p>
+<p>There are some important implementation details related to
+the points above that are important to understand if you encounter
+issues using this algorithm.
+1.  Writing is always atomic.  Saving ensemble data is little more</p>
+<blockquote>
+<div><p>than an enhanced loop over data members.  By “enhanced” we mean
+two things:  (a)  any ensemble Metadata attributes are copied
+to the documents saved for each member, and (b) dead data have
+to be handled differently but the handling is a simple conditional
+of “if live” with dead data handled the same as atomic bodies.</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>Atomic saves handle four components of the MsPASS data objects
+differently.   The first thing saved is always the sample data.
+How that is done depends upon the storage mode and format
+discussed in more detail below.  The writer then saves the
+content of the datum’s Metadata container returning a copy of
+the value of the ObjectId of the document saved.   That ObjectID
+is used as a cross reference for saving the final two fundamentally
+different components:  (a) any error log entries and (b) object-level
+history data (optional).</p></li>
+<li><p>As noted above how the sample data is stored is driven by the
+“storage_mode” argument.  Currently two values are accepted.
+“gridfs”, which is the default, pushes the sample data to a
+MongoDB managed internal file space the documents refer to with
+that name.  There are two important caveats about gridfs storage.
+First, the data saved will use the same file system as that used
+by the database server.  That can easily cause a file-system full
+error or a quota error if used naively.   Second, gridfs IO is
+prone to a serious preformance issue in a parallel workflow as
+all workers can be shouting at the database server simultaneously
+filling the network connection and/or overloading the server.
+For those reasons, “files” should be used for the storage
+mode for most applications.   It is not the default because
+storing data in files always requires the user to implement some
+organizational scheme through the “dir” and “dfile” arguments.
+There is no one-size-fits-all solution for organizing how a
+particular project needs to organize the files it produces.
+Note, however, that one can set storage_mode to “files” and this
+writer will work.  By default is sets “dir” to the current directory
+and “dfile” to a random string created with a uuid generator.
+(For ensembles the default is to write all member data to
+the file defined explicitly or implicitly by the “dir” and “dfile”
+arguments.)   An final implementation detail is that if “dir”
+and “dfile” are left at the default None, the algorithm will
+attempt to extract the value of “dir” and “dfile” from the
+Metadata of an atomic datum referenced in the save (i.e. for
+ensembles each datum will be treated independently.).  That
+feature allows more complex data organization schemes managed
+externally from the writer for ensembles.  All of that was
+designed to make this method as bombproof as possible, but
+users need to be aware naive usage can create a huge mess.
+e.g. with “files” and null “dir” and “dfile” saving a million
+atomic data will create a million files with random names in
+your current directory.  Good luck cleaning that mess up.
+Finally, we reiterate that when Earthscope finishes their
+design work for cloud storage access there will probably be
+a new storage mode added to support that access.  The “s3”
+methods in <cite>Database</cite> should be viewed only as prototypes.</p></li>
+<li><p>If any datum has an error log entry it is always saved by
+this method is a collection called “elog”.  That save is not
+optional as we view all error log entries as significant.
+Each elog document contains an ObjectId of the wf document
+with which it is associated.</p></li>
+<li><p>Handling of the bodies of dead data has some complexity.
+Since v2 of <cite>Database</cite> all dead data are passed through an
+instance of <a class="reference internal" href="mspasspy.util.html#module-mspasspy.util.Undertaker" title="mspasspy.util.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker</span></code></a>.  By default
+atomic dead data are passed through the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.bury()</span></code> method.
+If the “cremate” argument is set True the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.cremate()</span></code> method will be called.
+For ensembles the writer calls the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.bring_out_your_dead()</span></code>.
+If cremate is set True the bodies are discarded. Otherwise
+the <cite>bury</cite> method is called in a loop over all bodies.
+Note the default <cite>bury</cite> method creates
+a document for each dead datum in one of two
+special collections:  (a) data killed by a processing algorithm
+are saved to the “cemetery” collection, and (b) data killed by
+a reader are saved to “abortions” (An abortion is a datum
+that was never successfully constructed - born.)  The documents
+for the two collections contain the same name-value pairs but
+we split them because action required by an abortion is
+very different from a normal kill.   See the User Manual
+section on “CRUD Operations” for information on this topic.</p></li>
+<li><p>Object-level history is not saved unless the argument
+“save_history” is set True (default is False).   When enabled
+the history data (if defined) is saved to a collection called
+“history”.   The document saved, like elog, has the ObjectId of
+the wf document with which it is associated.  Be aware that there
+is a signficant added cost to creating a history document entry.
+Because calling this method is part of the history chain one
+would want to preserve, an atomic database operation is
+required for each datum saved.   That is, the algorithm
+does an update of the wf document with which it it is associated
+containing the ObjectId of the history document it saved.</p></li>
+<li><p>As noted above saving data with “format” set to anything but
+the default “binary” or “MSEED” is adventure land.
+We reiterate saving other formats is a development frontier we
+hope to come as contributions from users who need writers for a particular
+format and are intimately familiar with that format’s idiosyncracies.</p></li>
+<li><p>The “mode” argument has a number of subtle idiosyncracies
+that need to be recognized.  In general we recommend always
+writing data (i.e. calling this method) with the default
+mode of “promiscuous”.  That guarantees you won’t mysteriously
+lose data being saved or abort the workflow when it is finished.
+In general it is better to use one of the verify methods or the
+dbverify command line tool to look for problem attributes in
+any saved documents than try to enforce rules setting
+mode to “cautious” or “pedantic”.   On the other hand, even
+if running in “promiscuous” mode certain rules are enforced:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Any aliases defined in the schema are always reset to the
+key defined for the schema.  e.g. if you used the alias
+“dt” for the data sample interval this writer will always
+change it to “delta” (with the standard schema anyway)
+before saving the document created from that datum.</p></li>
+<li><p>All modes enforce a schema constraint for “readonly”
 attributes.   An immutable (readonly) attribute by definition
 should not be changed during processing.   During a save
 all attributes with a key defined as readonly are tested
 with a method in the Metadata container that keeps track of
 any Metadata changes.  If a readonly attribute is found to
 have been changed it will be renamed with the prefix
-“<a href="#id8"><span class="problematic" id="id9">READONLYERROR_</span></a>”, saved, and an error posted (e.g. if you try
+“<a href="#id12"><span class="problematic" id="id13">READONLYERROR_</span></a>”, saved, and an error posted (e.g. if you try
 to alter site_lat (a readonly attribute) in a workflow when
 you save the waveform you will find an entry with the key
-READONERROR_site_lat.)   In the default ‘promiscuous’ mode
-all other attributes are blindly saved to the database as
-name value pairs with no safeties.  In ‘cautious’ mode we
-add a type check.  If the actual type of an attribute does not
-match what the schema expect, this method will try to fix the
-type error before saving the data.  If the conversion is
-successful it will be saved with a complaint error posted
-to elog.  If it fails, the attribute will not be saved, an
-additional error message will be posted, and the save
-algorithm continues.  In ‘pedantic’ mode, in contrast, all
-type errors are considered to invalidate the data.
-Similar error messages to that in ‘cautious’ mode are posted
-but any type errors will cause the datum passed as arg 0
-to be killed. The lesson is saves can leave entries that
-may need to be examined in elog and when really bad will
-cause the datum to be marked dead after the save.</p>
+READONERROR_site_lat.)  We emphasize the issue happens if
+the value associated with such a key was altered after the
+datum was constructed.  If the attribute does not
+change it is ERASED and will not appear in the document.
+The reason for that is this feature exists to handle
+attributes loaded in normalization.   Be aware this
+feature can bloat the elog collection if an entire dataset
+share a problem this algorithm flags as a readonly error.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ol>
 <p>This method can throw an exception but only for errors in
 usage (i.e. arguments defined incorrectly)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mspass_object</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>) – the object you want to save.</p></li>
+<li><p><strong>mspass_object</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a>,
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>,
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a>, or
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>) – the seismic object you want to save.</p></li>
+<li><p><strong>return_data</strong> – When True return a (usually edited) copy</p></li>
+</ul>
+</dd>
+</dl>
+<p>of the data received.   When False, the default, return only
+a requested subset of the attributes in the wf document saved
+for this datum.s
+:param return_list:  list of keys for attributes to extract</p>
+<blockquote>
+<div><p>and set for return python dictionary when return_data is False.
+Ignored if return_data is True.   Be warned for ensembles the
+attributes are expected to be in the ensemble Metadata container.
+Missing attributes will be silentely ignored so an empty dict
+will be returned if none of the attributes is this list are defined.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – This parameter defines how attributes defined with
 key-value pairs in MongoDB documents are to be handled on reading.
 By “to be handled” we mean how strongly to enforce name and type
@@ -1252,11 +1724,11 @@ specification in the schema for the type of object being constructed.
 Options are [‘promiscuous’,’cautious’,’pedantic’] with ‘promiscuous’
 being the default.  See the User’s manual for more details on
 the concepts and how to use this option.</p></li>
-<li><p><strong>storage_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Must be either “gridfs” or “file.  When set to
+<li><p><strong>storage_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Current must be either “gridfs” or “file.  When set to
 “gridfs” the waveform data are stored internally and managed by
 MongoDB.  If set to “file” the data will be stored in a file system
 with the dir and dfile arguments defining a file name.   The
-default is “gridfs”.</p></li>
+default is “gridfs”.  See above for more details.</p></li>
 <li><p><strong>dir</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file directory for storage.  This argument is ignored if
 storage_mode is set to “gridfs”.  When storage_mode is “file” it
 sets the directory in a file system where the data should be saved.
@@ -1265,22 +1737,33 @@ relative it will be expanded with the standard python library
 path functions to a full path name for storage in the database
 document with the attribute “dir”.  As for any io we remind the
 user that you much have write permission in this directory.
-The writer will also fail if this directory does not already
-exist.  i.e. we do not attempt to</p></li>
+Note if this argument is None (default) and storage_mode is “files”
+the algorithm will first attempt to extract “dir” from the
+Metadata of mspass_object.  If that is defined it will be used
+as the write directory. If it is not defined it will default to
+the current directory.</p></li>
 <li><p><strong>dfile</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file name for storage of waveform data.  As with dir
 this parameter is ignored if storage_mode is “gridfs” and is
 required only if storage_mode is “file”.   Note that this file
-name does not have to be unique.  The writer always calls positions
+name does not have to be unique.  The writer always positions
 the write pointer to the end of the file referenced and sets the
 attribute “foff” to that position. That allows automatic appends to
-files without concerns about unique names.</p></li>
+files without concerns about unique names.  Like the dir argument
+if this argument is None (default) and storage_mode is “files”
+the algorithm will first attempt to extract “dfile” from the
+Metadata of mspass_object.  If that is defined it will be used
+as the output filename. If it is not defined a uuid generator
+is used to create a file name with a random string of characters.
+That usage is never a good idea, but is a feature added to make
+this method more bombproof.</p></li>
 <li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the format of the file. This can be one of the
 <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats">supported formats</a>
 of ObsPy writer. The default the python None which the method
 assumes means to store the data in its raw binary form.  The default
 should normally be used for efficiency.  Alternate formats are
 primarily a simple export mechanism.  See the User’s manual for
-more details on data export.  Used only for “file” storage mode.</p></li>
+more details on data export.  Used only for “file” storage mode.
+A discussion of format caveats can be found above.</p></li>
 <li><p><strong>overwrite</strong> (<em>boolean</em>) – If true gridfs data linked to the original
 waveform will be replaced by the sample data from this save.
 Default is false, and should be the normal use.  This option
@@ -1297,7 +1780,7 @@ objects and produces a single Seismogram from them.  That process
 can, and usually does, leave things like seed channel names and
 orientation attributes (hang and vang) from one of the components
 as extraneous baggage.   Use this of keys to prevent such attributes
-from being written to the output documents.  Not if the data being
+from being written to the output documents.  Note if the data being
 saved lack these keys nothing happens so it is safer, albeit slower,
 to have the list be as large as necessary to eliminate any potential
 debris.</p></li>
@@ -1311,10 +1794,35 @@ The most common use of anything other than the default is an
 export to a diffrent format.</p></li>
 <li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified “data_tag” key.  See above and
 User’s manual for guidance on how the use of this option.</p></li>
+<li><p><strong>cremate</strong> – boolean controlling how dead data are handled.
+When True a datum marked dead is ignored and the body or a
+shell of the body (what depends on the return_list value) is
+returned.  If False (default) the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.bury()</span></code> method is called
+with body as input.  That creates a document for each dead
+datum either in the “cemetery” or “abortions” collection.
+See above for more deails.</p></li>
+<li><p><strong>normalizing_collections</strong> – list of collection names dogmatically treated
+as normalizing collection names.  The keywords in the list are used
+to always (i.e. for all modes) erase any attribute with a key name
+of the form <cite>collection_attribute where `collection</cite> is one of the collection
+names in this list and attribute is any string.  Attribute names with the “_”
+separator are saved unless the collection field matches one one of the
+strings (e.g. “channel_vang” will be erased before saving to the
+wf collection while “foo_bar” will not be erased.)  This list should
+ONLY be changed if a different schema than the default mspass schema
+is used and different names are used for normalizing collections.
+(e.g. if one added a “shot” collection to the schema the list would need
+to be changed to at least add “shot”.)</p></li>
+<li><p><strong>save_history</strong> – When True the optional history data will
+be saved to the database if it was actually enabled in the workflow.
+If the history container is empty will silently do nothing.
+Default is False meaning history data is ignored.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Data object as saved (if killed it will be dead)</p>
+<dd class="field-even"><p>python dict of requested attributes by default.  Edited
+copy of input when return_data is True.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1324,13 +1832,18 @@ User’s manual for guidance on how the use of this option.</p></li>
 <span class="sig-name descname"><span class="pre">save_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">one_to_one</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_dataframe" title="Permalink to this definition"></a></dt>
 <dd><p>Tansfer a dataframe into a set of documents, and store them
 in a specified collection. In one_to_one mode every row in the
-dataframe will be saved into the mongodb, otherwise duplicates
-would be discarded.
-The dataframe will first call dropna to eliminate None values stored
-in it, so that after it is transfered into a document, the memory
-usage will be reduced.
-:param df: Pandas.Dataframe object, the input to be transfered into mongodb
-documents
+dataframe will be saved in the specified mongodb collection.
+Otherwise duplicates would be discarded.</p>
+<p>Note we first call the dropna method of DataFrame to eliminate
+None values to mesh with how MongoDB handles Nulls; not
+consistent with DataFrame implemenations that mimic relational
+database tables where nulls are a hole in the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> – Pandas.Dataframe object, the input to be transfered into mongodb</p>
+</dd>
+</dl>
+<p>documents
 :param collection:  MongoDB collection name to be used to save the
 (often subsetted) tuples of filename as documents in this collection.
 :param null_values:  is an optional dict defining null field values.
@@ -1358,6 +1871,7 @@ operations on the dataframe, default is false.
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.save_ensemble_data">
 <span class="sig-name descname"><span class="pre">save_ensemble_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gridfs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dfile_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'save_ensemble_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_ensemble_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_ensemble_data" title="Permalink to this definition"></a></dt>
 <dd><p>Save an Ensemble container of a group of data objecs to MongoDB.</p>
+<p>DEPRICATED METHOD:  use save_method instead.</p>
 <p>Ensembles are a core concept in MsPASS that are a generalization of
 fixed “gather” types frozen into every seismic reflection processing
 system we know of.   This is is a writer for data stored in such a
@@ -1400,6 +1914,7 @@ the object in a binary file, which requires <code class="docutils literal notran
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.save_ensemble_data_binary_file">
 <span class="sig-name descname"><span class="pre">save_ensemble_data_binary_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'save_ensemble_data_binary_file'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_ensemble_data_binary_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_ensemble_data_binary_file" title="Permalink to this definition"></a></dt>
 <dd><p>Save an Ensemble container of a group of data objecs to MongoDB.</p>
+<p>DEPRICATED METHOD:  use save_method instead.</p>
 <p>Ensembles are a core concept in MsPASS that are a generalization of
 fixed “gather” types frozen into every seismic reflection processing
 system we know of.   This is is a writer for data stored in such a
@@ -1596,13 +2111,20 @@ length as the number of tuples in the table.
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.set_database_schema">
 <span class="sig-name descname"><span class="pre">set_database_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.set_database_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.set_database_schema" title="Permalink to this definition"></a></dt>
-<dd><p>Use this method to change the database schema defined for this
-instance of a database handle.  This method sets the database
-schema (namespace for attributes saved in MongoDB).  Use metadata_schema
-to change the in memory namespace.</p>
+<dd><p>Change the database schema defined for this handle.</p>
+<p>Normal use sets the schema at the time handle is created.
+In rare instances it can be useful to change the schema on the
+fly.   Use this method to do that for the database schema component.
+An alternative is to create
+a new instance of Database with the new schema, but that approach
+is much slower than using this method.  Whether that matters is
+dependent on the number of times that operation is required.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema</strong> – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">mspsspy.db.schema.DatabaseSchema</span></code> or a <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> of the yaml file name.</p>
+<dd class="field-odd"><p><strong>schema</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">mspsspy.db.schema.MetadataSchema</span></code> or a <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Specification of the schema to use.  Can be
+a string defining a path to a yaml file defining the schema or
+an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">mspsspy.db.schema.MetadataSchema</span></code> that
+was previously created by reading such a file.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1610,13 +2132,20 @@ to change the in memory namespace.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.set_metadata_schema">
 <span class="sig-name descname"><span class="pre">set_metadata_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.set_metadata_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.set_metadata_schema" title="Permalink to this definition"></a></dt>
-<dd><p>Use this method to change the metadata schema defined for this
-instance of a database handle.  This method sets the metadata
-schema (interal namespace).  Use set_database_schema to change
-the stored data schema.</p>
+<dd><p>Change the metadata schema defined for this handle.</p>
+<p>Normal use sets the schema at the time handle is created.
+In rare instances it can be useful to change the schema on the
+fly.   Use this method to do that for the Metadata component.
+An alternative is to create
+a new instance of Database with the new schema, but that approach
+is much slower than using this method.  Whether that matters is
+dependent on the number of times that operation is required.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema</strong> – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">mspsspy.db.schema.MetadataSchema</span></code> or a <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> of the yaml file name.</p>
+<dd class="field-odd"><p><strong>schema</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">mspsspy.db.schema.MetadataSchema</span></code> or a <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Specification of the schema to use.  Can be
+a string defining a path to a yaml file defining the schema or
+an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">mspsspy.db.schema.MetadataSchema</span></code> that
+was previously created by reading such a file.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1637,7 +2166,7 @@ schema (interal namespace).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.update_data">
-<span class="sig-name descname"><span class="pre">update_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cautious'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Database.update_data'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.update_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.update_data" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">update_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cautious'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalizing_collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['channel',</span> <span class="pre">'site',</span> <span class="pre">'source']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Database.update_data'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.update_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.update_data" title="Permalink to this definition"></a></dt>
 <dd><p>Updates both metadata and sample data corresponding to an input data
 object.</p>
 <p>Since storage of data objects in MsPASS is broken into multiple
@@ -1659,6 +2188,11 @@ this could create a blaat problem with large data sets so
 we do not currently support that type of update.</p></li>
 </ol>
 </div></blockquote>
+<p>A VERY IMPORTANT implicit feature of this method is that
+if the magic key “gridfs_id” exists the sample data in the
+input to this method (mspass_object.data) will overwrite any
+the existing content of gridfs found at the matching id.   This
+is a somewhat hidden feature so beware.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1680,9 +2214,21 @@ more complaint message in the elog of mspass_object on how the
 method did or did not fix mismatches with the schema.  Both
 also will drop any key-value pairs where the value cannot be
 converted to the type defined in the schema.</p></li>
+<li><p><strong>normalizing_collections</strong> – list of collection names dogmatically treated
+as normalizing collection names.  The keywords in the list are used
+to always (i.e. for all modes) erase any attribute with a key name
+of the form <cite>collection_attribute where `collection</cite> is one of the collection
+names in this list and attribute is any string.  Attribute names with the “_”
+separator are saved unless the collection field matches one one of the
+strings (e.g. “channel_vang” will be erased before saving to the
+wf collection while “foo_bar” will not be erased.)  This list should
+ONLY be changed if a different schema than the default mspass schema
+is used and different names are used for normalizing collections.
+(e.g. if one added a “shot” collection to the schema the list would need
+to be changed to at least add “shot”.)</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.
 (defaults to ‘Database.update_data’ and should not normally need to be changed)</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.ObjectId.ObjectId</span></code>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1700,6 +2246,7 @@ is the last collection updated.</p>
 <span class="sig-name descname"><span class="pre">update_ensemble_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'update_ensemble_metadata'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.update_ensemble_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.update_ensemble_metadata" title="Permalink to this definition"></a></dt>
 <dd><p>Updates (or save if it’s new) the mspasspy ensemble object, including saving the processing history, elogs
 and metadata attributes.</p>
+<p>DEPRICATED METHOD:  Do not use.</p>
 <p>This method is a companion to save_ensemble_data. The relationship is
 comparable to that between the save_data and update_metadata methods.
 In particular, this method is mostly for internal use to save the
@@ -1730,7 +2277,7 @@ schema.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.update_metadata">
-<span class="sig-name descname"><span class="pre">update_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cautious'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Database.update_metadata'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.update_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.update_metadata" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">update_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cautious'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalizing_collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['channel',</span> <span class="pre">'site',</span> <span class="pre">'source']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Database.update_metadata'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.update_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.update_metadata" title="Permalink to this definition"></a></dt>
 <dd><p>Use this method if you want to save the output of a processing algorithm
 whose output is only posted to metadata.   That can be something as
 simple as a little python function that does some calculations on other
@@ -1755,7 +2302,7 @@ method for handling this as the save_data method.  That is,
 for all “mode” parameters if an key is defined in the schema as
 readonly and it is listed as having been modified, it will
 be save with a new key creating by adding the prefix
-“<a href="#id10"><span class="problematic" id="id11">READONLYERROR_</span></a>” .  e.g. if we had a site_sta read as
+“<a href="#id14"><span class="problematic" id="id15">READONLYERROR_</span></a>” .  e.g. if we had a site_sta read as
 ‘AAK’ but we changed it to ‘XYZ’ in a workflow, when we tried
 to save the data you will find an entry in the document
 of {‘READONLYERROR_site_sta’ : ‘XYZ’}</p>
@@ -1781,7 +2328,7 @@ method did or did not fix mismatches with the schema.  Both
 also will drop any key-value pairs where the value cannot be
 converted to the type defined in the schema.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.ObjectId.ObjectId</span></code>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1809,7 +2356,7 @@ enables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>document_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a> of document to be tested) – the value of the _id field in the document you want to verify</p></li>
+<li><p><strong>document_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.ObjectId.ObjectId</span></code> of document to be tested) – the value of the _id field in the document you want to verify</p></li>
 <li><p><strong>collection</strong> – the name of collection to which document_id is
 expected to provide a unique match.  If not specified, uses the default wf collection</p></li>
 <li><p><strong>tests</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – this should be a python list of test to apply by
@@ -1837,6 +2384,228 @@ ids found after query and the ids should then always be valid.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.db.database.doc2md">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">doc2md</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database_schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wfcol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#doc2md"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.doc2md" title="Permalink to this definition"></a></dt>
+<dd><p>This function is more or less the inverse of md2doc.   md2doc is
+needed by writers to convert Metadata to a python dict for saving
+with pymongo.   This function is similarly needed for readers to
+translate MongoDB documents into the Metadata container used by
+MsPASS data objects.</p>
+<p>This function can optionally apply schema constraints using the
+same schema class used by the Database class.  In fact, normal use
+would pass the schema class from the instance of Database that was
+used in loading the document to be converted (arg0).</p>
+<p>This function was built from a skeleton that was originally part of
+the read_data method of Database.  Its behavior for
+differnt modes is inherited from that implementation for backward
+compatibility.  The returns structure is a necessary evil with that
+change in the implementatoin, but is exactly the same as md2doc for
+consistency.</p>
+<p>The way the mode argument is handled is slightly different than
+for md2doc because of the difference in the way this function is
+expected to be used.  This function builds the Metadata container
+that is used in all readers to drive the construction of atomic
+data objects.  See below for a description of what different settings
+of mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>doc</strong> (<em>python dict assumed</em><em> (</em><em>there is no internal test for efficiency</em><em>)</em>) – document (dict) to be converted to Metadata</p>
+</dd>
+</dl>
+<p>An associative array with string keys operator [] are the main requirements.
+e.g. this function might work with a Metadata container to apply
+schema constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>metadata_schema</strong> – instance of MetadataSchema class that can</p>
+</dd>
+</dl>
+<p>optionally be used to impose schema constraints.
+:type metadata_schema:  <a class="reference internal" href="#mspasspy.db.schema.MetadataSchema" title="mspasspy.db.schema.MetadataSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.schema.MetadataSchema</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>wfcol</strong> – Collection name from which doc was retrieved.   It should</p>
+</dd>
+</dl>
+<p>normally alreacy be known by the caller so we require it to be passed
+with this required arg.
+:type wfcol:   string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mode</strong> – read mode as described in detail in User’s Manual.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Behavior for this function is as follows:</dt><dd><dl class="simple">
+<dt>“promiscuous” - (default)  no checks are applied to any key-value</dt><dd><p>pairs and the result is a one-to-one translation of the input.</p>
+</dd>
+<dt>“cautious” - Type constraints in the schema are enforced and</dt><dd><p>automatically conveted if possible.  If conversion is needed
+and fails the live/dead boolan in the return will be set to
+signal this datum should be killed.  There will also be elog entries.</p>
+</dd>
+<dt>“pedantic” - type conversions are strongly enforced.  If any</dt><dd><p>type mismatch of a value occurs the live/dead boolean returned
+will be set to signal a kill and there will be one or more
+error messages in the elog return.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list">
+<dt class="field-odd">Return 3-component tuple<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 = converted Metadata container,
+1 - boolean equivalent to “live”.  i.e. if True the results is valid
+while if False constructing an object from the result is ill advised,
+2 - ErrorLogger object containing in error messages.  Callers should</p>
+<blockquote>
+<div><p>test if the result of the size method of the return is &gt; 0 and
+handle the error messages as desired.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.db.database.doclist2mdlist">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">doclist2mdlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doclist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database_schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wfcol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#doclist2mdlist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.doclist2mdlist" title="Permalink to this definition"></a></dt>
+<dd><p>Create a cleaned array of Metadata containers that can be used to
+construct a TimeSeriesEnsemble or SeismogramEnsemble.</p>
+<p>This function is like doc2md but for an input given as a list of docs (python dict).
+The main difference is the return tuple is very different.
+The function has to robustly handle the fact that sometimes converting
+a document to md is problematic.  The issues are defined in the
+related <cite>doc2md</cite> function that is used here for the atomic operation of
+converting a given document to a Metadata object.   The issue we have to
+face is what to do with warning message and documents that have
+fatal flaws (marked dead when passed through doc2md).  Warning
+messages are passed to the ErrorLogger component of the returned tuple.
+Callers should either print those messages or post them to the
+ensemble metadata that is expected to be constructed after calling
+this function.   In “cautious” and “pedantic” mode doc2md may mark
+a datum as bad with a kill return.  When a document is “killed”
+by doc2md it is dropped and two thi</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>doclist</strong> – list of documents to be converted to Metadata with schema</p>
+</dd>
+</dl>
+<p>constraints
+:type doclist:  any iterable container holding an array of dict containers
+with rational content (i.e. expected to be a MongoDB document with attributes
+defined for a set of seismic data objects.)</p>
+<p>—other here –</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>array with three components:
+0 - filtered array of Metadata containers
+1 - live boolean.   Set False only if conversion of all the documents</p>
+<blockquote>
+<div><p>in doclist failed.</p>
+</div></blockquote>
+<p>2 - ErrorLogger where warning and kill messages are posted (see above)
+3 - an array of documents that could not be converted (i.e. marked</p>
+<blockquote>
+<div><p>bad when processed with doc2md.)</p>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.db.database.elog2doc">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">elog2doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elog</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/mspasspy/db/database.html#elog2doc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.elog2doc" title="Permalink to this definition"></a></dt>
+<dd><p>Extract error log messages for storage in MongoDB</p>
+<p>This function can be thought of as a formatter for an ErrorLogger
+object.   The error log is a list of what is more or less a C struct (class)
+This function converts the log to list of python dictionaries
+with keys being the names of the symbols in the C code.  The list
+of dict objects is then stored in a python dictionary with the
+single key “logdata” that is returned.  If the log is entry
+an empty dict is returned.  That means the return is either empty
+or with one key-value pair with key==”logdata”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>elog</strong> – ErrorLogger object to be reformatted.
+(Note for all mspass seismic data objects == self.elog)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>python dictionary as described above</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.db.database.geoJSON_doc">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">geoJSON_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'epicenter'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/mspasspy/db/database.html#geoJSON_doc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.geoJSON_doc" title="Permalink to this definition"></a></dt>
+<dd><p>Convenience function to create a geoJSON format point object document
+from a points specified by latitude and longitude. The format 
+for a geoJSON point isn’t that strange but how to structure it into 
+a mongoDB document for use with geospatial queries is not as
+clear from current MongoDB documentation.  This function makes that 
+proess easier.</p>
+<p>The required inpput is latitude (lat) and longitude (lon).  The 
+values are assumed to be in degrees for compatibility with MongoDB.
+That means latitude must be -90&lt;=lat&lt;=90 and longitude 
+must satisfy -180&lt;=lat&lt;=180.  The function will try to handle the 
+common situation with 0&lt;=lon&lt;=360 by wrapping 90-&gt;180 values to 
+-180-&gt;0,  A ValueError exception is thrown if  
+for any other situation with lot or lon outside those bounds.</p>
+<p>If you specify the optional “doc” argument it is assumed to be 
+a python dict to which the geoJSON point data is to be added.  
+By default a new dict is created that will contain only the 
+geoJSON point data.  The doc options is useful if you want to 
+add the geoJSON data to the document before appending it.  
+The default is more useful for updates to add geospatial 
+query capabilities to a collection with lat-lon data that is 
+not properl structure.  In all cases the geoJSON data is a
+itself a python dict but a value associated accessible from 
+the output dict with te key defined by the “key” argument
+(default is ‘epicenter’, which is appropriate for earthquake 
+source data.)
+with a</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.db.database.history2doc">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">history2doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proc_history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/mspasspy/db/database.html#history2doc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.history2doc" title="Permalink to this definition"></a></dt>
+<dd><p>Extract ProcessingHistory data and package into a python dictionary.</p>
+<p>This function can be thought of as a formatter for the ProcessingHistory
+container in a MsPASS data object.  It returns a python dictionary
+that, if retrieved, can be used to reconstruct the ProcessingHistory
+container.  We do that a fairly easy way here by using pickle.dumps
+of the container that is saved with the key “processing_history”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>proc_history</strong> (<em>Must be an instance</em><em> of </em><em>a
+mspasspy.ccore.util.ProcessingHistory object</em><em> or </em><em>a TypeError
+exception will be thrown.</em>) – history container to be reformatted</p></li>
+<li><p><strong>alg_id</strong> – algorithm id for caller.   By default this is
+extracted from the last entry in the history tree.  Use other
+than the default should be necessary only if called from a
+nonstandard writer.
+(See C++ doxygen page on ProcessingHistory for concept ).</p></li>
+<li><p><strong>alg_id</strong> – string</p></li>
+<li><p><strong>alg_name</strong> (<em>string</em>) – name of calling algorithm.   By default this is
+extracted from the last entry in the history tree.  Use other
+than the default should be necessary only if called from a
+nonstandard writer.
+(See C++ doxygen page on ProcessingHistory for concept ).</p></li>
+<li><p><strong>job_name</strong> (<em>string</em><em> (</em><em>default None taken to mean do not save</em><em>)</em>) – optional job name string.  If set the value
+will be saved in output with the “job_name”.  By default
+there will be no value for the “job_name” key</p></li>
+<li><p><strong>job_id</strong> (<em>string</em><em> (</em><em>default None taken to mean do not save</em><em>)</em>) – optional job id string.  If set the value
+will be saved in output with the “job_id”.  By default
+there will be no value for the “job_id” key</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>python dictoinary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.db.database.index_mseed_file_parallel">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">index_mseed_file_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#index_mseed_file_parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.index_mseed_file_parallel" title="Permalink to this definition"></a></dt>
 <dd><p>A parallel wrapper for the index_mseed_file method in the Database class.
@@ -1855,6 +2624,100 @@ User would need to scan the RDD/bag to search for thing not None for errors.</p>
 </dl>
 <p>index_mseed_file method
 :return: None or error message string</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.db.database.md2doc">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">md2doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalizing_collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['channel',</span> <span class="pre">'site',</span> <span class="pre">'source']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">{}</span></span></span><a class="reference internal" href="../_modules/mspasspy/db/database.html#md2doc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.md2doc" title="Permalink to this definition"></a></dt>
+<dd><p>Converts a Metadata container to a python dict applying a schema constraints.</p>
+<p>This function is used in all database save operations to guaranteed the
+Metadata container in a mspass data object is consistent with
+requirements for MongDB defined by a specified schema.   It
+dogmatically enforces readonly restrictions in the schema by
+changing the key for any fields marked readonly and found to have
+been set as changed.  Such entries change to “<a href="#id16"><span class="problematic" id="id17">READONLYERROR_</span></a>” + k
+where k is the original key marked readonly.  See user’s manual for
+a discussion of why this is done.</p>
+<p>Other schema constraints are controlled by the setting of mode.
+Mode must be one of “promiscuous”,”cautious”, or “pedantic” or
+the function will raise a MsPASS error marked fatal.   That is the
+only exception this function can throw.  It will never happen when
+used with the Database class method but is possible if a user uses
+this function in a different implementation.</p>
+<p>The contents of the data associated with the md argument (arg0) are assumed
+to have passed through the private database method _sync_metadata_before_update
+before calling this function.  Anyone usingn this function outside the
+Database class should assure a comparable algorithm is not required.</p>
+<p>Note the return is a tuple.  See below for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (<em>For normal use in mspass md is a larger data object that
+inherits Metadata.  That is</em><em>, </em><em>in most uses it is a TimeSeries</em><em> or
+</em><em>Seismogram object.  It can be a raw Metadata container and the
+algorithm should work</em>) – contains a Metadata container that is to be converted.</p></li>
+<li><p><strong>save_schema</strong> (<em>Schema class</em>) – The Schema class to be used for constraints
+in building the doc for MongoDB use.  See User’s Manual for details
+on how a schema is defined and used in MsPASS.</p></li>
+<li><p><strong>exclude_keys</strong> (<em>list</em><em> of </em><em>strings</em>) – list of keys (strings) to be excluded from
+the output python dict.   Note “_id” is always excluded to mess
+with required MongoDB usage.  Default is None which means no
+values are excluded.  Note is harmless to list keys that are not
+present in md - does nothing except for a minor cost to test for existence.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Must be one of “promiscuous”, “caution”, or “pedantic”.
+See User’s Manual for which to use.  Default is “promiscuous”.
+The function will throw MsPASSError exception if not one of the three
+keywords list.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Result is a returned as a tuple appropriate for the
+normal use of this function inside the Database class.
+The contents of the tuple are:</p>
+<p>0 - python dictionary of edited result ready to save as MongoDB document
+1 - boolean equivalent of the “live” attribute of TimeSeries and Seismogram.</p>
+<blockquote>
+<div><p>i.e. if True the result can be considered valid.  If False something
+was very wrong with the input and the contents of 0 is invalid and
+should not be used.  When False the error log in 2 will contain
+one or more error messages.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>2 - An ErrorLogger object that may or may not contain any error logging</dt><dd><p>messages.  Callers should call the size method of the this entry
+and handle the list of error messages it contains if size is not zero.
+Note the right way to do that for TimeSeries and Seismogram is to
+use operator += for the elog attribute of the datum.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.db.database.parse_normlist">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">parse_normlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_nlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/mspasspy/db/database.html#parse_normlist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.parse_normlist" title="Permalink to this definition"></a></dt>
+<dd><p>Parses a list of multiple accepted types to return a list of Matchers.</p>
+<p>This function is more or less a translator to create a list of
+subclasses of the BasicMatcher class used for generic normalization.
+The input list (input_nlist) can be one of two things.  If the
+list is a set of strings the strings are assumed to define
+collection names.  It then constructs a database-driven
+matcher class using the ObjectId method that is the stock
+MongoDB indexing method.   Specifically, for each collection
+name it creates an instance of the generic ObjectIdDBMatcher
+class pointing to the named collection.   The other allowed
+type for the members of the input list are children of the
+base class called <cite>BasicMatcher</cite> defined in spasspy.db.normalize.
+<cite>BasicMatcher</cite> abstracts the task required for normalization
+and provides a generic mechanism to load normalization data
+including data defined outside of MongoDB (e.g. a pandas DataFrame).
+If the list contains anything but a string or a child of
+BasicMatcher the function will abort throwing a TypeError
+exception.  On success it returns a list of children of
+<cite>BasicMatcher</cite> that can be used to normalize any wf
+document retried from MongoDB assuming the matching
+algorithm is valid.</p>
 </dd></dl>
 
 </section>
@@ -2832,7 +3695,7 @@ defined “starttime” and “endtime” attributes.</p>
 A common current issue is that if miniseed data are saved
 to wf_TimeSeries and then read back in a later workflow
 the default schema will alter the keys for net, sta, chan,
-and loc to add the prefix “<a href="#id12"><span class="problematic" id="id13">READONLY_</span></a>” (e.g. READONLY_net).
+and loc to add the prefix “<a href="#id18"><span class="problematic" id="id19">READONLY_</span></a>” (e.g. READONLY_net).
 The query automatically tries to recover any of the
 station name keys using that recipe.</p>
 <dl class="field-list simple">
@@ -2966,11 +3829,11 @@ document would be returned as “channel_lat”.</p></li>
 <dd><p>Concrete implementations of this required method.  The cache_id
 in this algorithm is a composite key made from net, sta, chan, and
 loc with a fixed separator string of “_”.  A typical example
-is <a href="#id14"><span class="problematic" id="id15">IU_AAK_BHZ_00_</span></a>.</p>
+is <a href="#id20"><span class="problematic" id="id21">IU_AAK_BHZ_00_</span></a>.</p>
 <p>An added feature to mesh with MsPASS conventions is a safety
 for attributes that are automatically renamed when saved
 that are marked readonly in the schema.   Such attributes
-have a prepended tag, (at this time “<a href="#id16"><span class="problematic" id="id17">READONLYERROR_</span></a>”).  If
+have a prepended tag, (at this time “<a href="#id22"><span class="problematic" id="id23">READONLYERROR_</span></a>”).  If
 one of the required keys for the index is missing (e.g. “net”)
 the function tries to then fetch the modified name
 (e.g. “READONLYERROR_net”).  If that also fails it returns
@@ -2981,7 +3844,7 @@ a None as specified by the API.</p>
 Must contain net, sta fpr site matching and net, sta, and
 chan for the channel collection. If loc is not defined for
 any case an emtpy string in defined an the key has two
-trailing separator characters (e.g. <a href="#id1"><span class="problematic" id="id2">IU_AAK_BHZ__</span></a>)</p>
+trailing separator characters (e.g. <a href="#id3"><span class="problematic" id="id6">IU_AAK_BHZ__</span></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>normal return is a string that can be used as an index string.
@@ -2996,7 +3859,7 @@ If any of the required keys is missing it will return a None</p>
 <dd><p>Concrete implementations of this required method.  The cache_id
 in this algorithm is a composite key made from net, sta, chan, and
 loc with a fixed separator string of “_”.  A typical example
-is <a href="#id18"><span class="problematic" id="id19">IU_AAK_BHZ_00_</span></a>.  This method creates this string from
+is <a href="#id24"><span class="problematic" id="id25">IU_AAK_BHZ_00_</span></a>.  This method creates this string from
 a MongoDB document assumed passed through a python dictionary
 as argument doc.  Unlike the cache_id method this function
 does not have a safety for readonly errors.  The reason is that
@@ -3008,7 +3871,7 @@ site or channel documents.</p>
 Must contain net, sta fpr site matching and net, sta, and
 chan for the channel collection. If loc is not defined for
 any case an emtpy string in defined an the key has two
-trailing separator characters (e.g. <a href="#id1"><span class="problematic" id="id3">IU_AAK_BHZ__</span></a>)</p>
+trailing separator characters (e.g. <a href="#id3"><span class="problematic" id="id7">IU_AAK_BHZ__</span></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>normal return is a string that can be used as an index string.
