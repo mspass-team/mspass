@@ -159,6 +159,7 @@ class TestObjectIdMatcher(TestNormalize):
         self.df = pd.DataFrame(list(self.db["channel"].find()))
 
     def test_ID_matcher_find_one(self):
+        # note these use default collection of channel
         cached_matcher = ObjectIdMatcher(self.db)
         db_matcher = ObjectIdDBMatcher(self.db)
 

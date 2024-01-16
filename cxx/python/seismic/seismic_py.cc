@@ -321,7 +321,7 @@ PYBIND11_MODULE(seismic, m) {
           self.set_live();
         else
           self.kill();
-      },"Whether the data is valid or not")
+      },"True if the data is valid")
     .def_property("tref",[](const BasicTimeSeries &self) {
         return self.timetype();
       },[](BasicTimeSeries &self, TimeReferenceType tref) {
@@ -692,7 +692,15 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const Ensemble<Seismogram>&>())
     .def(py::init<const LoggingEnsemble<Seismogram>&>())
     .def("kill",&LoggingEnsemble<Seismogram>::kill,"Mark the entire ensemble dead")
-    .def("live",&LoggingEnsemble<Seismogram>::live,"Return true if the ensemble is marked live")
+    //.def("live",&LoggingEnsemble<Seismogram>::live,"Return true if the ensemble is marked live")
+    .def_property("live",[](const LoggingEnsemble<Seismogram> &self) {
+        return self.live();
+      },[](LoggingEnsemble<Seismogram> &self, bool b) {
+        if(b)
+          self.set_live();
+        else
+          self.kill();
+      },"True if the ensemble contains any valid data.  False if empty or all invalid.")
     .def("dead",&LoggingEnsemble<Seismogram>::dead,"Return true if the entire ensemble is marked dead")
     .def("validate",&LoggingEnsemble<Seismogram>::validate,"Test to see if the ensemble has any live members - return true of it does")
     .def("set_live",&LoggingEnsemble<Seismogram>::set_live,"Mark ensemble live but use a validate test first")
@@ -761,7 +769,15 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const Ensemble<TimeSeries>&>())
     .def(py::init<const LoggingEnsemble<TimeSeries>&>())
     .def("kill",&LoggingEnsemble<TimeSeries>::kill,"Mark the entire ensemble dead")
-    .def("live",&LoggingEnsemble<TimeSeries>::live,"Return true if the ensemble is marked live")
+    //.def("live",&LoggingEnsemble<TimeSeries>::live,"Return true if the ensemble is marked live")
+    .def_property("live",[](const LoggingEnsemble<TimeSeries> &self) {
+        return self.live();
+      },[](LoggingEnsemble<TimeSeries> &self, bool b) {
+        if(b)
+          self.set_live();
+        else
+          self.kill();
+      },"True if the ensemble contains any valid data.  False if empty or all invalid.")
     .def("dead",&LoggingEnsemble<TimeSeries>::dead,"Return true if the entire ensemble is marked dead")
     .def("validate",&LoggingEnsemble<TimeSeries>::validate,"Test to see if the ensemble has any live members - return true of it does")
     .def("set_live",&LoggingEnsemble<TimeSeries>::set_live,"Mark ensemble live but use a validate test first")

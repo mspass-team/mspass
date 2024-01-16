@@ -158,7 +158,7 @@ def test_ensembles():
     )
     assert len(enslist) == 2
     for i in range(2):
-        assert enslist[i].live()
+        assert enslist[i].live
     assert enslist[0]["chan"] == "BH1"
     assert enslist[1]["chan"] == "BHZ"
     assert len(enslist[0].member) == 1
@@ -187,7 +187,7 @@ def test_ensembles():
     )
     assert len(enslist) == 2
     for i in range(2):
-        assert enslist[i].live()
+        assert enslist[i].live
         assert len(enslist[i].member) == 1
         assert enslist[i].member[0]["has_gap"]
         gapdata = enslist[i].member[0]["gaps"]
@@ -210,7 +210,7 @@ def test_ensembles():
     )
     assert len(enslist) == 2
     for i in range(2):
-        assert enslist[i].live()
+        assert enslist[i].live
     assert enslist[0]["chan"] == "BH1"
     assert enslist[1]["chan"] == "BHZ"
     assert len(enslist[0].member) == 1
@@ -228,7 +228,7 @@ def test_ensembles():
     )
     assert len(enslist) == 2
     for i in range(2):
-        assert enslist[i].live()
+        assert enslist[i].live
     assert enslist[0]["chan"] == "BH1"
     assert enslist[1]["chan"] == "BHZ"
     assert len(enslist[0].member) == 1
@@ -264,7 +264,7 @@ def test_ensembles():
     )
     assert len(enslist) == 2
     for i in range(2):
-        assert enslist[i].live()
+        assert enslist[i].live
     assert enslist[0]["chan"] == "BH1"
     assert enslist[1]["chan"] == "BHZ"
     assert len(enslist[0].member) == 2
@@ -280,7 +280,7 @@ def test_ensembles():
     )
     assert len(enslist) == 2
     for i in range(2):
-        assert enslist[i].live()
+        assert enslist[i].live
     assert enslist[0]["chan"] == "BH1"
     assert enslist[1]["chan"] == "BHZ"
     assert len(enslist[0].member) == 3
