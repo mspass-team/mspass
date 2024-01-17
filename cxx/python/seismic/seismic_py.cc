@@ -13,6 +13,10 @@
 #include <mspass/seismic/Seismogram.h>
 #include <mspass/seismic/Ensemble.h>
 #include <mspass/seismic/PowerSpectrum.h>
+#include <mspass/seismic/DataGap.h>
+#include <mspass/seismic/TimeSeriesWGaps.h>
+
+#include <mspass/algorithms/TimeWindow.h>
 
 #include "python/utility/Publicdmatrix_py.h"
 #include "python/utility/boost_any_converter_py.h"
@@ -35,6 +39,7 @@ namespace py=pybind11;
 using namespace std;
 using namespace mspass::utility;
 using namespace mspass::seismic;
+using mspass::algorithms::TimeWindow;
 
 /* Trampoline class for BasicTimeSeries */
 class PyBasicTimeSeries : public BasicTimeSeries
@@ -90,6 +95,61 @@ public:
       BasicTimeSeries,
       set_t0,
       d0in);
+  }
+};
+/* Trampoline class for BasicSpectrum */
+class PyBasicSpectrum : public BasicSpectrum
+{
+public:
+  std::vector<double> frequencies() const
+  {
+    PYBIND11_OVERLOAD_PURE(
+      std::vector<double>,
+      BasicSpectrum,
+      frequencies,
+    );
+  }
+  double frequency(const int sample_number) const
+  {
+    PYBIND11_OVERLOAD_PURE(
+      double,
+      BasicSpectrum,
+      frequency,
+      sample_number
+    );
+  }
+  size_t nf() const
+  {
+    PYBIND11_OVERLOAD_PURE(
+      size_t,
+      BasicSpectrum,
+      nf,
+    );
+  }
+  double Nyquist() const
+  {
+    PYBIND11_OVERLOAD_PURE(
+      double,
+      BasicSpectrum,
+      Nyquist,
+    );
+  }
+};
+
+/* Trampoline class for DataGap */
+class PyDataGap : public DataGap
+{
+public:
+  /* BasicTimeSeries has virtual methods that are not pure because
+  forms that contain gap handlers need additional functionality.
+  We thus use a different qualifier to PYBIND11_OVERLOAD macro here.
+  i.e. omit the PURE part of the name*/
+  void zero_gaps()
+  {
+    PYBIND11_OVERLOAD_PURE(
+      void,
+      DataGap,
+      zero_gaps);
   }
 };
 
@@ -234,6 +294,8 @@ PYBIND11_MODULE(seismic, m) {
     .def("time_is_relative",&BasicTimeSeries::time_is_relative,"Return true if t0 is not UTC=some relative time standard like shot time")
     .def("npts",&BasicTimeSeries::npts,"Return the number of time samples in this object")
     .def("t0",&BasicTimeSeries::t0,"Return the time of the first sample of data in this time series")
+    /*Useful alias for t0 method*/
+    .def("starttime",[](const BasicTimeSeries &self){return self.t0();})
     .def("set_dt",&BasicTimeSeries::set_dt,"Set the data time sample interval")
     .def("set_npts",&BasicTimeSeries::set_npts,"Set the number of data samples in this object")
     .def("set_t0",&BasicTimeSeries::set_t0,"Set time of sample 0 (t0) - does not check if consistent with time standard")
@@ -259,7 +321,7 @@ PYBIND11_MODULE(seismic, m) {
           self.set_live();
         else
           self.kill();
-      },"Whether the data is valid or not")
+      },"True if the data is valid")
     .def_property("tref",[](const BasicTimeSeries &self) {
         return self.timetype();
       },[](BasicTimeSeries &self, TimeReferenceType tref) {
@@ -359,6 +421,7 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>())
     .def("load_history",&Seismogram::load_history,
        "Load ProcessingHistory from another data object that contains relevant history")
+    .def("__sizeof__",[](const Seismogram& self){return self.memory_use();})
     .def(py::pickle(
       [](const Seismogram &self) {
         pybind11::object sbuf;
@@ -470,6 +533,7 @@ PYBIND11_MODULE(seismic, m) {
       }))
       .def("load_history",&TimeSeries::load_history,
          "Load ProcessingHistory from another data object that contains relevant history")
+      .def("__sizeof__",[](const TimeSeries& self){return self.memory_use();})
       // Not sure this constructor needs to be exposed to python
       /*
       .def(py::init<const BasicTimeSeries&,const Metadata&,
@@ -628,10 +692,19 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const Ensemble<Seismogram>&>())
     .def(py::init<const LoggingEnsemble<Seismogram>&>())
     .def("kill",&LoggingEnsemble<Seismogram>::kill,"Mark the entire ensemble dead")
-    .def("live",&LoggingEnsemble<Seismogram>::live,"Return true if the ensemble is marked live")
+    //.def("live",&LoggingEnsemble<Seismogram>::live,"Return true if the ensemble is marked live")
+    .def_property("live",[](const LoggingEnsemble<Seismogram> &self) {
+        return self.live();
+      },[](LoggingEnsemble<Seismogram> &self, bool b) {
+        if(b)
+          self.set_live();
+        else
+          self.kill();
+      },"True if the ensemble contains any valid data.  False if empty or all invalid.")
     .def("dead",&LoggingEnsemble<Seismogram>::dead,"Return true if the entire ensemble is marked dead")
     .def("validate",&LoggingEnsemble<Seismogram>::validate,"Test to see if the ensemble has any live members - return true of it does")
     .def("set_live",&LoggingEnsemble<Seismogram>::set_live,"Mark ensemble live but use a validate test first")
+    .def("__sizeof__",[](const LoggingEnsemble<Seismogram>& self){return self.memory_use();})
     .def_readwrite("elog",&LoggingEnsemble<Seismogram>::elog,"Error log attached to the ensemble - not the same as member error logs")
     .def(py::pickle(
       [](const LoggingEnsemble<Seismogram> &self) {
@@ -696,10 +769,19 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const Ensemble<TimeSeries>&>())
     .def(py::init<const LoggingEnsemble<TimeSeries>&>())
     .def("kill",&LoggingEnsemble<TimeSeries>::kill,"Mark the entire ensemble dead")
-    .def("live",&LoggingEnsemble<TimeSeries>::live,"Return true if the ensemble is marked live")
+    //.def("live",&LoggingEnsemble<TimeSeries>::live,"Return true if the ensemble is marked live")
+    .def_property("live",[](const LoggingEnsemble<TimeSeries> &self) {
+        return self.live();
+      },[](LoggingEnsemble<TimeSeries> &self, bool b) {
+        if(b)
+          self.set_live();
+        else
+          self.kill();
+      },"True if the ensemble contains any valid data.  False if empty or all invalid.")
     .def("dead",&LoggingEnsemble<TimeSeries>::dead,"Return true if the entire ensemble is marked dead")
     .def("validate",&LoggingEnsemble<TimeSeries>::validate,"Test to see if the ensemble has any live members - return true of it does")
     .def("set_live",&LoggingEnsemble<TimeSeries>::set_live,"Mark ensemble live but use a validate test first")
+    .def("__sizeof__",[](const LoggingEnsemble<TimeSeries>& self){return self.memory_use();})
     .def_readwrite("elog",&LoggingEnsemble<TimeSeries>::elog,"Error log attached to the ensemble - not the same as member error logs")
     /* This is exactly parallel to the version for a SeismogramEnsemble.
     Only changed Seismogram to TimeSeries everywhere in this section.
@@ -763,18 +845,49 @@ PYBIND11_MODULE(seismic, m) {
       } )
     )
   ;
+  py::class_<BasicSpectrum,PyBasicSpectrum>(m,"_BasicSpectrum",
+     "Base class for data objects based on Fourier transforms with uniform sampling")
+    .def(py::init<>())
+    /* We do not need bindings for these base class constuctors.  they
+    cause errors with pybind11 and because I see no need for them we don't
+    include these bindings.
+    .def(py::init<const double, const double>())
+    .def(py::init<const BasicSpectrum&>())
+    */
+    .def("live",&BasicSpectrum::live,"Return True if marked ok, False if data are bad")
+    .def("dead",&BasicSpectrum::dead,"Return True if marked bad, False if data are good - negation of live method")
+    .def("kill",&BasicSpectrum::kill,"Mark this datum bad (dead)")
+    .def("set_live",&BasicSpectrum::set_live,"Mark this datum as good (not dead)")
+    .def("df",&BasicSpectrum::df,"Return the frequency bin sample interval")
+    .def("f0",&BasicSpectrum::f0,
+      "Return frequency of first sample of the vector holding the spectrum (normally 0 but interface allow it to be nonzero)")
+    .def("sample_number",&BasicSpectrum::sample_number,"Return vector index position of a specified frequency")
+    .def("dt",&BasicSpectrum::dt,"Return parent data sample interval")
+    .def("rayleigh",&BasicSpectrum::rayleigh,"Return Rayleigh bin size")
+    .def("set_df",&BasicSpectrum::set_df,"Set the frequency bin interval")
+    .def("set_f0",&BasicSpectrum::set_f0,
+      "Set the frequency defined for first component of vector holding spectrum")
+    .def("set_dt",&BasicSpectrum::set_dt,"Set the parent data sample interval")
+    .def("set_npts",&BasicSpectrum::set_npts,"Set the number of points of the parent spectrum")
+  ;
 
-    py::class_<PowerSpectrum,Metadata>(m,"PowerSpectrum",
+
+  py::class_<PowerSpectrum,BasicSpectrum,Metadata>(m,"PowerSpectrum",
                   "Container for power spectrum estimates")
       .def(py::init<>())
-      .def(py::init<const Metadata&,const vector<double>&,const double,const string>())
+      .def(py::init<const Metadata&,const vector<double>&,const double,
+        const string,const double, const double, const int>())
       .def(py::init<const PowerSpectrum&>())
-      .def("nf",&PowerSpectrum::nf,"Return number of frequencies in this spectral estimate")
-      .def("frequency",&PowerSpectrum::frequency,"Return frequency of sample number of spectrum vector")
-      .def("Nyquist",&PowerSpectrum::Nyquist,"Return Nyquist frequency")
-      .def("sample_number",&PowerSpectrum::sample_number,"Return sample number of a given frequency")
-      .def_readwrite("df",&PowerSpectrum::df,"Frequency bin size")
-      .def_readwrite("f0",&PowerSpectrum::f0,"Frequency of sample 0 (This implementation supports only constant frequency bin size)")
+      .def("amplitude",&PowerSpectrum::amplitude,
+        "Return an std::vector of amplitude values (sqrt of power)")
+      .def("power",&PowerSpectrum::power,
+        "Return power at a specified frequency using linear interpolation between gridded values")
+      .def("frequency",&PowerSpectrum::frequency,"Return frequency linked to given sample number")
+      .def("frequencies",&PowerSpectrum::frequencies,"Return an std::vector of ")
+      .def("nf",&PowerSpectrum::nf,
+        "Return number of frequencies in this spectral estimate")
+      .def("Nyquist",&PowerSpectrum::Nyquist,
+        "Return Nyquist frequency of this powewr spectrum estimate")
       .def_readwrite("spectrum_type",&PowerSpectrum::spectrum_type,
           "Descriptive name of method used to generate spectrum")
       .def_readwrite("spectrum",&PowerSpectrum::spectrum,
@@ -792,8 +905,8 @@ PYBIND11_MODULE(seismic, m) {
           stringstream ss_elog;
           boost::archive::text_oarchive ar(ss_elog);
           ar << self.elog;
-          return py::make_tuple(sbuf,self.df,self.f0,self.spectrum_type,
-              ss_elog.str(),darr);
+          return py::make_tuple(sbuf,self.df(),self.f0(),self.spectrum_type,
+              ss_elog.str(),darr,self.dt(),self.timeseries_npts());
         },
         [](py::tuple t)
         {
@@ -813,14 +926,44 @@ PYBIND11_MODULE(seismic, m) {
           std::vector<double> d;
           d.resize(info.shape[0]);
           memcpy(d.data(), info.ptr, sizeof(double) * d.size());
-          PowerSpectrum restored(md,d,df,spectrum_type);
-
-          restored.f0=f0;
+          double dt=t[6].cast<double>();
+          double parent_npts=t[7].cast<double>();
+          PowerSpectrum restored(md,d,df,spectrum_type,f0,dt,parent_npts);
           restored.elog=elog;
           return restored;
         }
       ))
     ;
+
+    py::class_<DataGap,PyDataGap>(m,"DataGap","Base class for lightweight definition of data gaps")
+      .def(py::init<>())
+      /* Cannot get bindings with the next line for this constructor to compile.
+      Disabled as the python interface only uses DataGap as a base class for TimeSeriesWGaps
+      and I see now reason a python code would need this constructor*/
+      //.def(py::init<const std::list<mspass::algorithms::TimeWindow>&>())
+      .def("is_gap",&DataGap::is_gap,"Return true if arg0 time is inside a data gap")
+      .def("has_gap",py::overload_cast<>(&DataGap::has_gap),"Test if datum has any gaps defined")
+      .def("has_gap",py::overload_cast<const mspass::algorithms::TimeWindow>(&DataGap::has_gap),
+                 "Test if there is a gap inside a specified time range (defined with TimeWindow object)")
+      .def("add_gap",&DataGap::add_gap,"Define a specified time range as a data gap")
+      .def("get_gaps",&DataGap::get_gaps,"Return a list of TimeWindows marked as gaps")
+      .def("clear_gaps",&DataGap::add_gap,"Flush the entire gaps container")
+    ;
+
+    py::class_<TimeSeriesWGaps,TimeSeries,DataGap>(m,"TimeSeriesWGaps","TimeSeries object with gap handling methods")
+      .def(py::init<>())
+      .def(py::init<const TimeSeries&>())
+      .def(py::init<const TimeSeriesWGaps&>())
+      .def("ator",&TimeSeriesWGaps::ator,"Convert to relative time shifting gaps to match")
+      .def("rtoa",py::overload_cast<>(&TimeSeriesWGaps::rtoa),
+         "Return to UTC time using time shift defined in earlier ator call")
+      .def("rtoa",py::overload_cast<const double>(&TimeSeriesWGaps::rtoa),
+                 "Return to UTC time using a specified time shift")
+      .def("shift",&TimeSeriesWGaps::shift,"Shift the time reference by a specified constant")
+      .def("zero_gaps",&TimeSeriesWGaps::zero_gaps,"Zero the data vector for all sections defined as a gap")
+      .def("__sizeof__",[](const TimeSeriesWGaps& self){return self.memory_use();})
+    ;
+
 }
 
 } // namespace mspasspy

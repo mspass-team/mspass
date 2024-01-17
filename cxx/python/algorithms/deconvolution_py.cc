@@ -222,8 +222,10 @@ PYBIND11_MODULE(deconvolution, m) {
   py::class_<MTPowerSpectrumEngine>(m,"MTPowerSpectrumEngine",
       "Processing object used compute multitaper power spectrum estimates from time series data")
     .def(py::init<>())
+    .def(py::init<const int, const double, const int, const int, const double>(),
+      "Parameterized constructor:  nsamples, tbp, ntapers, nfft, dt")
     .def(py::init<const int, const double, const int>(),
-      "Parameterized constructor:  nsamples, tbp, ntapers")
+        "Parameterized constructor:  nsamples, tbp, ntapers(nfft=2*nsamples, dt=1.0")
     .def(py::init<const MTPowerSpectrumEngine&>(),"Copy constructor")
     .def("apply",py::overload_cast<const mspass::seismic::TimeSeries&>(&MTPowerSpectrumEngine::apply),
       "Compute from data in a TimeSeries container")
@@ -238,6 +240,8 @@ PYBIND11_MODULE(deconvolution, m) {
       "Return the number of tapers this operator uses for power spectrum estimates")
     .def("set_df",&MTPowerSpectrumEngine::set_df,
       "Change the assumed frequency bin sample interval")
+    .def("nf",&MTPowerSpectrumEngine::nf,"Return number of frequency bins in this operator")
+    .def("nfft",&MTPowerSpectrumEngine::fftsize,"Return size of fft workspace in this operator")
     /* We do pickle for this object in a different way than I've ever done this
     before.  This object can be define by only 3 numbers that are expanded in
     the constructor what can be very large arrays.  An untested hypothesis that
@@ -249,14 +253,15 @@ PYBIND11_MODULE(deconvolution, m) {
     .def(py::pickle(
       [](const MTPowerSpectrumEngine& self)
       {
-        return py::make_tuple(self.taper_length(),self.time_bandwidth_product(),self.number_tapers());
+        return py::make_tuple(self.taper_length(),self.time_bandwidth_product(),self.number_tapers(),self.fftsize());
       },
       [](py::tuple t)
       {
         int taperlen=t[0].cast<int>();
         double tbp=t[1].cast<double>();
         int ntapers=t[2].cast<int>();
-        return MTPowerSpectrumEngine(taperlen,tbp,ntapers);
+        int nfft=t[3].cast<int>();
+        return MTPowerSpectrumEngine(taperlen,tbp,ntapers,nfft);
       }
     ))
   ;

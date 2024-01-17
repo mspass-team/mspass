@@ -1,6 +1,7 @@
 import array
 import copy
 import pickle
+import sys
 
 import numpy as np
 import pytest
@@ -160,14 +161,14 @@ def test_dmatrix():
     dm = dmatrix(md)
     assert (dm == md).all()
 
-    md = np.zeros((7, 4), dtype=np.int, order="F")
+    md = np.zeros((7, 4), dtype=int, order="F")
     for i in range(7):
         for j in range(4):
             md[i][j] = i * 4 + j
     dm = dmatrix(md)
     assert (dm == md).all()
 
-    md = np.zeros((7, 4), dtype=np.unicode_, order="C")
+    md = np.zeros((7, 4), dtype=str, order="C")
     for i in range(7):
         for j in range(4):
             md[i][j] = i * 4 + j
@@ -505,6 +506,8 @@ def test_TimeSeries():
     assert ts.data[103] == 8
     assert ts.time(100) == 0.1
     assert ts.sample_number(0.0998) == 100
+    # starttime method is an alias for t0 included as a convenience
+    assert ts.t0 == ts.starttime()
     # These metadata constructor used for cracking miniseed files
     md = Metadata()
     md["delta"] = 0.01
@@ -514,6 +517,16 @@ def test_TimeSeries():
     md["npts"] = 100
     ts = TimeSeries(md)
     assert ts.npts == 100
+    # this number is volatile. Changes above will make it invalid
+    expected_size = 1344
+    # we make this test a bit soft by this allowance.  sizeof computation
+    # in parent C function is subject to alignment ambiguity that is
+    # system dependent so we add this fudge factor for stability
+    memory_alignment_allowance = 2
+    memlow = expected_size - memory_alignment_allowance
+    memhigh = expected_size + memory_alignment_allowance
+    memuse = sys.getsizeof(ts)
+    assert memuse >= memlow and memuse <= memhigh
 
 
 def test_CoreSeismogram():
@@ -803,6 +816,16 @@ def test_Seismogram():
     assert uvec_copy.ux == uvec.ux
     assert uvec_copy.uy == uvec.uy
     assert uvec_copy.azimuth() == uvec.azimuth()
+    # test memory use method
+    # we make this test a bit soft by this allowance.  sizeof computation
+    # in parent C function is subject to alignment ambiguity that is
+    # system dependent so we add this fudge factor for stability
+    expected_size = 3080
+    memory_alignment_allowance = 2
+    memlow = expected_size - memory_alignment_allowance
+    memhigh = expected_size + memory_alignment_allowance
+    memuse = sys.getsizeof(seis)
+    assert memuse >= memlow and memuse <= memhigh
 
 
 @pytest.fixture(params=[TimeSeriesEnsemble, SeismogramEnsemble])
@@ -846,16 +869,16 @@ def test_Ensemble(Ensemble):
     # define TimeSeriesEnsemble == LoggingEnsemble<TimeSeries> and
     # SeismogramEnsemble == LoggingEnsemble<Seismogram>.
     # Should be initially marked live
-    assert es.live()
+    assert es.live
     es.elog.log_error("test_ensemble", "test complaint", ErrorSeverity.Complaint)
     es.elog.log_error("test_ensemble", "test invalid", ErrorSeverity.Invalid)
     assert es.elog.size() == 2
-    assert es.live()
+    assert es.live
     es.kill()
     assert es.dead()
     # resurrect es
     es.set_live()
-    assert es.live()
+    assert es.live
     # validate checks for for any live members - this tests that feature
     assert es.validate()
     # need this temporary copy for the next test_
@@ -874,7 +897,7 @@ def test_Ensemble(Ensemble):
     assert escopy.is_defined("long")
     assert escopy["double"] == 3.14
     assert escopy["long"] == 7
-    assert escopy.live()
+    assert escopy.live
     assert escopy.elog.size() == 2
     assert escopy.member[0].is_defined("bool")
     assert escopy.member[0]["bool"] == True
@@ -1394,7 +1417,7 @@ def test_MsPASSError():
     try:
         x = MetadataDefinitions("foo")
     except MsPASSError as err:
-        assert err.message == "bad file"
+        assert "bad file" in err.message
         assert err.severity == ErrorSeverity.Invalid
     try:
         raise MsPASSError("test error1", ErrorSeverity.Informational)
@@ -1438,10 +1461,41 @@ def test_PowerSpectrum():
     ts.live = True
     engine = MTPowerSpectrumEngine(100, 5, 10)
     spec = engine.apply(ts)
-    assert spec.Nyquist() == spec.f0 + spec.df * spec.nf()
+    # these are BasicSpectrum methods we test
+    # nfft goes to next power of 2 for efficiency - with gnu fft 64+1
+    assert spec.nf() == 65
+    assert spec.live()
+    spec.kill()
+    assert spec.dead()
+    spec.set_live()
+    assert spec.Nyquist() == 0.5
+    assert spec.f0() == 0.0
+    assert spec.dt() == 1.0
+    assert spec.rayleigh() == 0.01
+
+    # needed tests for set_df, set_f0, set_dt, set_npts, sample_number
+    # Depends upon MTPowerSpectrumEngine default which is to double
+    # length as a zero pad.
+    spec_copy = PowerSpectrum(spec)
+    df_expected = 1.0 / (2.0 * (spec.nf() - 1))
+    assert np.isclose(spec.df(), df_expected)
+    spec = PowerSpectrum(spec_copy)
+    # test setters
+    spec.set_f0(1.0)
+    assert spec.f0() == 1.0
+    spec = PowerSpectrum(spec_copy)
+    spec.set_dt(2.0)
+    assert spec.dt() == 2.0
+
+    # Repeat with no defaults
+    engine = MTPowerSpectrumEngine(100, 5, 10, 512, ts.dt)
+    spec = engine.apply(ts)
+    assert spec.nf() == int(512 / 2) + 1
+    df_expected = 1.0 / (2.0 * (spec.nf() - 1))
+    assert np.isclose(spec.df(), df_expected)
 
     spec_copy = pickle.loads(pickle.dumps(spec))
-    assert spec.df == spec_copy.df
-    assert spec.f0 == spec_copy.f0
+    assert spec.df() == spec_copy.df()
+    assert spec.f0() == spec_copy.f0()
     assert spec.spectrum_type == spec_copy.spectrum_type
     assert np.allclose(spec.spectrum, spec_copy.spectrum)

@@ -10,7 +10,7 @@ namespace mspass::seismic{
   in the MsPASS framework.   It extends CoreTimeSeries by adding
   common MsPASS components (ProcessingHistory).  It may evolve with additional
   special features.  */
-class TimeSeries : virtual public mspass::seismic::CoreTimeSeries,
+class TimeSeries : public mspass::seismic::CoreTimeSeries,
    public mspass::utility::ProcessingHistory
 {
 public:
@@ -73,7 +73,7 @@ public:
   are
     t0_shift - sets amount t0 has been shiftee when originally utc but set
       to relative with the shift method.  Ignored if time is UTC or it is
-      not defined.  
+      not defined.
 
   */
   TimeSeries(const Metadata& md);
@@ -146,6 +146,16 @@ function */
     return(*this);
   };
   void load_history(const mspass::utility::ProcessingHistory& h);
+  /*! Return an estimate of the memmory use by the data in this object.
+
+  Memory consumed by a TimeSeries object is needed to implement the
+  __sizeof__ method in python that dask/spark use to manage memory.  Without
+  that feature we had memory fault issues.  Note the estimate this
+  method returns should not be expected to be exact.  The MsPASS implementation
+  or any alternative implementation avoids an exact calculation because it
+  requries an (expensive) traversal of multiple map containers.
+  */
+  size_t memory_use() const;
 };
 }//END mspass::seismic namespace
 #endif

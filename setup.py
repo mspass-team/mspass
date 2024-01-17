@@ -82,17 +82,12 @@ ENTRY_POINTS = {
     "console_scripts": [
         "mspass-dbclean = mspasspy.db.script.dbclean:main",
         "mspass-dbverify = mspasspy.db.script.dbverify:main",
-        "mspass-normalize_mseed.py = mspasspy.db.script.normalize_mseed:main",
+        "mspass-normalize_mseed = mspasspy.db.script.normalize_mseed:main",
     ],
 }
 
 setup(
     name="mspasspy",
-    version="0.0.1",
-    author="Ian Wang",
-    author_email="yinzhi.wang.cug@gmail.com",
-    description="Massive Parallel Analysis System for Seismologists",
-    long_description="",
     ext_modules=[CMakeExtension("mspasspy.ccore")],
     cmdclass=dict(build_ext=CMakeBuild),
     entry_points=ENTRY_POINTS,

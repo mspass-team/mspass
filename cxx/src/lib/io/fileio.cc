@@ -2,6 +2,7 @@
 #include <vector>
 #include <stdio.h>
 #include <string>
+#include <sstream>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/keywords.h"
 #include "mspass/seismic/TimeSeries.h"
@@ -15,13 +16,14 @@ using namespace mspass::seismic;
 using mspass::utility::MsPASSError;
 using mspass::utility::ErrorSeverity;
 using namespace std;
-/* This is a file scope function to allow the overlaoded fwrite_to_file
+
+/*This is a file scope function to allow the overlaoded fwrite_to_file
 functions to share this common code to write a contiguous buffer of data.
 to a file.
 
-Note I considered adding an old school call to flock to assure this
+Note I considered adding an old school call to lockf to assure this
 function would be thread safe.   However, the man page for the posix
-function flockfile says that is no longer necessary and stdio is
+function lockffile says that is no longer necessary and stdio is
 now tread safe - fopen creates an intrinsic lock that is not released
 until fclose is called.  That is important for mspass as multiple threads
 writing to the same file can be expected to be common. */
@@ -49,14 +51,19 @@ long int fwrite_sample_data(const string dir, const string dfile, double *dptr, 
 		if( fwrite((void*)dptr,sizeof(double),nd,fp) != nd)
 		{
 			fclose(fp);
-			throw MsPASSError("fwrite_to_file:  fwrite error to file "+fname,ErrorSeverity::Invalid);
+			throw MsPASSError("fwrite_to_file:  fwrite error while writing to file "+fname,ErrorSeverity::Invalid);
 		}
 		fclose(fp);
 		return foff;
 	}catch(...){throw;};
 }
+/*! Write sample data for a TimeSeries to a file with fwrite.  Always
+appends and returns foff of the position where fwrite wrote these data.
+Returns -1 if it receives a datum marked dead.
+*/
 long int fwrite_to_file(TimeSeries& d,const string dir,const string dfile)
 {
+	if(d.dead()) return -1;
 	/* Using this function avoids repetitious code with Seismogram version. */
 	long int foff;
 	try{
@@ -70,8 +77,16 @@ long int fwrite_to_file(TimeSeries& d,const string dir,const string dfile)
 	d.put_long(SEISMICMD_foff,foff);
 	return(foff);
 }
+/*! Write sample data for a Seismogram to a file with fwrite.  Always
+appends and returns foff of the position where fwrite wrote these data.
+Note the data are a raw dump of the contiguous block storing the 3*npts
+sample matrix.
+
+Returns -1 if it receives a datum marked dead.
+*/
 long int fwrite_to_file(Seismogram& d, const string dir,const string dfile)
 {
+	if(d.dead()) return(-1);
 	/* Using this function avoids repetitious code with TimeSeries version.
 	Note use of 3*npts as the buffer size*/
 	long int foff;
@@ -84,7 +99,26 @@ long int fwrite_to_file(Seismogram& d, const string dir,const string dfile)
 
 	return(foff);
 }
-std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>& d, const std::string dir,const std::string dfile)
+/*! Write sample data for an Ensemble of TimeSeries to a single file.
+
+Writing ensemble data with this function is more efficient than writing atomic
+data one at time.  The reason is this function writes all the sample data for
+the ensemble to a single and only opens and closes the file specfied once.
+It returns a vector of foff values.  Dead members have no sample data written
+and will generate a -1 entry in the foff vector returned.  Caller should handle
+that condition in some way.
+
+If entire ensemble is marked dead it will return an empty vector container.
+
+\param d input ensemble to save sample data
+\param dir directory name (if entry use current directory)
+\param dfile file name for write
+
+*/
+std::vector<long int> fwrite_to_file(
+	mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>& d, \
+	  const std::string dir,
+		  const std::string dfile)
 {
 	try{
 		FILE *fp;
@@ -102,30 +136,64 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 			fname=dfile;
 		if((fp=fopen(fname.c_str(),"a")) == NULL)
 		  /* use the name of the overloaded parent instead of the actual function - intentional*/
-			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
+			throw MsPASSError("fwrite_to_file (TimeSeriesEnsemble):  Open failed on file "+fname,ErrorSeverity::Invalid);
+		/* This guarantees appending - not essential since we open in "a" mode but
+		clearer */
+		fseek(fp,0L,2);
+
 		for (int i = 0; i < d.member.size(); ++i) {
+<<<<<<< HEAD
 			/* Silenetly skip dead data */
 			if(d.member[i].dead()) continue;
 			long int foff = ftell(fp);
 			foffs.push_back(foff);
 			TimeSeries& t = d.member[i];
 			if (fwrite((void *)t.s.data(), sizeof(double), t.npts(), fp) != t.npts())
+=======
+			if(d.member[i].dead())
+			    foffs.push_back(-1);
+			else
+>>>>>>> dac6e7f1729a67e87eaa44658263e18e705488aa
 			{
-				fclose(fp);
-				throw MsPASSError("fwrite_to_file:  fwrite error to file " + fname, ErrorSeverity::Invalid);
+				long int foff = ftell(fp);
+				foffs.push_back(foff);
+				TimeSeries& t = d.member[i];
+				if (fwrite((void *)t.s.data(), sizeof(double), t.npts(), fp) != t.npts())
+				{
+					fclose(fp);
+					stringstream ss;
+					ss << "fwrite_to_file (TimeSeriesEnsemble):  fwrite error while writing ensemble member "
+				   	<< i << " to file="<<fname<<endl;
+					throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+				}
+				/* We always set these 3 attributes in Metadata so they can be properly
+				saved to the database after a successful write.  Repetitious with Seismogram
+				but a function to do this would be more confusing that helpful */
+				t.put_string(SEISMICMD_dir, dir);
+				t.put_string(SEISMICMD_dfile, dfile);
+				t.put_long(SEISMICMD_foff, foff);
 			}
-			/* We always set these 3 attributes in Metadata so they can be properly
-			saved to the database after a successful write.  Repetitious with Seismogram
-			but a function to do this would be more confusing that helpful */
-			t.put_string(SEISMICMD_dir, dir);
-			t.put_string(SEISMICMD_dfile, dfile);
-			t.put_long(SEISMICMD_foff, foff);
-		}	
+		}
 		fclose(fp);
-
 		return foffs;
 	}catch(...){throw;};
 }
+/*! Write sample data for an Ensemble of Seismogram objects to a single file.
+
+Writing ensemble data with this function is more efficient than writing atomic
+data one at time.  The reason is this function writes all the sample data for
+the ensemble to a single and only opens and closes the file specfied once.
+It returns a vector of foff values.  Dead members have no sample data written
+and will generate a -1 entry in the foff vector returned.  Caller should handle
+that condition in some way.
+
+If entire ensemble is marked dead it will return an empty vector container.
+
+\param d input ensemble to save sample data
+\param dir directory name (if entry use current directory)
+\param dfile file name for write
+
+*/
 std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram>& d, const std::string dir,const std::string dfile)
 {
 	try{
@@ -142,27 +210,46 @@ std::vector<long int> fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::se
 			fname=dfile;
 		if((fp=fopen(fname.c_str(),"a")) == NULL)
 		  /* use the name of the overloaded parent instead of the actual function - intentional*/
-			throw MsPASSError("fwrite_to_file:  Open failed on file "+fname,ErrorSeverity::Invalid);
+			throw MsPASSError("fwrite_to_file (SeismogramEnsemble):  Open failed on file "+fname,ErrorSeverity::Invalid);
+		/* This guarantees appending - not essential since we open in "a" mode but
+		clearer */
+		fseek(fp,0L,2);
+
 		for (int i = 0; i < d.member.size(); ++i) {
+<<<<<<< HEAD
 			/* Silently skip dead data */
 			if(d.member[i].dead()) continue;
 			long int foff = ftell(fp);
 			foffs.push_back(foff);
 			Seismogram& t = d.member[i];
 			if (fwrite((void *)t.u.get_address(0,0), sizeof(double), 3*t.npts(), fp) != 3*t.npts())
+=======
+			if(d.member[i].dead())
+			    foffs.push_back(-1);
+			else
+>>>>>>> dac6e7f1729a67e87eaa44658263e18e705488aa
 			{
-				fclose(fp);
-				throw MsPASSError("fwrite_to_file:  fwrite error to file " + fname, ErrorSeverity::Invalid);
+				if(d.member[i].dead()) continue;
+				long int foff = ftell(fp);
+				foffs.push_back(foff);
+				Seismogram& t = d.member[i];
+				if (fwrite((void *)t.u.get_address(0,0), sizeof(double), 3*t.npts(), fp) != 3*t.npts())
+				{
+					fclose(fp);
+					stringstream ss;
+					ss << "fwrite_to_file (SeismogramEnsemble):  fwrite error while writing ensemble member "
+				   << i << " to file="<<fname<<endl;
+				  throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+				}
+				/* We always set these 3 attributes in Metadata so they can be properly
+				saved to the database after a successful write.  Repetitious with Seismogram
+				but a function to do this would be more confusing that helpful */
+				t.put_string(SEISMICMD_dir, dir);
+				t.put_string(SEISMICMD_dfile, dfile);
+				t.put_long(SEISMICMD_foff, foff);
 			}
-			/* We always set these 3 attributes in Metadata so they can be properly
-			saved to the database after a successful write.  Repetitious with Seismogram
-			but a function to do this would be more confusing that helpful */
-			t.put_string(SEISMICMD_dir, dir);
-			t.put_string(SEISMICMD_dfile, dfile);
-			t.put_long(SEISMICMD_foff, foff);
-		}	
+		}
 		fclose(fp);
-
 		return foffs;
 	}catch(...){throw;};
 }
@@ -233,7 +320,7 @@ size_t fread_from_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismog
 		de.elog.log_error(ss.str());
 		return -1;
 	}
-	
+
 	for (int ind = 0; ind < n; ++ind) {
 		size_t ns_read;
 		int i = indexes[ind];
@@ -251,17 +338,14 @@ size_t fread_from_file(mspass::seismic::LoggingEnsemble<mspass::seismic::Seismog
 		  continue;
 		}
 		try{
-			if(foff>0)
+			if(fseek(fp,foff,SEEK_SET))
 			{
-				if(fseek(fp,foff,SEEK_SET))
-				{
-					fclose(fp);
-					de.member[i].kill();
-					stringstream ss;
-		  			ss << "can not fseek in " << foff << endl;
-					de.member[i].elog.log_error(ss.str());
-					continue;
-				}
+				fclose(fp);
+				de.member[i].kill();
+				stringstream ss;
+		  		ss << "can not fseek in " << foff << endl;
+				     de.member[i].elog.log_error(ss.str());
+				continue;
 			}
 			ns_read = fread((void*)de.member[i].u.get_address(0, 0), sizeof(double), 3 * de.member[i].npts(), fp);
 			if (ns_read != 3 * de.member[i].npts())
@@ -319,17 +403,14 @@ size_t fread_from_file(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSer
 		  continue;
 		}
 		try{
-			if(foff>0)
+			if(fseek(fp,foff,SEEK_SET))
 			{
-				if(fseek(fp,foff,SEEK_SET))
-				{
-					fclose(fp);
-					de.member[i].kill();
-					stringstream ss;
-		  			ss << "can not fseek in " << foff << endl;
-					de.member[i].elog.log_error(ss.str());
-					continue;
-				}
+				fclose(fp);
+				de.member[i].kill();
+				stringstream ss;
+		  		ss << "can not fseek in " << foff << endl;
+				de.member[i].elog.log_error(ss.str());
+				continue;
 			}
 			ns_read = fread((void*)(&(de.member[i].s[0])), sizeof(double), de.member[i].npts(), fp);
 			if (ns_read != de.member[i].npts())

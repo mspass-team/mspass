@@ -631,7 +631,7 @@ void CNR3CDecon::compute_gwl_inverse()
       double f;
       f=df*static_cast<double>(j);
       if(f>fNy) f=2.0*fNy-f;  // Fold frequency axis
-      double namp=psnoise.amplitude(f);
+      double namp=sqrt(psnoise.power(f));
       /* Avoid divide by zero that could randomly happen with simulation data*/
       double snr;
       if((namp/amp)<DBL_EPSILON)
@@ -703,7 +703,7 @@ void CNR3CDecon::compute_gdamp_inverse()
 
       f=df*static_cast<double>(k);
       if(f>fNy) f=2.0*fNy-f;  // Fold frequency axis
-      double namp=psnoise.amplitude(f);
+      double namp=sqrt(psnoise.power(f));
       double theta;
       if(namp>scaled_noise_floor)
       {
@@ -875,7 +875,7 @@ Seismogram CNR3CDecon::process()
         f=df*static_cast<double>(j);
         Complex64 z=numerator[j];
         double sigamp=abs(z);
-        double namp=psnoise.amplitude(f);
+        double namp=sqrt(psnoise.power(f));
         double snr=sigamp/namp;
         //Debug
         //cout <<f<<" "<< sigamp<<" "<<namp<<" "<<snr<<endl;

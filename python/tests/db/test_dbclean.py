@@ -108,13 +108,25 @@ class TestDBClean:
         ts3["npts"] = "xyz"
 
         save_res_code = self.db.save_data(
-            ts1, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts1,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         save_res_code = self.db.save_data(
-            ts2, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts2,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         save_res_code = self.db.save_data(
-            ts3, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts3,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
 
         # exit
@@ -171,13 +183,25 @@ class TestDBClean:
         ts3["npts"] = "xyz"
 
         save_res_code = self.db.save_data(
-            ts1, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts1,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         save_res_code = self.db.save_data(
-            ts2, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts2,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         save_res_code = self.db.save_data(
-            ts3, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts3,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
 
         # only fix types

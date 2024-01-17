@@ -1,11 +1,8 @@
-from mspasspy.db.client import DBClient
-from mspasspy.db.database import Database
 import copy
 import io
 import os
 import pickle
 
-import dask.bag
 import gridfs
 import numpy as np
 import obspy
@@ -13,19 +10,24 @@ import obspy.clients.fdsn.client
 import pytest
 import sys
 import re
-import collections
 
 import boto3
 from moto import mock_s3
 import botocore.session
-from botocore.stub import Stubber
 from unittest.mock import patch, Mock
 import json
 import base64
+from unittest import mock
 
+
+sys.path.append("python/tests")
+
+from helper import (
+    get_live_seismogram,
+    get_live_timeseries,
+)
 
 from mspasspy.util.converter import (
-    TimeSeries2Trace,
     Pf2AttributeNameTbl,
     Textfile2Dataframe,
 )
@@ -37,12 +39,9 @@ from mspasspy.ccore.seismic import (
     DoubleVector,
 )
 from mspasspy.ccore.utility import (
-    dmatrix,
     ErrorSeverity,
     Metadata,
     MsPASSError,
-    ProcessingHistory,
-    AtomicType,
     AntelopePf,
 )
 
@@ -50,18 +49,8 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util import logging_helper
 from bson.objectid import ObjectId
 from datetime import datetime
-
-sys.path.append("python/tests")
-
-from mspasspy.db.database import Database
-from mspasspy.io.distributed import read_distributed_data
+from mspasspy.db.database import Database,geoJSON_doc
 from mspasspy.db.client import DBClient
-from helper import (
-    get_live_seismogram,
-    get_live_timeseries,
-    get_live_timeseries_ensemble,
-    get_live_seismogram_ensemble,
-)
 
 
 class TestDatabase:
@@ -75,16 +64,28 @@ class TestDatabase:
             self.db[col_name].delete_many({})
 
         self.test_ts = get_live_timeseries()
-        self.test_ts["test"] = " "  # empty key
+        # this is may not be necessary but is useful to be sure
+        # state is clear
+        self.test_ts.clear_modified()
+        # this is used to test automatic dropping of any value
+        # that is all all spaces
+        self.test_ts["test"] = " "
         self.test_ts["extra1"] = "extra1"
         self.test_ts["extra2"] = "extra2"  # exclude
         self.test_ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
         self.test_ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
+        # this is used to test aliases
         self.test_ts.erase("starttime")
         self.test_ts["t0"] = datetime.utcnow().timestamp()
 
         self.test_seis = get_live_seismogram()
-        self.test_seis["test"] = " "  # empty key
+        self.test_seis["tmatrix"] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+        # this is may not be necessary but is useful to be sure
+        # state is clear
+        self.test_ts.clear_modified()
+        # this is used to test automatic dropping of any value
+        # that is all all spaces
+        self.test_seis["test"] = " "
         self.test_seis["extra1"] = "extra1"
         self.test_seis["extra2"] = "extra2"  # exclude
         self.test_seis.elog.log_error(
@@ -93,9 +94,9 @@ class TestDatabase:
         self.test_seis.elog.log_error(
             "alg", str("message"), ErrorSeverity.Informational
         )
+
         self.test_seis.erase("starttime")
         self.test_seis["t0"] = datetime.utcnow().timestamp()
-        self.test_seis["tmatrix"] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
         site_id = ObjectId()
         channel_id = ObjectId()
@@ -160,13 +161,6 @@ class TestDatabase:
             dummy = db.database_schema.site
         with pytest.raises(MsPASSError, match="not defined"):
             dummy = db.database_schema["source"]
-        db2 = Database(
-            client, "dbtest", db_schema="mspass_lite.yaml", md_schema="mspass_lite.yaml"
-        )
-        with pytest.raises(AttributeError, match="no attribute"):
-            dummy = db.database_schema.site
-        with pytest.raises(MsPASSError, match="not defined"):
-            dummy = db.database_schema["source"]
 
     def test_save_elogs(self):
         tmp_ts = get_live_timeseries()
@@ -198,39 +192,92 @@ class TestDatabase:
         assert elog_doc["tombstone"] == dict(tmp_ts)
 
     def test_save_and_read_data(self):
+        # first test read and write in native binary format
         tmp_seis = get_live_seismogram()
         dir = "python/tests/data/"
         dfile = "test_db_output"
-        foff, nbytes = self.db._save_data_to_dfile(tmp_seis, dir, dfile)
+        seis_return = self.db._save_sample_data_to_file(tmp_seis, dir, dfile)
+        assert seis_return.is_defined("foff")
+        assert seis_return.is_defined("dir")
+        assert seis_return.is_defined("dfile")
+        assert seis_return.is_defined("format")
+        assert seis_return.is_defined("storage_mode")
+        foff = seis_return["foff"]
+        dir = seis_return["dir"]
+        dfile = seis_return["dfile"]
+        assert seis_return["format"] == "binary"
+        assert seis_return["storage_mode"] == "file"
         tmp_seis_2 = Seismogram()
         tmp_seis_2.npts = 255
         self.db._read_data_from_dfile(tmp_seis_2, dir, dfile, foff)
         assert all(a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data))
 
         tmp_ts = get_live_timeseries()
-        foff, nbytes = self.db._save_data_to_dfile(tmp_ts, dir, dfile)
+        ts_return = self.db._save_sample_data_to_file(tmp_ts, dir, dfile)
+        assert ts_return.is_defined("foff")
+        assert ts_return.is_defined("dir")
+        assert ts_return.is_defined("dfile")
+        assert ts_return.is_defined("format")
+        assert ts_return.is_defined("storage_mode")
+        foff = ts_return["foff"]
+        dir = ts_return["dir"]
+        dfile = ts_return["dfile"]
+        assert ts_return["format"] == "binary"
+        assert ts_return["storage_mode"] == "file"
         tmp_ts_2 = TimeSeries()
         tmp_ts_2.npts = 255
         self.db._read_data_from_dfile(tmp_ts_2, dir, dfile, foff)
         assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
 
-        with pytest.raises(MsPASSError, match="Error while read data from files."):
+        # verify error handler thrown when file is not found
+        with pytest.raises(MsPASSError, match="_fread_from_file failed"):
             self.db._read_data_from_dfile(tmp_ts_2, dir, dfile + "dummy", foff)
 
-        # miniseed format
+        # test read and write  miniseed format
         tmp_seis = get_live_seismogram()
         dir = "python/tests/data/"
         dfile = "test_mseed_output"
-        fname = os.path.join(dir, dfile)
-        foff, nbytes = self.db._save_data_to_dfile(tmp_seis, dir, dfile, format="mseed")
+        seis_return = self.db._save_sample_data_to_file(
+            tmp_seis, dir, dfile, format="mseed"
+        )
+        assert seis_return.is_defined("foff")
+        assert seis_return.is_defined("dir")
+        assert seis_return.is_defined("dfile")
+        assert seis_return.is_defined("nbytes")
+        assert seis_return.is_defined("format")
+        assert seis_return.is_defined("storage_mode")
+        foff = seis_return["foff"]
+        dir = seis_return["dir"]
+        dfile = seis_return["dfile"]
+        nbytes = seis_return["nbytes"]
+        assert seis_return["format"] == "mseed"
+        assert seis_return["storage_mode"] == "file"
+
         tmp_seis_2 = Seismogram()
+        # this method is a bit weird in acting like a subroutine
+        # result is returned in tmp_seis_2
         self.db._read_data_from_dfile(
             tmp_seis_2, dir, dfile, foff, nbytes, format="mseed"
         )
         assert all(a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data))
 
         tmp_ts = get_live_timeseries()
-        foff, nbytes = self.db._save_data_to_dfile(tmp_ts, dir, dfile, format="mseed")
+        ts_return = self.db._save_sample_data_to_file(
+            tmp_ts, dir, dfile, format="mseed"
+        )
+        assert ts_return.is_defined("foff")
+        assert ts_return.is_defined("dir")
+        assert ts_return.is_defined("dfile")
+        assert ts_return.is_defined("nbytes")
+        assert ts_return.is_defined("format")
+        assert ts_return.is_defined("storage_mode")
+        foff = ts_return["foff"]
+        dir = ts_return["dir"]
+        dfile = ts_return["dfile"]
+        nbytes = ts_return["nbytes"]
+        assert ts_return["format"] == "mseed"
+        assert ts_return["storage_mode"] == "file"
+
         tmp_ts_2 = TimeSeries()
         self.db._read_data_from_dfile(
             tmp_ts_2, dir, dfile, foff, nbytes, format="mseed"
@@ -239,7 +286,11 @@ class TestDatabase:
 
     def test_save_and_read_gridfs(self):
         tmp_seis = get_live_seismogram()
-        gridfs_id = self.db._save_data_to_gridfs(tmp_seis)
+        seis_return = self.db._save_sample_data_to_gridfs(tmp_seis)
+        assert seis_return.is_defined("storage_mode")
+        assert seis_return.is_defined("gridfs_id")
+        assert seis_return["storage_mode"] == "gridfs"
+        gridfs_id = seis_return["gridfs_id"]
         tmp_seis_2 = Seismogram()
         tmp_seis_2.npts = 255
         self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
@@ -258,7 +309,11 @@ class TestDatabase:
             )
 
         tmp_ts = get_live_timeseries()
-        gridfs_id = self.db._save_data_to_gridfs(tmp_ts)
+        ts_return = self.db._save_sample_data_to_gridfs(tmp_ts)
+        assert ts_return.is_defined("storage_mode")
+        assert ts_return.is_defined("gridfs_id")
+        assert ts_return["storage_mode"] == "gridfs"
+        gridfs_id = ts_return["gridfs_id"]
         tmp_ts_2 = TimeSeries()
         tmp_ts_2.npts = 255
         self.db._read_data_from_gridfs(tmp_ts_2, gridfs_id)
@@ -266,243 +321,9 @@ class TestDatabase:
 
         gfsh = gridfs.GridFS(self.db)
         assert gfsh.exists(gridfs_id)
-        self.db._save_data_to_gridfs(tmp_ts, gridfs_id)
+        # test overwrite mode
+        self.db._save_sample_data_to_gridfs(tmp_ts, True)
         assert not gfsh.exists(gridfs_id)
-
-    def test_save_ensemble_data_binary_file(self):
-        ts1 = copy.deepcopy(self.test_ts)
-        ts2 = copy.deepcopy(self.test_ts)
-        ts3 = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts1, "1", "deepcopy")
-        logging_helper.info(ts2, "1", "deepcopy")
-        logging_helper.info(ts3, "1", "deepcopy")
-        ts_ensemble = TimeSeriesEnsemble()
-        ts_ensemble.member.append(ts1)
-        ts_ensemble.member.append(ts2)
-        ts_ensemble.member.append(ts3)
-        ts_ensemble.set_live()
-        dfile = "test_db_output_n"
-        dir = "python/tests/datan/"
-        self.db.save_ensemble_data_binary_file(ts_ensemble, dfile=dfile, dir=dir)
-        self.db.database_schema.set_default("wf_TimeSeries", "wf")
-        res = self.db.read_data(
-            ts_ensemble.member[0]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-        )
-        assert np.isclose(ts_ensemble.member[0].data, res.data).all()
-        res = self.db.read_data(
-            ts_ensemble.member[1]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-        )
-        assert np.isclose(ts_ensemble.member[1].data, res.data).all()
-        res = self.db.read_data(
-            ts_ensemble.member[2]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-        )
-        assert np.isclose(ts_ensemble.member[2].data, res.data).all()
-
-        # using seismogram
-        seis1 = copy.deepcopy(self.test_seis)
-        seis2 = copy.deepcopy(self.test_seis)
-        seis3 = copy.deepcopy(self.test_seis)
-        logging_helper.info(seis1, "1", "deepcopy")
-        logging_helper.info(seis2, "1", "deepcopy")
-        logging_helper.info(seis3, "1", "deepcopy")
-        seis_ensemble = SeismogramEnsemble()
-        seis_ensemble.member.append(seis1)
-        seis_ensemble.member.append(seis2)
-        seis_ensemble.member.append(seis3)
-        seis_ensemble.set_live()
-        self.db.save_ensemble_data_binary_file(seis_ensemble, dfile=dfile, dir=dir)
-        self.db.database_schema.set_default("wf_Seismogram", "wf")
-        res = self.db.read_data(
-            seis_ensemble.member[2]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source"],
-        )
-        assert np.isclose(seis_ensemble.member[2].data, res.data).all()
-        res = self.db.read_data(
-            seis_ensemble.member[1]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source"],
-        )
-        assert np.isclose(seis_ensemble.member[1].data, res.data).all()
-        res = self.db.read_data(
-            seis_ensemble.member[0]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source"],
-        )
-        assert np.isclose(seis_ensemble.member[0].data, res.data).all()
-
-        ts1 = copy.deepcopy(self.test_ts)
-        ts2 = copy.deepcopy(self.test_ts)
-        ts3 = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts1, "1", "deepcopy")
-        logging_helper.info(ts2, "1", "deepcopy")
-        logging_helper.info(ts3, "1", "deepcopy")
-        ts_ensemble = TimeSeriesEnsemble()
-        ts_ensemble.member.append(ts1)
-        ts_ensemble.member.append(ts2)
-        ts_ensemble.member.append(ts3)
-        ts_ensemble.set_live()
-        dfile = "test_db_output_n2"
-        dir = ""
-        self.db.save_ensemble_data_binary_file(
-            ts_ensemble, mode="cautious", dfile=dfile, dir=dir
-        )
-        self.db.database_schema.set_default("wf_TimeSeries", "wf")
-        res = self.db.read_data(
-            ts_ensemble.member[0]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-        )
-        assert np.isclose(ts_ensemble.member[0].data, res.data).all()
-        res = self.db.read_data(
-            ts_ensemble.member[1]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-        )
-        assert np.isclose(ts_ensemble.member[1].data, res.data).all()
-        res = self.db.read_data(
-            ts_ensemble.member[2]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-        )
-        assert np.isclose(ts_ensemble.member[2].data, res.data).all()
-
-        # using seismogram
-        seis1 = copy.deepcopy(self.test_seis)
-        seis2 = copy.deepcopy(self.test_seis)
-        seis3 = copy.deepcopy(self.test_seis)
-        logging_helper.info(seis1, "1", "deepcopy")
-        logging_helper.info(seis2, "1", "deepcopy")
-        logging_helper.info(seis3, "1", "deepcopy")
-        seis_ensemble = SeismogramEnsemble()
-        seis_ensemble.member.append(seis1)
-        seis_ensemble.member.append(seis2)
-        seis_ensemble.member.append(seis3)
-        seis_ensemble.set_live()
-        self.db.save_ensemble_data_binary_file(
-            seis_ensemble, mode="pedantic", dfile=dfile, dir=dir
-        )
-        self.db.database_schema.set_default("wf_Seismogram", "wf")
-        res = self.db.read_data(
-            seis_ensemble.member[2]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source"],
-        )
-        assert np.isclose(seis_ensemble.member[2].data, res.data).all()
-        res = self.db.read_data(
-            seis_ensemble.member[1]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source"],
-        )
-        assert np.isclose(seis_ensemble.member[1].data, res.data).all()
-        res = self.db.read_data(
-            seis_ensemble.member[0]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source"],
-        )
-        assert np.isclose(seis_ensemble.member[0].data, res.data).all()
-
-    def test_read_ensemble_data_group(self):
-        # clean wf collection
-        self.db["wf_TimeSeries"].delete_many({})
-
-        ts1 = copy.deepcopy(self.test_ts)
-        ts2 = copy.deepcopy(self.test_ts)
-        ts3 = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts1, "1", "deepcopy")
-        logging_helper.info(ts2, "1", "deepcopy")
-        logging_helper.info(ts3, "1", "deepcopy")
-        ts_ensemble = TimeSeriesEnsemble()
-        ts_ensemble.member.append(ts1)
-        ts_ensemble.member.append(ts2)
-        ts_ensemble.member.append(ts3)
-        ts_ensemble.set_live()
-        self.db.database_schema.set_default("wf_TimeSeries", "wf")
-        dfile = "test_db_output_n"
-        dir = "python/tests/datan/"
-        self.db.save_ensemble_data_binary_file(ts_ensemble, dfile=dfile, dir=dir)
-
-        # test with python list
-        res = self.db.read_ensemble_data_group(
-            [
-                ts_ensemble.member[0]["_id"],
-                ts_ensemble.member[1]["_id"],
-                ts_ensemble.member[2]["_id"],
-            ],
-            ensemble_metadata={"key1": "value1", "key2": "value2"},
-        )
-        assert len(res.member) == 3
-        for i in range(3):
-            assert np.isclose(res.member[i].data, ts_ensemble.member[i].data).all()
-        # test ensemble_metadata
-        ts_ensemble_metadata = Metadata(res)
-        assert (
-            "key1" in ts_ensemble_metadata and ts_ensemble_metadata["key1"] == "value1"
-        )
-        assert (
-            "key2" in ts_ensemble_metadata and ts_ensemble_metadata["key2"] == "value2"
-        )
-
-        # test with cursor
-        cursor = self.db["wf_TimeSeries"].find({})
-        res = self.db.read_ensemble_data_group(
-            cursor,
-            ensemble_metadata={"key1": "value1", "key2": "value2"},
-        )
-
-        assert len(res.member) == 3
-        for i in range(3):
-            assert np.isclose(res.member[i].data, ts_ensemble.member[i].data).all()
-        # test ensemble_metadata
-        ts_ensemble_metadata = Metadata(res)
-        assert (
-            "key1" in ts_ensemble_metadata and ts_ensemble_metadata["key1"] == "value1"
-        )
-        assert (
-            "key2" in ts_ensemble_metadata and ts_ensemble_metadata["key2"] == "value2"
-        )
-
-        # using seismogram
-        seis1 = copy.deepcopy(self.test_seis)
-        seis2 = copy.deepcopy(self.test_seis)
-        seis3 = copy.deepcopy(self.test_seis)
-        logging_helper.info(seis1, "1", "deepcopy")
-        logging_helper.info(seis2, "1", "deepcopy")
-        logging_helper.info(seis3, "1", "deepcopy")
-        seis_ensemble = SeismogramEnsemble()
-        seis_ensemble.member.append(seis1)
-        seis_ensemble.member.append(seis2)
-        seis_ensemble.member.append(seis3)
-        seis_ensemble.set_live()
-        self.db.database_schema.set_default("wf_Seismogram", "wf")
-        self.db.save_ensemble_data_binary_file(seis_ensemble, dfile=dfile, dir=dir)
-        res = self.db.read_ensemble_data_group(
-            [
-                seis_ensemble.member[0]["_id"],
-                seis_ensemble.member[1]["_id"],
-                seis_ensemble.member[2]["_id"],
-            ],
-            ensemble_metadata={"key1": "value1", "key2": "value2"},
-        )
-        assert len(res.member) == 3
-        for i in range(3):
-            assert np.isclose(res.member[i].data, seis_ensemble.member[i].data).all()
-        # test ensemble_metadata
-        seis_ensemble_metadata = Metadata(res)
-        assert (
-            "key1" in seis_ensemble_metadata
-            and seis_ensemble_metadata["key1"] == "value1"
-        )
-        assert (
-            "key2" in seis_ensemble_metadata
-            and seis_ensemble_metadata["key2"] == "value2"
-        )
 
     def mock_urlopen(*args):
         response = Mock()
@@ -535,70 +356,141 @@ class TestDatabase:
         ts["_id"] = "test_id"
         logging_helper.info(ts, "1", "dummy_func")
         logging_helper.info(ts, "2", "dummy_func_2")
+        ts0 = TimeSeries(ts)
         assert ts.number_of_stages() == 2
         history_object_id = self.db._save_history(ts)
         res = self.db["history_object"].find_one({"_id": history_object_id})
         assert res
-        assert res["wf_TimeSeries_id"] == "test_id"
+        assert "save_uuid" in res
+        assert res["save_stage"] == 2
+        # when  ot given an alg_name and alg_id _save_history extracts it
+        # from the end of the history chain.  This tests that is done
         assert res["alg_name"] == "dummy_func_2"
         assert res["alg_id"] == "2"
-        assert ts.number_of_stages() == 0
-        assert ts.current_nodedata().algorithm == "dummy_func_2"
-        assert ts.current_nodedata().algid == "2"
-        assert ts.id() == history_object_id
-        assert ts.is_origin()
-        # can't save a object without operations after save
-        with pytest.raises(
-            MsPASSError, match="The history object to be saved has a duplicate uuid"
-        ):
-            self.db._save_history(ts)
+        assert "processing_history" in res
 
-        # add operation dummy_func_3 and save with alg_name and alg_id set explicitly
-        logging_helper.info(ts, "3", "dummy_func_3")
-        nodes = ts.get_nodes()
-        assert ts.number_of_stages() == 1
-        new_history_object_id = self.db._save_history(ts, "test_func", "test_id")
-        res = self.db["history_object"].find_one({"_id": new_history_object_id})
-        assert res["wf_TimeSeries_id"] == "test_id"
-        assert res["alg_name"] == "test_func"
-        assert res["alg_id"] == "test_id"
-        assert ts.number_of_stages() == 0
-        assert ts.current_nodedata().algorithm == "test_func"
-        assert ts.current_nodedata().algid == "test_id"
-        assert ts.id() == new_history_object_id
-        assert ts.is_origin()
-        # should be 2 history records with this TimeSeries
-        assert (
-            self.db["history_object"].count_documents({"wf_TimeSeries_id": "test_id"})
-            == 2
+        #  We tested _test_history above in isolation. Now
+        #  use save_data and verify we get the same history
+        # chain saved but with a wf id cross reference in the
+        # saved document
+        ts = TimeSeries(ts0)
+        ts_saved = self.db.save_data(
+            ts, save_history=True, alg_id="testid", return_data=True
         )
+        assert ts_saved.live
+        assert "history_object_id" in ts_saved
+        hid = ts_saved["history_object_id"]
+        doc = self.db.history_object.find_one({"_id": hid})
+        assert doc
+        assert "save_uuid" in doc
+        # save_data adds it's stamp to history with tag "save_data"
+        # so this differs from direct call to _save_history
+        assert doc["save_stage"] == 3
+        assert doc["alg_name"] == "save_data"
+        assert doc["alg_id"] == "testid"
+        assert "processing_history" in res
+        # only difference from direct _save_history call are these
+        assert "wf_TimeSeries_id" in doc
+        assert ts_saved.is_origin()
 
-        # default behavior for _load_history
-        ts_2 = TimeSeries()
+        # Now simulate taking the output of save and passing it to
+        # a differnt algorithm and saving it.
+        # save_data clears the history chain after saving and sets
+        # ts_saved to define the result as an "origin" (assert immediatley above)
+        # after simulting the algorithm we save and verify that result
+        logging_helper.info(ts_saved, "3", "dummy_func_3")
+        nodes = ts_saved.get_nodes()
+        assert ts_saved.number_of_stages() == 1
+        # changing alg_id in this context would not be normal. Done
+        # here to assure test below is unique for the saved document
+        ts_saved = self.db.save_data(
+            ts_saved, save_history=True, alg_id="testid2", return_data=True
+        )
+        assert ts_saved.live
+        assert "history_object_id" in ts_saved
+        hid = ts_saved["history_object_id"]
+        doc = self.db.history_object.find_one({"_id": hid})
+        assert doc
+        assert "save_uuid" in doc
+        # save_data adds it's stamp to history with tag "save_data"
+        # so this differs from direct call to _save_history
+        assert doc["save_stage"] == 2
+        assert doc["alg_name"] == "save_data"
+        # see note above
+        assert doc["alg_id"] == "testid2"
+        assert "processing_history" in res
+        assert "wf_TimeSeries_id" in doc
+        assert ts_saved.is_origin()
+
+        # Next test the private _load_history method by itself
+        # We retrieve the document last saved into a
+        # TimeSeries container.   Content tests match those
+        # immediately above, but we use the ProcessingHistory
+        # api instead of the document retrieved with find_one
+        # ts is copied as a convenience to get a live datum.
+        # note use of ts_saved is a dependence from above that is
+        # critical for this test
+        ts_2 = TimeSeries(ts)
+        history_object_id = ts_saved["history_object_id"]
         self.db._load_history(
-            ts_2, history_object_id, alg_name="test_func", alg_id="test_id"
+            ts_2,
+            history_object_id,
+            alg_name="test_load_history",
+            alg_id="tlh_0",
         )
-        assert ts_2.number_of_stages() == 0
-        assert ts_2.current_nodedata().algorithm == "test_func"
-        assert ts_2.current_nodedata().algid == "test_id"
-        assert ts_2.id() == history_object_id
-        # can't save a object without operations after save and read
-        with pytest.raises(
-            MsPASSError, match="The history object to be saved has a duplicate uuid"
-        ):
-            self.db._save_history(ts_2)
+        assert ts_2.number_of_stages() == 3
+        assert ts_2.current_nodedata().algorithm == "test_load_history"
+        assert ts_2.current_nodedata().algid == "tlh_0"
 
-        # with retrieve_history_record set to True, should be the same nodes with the latest save
-        ts_3 = TimeSeries()
-        self.db._load_history(ts_3, new_history_object_id, retrieve_history_record=True)
-        load_nodes = ts_3.get_nodes()
-        assert str(nodes) == str(load_nodes)
+        # repeat with null id field
+        # In that case result should be set as origin
+        # and there should be no elog entry as that state is
+        # treated as a signal to define this as an origin
+        ts_3 = TimeSeries(ts)
+        self.db._load_history(
+            ts_3,
+            None,
+            alg_name="test_alg_name",
+            alg_id="test_alg_id",
+        )
+        assert ts_3.is_origin()
+        nd = ts_3.current_nodedata()
+        assert nd.algorithm == "test_alg_name"
+        assert nd.algid == "test_alg_id"
+        assert ts_3.elog.size() == 0
+
+        # Repeat above with an invalid ObjectId.  Result
+        # shouldd be similar to that with None but there
+        # should be an elog message we verify here
+        bad_hid = ObjectId()
+        ts_3 = TimeSeries(ts)
+        self.db._load_history(
+            ts_3,
+            bad_hid,
+            alg_name="test_alg_name",
+            alg_id="test_alg_id",
+        )
+        assert ts_3.is_origin()
+        nd = ts_3.current_nodedata()
+        assert nd.algorithm == "test_alg_name"
+        assert nd.algid == "test_alg_id"
+        assert ts_3.elog.size() == 1
+
+        # test with read_data using and defining load_history True
+        ts_4 = self.db.read_data(
+            ts_3["_id"], load_history=True, alg_id="testreader_fakeid"
+        )
+        assert ts_4.live
+        assert ts_4.is_origin()
+        assert ts_4.number_of_stages() == 3
+        nd = ts_4.current_nodedata()
+        assert nd.algorithm == "read_data"
+        assert nd.algid == "testreader_fakeid"
 
     def test_update_metadata(self):
-        ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, "1", "deepcopy")
+        ts = TimeSeries(self.test_ts)
         exclude = ["extra2"]
-        # insert ts into the database
+        # insert document into wf_TimeSeries - use this id for later updates
         wfid = (
             self.db["wf_TimeSeries"]
             .insert_one(
@@ -622,11 +514,12 @@ class TestDatabase:
             res_ts = self.db.update_metadata(123)
 
         # test dead object
-        ts.live = False
+        ts.kill()
         res_ts = self.db.update_metadata(ts)
         assert not res_ts
-        ts.set_live()
 
+        # could use set_live but safer to make a fresh copy to avoid side effects of kill
+        ts = TimeSeries(self.test_ts)
         # test mode that not in promiscuous, cautious and pedantic
         with pytest.raises(
             MsPASSError,
@@ -646,199 +539,235 @@ class TestDatabase:
         ts["_id"] = wfid
         # test promiscuous
         ts["extra1"] = "extra1+"
-        ts["net"] = "Asia"
+        # compound keys implying normalization should always be deleted
+        # even in promiscuous mode
+        ts["site_net"] = "Asia"
         ts["npts"] = 255
         logging_helper.info(ts, "2", "update_metadata")
         res_ts = self.db.update_metadata(
             ts, mode="promiscuous", exclude_keys=exclude, force_keys=["extra3"]
         )
         assert res_ts.live
-        res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
-        # test read-only attribute
-        assert "net" not in res
-        assert "READONLYERROR_net" not in res
-        assert (
-            ts.elog.get_error_log()[-1].message
-            == "readonly attribute with key=net was improperly modified.  Saved changed value with key=READONLYERROR_net"
-        )
-        assert len(ts.elog.get_error_log()) == 3
-        ts.erase("net")
-        # test default update
-        assert res["extra1"] == "extra1+"
-        assert "source_id" in res
-        assert "site_id" in res
-        assert "channel_id" in res
-        assert res["npts"] == 255
+        doc = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+        # test that normalized attribute defined key was deleted
+        assert "site_net" not in doc
+        # same - update_metadata should not add an error
+        # weirdness in this test is that the parent (self.test_ts) has two informational
+        # elog entries so the size of elog to begin is 2.    Hence we test for 2 not 0
+        assert ts.elog.size() == 2
+        # test updates are as expected
+        assert doc["extra1"] == "extra1+"
+        assert "source_id" in doc
+        assert "site_id" in doc
+        assert "channel_id" in doc
+        assert doc["npts"] == 255
         # test exclude keys
-        assert "extra2" not in res
+        assert "extra2" not in doc
         # test clear alias
-        assert "t0" not in res
-        assert "starttime" in res
+        assert "t0" not in doc
+        assert "starttime" in doc
         # test empty keys
-        assert "test" not in res
+        assert "test" not in doc
         # test sync_metadata_before_update
-        assert "utc_convertible" in res
-        assert "time_standard" in res
+        assert "utc_convertible" in doc
+        assert "time_standard" in doc
         # test force_keys(but extra3 is not in metadata)
-        assert "extra3" not in res
+        assert "extra3" not in doc
 
         # test cautious(required key) -> fail
+        ts = TimeSeries(self.test_ts)
         old_npts = ts["npts"]
         ts.put_string("npts", "xyz")
         logging_helper.info(ts, "2", "update_metadata")
+        # adding id needed since we are testing update
+        ts["_id"] = wfid
         res_ts = self.db.update_metadata(
             ts, exclude_keys=["extra1", "extra2", "utc_convertible"]
         )
-        # object is killed
-        assert not res_ts.live
-        res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
-        # attr value remains the same
-        assert res["npts"] == old_npts
-        # add one elog entry
-        assert len(ts.elog.get_error_log()) == 4
+
+        assert res_ts.dead()
+        # attain parent had elog size of 2.  The above should add an entry so
+        # expect 3
+        assert len(res_ts.elog.get_error_log()) == 3
 
         # test cautious(required key) -> success
-        ts.live = True
-        ts.put_string("npts", "123")
-        logging_helper.info(ts, "2", "update_metadata")
+        ts = TimeSeries(self.test_ts)
+        # adding id needed since we are testing update
+        ts["_id"] = wfid
+        ts.put_string("npts", "100")
         res_ts = self.db.update_metadata(
-            ts, exclude_keys=["extra1", "extra2", "utc_convertible"]
+            ts, mode="cautious", exclude_keys=["extra1", "extra2", "utc_convertible"]
         )
         assert res_ts.live
-        res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+        doc = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
         # attr value remains the same
-        assert res["npts"] == 123
-        # add one elog entry
-        assert len(ts.elog.get_error_log()) == 5
-        ts.put("npts", 255)
+        npts = doc["npts"]
+        assert isinstance(npts, int)
+        assert doc["npts"] == 100
+        # leaves datum live but should add one elog entry
+        assert res_ts.elog.size() == 3
 
         # test cautious(normal key) -> fail
+        ts = TimeSeries(self.test_ts)
+        # adding id needed since we are testing update
+        ts["_id"] = wfid
         old_sampling_rate = ts["sampling_rate"]
         ts.put_string("sampling_rate", "xyz")
-        logging_helper.info(ts, "2", "update_metadata")
         res_ts = self.db.update_metadata(
-            ts, exclude_keys=["extra1", "extra2", "utc_convertible"]
+            ts, mode="cautious", exclude_keys=["extra1", "extra2", "utc_convertible"]
         )
         assert res_ts.live
-        res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+        doc = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
         # attr value remains the same
-        assert res["sampling_rate"] == old_sampling_rate
+        assert doc["sampling_rate"] == old_sampling_rate
         # add one elog entry
-        assert len(ts.elog.get_error_log()) == 6
+        assert res_ts.elog.size() == 3
 
         # test cautious(normal key) -> success
+        ts = TimeSeries(self.test_ts)
+        # adding id needed since we are testing update
+        ts["_id"] = wfid
         ts.put_string("sampling_rate", "1.0")
-        logging_helper.info(ts, "2", "update_metadata")
         res_ts = self.db.update_metadata(
-            ts, exclude_keys=["extra1", "extra2", "utc_convertible"]
+            ts, mode="cautious", exclude_keys=["extra1", "extra2", "utc_convertible"]
         )
         assert res_ts.live
-        res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+        doc = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
         # attr value remains the same
-        assert res["sampling_rate"] == 1.0
-        # add one elog entry
-        assert len(ts.elog.get_error_log()) == 7
-        ts.put("sampling_rate", 1.0)
+        assert doc["sampling_rate"] == 1.0
+        # adds one elog entry
+        assert res_ts.elog.size() == 3
 
         # test cautious(schema undefined key)
+        ts = TimeSeries(self.test_ts)
+        # adding id needed since we are testing update
+        ts["_id"] = wfid
         ts["extra3"] = "123"
-        logging_helper.info(ts, "2", "update_metadata")
         res_ts = self.db.update_metadata(
-            ts, exclude_keys=["extra1", "extra2", "utc_convertible"]
+            ts, mode="cautious", exclude_keys=["extra1", "extra2", "utc_convertible"]
         )
         assert res_ts.live
-        res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
-        # can add attribute to the database
-        assert res["extra3"] == "123"
-        # add 1 more log error to the elog
-        assert len(ts.elog.get_error_log()) == 8
-        ts.erase("extra3")
+        doc = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+        # Verify new attribute was properly added
+        assert doc["extra3"] == "123"
+        # adds 1 more log error to the elog
+        assert res_ts.elog.size() == 3
 
         # test pedantic(required key) -> fail
-        old_npts = ts["npts"]
+        ts = TimeSeries(self.test_ts)
+        # adding id needed since we are testing update
+        ts["_id"] = wfid
+        # earlier edits of a common record alter npts so we have to
+        # fetch that value not the one from ts
+        doc = self.db["wf_TimeSeries"].find_one({"_id": wfid})
+        old_npts = doc["npts"]
         ts.put_string("npts", "xyz")
-        logging_helper.info(ts, "2", "update_metadata")
         res_ts = self.db.update_metadata(
-            ts, mode="pedantic", exclude_keys=["extra1", "extra2", "utc_convertible"]
+            ts,
+            mode="pedantic",
+            exclude_keys=["extra1", "extra2", "utc_convertible"],
         )
-        assert not res_ts.live
-        res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+        assert res_ts.dead()
+        doc = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
         # attr value remains the same
-        assert res["npts"] == old_npts
-        # add one elog entry
-        assert len(ts.elog.get_error_log()) == 10
+        assert doc["npts"] == old_npts
+        # That update should add two elog entries
+        assert res_ts.elog.size() == 4
 
-        # test pedantic(required key) -> success
-        ts.live = True
+        # test pedantic(required key) -> does auto repair and returns live
+        ts = TimeSeries(self.test_ts)
+        # adding id needed since we are testing update
+        ts["_id"] = wfid
         ts.put_string("npts", "123")
-        logging_helper.info(ts, "2", "update_metadata")
         res_ts = self.db.update_metadata(
-            ts, mode="pedantic", exclude_keys=["extra1", "extra2", "utc_convertible"]
+            ts,
+            mode="pedantic",
+            exclude_keys=["extra1", "extra2", "utc_convertible"],
         )
         assert res_ts.live
-        res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+        doc = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
         # attr value remains the same
-        assert res["npts"] == 123
-        # add one elog entry
-        assert len(ts.elog.get_error_log()) == 12
-        ts.put("npts", 255)
+        assert doc["npts"] == 123
+        # This update problem adds 2 elog entries
+        assert res_ts.elog.size() == 4
 
-        # test pedantic(normal key) -> fail
-        old_sampling_rate = ts["sampling_rate"]
+        # test pedantic(normal key) that fails and causes a kill
+        ts = TimeSeries(self.test_ts)
+        # adding id needed since we are testing update
+        ts["_id"] = wfid
+        # earlier updates may change sampling rate stored for the
+        # document we've been altering so we pull it from there
+        # not ts
+        doc = self.db.wf_TimeSeries.find_one({"_id": wfid})
+        old_sampling_rate = doc["sampling_rate"]
         ts.put_string("sampling_rate", "xyz")
-        logging_helper.info(ts, "2", "update_metadata")
         res_ts = self.db.update_metadata(
-            ts, mode="pedantic", exclude_keys=["extra1", "extra2", "utc_convertible"]
+            ts,
+            mode="pedantic",
+            exclude_keys=["extra1", "extra2", "utc_convertible"],
         )
-        # this test probably should be testing if ts is dead
-        assert not res_ts.live
-        res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
-        # attr value remains the same
-        assert res["sampling_rate"] == old_sampling_rate
+        assert res_ts.dead()
+        doc = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+        # verify value did not change in database document even if
+        # the update failed
+        assert doc["sampling_rate"] == old_sampling_rate
         # add two more log error to the elog
-        assert len(ts.elog.get_error_log()) == 14
+        assert res_ts.elog.size() == 4
 
-        # test pedantic(normal key) -> success
+        # test pedantic(normal key) where the auto repairs work
+        # will leave datum returned live but adds elog entries
+        ts = TimeSeries(self.test_ts)
+        # adding id needed since we are testing update
+        ts["_id"] = wfid
         ts.live = True
         ts.put_string("sampling_rate", "5.0")
-        logging_helper.info(ts, "2", "update_metadata")
         res_ts = self.db.update_metadata(
-            ts, mode="pedantic", exclude_keys=["extra1", "extra2", "utc_convertible"]
+            ts,
+            mode="pedantic",
+            exclude_keys=["extra1", "extra2", "utc_convertible"],
         )
         # this test probably should be testing if ts is dead
         assert res_ts.live
-        res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+        doc = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
         # attr value remains the same
-        assert res["sampling_rate"] == 5.0
+        assert doc["sampling_rate"] == 5.0
         # add two more log error to the elog
-        assert len(ts.elog.get_error_log()) == 16
-        ts.put("sampling_rate", 20.0)
+        assert res_ts.elog.size() == 4
 
-        # test pedantic(schema undefined key)
+        # test pedantic mode with a key not defined in the schema
+        ts = TimeSeries(self.test_ts)
+        # adding id needed since we are testing update
+        ts["_id"] = wfid
         ts["extra4"] = "123"
-        logging_helper.info(ts, "2", "update_metadata")
         res_ts = self.db.update_metadata(
-            ts, mode="pedantic", exclude_keys=["extra1", "extra2", "utc_convertible"]
+            ts,
+            mode="pedantic",
+            exclude_keys=["extra1", "extra2", "utc_convertible"],
         )
         assert res_ts.live
-        res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
-        # can add attribute to the database
-        assert "extra4" not in res
-        # add 1 more log error to the elog
-        assert len(ts.elog.get_error_log()) == 17
+        doc = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+        # in pedantic mode update will be refused so the test
+        # attribute should not be present
+        assert "extra4" not in doc
+        # This error adds only one elog entry
+        assert res_ts.elog.size() == 3
 
-        # test _id which we can't find the corresponding document in database
+        # test trying to do an update with an id not in the db
+        # should add a new document with the new objectid
+        ts = TimeSeries(self.test_ts)
+        # adding id needed since we are testing update
         ts["_id"] = ObjectId()
         res_ts = self.db.update_metadata(ts)
         # should insert a document into wf collection
-        res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
-        assert ts.live
-        assert res
+        doc = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
+        assert res_ts.live
+        assert doc is not None
 
         # test tmatrix attribute when update seismogram
-        test_seis = get_live_seismogram()
-        logging_helper.info(test_seis, "1", "deepcopy")
-        # insert ts into the database
+        test_seis0 = get_live_seismogram()
+        # work with a copy to avoid side effects
+        test_seis = Seismogram(test_seis0)
+        # insert template for updates into the database
         wfid = (
             self.db["wf_Seismogram"]
             .insert_one(
@@ -863,7 +792,9 @@ class TestDatabase:
         assert "orthogonal" in res and res["orthogonal"]
         assert res["tmatrix"] == [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
         # change tmatrix
-        logging_helper.info(test_seis, "2", "update_metadata")
+        # refresh with a copy
+        test_seis = Seismogram(test_seis0)
+        test_seis["_id"] = wfid
         test_seis.tmatrix = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
         res_seis = self.db.update_metadata(test_seis, mode="promiscuous")
         res = self.db["wf_Seismogram"].find_one({"_id": test_seis["_id"]})
@@ -875,9 +806,13 @@ class TestDatabase:
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, "1", "deepcopy")
         # insert ts into the database
-        res_ts = self.db.save_data(ts, mode="cautious", storage_mode="gridfs")
+        res_ts = self.db.save_data(
+            ts, mode="cautious", storage_mode="gridfs", return_data=True
+        )
         assert ts.live
-        assert not "storage_mode" in ts
+        # This test was reversed in api change mid 2023.  Now always set storage_mode so reverse test
+        # assert not "storage_mode" in ts
+        assert "storage_mode" in ts
         # change read only attribute to create a elog entry
         ts["net"] = "test_net"
         # add one more history entry into the chain
@@ -895,8 +830,14 @@ class TestDatabase:
         assert not ts["gridfs_id"] == old_gridfs_id
         assert not ts["history_object_id"] == old_history_object_id
         assert not ts["elog_id"] == old_elog_id
+        # Changes for V2 modified the output of this test due to
+        # an implementation detail.  V1 had the following:
         # should add 3 more elog entries(one in update_metadata, two in update_data)
-        assert len(ts.elog.get_error_log()) == old_elog_size + 3
+        # assert len(ts.elog.get_error_log()) == old_elog_size + 3
+        # Revision for V2 update_data does not add an elog entry so this
+        # assertion was dropped.  Retained commented out in the event
+        # this gets changed later.
+        # assert en(ts.elog.get_error_log()) == old_elog_size + 2
         # check history_object collection and elog_id collection
         wf_res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
         elog_res = self.db["elog"].find_one({"_id": ts["elog_id"]})
@@ -928,33 +869,466 @@ class TestDatabase:
         assert len(ts.elog.get_error_log()) == old_elog_size
         assert not ts.live
 
-    def test_save_read_data(self):
-        # new object
-        # read data
-        fail_seis = self.db.read_data(
-            ObjectId(), mode="cautious", normalize=["site", "source"]
+    def test_save_read_data_timeseries(self):
+        """
+        This method tests various permutations of read and write
+        of TimeSeries data objects.  It probably should be broken into
+        about a dozen different functions but for now think of it
+        as a series of tests of read_data and write_data and
+        associated baggage.   Instead we have comments that enumerate
+        blocks testing specific features.  It has a companion
+        below called "tes_save_read_data_seismogram" that is
+        nearly identical but for Seismogram objects.
+        The main differences is noremalization with channel instead of
+        site.
+        """
+        #  Test 0 - nothing to read with a random object id
+        # returns a default constructed dead datum with an elog entry
+        fail_ts = self.db.read_data(
+            ObjectId(), mode="cautious", normalize=["channel", "source"]
         )
-        assert not fail_seis
+        assert fail_ts.dead()
+        assert fail_ts.elog.size() > 0
 
-        # tests for Seismogram
-        promiscuous_seis = copy.deepcopy(self.test_seis)
-        cautious_seis = copy.deepcopy(self.test_seis)
-        pedantic_seis = copy.deepcopy(self.test_seis)
-        logging_helper.info(promiscuous_seis, "1", "deepcopy")
-        logging_helper.info(cautious_seis, "1", "deepcopy")
-        logging_helper.info(pedantic_seis, "1", "deepcopy")
+        # first create valid simulation data for tests
+        promiscuous_ts0 = copy.deepcopy(self.test_ts)
+        cautious_ts0 = copy.deepcopy(self.test_ts)
+        pedantic_ts0 = copy.deepcopy(self.test_ts)
+        logging_helper.info(promiscuous_ts0, "1", "deepcopy")
+        logging_helper.info(cautious_ts0, "1", "deepcopy")
+        logging_helper.info(pedantic_ts0, "1", "deepcopy")
+        # We use the C++ copy constructor here to build working
+        # copies.  It doesn't alter history so they are pure clones
+        # of 0 version with stage 1 of history "deepcopy"
+        promiscuous_ts = TimeSeries(promiscuous_ts0)
+        cautious_ts = TimeSeries(cautious_ts0)
+        pedantic_ts = TimeSeries(pedantic_ts0)
 
-        res_seis = self.db.save_data(
-            promiscuous_seis,
+        # Test 1
+        # initial test of a basic save in promiscuous mode and all
+        # else defaulted - promiscuous is actually the default but set
+        # here for emphasis.  Well, actually return_data is needed
+        # to validate but default is false
+        res_ts = self.db.save_data(
+            promiscuous_ts,
+            mode="promiscuous",
+            return_data=True,
+        )
+        assert res_ts.live
+        # read it back in and compare the metadata entries.
+        # they will not match completely because t0 is an alias
+        # that is converted in all modes to starttime.  The original
+        # promiscuous_ts saved has a "test" key that is empty and
+        # is also automatically dropped in all modes - all spaces
+        # is dogmatically treated as null
+        res_ts_read = self.db.read_data(res_ts["_id"], collection="wf_TimeSeries")
+        skipkeys = ["t0", "test", "is_abortion"]
+        for k in res_ts:
+            if k not in skipkeys:
+                assert res_ts_read[k] == res_ts[k]
+        # this verifies the alias
+        assert res_ts_read["starttime"] == res_ts["t0"]
+        # verify "test" was dropped
+        assert "test" not in res_ts_read
+        # the writer should add this
+        assert "is_abortion" in res_ts_read
+        assert not res_ts_read["is_abortion"]
+        # We uses this to retrieve this record for later test
+        basic_save_ts_id = res_ts["_id"]
+
+        #
+        # Test 2
+        # same as above but add exclude_keys to verify that works
+        # use a fresh copy of initial datum
+        promiscuous_ts = TimeSeries(promiscuous_ts0)
+        res_ts = self.db.save_data(
+            promiscuous_ts,
+            mode="promiscuous",
+            exclude_keys=["extra2"],
+            return_data=True,
+        )
+        assert res_ts.live
+        # check extra2 was excluded
+        res_ts_read = self.db.read_data(res_ts["_id"], collection="wf_TimeSeries")
+        skipkeys = ["t0", "test", "is_abortion"]
+        for k in res_ts:
+            if k not in skipkeys:
+                assert res_ts_read[k] == res_ts[k]
+        # this verifies the alias
+        assert res_ts_read["starttime"] == res_ts["t0"]
+        # verify "test" was dropped
+        assert "test" not in res_ts_read
+        # the writer should add this
+        assert "is_abortion" in res_ts_read
+        assert not res_ts_read["is_abortion"]
+        # We uses this to retrieve this record for later test
+        basic_save_ts_id = res_ts["_id"]
+
+        # test 3
+        # here we validate the history data was saved correctly
+        # this actualy somewhat duplicates tests in test_save_load_history
+        # but differs a bit because it uses TimeSeries so was retained  (Aug. 2023)
+        assert res_ts.live
+        assert promiscuous_ts.live
+        assert not res_ts.is_defined("extra2")
+        # check it is the origin in the processing history after save
+        wf_doc = self.db["wf_TimeSeries"].find_one({"_id": promiscuous_ts["_id"]})
+
+        history_object_doc = self.db["history_object"].find_one(
+            {"_id": wf_doc["history_object_id"]}
+        )
+        assert wf_doc
+        assert history_object_doc
+        assert history_object_doc["wf_TimeSeries_id"] == promiscuous_ts["_id"]
+        assert history_object_doc["alg_name"] == "save_data"
+        assert history_object_doc["alg_id"] == "0"
+        assert "processing_history" in history_object_doc
+        assert history_object_doc["save_stage"] == 2
+        assert "save_uuid" in history_object_doc
+
+        # test 4
+        # Verify setting a required attribute to an invalid value
+        # leads to a failed save and dead datum return
+        cautious_ts = TimeSeries(cautious_ts0)
+        cautious_ts.put_string("npts", "xyz")
+        res_ts = self.db.save_data(
+            cautious_ts, mode="cautious", storage_mode="gridfs", return_data=True
+        )
+        assert res_ts.dead()
+        # save kills both original and return because data is passed by reference
+        # following need to be aware cautious_ts is dead
+        assert cautious_ts.dead()
+
+        # test 5
+        # for invalid required args cautious and pedantic act the same
+        # here we use sampling_rate wrong instead of npts
+        # i.e. this is a comparable test to previous
+        pedantic_ts = TimeSeries(pedantic_ts0)
+        pedantic_ts.put_string("sampling_rate", "xyz")
+        res_ts = self.db.save_data(
+            pedantic_ts, mode="pedantic", storage_mode="gridfs", return_data=True
+        )
+        assert res_ts.dead()
+        assert pedantic_ts.dead()
+        # the cemetery should contain two documents from each of the
+        # above saves at this point
+        n_dead = self.db.cemetery.count_documents({})
+        assert n_dead == 2
+
+        # test 6
+        # Valitdate normalziation works correctly
+        # the following uses the id of the basic save done near the
+        # top of this test function
+
+        # in this mode the retrieved
+        self.db.database_schema.set_default("wf_TimeSeries", "wf")
+        promiscuous_ts2 = self.db.read_data(
+            basic_save_ts_id,
+            mode="promiscuous",
+            normalize=["channel", "source"],
+            collection="wf_TimeSeries",
+        )
+        assert "_id" in promiscuous_ts2
+        # 2 should have the same metadata as original plus _id
+        # hence loop is driven by datum prior to being saved
+        # 2 should also contain the normalizatoin data which we test after this loop
+        skipkeys = ["t0", "test", "is_abortion"]
+        for k in promiscuous_ts:
+            if k not in skipkeys:
+                assert promiscuous_ts[k] == promiscuous_ts2[k]
+        assert not promiscuous_ts2["is_abortion"]
+        # normalize should set these
+        channellist = [
+            "channel_lat",
+            "channel_lon",
+            "channel_elev",
+            "channel_starttime",
+            "channel_endtime",
+        ]
+        sourcelist = ["source_lat", "source_lon", "source_depth", "source_time"]
+        for k in channellist:
+            assert k in promiscuous_ts2
+        for k in sourcelist:
+            assert k in promiscuous_ts2
+
+        # test 7
+        # test exclude_keys feature of read_data - above tested save_data
+        # so they are easily confused
+        exclude_list = ["_id", "endtime", "channel_id", "extra1"]
+        exclude_promiscuous_ts2 = self.db.read_data(
+            basic_save_ts_id,
+            mode="promiscuous",
+            normalize=["channel", "source"],
+            exclude_keys=exclude_list,
+        )
+        for k in exclude_list:
+            assert k not in exclude_promiscuous_ts2
+
+        # test 8
+        # This test saves a datum with an invalid value in promiscuous
+        # mode.   It is then read back cautious and we validate
+        # the expected errors are present in elog
+        # Note we restore cautious_ts to its original state and
+        # add the error as the above changes it.  That makes this
+        # test more stable and less confusing than the previous version
+        cautious_ts = TimeSeries(cautious_ts0)
+        cautious_ts["npts"] = "foobar"
+        res_ts = self.db.save_data(
+            cautious_ts,
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
-        #  old code had this which was used to signal no errors
-        # revision returns a valid objectid on success and a live
-        # object.  Modified
+        # promicuous save ignores the error and leaves these live
+        assert res_ts.live
+        assert cautious_ts.live
+        # this will fail with an invalid type error logged because
+        # previous save has invalid npts which makes it impossible to
+        # reconstruct the datum
+        cautious_ts2 = self.db.read_data(
+            res_ts["_id"],
+            mode="cautious",
+            normalize=["channel", "source"],
+            collection="wf_TimeSeries",
+        )
+        # This next test could change if the schema changes.
+        # currently it issues a complaint for keys history_id, elog_id, and extra1
+        # The second message is the npts botch error set above
+        cautious_ts2_elog = cautious_ts2.elog.get_error_log()
+        assert len(cautious_ts2.elog) == 2
+        assert cautious_ts2_elog[0].badness == ErrorSeverity.Complaint
+        assert cautious_ts2_elog[1].badness == ErrorSeverity.Invalid
+
+        assert "data" not in cautious_ts2
+        assert cautious_ts2["is_abortion"]
+
+        # test 9
+        #  Now do the same thing but set npts to a string that can
+        # be converted to an int - note 255 is magic from the seis generator
+        cautious_ts = TimeSeries(cautious_ts0)
+        cautious_ts.put_string("npts", "255")
+        res_ts = self.db.save_data(
+            cautious_ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            return_data=True,
+            collection="wf_TimeSeries",
+        )
+        assert res_ts.live
+        assert cautious_ts.live
+        cautious_ts2 = self.db.read_data(
+            res_ts["_id"],
+            mode="cautious",
+        )
+        assert cautious_ts2.live
+        assert cautious_ts2["npts"] == 255
+        assert not cautious_ts2["is_abortion"]
+        # in pedantic mode the same read should cause the datum
+        # to be killed
+        pedantic_ts2 = self.db.read_data(
+            res_ts["_id"], mode="pedantic", collection="wf_TimeSeries"
+        )
+        assert pedantic_ts2.dead()
+        assert pedantic_ts2["is_abortion"]
+
+        # test 10
+        # test save with non exist id under cautious mode
+        cautious_ts = TimeSeries(cautious_ts0)
+        non_exist_id = ObjectId()
+        cautious_ts["_id"] = non_exist_id
+        logging_helper.info(cautious_ts, "3", "save_data")
+        res_ts = self.db.save_data(cautious_ts, mode="cautious", return_data=True)
+        assert res_ts.live
+        assert cautious_ts.live
+        assert "_id" in cautious_ts
+        assert not cautious_ts["_id"] == non_exist_id
+
+        # Test 11
+        # Test new normalize method using list of matchers
+        # use both cached and db version to test both
+        from mspasspy.db.normalize import ObjectIdMatcher, ObjectIdDBMatcher
+
+        chankeylist = [
+            "_id",
+            "lat",
+            "lon",
+            "elev",
+            "starttime",
+            "endtime",
+            "hang",
+            "vang",
+        ]
+        channel_matcher = ObjectIdMatcher(
+            self.db,
+            collection="channel",
+            attributes_to_load=chankeylist,
+            load_if_defined=["net", "sta", "loc"],
+        )
+        source_matcher = ObjectIdDBMatcher(
+            self.db,
+            collection="source",
+            attributes_to_load=["_id", "lat", "lon", "depth", "time"],
+            load_if_defined=["magnitude"],
+        )
+        # basic_save_ts_id is defined earlier in this function
+        # is the stock datum saved with defaults in promiscuous mode
+        promiscuous_ts2 = self.db.read_data(
+            basic_save_ts_id,
+            mode="promiscuous",
+            normalize=[channel_matcher, source_matcher],
+            collection="wf_TimeSeries",
+        )
+        # this is a looser list than what we used earlier that
+        # was carried forward in major revision aug 2023.
+        # minor issue - the major point of this is after we
+        # verify these match
+
+        wf_keys = [
+            "npts",
+            "delta",
+            "sampling_rate",
+            "calib",
+            "starttime",
+            "dtype",
+            "channel_id",
+            "source_id",
+            "storage_mode",
+            "dir",
+            "dfile",
+            "foff",
+            "gridfs_id",
+            "url",
+            "elog_id",
+            "history_object_id",
+            "time_standard",
+            "tmatrix",
+        ]
+        for key in wf_keys:
+            if key in promiscuous_ts:
+                assert promiscuous_ts[key] == promiscuous_ts2[key]
+        assert "test" not in promiscuous_ts2
+        assert "extra2" not in promiscuous_ts2
+        # now verify normalization worked correctly
+
+        res = self.db["channel"].find_one({"_id": promiscuous_ts["channel_id"]})
+        for k in chankeylist:
+            if k == "_id":
+                k2 = "channel_id"
+            else:
+                k2 = "channel_{}".format(k)
+            assert promiscuous_ts2[k2] == res[k]
+        # TODO:  should handle load_if_defined properly
+
+        res = self.db["source"].find_one({"_id": promiscuous_ts["source_id"]})
+        assert promiscuous_ts2["source_lat"] == res["lat"]
+        assert promiscuous_ts2["source_lon"] == res["lon"]
+        assert promiscuous_ts2["source_depth"] == res["depth"]
+        assert promiscuous_ts2["source_time"] == res["time"]
+        assert promiscuous_ts2["source_magnitude"] == res["magnitude"]
+        # Necessary to avoid state problems with other tests
+        self.db.drop_collection("cemetery")
+        self.db.drop_collection("abortions")
+
+    def test_save_read_data_seismogram(self):
+        """
+        This method tests various permutations of read and write
+        of Seismogram data objects.  It probably should be broken into
+        about a dozen different functions but for now think of it
+        as a series of tests of read_data and write_data and
+        associated baggage.   Instead we have comments that enumerate
+        blocks testing specific features.
+        """
+        #  Test 0 - nothing to read with a random object id
+        # returns a default constructed dead datum with an elog entry
+        fail_seis = self.db.read_data(
+            ObjectId(), mode="cautious", normalize=["site", "source"]
+        )
+        assert fail_seis.dead()
+        assert fail_seis.elog.size() > 0
+
+        # tests for Seismogram
+        # first create valid simulation data for tests
+        promiscuous_seis0 = copy.deepcopy(self.test_seis)
+        cautious_seis0 = copy.deepcopy(self.test_seis)
+        pedantic_seis0 = copy.deepcopy(self.test_seis)
+        logging_helper.info(promiscuous_seis0, "1", "deepcopy")
+        logging_helper.info(cautious_seis0, "1", "deepcopy")
+        logging_helper.info(pedantic_seis0, "1", "deepcopy")
+        # We use the C++ copy constructor here to build working
+        # copies.  It doesn't alter history so they are pure clones
+        # of 0 version with stage 1 of history "deepcopy"
+        promiscuous_seis = Seismogram(promiscuous_seis0)
+        cautious_seis = Seismogram(cautious_seis0)
+        pedantic_seis = Seismogram(pedantic_seis0)
+
+        # Test 1
+        # initial test of a basic save in promiscuous mode and all
+        # else defaulted - promiscuous is actually the default but set
+        # here for emphasis.  Well, actually return_data is needed
+        # to validate but default is false
+        res_seis = self.db.save_data(
+            promiscuous_seis,
+            mode="promiscuous",
+            return_data=True,
+        )
+        assert res_seis.live
+        # read it back in and compare the metadata entries.
+        # they will not match completely because t0 is an alias
+        # that is converted in all modes to starttime.  The original
+        # promiscuous_seis saved has a "test" key that is empty and
+        # is also automatically dropped in all modes - all spaces
+        # is dogmatically treated as null
+        res_seis_read = self.db.read_data(res_seis["_id"], collection="wf_Seismogram")
+        skipkeys = ["t0", "test", "is_abortion"]
+        for k in res_seis:
+            if k not in skipkeys:
+                assert res_seis_read[k] == res_seis[k]
+        # this verifies the alias
+        assert res_seis_read["starttime"] == res_seis["t0"]
+        # verify "test" was dropped
+        assert "test" not in res_seis_read
+        # the writer should add this
+        assert "is_abortion" in res_seis_read
+        assert not res_seis_read["is_abortion"]
+        # We uses this to retrieve this record for later test
+        basic_save_seis_id = res_seis["_id"]
+
+        #
+        # Test 2
+        # same as above but add exclude_keys to verify that works
+        # use a fresh copy of initial datum
+        promiscuous_seis = Seismogram(promiscuous_seis0)
+        res_seis = self.db.save_data(
+            promiscuous_seis,
+            mode="promiscuous",
+            exclude_keys=["extra2"],
+            return_data=True,
+        )
+        assert res_seis.live
+        # check extra2 was excluded
+        res_seis_read = self.db.read_data(res_seis["_id"], collection="wf_Seismogram")
+        skipkeys = ["t0", "test", "is_abortion"]
+        for k in res_seis:
+            if k not in skipkeys:
+                assert res_seis_read[k] == res_seis[k]
+        # this verifies the alias
+        assert res_seis_read["starttime"] == res_seis["t0"]
+        # verify "test" was dropped
+        assert "test" not in res_seis_read
+        # the writer should add this
+        assert "is_abortion" in res_seis_read
+        assert not res_seis_read["is_abortion"]
+        # We uses this to retrieve this record for later test
+        basic_save_seis_id = res_seis["_id"]
+
+        # test 3
+        # here we validate the history data was saved correctly
+        # this actualy somewhat duplicates tests in test_save_load_history
+        # but differs a bit because it uses Seismogram so was retained  (Aug. 2023)
         assert res_seis.live
         assert promiscuous_seis.live
+        assert not res_seis.is_defined("extra2")
         # check it is the origin in the processing history after save
         wf_doc = self.db["wf_Seismogram"].find_one({"_id": promiscuous_seis["_id"]})
 
@@ -966,150 +1340,198 @@ class TestDatabase:
         assert history_object_doc["wf_Seismogram_id"] == promiscuous_seis["_id"]
         assert history_object_doc["alg_name"] == "save_data"
         assert history_object_doc["alg_id"] == "0"
-        assert promiscuous_seis.number_of_stages() == 0
-        assert promiscuous_seis.current_nodedata().algorithm == "save_data"
-        assert promiscuous_seis.current_nodedata().algid == "0"
-        assert promiscuous_seis.id() == wf_doc["history_object_id"]
-        assert promiscuous_seis.is_origin()
+        assert "processing_history" in history_object_doc
+        assert history_object_doc["save_stage"] == 2
+        assert "save_uuid" in history_object_doc
 
+        # test 4
+        # Verify setting a required attribute to an invalid value
+        # leads to a failed save and dead datum return
+        cautious_seis = Seismogram(cautious_seis0)
         cautious_seis.put_string("npts", "xyz")
         res_seis = self.db.save_data(
-            cautious_seis, mode="cautious", storage_mode="gridfs"
+            cautious_seis, mode="cautious", storage_mode="gridfs", return_data=True
         )
-        assert not res_seis.live
-        assert not cautious_seis.live
+        assert res_seis.dead()
+        # save kills both original and return because data is passed by reference
+        # following need to be aware cautious_seis is dead
+        assert cautious_seis.dead()
 
+        # test 5
+        # for invalid required args cautious and pedantic act the same
+        # here we use sampling_rate wrong instead of npts
+        # i.e. this is a comparable test to previous
+        pedantic_seis = Seismogram(pedantic_seis0)
         pedantic_seis.put_string("sampling_rate", "xyz")
         res_seis = self.db.save_data(
-            pedantic_seis, mode="pedantic", storage_mode="gridfs"
+            pedantic_seis, mode="pedantic", storage_mode="gridfs", return_data=True
         )
-        assert not res_seis.live
-        assert not pedantic_seis.live
+        assert res_seis.dead()
+        assert pedantic_seis.dead()
+        # the cemetery should contain two documents from each of the
+        # above saves at this point
+        n_dead = self.db.cemetery.count_documents({})
+        assert n_dead == 2
 
+        # test 6
+        # Valitdate normalziation works correctly
+        # the following uses the id of the basic save done near the
+        # top of this test function
+
+        # in this mode the retrieved
         self.db.database_schema.set_default("wf_Seismogram", "wf")
         promiscuous_seis2 = self.db.read_data(
-            promiscuous_seis["_id"], mode="promiscuous", normalize=["site", "source"]
-        )
-        no_source_seis2 = self.db.read_data(
-            promiscuous_seis["_id"], mode="promiscuous", normalize=["site"]
-        )
-        exclude_promiscuous_seis2 = self.db.read_data(
-            promiscuous_seis["_id"],
+            basic_save_seis_id,
             mode="promiscuous",
             normalize=["site", "source"],
-            exclude_keys=["_id", "channel_id", "source_depth"],
+            collection="wf_Seismogram",
         )
-        cautious_seis2 = self.db.read_data(
-            promiscuous_seis["_id"], mode="cautious", normalize=["site", "source"]
+        assert "_id" in promiscuous_seis2
+        # 2 should have the same metadata as original plus _id
+        # hence loop is driven by datum prior to being saved
+        # 2 should also contain the normalizatoin data which we test after this loop
+        skipkeys = ["t0", "test", "is_abortion"]
+        for k in promiscuous_seis:
+            if k not in skipkeys:
+                assert promiscuous_seis[k] == promiscuous_seis2[k]
+        assert not promiscuous_seis2["is_abortion"]
+        # normalize should set these
+        sitelist = [
+            "site_lat",
+            "site_lon",
+            "site_elev",
+            "site_starttime",
+            "site_endtime",
+        ]
+        sourcelist = ["source_lat", "source_lon", "source_depth", "source_time"]
+        for k in sitelist:
+            assert k in promiscuous_seis2
+        for k in sourcelist:
+            assert k in promiscuous_seis2
+
+        # test 7
+        # test exclude_keys feature of read_data - above tested save_data
+        # so they are easily confused
+        exclude_list = ["_id", "endtime", "channel_id", "extra1"]
+        exclude_promiscuous_seis2 = self.db.read_data(
+            basic_save_seis_id,
+            mode="promiscuous",
+            normalize=["site", "source"],
+            exclude_keys=exclude_list,
         )
+        for k in exclude_list:
+            assert k not in exclude_promiscuous_seis2
 
-        # test extra key
-        assert "extra1" in promiscuous_seis2
-        assert "extra1" not in cautious_seis2
-
-        # test normalize parameter
-        assert "source_lat" not in no_source_seis2
-        assert "source_lon" not in no_source_seis2
-        assert "source_depth" not in no_source_seis2
-        assert "source_time" not in no_source_seis2
-        assert "source_magnitude" not in no_source_seis2
-
-        # test cautious read
-        cautious_seis.set_live()
-        logging_helper.info(cautious_seis, "2", "save_data")
+        # test 8
+        # This test saves a datum with an invalid value in promiscuous
+        # mode.   It is then read back cautious and we validate
+        # the expected errors are present in elog
+        # Note we restore cautious_seis to its original state and
+        # add the error as the above changes it.  That makes this
+        # test more stable and less confusing than the previous version
+        cautious_seis = Seismogram(cautious_seis0)
+        cautious_seis["npts"] = "foobar"
         res_seis = self.db.save_data(
             cautious_seis,
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
+        # promicuous save ignores the error and leaves these live
         assert res_seis.live
         assert cautious_seis.live
-        # unable to convert to the correct type
+        # this will fail with an invalid type error logged because
+        # previous save has invalid npts which makes it impossible to
+        # reconstruct the datum
         cautious_seis2 = self.db.read_data(
-            cautious_seis["_id"], mode="cautious", normalize=["site", "source"]
+            res_seis["_id"],
+            mode="cautious",
+            normalize=["site", "source"],
+            collection="wf_Seismogram",
         )
-        assert (
-            cautious_seis2.elog.get_error_log()[-1].message
-            == "cautious mode: Required attribute npts has type <class 'str'>, forbidden by definition and unable to convert"
-        )
-        elog_doc = self.db["elog"].find_one(
-            {"wf_Seismogram_id": cautious_seis2["_id"], "tombstone": {"$exists": True}}
-        )
+        # This next test could change if the schema changes.
+        # currently it issues a complaint for keys history_id, elog_id, and extra1
+        # The second message is the npts botch error set above
+        cautious_seis2_elog = cautious_seis2.elog.get_error_log()
+        assert len(cautious_seis2.elog) == 2
+        assert cautious_seis2_elog[0].badness == ErrorSeverity.Complaint
+        assert cautious_seis2_elog[1].badness == ErrorSeverity.Invalid
+
         assert "data" not in cautious_seis2
-        # successfully convert to the correct type
-        cautious_seis = copy.deepcopy(self.test_seis)
-        logging_helper.info(cautious_seis, "1", "deepcopy")
+        assert cautious_seis2["is_abortion"]
+
+        # test 9
+        #  Now do the same thing but set npts to a string that can
+        # be converted to an int - note 255 is magic from the seis generator
+        cautious_seis = Seismogram(cautious_seis0)
         cautious_seis.put_string("npts", "255")
-        logging_helper.info(cautious_seis, "2", "save_data")
         res_seis = self.db.save_data(
-            cautious_seis, mode="promiscuous", storage_mode="gridfs"
+            cautious_seis,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            return_data=True,
+            collection="wf_Seismogram",
         )
         assert res_seis.live
         assert cautious_seis.live
         cautious_seis2 = self.db.read_data(
-            cautious_seis["_id"], mode="cautious", normalize=["site", "source"]
+            res_seis["_id"],
+            mode="cautious",
         )
         assert cautious_seis2.live
         assert cautious_seis2["npts"] == 255
+        assert not cautious_seis2["is_abortion"]
+        # in pedantic mode the same read should cause the datum
+        # to be killed
+        pedantic_seis2 = self.db.read_data(
+            res_seis["_id"], mode="pedantic", collection="wf_Seismogram"
+        )
+        assert pedantic_seis2.dead()
+        assert pedantic_seis2["is_abortion"]
 
+        # test 10
         # test save with non exist id under cautious mode
+        cautious_seis = Seismogram(cautious_seis0)
         non_exist_id = ObjectId()
         cautious_seis["_id"] = non_exist_id
         logging_helper.info(cautious_seis, "3", "save_data")
-        res_seis = self.db.save_data(cautious_seis, mode="cautious")
+        res_seis = self.db.save_data(cautious_seis, mode="cautious", return_data=True)
         assert res_seis.live
         assert cautious_seis.live
         assert "_id" in cautious_seis
         assert not cautious_seis["_id"] == non_exist_id
 
-        # test pedantic read
-        pedantic_seis.set_live()
-        logging_helper.info(pedantic_seis, "2", "save_data")
-        res_seis = self.db.save_data(
-            pedantic_seis,
+        # Test 11
+        # Test new normalize method using list of matchers
+        # use both cached and db version to test both
+        from mspasspy.db.normalize import ObjectIdMatcher, ObjectIdDBMatcher
+
+        site_matcher = ObjectIdMatcher(
+            self.db,
+            collection="site",
+            attributes_to_load=["_id", "lat", "lon", "elev", "starttime", "endtime"],
+            load_if_defined=["net", "sta", "loc"],
+        )
+        source_matcher = ObjectIdDBMatcher(
+            self.db,
+            collection="source",
+            attributes_to_load=["_id", "lat", "lon", "depth", "time"],
+            load_if_defined=["magnitude"],
+        )
+        # basic_save_seis_id is defined earlier in this function
+        # is the stock datum saved with defaults in promiscuous mode
+        promiscuous_seis2 = self.db.read_data(
+            basic_save_seis_id,
             mode="promiscuous",
-            storage_mode="gridfs",
-            exclude_keys=["extra2"],
+            normalize=[site_matcher, source_matcher],
+            collection="wf_Seismogram",
         )
-        assert res_seis.live
-        assert pedantic_seis.live
-        pedantic_seis2 = self.db.read_data(
-            pedantic_seis["_id"], mode="pedantic", normalize=["site", "source"]
-        )
-        assert (
-            pedantic_seis2.elog.get_error_log()[-1].message
-            == "pedantic mode: sampling_rate has type <class 'str'>, forbidden by definition"
-        )
-        elog_doc = self.db["elog"].find_one(
-            {"wf_Seismogram_id": pedantic_seis["_id"], "tombstone": {"$exists": True}}
-        )
-        assert "data" not in pedantic_seis2
+        # this is a looser list than what we used earlier that
+        # was carried forward in major revision aug 2023.
+        # minor issue - the major point of this is after we
+        # verify these match
 
-        # test save with non exist id under pedantic mode
-        non_exist_id = ObjectId()
-        pedantic_seis["_id"] = non_exist_id
-        logging_helper.info(pedantic_seis, "3", "save_data")
-        res_seis = self.db.save_data(pedantic_seis, mode="pedantic")
-        # save is unsuccessful because sampling_rate has type str
-        assert not res_seis.live
-        # no attribute errors
-        pedantic_seis.put_double("sampling_rate", 1.0)
-        pedantic_seis.set_live()
-        save_res = self.db.save_data(pedantic_seis, mode="pedantic")
-        assert pedantic_seis.live
-        assert "_id" in pedantic_seis
-        assert not pedantic_seis["_id"] == non_exist_id
-
-        # test read exclude parameter
-        assert "_id" in promiscuous_seis2
-        assert "channel_id" not in promiscuous_seis2
-        assert "source_depth" in promiscuous_seis2
-        assert "_id" not in exclude_promiscuous_seis2
-        assert "channel_id" not in exclude_promiscuous_seis2
-        assert "source_depth" not in exclude_promiscuous_seis2
-
-        # _id is changed before int test save with non exist id under promiscuous mode
         wf_keys = [
             "npts",
             "delta",
@@ -1136,6 +1558,7 @@ class TestDatabase:
                 assert promiscuous_seis[key] == promiscuous_seis2[key]
         assert "test" not in promiscuous_seis2
         assert "extra2" not in promiscuous_seis2
+        # now verify normalization worked correctly
 
         res = self.db["site"].find_one({"_id": promiscuous_seis["site_id"]})
         assert promiscuous_seis2["site_lat"] == res["lat"]
@@ -1143,9 +1566,9 @@ class TestDatabase:
         assert promiscuous_seis2["site_elev"] == res["elev"]
         assert promiscuous_seis2["site_starttime"] == res["starttime"]
         assert promiscuous_seis2["site_endtime"] == res["endtime"]
-        assert promiscuous_seis2["net"] == res["net"]
-        assert promiscuous_seis2["sta"] == res["sta"]
-        assert promiscuous_seis2["loc"] == res["loc"]
+        assert promiscuous_seis2["site_net"] == res["net"]
+        assert promiscuous_seis2["site_sta"] == res["sta"]
+        assert promiscuous_seis2["site_loc"] == res["loc"]
 
         res = self.db["source"].find_one({"_id": promiscuous_seis["source_id"]})
         assert promiscuous_seis2["source_lat"] == res["lat"]
@@ -1153,345 +1576,9 @@ class TestDatabase:
         assert promiscuous_seis2["source_depth"] == res["depth"]
         assert promiscuous_seis2["source_time"] == res["time"]
         assert promiscuous_seis2["source_magnitude"] == res["magnitude"]
-
-        # tests for TimeSeries
-        # not testing promiscuous/cautious/pedantic save->read here because it's coveraged by the tests above
-        ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, "1", "deepcopy")
-        self.db.save_data(
-            ts,
-            mode="promiscuous",
-            storage_mode="gridfs",
-            exclude_keys=["extra2"],
-            data_tag="tag1",
-        )
-        self.db.database_schema.set_default("wf_TimeSeries", "wf")
-        # test mismatch data_tag
-        assert not self.db.read_data(
-            ts["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-            data_tag="tag2",
-        )
-        ts2 = self.db.read_data(
-            ts["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-            data_tag="tag1",
-        )
-        for key in wf_keys:
-            if key in ts:
-                assert ts[key] == ts2[key]
-        assert "test" not in ts2
-        assert "extra2" not in ts2
-        assert "data_tag" in ts2 and ts2["data_tag"] == "tag1"
-        # dummy ts without data_tag
-        dummy_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(dummy_ts, "1", "deepcopy")
-        self.db.save_data(
-            dummy_ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
-        )
-        assert not self.db.read_data(
-            dummy_ts["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-            data_tag="tag1",
-        )
-
-        res = self.db["site"].find_one({"_id": ts["site_id"]})
-        assert ts2["site_lat"] == res["lat"]
-        assert ts2["site_lon"] == res["lon"]
-        assert ts2["site_elev"] == res["elev"]
-        assert ts2["site_starttime"] == res["starttime"]
-        assert ts2["site_endtime"] == res["endtime"]
-        assert ts2["net"] == res["net"]
-        assert ts2["sta"] == res["sta"]
-
-        res = self.db["source"].find_one({"_id": ts["source_id"]})
-        assert ts2["source_lat"] == res["lat"]
-        assert ts2["source_lon"] == res["lon"]
-        assert ts2["source_depth"] == res["depth"]
-        assert ts2["source_time"] == res["time"]
-        assert ts2["source_magnitude"] == res["magnitude"]
-
-        res = self.db["channel"].find_one({"_id": ts["channel_id"]})
-        assert ts2["chan"] == res["chan"]
-        assert ts2["channel_hang"] == res["hang"]
-        assert ts2["channel_vang"] == res["vang"]
-        assert ts2["channel_lat"] == res["lat"]
-        assert ts2["channel_lon"] == res["lon"]
-        assert ts2["channel_elev"] == res["elev"]
-        assert ts2["channel_edepth"] == res["edepth"]
-        assert ts2["channel_starttime"] == res["starttime"]
-        assert ts2["channel_endtime"] == res["endtime"]
-        assert ts2["loc"] == res["loc"]
-
-        # test ignore_metadata_changed_test in save_data
-        ignore_changed_test_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ignore_changed_test_ts, "1", "deepcopy")
-        ignore_changed_test_ts.clear_modified()
-        self.db.save_data(ignore_changed_test_ts, mode="promiscuous")
-        ignore_changed_test_ts2 = self.db["wf_TimeSeries"].find_one(
-            {"_id": ignore_changed_test_ts["_id"]}
-        )
-        # attributes that are not in modified list could also be saved
-        assert ignore_changed_test_ts2["npts"] == 255
-        assert ignore_changed_test_ts2["sampling_rate"] == 20.0
-        assert ignore_changed_test_ts2["delta"] == 0.1
-        assert ignore_changed_test_ts2["calib"] == 0.1
-
-        # test save with non exist id under promiscuous mode
-        non_exist_id = ObjectId()
-        promiscuous_seis["_id"] = non_exist_id
-        logging_helper.info(promiscuous_seis, "3", "save_data")
-        res_seis = self.db.save_data(promiscuous_seis, mode="promiscuous")
-        assert res_seis.live
-        assert promiscuous_seis.live
-        assert "_id" in promiscuous_seis
-        assert not promiscuous_seis["_id"] == non_exist_id
-
-        # test save data with different storage mode
-        # gridfs
-        res = self.db["wf_Seismogram"].find_one({"_id": promiscuous_seis["_id"]})
-        assert res["storage_mode"] == "gridfs"
-        assert all(
-            a.any() == b.any()
-            for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data)
-        )
-
-        # file
-        logging_helper.info(promiscuous_seis, "2", "save_data")
-        self.db.save_data(
-            promiscuous_seis,
-            mode="promiscuous",
-            storage_mode="file",
-            dir="./python/tests/data/",
-            dfile="test_db_output",
-            exclude_keys=["extra2"],
-        )
-        self.db.database_schema.set_default("wf_Seismogram", "wf")
-        promiscuous_seis2 = self.db.read_data(
-            promiscuous_seis["_id"], mode="cautious", normalize=["site", "source"]
-        )
-
-        res = self.db["wf_Seismogram"].find_one({"_id": promiscuous_seis["_id"]})
-        assert res["storage_mode"] == "file"
-        assert all(
-            a.any() == b.any()
-            for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data)
-        )
-
-        # file_mseed
-        logging_helper.info(promiscuous_seis, "2", "save_data")
-        self.db.save_data(
-            promiscuous_seis,
-            mode="promiscuous",
-            storage_mode="file",
-            dir="./python/tests/data/",
-            dfile="test_db_output",
-            format="mseed",
-            exclude_keys=["extra2"],
-        )
-        self.db.database_schema.set_default("wf_Seismogram", "wf")
-        promiscuous_seis2 = self.db.read_data(
-            promiscuous_seis["_id"], mode="cautious", normalize=["site", "source"]
-        )
-
-        res = self.db["wf_Seismogram"].find_one({"_id": promiscuous_seis["_id"]})
-        assert res["storage_mode"] == "file"
-        assert res["format"] == "mseed"
-        assert all(
-            a.any() == b.any()
-            for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data)
-        )
-
-        # file_mseed with no dfile name
-        logging_helper.info(promiscuous_seis, "2", "save_data")
-        self.db.save_data(
-            promiscuous_seis,
-            mode="promiscuous",
-            storage_mode="file",
-            dir="./python/tests/data/",
-            format="mseed",
-            exclude_keys=["extra2"],
-        )
-        self.db.database_schema.set_default("wf_Seismogram", "wf")
-        promiscuous_seis2 = self.db.read_data(
-            promiscuous_seis["_id"], mode="cautious", normalize=["site", "source"]
-        )
-
-        res = self.db["wf_Seismogram"].find_one({"_id": promiscuous_seis["_id"]})
-        assert res["storage_mode"] == "file"
-        assert res["format"] == "mseed"
-        assert all(
-            a.any() == b.any()
-            for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data)
-        )
-
-        with pytest.raises(
-            ValueError, match="dir or dfile is not specified in data object"
-        ):
-            self.db.save_data(
-                promiscuous_seis2, mode="promiscuous", storage_mode="file"
-            )
-        promiscuous_seis2["dir"] = "/"
-        promiscuous_seis2["dfile"] = "test_db_output"
-        with pytest.raises(
-            PermissionError, match="No write permission to the save directory"
-        ):
-            self.db.save_data(
-                promiscuous_seis2, mode="promiscuous", storage_mode="file"
-            )
-
-        # url
-        with patch("urllib.request.urlopen", new=self.mock_urlopen):
-            res_url = dict(res)
-            res_url_id = ObjectId()
-            res_url["_id"] = res_url_id
-            res_url["storage_mode"] = "url"
-            res_url[
-                "url"
-            ] = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
-            self.db["wf_Seismogram"].insert_one(res_url)
-            url_seis = self.db.read_data(res_url_id, mode="promiscuous")
-            assert url_seis.data.columns() == 6000
-
-        # save with a dead object
-        promiscuous_seis.live = False
-        logging_helper.info(promiscuous_seis, "2", "save_data")
-        self.db.save_data(promiscuous_seis, mode="promiscuous")
-        elog_doc = self.db["elog"].find_one(
-            {
-                "wf_Seismogram_id": promiscuous_seis["_id"],
-                "tombstone": {"$exists": True},
-            }
-        )
-        assert elog_doc["tombstone"] == dict(promiscuous_seis)
-
-        # save to a different collection
-        promiscuous_seis = copy.deepcopy(self.test_seis)
-        logging_helper.info(promiscuous_seis, "1", "deepcopy")
-        db_schema = copy.deepcopy(self.db2.database_schema)
-        md_schema = copy.deepcopy(self.db2.metadata_schema)
-        wf_test = copy.deepcopy(self.db2.database_schema.wf_Seismogram)
-        db_schema["wf_test"] = wf_test
-        md_schema.Seismogram.swap_collection("wf_Seismogram", "wf_test")
-        self.db2.set_database_schema(db_schema)
-        self.db2.set_metadata_schema(md_schema)
-        logging_helper.info(promiscuous_seis, "2", "save_data")
-        self.db2.save_data(
-            promiscuous_seis,
-            mode="promiscuous",
-            storage_mode="gridfs",
-            collection="wf_test",
-        )
-        promiscuous_seis2 = self.db2.read_data(
-            promiscuous_seis["_id"],
-            mode="cautious",
-            normalize=["site", "source"],
-            collection="wf_test",
-        )
-        assert all(
-            a.any() == b.any()
-            for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data)
-        )
-        with pytest.raises(MsPASSError, match="is not defined"):
-            self.db2.read_data(
-                promiscuous_seis["_id"],
-                mode="cautious",
-                normalize=["site", "source"],
-                collection="wf_test2",
-            )
-
-        # test read mseed file that contains more than one Trace object, which results in gaps
-        dir = "python/tests/data/"
-        dfile = "gaps.mseed"
-        wf_id = (
-            self.db["wf_TimeSeries"]
-            .insert_one(
-                {
-                    "npts": 1,
-                    "delta": 0.1,
-                    "sampling_rate": 100.0,
-                    "starttime": 0.0,
-                    "starttime_shift": 1.0,
-                    "calib": 0.1,
-                    "foff": 0,
-                    "dir": dir,
-                    "dfile": dfile,
-                    "storage_mode": "file",
-                    "format": "mseed",
-                    "nbytes": 26186752,
-                }
-            )
-            .inserted_id
-        )
-        gaps_ts = self.db.read_data(
-            wf_id, collection="wf_TimeSeries", merge_fill_value=-1
-        )
-        assert gaps_ts.npts == 8640000
-        fill_val_cnt = np.isclose(gaps_ts.data, -1).sum()
-        assert (
-            fill_val_cnt
-            == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
-        )  # = 315090
-        assert len(gaps_ts.elog.get_error_log()) == 1
-        assert (
-            gaps_ts.elog.get_error_log()[0].message
-            == "There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps."
-        )
-
-        # test read_data with missing attributes in the normalized records
-        # 1. test missing normal attribute
-        missing_net_site_id = ObjectId()
-        self.db["site"].insert_one(
-            {
-                "_id": missing_net_site_id,
-                "sta": "sta1",
-                "loc": "loc",
-                "lat": 1.0,
-                "lon": 1.0,
-                "elev": 2.0,
-                "starttime": datetime.utcnow().timestamp(),
-                "endtime": datetime.utcnow().timestamp(),
-            }
-        )
-        ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, "1", "deepcopy")
-        ts["site_id"] = missing_net_site_id
-        self.db.save_data(ts, mode="promiscuous", storage_mode="gridfs")
-        self.db.database_schema.set_default("wf_TimeSeries", "wf")
-        missing_normal_ts = self.db.read_data(ts["_id"], normalize=["site"])
-        assert missing_normal_ts.live
-        assert "net" not in missing_normal_ts
-        assert len(missing_normal_ts.elog.get_error_log()) == 0
-        # 2. test missing required attribute
-        missing_lat_site_id = ObjectId()
-        self.db["site"].insert_one(
-            {
-                "_id": missing_lat_site_id,
-                "net": "net1",
-                "sta": "sta1",
-                "loc": "loc",
-                "lon": 1.0,
-                "elev": 2.0,
-                "starttime": datetime.utcnow().timestamp(),
-                "endtime": datetime.utcnow().timestamp(),
-            }
-        )
-        ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, "1", "deepcopy")
-        ts["site_id"] = missing_lat_site_id
-        self.db.save_data(ts, mode="promiscuous", storage_mode="gridfs")
-        missing_required_ts = self.db.read_data(ts["_id"], normalize=["site"])
-        assert missing_required_ts.live
-        assert "site_lat" not in missing_required_ts
-        assert len(missing_required_ts.elog.get_error_log()) == 1
-        assert missing_required_ts.elog.get_error_log()[
-            0
-        ].message == "Attribute lat is required in collection site, but is missing in the document with id={}.".format(
-            str(missing_lat_site_id)
-        )
+        # Necessary to avoid state problems with other tests
+        self.db.drop_collection("cemetery")
+        self.db.drop_collection("abortions")
 
     def test_index_mseed_file(self):
         dir = "python/tests/data/"
@@ -1511,7 +1598,11 @@ class TestDatabase:
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, "1", "deepcopy")
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
         assert save_res.live
@@ -1556,6 +1647,7 @@ class TestDatabase:
             dir="./python/tests/data/",
             dfile="test_db_output_1",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
 
@@ -1581,6 +1673,7 @@ class TestDatabase:
             dir="./python/tests/data/",
             dfile="test_db_output_1",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         save_res2 = self.db.save_data(
             ts2,
@@ -1589,6 +1682,7 @@ class TestDatabase:
             dir="./python/tests/data/",
             dfile="test_db_output_1",
             exclude_keys=["extra2"],
+            return_data=True,
         )
 
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -1636,11 +1730,19 @@ class TestDatabase:
         ts2["starttime"] = "123"
 
         save_res = self.db.save_data(
-            ts1, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts1,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
-            ts2, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts2,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
 
@@ -1648,14 +1750,18 @@ class TestDatabase:
         assert fixed_cnt == {"npts": 1, "delta": 1}
 
     def test_clean(self, capfd):
-        # clear all the wf collection documents
-        self.db["wf_TimeSeries"].delete_many({})
+        """
+        Collection of several tests of clean method.
+        """
+        # make certain wf_TimeSeries is empty to avoid state problems
+        # from previous tests
+        self.db.drop_collection("wf_TimeSeries")
 
         self.db.database_schema.set_default("wf_TimeSeries", "wf")
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, "1", "deepcopy")
 
-        # invalid parameters
+        # Test 1:  invalid parameters to function
         with pytest.raises(
             MsPASSError,
             match="verbose_keys should be a list , but <class 'str'> is requested.",
@@ -1672,14 +1778,23 @@ class TestDatabase:
         ):
             self.db.clean(ObjectId(), required_xref_list="123")
 
-        # erase a required field in TimeSeries
+        # Test 2:
+        # erase a required field in TimeSeries.  In promiscuous mode that
+        # will work but produce a wf cocument that is invalid
+        # later tests are to handle that problem datum
         ts.erase("npts")
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         assert ts.live
+        # save this for later test
+        bad_datum_id = save_res["_id"]
 
         # test nonexist document
         nonexist_id = ObjectId()
@@ -1695,15 +1810,17 @@ class TestDatabase:
 
         # test verbose_keys and delete required fields missing document if delete_missing_required is True
         fixes_cnt = self.db.clean(
-            ts["_id"],
+            bad_datum_id,
             verbose_keys=["delta"],
             verbose=True,
             delete_missing_required=True,
         )
         assert len(fixes_cnt) == 0
         # test if it is deleted
-        assert not self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
-        assert not self.db["history_object"].find_one({"wf_TimeSeries_id": ts["_id"]})
+        assert not self.db["wf_TimeSeries"].find_one({"_id": bad_datum_id})
+        assert not self.db["history_object"].find_one(
+            {"wf_TimeSeries_id": bad_datum_id}
+        )
         assert not self.db["elog"].find_one({"wf_TimeSeries_id": ts["_id"]})
         out, err = capfd.readouterr()
         assert (
@@ -1713,25 +1830,34 @@ class TestDatabase:
             )
         )
 
+        # Test 3:
         # test check_xref and delete required xref_keys missing document
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, "1", "deepcopy")
         ts["starttime_shift"] = 1.0
         ts.erase("site_id")
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
+        # The document with this id has the missing site_id value
+        bad_xref_wfid = save_res["_id"]
         fixes_cnt = self.db.clean(
-            ts["_id"],
+            bad_xref_wfid,
             verbose=True,
             required_xref_list=["site_id"],
             delete_missing_xref=True,
         )
         assert len(fixes_cnt) == 0
-        assert not self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
-        assert not self.db["history_object"].find_one({"wf_TimeSeries_id": ts["_id"]})
-        assert not self.db["elog"].find_one({"wf_TimeSeries_id": ts["_id"]})
+        assert not self.db["wf_TimeSeries"].find_one({"_id": bad_xref_wfid})
+        assert not self.db["history_object"].find_one(
+            {"wf_TimeSeries_id": bad_xref_wfid}
+        )
+        assert not self.db["elog"].find_one({"wf_TimeSeries_id": bad_xref_wfid})
         out, err = capfd.readouterr()
         assert (
             out
@@ -1740,14 +1866,18 @@ class TestDatabase:
             )
         )
 
-        # test conversion success
+        # Test 4:  test successful type conversions - not a function option
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, "1", "deepcopy")
         # npts has type str, should convert to int
         ts["npts"] = "123"
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         fixes_cnt = self.db.clean(ts["_id"], verbose=True)
@@ -1765,14 +1895,18 @@ class TestDatabase:
             )
         )
 
-        # test conversion fail
+        # Test 5:  test impossible type conversion
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, "1", "deepcopy")
         # npts has type str, but unable to convert to int
         ts["npts"] = "xyz"
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         fixes_cnt = self.db.clean(ts["_id"], verbose=True)
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -1817,7 +1951,11 @@ class TestDatabase:
         logging_helper.info(ts, "1", "deepcopy")
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -1836,7 +1974,11 @@ class TestDatabase:
         logging_helper.info(ts, "1", "deepcopy")
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -1880,7 +2022,11 @@ class TestDatabase:
         # mismatch type
         ts["delta"] = "123"
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -1891,9 +2037,7 @@ class TestDatabase:
         non_exist_id = ObjectId()
         with pytest.raises(
             MsPASSError,
-            match="Database.verify:  objectid="
-            + str(non_exist_id)
-            + " has no matching document in wf_TimeSeries",
+            match=" has no matching document",
         ):
             problematic_keys = self.db.verify(
                 non_exist_id, "wf_TimeSeries", tests=["xref", "type", "undefined"]
@@ -1925,6 +2069,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
@@ -1932,6 +2077,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2", "site_id"],
+            return_data=True,
         )
         assert save_res.live
 
@@ -1983,6 +2129,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2", "starttime"],
+            return_data=True,
         )
         assert save_res.live
         self.db["wf_TimeSeries"].update_one({"_id": ts["_id"]}, {"$set": {"t0": 1.0}})
@@ -2006,6 +2153,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2", "starttime"],
+            return_data=True,
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -2022,7 +2170,11 @@ class TestDatabase:
         logging_helper.info(ts, "1", "deepcopy")
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -2047,7 +2199,11 @@ class TestDatabase:
         logging_helper.info(ts, "1", "deepcopy")
         ts["starttime_shift"] = 1.0
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -2056,7 +2212,8 @@ class TestDatabase:
         sampling_rate_val = res["sampling_rate"]
         starttime_val = res["starttime"]
         counts = self.db._rename_attributes(
-            "wf_TimeSeries", {"delta": "dt", "sampling_rate": "sr", "starttime": "st"}
+            "wf_TimeSeries",
+            {"delta": "dt", "sampling_rate": "sr", "starttime": "st"},
         )
         assert len(counts) == 3 and counts == {
             "delta": 1,
@@ -2083,7 +2240,11 @@ class TestDatabase:
         ts["delta"] = "123"
         ts["sampling_rate"] = "123"
         save_res = self.db.save_data(
-            ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
@@ -2125,6 +2286,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
@@ -2132,6 +2294,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
@@ -2139,6 +2302,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
@@ -2146,6 +2310,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
 
@@ -2178,7 +2343,11 @@ class TestDatabase:
         (bad_id_list, missing_id_list) = self.db._check_links(collection="wf")
         assert len(bad_id_list) == 3
         assert set(bad_id_list) == set(
-            [bad_site_id_ts["_id"], bad_source_id_ts["_id"], bad_channel_id_ts["_id"]]
+            [
+                bad_site_id_ts["_id"],
+                bad_source_id_ts["_id"],
+                bad_channel_id_ts["_id"],
+            ]
         )
         assert len(missing_id_list) == 1
         assert missing_id_list == [missing_site_id_ts["_id"]]
@@ -2215,6 +2384,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
@@ -2222,6 +2392,7 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
 
@@ -2265,10 +2436,15 @@ class TestDatabase:
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
         save_res = self.db.save_data(
-            undef_ts, mode="promiscuous", storage_mode="gridfs", exclude_keys=["extra2"]
+            undef_ts,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            exclude_keys=["extra2"],
+            return_data=True,
         )
         assert save_res.live
 
@@ -2316,37 +2492,38 @@ class TestDatabase:
         logging_helper.info(ts1, "1", "deepcopy")
         logging_helper.info(ts2, "1", "deepcopy")
         logging_helper.info(ts3, "1", "deepcopy")
-        self.db.save_data(ts1, storage_mode="gridfs")
-        self.db.save_data(ts2, storage_mode="gridfs")
-        self.db.save_data(ts3, storage_mode="gridfs")
+        self.db.save_data(ts1, storage_mode="gridfs", return_data=True)
+        self.db.save_data(ts2, storage_mode="gridfs", return_data=True)
+        self.db.save_data(ts3, storage_mode="gridfs", return_data=True)
 
         time = datetime.utcnow().timestamp()
         ts1.t0 = time
         ts1["tst"] = time
         ts2.t0 = time
-        ts3.t0 = time
+        ts3.t0 = time + 5.0
         ts_ensemble = TimeSeriesEnsemble()
         ts_ensemble.member.append(ts1)
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
+        ts_ensemble.set_live()
 
         logging_helper.info(ts_ensemble.member[0], "2", "update_data")
         logging_helper.info(ts_ensemble.member[1], "2", "update_data")
         logging_helper.info(ts_ensemble.member[2], "2", "update_data")
         # Test this section is a temporary to see if save_ensemble_data
         # resolves the _id problem:
-        self.db.save_ensemble_data(ts_ensemble)
+        res = self.db.save_data(ts_ensemble, return_data=True)
         # This test needs to be moved and/or changed.   It is failing with
         # and error that says it needs the _id to do an update.
-        # I'm commenting ou the next 3 asserts because they will fail until
+        # I'm commenting out the next 3 asserts because they will fail until
         # that is resolved
-        # self.db.update_ensemble_metadata(ts_ensemble, mode='promiscuous', exclude_objects=[2])
-        # res = self.db['wf_TimeSeries'].find_one({'_id': ts1['_id']})
-        # assert res['starttime'] == time
-        # res = self.db['wf_TimeSeries'].find_one({'_id': ts2['_id']})
-        # assert res['starttime'] == time
-        # res = self.db['wf_TimeSeries'].find_one({'_id': ts3['_id']})
-        # assert res['starttime'] != time
+        self.db.update_ensemble_metadata(ts_ensemble, mode="promiscuous")
+        doc = self.db["wf_TimeSeries"].find_one({"_id": res.member[0]["_id"]})
+        assert doc["starttime"] == time
+        doc = self.db["wf_TimeSeries"].find_one({"_id": res.member[1]["_id"]})
+        assert doc["starttime"] == time
+        doc = self.db["wf_TimeSeries"].find_one({"_id": res.member[2]["_id"]})
+        assert doc["starttime"] != time
 
         time_new = datetime.utcnow().timestamp()
         ts_ensemble.member[0]["tst"] = time + 1
@@ -2379,9 +2556,9 @@ class TestDatabase:
         logging_helper.info(seis1, "1", "deepcopy")
         logging_helper.info(seis2, "1", "deepcopy")
         logging_helper.info(seis3, "1", "deepcopy")
-        self.db.save_data(seis1, storage_mode="gridfs")
-        self.db.save_data(seis2, storage_mode="gridfs")
-        self.db.save_data(seis3, storage_mode="gridfs")
+        self.db.save_data(seis1, storage_mode="gridfs", return_data=True)
+        self.db.save_data(seis2, storage_mode="gridfs", return_data=True)
+        self.db.save_data(seis3, storage_mode="gridfs", return_data=True)
         time = datetime.utcnow().timestamp()
         seis1.t0 = time
         seis1["tst"] = time
@@ -2417,6 +2594,21 @@ class TestDatabase:
         # assert res['starttime'] == time_new
 
     def test_save_ensemble_data(self):
+        """
+        Tests writer for ensembles.   In v1 this was done with
+        different methods.  From v2 forward the recommended use is
+        to run with save_data.  These tests were modified to make
+        that change Sept 2023.  Also cleaned up some internal
+        state dependencies in earlier version that carried data forward
+        inside this function in confusing ways that caused maintenance
+        issues.
+
+        Note retained compatibility tests for old api.  If and when
+        those are completely deprecated those sections will need to be
+        changed.
+        """
+        self.db.drop_collection("wf_TimeSeries")
+        self.db.drop_collection("wf_Seismogram")
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
@@ -2428,9 +2620,21 @@ class TestDatabase:
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
         ts_ensemble.set_live()
+        # We use this copy below to restore the state of the
+        # data being tested - avoids confusing dependencies that
+        # were present in earlier versions of this test script
+        ts_ensemble0 = copy.deepcopy(ts_ensemble)
+        # First test save in backward compatibility with
+        # save_ensemble_data using directory list and dfile list.
+        # Note this function may be deprecated in future releases
+        # An anomaly the revision is that exclude_objects edits
+        # the return deleting the excluded members.  Older version
+        # just left it unaltered and didn't save it.
+        # I (glp) judged that the wrong behavior
+        self.db.database_schema.set_default("wf_TimeSeries", "wf")
         dfile_list = ["test_db_output", "test_db_output"]
         dir_list = ["python/tests/data/", "python/tests/data/"]
-        self.db.save_ensemble_data(
+        ts_ensemble = self.db.save_ensemble_data(
             ts_ensemble,
             mode="promiscuous",
             storage_mode="file",
@@ -2438,42 +2642,96 @@ class TestDatabase:
             dir_list=dir_list,
             exclude_objects=[1],
         )
-        self.db.database_schema.set_default("wf_TimeSeries", "wf")
-        res = self.db.read_data(
-            ts_ensemble.member[0]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-        )
-        assert np.isclose(ts_ensemble.member[0].data, res.data).all()
-        res = self.db.read_data(
-            ts_ensemble.member[2]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-        )
-        assert np.isclose(ts_ensemble.member[2].data, res.data).all()
-        assert "_id" not in ts_ensemble.member[1]
+        assert len(ts_ensemble.member) == 2
+        # Test atomic read of members just written
+        # Note exclude_objects now deletes data excluded from member vector
+        # so we don't get here without passing the assert immediately above
 
+        for i in range(len(ts_ensemble.member)):
+            res = self.db.read_data(
+                ts_ensemble[i]["_id"],
+                mode="promiscuous",
+                normalize=["site", "source", "channel"],
+            )
+            assert res.live
+            assert np.isclose(ts_ensemble.member[i].data, res.data).all()
+
+        # Repeat same test as immediately above using gridfs storage mode
+        # and adding a second history node
+        ts_ensemble = copy.deepcopy(ts_ensemble0)
         logging_helper.info(ts_ensemble.member[0], "2", "save_data")
         logging_helper.info(ts_ensemble.member[1], "2", "save_data")
         logging_helper.info(ts_ensemble.member[2], "2", "save_data")
-        self.db.save_ensemble_data(
-            ts_ensemble, mode="promiscuous", storage_mode="gridfs", exclude_objects=[1]
-        )
-        res = self.db.read_data(
-            ts_ensemble.member[0]["_id"],
+        ts_ensemble = self.db.save_ensemble_data(
+            ts_ensemble,
             mode="promiscuous",
-            normalize=["site", "source", "channel"],
+            storage_mode="gridfs",
+            exclude_objects=[1],
         )
-        assert np.isclose(ts_ensemble.member[0].data, res.data).all()
-        assert "_id" not in ts_ensemble.member[1]
-        res = self.db.read_data(
-            ts_ensemble.member[2]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source", "channel"],
-        )
-        assert np.isclose(ts_ensemble.member[2].data, res.data).all()
+        # Test atomic read of members just written
+        # Note exclude_objects use above is why we add the conditional
+        self.db.database_schema.set_default("wf_TimeSeries", "wf")
+        for i in range(len(ts_ensemble.member)):
+            res = self.db.read_data(
+                ts_ensemble.member[i]["_id"],
+                mode="promiscuous",
+                normalize=["site", "source", "channel"],
+            )
+            assert res.live
+            assert np.isclose(ts_ensemble.member[i].data, res.data).all()
 
-        # using seismogram
+        # Now repeat both of the above using the new shorter named
+        # function save_data (previously only supported atomic data)
+        # we don't use exclude as that is is expected to be deprecated
+        ts_ensemble = copy.deepcopy(ts_ensemble0)
+        ts_ensemble = self.db.save_data(
+            ts_ensemble,
+            mode="promiscuous",
+            storage_mode="file",
+            dir="python/tests/data/",
+            dfile="test_db_output",
+            return_data=True,
+        )
+        assert ts_ensemble.live
+        assert len(ts_ensemble.member) == 3
+        self.db.database_schema.set_default("wf_TimeSeries", "wf")
+        # using atomic reader for now - ensemble reader is tested
+        # in test_read_ensemble_data
+        for i in range(len(ts_ensemble.member)):
+            res = self.db.read_data(
+                ts_ensemble.member[i]["_id"],
+                mode="promiscuous",
+                normalize=["site", "source", "channel"],
+            )
+            assert res.live
+            assert np.isclose(ts_ensemble.member[i].data, res.data).all()
+
+        # Repeat same test as immediately above using gridfs storage mode
+        # and adding a second history node
+        ts_ensemble = copy.deepcopy(ts_ensemble0)
+        logging_helper.info(ts_ensemble.member[0], "2", "save_data")
+        logging_helper.info(ts_ensemble.member[1], "2", "save_data")
+        logging_helper.info(ts_ensemble.member[2], "2", "save_data")
+        ts_ensemble = self.db.save_data(
+            ts_ensemble,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            return_data=True,
+        )
+        assert len(ts_ensemble.member) == 3
+        self.db.database_schema.set_default("wf_TimeSeries", "wf")
+        # using atomic reader for now - ensemble reader is tested
+        # in test_read_ensemble_data
+        for i in range(len(ts_ensemble.member)):
+            res = self.db.read_data(
+                ts_ensemble.member[i]["_id"],
+                mode="promiscuous",
+                normalize=["site", "source", "channel"],
+            )
+            assert res.live
+            assert np.isclose(ts_ensemble.member[i].data, res.data).all()
+
+        # Near copy of above for Seismogram
         seis1 = copy.deepcopy(self.test_seis)
         seis2 = copy.deepcopy(self.test_seis)
         seis3 = copy.deepcopy(self.test_seis)
@@ -2485,7 +2743,21 @@ class TestDatabase:
         seis_ensemble.member.append(seis2)
         seis_ensemble.member.append(seis3)
         seis_ensemble.set_live()
-        self.db.save_ensemble_data(
+        # We use this copy below to restore the state of the
+        # data being tested - avoids confusing dependencies that
+        # were present in earlier versions of this test script
+        seis_ensemble0 = copy.deepcopy(seis_ensemble)
+        # First test save in backward compatibility with
+        # save_ensemble_data using directory list and dfile list.
+        # Note this function may be deprecated in future releases
+        # An anomaly the revision is that exclude_objects edits
+        # the return deleting the excluded members.  Older version
+        # just left it unaltered and didn't save it.
+        # I (glp) judged that the wrong behavior
+        self.db.database_schema.set_default("wf_Seismogram", "wf")
+        dfile_list = ["test_db_output_seis", "test_db_output_seis"]
+        dir_list = ["python/tests/data/", "python/tests/data/"]
+        seis_ensemble = self.db.save_ensemble_data(
             seis_ensemble,
             mode="promiscuous",
             storage_mode="file",
@@ -2493,46 +2765,107 @@ class TestDatabase:
             dir_list=dir_list,
             exclude_objects=[1],
         )
-        self.db.database_schema.set_default("wf_Seismogram", "wf")
-        res = self.db.read_data(
-            seis_ensemble.member[0]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source"],
-        )
-        assert np.isclose(seis_ensemble.member[0].data, res.data).all()
-        res = self.db.read_data(
-            seis_ensemble.member[2]["_id"],
-            mode="promiscuous",
-            normalize=["site", "source"],
-        )
-        assert np.isclose(seis_ensemble.member[2].data, res.data).all()
-        assert "_id" not in seis_ensemble.member[1]
+        assert len(seis_ensemble.member) == 2
+        # Test atomic read of members just written
+        # Note exclude_objects now deletes exlcuded from member vector
+        # so we don't get here without passing the assert immediately above
+        for i in range(len(seis_ensemble.member)):
+            res = self.db.read_data(
+                seis_ensemble.member[i]["_id"],
+                mode="promiscuous",
+                normalize=["site", "source"],
+                collection="wf_Seismogram",
+            )
+            assert res.live
+            assert np.isclose(seis_ensemble.member[i].data, res.data).all()
+
+        # Repeat same test as immediately above using gridfs storage mode
+        # and adding a second history node
+        seis_ensemble = copy.deepcopy(seis_ensemble0)
         logging_helper.info(seis_ensemble.member[0], "2", "save_data")
         logging_helper.info(seis_ensemble.member[1], "2", "save_data")
         logging_helper.info(seis_ensemble.member[2], "2", "save_data")
-        self.db.save_ensemble_data(
+        seis_ensemble = self.db.save_ensemble_data(
             seis_ensemble,
             mode="promiscuous",
             storage_mode="gridfs",
             exclude_objects=[1],
         )
-        res = self.db.read_data(
-            seis_ensemble.member[0]["_id"],
+        # Test atomic read of members just written
+        # Note exclude_objects use above is why we add the conditional
+        self.db.database_schema.set_default("wf_Seismogram", "wf")
+        for i in range(len(seis_ensemble.member)):
+            res = self.db.read_data(
+                seis_ensemble.member[i]["_id"],
+                mode="promiscuous",
+                normalize=["site", "source"],
+            )
+        assert res.live
+        assert np.isclose(seis_ensemble.member[i].data, res.data).all()
+
+        # Now repeat both of the above using the new shorter named
+        # function save_data (previously only supported atomic data)
+        # we don't use exclude as that is is expected to be deprecated
+        seis_ensemble = copy.deepcopy(seis_ensemble0)
+        seis_ensemble = self.db.save_data(
+            seis_ensemble,
             mode="promiscuous",
-            normalize=["site", "source"],
+            storage_mode="file",
+            dir="python/tests/data/",
+            dfile="test_db_output",
+            return_data=True,
         )
-        assert np.isclose(seis_ensemble.member[0].data, res.data).all()
-        assert "_id" not in seis_ensemble.member[1]
-        res = self.db.read_data(
-            seis_ensemble.member[2]["_id"],
+        assert seis_ensemble.live
+        assert len(seis_ensemble.member) == 3
+        self.db.database_schema.set_default("wf_Seismogram", "wf")
+        # using atomic reader for now - ensemble reader is tested
+        # in test_read_ensemble_data
+        for i in range(len(seis_ensemble.member)):
+            res = self.db.read_data(
+                seis_ensemble.member[i]["_id"],
+                mode="promiscuous",
+                normalize=["site", "source"],
+            )
+        assert res.live
+        assert np.isclose(seis_ensemble.member[i].data, res.data).all()
+
+        # Repeat same test as immediately above using gridfs storage mode
+        # and adding a second history node
+        seis_ensemble = copy.deepcopy(seis_ensemble0)
+        logging_helper.info(seis_ensemble.member[0], "2", "save_data")
+        logging_helper.info(seis_ensemble.member[1], "2", "save_data")
+        logging_helper.info(seis_ensemble.member[2], "2", "save_data")
+        seis_ensemble = self.db.save_data(
+            seis_ensemble,
             mode="promiscuous",
-            normalize=["site", "source"],
+            storage_mode="gridfs",
+            return_data=True,
         )
-        assert np.isclose(seis_ensemble.member[2].data, res.data).all()
+        assert len(seis_ensemble.member) == 3
+        self.db.database_schema.set_default("wf_Seismogram", "wf")
+        # using atomic reader for now - ensemble reader is tested
+        # in test_read_ensemble_data
+        for i in range(len(seis_ensemble.member)):
+            res = self.db.read_data(
+                seis_ensemble.member[i]["_id"],
+                mode="promiscuous",
+                normalize=["site", "source"],
+            )
+            assert res.live
+            assert np.isclose(seis_ensemble.member[i].data, res.data).all()
 
     def test_read_ensemble_data(self):
-        # clean wf collection
-        self.db["wf_TimeSeries"].delete_many({})
+        """
+        Test function for reading ensembles.  This file has multiple
+        tests for different features.  It currently contains
+        legacy tests of methods that may be depcrecated in the
+        future when only read_data and read_distributed_data
+        will be the mspass readers.   Be warned this set of tests
+        will need to be altered when and if the old ensmeble
+        functions are removed.
+        """
+        self.db.drop_collection("wf_TimeSeries")
+        self.db.drop_collection("wf_Seismogram")
 
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
@@ -2545,17 +2878,19 @@ class TestDatabase:
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
         ts_ensemble.set_live()
+
         self.db.database_schema.set_default("wf_TimeSeries", "wf")
-        self.db.save_ensemble_data(
+        # as a legacy function wrapper for this method sets optional
+        # return_data True.
+        ensemble_saved = self.db.save_ensemble_data(
             ts_ensemble, mode="promiscuous", storage_mode="gridfs"
         )
-        # test with python list
+        # Test legacy reader with cursor
+        # this works because there is only one previous write to
+        # wf_TimeSeries
+        cursor = self.db.wf_TimeSeries.find({})
         res = self.db.read_ensemble_data(
-            [
-                ts_ensemble.member[0]["_id"],
-                ts_ensemble.member[1]["_id"],
-                ts_ensemble.member[2]["_id"],
-            ],
+            cursor,
             ensemble_metadata={"key1": "value1", "key2": "value2"},
             mode="cautious",
             normalize=["source", "site", "channel"],
@@ -2571,10 +2906,26 @@ class TestDatabase:
         assert (
             "key2" in ts_ensemble_metadata and ts_ensemble_metadata["key2"] == "value2"
         )
+        # test legacy use of list of ObjectIds.
+        # That should now generate a TypeError exception we test here
+        with pytest.raises(TypeError, match="for arg0"):
+            res = self.db.read_ensemble_data(
+                [
+                    ensemble_saved.member[0]["_id"],
+                    ensemble_saved.member[1]["_id"],
+                    ensemble_saved.member[2]["_id"],
+                ],
+                ensemble_metadata={"key1": "value1", "key2": "value2"},
+                mode="cautious",
+                normalize=["source", "site", "channel"],
+            )
 
-        # test with cursor
+        # test read_data method with cursor which is the read_data signal for ensemble
+        # hence we use read_data not the legacy function
+        # With current implementation this is identical to call
+        # above with read_ensmble_data
         cursor = self.db["wf_TimeSeries"].find({})
-        res = self.db.read_ensemble_data(
+        res = self.db.read_data(
             cursor,
             ensemble_metadata={"key1": "value1", "key2": "value2"},
             mode="cautious",
@@ -2593,7 +2944,8 @@ class TestDatabase:
             "key2" in ts_ensemble_metadata and ts_ensemble_metadata["key2"] == "value2"
         )
 
-        # using seismogram
+        # repeat for Seismogram - these tests are a near copy
+        # of above for TimeSeries
         seis1 = copy.deepcopy(self.test_seis)
         seis2 = copy.deepcopy(self.test_seis)
         seis3 = copy.deepcopy(self.test_seis)
@@ -2606,17 +2958,60 @@ class TestDatabase:
         seis_ensemble.member.append(seis3)
         seis_ensemble.set_live()
         self.db.database_schema.set_default("wf_Seismogram", "wf")
-        self.db.save_ensemble_data(
+        # as a legacy function wrapper for this method sets optional
+        # return_data True.
+        ensemble_saved = self.db.save_ensemble_data(
             seis_ensemble, mode="promiscuous", storage_mode="gridfs"
         )
+        # Test legacy reader with cursor
+        # this works because there is only one previous write to
+        # wf_TimeSeries
+        cursor = self.db.wf_Seismogram.find({})
         res = self.db.read_ensemble_data(
-            [
-                seis_ensemble.member[0]["_id"],
-                seis_ensemble.member[1]["_id"],
-                seis_ensemble.member[2]["_id"],
-            ],
+            cursor,
             ensemble_metadata={"key1": "value1", "key2": "value2"},
+            mode="cautious",
+            normalize=["source", "site"],
         )
+        assert len(res.member) == 3
+        for i in range(3):
+            assert np.isclose(res.member[i].data, seis_ensemble.member[i].data).all()
+        # test ensemble_metadata
+        seis_ensemble_metadata = Metadata(res)
+        assert (
+            "key1" in seis_ensemble_metadata
+            and seis_ensemble_metadata["key1"] == "value1"
+        )
+        assert (
+            "key2" in seis_ensemble_metadata
+            and seis_ensemble_metadata["key2"] == "value2"
+        )
+        # test legacy use of list of ObjectIds.
+        # That should now generate a TypeError exception we test here
+        with pytest.raises(TypeError, match="for arg0"):
+            res = self.db.read_ensemble_data(
+                [
+                    ensemble_saved.member[0]["_id"],
+                    ensemble_saved.member[1]["_id"],
+                    ensemble_saved.member[2]["_id"],
+                ],
+                ensemble_metadata={"key1": "value1", "key2": "value2"},
+                mode="cautious",
+                normalize=["source", "site"],
+            )
+
+        # test read_data method with cursor which is the read_data signal for ensemble
+        # hence we use read_data not the legacy function
+        # With current implementation this is identical to call
+        # above with read_ensmble_data
+        cursor = self.db["wf_Seismogram"].find({})
+        res = self.db.read_data(
+            cursor,
+            ensemble_metadata={"key1": "value1", "key2": "value2"},
+            mode="cautious",
+            normalize=["source", "site"],
+        )
+
         assert len(res.member) == 3
         for i in range(3):
             assert np.isclose(res.member[i].data, seis_ensemble.member[i].data).all()
@@ -2646,6 +3041,8 @@ class TestDatabase:
         assert self.db.get_response(net="TA", sta="036A", chan="BHE", time=time) is None
 
     def teardown_class(self):
+        import glob
+
         try:
             os.remove("python/tests/data/test_db_output")
             os.remove("python/tests/data/test_mseed_output")
@@ -2653,6 +3050,17 @@ class TestDatabase:
             pass
         client = DBClient("localhost")
         client.drop_database("dbtest")
+        # version 2 tests have random file name creation we handle this
+        # way with glob
+        filelist = glob.glob("./*-binary")  # binary format writes to undefine dfile
+        filelist2 = glob.glob("./*.ms")  # mseed writes to undefined to here
+        try:
+            for f in filelist:
+                os.remove(f)
+            for f in filelist2:
+                os.remove(f)
+        except OSError:
+            pass
 
     def test_load_source_site_channel_metadata(self):
         ts = copy.deepcopy(self.test_ts)
@@ -2944,7 +3352,14 @@ class TestDatabase:
             new=self.mock_fdsn_get_waveform,
         ):
             self.db.index_mseed_FDSN(
-                "IRIS", 2010, 58, "IU", "ANMO", "00", "BHZ", collection="test_s3_fdsn"
+                "IRIS",
+                2010,
+                58,
+                "IU",
+                "ANMO",
+                "00",
+                "BHZ",
+                collection="test_s3_fdsn",
             )
             assert self.db["test_s3_fdsn"].count_documents({}) == 1
             fdsn_doc = self.db.test_s3_fdsn.find_one()
@@ -2993,7 +3408,7 @@ class TestDatabase:
         save_num = self.db.save_dataframe(
             df,
             "testdataframe",
-            parallel=True,
+            parallel=False,
             one_to_one=True,
             null_values=attributes[2],
         )
@@ -3031,179 +3446,56 @@ class TestDatabase:
         query = {"pwfid": 3752}
         assert 1 == self.db.testtextfile.count_documents(query)
 
+    def test_set_schema(self):
+        assert self.db.database_schema._attr_dict["site"]
+        self.db.set_schema("mspass_lite.yaml")
+        with pytest.raises(KeyError, match="site"):
+            self.db.database_schema._attr_dict["site"]
+            
+    def test_geoJSON_doc(self):
+        """
+        Tests only the function geoJSON_doc added Jan 2024 to properly 
+        create geoJSON records that allow geospatial queries in 
+        site, channel, and source.  That function is now used in 
+        Database.save_inventory and Database.save_catalog to always 
+        save a geoJSOn format location data.   We assume the bulk of the 
+        code is already tested when those two functions are tested in 
+        other test functions.  The big thing here is testing the 
+        bad data input handlers.
+        """
+        # test null doc input
+        doc = geoJSON_doc(22.0,44.0,key='testpoint')
+        assert 'testpoint' in doc
+        val = doc['testpoint']
+        assert val['type'] == "Point"
+        coords = val['coordinates']
+        # note coordinates pair is lon,lat
+        assert coords[0] == 44.0
+        assert coords[1] == 22.0
 
-def test_read_distributed_data(spark_context):
-    client = DBClient("localhost")
-    client.drop_database("mspasspy_test_db")
+        doc = geoJSON_doc(33.0,55.0,doc=doc,key='testpoint2')
+        #  doc should contain both testpoint and testpoint2
+        #  This tests update feature of this function
+        assert 'testpoint' in doc
+        assert 'testpoint2' in doc
+        val = doc['testpoint2']
+        assert val['type'] == "Point"
+        coords = val['coordinates']
+        # note coordinates pair is lon,lat
+        assert coords[0] == 55.0
+        assert coords[1] == 33.0
 
-    test_ts = get_live_timeseries()
+        # recoverable value test
+        doc = geoJSON_doc(20,270.0,key='recoverable')
+        assert 'recoverable' in doc
+        val = doc['recoverable']
+        coords = val['coordinates']
+        # use is_close because -90 is computed but normal floating point math 
+        # for that simple calculation would allow an == to also work
+        assert np.isclose(coords[0],-90.0)
+        assert coords[1] == 20.0
+        
+        with pytest.raises(ValueError, 
+                           match="Illegal geographic input"):
+            doc = geoJSON_doc(20,400)
 
-    client = DBClient("localhost")
-    db = Database(client, "mspasspy_test_db")
-
-    site_id = ObjectId()
-    channel_id = ObjectId()
-    source_id = ObjectId()
-    db["site"].insert_one(
-        {
-            "_id": site_id,
-            "net": "net",
-            "sta": "sta",
-            "loc": "loc",
-            "lat": 1.0,
-            "lon": 1.0,
-            "elev": 2.0,
-            "starttime": datetime.utcnow().timestamp(),
-            "endtime": datetime.utcnow().timestamp(),
-        }
-    )
-    db["channel"].insert_one(
-        {
-            "_id": channel_id,
-            "net": "net1",
-            "sta": "sta1",
-            "loc": "loc1",
-            "chan": "chan",
-            "lat": 1.1,
-            "lon": 1.1,
-            "elev": 2.1,
-            "starttime": datetime.utcnow().timestamp(),
-            "endtime": datetime.utcnow().timestamp(),
-            "edepth": 3.0,
-            "vang": 1.0,
-            "hang": 1.0,
-        }
-    )
-    db["source"].insert_one(
-        {
-            "_id": source_id,
-            "lat": 1.2,
-            "lon": 1.2,
-            "time": datetime.utcnow().timestamp(),
-            "depth": 3.1,
-            "magnitude": 1.0,
-        }
-    )
-    test_ts["site_id"] = site_id
-    test_ts["source_id"] = source_id
-    test_ts["channel_id"] = channel_id
-
-    ts1 = copy.deepcopy(test_ts)
-    ts2 = copy.deepcopy(test_ts)
-    ts3 = copy.deepcopy(test_ts)
-    logging_helper.info(ts1, "1", "deepcopy")
-    logging_helper.info(ts2, "1", "deepcopy")
-    logging_helper.info(ts3, "1", "deepcopy")
-
-    ts_list = [ts1, ts2, ts3]
-    ts_list_rdd = spark_context.parallelize(ts_list)
-    ts_list_rdd.foreach(
-        lambda d, database=db: database.save_data(d, storage_mode="gridfs")
-    )
-    cursors = db["wf_TimeSeries"].find({})
-
-    spark_list = read_distributed_data(
-        db,
-        cursors,
-        mode="cautious",
-        normalize=["source", "site", "channel"],
-        format="spark",
-        spark_context=spark_context,
-    )
-    list = spark_list.collect()
-    assert len(list) == 3
-    for l in list:
-        assert l
-        assert np.isclose(l.data, test_ts.data).all()
-
-    client = DBClient("localhost")
-    client.drop_database("mspasspy_test_db")
-
-
-def test_read_distributed_data_dask():
-    client = DBClient("localhost")
-    client.drop_database("mspasspy_test_db")
-
-    test_ts = get_live_timeseries()
-
-    client = DBClient("localhost")
-    db = Database(client, "mspasspy_test_db")
-
-    site_id = ObjectId()
-    channel_id = ObjectId()
-    source_id = ObjectId()
-    db["site"].insert_one(
-        {
-            "_id": site_id,
-            "net": "net",
-            "sta": "sta",
-            "loc": "loc",
-            "lat": 1.0,
-            "lon": 1.0,
-            "elev": 2.0,
-            "starttime": datetime.utcnow().timestamp(),
-            "endtime": datetime.utcnow().timestamp(),
-        }
-    )
-    db["channel"].insert_one(
-        {
-            "_id": channel_id,
-            "net": "net1",
-            "sta": "sta1",
-            "loc": "loc1",
-            "chan": "chan",
-            "lat": 1.1,
-            "lon": 1.1,
-            "elev": 2.1,
-            "starttime": datetime.utcnow().timestamp(),
-            "endtime": datetime.utcnow().timestamp(),
-            "edepth": 3.0,
-            "vang": 1.0,
-            "hang": 1.0,
-        }
-    )
-    db["source"].insert_one(
-        {
-            "_id": source_id,
-            "lat": 1.2,
-            "lon": 1.2,
-            "time": datetime.utcnow().timestamp(),
-            "depth": 3.1,
-            "magnitude": 1.0,
-        }
-    )
-    test_ts["site_id"] = site_id
-    test_ts["source_id"] = source_id
-    test_ts["channel_id"] = channel_id
-
-    ts1 = copy.deepcopy(test_ts)
-    ts2 = copy.deepcopy(test_ts)
-    ts3 = copy.deepcopy(test_ts)
-    logging_helper.info(ts1, "1", "deepcopy")
-    logging_helper.info(ts2, "1", "deepcopy")
-    logging_helper.info(ts3, "1", "deepcopy")
-
-    ts_list = [ts1, ts2, ts3]
-    ts_list_dbg = dask.bag.from_sequence(ts_list)
-    ts_list_dbg.map(db.save_data, storage_mode="gridfs").compute()
-    cursors = db["wf_TimeSeries"].find({})
-
-    dask_list = read_distributed_data(
-        db,
-        cursors,
-        mode="cautious",
-        normalize=["source", "site", "channel"],
-        format="dask",
-    )
-    list = dask_list.compute()
-    assert len(list) == 3
-    for l in list:
-        assert l
-        assert np.isclose(l.data, test_ts.data).all()
-
-    client = DBClient("localhost")
-    client.drop_database("mspasspy_test_db")
-
-
-if __name__ == "__main__":
-    pass

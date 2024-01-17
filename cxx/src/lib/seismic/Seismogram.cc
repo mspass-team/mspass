@@ -1,6 +1,7 @@
 #include <string>
 #include "mspass/seismic/keywords.h"
 #include "mspass/seismic/Seismogram.h"
+#include "mspass/utility/memory_constants.h"
 namespace mspass::seismic
 {
 using namespace std;
@@ -123,5 +124,20 @@ Seismogram& Seismogram::operator=(const Seismogram& parent)
 void Seismogram::load_history(const ProcessingHistory& h)
 {
   this->ProcessingHistory::operator=(h);
+}
+size_t Seismogram::memory_use() const
+{
+  size_t memory_estimate;
+  memory_estimate = sizeof(Seismogram);
+  /* data for a seismogram is 3 channels so 3*npts*/
+  memory_estimate += sizeof(double)*3*this->npts();
+  /* We can only estimate the size of the Metadata container.
+  These constants are defined in memory_constants.h */
+  memory_estimate += memory_constants::MD_AVERAGE_SIZE*this->md.size();
+  memory_estimate += memory_constants::KEY_AVERAGE_SIZE*this->changed_or_set.size();
+  /* Similar for history and elog containers */
+  memory_estimate += memory_constants::HISTORYDATA_AVERAGE_SIZE*this->nodes.size();
+  memory_estimate += memory_constants::ELOG_AVERAGE_SIZE*this->elog.size();
+  return memory_estimate;
 }
 }// end mspass namespace

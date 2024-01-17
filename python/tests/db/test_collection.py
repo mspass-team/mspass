@@ -53,8 +53,7 @@ class TestDatabase:
                 "hang": 1.0,
             }
         )
-        col_source = self.db.create_collection("source")
-        col_source.insert_one(
+        self.db["source"].insert_one(
             {
                 "_id": source_id,
                 "lat": 1.2,

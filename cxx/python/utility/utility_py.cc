@@ -187,7 +187,7 @@ static PyGetSetDef MsPASSError_getsetters[] = {
 
 PYBIND11_MODULE(utility, m) {
   m.attr("__name__") = "mspasspy.ccore.utility";
-  m.doc() = "A submodule for utility namespace of ccore"; 
+  m.doc() = "A submodule for utility namespace of ccore";
 
   py::class_<SphericalCoordinate>(m,"SphericalCoordinate","Enscapsulates concept of spherical coordinates")
     .def(py::init<>())
@@ -433,7 +433,7 @@ PYBIND11_MODULE(utility, m) {
     .def_readwrite("tag",&Metadata_typedef::tag,"Name key for this metadata")
     .def_readwrite("mdt",&Metadata_typedef::mdt,"Type of any value associated with this key")
   ;
-  
+
   /* We need this definition to bind dmatrix to a numpy array as described
   in this section of pybind11 documentation:\
   https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html
@@ -577,7 +577,7 @@ PYBIND11_MODULE(utility, m) {
       return strout;
     })
   ;
-  
+
   py::enum_<ErrorSeverity>(m,"ErrorSeverity")
     .value("Fatal",ErrorSeverity::Fatal)
     .value("Invalid",ErrorSeverity::Invalid)
@@ -586,7 +586,7 @@ PYBIND11_MODULE(utility, m) {
     .value("Debug",ErrorSeverity::Debug)
     .value("Informational",ErrorSeverity::Informational)
   ;
-  
+
   /* The following magic were based on the great example from:
     https://www.pierov.org/2020/03/01/python-custom-exceptions-c-extensions/
     This appears to be the cleanest and easiest way to implement a custom
@@ -743,6 +743,7 @@ PYBIND11_MODULE(utility, m) {
     .def("size",&ErrorLogger::size,"Return number of entries in this log")
     .def(py::self += py::self,"Operator +=")
     .def("__len__",&ErrorLogger::size,"Return number of entries in this log")
+    .def("clear",&ErrorLogger::clear,"Reset log container to zero length destroying any current content")
     .def("worst_errors",&ErrorLogger::worst_errors,"Return a list of only the worst errors")
     .def("__getitem__", [](ErrorLogger &self, size_t i) {
       return py::cast(self).attr("get_error_log")().attr("__getitem__")(i);
@@ -934,7 +935,7 @@ PYBIND11_MODULE(utility, m) {
       }
      ))
   ;
-  
+
   /* this pair of functions are potentially useful for interactive queries of
   ProcessingHistory data */
   m.def("algorithm_history",&algorithm_history,
