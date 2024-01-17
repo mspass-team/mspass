@@ -62,6 +62,10 @@ Database:
           concept:  Time shift applied to define relative time of 0.0
           aliases:  t0shift
           constraint: required
+        endtime:
+          type: double
+          concept: Time of last sample of data (epoch time or relative to some other time mark)
+          constraint: optional
         utc_convertible:
           type:  bool
           concept:  When true starttime_shift can be used to convert relative time to UTC.
