@@ -6237,7 +6237,7 @@ class Database(pymongo.database.Database):
         else:
             # Try to create dir if it doesn't exist
             newdir = pathlib.Path(dir)
-            newdir.mkdir(parents=True)
+            newdir.mkdir(parents=True, exist_ok=True)
         fname = os.path.join(dir, dfile)
         if os.path.exists(fname):
             if not os.access(fname, os.W_OK):
