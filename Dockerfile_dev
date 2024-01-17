@@ -193,6 +193,11 @@ ADD requirements.txt /mspass/requirements.txt
 RUN pip3 install -C--global-option=build -C--global-option=--debug /mspass -v \
 	&& rm -rf /mspass/build && docker-clean
 
+# Add docs and dependencies to build docs
+ADD docs /mspass/docs
+RUN apt-get update && apt-get install -yq doxygen pandoc \
+        && pip install -r /mspass/docs/requirements.txt && docker-clean
+
 # Install jedi
 RUN pip3 --no-cache-dir install jedi==0.17.2 && docker-clean
 
