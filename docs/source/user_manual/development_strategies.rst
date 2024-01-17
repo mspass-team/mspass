@@ -2,14 +2,57 @@
 
 How do I develop a new workflow from scratch?
 ==================================================
+*Answer by Prof. Gary L. Pavlis*
 
 The answer to this question depends on the complexity of the workflow you
 need to develop.   We discuss this here in terms of two endmembers:  (1) a
 workflow that can be reduced to a single python script with one or two simple
 adapter functions, and (2) a complex program that requires adapting algorithms
-from an external package. The two subsections of this page discuss these two
-endmembers.  Most actual work will fall between these two endmembers and
-may require a hybrid approach.
+from an external package. This page is designed in a progression from these
+endmembers.
+
+For all cases there it is important to first recognize a fundamental
+starting point, at least in present IT environment I suspect most
+seismologists work in.   That is, you should expect:
+
+1.  You absolutely will need an interactive framework to develop any
+    workflow.  For most people, that means a local desktop or laptop
+    with docker installed.  It is possible to use only a web browser
+    and with connections to a cluster, but that is guaranteed to be
+    a lot more difficult to do.  The fact that containerization makes
+    the transition from a desktop a cluster much simpler makes the
+    model of using a desktop for initial development theh only sensible
+    norm.
+2.  Every single example I have ever created to run MsPASS was
+    best created by first writing the workflow as a serial process
+    with a single outer loop over the dataset elements.  Using
+    guidelines in :ref:`_parallel_processing` convert to a parallel
+    equivalent only after you get the syntax and variables all defined
+    with the serial job.
+2.  Most  workflows reduce to one or more sections that have the
+    generic structure:  read data -> process data -> save result.
+    To debug a parallel workflow on your desktop use a subset of
+    your data copied to your workstation and run the test on
+    the smaller subset that defines the "read data" section.
+    That approach provides a simple way to validate the workflow has
+    no obvious errors like python syntax errors and usage errors.
+    It is also a very good idea to use your desktop's system monitor
+    to watch the workflow's cpu and memory usage while running the
+    test data set.   You may need to tune the memory use of the workflow
+    based on concepts described in :ref:`_memory_management` section
+    of this manual.
+3.  If you are running on a (now ancient) computer with only on core
+    you will not be able to test the parallel version on your desktop/laptop.
+    If your machine has only two cores, keep your test data set to
+    the minimum possible because you may bring the machine to its knees
+    while you run the test. In general, my advice would be that to a
+    desktop/laptop parallel test configure docker to only use two cores.
+    I have found it is easy to bring a desktop/laptop to it's knees if
+    you use all or a large fraction of the available cores.  Hence, the
+    corollary to keep in mind is you shouldn't expect to do much else
+    like web surfing or email
+    on your desktop/laptop while running your test data set. You can expect
+    sluggish performance if parallelization is working as it should. 
 
 Simple workflows
 ~~~~~~~~~~~~~~~~~~~~
