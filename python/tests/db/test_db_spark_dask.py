@@ -50,11 +50,7 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util import logging_helper
 from bson.objectid import ObjectId
 from datetime import datetime
-
-sys.path.append("python/tests")
-
-from mspasspy.db.database import Database, index_mseed_file_parallel
-from mspasspy.io.distributed import read_distributed_data
+from mspasspy.db.database import Database, geoJSON_doc
 from mspasspy.db.client import DBClient
 from helper import (
     get_live_seismogram,
@@ -3065,179 +3061,54 @@ class TestDatabase:
         query = {"pwfid": 3752}
         assert 1 == self.db.testtextfile.count_documents(query)
 
+    def test_set_schema(self):
+        assert self.db.database_schema._attr_dict["site"]
+        self.db.set_schema("mspass_lite.yaml")
+        with pytest.raises(KeyError, match="site"):
+            self.db.database_schema._attr_dict["site"]
 
-def test_read_distributed_data(spark_context):
-    client = DBClient("localhost")
-    client.drop_database("mspasspy_test_db")
+    def test_geoJSON_doc(self):
+        """
+        Tests only the function geoJSON_doc added Jan 2024 to properly
+        create geoJSON records that allow geospatial queries in
+        site, channel, and source.  That function is now used in
+        Database.save_inventory and Database.save_catalog to always
+        save a geoJSOn format location data.   We assume the bulk of the
+        code is already tested when those two functions are tested in
+        other test functions.  The big thing here is testing the
+        bad data input handlers.
+        """
+        # test null doc input
+        doc = geoJSON_doc(22.0, 44.0, key="testpoint")
+        assert "testpoint" in doc
+        val = doc["testpoint"]
+        assert val["type"] == "Point"
+        coords = val["coordinates"]
+        # note coordinates pair is lon,lat
+        assert coords[0] == 44.0
+        assert coords[1] == 22.0
 
-    test_ts = get_live_timeseries()
+        doc = geoJSON_doc(33.0, 55.0, doc=doc, key="testpoint2")
+        #  doc should contain both testpoint and testpoint2
+        #  This tests update feature of this function
+        assert "testpoint" in doc
+        assert "testpoint2" in doc
+        val = doc["testpoint2"]
+        assert val["type"] == "Point"
+        coords = val["coordinates"]
+        # note coordinates pair is lon,lat
+        assert coords[0] == 55.0
+        assert coords[1] == 33.0
 
-    client = DBClient("localhost")
-    db = Database(client, "mspasspy_test_db")
+        # recoverable value test
+        doc = geoJSON_doc(20, 270.0, key="recoverable")
+        assert "recoverable" in doc
+        val = doc["recoverable"]
+        coords = val["coordinates"]
+        # use is_close because -90 is computed but normal floating point math
+        # for that simple calculation would allow an == to also work
+        assert np.isclose(coords[0], -90.0)
+        assert coords[1] == 20.0
 
-    site_id = ObjectId()
-    channel_id = ObjectId()
-    source_id = ObjectId()
-    db["site"].insert_one(
-        {
-            "_id": site_id,
-            "net": "net",
-            "sta": "sta",
-            "loc": "loc",
-            "lat": 1.0,
-            "lon": 1.0,
-            "elev": 2.0,
-            "starttime": datetime.utcnow().timestamp(),
-            "endtime": datetime.utcnow().timestamp(),
-        }
-    )
-    db["channel"].insert_one(
-        {
-            "_id": channel_id,
-            "net": "net1",
-            "sta": "sta1",
-            "loc": "loc1",
-            "chan": "chan",
-            "lat": 1.1,
-            "lon": 1.1,
-            "elev": 2.1,
-            "starttime": datetime.utcnow().timestamp(),
-            "endtime": datetime.utcnow().timestamp(),
-            "edepth": 3.0,
-            "vang": 1.0,
-            "hang": 1.0,
-        }
-    )
-    db["source"].insert_one(
-        {
-            "_id": source_id,
-            "lat": 1.2,
-            "lon": 1.2,
-            "time": datetime.utcnow().timestamp(),
-            "depth": 3.1,
-            "magnitude": 1.0,
-        }
-    )
-    test_ts["site_id"] = site_id
-    test_ts["source_id"] = source_id
-    test_ts["channel_id"] = channel_id
-
-    ts1 = copy.deepcopy(test_ts)
-    ts2 = copy.deepcopy(test_ts)
-    ts3 = copy.deepcopy(test_ts)
-    logging_helper.info(ts1, "1", "deepcopy")
-    logging_helper.info(ts2, "1", "deepcopy")
-    logging_helper.info(ts3, "1", "deepcopy")
-
-    ts_list = [ts1, ts2, ts3]
-    ts_list_rdd = spark_context.parallelize(ts_list)
-    ts_list_rdd.foreach(
-        lambda d, database=db: database.save_data(d, storage_mode="gridfs")
-    )
-    cursors = db["wf_TimeSeries"].find({})
-
-    spark_list = read_distributed_data(
-        db,
-        cursors,
-        mode="cautious",
-        normalize=["source", "site", "channel"],
-        format="spark",
-        spark_context=spark_context,
-    )
-    list = spark_list.collect()
-    assert len(list) == 3
-    for l in list:
-        assert l
-        assert np.isclose(l.data, test_ts.data).all()
-
-    client = DBClient("localhost")
-    client.drop_database("mspasspy_test_db")
-
-
-def test_read_distributed_data_dask():
-    client = DBClient("localhost")
-    client.drop_database("mspasspy_test_db")
-
-    test_ts = get_live_timeseries()
-
-    client = DBClient("localhost")
-    db = Database(client, "mspasspy_test_db")
-
-    site_id = ObjectId()
-    channel_id = ObjectId()
-    source_id = ObjectId()
-    db["site"].insert_one(
-        {
-            "_id": site_id,
-            "net": "net",
-            "sta": "sta",
-            "loc": "loc",
-            "lat": 1.0,
-            "lon": 1.0,
-            "elev": 2.0,
-            "starttime": datetime.utcnow().timestamp(),
-            "endtime": datetime.utcnow().timestamp(),
-        }
-    )
-    db["channel"].insert_one(
-        {
-            "_id": channel_id,
-            "net": "net1",
-            "sta": "sta1",
-            "loc": "loc1",
-            "chan": "chan",
-            "lat": 1.1,
-            "lon": 1.1,
-            "elev": 2.1,
-            "starttime": datetime.utcnow().timestamp(),
-            "endtime": datetime.utcnow().timestamp(),
-            "edepth": 3.0,
-            "vang": 1.0,
-            "hang": 1.0,
-        }
-    )
-    db["source"].insert_one(
-        {
-            "_id": source_id,
-            "lat": 1.2,
-            "lon": 1.2,
-            "time": datetime.utcnow().timestamp(),
-            "depth": 3.1,
-            "magnitude": 1.0,
-        }
-    )
-    test_ts["site_id"] = site_id
-    test_ts["source_id"] = source_id
-    test_ts["channel_id"] = channel_id
-
-    ts1 = copy.deepcopy(test_ts)
-    ts2 = copy.deepcopy(test_ts)
-    ts3 = copy.deepcopy(test_ts)
-    logging_helper.info(ts1, "1", "deepcopy")
-    logging_helper.info(ts2, "1", "deepcopy")
-    logging_helper.info(ts3, "1", "deepcopy")
-
-    ts_list = [ts1, ts2, ts3]
-    ts_list_dbg = dask.bag.from_sequence(ts_list)
-    ts_list_dbg.map(db.save_data, storage_mode="gridfs").compute()
-    cursors = db["wf_TimeSeries"].find({})
-
-    dask_list = read_distributed_data(
-        db,
-        cursors,
-        mode="cautious",
-        normalize=["source", "site", "channel"],
-        format="dask",
-    )
-    list = dask_list.compute()
-    assert len(list) == 3
-    for l in list:
-        assert l
-        assert np.isclose(l.data, test_ts.data).all()
-
-    client = DBClient("localhost")
-    client.drop_database("mspasspy_test_db")
-
-
-if __name__ == "__main__":
-    pass
+        with pytest.raises(ValueError, match="Illegal geographic input"):
+            doc = geoJSON_doc(20, 400)

@@ -1,6 +1,3 @@
-"""
-Tools for connecting to MongoDB.
-"""
 import os
 import io
 import copy
@@ -4987,10 +4984,13 @@ class Database(pymongo.database.Database):
                     loc_etime = self._handle_null_endtime(loc_etime)
                     rec["lat"] = loc_lat
                     rec["lon"] = loc_lon
-                    # This is MongoDBs way to set a geographic
-                    # point - allows spatial queries.  Note longitude
-                    # must be first of the pair
-                    rec["coords"] = [loc_lat, loc_lon]
+                    # save coordinates in both geoJSON and "legacy"
+                    # format
+                    rec["coords"] = [loc_lon, loc_lat]
+                    # Illegal lon,lat values will cause this to throw a
+                    # ValueError exception.   We let it do that as
+                    # it indicates a problem datum
+                    rec = geoJSON_doc(loc_lat, loc_lon, doc=rec, key="location")
                     rec["elev"] = loc_elev
                     rec["edepth"] = loc_edepth
                     rec["starttime"] = starttime.timestamp
@@ -5514,7 +5514,13 @@ class Database(pymongo.database.Database):
             # rec['source_id']=source_id
             rec["lat"] = o.latitude
             rec["lon"] = o.longitude
-            rec["coords"] = [o.latitude, o.longitude]
+            # save the epicenter data in both legacy format an d
+            # geoJSON format.  Either can technically be used in a
+            # geospatial query but the geoJSON version is always
+            # preferred
+            rec["coords"] = [o.longitude, o.latitude]
+            # note this function updates rec and returns the upodate
+            rec = geoJSON_doc(o.latitude, o.longitude, doc=rec, key="epicenter")
             # It appears quakeml puts source depths in meter
             # convert to km
             # also obspy's catalog object seesm to allow depth to be
@@ -6343,3 +6349,769 @@ def index_mseed_file_parallel(db, *arg, **kwargs):
     except FileNotFoundError as e:
         ret = str(e)
     return ret
+
+
+def md2doc(
+    md,
+    save_schema,
+    exclude_keys=None,
+    mode="promiscuous",
+    normalizing_collections=["channel", "site", "source"],
+) -> {}:
+    """
+    Converts a Metadata container to a python dict applying a schema constraints.
+
+    This function is used in all database save operations to guaranteed the
+    Metadata container in a mspass data object is consistent with
+    requirements for MongDB defined by a specified schema.   It
+    dogmatically enforces readonly restrictions in the schema by
+    changing the key for any fields marked readonly and found to have
+    been set as changed.  Such entries change to "READONLYERROR_" + k
+    where k is the original key marked readonly.  See user's manual for
+    a discussion of why this is done.
+
+    Other schema constraints are controlled by the setting of mode.
+    Mode must be one of "promiscuous","cautious", or "pedantic" or
+    the function will raise a MsPASS error marked fatal.   That is the
+    only exception this function can throw.  It will never happen when
+    used with the Database class method but is possible if a user uses
+    this function in a different implementation.
+
+    The contents of the data associated with the md argument (arg0) are assumed
+    to have passed through the private database method _sync_metadata_before_update
+    before calling this function.  Anyone usingn this function outside the
+    Database class should assure a comparable algorithm is not required.
+
+    Note the return is a tuple.  See below for details.
+
+    :param md: contains a Metadata container that is to be converted.
+    :type md:  For normal use in mspass md is a larger data object that
+      inherits Metadata.  That is, in most uses it is a TimeSeries or
+      Seismogram object.  It can be a raw Metadata container and the
+      algorithm should work
+    :param save_schema:  The Schema class to be used for constraints
+      in building the doc for MongoDB use.  See User's Manual for details
+      on how a schema is defined and used in MsPASS.
+    :type save_schema:  Schema class
+    :param exclude_keys: list of keys (strings) to be excluded from
+      the output python dict.   Note "_id" is always excluded to mess
+      with required MongoDB usage.  Default is None which means no
+      values are excluded.  Note is harmless to list keys that are not
+      present in md - does nothing except for a minor cost to test for existence.
+    :type exclude_keys: list of strings
+    :param mode: Must be one of "promiscuous", "caution", or "pedantic".
+      See User's Manual for which to use.  Default is "promiscuous".
+      The function will throw MsPASSError exception if not one of the three
+      keywords list.
+    :type mode: str
+
+    :return:  Result is a returned as a tuple appropriate for the
+      normal use of this function inside the Database class.
+      The contents of the tuple are:
+
+      0 - python dictionary of edited result ready to save as MongoDB document
+      1 - boolean equivalent of the "live" attribute of TimeSeries and Seismogram.
+          i.e. if True the result can be considered valid.  If False something
+          was very wrong with the input and the contents of 0 is invalid and
+          should not be used.  When False the error log in 2 will contain
+          one or more error messages.
+      2 - An ErrorLogger object that may or may not contain any error logging
+          messages.  Callers should call the size method of the this entry
+          and handle the list of error messages it contains if size is not zero.
+          Note the right way to do that for TimeSeries and Seismogram is to
+          use operator += for the elog attribute of the datum.
+    """
+    # this is necessary in case someone uses this outside Database
+    # it should never happen when used by Database methods
+    if not (mode in ["promiscuous", "cautious", "pedantic"]):
+        message = "md2doc:  Illegal value for mode=" + mode
+        message += " must be one of: promiscuous, cautious, or pedantic"
+        raise MsPASSError(message, ErrorSeverity.Fatal)
+
+    # Result is a tuple made up of these three items.  Return
+    # bundles them.  Here we define them as symbols for clarity
+    insertion_doc = dict()
+    aok = True
+    elog = ErrorLogger()
+
+    if exclude_keys is None:
+        exclude_keys = []
+
+    # Original code had this - required now to be done by caller
+    # self._sync_metadata_before_update(mspass_object)
+
+    # First step in this algorithm is to edit the metadata contents
+    # to handle a variety of potential issues.
+    # This method of Metadata returns a list of all
+    # attributes that were changed after creation of the
+    # object to which they are attached.
+    changed_key_list = md.modified()
+
+    copied_metadata = Metadata(md)
+
+    # clear all the aliases
+    # TODO  check for potential bug in handling clear_aliases
+    # and modified method - i.e. keys returned by modified may be
+    # aliases
+    save_schema.clear_aliases(copied_metadata)
+
+    # remove any values with only spaces
+    for k in copied_metadata:
+        if not str(copied_metadata[k]).strip():
+            copied_metadata.erase(k)
+
+    # remove any defined items in exclude list
+    for k in exclude_keys:
+        if k in copied_metadata:
+            copied_metadata.erase(k)
+    # the special mongodb key _id is currently set readonly in
+    # the mspass schema.  It would be cleared in the following loop
+    # but it is better to not depend on that external constraint.
+    # The reason is the insert_one used below for wf collections
+    # will silently update an existing record if the _id key
+    # is present in the update record.  We want this method
+    # to always save the current copy with a new id and so
+    # we make sure we clear it
+    if "_id" in copied_metadata:
+        copied_metadata.erase("_id")
+
+    # always strip normalizing data from standard collections
+    # Note this usage puts the definition of "standard collection"
+    # to the default of the argument normalizing_collection of this
+    # function.   May want to allow callers to set this and add a
+    # value for the list to args of this function
+    copied_metadata = _erase_normalized(copied_metadata, normalizing_collections)
+    # this section creates a python dict from the metadata container.
+    # it applies safties based on mode argument (see user's manual)
+    if mode == "promiscuous":
+        # A python dictionary can use Metadata as a constructor due to
+        # the way the bindings were defined
+        insertion_doc = dict(copied_metadata)
+    else:
+        for k in copied_metadata.keys():
+            if save_schema.is_defined(k):
+                if save_schema.readonly(k):
+                    if k in changed_key_list:
+                        newkey = "READONLYERROR_" + k
+                        copied_metadata.change_key(k, newkey)
+                        elog.log_error(
+                            "Database.save_data",
+                            "readonly attribute with key="
+                            + k
+                            + " was improperly modified.  Saved changed value with key="
+                            + newkey,
+                            ErrorSeverity.Complaint,
+                        )
+                    else:
+                        copied_metadata.erase(k)
+
+        # Other modes have to test every key and type of value
+        # before continuing.  pedantic kills data with any problems
+        # Cautious tries to fix the problem first
+        # Note many errors can be posted - one for each problem key-value pair
+        for k in copied_metadata:
+            if save_schema.is_defined(k):
+                if isinstance(copied_metadata[k], save_schema.type(k)):
+                    insertion_doc[k] = copied_metadata[k]
+                else:
+                    if mode == "pedantic":
+                        aok = False
+                        message = "pedantic mode error:  key=" + k
+                        value = copied_metadata[k]
+                        message += (
+                            " type of stored value="
+                            + str(type(value))
+                            + " does not match schema expectation="
+                            + str(save_schema.type(k))
+                        )
+                        elog.log_error(
+                            "Database.save_data",
+                            "message",
+                            ErrorSeverity.Invalid,
+                        )
+                    else:
+                        # Careful if another mode is added here.  else means cautious in this logic
+                        try:
+                            # The following convert the actual value in a dict to a required type.
+                            # This is because the return of type() is the class reference.
+                            insertion_doc[k] = save_schema.type(k)(copied_metadata[k])
+                        except Exception as err:
+                            message = "cautious mode error:  key=" + k
+                            #  cannot convert required keys -> kill the object
+                            if save_schema.is_required(k):
+                                aok = False
+                                message = "cautious mode error:  key={}\n".format(k)
+                                message += "Required key value could not be converted to required type={}\n".format(
+                                    str(save_schema.type(k))
+                                )
+                                message += "Actual type={}\n".format(
+                                    str(type(copied_metadata[k]))
+                                )
+                                message += "\nPython error exception message caught:\n"
+                                message += str(err)
+                                elog.log_error(
+                                    "Database.save",
+                                    message,
+                                    ErrorSeverity.Invalid,
+                                )
+                            else:
+                                message += "\nValue associated with this key "
+                                message += "could not be converted to required type={}\n".format(
+                                    str(save_schema.type())
+                                )
+                                message += "Actual type={}\n".format(
+                                    str(type(copied_metadata[k]))
+                                )
+                                message += (
+                                    "Entry for this key will not be saved in database"
+                                )
+                                elog.log_error(
+                                    "md2doc",
+                                    message,
+                                    ErrorSeverity.Complaint,
+                                )
+                                copied_metadata.erase(k)
+    return [insertion_doc, aok, elog]
+
+
+def elog2doc(elog) -> dict:
+    """
+    Extract error log messages for storage in MongoDB
+
+    This function can be thought of as a formatter for an ErrorLogger
+    object.   The error log is a list of what is more or less a C struct (class)
+    This function converts the log to list of python dictionaries
+    with keys being the names of the symbols in the C code.  The list
+    of dict objects is then stored in a python dictionary with the
+    single key "logdata" that is returned.  If the log is entry
+    an empty dict is returned.  That means the return is either empty
+    or with one key-value pair with key=="logdata".
+
+    :param elog:   ErrorLogger object to be reformatted.
+      (Note for all mspass seismic data objects == self.elog)
+    :return:  python dictionary as described above
+    """
+    if isinstance(elog, ErrorLogger):
+        doc = dict()
+        if elog.size() > 0:
+            logdata = []
+            errs = elog.get_error_log()
+            jobid = elog.get_job_id()
+            for x in errs:
+                logdata.append(
+                    {
+                        "job_id": jobid,
+                        "algorithm": x.algorithm,
+                        "badness": str(x.badness),
+                        "error_message": x.message,
+                        "process_id": x.p_id,
+                    }
+                )
+            doc = {"logdata": logdata}
+        # note with this logic if elog is empty returns an empty dict
+        return doc
+    else:
+        message = "elog2doc:  "
+        message += "arg0 has unsupported type ={}\n".format(str(type(elog)))
+        message += "Must be an instance of mspasspy.ccore.util.ErrorLogger"
+        raise TypeError(message)
+
+
+def history2doc(
+    proc_history,
+    alg_id=None,
+    alg_name=None,
+    job_name=None,
+    job_id=None,
+) -> dict:
+    """
+    Extract ProcessingHistory data and package into a python dictionary.
+
+    This function can be thought of as a formatter for the ProcessingHistory
+    container in a MsPASS data object.  It returns a python dictionary
+    that, if retrieved, can be used to reconstruct the ProcessingHistory
+    container.  We do that a fairly easy way here by using pickle.dumps
+    of the container that is saved with the key "processing_history".
+
+    :param proc_history:   history container to be reformatted
+    :type proc_history:  Must be an instance of a
+      mspasspy.ccore.util.ProcessingHistory object or a TypeError
+      exception will be thrown.
+
+    :param alg_id:   algorithm id for caller.   By default this is
+      extracted from the last entry in the history tree.  Use other
+      than the default should be necessary only if called from a
+      nonstandard writer.
+      (See C++ doxygen page on ProcessingHistory for concept ).
+    :param alg_id:  string
+
+    :param alg_name:  name of calling algorithm.   By default this is
+      extracted from the last entry in the history tree.  Use other
+      than the default should be necessary only if called from a
+      nonstandard writer.
+      (See C++ doxygen page on ProcessingHistory for concept ).
+    :type alg_name:  string
+
+    :param job_name:  optional job name string.  If set the value
+      will be saved in output with the "job_name".  By default
+      there will be no value for the "job_name" key
+    :type job_name:  string (default None taken to mean do not save)
+
+    :param job_id:  optional job id string.  If set the value
+      will be saved in output with the "job_id".  By default
+      there will be no value for the "job_id" key
+    :type job_id:  string (default None taken to mean do not save)
+
+    :return:  python dictoinary
+    """
+    if not isinstance(proc_history, ProcessingHistory):
+        message = "history2doc:  "
+        message += "arg0 has unsupported type ={}\n".format(str(type(proc_history)))
+        message += "Must be an instance of mspasspy.ccore.util.ProcessingHistory"
+        raise TypeError(message)
+    current_uuid = proc_history.id()  # uuid in the current node
+    current_nodedata = proc_history.current_nodedata()
+    current_stage = proc_history.stage()
+    # get the alg_name and alg_id of current node
+    if alg_id is None:
+        alg_id = current_nodedata.algid
+    if alg_name is None:
+        alg_name = current_nodedata.algorithm
+
+    history_binary = pickle.dumps(proc_history)
+    doc = {
+        "save_uuid": current_uuid,
+        "save_stage": current_stage,
+        "processing_history": history_binary,
+        "alg_id": alg_id,
+        "alg_name": alg_name,
+    }
+    if job_name:
+        doc["job_name"] = job_name
+    if job_id:
+        doc["job_id"] = job_id
+    return doc
+
+
+def doc2md(
+    doc, database_schema, metadata_schema, wfcol, exclude_keys=None, mode="promiscuous"
+):
+    """
+    This function is more or less the inverse of md2doc.   md2doc is
+    needed by writers to convert Metadata to a python dict for saving
+    with pymongo.   This function is similarly needed for readers to
+    translate MongoDB documents into the Metadata container used by
+    MsPASS data objects.
+
+    This function can optionally apply schema constraints using the
+    same schema class used by the Database class.  In fact, normal use
+    would pass the schema class from the instance of Database that was
+    used in loading the document to be converted (arg0).
+
+    This function was built from a skeleton that was originally part of
+    the read_data method of Database.  Its behavior for
+    differnt modes is inherited from that implementation for backward
+    compatibility.  The returns structure is a necessary evil with that
+    change in the implementatoin, but is exactly the same as md2doc for
+    consistency.
+
+    The way the mode argument is handled is slightly different than
+    for md2doc because of the difference in the way this function is
+    expected to be used.  This function builds the Metadata container
+    that is used in all readers to drive the construction of atomic
+    data objects.  See below for a description of what different settings
+    of mode.
+
+    :param doc:  document (dict) to be converted to Metadata
+    :type doc:  python dict assumed (there is no internal test for efficiency)
+    An associative array with string keys operator [] are the main requirements.
+    e.g. this function might work with a Metadata container to apply
+    schema constraints.
+
+    :param metadata_schema:  instance of MetadataSchema class that can
+    optionally be used to impose schema constraints.
+    :type metadata_schema:  :class:`mspasspy.db.schema.MetadataSchema`
+
+    :param wfcol:  Collection name from which doc was retrieved.   It should
+    normally alreacy be known by the caller so we require it to be passed
+    with this required arg.
+    :type wfcol:   string
+
+    :param mode: read mode as described in detail in User's Manual.
+    Behavior for this function is as follows:
+        "promiscuous" - (default)  no checks are applied to any key-value
+           pairs and the result is a one-to-one translation of the input.
+        "cautious" - Type constraints in the schema are enforced and
+          automatically conveted if possible.  If conversion is needed
+          and fails the live/dead boolan in the return will be set to
+          signal this datum should be killed.  There will also be elog entries.
+        "pedantic" - type conversions are strongly enforced.  If any
+          type mismatch of a value occurs the live/dead boolean returned
+          will be set to signal a kill and there will be one or more
+          error messages in the elog return.
+    :type mode: string (must match one of the above or the function will throw
+        a ValueError exception.
+
+    :return 3-component tuple:  0 = converted Metadata container,
+      1 - boolean equivalent to "live".  i.e. if True the results is valid
+      while if False constructing an object from the result is ill advised,
+      2 - ErrorLogger object containing in error messages.  Callers should
+        test if the result of the size method of the return is > 0 and
+        handle the error messages as desired.
+
+    """
+    elog = ErrorLogger()
+    if mode == "promiscuous":
+        md = Metadata(doc)
+        if exclude_keys:
+            for k in exclude_keys:
+                if md.is_defined(k):
+                    md.erase(k)
+        aok = True
+    else:
+        md = Metadata()
+        dropped_keys = []
+
+        for k in doc:
+            if exclude_keys:
+                if k in exclude_keys:
+                    continue
+
+            if metadata_schema.is_defined(k) and not metadata_schema.is_alias(k):
+                md[k] = doc[k]
+            else:
+                dropped_keys.append(k)
+        if len(dropped_keys) > 0:
+            message = "While running with mode={} found {} entries not defined in schema\n".format(
+                mode, len(dropped_keys)
+            )
+            message += "The attributes linked to the following keys were dropped from converted Metadata container\n"
+            for d in dropped_keys:
+                message += d
+                message += " "
+            elog.log_error("doc2md", message, ErrorSeverity.Complaint)
+        aok = True
+        fatal_keys = []
+        converted_keys = []
+        if mode == "cautious":
+            for k in md:
+                if metadata_schema.is_defined(k):
+                    unique_key = database_schema.unique_name(k)
+                    if not isinstance(md[k], metadata_schema.type(k)):
+                        # try to convert the mismatch attribute
+                        try:
+                            # convert the attribute to the correct type
+                            md[k] = metadata_schema.type(k)(md[k])
+                        except:
+                            if database_schema.is_required(unique_key):
+                                fatal_keys.append(k)
+                                aok = False
+                                message = "cautious mode: Required attribute {} has type {}\n".format(
+                                    k, str(type(md[k]))
+                                )
+                                message += "Schema requires this attribute have type={}\n".format(
+                                    str(metadata_schema.type(k))
+                                )
+                                message += "Type conversion not possible - datum linked to this document will be killed"
+                                elog.log_error("doc2md", message, ErrorSeverity.Invalid)
+                        else:
+                            converted_keys.append(k)
+            if len(converted_keys) > 0:
+                message = "WARNING:  while running in cautious mode the value associated with the following keys required an automatic type conversion:\n"
+                for c in converted_keys:
+                    message += c
+                    message += " "
+                message += "\nRunning clean_collection method is recommended"
+                elog.log_error("doc2md", message, ErrorSeverity.Informational)
+            if len(fatal_keys) > 0:
+                aok = False
+
+        elif mode == "pedantic":
+            for k in md:
+                if metadata_schema.is_defined(k):
+                    if not isinstance(md[k], metadata_schema.type(k)):
+                        fatal_keys.append(k)
+                        aok = False
+                        message = (
+                            "pedantic mode: Required attribute {} has type {}\n".format(
+                                k, str(type(md[k]))
+                            )
+                        )
+                        message += (
+                            "Schema requires this attribute have type={}\n".format(
+                                str(metadata_schema.type(k))
+                            )
+                        )
+                        message += "Type mismatches are not allowed in pedantic mode - datum linked to this document will be killed"
+                        elog.log_error("doc2md", message, ErrorSeverity.Invalid)
+            if len(fatal_keys) > 0:
+                aok = False
+        else:
+            message = "Unrecognized value for mode=" + str(mode)
+            message += " Must be one of promiscuous, cautious, or pedantic"
+            raise ValueError(message)
+
+    return [md, aok, elog]
+
+
+def doclist2mdlist(
+    doclist,
+    database_schema,
+    metadata_schema,
+    wfcol,
+    exclude_keys,
+    mode="promiscuous",
+):
+    """
+    Create a cleaned array of Metadata containers that can be used to
+    construct a TimeSeriesEnsemble or SeismogramEnsemble.
+
+    This function is like doc2md but for an input given as a list of docs (python dict).
+    The main difference is the return tuple is very different.
+    The function has to robustly handle the fact that sometimes converting
+    a document to md is problematic.  The issues are defined in the
+    related `doc2md` function that is used here for the atomic operation of
+    converting a given document to a Metadata object.   The issue we have to
+    face is what to do with warning message and documents that have
+    fatal flaws (marked dead when passed through doc2md).  Warning
+    messages are passed to the ErrorLogger component of the returned tuple.
+    Callers should either print those messages or post them to the
+    ensemble metadata that is expected to be constructed after calling
+    this function.   In "cautious" and "pedantic" mode doc2md may mark
+    a datum as bad with a kill return.  When a document is "killed"
+    by doc2md it is dropped and two thi
+
+    :param doclist:  list of documents to be converted to Metadata with schema
+    constraints
+    :type doclist:  any iterable container holding an array of dict containers
+    with rational content (i.e. expected to be a MongoDB document with attributes
+    defined for a set of seismic data objects.)
+
+    ---other here --
+
+    :return:  array with three components:
+        0 - filtered array of Metadata containers
+        1 - live boolean.   Set False only if conversion of all the documents
+            in doclist failed.
+        2 - ErrorLogger where warning and kill messages are posted (see above)
+        3 - an array of documents that could not be converted (i.e. marked
+            bad when processed with doc2md.)
+
+    """
+    mdlist = []
+    ensemble_elog = ErrorLogger()
+    bodies = []
+    for doc in doclist:
+        md, live, elog = doc2md(
+            doc, database_schema, metadata_schema, wfcol, exclude_keys, mode
+        )
+        if live:
+            mdlist.append(md)
+        else:
+            bodies.append(doc)
+        if elog.size() > 0:
+            ensemble_elog += elog
+
+    if len(mdlist) == 0:
+        live = False
+    else:
+        live = True
+    return [mdlist, live, ensemble_elog, bodies]
+
+
+def parse_normlist(input_nlist, db) -> list:
+    """
+    Parses a list of multiple accepted types to return a list of Matchers.
+
+    This function is more or less a translator to create a list of
+    subclasses of the BasicMatcher class used for generic normalization.
+    The input list (input_nlist) can be one of two things.  If the
+    list is a set of strings the strings are assumed to define
+    collection names.  It then constructs a database-driven
+    matcher class using the ObjectId method that is the stock
+    MongoDB indexing method.   Specifically, for each collection
+    name it creates an instance of the generic ObjectIdDBMatcher
+    class pointing to the named collection.   The other allowed
+    type for the members of the input list are children of the
+    base class called `BasicMatcher` defined in spasspy.db.normalize.
+    `BasicMatcher` abstracts the task required for normalization
+    and provides a generic mechanism to load normalization data
+    including data defined outside of MongoDB (e.g. a pandas DataFrame).
+    If the list contains anything but a string or a child of
+    BasicMatcher the function will abort throwing a TypeError
+    exception.  On success it returns a list of children of
+    `BasicMatcher` that can be used to normalize any wf
+    document retried from MongoDB assuming the matching
+    algorithm is valid.
+    """
+    # This import has to appear here to avoid a circular import
+    from mspasspy.db.normalize import BasicMatcher, ObjectIdDBMatcher
+
+    normalizer_list = []
+    # Need this for backward compatibility for site, channel, and source
+    # These lists are more restricitive than original algorithm but
+    # will hopefully not cause a serious issue.
+    # We use a dict keyed by collection name with lists passed to
+    # matcher constructor
+    atl_map = dict()
+    lid_map = dict()
+    klist = ["lat", "lon", "elev", "hang", "vang", "_id"]
+    atl_map["channel"] = klist
+    klist = ["net", "sta", "chan", "loc", "starttime", "endtime"]
+    lid_map["channel"] = klist
+
+    klist = ["lat", "lon", "elev", "_id"]
+    atl_map["site"] = klist
+    klist = ["net", "sta", "loc", "starttime", "endtime"]
+    lid_map["site"] = klist
+
+    klist = ["lat", "lon", "depth", "time", "_id"]
+    atl_map["source"] = klist
+    klist = ["magnitude", "mb", "ms", "mw"]
+    lid_map["source"] = klist
+    # could dogmatically insist input_nlist is a list but all we
+    # need to require is it be iterable.
+
+    for n in input_nlist:
+        if isinstance(n, str):
+            # Assume this is a collection name and use the id normalizer with db
+            if n == "channel":
+                attributes_to_load = atl_map["channel"]
+                load_if_defined = lid_map["channel"]
+            elif n == "site":
+                attributes_to_load = atl_map["site"]
+                load_if_defined = lid_map["site"]
+            elif n == "source":
+                attributes_to_load = atl_map["source"]
+                load_if_defined = lid_map["source"]
+            else:
+                message = (
+                    "Do not have a method to handle normalize with collection name=" + n
+                )
+                raise MsPASSError("Database.read_data", message, ErrorSeverity.Invalid)
+            # intensionally let this constructor throw an exception if
+            # it fails - python should unwinde such errors if the happen
+            this_normalizer = ObjectIdDBMatcher(
+                db,
+                collection=n,
+                attributes_to_load=attributes_to_load,
+                load_if_defined=load_if_defined,
+            )
+        elif isinstance(n, dict):
+            col = n["collection"]
+            attributes_to_load = n["attributes_to_load"]
+            load_if_defined = n["load_if_defined"]
+            this_normalizer = ObjectIdDBMatcher(
+                db,
+                collection=col,
+                attributes_to_load=attributes_to_load,
+                load_if_defined=load_if_defined,
+            )
+        elif isinstance(n, BasicMatcher):
+            this_normalizer = n
+        else:
+            message = "parse_normlist: unsupported type for entry in normalize argument list\n"
+            message += "Found item in list of type={}\n".format(str(type(n)))
+            message += "Item must be a string, dict, or subclass of BasicMatcher"
+            raise TypeError(message)
+
+        normalizer_list.append(this_normalizer)
+
+    return normalizer_list
+
+
+def _erase_normalized(
+    md, normalizing_collections=["channel", "site", "source"]
+) -> Metadata:
+    """
+    Erases data from a Metadata container assumed to come from normalization.
+
+    In MsPASS attributes loaded with data from normalizing collections
+    are always of the form collection_key where collection is the name of the
+    normalizing collection and key is a simpler named used to store that
+    attribute in the normalizing collection.   e.g. the "lat" latitude of
+    an entry in the "site" collection would be posted to a waveform
+    Metadata as "site_lat".  One does not normally want to copy such
+    attributes back to the database when saving as it defeats the purpose of
+    normalization and can create confusions about which copy is definitive.
+    For that reason Database such attributes are erased before saving
+    unless overridden.   This simple function standardizes that process.
+
+    This function is mainly for internal use and has no safties.
+
+    :param md:  input Metadata container to use.   Note this can be a
+      MsPASS seismic data object that inherits metadata and the function
+      will work as it copies the content to a Metadata container.
+    :type md:  :class:`mspasspy.ccore.utility.Metadata` or a C++ data
+      object that inherits Metadata (that means all MsPASS seismid data objects)
+    :param normalizing_collection:  list of standard collection names that
+      are defined for normalization.   These are an argument only to put them
+      in a standard place.  They should not be changed unless a new
+      normalizing collection name is added or a different schema is used
+      that has different names.
+    """
+    # make a copy - not essential but small cost for stability
+    # make a copy - not essential but small cost for stability
+    mdout = Metadata(md)
+    for k in mdout.keys():
+        split_list = k.split("_")
+        if len(split_list) >= 2:  # gt allows things like channel_foo_bar
+            if split_list[1] != "id":  # never erase any of the form word_id
+                if split_list[0] in normalizing_collections:
+                    mdout.erase(k)
+    return mdout
+
+
+def geoJSON_doc(lat, lon, doc=None, key="epicenter") -> dict:
+    """
+    Convenience function to create a geoJSON format point object document
+    from a points specified by latitude and longitude. The format
+    for a geoJSON point isn't that strange but how to structure it into
+    a mongoDB document for use with geospatial queries is not as
+    clear from current MongoDB documentation.  This function makes that
+    proess easier.
+
+    The required inpput is latitude (lat) and longitude (lon).  The
+    values are assumed to be in degrees for compatibility with MongoDB.
+    That means latitude must be -90<=lat<=90 and longitude
+    must satisfy -180<=lat<=180.  The function will try to handle the
+    common situation with 0<=lon<=360 by wrapping 90->180 values to
+    -180->0,  A ValueError exception is thrown if
+    for any other situation with lot or lon outside those bounds.
+
+    If you specify the optional "doc" argument it is assumed to be
+    a python dict to which the geoJSON point data is to be added.
+    By default a new dict is created that will contain only the
+    geoJSON point data.  The doc options is useful if you want to
+    add the geoJSON data to the document before appending it.
+    The default is more useful for updates to add geospatial
+    query capabilities to a collection with lat-lon data that is
+    not properl structure.  In all cases the geoJSON data is a
+    itself a python dict but a value associated accessible from
+    the output dict with te key defined by the "key" argument
+    (default is 'epicenter', which is appropriate for earthquake
+    source data.)
+    with a
+    """
+    outval = dict()
+    outval["type"] = "Point"
+    lon = float(lon)  # make this it is a float for database consistency
+    if lon > 180.0 and lon <= 360.0:
+        # we do this correction silently
+        lon -= 360.0
+    lat = float(lat)
+    if lat < -90.0 or lat > 90.0 or lon < -180.0 or lon > 180.0:
+        message = "geoJSON_doc:  Illegal geographic input\n"
+        message += "latitude received={}  MongoDB requires [-90,90] range\n".format(lat)
+        message += "longitude received={}  MongoDB requires [-180,180] range".format(
+            lon
+        )
+        raise ValueError(message)
+
+    outval["coordinates"] = [float(lon), float(lat)]
+    if doc:
+        retdoc = doc
+        retdoc[key] = outval
+    else:
+        retdoc = {key: outval}
+    return retdoc
