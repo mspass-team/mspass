@@ -6505,12 +6505,13 @@ class Database(pymongo.database.Database):
             # Warning:  this can lead to sample data save orphans
             mspass_object.kill()
 
-        # add tag - intentionally not set in mspass_object returned
-        if data_tag:
-            insertion_dict["data_tag"] = data_tag
         # Always set starttime and endtime 
         insertion_dict["starttime"] = mspass_object.t0
         insertion_dict["endtime"] = mspass_object.endtime()
+
+        # add tag - intentionally not set in mspass_object returned
+        if data_tag:
+            insertion_dict["data_tag"] = data_tag
         else:
             # We need to clear data tag if was previously defined in
             # this case or a the old tag will be saved with this datum
