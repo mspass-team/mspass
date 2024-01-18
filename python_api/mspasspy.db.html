@@ -2538,29 +2538,29 @@ or with one key-value pair with key==”logdata”.</p>
 <dt class="sig sig-object py" id="mspasspy.db.database.geoJSON_doc">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">geoJSON_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'epicenter'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/mspasspy/db/database.html#geoJSON_doc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.geoJSON_doc" title="Permalink to this definition"></a></dt>
 <dd><p>Convenience function to create a geoJSON format point object document
-from a points specified by latitude and longitude. The format 
-for a geoJSON point isn’t that strange but how to structure it into 
+from a points specified by latitude and longitude. The format
+for a geoJSON point isn’t that strange but how to structure it into
 a mongoDB document for use with geospatial queries is not as
-clear from current MongoDB documentation.  This function makes that 
+clear from current MongoDB documentation.  This function makes that
 proess easier.</p>
-<p>The required inpput is latitude (lat) and longitude (lon).  The 
+<p>The required inpput is latitude (lat) and longitude (lon).  The
 values are assumed to be in degrees for compatibility with MongoDB.
-That means latitude must be -90&lt;=lat&lt;=90 and longitude 
-must satisfy -180&lt;=lat&lt;=180.  The function will try to handle the 
-common situation with 0&lt;=lon&lt;=360 by wrapping 90-&gt;180 values to 
--180-&gt;0,  A ValueError exception is thrown if  
+That means latitude must be -90&lt;=lat&lt;=90 and longitude
+must satisfy -180&lt;=lat&lt;=180.  The function will try to handle the
+common situation with 0&lt;=lon&lt;=360 by wrapping 90-&gt;180 values to
+-180-&gt;0,  A ValueError exception is thrown if
 for any other situation with lot or lon outside those bounds.</p>
-<p>If you specify the optional “doc” argument it is assumed to be 
-a python dict to which the geoJSON point data is to be added.  
-By default a new dict is created that will contain only the 
-geoJSON point data.  The doc options is useful if you want to 
-add the geoJSON data to the document before appending it.  
-The default is more useful for updates to add geospatial 
-query capabilities to a collection with lat-lon data that is 
+<p>If you specify the optional “doc” argument it is assumed to be
+a python dict to which the geoJSON point data is to be added.
+By default a new dict is created that will contain only the
+geoJSON point data.  The doc options is useful if you want to
+add the geoJSON data to the document before appending it.
+The default is more useful for updates to add geospatial
+query capabilities to a collection with lat-lon data that is
 not properl structure.  In all cases the geoJSON data is a
-itself a python dict but a value associated accessible from 
+itself a python dict but a value associated accessible from
 the output dict with te key defined by the “key” argument
-(default is ‘epicenter’, which is appropriate for earthquake 
+(default is ‘epicenter’, which is appropriate for earthquake
 source data.)
 with a</p>
 </dd></dl>

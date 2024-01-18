@@ -111,8 +111,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for mspasspy.db.database</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
@@ -5073,13 +5072,13 @@
                     <span class="n">loc_etime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_endtime</span><span class="p">(</span><span class="n">loc_etime</span><span class="p">)</span>
                     <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_lat</span>
                     <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_lon</span>
-                    <span class="c1"># save coordinates in both geoJSON and &quot;legacy&quot; </span>
-                    <span class="c1"># format </span>
-                    <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;coords&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">loc_lon</span><span class="p">,</span><span class="n">loc_lat</span><span class="p">]</span>
-                    <span class="c1"># Illegal lon,lat values will cause this to throw a </span>
-                    <span class="c1"># ValueError exception.   We let it do that as </span>
+                    <span class="c1"># save coordinates in both geoJSON and &quot;legacy&quot;</span>
+                    <span class="c1"># format</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;coords&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">loc_lon</span><span class="p">,</span> <span class="n">loc_lat</span><span class="p">]</span>
+                    <span class="c1"># Illegal lon,lat values will cause this to throw a</span>
+                    <span class="c1"># ValueError exception.   We let it do that as</span>
                     <span class="c1"># it indicates a problem datum</span>
-                    <span class="n">rec</span> <span class="o">=</span> <span class="n">geoJSON_doc</span><span class="p">(</span><span class="n">loc_lat</span><span class="p">,</span><span class="n">loc_lon</span><span class="p">,</span><span class="n">doc</span><span class="o">=</span><span class="n">rec</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;location&#39;</span><span class="p">)</span>
+                    <span class="n">rec</span> <span class="o">=</span> <span class="n">geoJSON_doc</span><span class="p">(</span><span class="n">loc_lat</span><span class="p">,</span> <span class="n">loc_lon</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">rec</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;location&quot;</span><span class="p">)</span>
                     <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;elev&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_elev</span>
                     <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;edepth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_edepth</span>
                     <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">starttime</span><span class="o">.</span><span class="n">timestamp</span>
@@ -5606,12 +5605,12 @@
             <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">latitude</span>
             <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">longitude</span>
             <span class="c1"># save the epicenter data in both legacy format an d</span>
-            <span class="c1"># geoJSON format.  Either can technically be used in a </span>
-            <span class="c1"># geospatial query but the geoJSON version is always </span>
+            <span class="c1"># geoJSON format.  Either can technically be used in a</span>
+            <span class="c1"># geospatial query but the geoJSON version is always</span>
             <span class="c1"># preferred</span>
             <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;coords&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">longitude</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">latitude</span><span class="p">]</span>
             <span class="c1"># note this function updates rec and returns the upodate</span>
-            <span class="n">rec</span> <span class="o">=</span> <span class="n">geoJSON_doc</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">latitude</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">longitude</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">rec</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;epicenter&#39;</span><span class="p">)</span>
+            <span class="n">rec</span> <span class="o">=</span> <span class="n">geoJSON_doc</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">latitude</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">longitude</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">rec</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;epicenter&quot;</span><span class="p">)</span>
             <span class="c1"># It appears quakeml puts source depths in meter</span>
             <span class="c1"># convert to km</span>
             <span class="c1"># also obspy&#39;s catalog object seesm to allow depth to be</span>
@@ -6617,6 +6616,12 @@
             <span class="c1"># currently means schema enforcement errors.</span>
             <span class="c1"># Warning:  this can lead to sample data save orphans</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+
+        <span class="c1"># Always set starttime and endtime</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exclude_keys</span> <span class="ow">or</span> <span class="s2">&quot;starttime&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude_keys</span><span class="p">:</span>
+            <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">t0</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exclude_keys</span> <span class="ow">or</span> <span class="s2">&quot;endtime&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude_keys</span><span class="p">:</span>
+            <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
 
         <span class="c1"># add tag - intentionally not set in mspass_object returned</span>
         <span class="k">if</span> <span class="n">data_tag</span><span class="p">:</span>
@@ -8299,56 +8304,59 @@
                     <span class="n">mdout</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">mdout</span>
 
-<div class="viewcode-block" id="geoJSON_doc"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.geoJSON_doc">[docs]</a><span class="k">def</span> <span class="nf">geoJSON_doc</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;epicenter&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">dict</span><span class="p">:</span>
+
+<div class="viewcode-block" id="geoJSON_doc"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.geoJSON_doc">[docs]</a><span class="k">def</span> <span class="nf">geoJSON_doc</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;epicenter&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convenience function to create a geoJSON format point object document</span>
-<span class="sd">    from a points specified by latitude and longitude. The format </span>
-<span class="sd">    for a geoJSON point isn&#39;t that strange but how to structure it into </span>
+<span class="sd">    from a points specified by latitude and longitude. The format</span>
+<span class="sd">    for a geoJSON point isn&#39;t that strange but how to structure it into</span>
 <span class="sd">    a mongoDB document for use with geospatial queries is not as</span>
-<span class="sd">    clear from current MongoDB documentation.  This function makes that </span>
+<span class="sd">    clear from current MongoDB documentation.  This function makes that</span>
 <span class="sd">    proess easier.</span>
-<span class="sd">    </span>
-<span class="sd">    The required inpput is latitude (lat) and longitude (lon).  The </span>
+
+<span class="sd">    The required inpput is latitude (lat) and longitude (lon).  The</span>
 <span class="sd">    values are assumed to be in degrees for compatibility with MongoDB.</span>
-<span class="sd">    That means latitude must be -90&lt;=lat&lt;=90 and longitude </span>
-<span class="sd">    must satisfy -180&lt;=lat&lt;=180.  The function will try to handle the </span>
-<span class="sd">    common situation with 0&lt;=lon&lt;=360 by wrapping 90-&gt;180 values to </span>
-<span class="sd">    -180-&gt;0,  A ValueError exception is thrown if  </span>
+<span class="sd">    That means latitude must be -90&lt;=lat&lt;=90 and longitude</span>
+<span class="sd">    must satisfy -180&lt;=lat&lt;=180.  The function will try to handle the</span>
+<span class="sd">    common situation with 0&lt;=lon&lt;=360 by wrapping 90-&gt;180 values to</span>
+<span class="sd">    -180-&gt;0,  A ValueError exception is thrown if</span>
 <span class="sd">    for any other situation with lot or lon outside those bounds.</span>
-<span class="sd">    </span>
-<span class="sd">    If you specify the optional &quot;doc&quot; argument it is assumed to be </span>
-<span class="sd">    a python dict to which the geoJSON point data is to be added.  </span>
-<span class="sd">    By default a new dict is created that will contain only the </span>
-<span class="sd">    geoJSON point data.  The doc options is useful if you want to </span>
-<span class="sd">    add the geoJSON data to the document before appending it.  </span>
-<span class="sd">    The default is more useful for updates to add geospatial </span>
-<span class="sd">    query capabilities to a collection with lat-lon data that is </span>
+
+<span class="sd">    If you specify the optional &quot;doc&quot; argument it is assumed to be</span>
+<span class="sd">    a python dict to which the geoJSON point data is to be added.</span>
+<span class="sd">    By default a new dict is created that will contain only the</span>
+<span class="sd">    geoJSON point data.  The doc options is useful if you want to</span>
+<span class="sd">    add the geoJSON data to the document before appending it.</span>
+<span class="sd">    The default is more useful for updates to add geospatial</span>
+<span class="sd">    query capabilities to a collection with lat-lon data that is</span>
 <span class="sd">    not properl structure.  In all cases the geoJSON data is a</span>
-<span class="sd">    itself a python dict but a value associated accessible from </span>
+<span class="sd">    itself a python dict but a value associated accessible from</span>
 <span class="sd">    the output dict with te key defined by the &quot;key&quot; argument</span>
-<span class="sd">    (default is &#39;epicenter&#39;, which is appropriate for earthquake </span>
+<span class="sd">    (default is &#39;epicenter&#39;, which is appropriate for earthquake</span>
 <span class="sd">    source data.)</span>
-<span class="sd">    with a </span>
+<span class="sd">    with a</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">outval</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="n">outval</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Point&#39;</span>
+    <span class="n">outval</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Point&quot;</span>
     <span class="n">lon</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>  <span class="c1"># make this it is a float for database consistency</span>
-    <span class="k">if</span> <span class="n">lon</span><span class="o">&gt;</span><span class="mf">180.0</span> <span class="ow">and</span> <span class="n">lon</span><span class="o">&lt;=</span><span class="mf">360.0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">lon</span> <span class="o">&gt;</span> <span class="mf">180.0</span> <span class="ow">and</span> <span class="n">lon</span> <span class="o">&lt;=</span> <span class="mf">360.0</span><span class="p">:</span>
         <span class="c1"># we do this correction silently</span>
         <span class="n">lon</span> <span class="o">-=</span> <span class="mf">360.0</span>
     <span class="n">lat</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">lat</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">90.0</span> <span class="ow">or</span> <span class="n">lat</span> <span class="o">&gt;</span> <span class="mf">90.0</span> <span class="ow">or</span> <span class="n">lon</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">180.0</span> <span class="ow">or</span> <span class="n">lon</span> <span class="o">&gt;</span> <span class="mf">180.0</span><span class="p">:</span>
         <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;geoJSON_doc:  Illegal geographic input</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;latitude received=</span><span class="si">{}</span><span class="s2">  MongoDB requires [-90,90] range</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;longitude received=</span><span class="si">{}</span><span class="s2">  MongoDB requires [-180,180] range&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;longitude received=</span><span class="si">{}</span><span class="s2">  MongoDB requires [-180,180] range&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">lon</span>
+        <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-        
-    <span class="n">outval</span><span class="p">[</span><span class="s1">&#39;coordinates&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">lon</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">lat</span><span class="p">)]</span>
+
+    <span class="n">outval</span><span class="p">[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">lon</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">lat</span><span class="p">)]</span>
     <span class="k">if</span> <span class="n">doc</span><span class="p">:</span>
         <span class="n">retdoc</span> <span class="o">=</span> <span class="n">doc</span>
         <span class="n">retdoc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">outval</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">retdoc</span><span class="o">=</span><span class="p">{</span><span class="n">key</span> <span class="p">:</span> <span class="n">outval</span><span class="p">}</span>
+        <span class="n">retdoc</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">outval</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">retdoc</span></div>
 </pre></div>
 
