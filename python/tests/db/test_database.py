@@ -49,7 +49,7 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util import logging_helper
 from bson.objectid import ObjectId
 from datetime import datetime
-from mspasspy.db.database import Database,geoJSON_doc
+from mspasspy.db.database import Database, geoJSON_doc
 from mspasspy.db.client import DBClient
 
 
@@ -2128,13 +2128,13 @@ class TestDatabase:
             ts,
             mode="promiscuous",
             storage_mode="gridfs",
-            exclude_keys=["extra2", "starttime"],
+            exclude_keys=["extra2", "calib"],
             return_data=True,
         )
         assert save_res.live
         self.db["wf_TimeSeries"].update_one({"_id": ts["_id"]}, {"$set": {"t0": 1.0}})
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
-        assert "starttime" not in res
+        assert "calib" not in res
         assert "npts" not in res
         assert "t0" in res
 
@@ -3451,51 +3451,49 @@ class TestDatabase:
         self.db.set_schema("mspass_lite.yaml")
         with pytest.raises(KeyError, match="site"):
             self.db.database_schema._attr_dict["site"]
-            
+
     def test_geoJSON_doc(self):
         """
-        Tests only the function geoJSON_doc added Jan 2024 to properly 
-        create geoJSON records that allow geospatial queries in 
-        site, channel, and source.  That function is now used in 
-        Database.save_inventory and Database.save_catalog to always 
-        save a geoJSOn format location data.   We assume the bulk of the 
-        code is already tested when those two functions are tested in 
-        other test functions.  The big thing here is testing the 
+        Tests only the function geoJSON_doc added Jan 2024 to properly
+        create geoJSON records that allow geospatial queries in
+        site, channel, and source.  That function is now used in
+        Database.save_inventory and Database.save_catalog to always
+        save a geoJSOn format location data.   We assume the bulk of the
+        code is already tested when those two functions are tested in
+        other test functions.  The big thing here is testing the
         bad data input handlers.
         """
         # test null doc input
-        doc = geoJSON_doc(22.0,44.0,key='testpoint')
-        assert 'testpoint' in doc
-        val = doc['testpoint']
-        assert val['type'] == "Point"
-        coords = val['coordinates']
+        doc = geoJSON_doc(22.0, 44.0, key="testpoint")
+        assert "testpoint" in doc
+        val = doc["testpoint"]
+        assert val["type"] == "Point"
+        coords = val["coordinates"]
         # note coordinates pair is lon,lat
         assert coords[0] == 44.0
         assert coords[1] == 22.0
 
-        doc = geoJSON_doc(33.0,55.0,doc=doc,key='testpoint2')
+        doc = geoJSON_doc(33.0, 55.0, doc=doc, key="testpoint2")
         #  doc should contain both testpoint and testpoint2
         #  This tests update feature of this function
-        assert 'testpoint' in doc
-        assert 'testpoint2' in doc
-        val = doc['testpoint2']
-        assert val['type'] == "Point"
-        coords = val['coordinates']
+        assert "testpoint" in doc
+        assert "testpoint2" in doc
+        val = doc["testpoint2"]
+        assert val["type"] == "Point"
+        coords = val["coordinates"]
         # note coordinates pair is lon,lat
         assert coords[0] == 55.0
         assert coords[1] == 33.0
 
         # recoverable value test
-        doc = geoJSON_doc(20,270.0,key='recoverable')
-        assert 'recoverable' in doc
-        val = doc['recoverable']
-        coords = val['coordinates']
-        # use is_close because -90 is computed but normal floating point math 
+        doc = geoJSON_doc(20, 270.0, key="recoverable")
+        assert "recoverable" in doc
+        val = doc["recoverable"]
+        coords = val["coordinates"]
+        # use is_close because -90 is computed but normal floating point math
         # for that simple calculation would allow an == to also work
-        assert np.isclose(coords[0],-90.0)
+        assert np.isclose(coords[0], -90.0)
         assert coords[1] == 20.0
-        
-        with pytest.raises(ValueError, 
-                           match="Illegal geographic input"):
-            doc = geoJSON_doc(20,400)
 
+        with pytest.raises(ValueError, match="Illegal geographic input"):
+            doc = geoJSON_doc(20, 400)

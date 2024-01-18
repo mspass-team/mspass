@@ -1,4 +1,3 @@
-
 import os
 import io
 import copy
@@ -4960,13 +4959,13 @@ class Database(pymongo.database.Database):
                     loc_etime = self._handle_null_endtime(loc_etime)
                     rec["lat"] = loc_lat
                     rec["lon"] = loc_lon
-                    # save coordinates in both geoJSON and "legacy" 
-                    # format 
-                    rec["coords"] = [loc_lon,loc_lat]
-                    # Illegal lon,lat values will cause this to throw a 
-                    # ValueError exception.   We let it do that as 
+                    # save coordinates in both geoJSON and "legacy"
+                    # format
+                    rec["coords"] = [loc_lon, loc_lat]
+                    # Illegal lon,lat values will cause this to throw a
+                    # ValueError exception.   We let it do that as
                     # it indicates a problem datum
-                    rec = geoJSON_doc(loc_lat,loc_lon,doc=rec,key='location')
+                    rec = geoJSON_doc(loc_lat, loc_lon, doc=rec, key="location")
                     rec["elev"] = loc_elev
                     rec["edepth"] = loc_edepth
                     rec["starttime"] = starttime.timestamp
@@ -5493,12 +5492,12 @@ class Database(pymongo.database.Database):
             rec["lat"] = o.latitude
             rec["lon"] = o.longitude
             # save the epicenter data in both legacy format an d
-            # geoJSON format.  Either can technically be used in a 
-            # geospatial query but the geoJSON version is always 
+            # geoJSON format.  Either can technically be used in a
+            # geospatial query but the geoJSON version is always
             # preferred
             rec["coords"] = [o.longitude, o.latitude]
             # note this function updates rec and returns the upodate
-            rec = geoJSON_doc(o.latitude, o.longitude, doc=rec,key='epicenter')
+            rec = geoJSON_doc(o.latitude, o.longitude, doc=rec, key="epicenter")
             # It appears quakeml puts source depths in meter
             # convert to km
             # also obspy's catalog object seesm to allow depth to be
@@ -6504,6 +6503,12 @@ class Database(pymongo.database.Database):
             # currently means schema enforcement errors.
             # Warning:  this can lead to sample data save orphans
             mspass_object.kill()
+
+        # Always set starttime and endtime
+        if not exclude_keys or "starttime" not in exclude_keys:
+            insertion_dict["starttime"] = mspass_object.t0
+        if not exclude_keys or "endtime" not in exclude_keys:
+            insertion_dict["endtime"] = mspass_object.endtime()
 
         # add tag - intentionally not set in mspass_object returned
         if data_tag:
@@ -8186,54 +8191,57 @@ def _erase_normalized(
                     mdout.erase(k)
     return mdout
 
-def geoJSON_doc(lat,lon,doc=None,key='epicenter')->dict:
+
+def geoJSON_doc(lat, lon, doc=None, key="epicenter") -> dict:
     """
     Convenience function to create a geoJSON format point object document
-    from a points specified by latitude and longitude. The format 
-    for a geoJSON point isn't that strange but how to structure it into 
+    from a points specified by latitude and longitude. The format
+    for a geoJSON point isn't that strange but how to structure it into
     a mongoDB document for use with geospatial queries is not as
-    clear from current MongoDB documentation.  This function makes that 
+    clear from current MongoDB documentation.  This function makes that
     proess easier.
-    
-    The required inpput is latitude (lat) and longitude (lon).  The 
+
+    The required inpput is latitude (lat) and longitude (lon).  The
     values are assumed to be in degrees for compatibility with MongoDB.
-    That means latitude must be -90<=lat<=90 and longitude 
-    must satisfy -180<=lat<=180.  The function will try to handle the 
-    common situation with 0<=lon<=360 by wrapping 90->180 values to 
-    -180->0,  A ValueError exception is thrown if  
+    That means latitude must be -90<=lat<=90 and longitude
+    must satisfy -180<=lat<=180.  The function will try to handle the
+    common situation with 0<=lon<=360 by wrapping 90->180 values to
+    -180->0,  A ValueError exception is thrown if
     for any other situation with lot or lon outside those bounds.
-    
-    If you specify the optional "doc" argument it is assumed to be 
-    a python dict to which the geoJSON point data is to be added.  
-    By default a new dict is created that will contain only the 
-    geoJSON point data.  The doc options is useful if you want to 
-    add the geoJSON data to the document before appending it.  
-    The default is more useful for updates to add geospatial 
-    query capabilities to a collection with lat-lon data that is 
+
+    If you specify the optional "doc" argument it is assumed to be
+    a python dict to which the geoJSON point data is to be added.
+    By default a new dict is created that will contain only the
+    geoJSON point data.  The doc options is useful if you want to
+    add the geoJSON data to the document before appending it.
+    The default is more useful for updates to add geospatial
+    query capabilities to a collection with lat-lon data that is
     not properl structure.  In all cases the geoJSON data is a
-    itself a python dict but a value associated accessible from 
+    itself a python dict but a value associated accessible from
     the output dict with te key defined by the "key" argument
-    (default is 'epicenter', which is appropriate for earthquake 
+    (default is 'epicenter', which is appropriate for earthquake
     source data.)
-    with a 
+    with a
     """
     outval = dict()
-    outval['type'] = 'Point'
+    outval["type"] = "Point"
     lon = float(lon)  # make this it is a float for database consistency
-    if lon>180.0 and lon<=360.0:
+    if lon > 180.0 and lon <= 360.0:
         # we do this correction silently
         lon -= 360.0
     lat = float(lat)
     if lat < -90.0 or lat > 90.0 or lon < -180.0 or lon > 180.0:
         message = "geoJSON_doc:  Illegal geographic input\n"
         message += "latitude received={}  MongoDB requires [-90,90] range\n".format(lat)
-        message += "longitude received={}  MongoDB requires [-180,180] range".format(lon)
+        message += "longitude received={}  MongoDB requires [-180,180] range".format(
+            lon
+        )
         raise ValueError(message)
-        
-    outval['coordinates'] = [float(lon), float(lat)]
+
+    outval["coordinates"] = [float(lon), float(lat)]
     if doc:
         retdoc = doc
         retdoc[key] = outval
     else:
-        retdoc={key : outval}
+        retdoc = {key: outval}
     return retdoc
