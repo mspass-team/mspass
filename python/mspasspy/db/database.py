@@ -6505,8 +6505,10 @@ class Database(pymongo.database.Database):
             mspass_object.kill()
 
         # Always set starttime and endtime
-        insertion_dict["starttime"] = mspass_object.t0
-        insertion_dict["endtime"] = mspass_object.endtime()
+        if not exclude_keys or "starttime" not in exclude_keys:
+            insertion_dict["starttime"] = mspass_object.t0
+        if not exclude_keys or "endtime" not in exclude_keys:
+            insertion_dict["endtime"] = mspass_object.endtime()
 
         # add tag - intentionally not set in mspass_object returned
         if data_tag:
