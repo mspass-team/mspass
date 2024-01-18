@@ -5709,6 +5709,8 @@ class Database(pymongo.database.Database):
             doc["format"] = "mseed"
             doc["dir"] = odir
             doc["dfile"] = dfile
+            # mseed is dogmatically UTC so we always set it this way
+            doc["time_standard"] = "UTC"
             thisid = dbh.insert_one(doc).inserted_id
             ids_affected.append(thisid)
         if normalize_channel:
