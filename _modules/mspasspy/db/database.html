@@ -5822,6 +5822,8 @@
             <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mseed&quot;</span>
             <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">odir</span>
             <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
+            <span class="c1"># mseed is dogmatically UTC so we always set it this way</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;time_standard&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;UTC&quot;</span>
             <span class="n">thisid</span> <span class="o">=</span> <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
             <span class="n">ids_affected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thisid</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">normalize_channel</span><span class="p">:</span>
