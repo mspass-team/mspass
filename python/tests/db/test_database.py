@@ -2128,13 +2128,13 @@ class TestDatabase:
             ts,
             mode="promiscuous",
             storage_mode="gridfs",
-            exclude_keys=["extra2", "starttime"],
+            exclude_keys=["extra2", "calib"],
             return_data=True,
         )
         assert save_res.live
         self.db["wf_TimeSeries"].update_one({"_id": ts["_id"]}, {"$set": {"t0": 1.0}})
         res = self.db["wf_TimeSeries"].find_one({"_id": ts["_id"]})
-        assert "starttime" not in res
+        assert "calib" not in res
         assert "npts" not in res
         assert "t0" in res
 
