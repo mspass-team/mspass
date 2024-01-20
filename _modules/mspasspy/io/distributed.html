@@ -1651,24 +1651,18 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
     <span class="n">stedronsky</span> <span class="o">=</span> <span class="n">Undertaker</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
-    <span class="c1"># Note we save sample data first.  That function will refuse to</span>
-    <span class="c1"># save sample data for dead data and not leave junk.  However,</span>
-    <span class="c1"># failures in conversion of Metadata attributes below can leave</span>
-    <span class="c1"># orphan sample data in files or on gridfs.   The assumption is</span>
-    <span class="c1"># that that kind of problem will be rare or so common you need to</span>
-    <span class="c1"># clear out everthing and start over</span>
     <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">db</span><span class="o">.</span><span class="n">_save_sample_data</span><span class="p">(</span>
-                <span class="n">d</span><span class="p">,</span>
-                <span class="n">storage_mode</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">,</span>
-                <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="nb">format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span>
-                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
         <span class="k">if</span> <span class="n">data_are_atomic</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">db</span><span class="o">.</span><span class="n">_save_sample_data</span><span class="p">(</span>
+                    <span class="n">d</span><span class="p">,</span>
+                    <span class="n">storage_mode</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">,</span>
+                    <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="nb">format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span>
+                    <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="n">pyspark_interface</span> <span class="o">=</span> <span class="n">pyspark_mappartition_interface</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span>
             <span class="c1"># With atomic data dead in this implementation we handle</span>
             <span class="c1"># any dead datum with the map operators that saves the</span>
@@ -1700,16 +1694,28 @@
             <span class="c1"># prone to memory problems so for now view this as worth doing</span>
             <span class="c1"># Note _save_ensemble_wfdocs is assumed to handle the bodies</span>
             <span class="c1"># cleanly when cremate is False (note when true dead members</span>
-            <span class="c1"># are vaporized with no trace)</span>
+            <span class="c1"># are vaporized with no trace).  The default runs bury which</span>
+            <span class="c1"># will create some overhead if there are a lot of bodies to handle</span>
+            <span class="c1"># in both cases the ensemble has the bodies removed by the undertaker</span>
             <span class="k">if</span> <span class="n">cremate</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">cremate</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># note we could do bury_the_dead as an option here but it</span>
-                <span class="c1"># seems ill advised as a possible bottleneck</span>
-                <span class="c1"># we don&#39;t save elog or history here deferring that the next step</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-                    <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">stedronsky</span><span class="o">.</span><span class="n">mummify</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">post_elog</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">post_history</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">stedronsky</span><span class="o">.</span><span class="n">bury</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">))</span>
+            <span class="c1"># Note with ensembles we delay saving sample data until the undertaker</span>
+            <span class="c1"># has taken care of the dead - different from atomic data.</span>
+            <span class="c1"># Works for atomic data data as it does nothing if the datum is</span>
+            <span class="c1"># marked dead.  Similarly if an entire ensemble is marked dead this</span>
+            <span class="c1"># will do nothing.</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">db</span><span class="o">.</span><span class="n">_save_sample_data</span><span class="p">(</span>
+                    <span class="n">d</span><span class="p">,</span>
+                    <span class="n">storage_mode</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">,</span>
+                    <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="nb">format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span>
+                    <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
                 <span class="p">)</span>
+            <span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
                 <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">_save_ensemble_wfdocs</span><span class="p">(</span>
                     <span class="n">d</span><span class="p">,</span>
@@ -1728,18 +1734,17 @@
             <span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-            <span class="n">db</span><span class="o">.</span><span class="n">_save_sample_data</span><span class="p">,</span>
-            <span class="n">storage_mode</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">,</span>
-            <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="nb">format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span>
-            <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
-        <span class="p">)</span>
-
         <span class="k">if</span> <span class="n">data_are_atomic</span><span class="p">:</span>
             <span class="c1"># See comment at top of spark section  - this code is exactly</span>
             <span class="c1"># the same by in the dask dialect</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">_save_sample_data</span><span class="p">,</span>
+                <span class="n">storage_mode</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">,</span>
+                <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="nb">format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
                 <span class="n">_atomic_extract_wf_document</span><span class="p">,</span>
                 <span class="n">db</span><span class="p">,</span>
@@ -1766,14 +1771,22 @@
             <span class="c1"># prone to memory problems so for now view this as worth doing</span>
             <span class="c1"># Note _save_ensemble_wfdocs is assumed to handle the bodies</span>
             <span class="c1"># cleanly when cremate is False (note when true dead members</span>
-            <span class="c1"># are vaporized with no trace)</span>
+            <span class="c1"># are vaporized with no trace)  Default is bury which will</span>
+            <span class="c1"># cause some overhead if the number of bodies is large.</span>
+            <span class="c1"># in both cases the ensemble has the bodies removed by the undertaker</span>
             <span class="k">if</span> <span class="n">cremate</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">cremate</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># note we could do bury_the_dead as an option here but it</span>
-                <span class="c1"># seems ill advised as a possible bottleneck</span>
-                <span class="c1"># we don&#39;t save elog or history here deferring that the next step</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">mummify</span><span class="p">,</span> <span class="n">post_elog</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">post_history</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">bury</span><span class="p">,</span> <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">)</span>
+            <span class="c1"># important comment about this next line in the spark section</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">_save_sample_data</span><span class="p">,</span>
+                <span class="n">storage_mode</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">,</span>
+                <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="nb">format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
                 <span class="n">_save_ensemble_wfdocs</span><span class="p">,</span>
                 <span class="n">db</span><span class="p">,</span>

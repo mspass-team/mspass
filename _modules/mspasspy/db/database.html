@@ -6471,6 +6471,9 @@
                         <span class="n">foff</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
                     <span class="n">f_byte</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+                        <span class="c1"># silently skip any dead members</span>
+                        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                            <span class="k">continue</span>
                         <span class="n">d</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
                             <span class="n">d</span><span class="o">.</span><span class="n">toTrace</span><span class="p">()</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f_byte</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
@@ -6552,14 +6555,8 @@
             <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;gridfs&quot;</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
             <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;gridfs_id&quot;</span><span class="p">):</span>
-                    <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;gridfs_id&quot;</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">):</span>
-                        <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">)</span>
-                <span class="n">ub</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
-                <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">ub</span><span class="p">)</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;gridfs_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridfs_id</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;gridfs&quot;</span>
+                <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_save_sample_data_to_gridfs</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s2">&quot;_save_sample_data_to_gridfs:  arg0 must be a MsPASS data object</span><span class="se">\n</span><span class="s2">&quot;</span>
