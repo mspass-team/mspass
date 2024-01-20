@@ -1538,24 +1538,18 @@ def write_distributed_data(
             raise ValueError(message)
 
     stedronsky = Undertaker(db)
-    # Note we save sample data first.  That function will refuse to
-    # save sample data for dead data and not leave junk.  However,
-    # failures in conversion of Metadata attributes below can leave
-    # orphan sample data in files or on gridfs.   The assumption is
-    # that that kind of problem will be rare or so common you need to
-    # clear out everthing and start over
     if scheduler == "spark":
-        data = data.map(
-            lambda d: db._save_sample_data(
-                d,
-                storage_mode=storage_mode,
-                dir=None,
-                dfile=None,
-                format=file_format,
-                overwrite=overwrite,
-            )
-        )
         if data_are_atomic:
+            data = data.map(
+                lambda d: db._save_sample_data(
+                    d,
+                    storage_mode=storage_mode,
+                    dir=None,
+                    dfile=None,
+                    format=file_format,
+                    overwrite=overwrite,
+                )
+            )
             pyspark_interface = pyspark_mappartition_interface(db, collection)
             # With atomic data dead in this implementation we handle
             # any dead datum with the map operators that saves the
@@ -1587,16 +1581,28 @@ def write_distributed_data(
             # prone to memory problems so for now view this as worth doing
             # Note _save_ensemble_wfdocs is assumed to handle the bodies
             # cleanly when cremate is False (note when true dead members
-            # are vaporized with no trace)
+            # are vaporized with no trace).  The default runs bury which
+            # will create some overhead if there are a lot of bodies to handle
+            # in both cases the ensemble has the bodies removed by the undertaker
             if cremate:
                 data = data.map(stedronsky.cremate)
             else:
-                # note we could do bury_the_dead as an option here but it
-                # seems ill advised as a possible bottleneck
-                # we don't save elog or history here deferring that the next step
-                data = data.map(
-                    lambda d: stedronsky.mummify(d, post_elog=False, post_history=False)
+                data = data.map(lambda d: stedronsky.bury(d, save_history=save_history))
+            # Note with ensembles we delay saving sample data until the undertaker
+            # has taken care of the dead - different from atomic data.
+            # Works for atomic data data as it does nothing if the datum is
+            # marked dead.  Similarly if an entire ensemble is marked dead this
+            # will do nothing.
+            data = data.map(
+                lambda d: db._save_sample_data(
+                    d,
+                    storage_mode=storage_mode,
+                    dir=None,
+                    dfile=None,
+                    format=file_format,
+                    overwrite=overwrite,
                 )
+            )
             data = data.map(
                 lambda d: _save_ensemble_wfdocs(
                     d,
@@ -1615,18 +1621,17 @@ def write_distributed_data(
             )
             data = data.collect()
     else:
-        data = data.map(
-            db._save_sample_data,
-            storage_mode=storage_mode,
-            dir=None,
-            dfile=None,
-            format=file_format,
-            overwrite=overwrite,
-        )
-
         if data_are_atomic:
             # See comment at top of spark section  - this code is exactly
             # the same by in the dask dialect
+            data = data.map(
+                db._save_sample_data,
+                storage_mode=storage_mode,
+                dir=None,
+                dfile=None,
+                format=file_format,
+                overwrite=overwrite,
+            )
             data = data.map(
                 _atomic_extract_wf_document,
                 db,
@@ -1653,14 +1658,22 @@ def write_distributed_data(
             # prone to memory problems so for now view this as worth doing
             # Note _save_ensemble_wfdocs is assumed to handle the bodies
             # cleanly when cremate is False (note when true dead members
-            # are vaporized with no trace)
+            # are vaporized with no trace)  Default is bury which will
+            # cause some overhead if the number of bodies is large.
+            # in both cases the ensemble has the bodies removed by the undertaker
             if cremate:
                 data = data.map(stedronsky.cremate)
             else:
-                # note we could do bury_the_dead as an option here but it
-                # seems ill advised as a possible bottleneck
-                # we don't save elog or history here deferring that the next step
-                data = data.map(stedronsky.mummify, post_elog=False, post_history=False)
+                data = data.map(stedronsky.bury, save_history=save_history)
+            # important comment about this next line in the spark section
+            data = data.map(
+                db._save_sample_data,
+                storage_mode=storage_mode,
+                dir=None,
+                dfile=None,
+                format=file_format,
+                overwrite=overwrite,
+            )
             data = data.map(
                 _save_ensemble_wfdocs,
                 db,
