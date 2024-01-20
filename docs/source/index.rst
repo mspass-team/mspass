@@ -6,19 +6,19 @@
 MsPASS Documentation
 ====================
 
-The Massive Parallel Analysis System for Seismologists 
-is an open source framework for seismic data processing 
+The Massive Parallel Analysis System for Seismologists
+is an open source framework for seismic data processing
 and management. It has three core components:
 
-* A scalable parallel processing framework based on a 
+* A scalable parallel processing framework based on a
   dataflow computation model.
 * A NoSQL database system centered on document store.
 * A container-based virtualization environment.
 
-The system builds on the `ObsPy <http://obspy.org>`_ 
-toolkit, with extension built on a rewrite of the 
-`SEISPP <http://www.indiana.edu/~pavlab/software/seispp/html/index.html>`_ 
-package. 
+The system builds on the `ObsPy <http://obspy.org>`_
+toolkit, with extension built on a rewrite of the
+`SEISPP <http://www.indiana.edu/~pavlab/software/seispp/html/index.html>`_
+package.
 
 .. .. mdinclude:: ../../README.md
 
@@ -30,7 +30,7 @@ package.
    getting_started/deploy_mspass_with_docker_compose
    getting_started/deploy_mspass_on_HPC
    getting_started/getting_started_overview
-   
+
 .. toctree::
    :maxdepth: 1
    :caption: User Manual
@@ -39,8 +39,10 @@ package.
    user_manual/data_object_design_concepts
    user_manual/time_standard_constraints
    user_manual/obspy_interface
+   user_manual/numpy_scipy_interface
    user_manual/database_concepts
    user_manual/CRUD_operations
+   user_manual/mongodb_and_mspass
    user_manual/importing_data
    user_manual/handling_errors
    user_manual/data_editing
@@ -52,6 +54,7 @@ package.
    user_manual/normalization
    user_manual/memory_management
    user_manual/io
+   user_manual/parallel_io
    user_manual/continuous_data
    user_manual/adapting_algorithms
    user_manual/schema_choices
@@ -66,4 +69,3 @@ package.
    python_api/index
    cxx_api/index
    mspass_schema/mspass_schema
-
