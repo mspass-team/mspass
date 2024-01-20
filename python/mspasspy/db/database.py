@@ -6358,6 +6358,9 @@ class Database(pymongo.database.Database):
                         foff = fh.tell()
                     f_byte = io.BytesIO()
                     for i in range(len(mspass_object.member)):
+                        # silently skip any dead members
+                        if mspass_object.member[i].dead():
+                            continue
                         d = mspass_object.member[i]
                         if isinstance(d, TimeSeries):
                             d.toTrace().write(f_byte, format=format)
@@ -6439,14 +6442,8 @@ class Database(pymongo.database.Database):
             mspass_object["storage_mode"] = "gridfs"
         elif isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
             for d in mspass_object.member:
-                if overwrite and d.is_defined("gridfs_id"):
-                    gridfs_id = d["gridfs_id"]
-                    if gfsh.exists(gridfs_id):
-                        gfsh.delete(gridfs_id)
-                ub = bytes(np.array(d.data))
-                gridfs_id = gfsh.put(ub)
-                d["gridfs_id"] = gridfs_id
-                d["storage_mode"] = "gridfs"
+                if d.live:
+                    self._save_sample_data_to_gridfs(d, overwrite=overwrite)
         else:
             message = (
                 "_save_sample_data_to_gridfs:  arg0 must be a MsPASS data object\n"
