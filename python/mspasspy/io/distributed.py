@@ -1366,7 +1366,7 @@ def write_distributed_data(
 
     :param storage_mode: Must be either "gridfs" or "file.  When set to
         "gridfs" the waveform data are stored internally and managed by
-        MongoDB.  If set to "file" the data will be stored in a file system.
+        MongoDB.  If set to "files" the data will be stored in a file system.
         File names are derived from attributes with the tags "dir" and 
         "dfile" in the standard way.   Any datum for which dir or dfile 
         aren't defined will default to the behaviour of the Database 
@@ -1390,7 +1390,7 @@ def write_distributed_data(
         assumes means to store the data in its raw binary form.  The default
         should normally be used for efficiency.  Alternate formats are
         primarily a simple export mechanism.  See the User's manual for
-        more details on data export.  Used only for "file" storage mode.
+        more details on data export.  Used only for "files" storage mode.
     :type file_format: :class:`str`
 
     :param overwrite:  If true gridfs data linked to the original
@@ -1495,7 +1495,7 @@ def write_distributed_data(
         message = "write_distributed_data:  required arg1 (db) must be an instance of mspasspy.db.Database\n"
         message += "Type of arg1 received is {}".format(str(type(db)))
         raise TypeError(message)
-    if storage_mode not in ["file", "gridfs"]:
+    if storage_mode not in ["files", "gridfs"]:
         raise TypeError(
             "write_distributed_data:  Unsupported storage_mode={}".format(storage_mode)
         )
