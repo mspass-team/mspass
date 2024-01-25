@@ -58,7 +58,7 @@ the dead bodies.  These are:
     a shell of the original with a minimal memory footprint.  For atomic
     data that means to set the sample array to zero length.  For ensembles
     it means to mummify all dead members but leave the mummies in the container.
-    An enemble marked dead passed through mummify will have all it's members
+    An ensemble marked dead passed through mummify will have all it's members
     mummified.
 3.  To `cremate` a dead datum means to make it disappear with little to no
     trace.   When an atomic datum is cremated we return a default constructed
@@ -344,7 +344,7 @@ class Undertaker:
                 if isinstance(mspass_object, TimeSeries):
                     return TimeSeries()
                 else:
-                    return Seismogram
+                    return Seismogram()
         elif isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
             if mspass_object.dead():
                 nlive = 0
