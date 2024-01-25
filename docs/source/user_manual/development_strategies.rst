@@ -26,7 +26,7 @@ seismologists work in.   That is, you should expect:
 2.  Every single example I have ever created to run MsPASS was
     best created by first writing the workflow as a serial process
     with a single outer loop over the dataset elements.  Using
-    guidelines in :ref:`_parallel_processing` convert to a parallel
+    guidelines in :ref:`parallel_processing` convert to a parallel
     equivalent only after you get the syntax and variables all defined
     with the serial job.
 2.  Most  workflows reduce to one or more sections that have the
@@ -39,7 +39,7 @@ seismologists work in.   That is, you should expect:
     It is also a very good idea to use your desktop's system monitor
     to watch the workflow's cpu and memory usage while running the
     test data set.   You may need to tune the memory use of the workflow
-    based on concepts described in :ref:`_memory_management` section
+    based on concepts described in :ref:`memory_management` section
     of this manual.
 3.  If you are running on a (now ancient) computer with only on core
     you will not be able to test the parallel version on your desktop/laptop.
@@ -117,7 +117,7 @@ following:
     If you are doing extensive python development you are likely already
     familiar with one of the standard Integrated Development Environments
     like `pycharm <https://www.jetbrains.com/pycharm/>`__ or
-    `spyder<https://www.spyder-ide.org/>`__, but there are
+    `spyder <https://www.spyder-ide.org/>`__, but there are
     a number of others.   IDEs dramatically improve most people's ability
     to test and debug python applications compared to a simple editor
     and pdb.   If you aren't already using one, choose one and use it.
@@ -163,6 +163,7 @@ following:
     module `mymodule.py` stored in a directory called `/home/myname/python`.
     With docker this could be mounted on the standard container
     with the following incantation:
+
     .. code-block:: bash
 
       docker run --mount src=/home/myname/python,target=/mnt,type=bind -p 8888:8888 mspass/mspass

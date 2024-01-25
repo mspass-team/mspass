@@ -31,7 +31,7 @@ The current support for graphics has two component.
 
 The best way to understand the concepts and features of the graphics
 module is to run our graphics tutorial found
-`here<https://github.com/mspass-team/mspass_tutorial/blob/master/notebooks/BasicGraphics.ipynb>`__.
+`here <https://github.com/mspass-team/mspass_tutorial/blob/master/notebooks/BasicGraphics.ipynb>`__.
 
 Native Graphics
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -82,7 +82,7 @@ classes support the four most common methods:
     wiggle trace variable area plot.
 
 Below are examples of all four types of plots from our
-`graphics tutorial<https://github.com/mspass-team/mspass_tutorial/blob/master/notebooks/BasicGraphics.ipynb>`__.
+`graphics tutorial <https://github.com/mspass-team/mspass_tutorial/blob/master/notebooks/BasicGraphics.ipynb>`__.
 
 .. _wiggle_trace_example_figure:
 

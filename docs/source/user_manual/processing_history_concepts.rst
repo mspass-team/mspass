@@ -57,11 +57,11 @@ preserving processing history has two components.
    is about as fast as possible.  The user interface hides the implementation
    details.   You as a user need only consult the API references to a
    object we call
-   `ProcessingHistory<https://www.mspass.org/cxx_api/mspass.html#mspass-namespace>`__.
+   `ProcessingHistory <https://www.mspass.org/cxx_api/mspass.html#mspass-namespace>`__.
    User's need only recognize that
-   `TimeSeries<https://www.mspass.org/cxx_api/mspass.seismic.TimeSeries.html>`__
+   `TimeSeries <https://www.mspass.org/cxx_api/mspass.seismic.TimeSeries.html>`__
    and
-   `Seismogram<https://www.mspass.org/cxx_api/mspass.seismic.Seismogram.html>`
+   `Seismogram <https://www.mspass.org/cxx_api/mspass.seismic.Seismogram.html>`__
    objects have a
    ProcessingHistory component.  Algorithms can and should at least allow
    the option of registering themselves through this mechanism.   All

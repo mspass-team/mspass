@@ -9,7 +9,7 @@ Prerequisites
 Docker is required in normal use to run MsPASS on desktop systems.
 The alternative is a more complicated installation of the components
 built from source as described on
-`this wiki page<https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code>`__.
+`this wiki page <https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code>`__.
 Docker is the piece of software you will use to run and manage
 any containers on your desktop system.
 

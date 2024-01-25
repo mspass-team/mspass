@@ -142,7 +142,7 @@ read_distributed_data - MsPASS parallel reader
 ------------------------------------------------
 Overview
 ~~~~~~~~~~~
-The `docstring<https://www.mspass.org/python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data>`__
+The `docstring <https://www.mspass.org/python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data>`__
 for this function is an important sidebar to this section.   As usual it gives
 details about usage, but also discusses a bit of an oddity of this function
 I reiterate here.   The design goal to use a common function name to create a

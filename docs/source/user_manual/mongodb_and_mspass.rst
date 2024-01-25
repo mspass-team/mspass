@@ -169,7 +169,7 @@ an RDBMS functionality.
 Since pandas are little more than an API for manipulating tables,
 linking pandas to MongoDB differs little from linking an RDBMS table
 to MongoDB.  What I mean by that is perhaps best illustrated by
-an example.  The `Antelope software<https://brtt.com/software/>`__
+an example.  The `Antelope software <https://brtt.com/software/>`__
 used by many seismologists is a "flat-file" RDBMS.  It stores tabular
 data in simple text files that can be viewed with standard unix tools.
 (Note most RDBMS systems hide data behind the API like MongoDB does and
@@ -203,15 +203,19 @@ from an Antelope "site" table.
   db.site.insert_many(doclist)
 
 A few details worth noting about this example:
+
 -  The list of keywords assigned to the symbol `keys` is needed because
    Antelope wfdisc fles do not have attribute names as the first line of
    the file.   The list used above uses CSS3.0 attribute names.  The order
    is significant as the names are tags on each column of data loaded
    with `read_fsf`.
+
 -  The `widths` symbol is set to a list of fixed field widths.  They ere
    derived from the antelope schema file.
+
 -  The call to the pandas `to_dict` method converts the pandas table to
    a list of python dictionaries.
+
 -  The for loop after the call to `to_dict` is not strictly necessary.
    It is used in this example to produce a "site collection" consistent
    with the MsPASS namespace.   This is an example of a disconnect in
@@ -221,6 +225,7 @@ A few details worth noting about this example:
    standard changed the equivalent to a time stamp normally specified as
    a unix epoch time or a date string.  Here we convert the time to a
    unix epoch time through obspy's UTCDateTime class.
+
 -  The last line is the only MongoDB component of this script.  More examples
    like this are seen below.  A key point here is that `insert_many` can
    handle any number of documents defined in doclist.   It is, of course,
@@ -232,7 +237,7 @@ The above example works for the special case of Antelope text-based
 database files.   The pandas API, as experienced pandas users know,
 has a rich set of readers that can read nearly any imaginable
 tabular data format from files, sql servers, and online sources.  These are documented
-`here<https://pandas.pydata.org/docs/reference/io.html>`__ and include
+`here <https://pandas.pydata.org/docs/reference/io.html>`__ and include
 Excel, csv, and json formatted files, SQL servers, and jargon most of
 us have never seen.  I have found that for research problems the fact that MongoDB
 documents are completely agnostic about content can be very helpful.
@@ -293,7 +298,7 @@ fundamental rules:
     to a test for the "sta" attribute being the constant "AAK" the
     query could be either `{"sta" : "AAK"}` or `{"sta" : {"$eq" : "AAK"}}`.
     The form with constant value only works for "$eq".
-5.  Compound queries (e.g. time interval expressions) have a value
+6.  Compound queries (e.g. time interval expressions) have a value
     with multiple operator keys.
 
 In the examples below, refer back to these rules to help you remember
@@ -310,7 +315,7 @@ the "Read" part of CRUD.  We will show examples of all three below.
 1.  `find_one` returns a document that is the first document found matching
     a query operator.
 2.  `find` returns a MongoDB
-    `Cursor object<https://www.mongodb.com/docs/v3.0/core/cursors/>`__
+    `Cursor object <https://www.mongodb.com/docs/v3.0/core/cursors/>`__
     that can be used to iterate through query that returns many documents.
 3.  `count_documents` is a utility function used to bound how many documents
     match a particular query.
@@ -390,7 +395,7 @@ MQL has a rich collection of operators.
 of the MongoDB documentation has the complete list. A particularly useful
 one for most seismologists that is typically omitted from introductory
 tutorials is the
-`$regex<https://www.mongodb.com/docs/manual/reference/operator/query/regex/#mongodb-query-op.-regex>`__
+`$regex <https://www.mongodb.com/docs/manual/reference/operator/query/regex/#mongodb-query-op.-regex>`__
 operator.  $regex can be used to apply a unix regular expression in
 a query operation.   Most seismologists are familiar with the regular
 expression syntax from using the unix shell.   The following, for
@@ -570,7 +575,7 @@ to be useful two things are required:
 
 1.  The attribute(s) you want to query should be structured into a
     special data type called a
-    `GeoJSON object<https://www.mongodb.com/docs/manual/geospatial-queries/#std-label-geospatial-geojson>`__.
+    `GeoJSON object <https://www.mongodb.com/docs/manual/geospatial-queries/#std-label-geospatial-geojson>`__.
     The only example packaged that way by MsPASS is the coordinates of
     seismic instruments stored in the "site" and"channel" collections
     and source spatial coordinates defined in the standard "source" collection.
@@ -582,7 +587,7 @@ to be useful two things are required:
     constraint requires a compound query mixing geospatial and a range
     query over depth.
 2.  All geospatial queries REQUIRE creating a
-    `geospatial index<https://www.mongodb.com/docs/manual/core/indexes/index-types/index-geospatial/#std-label-geospatial-index>`__.
+    `geospatial index <https://www.mongodb.com/docs/manual/core/indexes/index-types/index-geospatial/#std-label-geospatial-index>`__.
     Most MsPASS users will ALWAYS want to use what MongoDB calls a
     "2dsphere" index.   Their "2d" index uses a map projection and is
     designed only for local scale software apps at a city scale.
@@ -605,19 +610,19 @@ this page.
 
 .. code-block:: python
 
-query = {"location":{
-      '$nearSphere': {
-          '$geometry' : {
-              'type' : 'Point',
-              'coordinates' : [-86.5264, 39.1653]
-          },
-          '$maxDistance' : 500000.0,
+  query = {"location":{
+        '$nearSphere': {
+            '$geometry' : {
+                'type' : 'Point',
+                'coordinates' : [-86.5264, 39.1653]
+            },
+            '$maxDistance' : 500000.0,
+        }
       }
     }
-  }
-  cursor = db.site.find(query)
-  for doc in cursor:
-    print(doc)
+    cursor = db.site.find(query)
+    for doc in cursor:
+      print(doc)
 
 Note the complex, nested operators that characterize all MongoDB
 geospatial queries.   I trust the verbose names make clear how this
@@ -626,7 +631,7 @@ around 39 degrees latitude and the distance parameters have to
 be defined in meters.   Note a few key details:
 
 1.  MQL's geospatial query language is best done with
-    `geoJSON<https://geojson.org/>`__.  This example defines a
+    `geoJSON <https://geojson.org/>`__.  This example defines a
     geoJSON point
     and a search radius.  In all cases, the key at the top level of
     the query is an MQL operator.   In this case the operator is
@@ -643,7 +648,7 @@ be defined in meters.   Note a few key details:
     keep the example simple, but it could have.
 
 The set of spatial query operators are document in
-`this page<https://www.mongodb.com/docs/manual/reference/operator/query-geospatial/>`__
+`this page <https://www.mongodb.com/docs/manual/reference/operator/query-geospatial/>`__
 of the MongoDB documentation.  Most of the complexity is in the
 second level of attributes passed to the operator specified in geoJSON.
 That is, for spherical geometry, which I again stress is the only thing
@@ -672,17 +677,19 @@ are some major caveats and warnings:
     coordinates.  e.g. a specific lon-lat can be specified in "legacy"
     format like this:`{ "coords" : [-102.7724, 33.969601]}`.   The same
     information defined in geoJSON is:
-    ```
-    { "coords" :
-        {
-          "type": "Point",
-          "coordinates": [
-            -102.7724,
-            33.969601
-          ]
-        }
-    }
-    ```
+    
+    .. code-block:: python
+
+      { "coords" :
+          {
+            "type": "Point",
+            "coordinates": [
+              -102.7724,
+              33.969601
+            ]
+          }
+      }
+    
     From my experience you should avoid the legacy format and only use
     geoJSON specifications in MongoDB documents.  To make that easier
     there is a convenience function in the `mspasspy.db.database`
@@ -976,9 +983,9 @@ from common source gathers:
 
 Finally, a more advanced approach that is useful for large numbers of
 random updates with a large data set is the pymongo collection method
-called `bulk_write<https://pymongo.readthedocs.io/en/stable/examples/bulk.html>`__.
+called `bulk_write <https://pymongo.readthedocs.io/en/stable/examples/bulk.html>`__.
 An example of how to use this method can be found in the MsPASS function
-`bulk_normalize<https://github.com/mspass-team/mspass/blob/master/python/mspasspy/db/normalize.py>`__.
+`bulk_normalize <https://github.com/mspass-team/mspass/blob/master/python/mspasspy/db/normalize.py>`__.
 Briefly, the idea is to manually build up blocks of atomic-level updates.
 That approach is necessary only in the case where there is no simple
 recipe for creating smaller number of matching operators like my
@@ -1037,7 +1044,7 @@ occasional updates and is mostly used during read operations.
 A first point to recognize is that MongoDB ALWAYS defines an index on the
 magic attribute key "_id" for any collection.   Any additional
 index needs to be created with the collection method called
-`create_index<https://pymongo.readthedocs.io/en/stable/api/pymongo/collection.html>`__.
+`create_index <https://pymongo.readthedocs.io/en/stable/api/pymongo/collection.html>`__.
 The index can be defined for one or more keys and set to define an
 increasing or decreasing sequence.   e.g. the following will create an
 index on the channel collection appropriate for miniseed metadata

@@ -63,7 +63,7 @@ MsPASS IO is currently blocking IO.
 taking place via a communication channel that can be manipulated by
 an appropriate API.   That can be explicit like the FILE* handle in C
 or more abstract like the generic read handle in obspy's
-`read<https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html>`__ function.
+`read <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html>`__ function.
 In all cases the idea is the handle provides a mechanism to
 move data to/from some external location from/to the memory space of your program.
 
@@ -235,6 +235,7 @@ operation.  To reduce such delays
 always tries to insert multiple documents in each interaction with
 the MongoDB server.   The method is different for atomic data and
 ensembles:
+
 #.  For atomic data the algorithm uses the :code:`map_partition` method
     defined for both a dask bag and a pyspark RDD.   A partition is normally
     made up of multiple data components.  The writer than uses the
@@ -312,7 +313,7 @@ for long periods of time.   That means the systems are not tuned to
 handle large numbers of file open/close transactions.
 
 At the time of this writing the type example of this issue is when
-a job has to interact with a `Lustre file system<https://www.lustre.org/>`__.
+a job has to interact with a `Lustre file system <https://www.lustre.org/>`__.
 Lustre is a heavily
 used package today that HPC clusters use to set up huge virtual
 file systems.   For example, if a petabyte scale file system is defined on
@@ -347,6 +348,7 @@ to do the same if used naively in that environment.
 
 We know of three solutions to address this issue at present with
 different tradeoffs.
+
 #.  Use the ensemble strategy noted above to structure data into
     logical groupings to reduce the number of open/close operations.
     If here is not logical grouping consider just using ensembles
@@ -392,7 +394,7 @@ the main system bus.
 There is a known solution to this problem, but none of us have
 attempted to implement it with MsPASS for an actual processing job.
 That solution is what MongoDB
-calls `sharding<https://www.mongodb.com/docs/manual/sharding/>`__.
+calls `sharding <https://www.mongodb.com/docs/manual/sharding/>`__.
 Sharding can be used to set up multiple MongoDB servers to
 increase the number of communication channels and reduce collisions
 between workers demanding data simultaneously.   It adds a great
@@ -407,14 +409,16 @@ Web-service URL reads
 At the present time the most common way to assemble waveform
 data for seismology research is to download data from one or more FDSN
 data centers via a standardized protocol called
-`web services<https://service.iris.edu/fdsnws/dataselect/1/>`__.
+`web services <https://service.iris.edu/fdsnws/dataselect/1/>`__.
 MsPASS has a capability of defining a waveform segment with URL,
 which makes it theoretically possible to define and entire data set
 as residing remotely and accessible through the web service interface.
 That, however, is presently a really bad idea for two reasons:
+
 #.  The rate that data can be pulled by that mechanism is far too
     slow to be useful as a starting point for any data processing
     workflow other than a tiny data set.
+
 #.  Web services has no mechanism to guarantee success of a query.
     When one tries to retrieve millions of waveforms by this mechanism
     some loss is nearly guaranteed.

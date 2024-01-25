@@ -37,5 +37,5 @@ work for you, look at the `data/yaml` directory for the mspass source code
 tree for alternatives you may find there.   If none of those work for you
 it is relatively easy to extend any of the existing schema files.
 See related sections in this User's Manual for guidance and the docstring
-for the class :py:class:`mspasspy.db.schema.DatabaseSchema` and
-:py:class:`mspasspy.db.schema.MetadataSchema`.
+for the class :py:class:`DatabaseSchema<mspasspy.db.schema.DatabaseSchema>` and
+:py:class:`MetadataSchema<mspasspy.db.schema.MetadataSchema>`.

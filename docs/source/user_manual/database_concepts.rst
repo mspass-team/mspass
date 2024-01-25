@@ -491,7 +491,7 @@ binary memory image saved by writing the memory buffer to the external
 file (defined by :code:`dir` and :code:`dfile`) using the low level C fwrite function
 that is wrapped in the python standard by the :code:`write` method of
 standard file handles described in many tutorials like
-`this one<https://docs.python.org/3/tutorial/inputoutput.html>`__.
+`this one <https://docs.python.org/3/tutorial/inputoutput.html>`__.
 
 TimeSeries objects store data as vector of binary "double" values, which for
 decades now has implied an 8 byte floating point number stored in the IEEE
@@ -719,7 +719,7 @@ some support for two alternative indexing methods.
     index with one of MongoDB's Geospatial query constructs.
     There are numerous tutorials today on this topic.  The
     MongoDB documentation can be found
-    `here<https://www.mongodb.com/docs/manual/geospatial-queries/>`__.
+    `here <https://www.mongodb.com/docs/manual/geospatial-queries/>`__.
 
 A spatial query to link anything to a point in the :code:`site` or :code:`channel` collection has
 two complexities:  (1) all spatial queries require a uncertainty

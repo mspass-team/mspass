@@ -1,4 +1,4 @@
-.. _continuous_data
+.. _continuous_data:
 
 Continuous Data Handling with MsPASS
 ==========================================
@@ -19,6 +19,7 @@ than windowing.
 
 Some important issues about common practice and the reality of real
 data are:
+
 #.  There are two common choices for how the data are blocked:
     (1) day volumes, and (2)  raw digitizer files of irregular length
     created when the digitizer does a memory dump (All current
@@ -26,10 +27,12 @@ data are:
     dumped when the memory use exceeds a high water mark.)  In either case
     there is some explicit or implicit (e.g. file naming convention)
     that provides a hint of the order of the segments.
+
 #.  A large fraction of data contain various types of "data gaps".
     Gaps occur for a long list of reasons that are mostly unimportant
     when analyzing such data.  What is important is that data gaps
     span a range of time scales from a single sample to years.
+
 #.  A less-common problem is a data overlap.  An overlap occurs when
     two segments you need to merge have conflicting time stamps.
     To make this clear it is helpful to review two MsPASS concepts in
@@ -63,7 +66,7 @@ Gap Processing
 Internally MsPASS handles data gaps with a subclass of the
 :code:`TimeSeries` called :code:`TimeSeriesWGaps`.   That extension of
 :code:`TimeSeries` is written in C++ and is documented
-`here<https://www.mspass.org/cxx_api/mspass.html#mspass-namespace>`__.
+`here <https://www.mspass.org/cxx_api/mspass.html#mspass-namespace>`__.
 Like :code:`TimeSeries` this class has python bindings created
 with pybind11.  All the methods described in the C++ documentation
 page have python bindings.  There are methods for defining gaps,
@@ -106,7 +109,7 @@ packet, a reader will invoke a gap handler.  A reader's gap handler
 commonly has options for what to do with different kinds of "gaps", but
 for this section our definition is defined by the way obspy
 handles this problem with their :class:`Stream` merge method described
-`here<https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html>`__.
+`here <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html>`__.
 That particular algorithm is invoked when reading miniseed data
 if and only if a block of data defined running the mspass
 function :py:meth:`mspasspy.db.database.Database.index_mseed_file` is
@@ -206,7 +209,7 @@ illustration:
     # this is a MongoDB query to retrieve all segments with data in the
     # desired time range of output_stime to output_etime
     query = {
-      $and [
+      "$and": [
         { "sta" : {"$eq" : sta}},
         { "net" : {"$eq" : net}},
         { "chan" : {"$eq" : chan}},
@@ -269,7 +272,7 @@ from Earthscope.
       stime=time+stwin
       etime=time+etwin
       query = {
-        $and [
+        "$and": [
           { "sta" : {"$eq" : sta}},
           { "net" : {"$eq" : net},
           { "starttime" : {"$lte" : etime}},
@@ -376,7 +379,7 @@ ANF catalog.  It may be helpful to expand on the main steps of this algorithm:
     the name `arrival2list`.   For the prototype example given it could
     be driven by the CSS3.0 tables created by the Earthscope
     Array Network Facility (ANF).  That data can currently be found
-    `here<https://anf.ucsd.edu/tools/events/>`__.  The actual implementation
+    `here <https://anf.ucsd.edu/tools/events/>`__.  The actual implementation
     would need to select what picks to use and pull out a restricted set of
     attributes from the CSS3.0 tables creating a large list of tuples
     with each tuple containing:  ['net', 'sta', 'arrival_time'] values.
@@ -416,7 +419,7 @@ ANF catalog.  It may be helpful to expand on the main steps of this algorithm:
 6.  This example calls the parallel writer, `write_distributed_data`, to
     save the results.
 
-*Example 3:  Application of TimeIntervalReader. *
+*Example 3:  Application of TimeIntervalReader.*
 This example assumes we have a list of shot times from something like an
 onshore-offshore experiment using airguns or a set set of land shots with
 known shot times.  The script is serial, but is readily converted to

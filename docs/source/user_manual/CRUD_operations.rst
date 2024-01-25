@@ -406,7 +406,7 @@ reader to the sphinx documentation for full usage.
 #.  A workflow that needs to read and process a large data sets in
     a parallel environment should use
     the parallel equivalent of :code:`read_data` called
-    :py:function:`read_distributed_data <mspasspy.io.distributed.read_distributed_data>`.
+    :py:func:`read_distributed_data <mspasspy.io.distributed.read_distributed_data>`.
     MsPASS supports two parallel frameworks called
     SPARK and DASK.   Both abstract the concept of the parallel data set in
     a container they call an RDD and Bag respectively.   Both are best thought
@@ -464,7 +464,7 @@ be one of four python types with dependencies defined below for each item:
    This interface exists as an alternative way to define input from MongoDB
    using an SQL database, spreadsheet, or an ascii table (csv or fixed field
    tables like those used in the flat-file database in seismology called
-   `antelope<https://www.brtt.com>`__).  The interface will work provided the
+   `antelope <https://www.brtt.com>`__).  The interface will work provided the
    attribute names match several key concepts in the standard mspass schema.
    That is, each tuple in the DataFrame must contain key attributes that define
    how to construct a valid atomic data object.  That means universally
@@ -930,7 +930,7 @@ they are handled during construction.
     The feature of allowing the use of `:class:BasicMatcher` implementations
     was done for efficiency.
     (The developer discussion of this feature and why it improves performance
-    can be found `here.<https://github.com/mspass-team/mspass/discussions/303>`__.)
+    can be found `here <https://github.com/mspass-team/mspass/discussions/303>`__.)
     Note that using the verson 1 construct of a list of collection names will
     always be much slower because it implies a Database Id matcher with
     the collection name.  Not only does that require an additional database query for each
