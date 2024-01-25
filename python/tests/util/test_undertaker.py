@@ -25,25 +25,28 @@ from helper import (
     get_live_seismogram_ensemble,
 )
 
+
 class TestUnderTaker:
     def setup_class(self):
         client = DBClient("localhost")
         self.db = Database(client, "test_undertaker")
-        self.aborted_data_collection="abortions"
-        self.regular_data_collection="cemetery"
-        self.undertaker = Undertaker(self.db, 
-                                     regular_data_collection="cemetery",
-                                     aborted_data_collection="abortions",
-                                     data_tag='undertaker_dead'
-                                     )
+        self.aborted_data_collection = "abortions"
+        self.regular_data_collection = "cemetery"
+        self.undertaker = Undertaker(
+            self.db,
+            regular_data_collection="cemetery",
+            aborted_data_collection="abortions",
+            data_tag="undertaker_dead",
+        )
 
     def test_constructor(self):
         # Test with valid database instance
-        self.undertaker = Undertaker(self.db, 
-                                     regular_data_collection="cemetery",
-                                     aborted_data_collection="abortions",
-                                     data_tag='undertaker_dead'
-                                     )
+        self.undertaker = Undertaker(
+            self.db,
+            regular_data_collection="cemetery",
+            aborted_data_collection="abortions",
+            data_tag="undertaker_dead",
+        )
         assert isinstance(self.undertaker, Undertaker)
 
         # Test with invalid database instance
@@ -91,7 +94,7 @@ class TestUnderTaker:
         # Test with an invalid type - expecting a TypeError
         with pytest.raises(TypeError):
             self.undertaker._is_abortion("not_a_valid_type")
-    
+
     def test_handle_abortion(self):
         # Test with TimeSeries object
         ts = get_live_timeseries()
@@ -99,32 +102,42 @@ class TestUnderTaker:
         num_docs = self.db[self.aborted_data_collection].count_documents({})
         result = self.undertaker.handle_abortion(ts)
         # Check the database for correct entry
-        assert (num_docs + 1) == self.db[self.aborted_data_collection].count_documents({})
+        assert (num_docs + 1) == self.db[self.aborted_data_collection].count_documents(
+            {}
+        )
 
         # Test with Seismogram object
         sg = get_live_seismogram()
         sg.elog.log_error("sample error", str("message"), ErrorSeverity.Invalid)
         result = self.undertaker.handle_abortion(sg)
         # Check the database for correct entry
-        assert (num_docs + 2) == self.db[self.aborted_data_collection].count_documents({})
+        assert (num_docs + 2) == self.db[self.aborted_data_collection].count_documents(
+            {}
+        )
 
         # Test with a Metadata object
         md = Metadata()
-        md['some_key'] = 'some_value'
-        result = self.undertaker.handle_abortion(md, type='MetadataType')
+        md["some_key"] = "some_value"
+        result = self.undertaker.handle_abortion(md, type="MetadataType")
         # Check the database for correct entry
-        assert (num_docs + 3) == self.db[self.aborted_data_collection].count_documents({})
+        assert (num_docs + 3) == self.db[self.aborted_data_collection].count_documents(
+            {}
+        )
 
         # Test with a dictionary
-        doc = {'key1': 'value1', 'key2': 'value2'}
-        result = self.undertaker.handle_abortion(doc, type='DictType')
+        doc = {"key1": "value1", "key2": "value2"}
+        result = self.undertaker.handle_abortion(doc, type="DictType")
         # Check the database for correct entry
-        assert (num_docs + 4) == self.db[self.aborted_data_collection].count_documents({})
+        assert (num_docs + 4) == self.db[self.aborted_data_collection].count_documents(
+            {}
+        )
 
         # Test with a dictionary without type parameter
         result = self.undertaker.handle_abortion(doc)
         # Check that type is set to 'unknown'
-        last_document = list(self.db[self.aborted_data_collection].find().sort('_id', -1).limit(1))[0]
+        last_document = list(
+            self.db[self.aborted_data_collection].find().sort("_id", -1).limit(1)
+        )[0]
         assert last_document["type"] == "unknown"
 
         # Test with an invalid type - expecting a TypeError
@@ -153,7 +166,7 @@ class TestUnderTaker:
         assert result.npts == 0
         assert result.is_empty()
         assert "processing_history" in result
-        
+
         # Test mummify with an ensemble containing both live and dead members
         ensemble = TimeSeriesEnsemble()
         live_member = get_live_timeseries()
@@ -179,7 +192,7 @@ class TestUnderTaker:
         # Test with an invalid type - expecting a TypeError
         with pytest.raises(TypeError):
             self.undertaker.mummify("not_a_valid_type")
-        
+
     def test_bring_out_your_dead(self):
         # Create a mixed ensemble with both live and dead members
         ensemble = TimeSeriesEnsemble()
@@ -190,7 +203,9 @@ class TestUnderTaker:
         ensemble.member.append(dead_member)
         ensemble.live = True
 
-        live_ensemble, dead_ensemble = self.undertaker.bring_out_your_dead(ensemble, bury=True)
+        live_ensemble, dead_ensemble = self.undertaker.bring_out_your_dead(
+            ensemble, bury=True
+        )
         assert len(live_ensemble.member) == 1
         assert len(dead_ensemble.member) == 1
         assert live_ensemble.member[0].live
@@ -203,7 +218,9 @@ class TestUnderTaker:
             member.kill()
             dead_ensemble.member.append(member)
         dead_ensemble.kill()  # Mark the entire ensemble as dead
-        live_ensemble, dead_ensemble = self.undertaker.bring_out_your_dead(dead_ensemble)
+        live_ensemble, dead_ensemble = self.undertaker.bring_out_your_dead(
+            dead_ensemble
+        )
         assert len(live_ensemble.member) == 0
         assert len(dead_ensemble.member) == 3
 
@@ -216,15 +233,22 @@ class TestUnderTaker:
         dead_ts = TimeSeries()
         dead_ts.kill()
         assert not self.undertaker._is_abortion(dead_ts)
-        result = self.undertaker.bury(dead_ts, save_history=True, mummify_atomic_data=True)
+        result = self.undertaker.bury(
+            dead_ts, save_history=True, mummify_atomic_data=True
+        )
         assert dead_ts.dead()
         # assert that the elog was saved to the database
-        elog_doc = self.db[self.regular_data_collection].find_one({"data_tag": 'undertaker_dead'})
+        elog_doc = self.db[self.regular_data_collection].find_one(
+            {"data_tag": "undertaker_dead"}
+        )
         assert elog_doc is not None
-        # assert that the data was mummified 
+        # assert that the data was mummified
         assert dead_ts.npts == 0
-        # assert that the history was saved 
-        assert self.db["history_object"].find_one({"alg_name": 'Undertaker.bury'}) is not None
+        # assert that the history was saved
+        assert (
+            self.db["history_object"].find_one({"alg_name": "Undertaker.bury"})
+            is not None
+        )
 
         # Test burying a dead Seismogram object
         dead_sg = Seismogram()
@@ -262,9 +286,9 @@ class TestUnderTaker:
         sge_dead.member.append(get_live_seismogram())
         sge_dead.member.append(get_live_seismogram())
         sge_dead.kill()
-        result = self.undertaker.bury(sge_dead)    
+        result = self.undertaker.bury(sge_dead)
         assert result.dead()
-        assert len(result.member) == 0    
+        assert len(result.member) == 0
 
         # Test with an invalid type - expecting a TypeError
         with pytest.raises(TypeError):
@@ -310,7 +334,7 @@ class TestUnderTaker:
         result = self.undertaker.cremate(tse)
         assert len(result.member) == 1  # Assuming dead members are removed
         assert result.live
-        
+
         # Test cremate with a SeismogramEnsemble containing both live and dead members
         sge = SeismogramEnsemble()
         live_member = get_live_seismogram()
@@ -328,9 +352,9 @@ class TestUnderTaker:
         sge_dead.member.append(get_live_seismogram())
         sge_dead.member.append(get_live_seismogram())
         sge_dead.kill()
-        result = self.undertaker.cremate(sge_dead)    
+        result = self.undertaker.cremate(sge_dead)
         assert result.dead()
-        assert len(result.member) == 0   
+        assert len(result.member) == 0
 
         # Test with an invalid type - expecting a TypeError
         with pytest.raises(TypeError):
