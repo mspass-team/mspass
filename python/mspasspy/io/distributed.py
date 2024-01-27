@@ -1320,13 +1320,13 @@ def write_distributed_data(
     ```   
 
     The `storage_mode` argument is a constant that defines how the 
-    SAMPLE DATA are to be stored.  Currently this can be "files" or 
+    SAMPLE DATA are to be stored.  Currently this can be "file" or 
     "gridfs", but be aware future evolution may extend the options.  
     "gridfs" is the default as the only complexity it has is a speed 
     throttle by requiring the sample data to move through MongoDB and 
     the potential to overflow the file system where the database is stored. 
     (See User's Manual for more on this topic.).   Most users, however, 
-    likely want to use the "files" option for that parameter.  There are, 
+    likely want to use the "file" option for that parameter.  There are, 
     however, some caveats in that use that users MUST be aware of before
     using that option with large data sets.   Since V2 of MsPASS 
     the file save process was made more robust by allowing a chain of 
