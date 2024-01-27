@@ -1349,12 +1349,12 @@ class Database(pymongo.database.Database):
         :type mode: :class:`str`
         :param storage_mode: Current must be either "gridfs" or "file.  When set to
           "gridfs" the waveform data are stored internally and managed by
-          MongoDB.  If set to "file" the data will be stored in a file system
+          MongoDB.  If set to "files" the data will be stored in a file system
           with the dir and dfile arguments defining a file name.   The
           default is "gridfs".  See above for more details.
         :type storage_mode: :class:`str`
         :param dir: file directory for storage.  This argument is ignored if
-          storage_mode is set to "gridfs".  When storage_mode is "file" it
+          storage_mode is set to "gridfs".  When storage_mode is "files" it
           sets the directory in a file system where the data should be saved.
           Note this can be an absolute or relative path.  If the path is
           relative it will be expanded with the standard python library
@@ -1369,7 +1369,7 @@ class Database(pymongo.database.Database):
         :type dir: :class:`str`
         :param dfile: file name for storage of waveform data.  As with dir
           this parameter is ignored if storage_mode is "gridfs" and is
-          required only if storage_mode is "file".   Note that this file
+          required only if storage_mode is "files".   Note that this file
           name does not have to be unique.  The writer always positions
           the write pointer to the end of the file referenced and sets the
           attribute "foff" to that position. That allows automatic appends to
@@ -1388,7 +1388,7 @@ class Database(pymongo.database.Database):
           assumes means to store the data in its raw binary form.  The default
           should normally be used for efficiency.  Alternate formats are
           primarily a simple export mechanism.  See the User's manual for
-          more details on data export.  Used only for "file" storage mode.
+          more details on data export.  Used only for "files" storage mode.
           A discussion of format caveats can be found above.
         :type format: :class:`str`
         :param overwrite:  If true gridfs data linked to the original
@@ -1463,7 +1463,7 @@ class Database(pymongo.database.Database):
             message += "Must be a MsPASS seismic data object"
             raise TypeError(message)
         # WARNING - if we add a storage_mode this will need to change
-        if storage_mode not in ["file", "gridfs"]:
+        if storage_mode not in ["files", "gridfs"]:
             raise TypeError(
                 "Database.save_data:  Unsupported storage_mode={}".format(storage_mode)
             )
@@ -3318,11 +3318,11 @@ class Database(pymongo.database.Database):
             :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
         :param mode: reading mode regarding schema checks, should be one of ['promiscuous','cautious','pedantic']
         :type mode: :class:`str`
-        :param storage_mode: "gridfs" stores the object in the mongodb grid file system (recommended). "file" stores
+        :param storage_mode: "gridfs" stores the object in the mongodb grid file system (recommended). "files" stores
             the object in a binary file, which requires ``dfile`` and ``dir``.
         :type storage_mode: :class:`str`
-        :param dir_list: A :class:`list` of file directories if using "file" storage mode. File directory is ``str`` type.
-        :param dfile_list: A :class:`list` of file names if using "file" storage mode. File name is ``str`` type.
+        :param dir_list: A :class:`list` of file directories if using "files" storage mode. File directory is ``str`` type.
+        :param dfile_list: A :class:`list` of file names if using "files" storage mode. File name is ``str`` type.
         :param exclude_keys: the metadata attributes you want to exclude from being stored.
         :type exclude_keys: a :class:`list` of :class:`str`
         :param exclude_objects: A list of indexes, where each specifies a object in the ensemble you want to exclude from being saved. Starting from 0.
@@ -3488,7 +3488,7 @@ class Database(pymongo.database.Database):
         ensemble_object = self.save_ensemble_data(
             ensemble_object,
             mode=mode,
-            storage_mode="file",
+            storage_mode="files",
             exclude_keys=exclude_keys,
             collection=collection,
             data_tag=data_tag,
@@ -3633,7 +3633,7 @@ class Database(pymongo.database.Database):
             if gfsh.exists(object_doc["gridfs_id"]):
                 gfsh.delete(object_doc["gridfs_id"])
 
-        elif storage_mode in ["file"] and remove_unreferenced_files:
+        elif storage_mode in ["files"] and remove_unreferenced_files:
             dir_name = object_doc["dir"]
             dfile_name = object_doc["dfile"]
             # find if there are any remaining matching documents with dir and dfile
@@ -5705,7 +5705,7 @@ class Database(pymongo.database.Database):
         ids_affected = []
         for i in ind:
             doc = self._convert_mseed_index(i)
-            doc["storage_mode"] = "file"
+            doc["storage_mode"] = "files"
             doc["format"] = "mseed"
             doc["dir"] = odir
             doc["dfile"] = dfile
@@ -6026,7 +6026,7 @@ class Database(pymongo.database.Database):
         :param storage_mode:   is a string used to define the generic
           method for storing the sample data.  Currently must be one of
           two values or the function will throw an exception:
-          (1) "file" causes data to be written to external files.
+          (1) "files" causes data to be written to external files.
           (2) "gridfs" (the default) causes the sample data to be stored
                within the gridfs file system of MongoDB.
           See User's manuals for guidance on storage option tradeoffs.
@@ -6075,7 +6075,7 @@ class Database(pymongo.database.Database):
                 # do nothing to any datum marked dead - just return the pointer
                 return mspass_object
 
-            if storage_mode == "file":
+            if storage_mode == "files":
                 mspass_object = self._save_sample_data_to_file(
                     mspass_object,
                     dir,
@@ -6307,7 +6307,7 @@ class Database(pymongo.database.Database):
                             "_save_sample_data_to_file", message, ErrorSeverity.Invalid
                         )
 
-            mspass_object["storage_mode"] = "file"
+            mspass_object["storage_mode"] = "files"
             mspass_object["dir"] = dir
             mspass_object["dfile"] = dfile
             mspass_object["foff"] = foff
@@ -6337,7 +6337,7 @@ class Database(pymongo.database.Database):
                         # use the strongly typed putters here intentionally
                         mspass_object.member[i].put_string("dir", dir)
                         mspass_object.member[i].put_string("dfile", dfile)
-                        mspass_object.member[i].put_string("storage_mode", "file")
+                        mspass_object.member[i].put_string("storage_mode", "files")
                         mspass_object.member[i].put_long("foff", foff_list[i])
                         mspass_object.member[i].put_string("format", "binary")
             else:
@@ -6384,7 +6384,7 @@ class Database(pymongo.database.Database):
                             )
                         mspass_object.member[i].put_string("dir", dir)
                         mspass_object.member[i].put_string("dfile", dfile)
-                        mspass_object.member[i].put_string("storage_mode", "file")
+                        mspass_object.member[i].put_string("storage_mode", "files")
                         mspass_object.member[i].put_long("foff", foff)
                         mspass_object.member[i].put_string("format", format)
                         mspass_object.member[i].put_long("nbytes", nbytes_written)
@@ -6999,7 +6999,7 @@ class Database(pymongo.database.Database):
             # hard code this default
             storage_mode = "gridfs"
 
-        if storage_mode == "file":
+        if storage_mode == "files":
             if md.is_defined("format"):
                 form = md["format"]
             else:
