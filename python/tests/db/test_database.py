@@ -12,7 +12,7 @@ import sys
 import re
 
 import boto3
-from moto import mock_s3
+from moto import mock_aws
 import botocore.session
 from unittest.mock import patch, Mock
 import json
@@ -3149,10 +3149,10 @@ class TestDatabase:
         assert ts["channel_endtime"] == 1.0
 
     def _setup_aws_mock(self):
-        mock_inst_s3 = mock_s3()
+        mock_inst_s3 = mock_aws()
         # mock_inst_lambda = mock_lambda()
 
-    @mock_s3
+    @mock_aws
     def test_index_and_read_s3_continuous(self):
         #   Test _read_data_from_s3_continuous
         #   First upload a miniseed object to the mock server.
@@ -3220,7 +3220,7 @@ class TestDatabase:
         assert ts.data is not None
         assert ts.data == DoubleVector(mseed_st[0].data.astype("float64"))
 
-    @mock_s3
+    @mock_aws
     def test_index_and_read_s3_event(self):
         #   First upload a miniseed object to the mock server.
         s3_client = boto3.client(
