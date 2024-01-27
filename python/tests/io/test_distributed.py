@@ -979,7 +979,7 @@ def test_write_distributed_atomic(
     newwfidslist = write_distributed_data(
         bag_or_rdd,
         db,
-        storage_mode="file",
+        storage_mode="files",
         data_are_atomic=True,
         collection=collection,
         data_tag=data_tag,
@@ -994,7 +994,7 @@ def test_write_distributed_atomic(
         assert "dfile" in doc
         assert "foff" in doc
         assert "storage_mode" in doc
-        assert doc["storage_mode"] == "file"
+        assert doc["storage_mode"] == "files"
 
     # verify we can read these back in
     bag_or_rdd = read_distributed_data(
@@ -1531,7 +1531,7 @@ def test_write_distributed_ensemble(
     newwfidslist = write_distributed_data(
         bag_or_rdd,
         db,
-        storage_mode="file",
+        storage_mode="files",
         data_are_atomic=False,
         collection=collection,
         data_tag=data_tag,
@@ -1551,7 +1551,7 @@ def test_write_distributed_ensemble(
         assert "dfile" in doc
         assert "foff" in doc
         assert "storage_mode" in doc
-        assert doc["storage_mode"] == "file"
+        assert doc["storage_mode"] == "files"
 
     # verify we can read these back in
     # have to redefine querylist to do that
@@ -1592,7 +1592,7 @@ def test_write_distributed_ensemble(
             assert d.is_defined("foff")
             assert d.is_defined("dir")
             assert d.is_defined("dfile")
-            assert d["storage_mode"] == "file"
+            assert d["storage_mode"] == "files"
 
 
 def test_read_error_handlers(atomic_time_series_generator):
@@ -1706,5 +1706,5 @@ def test_write_error_handlers(atomic_time_series_generator):
         ValueError, match="overwrite mode is set True with storage_mode="
     ):
         mybag = write_distributed_data(
-            mybag, db, collection="wf_TimeSeries", overwrite=True, storage_mode="file"
+            mybag, db, collection="wf_TimeSeries", overwrite=True, storage_mode="files"
         )
