@@ -115,9 +115,6 @@ History
    three sensors at a common point in space.   Hence, we carefully
    separate :code:`TimeSeries` and :code:`Seismogram` (our name for Three-Component
    data).  We further distinguish :code:`Ensembles` of each atomic type.
-#. It was our opinion that obspy has some fundamental design flaws in the `Trace` and
-   `Stream` objects.   Both define methods we considered inappropriate for
-   core data objects and created unnecessary baggage.
 
 Core Concepts
 ~~~~~~~~~~~~~
@@ -189,6 +186,20 @@ saying all time series data have the following elements:
    large to fit in memory, but that is an extension we don't currently
    support. 
 
+3. We assume the data has been cleaned and **lacks data gaps**.  Real
+   continuous data today nearly always have gaps at a range of scale
+   created by a range of possible problems that create gaps:  telemetry
+   gaps, power failures, instrument failures, time tears, and with older
+   instruments data gaps created by station servicing.  MsPASS has stub API
+   definitions for data with gaps, but these are currently not
+   implemented.   Since the main goal of MsPASS is to provide a
+   framework for efficient processing of large data sets, we pass the
+   job of finding and/or fixing data gaps to other packages or
+   algorithms using MsPASS with a "when in doubt throw it out" approach
+   to editing.   The machinery to handle gap processing exists in both
+   obpsy and Antelope and provide possible path to solution for users
+   needing more extensive gap processing functionality.
+
 | BasicTimeSeries has seven internal attributes that are accessible via
   getters and (when absolutely necessary) can be set by the user with setters.
   Most are best understood from the class documentation, but one is worth
@@ -256,9 +267,7 @@ Handling Time
   invalid conversion from relative to absolute with the rtoa() method. 
   This was done to avoid errors from trying to convert active source
   data to an absolute time standard when the true time is not well
-  constrained.  Note both of these methods are also available as processing
-  functions for use in parallel map operators
-  (see :ref:`user manual section on parallel processing<parallel_processing>`).
+  constrained. 
 
 | For an expanded discussion on this topic go :ref:`here<time_standard_constraints>`.
 
@@ -477,8 +486,8 @@ Scalar versus 3C data
   allows one to manipulate sample data with numpy or scipy functions (e.g. `simple bandpass
   filters <https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.iirfilter.html#scipy.signal.iirfilter>`__). 
   That can be useful for testing and prototyping but converting and algorithm
-  to a parallel form requires additional steps described
-  :ref:`here<parallel_processing>`.
+  to a parallel form requires additional steps described here (LINK to parallel
+  section)
 
 | Although scalar time series data are treated the same (i.e. as a
   vector) in every seismic processing system we are aware of, the
@@ -490,12 +499,12 @@ Scalar versus 3C data
    raw data are often treated conceptually as a matrix with one array
    dimension defining the time variable and the other index defined by
    the channel number. When three component data are recorded the
-   component orientation can be defined implicitly by a third component index
-   number.   A three-component shot gather than can be indexed conveniently with
+   component orientation can be defined implicitly by a component index
+   number.   A 3C shot gather than can be indexed conveniently with
    three array indexes.  A complication in that approach is that which
-   index is used for which of the three concepts required for a gather of
+   index is used for which of the three concept required for a gather of
    3C data is not standarized.   Furthermore, for a generic system
-   like MsPASS the multichannel model does not map cleanly into passive
+   like mspass the multichannel model does not map cleanly into passive
    array data because a collection of 3C seismograms may have irregular
    size, may have variable sample rates,  and may come from variable
    instrumentation.  Hence, a simple matrix or array model would be very
@@ -562,7 +571,7 @@ Scalar versus 3C data
   transformations and :code:`components_are_cardinal` is true when the
   components are in the standard ENZ directions.  
 
-| The process of creating a Seismogram from a set of TimeSeries objects
+  The process of creating a Seismogram from a set of TimeSeries objects
   in a robust way is not trivial. Real data issues create a great deal of
   complexity to that conversion process.  Issues include: (a) data with
   a bad channel that have to be discarded, (b) stations with multiple
@@ -571,9 +580,8 @@ Scalar versus 3C data
   gaps that render one or more components of the set incomplete, and
   (e) others we haven't remembered or which will appear with some future
   instrumentation.   To handle this problem we have a module in MsPASS
-  called :code:`bundle`.  Currently, that module contains support only
-  for miniseed data using SEED channel codes and time to bundle data
-  assembled in a :code:`TimeSeriesEnsemble`.
+  called :code:`bundle` documented here(THIS NEEDS A LINK - wrote this when bundle
+  had not yet been merged).
 
 | Ensembles of TimeSeries and Seismogram data are handled internally with a more
   elaborate C++ standard template library container.   For readers familiar
@@ -660,24 +668,15 @@ Core versus Top-level Data Objects
 
 #. :code:`ErrorLogger` is an error logging object.   The purpose of the
    error logger is to maintain a log of any errors or informative messages
-   created during the processing of the data.  We built on a concept used
-   in Antelope's error logging system wherein errors are tagged with
-   a `ErrorSeverity` attribute.   That feature allows an error to be
-   tagged as anything from a verbose log messaged added just for
-   convenience to a fatal error that required the workflow to be aborted.
-   All processing modules
-   in MsPASS are designed with error handlers so that they should
-   abort only if they encounter an unresolvable condition
-   (e.g. a memory allocation error).  Errors viewed as unresolvable
-   will throw a MsPASSError with an error message and tagged as fatal.
-   Most algorithms will have conditions where the algorithm cannot process
-   the data, but does not indicate a problem that justifies terminating
-   the workflow.  In that condition algorithms will normally log an
-   error message tagged `Invalid` and "kill" that datum.
-   (See :ref:`Data Editing<data_editing>` for more on this concept.)
+   created during the processing of the data.  All processing modules
+   in MsPASS are designed with global error handlers so that they should never
+   abort, but in worst case post a log message that tags a fatal
+   error.   (Note if any properly structured mspass enabled
+   processing function throws an exception and aborts it has
+   encountered a bug that needs to b reported to the authors.)
    In our design we considered making the ErrorLogger a base class
    for Seismogram and TimeSeries, but it does not satisfy the basic rule of
-   making a concept a base class if the child "is an" ErrorLogger.
+   making a concept a base class if the child "is a" ErrorLogger.
    It does, however, perfectly satisfy the idea that the object "has an"
    ErrorLogger.  Both :code:`TimeSeries` and :code:`Seismogram` use the
    symbol :code:`elog` as the name for the ErrorLogger object
@@ -694,7 +693,7 @@ history can be described by an inverted tree structure.  That is, most workflows
 merge many pieces of data (a reduce operation in map-reduce) to produce
 a given output.  The process chain could then be viewed as tree growth with time
 running backward.  The leaves are the data sources.  Each growth season is one
-processing stage.  As time moves forward the tree may strink from many branches to
+processing stage.  As time moves forward the tree shrinks from many branches to
 a single trunk that is the current data state.   The structure we use, however,
 is more flexible than real tree growth.   Many-to-many mixes of data will produce
 a tree that does not look at all like the plant forms of nature, but we hope
@@ -715,9 +714,7 @@ following foundational data is required:
    standard type and emits data of the same or different standard type. ("type"
    in this context means TimeSeries, Seismogram, or an obspy Trace object)
    The history mechanism is designed to preserve what the primary input and output
-   types are.  That was done since that is the standard model for functional
-   programming that is the basis of the map-reduce model used in
-   MsPASS to implement :ref:`parallel processing<parallel_processing>`.
+   types are.
 
 #. Most algorithms have one to a large number of tunable parameters that
    determine their behavior.  The history needs to preserve the full
@@ -779,9 +776,9 @@ following foundational data is required:
   MsPASS framework.   MsPASS supported algorithms all implement history preservation
   as an option.   User's interested in adapting their own code to the
   framework will need to learn the social norms (i.e. the API for ProcessingHistory
-  and how it can be used to automate the process).   See the sections on
-  :ref:`Processing History Concepts<processing_history_concepts>` and
-  :ref:`Adapting an Existing Algorithm to MsPASS<adapting_algorithms>`  for details.
+  and how it can be used to automate the process).   We expect to eventually
+  produce a document on adapting algorithms to MsPASS that will cover this
+  subject. **Needs a link to a related document on ProcessingHistory API**
 
 Error Logging Concepts
 -------------------------

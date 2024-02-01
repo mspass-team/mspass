@@ -6,6 +6,8 @@ Graphics in MsPASS
 Overview
 ~~~~~~~~~~~
 
+THIS SECTION NEEDS FIGURES - THE GRAPHICS TUTORIAL CREATES ALL THE EXAMPLES NEEDED
+
 Data visualization in general and graphics to visualize seismic data
 in particular are critical elements to understand data and the
 result of a processing workflow.   On the other hand, because of the
@@ -28,10 +30,6 @@ The current support for graphics has two component.
     That is relevant because obspy's native data types have integrated
     plot methods that produce wiggle trace plots of seismic data using the
     matplotlib library.
-
-The best way to understand the concepts and features of the graphics
-module is to run our graphics tutorial found
-`here <https://github.com/mspass-team/mspass_tutorial/blob/master/notebooks/BasicGraphics.ipynb>`__.
 
 Native Graphics
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -78,54 +76,24 @@ classes support the four most common methods:
 4.  The most complicated plot is what we call a
     :code:`wiggle trace variable area with image overlay (wtvaimg)` plot.
     The best way to understand this plot, and in fact is exactly how it is
-    produced, is to first plot the data as an image plot and then overlay a
+    produced, is first plot the data as an image plot and then overlay a
     wiggle trace variable area plot.
 
-Below are examples of all four types of plots from our
-`graphics tutorial <https://github.com/mspass-team/mspass_tutorial/blob/master/notebooks/BasicGraphics.ipynb>`__.
+Below are examples of all four types of plots from our graphics tutorial.
+For details of the API and how to use our plotting capabilities is
+to run that tutorial and review the sphynx documentation.
 
-.. _wiggle_trace_example_figure:
+Wiggle trace examples
 
-.. figure:: ../_static/figures/graphics/wt_example.png
-    :width: 600px
-    :align: center
+variable area example colored fill
 
-    Wiggle trace example from graphics tutorial.  This type of plot is
-    produced by the :py:class:`SeismicPlotter<mspasspy.graphics.SeismicPlotter>`
-    python class with the "style" set as "wt".
+image plot examples
 
+wtvaimg examples
 
-.. _wiggle_trace_variable_area_example_figure:
-
-.. figure:: ../_static/figures/graphics/wtva_example.png
-    :width: 600px
-    :align: center
-
-    Wiggle trace, variable area example from graphics tutorial.  This type of plot is
-    produced by the :py:class:`SeismicPlotter<mspasspy.graphics.SeismicPlotter>`
-    python class with the "style" set as "wtva".
-
-.. _image_plot_example_figure:
-
-.. figure:: ../_static/figures/graphics/img_example.png
-    :width: 600px
-    :align: center
-
-    Image plot example from graphics tutorial.  This type of plot is
-    produced by the :py:class:`SeismicPlotter<mspasspy.graphics.SeismicPlotter>`
-    python class with the "style" set as "img".
-
-.. _wtvaimg_example_figure:
-
-.. figure:: ../_static/figures/graphics/wtvaimg_example.png
-    :width: 600px
-    :align: center
-
-    Wiggle trace, variable area plot with image overlay example
-    from graphics tutorial.  This type of plot is
-    produced by the :py:class:`SeismicPlotter<mspasspy.graphics.SeismicPlotter>`
-    python class with the "style" set as "wtvaimg".
-
+wtvaimag example with sectionplot.  Caption should explain that wt, wtva,
+and img options are defined for this type of plot as well but omitted for
+brevity
 
 Finally, we would note that the plotters automatically handle switching to
 plot all the standard MsPASS data objects.   Some implementation details
@@ -186,36 +154,11 @@ Extending MsPASS Graphics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 As noted at the beginning of this section the graphics available in
 MsPASS are simple by design.   If you need different graphics capabilities
-you have several different choices:
+you have two different choices:
 
-#.  Develop a custom plotting feature with matplotlib or some other
-    python package.  Any external python
-    package that can supports plotting of numpy arrays can produce plots with
-    MsPASS data objects by referencing the data arrays directly.  e.g. if
-    `d` refers to a `TimeSeries` object the symbol `d.data` can be passed to
-    any numpy function that expects a numpy implementation of a vector.
-    For example, the following code fragment could be used to plot log
-    amplitudes as a function of time:
-
-    .. code-block:: python
-
-      import maplotlib.pyplot as plt
-      import numpy as np
-      # code to define d
-      damp = np.log10(d.data)
-      # This is a coversion to time relative to data start time
-      t = np.zeros(d.npts)
-      for i in range(d.npts):
-        t[i] = d.time(i)-t0
-      plt.plot(t,damp)
-
-
-
-#.  Export a subset of your data you want to plot with an external
-    package that is not a python package.  A type example is Seismic Unix
-    where the data would need to be exported with SEGY with obspy's segy
-    writer and then passed through a custom Seismic Unix shell script.
-#.  Extend the SectionPlotter or SeismicPlotter classes using python's inheritance
+1.  Export the subset of your dataset you want to plot and use a different
+    graphics package to make the graphic you need.
+2.  Extend the SectionPlotter or SeismicPlotter classes using python's inheritance
     mechanism.  If you look under the hook you will find that both classes use the
     same python graphics library as obspy:
     `matplotlib <https://matplotlib.org/stable/index.html>`__.

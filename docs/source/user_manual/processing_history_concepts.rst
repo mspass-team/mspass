@@ -47,7 +47,7 @@ preserving processing history has two components.
    for object level history from at least two sources:  (1) python is a much
    richer language than traditional, custom job control languages used by
    processing packages and (2) some machine learning algorithms are iterative
-   at the object level.   On the other hand, although the need for object-level history
+   at the object level.   On the other hand, although the need object-level history
    is clear a naive implementation is potentially problematic in two
    ways:  (1) memory bloat, and (2) performance.  We created a mechanism for
    preserving object level history that is lightweight by preserving
@@ -56,14 +56,12 @@ preserving processing history has two components.
    mechanism in C++ using an std::multimap container for which insertion
    is about as fast as possible.  The user interface hides the implementation
    details.   You as a user need only consult the API references to a
-   object we call
-   `ProcessingHistory <https://www.mspass.org/cxx_api/mspass.html#mspass-namespace>`__.
-   User's need only recognize that
-   `TimeSeries <https://www.mspass.org/cxx_api/mspass.seismic.TimeSeries.html>`__
-   and
-   `Seismogram <https://www.mspass.org/cxx_api/mspass.seismic.Seismogram.html>`__
-   objects have a
+   object we call *mspass.ProcessingHistory*.     (NEED A LINK HERE TO python
+   documentation)  User's need only recognize that *Seismogram* and *TimeSeries*
+   objects (THESE ALSO NEED TO BE LINKS TO PYTHON API PAGES) have a
    ProcessingHistory component.  Algorithms can and should at least allow
    the option of registering themselves through this mechanism.   All
    algorithms supported in MsPASS have an option to enable object level
-   history.
+   history.   NEED A FEW MORE SENTENCES HERE WITH A LINK TO PAGE WITH THE TOPIC
+   OF WRITING YOUR OWN PROCESSING MODULE EXTENSION.  THAT DOCUMENT CAN AND
+   SHOULD CONTAIN A SECTION ON HOW TO SET UP THE HISTORY MECHANISM.

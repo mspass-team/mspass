@@ -18,7 +18,7 @@ Some key features of MsPASS are the following:
 -   Few seismologists have strong expertise in modern information technology.
     Furthermore, installing a software package can prove challenging today
     even on a desktop on which you may have special privileges.  On large high performance (HPC)
-    systems installation it is usually impossible to install special software
+    systems installation is usually impossible to install special software
     without a long string of
     meetings and correspondence with system managers.  For this reason MsPASS uses
     modern container technology to simplify installation.  That allows you
@@ -47,7 +47,7 @@ Some key features of MsPASS are the following:
     searches for MongoDB commands or a book at your side are an essential tool for
     working with MsPASS at any level.
 
--   MsPASS uses python as the job control language.  That contrasts with
+-   MsPASS uses python as the job control language.  This is in contrast to
     traditional programs like SAC or older seismic processing systems that
     use a custom command interpreter.   We assert that custom languages
     like that in SAC or even the unix shell will become the equivalent of
@@ -96,11 +96,7 @@ Some key features of MsPASS are the following:
     time this user's manuals was written that part of the system is incomplete.
     For that reason (and for efficiency) MsPASS processing functions make
     handling history optional and by default it is turned off.  If the system
-    grows as we hope that limitation will disappear.  For the near term
-    MsPASS uses jupyter lab to contain the python code of all workflows.
-    Proper attention to documenting the algorithms used and preserving all
-    components can provide a level of reproducibility far beyond current
-    practice.
+    grows as we hope that limitation will disappear.
 
 -   The design of MsPASS has stressed leading edge but not bleeding edge open-source
     technologies.  MsPASS was assembled from
@@ -113,7 +109,7 @@ Some key features of MsPASS are the following:
 Getting Started
 ~~~~~~~~~~~~~~~~~~~
 
-The first step to use MsPASS is to download a copy of the docker container you can use
+The first step to use MsPASS is to install a local copy that you can use
 for initial experimentation.
 :ref:`Click here <run_mspass_with_docker>` for installation instructions.
 

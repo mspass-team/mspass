@@ -19,41 +19,41 @@ incantation at the top of the python job script:
 .. code-block:: python
 
     from mspasspy.db.client import DBClient
+    from mspasspy.db.database import Database
     dbclient = DBClient()
-    db = dbclient.get_database('database_name')
+    db = Database(dbclient, 'database_name')
 
-where :code:`'database_name'`,
-is, as implied, a name you chose for the dataset you are working with.
+where the second argument on Database, :code:`'database_name'`,
+is a name you chose for the dataset you are working with.
 For the remainder of this section we will use the symbol "db" as
 defined, but as in any programming language you need to recognize the
 symbol can be anything you as the user find sensible. "db" is just our
-choice.  Some may prefer "dbh" as short for database handle, as a
-somewhat more descriptive name.
+choice.
 
 Unlike relational database systems, a schema is not required by
 MongoDB.   However, for reasons outlined in the section
-:ref:`data_object_design_concepts<data_object_design_concepts>` a schema feature
+:ref:`data_object_design_concepts` a schema feature
 was added as a component of MsPASS.  We emphasize the
 schema in this design, however, can be thought of as more
-like guidelines than rigid rules.  The default schema
-is called :code:`mspass`.   An alternative that is useful in working
-with a workflow reading miniseed files is called :code:`mspass_lite`.
-You can specify an alternative schema, like mspass_lite, with
-this variant of the above:
+like guidelines than rigid rules.
+The default schema for a Database assumes the data set is a set of
+TimeSeries object.  That implies the dataset is defined in the
+collection we call :code:`wf_TimeSeries`.   If the dataset is already
+assembled into three component bundles (:code:`Seismogram` objects)
+the Database constructor needs to be informed of that through this
+alternative construct:
 
 .. code-block:: python
 
-    from mspasspy.db.client import DBClient
-    dbclient = DBClient()
-    db = dbclient.get_database('database_name',schema="mspass_lite.yaml")
+    from mspasspy.db.client import Client
+    from mspasspy.db.database import Database
+    dbclient = Client()
+    db=Database(dbclient, 'database_name', db_schema='wf_Seismogram')
 
-Users needing an alternative schema can use the existing yaml files as a
-template and load their alternative in the data/yaml directory.
-You would then simply substitute the file name you choose for the
-schema argument.
-
-In normal use the Database class sets the schema based on the
-type of data you ask it to handle.
+If your workflow requires reading both TimeSeries and Seismogram
+data, best practice (i.e. it isn't required but a good idea)
+would be to create two handles with one using the wf_TimeSeries
+and the other using the wf_Seismogram schema.
 
 Create
 ~~~~~~~~~~
@@ -63,13 +63,9 @@ the synonymous word "save".   Here we list all save methods with a brief
 description of each method.  Consult the docstring pages for detailed
 and most up to date usage:
 
-#.  :py:meth:`save_data <mspasspy.db.database.Database.save_data>` is
-    the standard method to save seismic data in serial jobs.  Parallel
-    workflows should use the `write_distributed_data` function
-    described below.  The
-    first argument is one seismic data objects defined in MsPASS
-    (Seismogram, TimeSeries, SeismogramEnsemble, or TimeSeriesEnsemble)
-    that you wish to save.  Options are
+1.  :code:`save_data` is probably the most common method you will use.  The
+    first argument is one of the atomic objects defined in MsPASS
+    (Seismogram or TimeSeries) that you wish to save.  Options are
     described in the docstring.  Here is an example usage:
 
     .. code-block:: python
@@ -84,17 +80,28 @@ and most up to date usage:
         d = Trace2TimeSeries(dtr)
         db.save_data(d)
 
-    By default :py:meth:`save_data<<mspasspy.db.database.Database.save_data>>`
-    stores all Metadata except those linked to
+    By default :code:`save_data` stores all Metadata except those linked to
     normalized collections (:code:`source`, :code:`channel`, and/or :code:`site`) with no
     safety checks.  We discuss additional common options in a later section.
-    Ensembles are groups of atomic data and the save is more or less a loop
-    over the "member" array using this same method to save each atomic datum.
-    The only detail is that the ensembles `Metadata` attributes will be copied
-    to each member before they are saved.
 
-#.  :py:meth:`save_catalog <mspasspy.db.database.Database.save_catalog>`
-    should be viewed mostly as a convenience method to build
+2.  :code:`save_ensemble_data`  is similar to :code:`save_data` except the first argument
+    is an Ensemble object.  There are currently two of them:  (1) TimeSeriesEnsemble
+    and (2) SeismogramEnsemble.   As discussed in the section
+    :ref:`data_object_design_concepts` an Ensemble
+    is a generalization of the idea of a "gather" in seismic reflection processing.
+    The :code:`save_ensemble_data` method is a convenience function for saving Ensembles.
+    Ensembles are containers of atomic objects.  :code:`save_ensemble_data`
+    is mostly a loop over the container saving the atomic objects it contains
+    to the wf_TimeSeries (for TimeSeriesEnsembles) or wf_Seismogram
+    (for Seismogram objects).  The method has one feature that differs form
+    :code:`save_data`; Ensemble objects may and often do contain attributes
+    common to the entire group in a separate Metadata container linked to the
+    ensemble as a whole.  Prior to entering the loop for saving the atomic
+    members of the ensemble the contents of the Ensemble's Metadata container
+    are copied verbatim to each member.  If previous values existed in any
+    of the members they will be silently replaced by the ensemble groups version.
+
+3.  :code:`save_catalog` should be viewed mostly as a convenience method to build
     the :code:`source` collection from QUAKEML data downloaded from FDSN data
     centers via obspy's web services functions.   :code:`save_catalog` can be
     thought of as a converter that translates the contents of a QUAKEML
@@ -126,8 +133,7 @@ and most up to date usage:
     This particular example pulls 11 large aftershocks of the 2011 Tohoku
     Earthquake.
 
-#.  :py:meth:`save_inventory <mspasspy.db.database.Database.save_inventory>`
-    is similar in concept to :code:`save_catalog`, but instead of
+4.  :code:`save_inventory` is similar in concept to :code:`save_catalog`, but instead of
     translating data for source information it translates information to
     MsPASS for station metadata.  The station information problem is slightly
     more complicated than the source problem because of an implementation
@@ -180,143 +186,45 @@ and most up to date usage:
 
     Finally, we note a key feature of the :code:`save_inventory` method:
     it enforces a seed convention to avoid saving duplicate documents.
-    As noted earlier the SEED standard uses the keys we call net, sta, chan,
+    As noted earlier he SEED standard uses the keys we call net, sta, chan,
     and loc along with a time interval to define a unique block of
     receiver metadata.   The :code:`save_inventory` method enforces
     the unique combination of these keys in a save.  It always will
     refuse to add an entry it interprets as a pure duplicate document.
     If you need to modify an existing site or channel
     collection that has invalid documents you will need to write a custom function to override that
-    behavior or rebuild the collection as needed with web services.
-    Note rebuilding these small collections takes seconds to a few minutes unless you
-    are on a very slow internet connection.
-
-#.  :py:meth:`write_distributed_data <mspasspy.db.database.Database.write_distributed_data>`
-    should be used to save a dataset in a parallel environment.
-    It parallelizes writes by separating database transactions from
-    saving the sample data, which experience has shown improves write
-    performance.  It also utilizes partitioning of the bag/RDD
-    holding the dataset to parallelize the database transactions to the
-    number of workers.   For ensembles each ensemble is saved with a
-    call to the `save_data` method (item 1 above) as a dask/Spark
-    "task".  That means, writes are performed in parallel by ensemble.
-
-Note when saving seismic data, the `save_data` method, by default,
-returns only the `ObjectId` of the document saved. Returning
-a copy of the data is an option.
-`write_distributed_data` is more dogmatic and always only returns
-a python list of `ObjectID`s.
-The default was found to be important to avoid
-memory faults that can happen when a workflow computation is initiated in
-the standard way (e.g. in dask calling the bag "compute" method.).
-If the last step in the workflow is a save and the bag/RDD contains the
-entire data set, a memory fault will occur when "compute" is called
-as the scheduler will attempt to return the entire dataset to its
-memory space.
-
-There are three additional details about all the writers that User's
-should recognize:
-
-#.  As noted in many places in this User's Manual, in MsPASS all
-    error messages during processing are posted to an internal
-    class called `ErrorLogger` held in any datum (including ensembles)
-    with the symbol name "elog"  (e.g if d is a TimeSeries the error
-    log is stored in d.elog.)  When data are saved any elog entries for "live" data
-    are posted to a collection called `elog`.  Each document in elog
-    contain an id of the comparable waveform data with which that document is
-    associated.
-#.  Data killed during processing are handled differently.  Prior to version 2.0
-    dead data were mixed with live data error messages in the `elog` collection.
-    From version 2 forward, however, the bodies of data killed during
-    a workflow are posted to
-    a separate collection with the colorful name `cemetery`.  In addition,
-    starting with version 2.0 we defined a special type of dead data with
-    the another colorful/memorable name:  `abortion`.  An `abortion` in
-    MsPASS is defined as a datum that was never born, meaning it was killed
-    during construction by a reader.  MsPASS adopts a dogmatically pro-life
-    stance and treats all abortions as a serious problem.  Any detected abortions
-    are saved in seperate collection called "abortions".  The documents
-    are the same structure as those in "cemetery", but they are isolated
-    to a different collection to make the fact the error were internal and may
-    not have been a fundamental data problem.   That is, most abortions
-    can be avoided by using the `dbclean` command line tool.  They are also
-    mainly created by running the readers with `mode="cautious"` or
-    `mode="pedantic"`.   These concepts are described in detail below
-    in the section on reading data.
-#.  The writers all have a `save_history` to save the object-level history.
-    That data is stored in a separate collection called `history`.
-#.  Writers have a `mode` argument that must be one of "promiscuous",
-    "cautious", or "pedantic".   Readers also use this argument, but
-    writing this controls how much a schema is enforced on the output.
-    The default ("promiscuous") does no schema enforcement at all.
-    All modes, however, do dogmatically enforce one rule.  Any attribute
-    key interpreted as loaded by normalization is erased before the save.
-    In MsPASS normalization data are normally loaded by prepending a
-    the name of the collection to the attribute.  e.g. the latitude of
-    a station ("lat" in the MsPASS schema) stored in the channel collection
-    would be loaded with the key "channel_lat".   Attributes with
-    one of the standard collection names ("site", "channel", and "source")
-    will always be erased before the wf document is saved.  When node
-    is set to "cautious" the writer will attempt to correct any time mismatches
-    and log an error if any issues are detected.  In "pedantic" mode any
-    type mismatches will cause the datum to be killed before the save.
-    "pedantic" is rarely advised for writing unless one is writing to a
-    files with a format that is dogmatic about attribute types.
-
+    behaviour or rebuild the collection as needed with web services.
 
 Read
 ~~~~~~~
 
 The Read operation is the inverse of save (create).  The core readers were
-designed to simplify the process of reading the core data types of MsPASS:  TimeSeries,
-Seismogram, and ensembles of either.
-As with the save operators we focus on key methods and refer the
+designed to simplify the process of reading the core data types of MsPASS:  TimeSeries
+and Seismogram.  There are also convenience functions for reading ensembles.
+As with the save operators we discuss here the key methods, but refer the
 reader to the sphinx documentation for full usage.
 
-#.  :py:meth:`read_data <mspasspy.db.database.Database.read_data>`
-    is the core method for reading any seismic data.  Prior to version 2.0
-    there were separate methods for handling ensembles, but all are
-    now handled through this single method.  The method has
-    one required argument.  The expected form of that argument
-    is completely different for ensembles and atomic data.
-    For Atomic data that argument should
-    be a "document" loaded from the appropriate MongoDB "wf" collection.
-    The most common use
-    is some variant of the following serial job:
+1.  :code:`read_data` is the core method for reading atomic data.  The method has
+    one required argument.  That argument is an ObjectID for the document used
+    to define the read operation OR a MongoDB document (python dict) that
+    contains the ObjectID.  The ObjectID is guaranteed to provide a
+    unique key to one and only one document and is the way this reader
+    finds one and only one record to fetch per call.  The most common use
+    is the for with a MongoDB document in a construct like the following
+    in a serial job:
 
     .. code-block:: python
 
-        query = {...Some MongoDB query dict entry...}
-        cursor = db.wf_TimeSeries.find(query) # Changed to wf_Seismogram for 3D data
-        for doc in cursor:
-            d = db.read_data(doc)  # Add option collection='wf_Seismogram' for 3C reads
+    query={...Some MongoDB query dict entry...}
+    cursor=db.wf_TimeSeries.find(query) # Changed to wf_Seismogram for 3D data
+    for doc in cursor:
+      d=db.read_data(doc)  # Add option collection='wf_Seismogram' for 3C reads
 
     By default :code:`read_data` will use the waveform collection defined
     in the schema defined for the handle.  The default for the standard
     MsPASS schema is TimeSeries.   As the comment in the example states
     if you are trying to read from a different collection (i.e wf_Seismogram
     or wf_miniseed) you need to specify that alternative with the collection argument.
-
-    Atomic reads are also possible by passing arg0 as a MongoDB
-    `ObjectId`.   Be warned, however, that use is always slower than
-    using a document (python dict) input as it is translated to a
-    MongoDB `find_one` query using the object id to define the query.
-
-    For ensembles, arg0 of `read_data` is expected to normally
-    (There are options described in the sphynx documenation for this method.)
-    be a MongoDB cursor like the one used to drive the loop above.
-    A typical ensemble-based processing job would use `read_data`
-    in the following variant of above.  This job reads data as
-    "common source gathers" with the grouping defined by the "source_id"
-    attribute:
-
-    .. code-block:: python
-
-        idlist = wf.TimeSeries.distinct("source_id")
-        for id in idlist:
-          query = {"source_id" : id}
-          cursor = wf.TimeSeries.find(query)
-          ensemble = db.read_data(cursor)
 
     The data objects in MsPASS are stored internally as C++ objects with
     multiple elements illustrated in the figure below.   Although these
@@ -331,7 +239,7 @@ reader to the sphinx documentation for full usage.
         :width: 600px
         :align: center
 
-        Schematic diagram of how different parts of a atomic data object are handled.
+        Schematic diagram of how different parts of a data object are handled.
         The red box around the center of the figure shows a schematic of the
         data components when a data object is constructed in memory.  The
         boxes in the right-hand (black) box illustrate that the different
@@ -342,254 +250,121 @@ reader to the sphinx documentation for full usage.
 
     The key point of this figure is that the waveform data is treated differently
     from the Metadata and two auxiliary items we call ProcessingHistory and the
-    error log (elog).  Waveform data storage is abstracted to allow retrieval
-    from drastically different implementations.   Currently, MsPASS has support
-    to handle storage in MongoDB's "gridfs" storage, normal local files,
-    cloud file systems, and a "URL" storage that utilizes web services.
-    What handler is needed to retrieve the sample data is controlled by
-    the `storage_mode` attribute readers expect to find in any
-    "wf" collection.   `storage_mode` is a required attribute for any valid
-    "wf" collection.
-
-    Documents in the wf collection for
-    the data type being read (`wf_TimeSeries` or `wf_Seismogram`) contain only
+    error log (elog).  Waveform data is currently stored either internally in
+    MongoDB's gridfs storage or in external files.  Documents in the wf collection for
+    the data type being read (wf_TimeSeries or wf_Seismogram) contain only
     data we store as Metadata.  A more extensive discussion of Metadata and
     how we use it can be found :ref:`here<data_object_design_concepts>`.
     That section also gives details about ProcessingHistory and the error
     log and the reasons they are part of MsPASS.
 
     By default :code:`read_data` reads Metadata in what we call "promiscuous" mode.
-    That means it takes in all metadata stored in the python dict
-    retrieved by pymongo and loads the results into the objects Metadata container
-    with no type checking or filtering.
-    (Note ensembles are conceptually more-or-less loops over the atomic construction
-    processes loading each "member" with the same `read_data` method.  In
-    reality ensembles readers have complexity to improve read performance
-    described in the docstring for `Database.read_data`, but the conceptual
-    model is still valid.)
-    Alternatives are "cautious"
-    and "pedantic".   Both of the later enforce the type and other constraints defined
+    That means it takes in all metadata stored in the wf collection at which
+    it is is pointed and loads the results into the objects Metadata container
+    with no type checking or filtering.  Alternatives are "cautious"
+    and "pedantic".   Both of the later enforce the type and name constraints defined
     by the schema.   The difference is that in "pedantic" mode any
-    conflicts with the schema will cause the
+    conflicts in data type stored versus what is expected will cause the
     return to be marked dead.  In "cautious" mode the reader will attempt
     to convert any mismatched types and mark the return dead only if the
     conversion is not possible (e.g. a string like "xyz" cannot normally
     be converted to an integer and a python list cannot be converted to
     a float.)  Guidelines for how to use these different modes are:
 
-    #.  Use "promiscuous" mode when the wf collection to be read is known
+    1.  Use "promiscuous" mode when the wf collection to be read is known
         to be clean.  That mode is the default because it is faster to
         run because all the safeties are bypassed.  The potential cost is that
         some members of the data set could be killed on input.
         That potential problem can normally be eliminated by running the
-        :code:`dbclean` command-line tool described in a section below.
-    #.  Use "cautious" for data saved without an intervening :code:`dbclean`
+        :code:`clean` method described in a section below.
+    2.  Use "cautious" for data saved without an intervening :code:`clean`
         operation, especially if the workflow contains an experimental
         algorithm.
-    #.  The "pedantic" mode is mainly of use for data export where a
+    3.  The "pedantic" mode is mainly of use for data export where a
         type mismatch could produce invalid data required by another package.
 
-    Finally, note that fatal conditions flagged in "cautious" or "pedantic"
-    mode are the most common source of dead data we define as "abortions"
-    (see above).  The reader will refuse to construct a valid datum
-    when any conditions are detected to make a datum invalid.  In serial
-    jobs such data could be simply dropped, but in parallel jobs
-    (see next below) the body has to be carried through the workflow.
-    In either case, however, we emphasize that "abortions" should be
-    considered a serious problem that should be fixed before running
-    a large job and `dbverify` and `dbclean` need to become your friends.
-    Note also there is a special case of abortions when reading ensembles.
-    If the entire contents of an ensemble is a group of abortions the
-    entire ensemble is marked dead.  The bodies, however, are retained
-    in the container for diagnosic purposes.
+2.  A closely related function to :code:`read_data` is :code:`read_ensemble_data`.  Like
+    :code:`save_ensemble_data` it is mostly a loop to assemble an ensemble of
+    atomic data using a sequence of calls to :code:`read_data`.  The sequence of
+    what to read is defined by arg 0.   That arg must be one of two things:
+    (a) a python list of ObjectIDs or (b) a cursor object created by a query
+    that uniquely defines the ensemble contnts.  The example code below illustrates how this is done.
+    This code fragment assumes the variable :code:`source_id` was defined earlier
+    and defines (a) a valid ObjectId in the source collection, and (b) has
+    been defined in wf_TimeSeries previously by a cross-referencing function.  Notice we
+    also include a size check with the MongoDB function count_documents
+    to impose constraints on the query. That is always good practice.
 
-#.  A workflow that needs to read and process a large data sets in
+    .. code-block:: python
+
+        query = {"source_id": source_id}
+        ndocs = db.wf_TimeSeries.count_documents(query)
+        if ndocs == 0:
+            print("No data found for source_id = ", source_id)
+        elif ndocs > TOOBIG:
+            print("Number of documents matching source_id=", source_id, " is ", ndocs,
+                "Exceeds the internal limit on the ensemble size=", TOBIG)
+        else:
+            cursor = db.wf_TimeSeries.find(query)
+            ens = db.read_ensemble_data(cursoe)
+
+3.  A workflow that needs to read and process a large data sets in
     a parallel environment should use
-    the parallel equivalent of :code:`read_data` called
-    :py:func:`read_distributed_data <mspasspy.io.distributed.read_distributed_data>`.
-    MsPASS supports two parallel frameworks called
+    the parallel equivalent of :code:`read_data` and :code:`read_ensemble_data` called
+    :code:`read_distributed_data`.  MsPASS supports two parallel frameworks called
     SPARK and DASK.   Both abstract the concept of the parallel data set in
     a container they call an RDD and Bag respectively.   Both are best thought
     of as a handle to the entire data set that can be passed between
     processing functions.   The :code:`read_distributed_data` method is critical
-    to improve performance of a parallel workflow.  Always use this function
-    as the read step in a parallel workflow.
+    to improve performance of a parallel workflow.  The use of storage
+    in MongoDB's gridfs in combination with SPARK or DASK
+    are known to help reduce io bottlenecks
+    in a parallel environment.  SPARK and DASK have internal mechanisms to schedule
+    IO to optimize throughput, particularly with reads made through the gridfs
+    mechanism we use as the default data storage.  :code:`read_distributed_data`
+    provides the mechanism to accomplish that.
 
-:code:`read_distributed_data` has a very different call structure than the
-other seismic data readers.  It is not a method of Database, but a
-separate function call.  A more important issue is that in order to
-bundle parallel reads under this single function (`read_distributed_data`),
-the call structure has some complexity.   That complexity is largely
-driven by the fact that reading ensembles utilizing MongoDB as discussed
-above is has complexities beyond that for reading atomic data.
-In any case, the prime complexity is that the arguments to
-`read_distributed_data` have some strong dependencies.  It might
-be helpful to show a subset of the def line for this function:
+    :code:`read_distributed_data` has a very different call structure than the
+    other seismic data readers.  It is not a method of Database, but a
+    separate function call.  The input to be read by this function is
+    defined by arg 2 (C counting starting at 0).  It expects to be passed a
+    MongoDB cursor object, which is the standard return from the database
+    find operation.   As with the other functions discussed in this section
+    a block of example code should make this clearer:
 
-.. code-block:: python
+    .. code-block:: python
 
-    def read_distributed_data(
-      data,
-      db=None,
-      query=None,
-      scratchfile=None,
-      collection="wf_TimeSeries",
-      mode="promiscuous",
-    ):
+        from mspasspy.db.client import Client
+        from mspasspy.db.database import Database,read_distributed_data
+        dbclient = Client()
+        # This is the name used to acccess the database of interest assumed
+        # to contain data loaded previously.  Name used would change for user
+        dbname = 'distributed_data_example'  # name of db set in MongoDB - example
+        db = Database(dbclient,dbname)
+        # This example reads all the data currently stored in this database
+        cursor = db.wf_TimeSeries.find({})
+        rdd0 = read_distributed_data(dbclient, dbname, cursor)
 
-There is a hierarchy of behavior driven by the type of
-arg0 (`data` in the function definition).   The arguments
-`db` and `query` have a dependency on the type of the `data` argument.
-`data` is required to
-be one of four python types with dependencies defined below for each item:
-
-#. *An instance of a MsPASS `Database` object* (a subclass of MongoDB's
-   Database class that is best thought of as a handle to interact with the
-   database server).  When arg0 is a `Database` the `query` argument is
-   always used explicitly on implicitly.  That is, if `query` is a python
-   dictionary, which is used as a query operator in MongoDB, the contents
-   are used to define the dataset with the MongoDB query:
-   `cursor=db[collection].find(query)`.  If query is undefined (the default)
-   the function will assume the entire content of the `wf[collection]`
-   defines the data set.
-#. *An implementation of a `DataFrame`*.   The most common of these is
-   a `pandas DataFrame <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html>`__.
-   The function also accepts the dask and pyspark implementations of
-   the same conceptual container as both have nearly identical APIs to
-   the pandas version.   A DataFrame, in this context, is best thought of
-   as an abstraction of a table.  A single relation (table) in a relational
-   database maps directly into a DataFrame and is a common way to create one.
-   That includes the concept of a string that defines a human readable name
-   for each column (attribute in relational database jargon) of the table.
-   This interface exists as an alternative way to define input from MongoDB
-   using an SQL database, spreadsheet, or an ascii table (csv or fixed field
-   tables like those used in the flat-file database in seismology called
-   `antelope <https://www.brtt.com>`__).  The interface will work provided the
-   attribute names match several key concepts in the standard mspass schema.
-   That is, each tuple in the DataFrame must contain key attributes that define
-   how to construct a valid atomic data object.  That means universally
-   essential attributes like `npts, delta,` and `starttime` as well as
-   the long list of attributes that might be essential to describe
-   your data.  That includes attributes like `dir`, `dfile`, and `foff` that
-   are required when the sample data are stored in files.  To construct a
-   valid DataFrame from outside a mspass `Database` will require care in
-   assuring the attributes match the MsPASS schema.  Note, however, that
-   a key reason this functionality exists is that within `read_distributed_data`
-   we use a pandas DataFrame as an intermediary
-   by mapping the set of documents that define the dataset in a wf collection
-   as a DataFrame.  We found that approach is useful
-   to avoid cursor timeouts that plagued our
-   earler implementation for parallel reads.  The internal DataFrame
-   usage, however, is a feature that is
-   "under the hood".
-#. *A list of python dictionaries*.  The dictionary content is
-   required to be a set of valid pymongo queries that will resolve when
-   applied to a wf collection (e.g. wf_TimeSeries) "find" operation.
-   This interface exists for loading a dataset that is naturally handled
-   as ensembles.  Reading ensembles in parallel present a
-   fundamentally different problem from reading atomic data.   Ensembles
-   are a collection of atomic data that have some relationship that defines
-   the grouping.   e.g. common source gathers (ensembles) can be defined
-   by data have a common `source_id`.  As discussed widely in online sources
-   on dask and pyspark sorting and grouping atomic data can be very slow and
-   very memory instensive.  Furthermore, reading huge datasets is subject to
-   cursor timeout errors if ensembles are assembled inline by grouping.
-   For these reasons we have found using the database
-   to define ensemble grouping is a far superior approach as
-   scalable is limited only by storage.
-
-As with the other functions discussed in this section sample code can
-help clarify the words.  We show examples below in the same order as the itemized
-list immediately above.
-
-*Example of loading dask bag with Database input*
-
-.. code-block:: python
-
-    from mspasspy.db.client import Client
-    from mspasspy.db.database import read_distributed_data
-    dbclient = Client()
-    db = dbclient.get_database("testdb")
-    query={'data_tag' : 'atomic_read_example'}
-    mybag = read_distributed_data(db,query=query)
-
-This example uses the default dask scheduler loading a dask bag, which
-we reference here with the symbol `mybag`, with all data saved with the
-`data_tag` argument set to "atomic_read_example".  The example uses
-a MongoDB database with the name "testdb".
-
-*Example of reading from a pandas DataFrame*
-
-.. code-block:: python
-
-    from mspasspy.db.client import Client
-    from mspasspy.db.database import read_distributed_data
-    import pandas as pd
-    dbclient = Client()
-    db = dbclient.get_database("testdb.csv")
-    # note the file read here must contain attributes that mesh
-    # with the appropriate schema for the data being constructed
-    filename="examples_dbtable.csv"
-    df = pd.read_csv("filename")
-    mybag = read_distributed_data(df,db)
-
-This code assumes the user has previously created a csv format file
-with the name "testdb.csv" that defines a table of attributes with required
-parameters needed to construct one `TimeSeries` object from each line
-of the csv.  Each row of the file maps to one tuple the pandas DataFrame
-created by `read_csv`.
-
-*Example of reading enembles with query list*
-
-.. code-block:: python
-
-    def srcid_to_dict(srcid):
-      return {"source_id" : srcid}
-    from mspasspy.db.client import Client
-    from mspasspy.db.database import read_distributed_data
-    import pandas as pd
-    dbclient = Client()
-    db = dbclient.get_database("testdb")
-    srcid_list = db.wf_TimeSeries.find({}).distinct("source_id")
-    query_list = map(srcid_to_dict, srcid_list)
-    mybag = read_distributed_data(query_list,db)
-
-Note we used the small function `srcid_to_dict` defined at the top
-to generate a list of python dict containers used to drive
-`read_distributed_data`.  This examples uses a generic
-python `map` function that is conceptually similar to dask/pyspark map.
-The API is different and the operation is not done in parallel, but it
-behaves the same; `map` converts the input list of `source_id` values to
-a list of python dict containers that are MongoDB queries for finding
-all waveforms matching the given id.
-
-The default output of `read_distributed_data` is a dask bag
-containing the content defined by
-the wf_TimeSeries collection. If you are using Spark instead of Dask
-you would add the optional
-argument :code:`format='spark'` and you also need to pass a value
-for the argument :code:`spark_context`.
+    The output of the read is the SPARK RDD that we assign the symbol rdd0.
+    If you are using DASK instead of SPARK you would add the optional
+    argument :code:`format='dask'`.
 
 Update
 ~~~~~~
 
-Because of the way seismic data is stored in MsPASS (see figure above)
+Because of the way we stored seismic data in MsPASS (see figure above)
 the concept of an update makes sense only for Metadata.
-If the sample data are modified, the assumption is the result
-would be saved as a new instance, not updated.   That constraint is
-necessary for a long list of reasons.  In addition, the concept of an
-update makes no sense for ProcessingHistory and error log data.
+The update concept makes no sense for ProcessingHistory and error log data.
 Hence, the history and elog collections, that hold that data, should never
 be updated.   No MsPASS supported algorithms will do that, but we
 emphasize that constraint because you as the owner of the dataset could
 (incorrectly) modify history or elog with calls to MongoDB's api.
 
-Metadata contained in a data objects in MsPASS can come
-from three places:  (1) attributes loaded directly with the atomic data from
-the unique document in a wf collection with which that data is originated,
-(2) "normalized" data loaded from an auxiliary collection (currently
-`channel`, `source`, and `site` and MsPASS standards but the concept is generic)
-(3) new attributes created during processing.
+As noted elsewhere Metadata loaded with data objects in MsPASS can come
+from one of two places:  (1) attributes loaded directly with the atomic data from
+the unique document in a wf collection with which that data is associated,
+and (2) "normalized" data loaded through a cross reference ID from one of the
+standardized collection in MsPASS (currently :code:`site`, :code:`channel`, and :code:`source`).
 In a waveform processing job (i.e. python driver script) the metadata
 extracted from normalized collections should be treated as immutable.
 In fact, when schema validation tests are enabled for save operations
@@ -631,7 +406,7 @@ that has worked with a CSS3.0 relational database schema like Antelope.
 In MsPASS we adopt these rules to keep delete operations under control.
 
 * **Delete Rule 1**:  Normalization collection documents should never be
-  delete any document during a processing run.  Creation of these collections should
+  deleted during a processing run.  Creation of these collections should
   always be treated as a preprocessing step.
 * **Delete Rule 2**:  Any deletions of documents in normalization collections should
   be done through one of the MongoDB APIs.  If such housecleaning is
@@ -645,7 +420,12 @@ In MsPASS we adopt these rules to keep delete operations under control.
 We trust rules 1 and 2 require no further comment.  Rule 3, however,
 needs some clarification to understand how we handle deletes.
 A good starting point is to look at the signature of the simple core delete
-method of the Database class: :py:meth:`delete_data <mspasspy.db.database.Database.delete_data>`
+method of the Database class:
+
+.. code-block:: python
+
+  def delete_data(self,id,remove_unreferenced_files=False,
+                      clear_history=True,clear_elog=False):)
 
 As with the read methods id is the ObjectID of the wf collection document
 that references the data to be deleted.
@@ -688,7 +468,7 @@ other hand, the common old SAC model of one waveform per file is an abomination
 for storing millions of waveforms on any HPC system.   If your application
 requires frequent delete operations for cleanup during a workflow
 we strongly advise you store all your data with the
-gridfs option.
+gridfs option. 
 
 Key IO Concepts
 ~~~~~~~~~~~~~~~~~
@@ -697,7 +477,7 @@ MsPASS Chemistry
 --------------------
 
 In this section we expand on some concepts the user needs to understand
-in interacting with the I/O system in MsPASS.  If we repeat things it means
+in interacting with the io system in MsPASS.  If we repeat things it means
 they are important, not that we were careless in writing this document.
 
 It might be useful to think of data in MsPASS with an analogy from
@@ -772,16 +552,13 @@ that are handled differently through the schema definition:
     :code:`collection_id` where "collection" is a variable and "_id" is literal.
     (e.g. the linking key for the source collection is "source_id").
     We use that approach because in MongoDB an ObjectID is guaranteed to
-    provide a unique index.   That allows the system to be more generic.
+    provide a unique index.   That allows the system be more generic.
     Hence, unlike FDSN data centers that depend upon the SEED format in
     MsPASS net, sta, chan, loc (the core miniseed keys)
-    are excess baggage in a processing workflow.  The default aims to
-    only preserve the id that links a datum back to a site and/or channel
-    collection.  We have functions for
+    are baggage for joining the site or channel
+    collections to a set of waveform data.  We have functions for
     linking seed data with net, sta, chan, and loc keys to build links
-    stored in the database or that can be used within a workflow.
-    (See :ref:`Normalization<normalization>`)
-    An example of why the approach we use
+    but the links are still best defined by ObjectIDs.   An example of why this
     is more generic is to contrast SEED data to something like a CMP
     reflection data set.  In a CMP survey geophone locations are never
     given names but are indexed by something else like a survey flag
@@ -792,13 +569,7 @@ that are handled differently through the schema definition:
     providing such cross references a normalization id is treated
     as absolutely immutable in a workflow.  If a writer detects a linking
     id was altered the datum with which it is associated will be marked
-    bad (dead) and the waveform data will not be saved. Finally, it is
-    also important to note that MsPASS supports a generic matching
-    feature for normalization discussed in detail in the section of
-    this manual titled :ref:`Normalization<normalization>`.  In particular,
-    normalization data that his highly redundant (i.e. many wf documents
-    match to common normalization documents) are much faster to
-    handle with cached matchers described in that section of this manual.
+    bad (dead) and the waveform data will not be saved.
 
 Save Concepts
 ----------------
@@ -809,7 +580,7 @@ as yet unknown ways data can acquire inconsistencies that are problems of
 varying levels of severity.  Here is the range of outcomes in increasing
 order severity:
 
-1.  No problems equals complete success.
+1.  No problems equal to complete success.
 
 2.  Problems that could be repaired automatically.  Such errors always
     generate error log entries, but the errors are judged to
@@ -826,7 +597,7 @@ order severity:
     At present the only unforgivable sin is changing a cross-referencing id.
     If a writer detects that cross-referencing ObjectID has been altered the
     data will be marked dead and the Metadata document will be written to
-    the `cemetery` collection.
+    a special collection called "graveyard".
 
 4.  Unrecoverable (fatal) errors will abort a workflow.   At present that
     should only happen from system generated errors that throw an
@@ -848,9 +619,8 @@ convention for cross-reference keys.  That is, wf_TimeSeries_id and
 wf_Seismogram_id for TimeSeries and Seismogram data respectively.
 
 Data marked dead are handled specially.  For such data the sample data will be
-throw away.  The Metadata for dead data are saved in a separate collection
-with the colorful name `cemetery`.  The
-Metadata associated with the datum is saved as a subdocument accessible with the
+throw away.  The Metadata for dead data are saved in the elog collection
+document associated with the datum as a subdocument accessible with the
 key "tombstone".  That provides a simple query mechanism to
 show only the most serious errors from a processing run.   Specifically,
 this code fragment will print all error messages associated with
@@ -861,12 +631,12 @@ list of elog messages:
 
     # This needs to be checked for correctness - done while off the grid
     query = {'$def' : 'tombstone'}
-    cursor = db.cemetery.find(query)
+    cursor=db.elog.find(query)
     for doc in cursor:
-      wfmd = doc['tombstone']
+      wfmd=doc['tombstone']
       print('Error log contents for this Seismogram marked dead:',
-            wfmd['net'], wfmd['sta'], UTCDateTime(wfmd['startime']))
-      err = doc['logdata']
+         wfmd['net'],wfmd['sta'],UTCDateTime(wfmd['startime'])
+      err=doc['logdata']
       for e in err:
         print(e.message)
 
@@ -887,76 +657,49 @@ Reads have to construct a valid data object and are subject to different
 constraints.  We believe it is most instructive to describe these in the order
 they are handled during construction.
 
-#.  Construction of TimeSeries or Seismogram objects are driven by
-    document data read from a collection containing documents with
-    key-value pairs that match at least a set of fundamental attributes
-    required to construct any such datum.   For example, the number of points
-    in the data vector of a TimeSeriers (columns in the Seismogram sample
-    matrix) always requires a value to be associated with the key `npts`.
-    By default the entire contents of each document
-    are loaded into a Metadata container with no safety checks (defined
+1.  Construction of TimeSeries or Seismogram objects are driven by
+    document data read from the wf_TimeSeries or wf_Seismogram collection
+    respectively.   By default the entire contents of each document
+    are loaded into Metadata with no safety checks (defined
     above as "promiscuous mode").  Options allow Metadata type checks to be enabled
     against the schema.  In addition, one can list a set of keys that should
-    be dropped in the read.  When running in "cautious" or "pedantic"
-    mode attributes not defined in the schema will be dropped.   In "cautious"
-    mode attributes that cannot be converted will be killed.   In "pedantic"
-    mode any type mismatches will cause the datum to be killed.   Any datum
-    killed in this will way will be returned as a "mummy", which is the
-    husk of the object containing Metadata, error log data, and an empty
-    sample container. Such data will also have the attribute `is_abortion`
-    set true.
+    be dropped in the read.
 
-#.  The sample data are loaded.  How that happens depends on multiple
-    attributes that are expected to be found in the input document or
-    passed via optional parameters to `read_data`.  Currently, the top branch
-    in the decision chain on how to handle sample data is controlled by
-    the keyword `storage_mode`.  `storage_mode` is expected to be defined in
-    all wf document, but if it is missing the value passed by a function
-    argument with the same name will be used.   The current list of
-    values for `storage_mode` are:  (1) "file" for conventional file storage,
-    (2) "gridfs" for storage using a MongoDB feature with the same name, and
-    (3) "url" to read from a web address
-    (currently that means web services but the concept is more generic).
-    Be aware this list may change in the future as IT systems evolve.
-    The whole point of this approach is to provide a mechanism to abstract
-    the reading process.  Using `storage_mode` in combination with other
-    (method dependent) attributes.
+2.  By default normalized Metadata can only be loaded through cross-referencing id
+    keys (currently source_id, site_id, and/or channel_id but more may be added).
+    The set of which collections are to be loaded are controlled by optional
+    parameters in each reader.  An important constraint is that for all
+    normalized collections defined as required, if the cross-referencing
+    key is not defined a reader will ignore that datum.  :code:`read_data` silently
+    signals that condition by returning a None.  :code:`read_ensemble_data` and
+    :code:`read_distributed_data` normally silently skip such data.   That model
+    is intentional because it allows initial loading of a large data set with
+    unresolvable anomalies that prevent one or more of the cross-referencing
+    ids from being defined.
 
-#.  If the `normalize` argument is not empty the reader attempts to
-    load attributes defined for the normalizing collection.  Since version 2
-    of Database normalization can be defined one of two ways :
-    (1) a list of subclasses of the `:class:BasicMatcher`, or
-    (2) a list of strings defining collection names (e.g. "source").
-    The feature of allowing the use of `:class:BasicMatcher` implementations
-    was done for efficiency.
-    (The developer discussion of this feature and why it improves performance
-    can be found `here <https://github.com/mspass-team/mspass/discussions/303>`__.)
-    Note that using the verson 1 construct of a list of collection names will
-    always be much slower because it implies a Database Id matcher with
-    the collection name.  Not only does that require an additional database query for each
-    datum created but in the current implementation it also requires constructing
-    the python class that implements the queries on each read call.
-    Normalization failures will, by default, cause the datum to be killed and
-    defined as an "abortion".
+3.  The waveform data is read and the data object is constructed.  If that process fails the data
+    will be marked dead and an error log posted with the reason (e.g. a
+    file not found message).
 
-#.  If processing history is desired the :code:`load_history` option needs to be
+4.  If the sample date read is successful the error log will normally be empty
+    after any read.
+
+5.  If processing history is desired the :code:`load_history` option needs to be
     set true.  In a reader the only action this creates is initialization of the
     ProcessingHistory component of the data with a record providing a unique
     link back to the data just read.
 
-#.  Any datum created by `read_data` and marked live should have an empty error log
-    on return. It is good practice before running a large dataset to run a
-    pure read only job that produces a report on the number of two key
-    measures of reliability:  (1) the number of live entries for which the
-    error log is not empty, and (2) the number of abortions.
+We reiterate that the overall behavior of all readers are controlled by the
+:code:`mode=` argument common to all.  The current options are: :code:`promiscuous`,
+:code:`cautious`, and :code:`pedantic`.   Detailed descriptions of what each mean are
+given above and in the sphynx documentation generated from docstrings.
 
 Update Concepts
 ---------------
 As noted above an update is an operation that can be made only to
 Metadata.  In MsPASS Metadata map directly into MongoDB's document concept
-of name-value pairs, while the waveform data are stored by some other
-mechanism defined by the `storage_mode` attribute.
-We know of two common application for a pure Metadata update
+of name-value pairs, while the waveform data are stored in some version of
+a file. We know of two common application for a pure Metadata update
 without an associated save of the waveform data.
 
 1.  A processing step that computes something that can be conveniently
@@ -1010,12 +753,3 @@ Three others are important for controlling the behavior of updates:
    will have the associated tag in the database changed to the string
    specified in the call to :code:`update_metadata`.  The default is to
    do nothing to any existing tag (i.e. the tag is not updated).
-
-Finally, we note that you should consider carefully if a database update is the
-right algorithm for what you want to do.   Database updates are always
-a slow operation relative to most calculations that can be posted as
-Metadata.  Any operation we know of that can be reduced to operations
-on Metadata attributes (e.g. computing epicentral distance from source
-and receiver coordinates) can always be done faster inline with custom
-python functions or one of the set of operators described in
-the section of this manual titled `:ref:Header Math<_header_math>`.
