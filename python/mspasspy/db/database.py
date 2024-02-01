@@ -5564,6 +5564,7 @@ class Database(pymongo.database.Database):
         o["foff"] = index_record.foff
         o["nbytes"] = index_record.nbytes
         o["npts"] = index_record.npts
+        o["endtime"] = index_record.endtime
         return o
 
     def index_mseed_file(
