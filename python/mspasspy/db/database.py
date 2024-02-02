@@ -1099,7 +1099,7 @@ class Database(pymongo.database.Database):
             an abstraction that even in FORTRAN days hid a lot of complexity.
             A call to this function supports multiple save mechanisms we
             define through the `storage_mode` keyword. At present
-            "storage_mode" can be only one of two options:  "files" and
+            "storage_mode" can be only one of two options:  "file" and
             "gridfs".  Note this class has prototype code for reading data
             in AWS s3 cloud storage that is not yet part of this interface.
             The API, however, was designed to allow adding one or more
@@ -1218,13 +1218,13 @@ class Database(pymongo.database.Database):
             prone to a serious preformance issue in a parallel workflow as
             all workers can be shouting at the database server simultaneously
             filling the network connection and/or overloading the server.
-            For those reasons, "files" should be used for the storage
+            For those reasons, "file" should be used for the storage
             mode for most applications.   It is not the default because
             storing data in files always requires the user to implement some
             organizational scheme through the "dir" and "dfile" arguments.
             There is no one-size-fits-all solution for organizing how a
             particular project needs to organize the files it produces.
-            Note, however, that one can set storage_mode to "files" and this
+            Note, however, that one can set storage_mode to "file" and this
             writer will work.  By default is sets "dir" to the current directory
             and "dfile" to a random string created with a uuid generator.
             (For ensembles the default is to write all member data to
@@ -1238,7 +1238,7 @@ class Database(pymongo.database.Database):
             externally from the writer for ensembles.  All of that was
             designed to make this method as bombproof as possible, but
             users need to be aware naive usage can create a huge mess.
-            e.g. with "files" and null "dir" and "dfile" saving a million
+            e.g. with "file" and null "dir" and "dfile" saving a million
             atomic data will create a million files with random names in
             your current directory.  Good luck cleaning that mess up.
             Finally, we reiterate that when Earthscope finishes their
@@ -1361,7 +1361,7 @@ class Database(pymongo.database.Database):
           path functions to a full path name for storage in the database
           document with the attribute "dir".  As for any io we remind the
           user that you much have write permission in this directory.
-          Note if this argument is None (default) and storage_mode is "files"
+          Note if this argument is None (default) and storage_mode is "file"
           the algorithm will first attempt to extract "dir" from the
           Metadata of mspass_object.  If that is defined it will be used
           as the write directory. If it is not defined it will default to
@@ -1374,7 +1374,7 @@ class Database(pymongo.database.Database):
           the write pointer to the end of the file referenced and sets the
           attribute "foff" to that position. That allows automatic appends to
           files without concerns about unique names.  Like the dir argument
-          if this argument is None (default) and storage_mode is "files"
+          if this argument is None (default) and storage_mode is "file"
           the algorithm will first attempt to extract "dfile" from the
           Metadata of mspass_object.  If that is defined it will be used
           as the output filename. If it is not defined a uuid generator
@@ -4302,7 +4302,7 @@ class Database(pymongo.database.Database):
         """
         Private method used to read sample data from MongoDB's gridfs
         storage for atomic MsPASS data objects.  Like the
-        comparable "files" reader this method assumes the skeleton of
+        comparable "file" reader this method assumes the skeleton of
         the datum received as mspass_object in arg0 has the array
         memory storage already constructed and initialized.   This function
         then simply moves the sample data from gridfs into the data
@@ -5999,7 +5999,7 @@ class Database(pymongo.database.Database):
         See description below of "use_member_dfile_value" parameter.
 
         2) The "storage_mode" argument determines what medium will hold the
-        sample data.  Currently accepted values are "files" and "gridfs"
+        sample data.  Currently accepted values are "file" and "gridfs"
         but other options may be added in the near future to support cloud
         computing.
 
@@ -7379,9 +7379,9 @@ class Database(pymongo.database.Database):
         # first group by storage mode
         smdict = self._group_mdlist(mdlist)
         for sm in smdict:
-            if sm == "files":
+            if sm == "file":
                 # only binary currently works for ensemble files
-                file_dict = smdict["files"]
+                file_dict = smdict["file"]
                 for form in file_dict:
                     if form == "binary":
                         bf_mdlist = file_dict["binary"]
