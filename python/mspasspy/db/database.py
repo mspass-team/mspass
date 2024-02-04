@@ -7263,8 +7263,14 @@ class Database(pymongo.database.Database):
         nmembers = len(mdlist)
         if object_type is TimeSeriesEnsemble:
             ensemble = TimeSeriesEnsemble(nmembers)
-        else:
+        elif object_type is SeismogramEnsmble:
             ensemble = SeismogramEnsemble(nmembers)
+        else:
+            message = "Database._load_enemble_file:  Received illegal value for object_type argument\n"
+            message += "Received object_type={}\n".format(object_type)
+            message += "Must be eithre TimeSeriesEnsemble or SeismogramEnsemble"
+            raise ValueError(message)
+
         abortions = []
         for md in mdlist:
             try:
@@ -7273,7 +7279,7 @@ class Database(pymongo.database.Database):
                 # buffer for the sample data and initialize it to zero.
                 # This allows sample data readers to load the buffer without
                 # having to handle memory management.
-                if object_type is TimeSeries:
+                if object_type is TimeSeriesEnsemble:
                     d = TimeSeries(md)
                     ensemble.member.append(d)
                 else:
@@ -7306,7 +7312,7 @@ class Database(pymongo.database.Database):
             # sets d as a pointer and doesn't create a copy
             d = ensemble.member[i]
             if d.is_defined("foff"):
-                t = tuple(d["foff"], i)
+                t = tuple([d["foff"], i])
                 foff_list.append(t)
             else:
                 # These members will not be handled by the
@@ -7391,28 +7397,27 @@ class Database(pymongo.database.Database):
                         for path in bf_dict:
                             this_mdl = bf_dict[path]
                             if len(this_mdl) > 1:
-                                # _group_by_path assures all compomnents of this_mdl 
-                                # have the same value of dir and file.  Use an iteration to 
+                                # _group_by_path assures all compomnents of this_mdl
+                                # have the same value of dir and file.  Use an iteration to
                                 # assure dir and dfile are present in one of the components
                                 # TODO:  this may have an issue if there are entries marked undefined
                                 # needs a controlled tests.
-                                dir="UNDEFINED"
+                                dir = "UNDEFINED"
                                 for md in this_mdl:
-                                    if md.is_defined('dir') and md.is_defined('dfile'):
-                                        dir = md['dir']
-                                        dfile = md['dfile']
+                                    if md.is_defined("dir") and md.is_defined("dfile"):
+                                        dir = md["dir"]
+                                        dfile = md["dfile"]
                                         break
-                                if dir=="UNDEFINED":
+                                if dir == "UNDEFINED":
                                     message = "Database.construct_ensemble:  "
                                     message += "binary file reader section could not find values for dir and/or dfile"
                                     message += "This should not happen but was trapped to avoid mysterious errors"
-                                    raise MsPASSError(message,ErrorSeverity.Fatal)
+                                    raise MsPASSError(message, ErrorSeverity.Fatal)
 
-                                ens_tmp, abortions = self._load_ensemble_file(this_mdl,
-                                        object_type,
-                                        dir,
-                                        dfile)
-                                
+                                ens_tmp, abortions = self._load_ensemble_file(
+                                    this_mdl, object_type, dir, dfile
+                                )
+
                                 # the above guarantees ens_tmp has no dead dead
                                 for d in ens_tmp.member:
                                     ensemble.member.append(d)
