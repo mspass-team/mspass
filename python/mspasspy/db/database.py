@@ -7263,7 +7263,7 @@ class Database(pymongo.database.Database):
         nmembers = len(mdlist)
         if object_type is TimeSeriesEnsemble:
             ensemble = TimeSeriesEnsemble(nmembers)
-        elif object_type is SeismogramEnsmble:
+        elif object_type is SeismogramEnsemble:
             ensemble = SeismogramEnsemble(nmembers)
         else:
             message = "Database._load_enemble_file:  Received illegal value for object_type argument\n"
