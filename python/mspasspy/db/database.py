@@ -7261,9 +7261,9 @@ class Database(pymongo.database.Database):
         # Because this is private method that should only be used
         # interally we do no type checking for speed.
         nmembers = len(mdlist)
-        if object_type is TimeSeriesEnsemble:
+        if object_type is (TimeSeriesEnsemble or TimeSeries):
             ensemble = TimeSeriesEnsemble(nmembers)
-        elif object_type is SeismogramEnsemble:
+        elif object_type is (SeismogramEnsemble or Seismogram):
             ensemble = SeismogramEnsemble(nmembers)
         else:
             message = "Database._load_enemble_file:  Received illegal value for object_type argument\n"
@@ -7279,7 +7279,7 @@ class Database(pymongo.database.Database):
                 # buffer for the sample data and initialize it to zero.
                 # This allows sample data readers to load the buffer without
                 # having to handle memory management.
-                if object_type is TimeSeriesEnsemble:
+                if object_type is (TimeSeriesEnsemble or TimeSeries):
                     d = TimeSeries(md)
                     ensemble.member.append(d)
                 else:
@@ -7291,7 +7291,7 @@ class Database(pymongo.database.Database):
             except MsPASSError as merr:
                 # if the constructor fails mspass_object will be invalid
                 # To preserve the error we have to create a shell to hold the error
-                if object_type is TimeSeriesEnsemble:
+                if object_type is (TimeSeriesEnsemble or TimeSeries):
                     d = TimeSeries()
                 else:
                     d = Seismogram()
