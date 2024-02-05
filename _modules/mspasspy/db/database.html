@@ -6630,7 +6630,7 @@
             <span class="c1"># We need to clear data tag if was previously defined in</span>
             <span class="c1"># this case or a the old tag will be saved with this datum</span>
             <span class="k">if</span> <span class="s2">&quot;data_tag&quot;</span> <span class="ow">in</span> <span class="n">insertion_dict</span><span class="p">:</span>
-                <span class="n">insertion_dict</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;data_tag&quot;</span><span class="p">)</span>
+                <span class="n">insertion_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;data_tag&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">storage_mode</span><span class="p">:</span>
             <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">storage_mode</span>
         <span class="k">else</span><span class="p">:</span>
