@@ -150,7 +150,7 @@ class TestMsPASSClient:
         monkeypatch.undo()
 
     def test_spark_scheduler(self, monkeypatch):
-        monkeypatch.setattr(SparkConf, "__init__", mock_excpt)
+        monkeypatch.setattr(SparkSession.builder, "appName", mock_excpt)
         with pytest.raises(
             MsPASSError,
             match="Runntime error: cannot create a spark configuration with: spark://168.0.0.1",
@@ -161,7 +161,7 @@ class TestMsPASSClient:
         monkeypatch.setenv("MSPASS_SCHEDULER", "spark")
         monkeypatch.setenv("MSPASS_SCHEDULER_ADDRESS", "168.0.0.1")
         monkeypatch.setenv("SPARK_MASTER_PORT", "12345")
-        monkeypatch.setattr(SparkConf, "__init__", mock_excpt)
+        monkeypatch.setattr(SparkSession.builder, "appName", mock_excpt)
         with pytest.raises(
             MsPASSError,
             match="Runntime error: cannot create a spark configuration with: spark://168.0.0.1:12345",

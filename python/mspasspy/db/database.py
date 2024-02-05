@@ -7261,10 +7261,16 @@ class Database(pymongo.database.Database):
         # Because this is private method that should only be used
         # interally we do no type checking for speed.
         nmembers = len(mdlist)
-        if object_type is TimeSeriesEnsemble:
+        if object_type is TimeSeries:
             ensemble = TimeSeriesEnsemble(nmembers)
-        else:
+        elif object_type is Seismogram:
             ensemble = SeismogramEnsemble(nmembers)
+        else:
+            message = "Database._load_enemble_file:  Received illegal value for object_type argument\n"
+            message += "Received object_type={}\n".format(object_type)
+            message += "Must be eithre TimeSeriesEnsemble or SeismogramEnsemble"
+            raise ValueError(message)
+
         abortions = []
         for md in mdlist:
             try:
@@ -7285,7 +7291,7 @@ class Database(pymongo.database.Database):
             except MsPASSError as merr:
                 # if the constructor fails mspass_object will be invalid
                 # To preserve the error we have to create a shell to hold the error
-                if object_type is TimeSeriesEnsemble:
+                if object_type is TimeSeries:
                     d = TimeSeries()
                 else:
                     d = Seismogram()
@@ -7306,7 +7312,7 @@ class Database(pymongo.database.Database):
             # sets d as a pointer and doesn't create a copy
             d = ensemble.member[i]
             if d.is_defined("foff"):
-                t = tuple(d["foff"], i)
+                t = tuple([d["foff"], i])
                 foff_list.append(t)
             else:
                 # These members will not be handled by the
@@ -7391,10 +7397,30 @@ class Database(pymongo.database.Database):
                         for path in bf_dict:
                             this_mdl = bf_dict[path]
                             if len(this_mdl) > 1:
-                                ens_tmp, abortions = self._load_ensemble_file(this_mdl)
+                                # _group_by_path assures all compomnents of this_mdl
+                                # have the same value of dir and file.  Use an iteration to
+                                # assure dir and dfile are present in one of the components
+                                # TODO:  this may have an issue if there are entries marked undefined
+                                # needs a controlled tests.
+                                dir = "UNDEFINED"
+                                for md in this_mdl:
+                                    if md.is_defined("dir") and md.is_defined("dfile"):
+                                        dir = md["dir"]
+                                        dfile = md["dfile"]
+                                        break
+                                if dir == "UNDEFINED":
+                                    message = "Database.construct_ensemble:  "
+                                    message += "binary file reader section could not find values for dir and/or dfile"
+                                    message += "This should not happen but was trapped to avoid mysterious errors"
+                                    raise MsPASSError(message, ErrorSeverity.Fatal)
+
+                                ens_tmp, abortions = self._load_ensemble_file(
+                                    this_mdl, object_type, dir, dfile
+                                )
+
                                 # the above guarantees ens_tmp has no dead dead
                                 for d in ens_tmp.member:
-                                    ensemble.append(d)
+                                    ensemble.member.append(d)
                                 for d in abortions:
                                     self.stedronsky.handle_abortion(d)
                             elif len(this_mdl) == 1:
@@ -7408,12 +7434,12 @@ class Database(pymongo.database.Database):
                                     aws_secret_access_key,
                                 )
                                 if d.live:
-                                    ensemble.append(d)
+                                    ensemble.member.append(d)
                                 else:
                                     self.stedronsky.handle_abortion(d)
                             else:
                                 message = "Database._construct_ensemble:  "
-                                message = "Reading binary file section retrieved a zero length"
+                                message += "Reading binary file section retrieved a zero length"
                                 message += " list of Metadata associated with path key={}\n".format(
                                     path
                                 )
@@ -7433,7 +7459,7 @@ class Database(pymongo.database.Database):
                                 aws_secret_access_key,
                             )
                             if d.live:
-                                ensemble.append(d)
+                                ensemble.member.append(d)
                             else:
                                 self.stedronsky.handle_abortion(d)
             else:
