@@ -171,7 +171,7 @@
 <span class="sd">    a shell of the original with a minimal memory footprint.  For atomic</span>
 <span class="sd">    data that means to set the sample array to zero length.  For ensembles</span>
 <span class="sd">    it means to mummify all dead members but leave the mummies in the container.</span>
-<span class="sd">    An enemble marked dead passed through mummify will have all it&#39;s members</span>
+<span class="sd">    An ensemble marked dead passed through mummify will have all it&#39;s members</span>
 <span class="sd">    mummified.</span>
 <span class="sd">3.  To `cremate` a dead datum means to make it disappear with little to no</span>
 <span class="sd">    trace.   When an atomic datum is cremated we return a default constructed</span>
@@ -457,7 +457,7 @@
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
                     <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">()</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">Seismogram</span>
+                    <span class="k">return</span> <span class="n">Seismogram</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
                 <span class="n">nlive</span> <span class="o">=</span> <span class="mi">0</span>
