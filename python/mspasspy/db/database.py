@@ -6517,7 +6517,7 @@ class Database(pymongo.database.Database):
             # We need to clear data tag if was previously defined in
             # this case or a the old tag will be saved with this datum
             if "data_tag" in insertion_dict:
-                insertion_dict.erase("data_tag")
+                insertion_dict.pop("data_tag")
         if storage_mode:
             insertion_dict["storage_mode"] = storage_mode
         else:
