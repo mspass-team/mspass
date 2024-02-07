@@ -79,21 +79,21 @@ jobs:
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
-      - name: Build and push Docker image (amd64 only)
-        uses: docker/build-push-action@v4
-        if: ${{ github.event_name != 'schedule' }}
-        with:
-          context: .
-          platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+      # - name: Build and push Docker image (amd64 only)
+      #   uses: docker/build-push-action@v4
+        # if: ${{ github.event_name != 'schedule' }}
+      #   with:
+      #     context: .
+      #     platforms: linux/amd64
+      #     push: ${{ github.event_name != 'pull_request' }}
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     cache-from: type=local,src=/tmp/.buildx-cache
+      #     cache-to: type=local,dest=/tmp/.buildx-cache-new
           
       - name: Build and push Docker image (amd64 and arm64)
         uses: docker/build-push-action@v4
-        if: ${{ github.event_name == 'schedule' }}
+        # if: ${{ github.event_name == 'schedule' }}
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -166,24 +166,24 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       # Build and push dev image
-      - name: Build and push dev image (amd64 only)
-        uses: docker/build-push-action@v4
-        if: ${{ github.event_name != 'schedule' }}
-        with:
-          context: .
-          file: Dockerfile_dev
-          platforms: linux/amd64
-          push: true
-          tags: |
-            mspass/mspass:dev
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache-dev
-          cache-to: type=local,dest=/tmp/.buildx-cache-dev-new
+      # - name: Build and push dev image (amd64 only)
+      #   uses: docker/build-push-action@v4
+      #   if: ${{ github.event_name != 'schedule' }}
+      #   with:
+      #     context: .
+      #     file: Dockerfile_dev
+      #     platforms: linux/amd64
+      #     push: true
+      #     tags: |
+      #       mspass/mspass:dev
+      #       ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     cache-from: type=local,src=/tmp/.buildx-cache-dev
+      #     cache-to: type=local,dest=/tmp/.buildx-cache-dev-new
           
       - name: Build and push dev image (amd64 amd arm64)
         uses: docker/build-push-action@v4
-        if: ${{ github.event_name == 'schedule' }}
+        # if: ${{ github.event_name == 'schedule' }}
         with:
           context: .
           file: Dockerfile_dev
