@@ -7451,7 +7451,7 @@ class Database(pymongo.database.Database):
                         this_mdlist = file_dict[form]
                         for md in this_mdlist:
                             d = self._construct_atomic_object(
-                                this_mdl[0],
+                                md,
                                 object_type,
                                 merge_method,
                                 merge_fill_value,
