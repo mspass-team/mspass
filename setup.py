@@ -13,7 +13,7 @@ from distutils import dir_util
 setup_path = os.path.abspath(__file__)
 os.chdir(os.path.normpath(os.path.join(setup_path, os.pardir)))
 
-dir_util.copy_tree("data", "python/mspasspy/data")
+# dir_util.copy_tree("data", "python/mspasspy/data")
 
 
 class CMakeExtension(Extension):
@@ -96,7 +96,7 @@ setup(
     packages=find_namespace_packages(
         where="python", include=["mspasspy", "mspasspy.*"]
     ),
-    package_data={"": ["*.yaml", "*.pf"]},
+    package_data={"": ["data/*", "*.yaml", "*.pf"], 'mspasspy': ['data/*']},
     include_package_data=True,
     install_requires=["pyyaml"],
 )
