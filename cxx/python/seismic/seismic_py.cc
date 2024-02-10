@@ -947,7 +947,7 @@ PYBIND11_MODULE(seismic, m) {
                  "Test if there is a gap inside a specified time range (defined with TimeWindow object)")
       .def("add_gap",&DataGap::add_gap,"Define a specified time range as a data gap")
       .def("get_gaps",&DataGap::get_gaps,"Return a list of TimeWindows marked as gaps")
-      .def("clear_gaps",&DataGap::add_gap,"Flush the entire gaps container")
+      .def("clear_gaps",&DataGap::clear_gaps,"Flush the entire gaps container")
     ;
 
     py::class_<TimeSeriesWGaps,TimeSeries,DataGap>(m,"TimeSeriesWGaps","TimeSeries object with gap handling methods")
