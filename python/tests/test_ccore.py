@@ -9,6 +9,7 @@ import pytest
 from mspasspy.ccore.seismic import (
     _CoreSeismogram,
     _CoreTimeSeries,
+    DataGap,
     PowerSpectrum,
     Seismogram,
     SeismogramEnsemble,
@@ -33,6 +34,7 @@ from mspasspy.ccore.utility import (
 from mspasspy.util.error_logger import PyErrorLogger
 from mspasspy.ccore.algorithms.basic import _ExtractComponent
 from mspasspy.ccore.algorithms.deconvolution import MTPowerSpectrumEngine
+from mspasspy.ccore.algorithms.basic import TimeWindow
 
 
 def make_constant_data_ts(d, t0=0.0, dt=0.1, nsamp=5, val=1.0):
@@ -1499,3 +1501,102 @@ def test_PowerSpectrum():
     assert spec.f0() == spec_copy.f0()
     assert spec.spectrum_type == spec_copy.spectrum_type
     assert np.allclose(spec.spectrum, spec_copy.spectrum)
+
+
+def test_DataGap():
+    # verify default constructor
+    dg = DataGap()
+    # verify behavior adding one gap
+    assert not dg.has_gap()
+    tw = TimeWindow(10.0, 20.0)
+    dg.add_gap(tw)
+    assert dg.has_gap()
+    assert dg.is_gap(15.0)
+    assert not dg.is_gap(5.0)
+    assert not dg.is_gap(100.0)
+    gpl = dg.get_gaps()
+    assert len(gpl) == 1
+
+    # add another gap that is not overlapping.  Should produce two
+    # distince gap definitions
+    tw = TimeWindow(100.0, 150.0)
+    dg.add_gap(tw)
+    gpl = dg.get_gaps()
+    assert len(gpl) == 2
+    assert dg.is_gap(15.0)
+    assert dg.is_gap(125.0)
+    assert not dg.is_gap(50.0)
+
+    # test has_gap with a TimeWindow argument (no arg is an existence test)
+    tw = TimeWindow(50.0, 125.0)
+    assert dg.has_gap(tw)
+    tw.end = 75.0
+    assert not dg.has_gap(tw)
+
+    # test that adding an overlapping window works correctly.
+    # This add_gaps should extend the 10,20 to 10,40
+    tw = TimeWindow(15.0, 40.0)
+    dg.add_gap(tw)
+    gpl = dg.get_gaps()
+    assert len(gpl) == 2
+    # this next text depends upon the fact that the container used in
+    # DataGaps is ordered by window start time.   It  could fail if
+    # the implementation changed.
+    assert np.isclose(gpl[0].start, 10.0)
+    assert np.isclose(gpl[0].end, 40.0)
+
+    # test copy constructor
+    dg_copy = DataGap(dg)
+    gpl = dg_copy.get_gaps()
+    assert len(gpl) == 2
+    assert dg_copy.is_gap(12.0)
+
+    # clear gaps discards everything
+    dg_copy.clear_gaps()
+    gpl = dg_copy.get_gaps()
+    assert len(gpl) == 0
+
+    # shift the origin by 5.0 s and verify it worked correctly
+    # this test also depends upon container have windows in start time order
+    # reinitialize so we don't have dependency from above at this point
+    dg = DataGap()
+    tw = TimeWindow(10.0, 20.0)
+    dg.add_gap(tw)
+    tw = TimeWindow(100.0, 150.0)
+    dg.add_gap(tw)
+    dg.translate_origin(5.0)
+    gpl = dg.get_gaps()
+    assert len(gpl) == 2
+    tw = gpl[0]
+    assert np.isclose(tw.start, 5.0)
+    assert np.isclose(tw.end, 15.0)
+    tw = gpl[1]
+    assert np.isclose(tw.start, 95.0)
+    assert np.isclose(tw.end, 145.0)
+
+    # test C++ operator+=
+    # copy of above - this probably should be a fixture
+    dg = DataGap()
+    tw = TimeWindow(10.0, 20.0)
+    dg.add_gap(tw)
+    tw = TimeWindow(100.0, 150.0)
+    dg.add_gap(tw)
+    # this one will be used for adding in
+    dgrhs = DataGap()
+    # first a nonoverlaping window
+    tw = TimeWindow(200.0, 250.0)
+    dgrhs.add_gap(tw)
+    dg += dgrhs
+    gpl = dg.get_gaps()
+    assert len(gpl) == 3
+    assert dg.is_gap(225.0)
+    # now to add an overlapping window
+    assert not dg.is_gap(190.0)
+    tw = TimeWindow(185.0, 210.0)
+    dg.add_gap(tw)
+    gpl = dg.get_gaps()
+    assert len(gpl) == 3
+    assert dg.is_gap(190.0)
+
+
+test_DataGap()
