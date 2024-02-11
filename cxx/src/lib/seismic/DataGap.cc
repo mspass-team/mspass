@@ -1,4 +1,5 @@
 #include "mspass/seismic/DataGap.h"
+#include "mspass/algorithms/TimeWindow.h"
 
 namespace mspass::seismic{
 
@@ -10,6 +11,28 @@ DataGap::DataGap(const std::list<TimeWindow>& twlist)
      gaps.insert(*twptr);
 }
 
+void DataGap::add_gap(const TimeWindow tw)
+{
+  auto insert_result = this->gaps.insert(tw);
+  if(!insert_result.second)
+  {
+    /* We land here if tw overlaps or duplicates something already in 
+     * the gaps container.  first in this case contains an iterator to 
+     * the potential duplicate.  We have to resolve which to keep*/
+    TimeWindow old_tw(*insert_result.first);
+    TimeWindow new_tw;
+    if(tw.start<old_tw.start)
+      new_tw.start=tw.start;
+    else
+      new_tw.start=old_tw.start;
+    if(tw.end>old_tw.end)
+        new_tw.end=tw.end;
+    else
+      new_tw.end=old_tw.end;
+    gaps.erase(insert_result.first);
+    gaps.insert(new_tw);
+  }
+}
 bool DataGap::is_gap(const double ttest)
 {
   const double dt(0.001);   // used to define small time interval smaller than most sampling
@@ -38,5 +61,41 @@ std::list<TimeWindow> DataGap::get_gaps() const
     result.push_back(*sptr);
   return result;
 }
-
+/* std::set iterators are always effectively const and the const 
+ * cannot be cast away.  Hence, this algorithm is much more complex
+ * than I thought it would be.  Have to make a copy of the gaps 
+ * container and edit the copy before then having to use the add_gap
+ * method to put in the edited value.  If there were a more elegant 
+ * way to handle the const problem this would go away.  I think 
+ * another element is the custom compare operator for this set 
+ * container.  Anyway this works and because in all known situations 
+ * the gaps set will be small this inefficiency is probably not important.
+ * */
+void DataGap::translate_origin(double origin_time)
+{
+  std::set<TimeWindow,TimeWindowCmp> translated_gaps;
+  for(auto ptr=this->gaps.begin();ptr!=this->gaps.end();++ptr)
+  {
+    TimeWindow tw(*ptr);
+    tw.start -= origin_time;
+    tw.end -= origin_time;
+    translated_gaps.insert(tw);
+  }
+  this->clear_gaps();
+  for(auto ptr=translated_gaps.begin();ptr!=translated_gaps.end();++ptr)
+	  this->add_gap(*ptr);
+}
+DataGap& DataGap::operator=(const DataGap& parent)
+{
+    if(this!=(&parent))
+    {
+        gaps=parent.gaps;
+    }
+    return *this;
+}
+DataGap& DataGap::operator+=(const DataGap& parent)
+{
+  for(auto ptr=parent.gaps.begin();ptr!=parent.gaps.end();++ptr) this->add_gap(*ptr);
+  return *this;
+}
 } // End namespace encapsulation

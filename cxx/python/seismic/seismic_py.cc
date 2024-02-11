@@ -136,23 +136,6 @@ public:
   }
 };
 
-/* Trampoline class for DataGap */
-class PyDataGap : public DataGap
-{
-public:
-  /* BasicTimeSeries has virtual methods that are not pure because
-  forms that contain gap handlers need additional functionality.
-  We thus use a different qualifier to PYBIND11_OVERLOAD macro here.
-  i.e. omit the PURE part of the name*/
-  void zero_gaps()
-  {
-    PYBIND11_OVERLOAD_PURE(
-      void,
-      DataGap,
-      zero_gaps);
-  }
-};
-
 PYBIND11_MODULE(seismic, m) {
   m.attr("__name__") = "mspasspy.ccore.seismic";
   m.doc() = "A submodule for seismic namespace of ccore";
@@ -935,8 +918,11 @@ PYBIND11_MODULE(seismic, m) {
       ))
     ;
 
-    py::class_<DataGap,PyDataGap>(m,"DataGap","Base class for lightweight definition of data gaps")
+    /*TODO:  This needs a pickle interface.*/
+    py::class_<DataGap>(m,"DataGap","Base class for lightweight definition of data gaps")
       .def(py::init<>())
+      .def(py::init<const DataGap&>())
+      //.def(py::init<std::list<mspass::algorithms::TimeWindow&>())
       /* Cannot get bindings with the next line for this constructor to compile.
       Disabled as the python interface only uses DataGap as a base class for TimeSeriesWGaps
       and I see now reason a python code would need this constructor*/
@@ -948,8 +934,12 @@ PYBIND11_MODULE(seismic, m) {
       .def("add_gap",&DataGap::add_gap,"Define a specified time range as a data gap")
       .def("get_gaps",&DataGap::get_gaps,"Return a list of TimeWindows marked as gaps")
       .def("clear_gaps",&DataGap::clear_gaps,"Flush the entire gaps container")
+      .def("translate_origin",&DataGap::translate_origin,
+		      "Shift time origin by a specified value")
+      .def(py::self += py::self)
     ;
 
+    /*TODO:  this needs a pickle interface.*/
     py::class_<TimeSeriesWGaps,TimeSeries,DataGap>(m,"TimeSeriesWGaps","TimeSeries object with gap handling methods")
       .def(py::init<>())
       .def(py::init<const TimeSeries&>())
