@@ -944,6 +944,7 @@ PYBIND11_MODULE(seismic, m) {
       .def(py::init<>())
       .def(py::init<const TimeSeries&>())
       .def(py::init<const TimeSeriesWGaps&>())
+      .def(py::init<const TimeSeries&,const DataGap&>())
       .def("ator",&TimeSeriesWGaps::ator,"Convert to relative time shifting gaps to match")
       .def("rtoa",py::overload_cast<>(&TimeSeriesWGaps::rtoa),
          "Return to UTC time using time shift defined in earlier ator call")
