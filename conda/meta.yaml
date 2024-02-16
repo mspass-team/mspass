@@ -1,0 +1,42 @@
+package:
+  name: mspasspy
+  version: 1.0.0
+
+source:
+  path: ../dist
+
+build:
+  number: 0
+  script: python -m pip install mspasspy-1.0.0-cp38-cp38-linux_x86_64.whl --no-deps --ignore-installed -vv
+
+requirements:
+  build:
+    - python 3.8
+    - pip
+    - numpy 
+
+  run:
+    - python 3.8
+    - pyyaml
+    - pymongo
+    - numpy
+    - dill
+    - click
+    - dask[complete]
+    - schema
+    - decorator
+    - boto3
+    - botocore
+    - moto
+    - requests 
+    - setuptools
+    - xarray
+    - zarr
+    - pandas==1.5.3
+    - numba
+    - ipympl
+
+about:
+  home: https://github.com/mspass-team/mspass
+  license: MIT
+  summary: "The Massive Parallel Analysis System for Seismologists is an open source framework for seismic data processing and management. It has three core components: A scalable parallel processing framework based on a dataflow computation model. A NoSQL database system centered on document store. A container-based virtualization environment."
