@@ -52,10 +52,9 @@ jobs:
       run: python -m pip install -C--global-option=build -C--global-option=--debug -v .
     - name: Build Wheel
       if: matrix.python-version == '3.8'
-      run: |
-        python -m pip install --upgrade build
-        pwd
-        python -m build --outdir dist/
+      uses: pypa/cibuildwheel@v2.16.5
+      env:
+        CIBW_ARCHS: "x86_64 i686"
 
     - uses: actions/checkout@v1
     - name: publish-to-conda
