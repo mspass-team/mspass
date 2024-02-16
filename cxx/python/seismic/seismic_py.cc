@@ -936,6 +936,9 @@ PYBIND11_MODULE(seismic, m) {
       .def("clear_gaps",&DataGap::clear_gaps,"Flush the entire gaps container")
       .def("translate_origin",&DataGap::translate_origin,
 		      "Shift time origin by a specified value")
+      .def("size",&DataGap::size,"Return number of defined gaps")
+      .def("subset",&DataGap::subset,
+		      "Return a subset of content spanning input range")
       .def(py::self += py::self)
     ;
 

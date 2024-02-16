@@ -73,6 +73,16 @@ This function provides a common mechanism to define such a gap in the data.
       could be used to add that functionality.
       */
       void clear_gaps(){if(!gaps.empty())gaps.clear();};
+      /*! Return number of defined gaps. */
+      int size() const{return gaps.size();};
+      /*! Return the subset of gaps within a specified time interval. 
+       *
+       * \param tw TimeWindow defining range to be returned.  Note 
+       * overlaps with the edge will be returned with range outside the
+       * range defined by tw.  If the tw is larger than the range of 
+       * the current content returns a copy of itself. 
+       */
+      DataGap subset(const mspass::algorithms::TimeWindow tw) const;
       /*! Shift the times of all gaps by a value.
        *
        When used with a TimeSeries or Seismogram the concept of UTC 

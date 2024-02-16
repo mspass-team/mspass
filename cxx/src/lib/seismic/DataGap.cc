@@ -61,6 +61,23 @@ std::list<TimeWindow> DataGap::get_gaps() const
     result.push_back(*sptr);
   return result;
 }
+DataGap DataGap::subset(const TimeWindow tw) const
+{
+  /* This could be implemented with the set equal_range method 
+   * but these objects are expected to normally be very small
+   * and it is a lot clearer what this algorithm does.
+   * */
+   DataGap result;
+   std::list<TimeWindow> gaplist = this->get_gaps();
+   for(auto twptr= gaplist.begin();twptr!=gaplist.end();++twptr)
+   {
+     if( ((twptr->end)>tw.start) && ((twptr->start)<tw.end))
+     {
+       result.add_gap(*twptr);
+     }
+   }
+   return result;
+}
 /* std::set iterators are always effectively const and the const 
  * cannot be cast away.  Hence, this algorithm is much more complex
  * than I thought it would be.  Have to make a copy of the gaps 
