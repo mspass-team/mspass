@@ -1539,7 +1539,7 @@ def test_DataGap():
     # using get_gaps as above - faster but need earlier to test get_gaps
     tw = TimeWindow(15.0, 40.0)
     dg.add_gap(tw)
-    n = dg.size()
+    n = dg.number_gaps()
     assert n == 2
     # this next text depends upon the fact that the container used in
     # DataGaps is ordered by window start time.   It  could fail if
@@ -1556,7 +1556,7 @@ def test_DataGap():
 
     # clear gaps discards everything
     dg_copy.clear_gaps()
-    n = dg_copy.size()
+    n = dg_copy.number_gaps()
     assert n == 0
 
     # shift the origin by 5.0 s and verify it worked correctly
@@ -1568,7 +1568,7 @@ def test_DataGap():
     tw = TimeWindow(100.0, 150.0)
     dg.add_gap(tw)
     dg.translate_origin(5.0)
-    n = dg.size()
+    n = dg.number_gaps()
     gpl = dg.get_gaps()
     assert n == 2
     tw = gpl[0]
@@ -1591,14 +1591,14 @@ def test_DataGap():
     tw = TimeWindow(200.0, 250.0)
     dgrhs.add_gap(tw)
     dg += dgrhs
-    n = dg.size()
+    n = dg.number_gaps()
     assert n == 3
     assert dg.is_gap(225.0)
     # now to add an overlapping window
     assert not dg.is_gap(190.0)
     tw = TimeWindow(185.0, 210.0)
     dg.add_gap(tw)
-    n = dg.size()
+    n = dg.number_gaps()
     assert n == 3
     assert dg.is_gap(190.0)
     # test the subset method.
@@ -1607,24 +1607,24 @@ def test_DataGap():
     # note at this point the content of dg is [ 10, 20; 100, 150, 185,250]
     twtest = TimeWindow(30.0, 160.0)
     dgs = dg.subset(twtest)
-    assert dgs.size() == 1
+    assert dgs.number_gaps() == 1
     # test range larger than self
     twtest = TimeWindow(0.0, 500.0)
     dgs = dg.subset(twtest)
-    assert dgs.size() == 3
+    assert dgs.number_gaps() == 3
     # overlaping left side test
     twtest = TimeWindow(15.0, 500.0)
     dgs = dg.subset(twtest)
-    assert dgs.size() == 3
+    assert dgs.number_gaps() == 3
     # overlapping right side and left side
     twtest = TimeWindow(15.0, 200.0)
     dgs = dg.subset(twtest)
-    assert dgs.size() == 3
+    assert dgs.number_gaps() == 3
     # exclude left
     twtest = TimeWindow(30.0, 200.0)
     dgs = dg.subset(twtest)
-    assert dgs.size() == 2
+    assert dgs.number_gaps() == 2
     # exclude right
     twtest = TimeWindow(0.0, 170.0)
     dgs = dg.subset(twtest)
-    assert dgs.size() == 2
+    assert dgs.number_gaps() == 2

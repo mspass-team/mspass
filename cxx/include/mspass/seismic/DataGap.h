@@ -74,7 +74,7 @@ This function provides a common mechanism to define such a gap in the data.
       */
       void clear_gaps(){if(!gaps.empty())gaps.clear();};
       /*! Return number of defined gaps. */
-      int size() const{return gaps.size();};
+      int number_gaps() const{return gaps.size();};
       /*! Return the subset of gaps within a specified time interval. 
        *
        * \param tw TimeWindow defining range to be returned.  Note 
