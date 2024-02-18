@@ -68,12 +68,11 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="18" column="3"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_w_gaps_1a976c7e2ae15527497d22fa9e82fcb4ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_w_gaps_1a976c7e2ae15527497d22fa9e82fcb4ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void mspass::seismic::SeismogramWGaps::zero_gaps</definition>
         <argsstring>()</argsstring>
         <name>zero_gaps</name>
-        <reimplements refid="classmspass_1_1seismic_1_1_data_gap_1ad57272fa5685b99efb01bd4c740900d6">zero_gaps</reimplements>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -242,6 +241,7 @@
       <member refid="classmspass_1_1utility_1_1_processing_history_1a110c300dfa2a6f5236a7d254fa7bf663" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>current_nodedata</name></member>
       <member refid="classmspass_1_1seismic_1_1_data_gap_1aa2a1e74ae7bf6ef9f3ff79153b890146" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>DataGap</name></member>
       <member refid="classmspass_1_1seismic_1_1_data_gap_1a2a6b612559664dc5634cd34eb8182227" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>DataGap</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1ae2159a919dd8a0cf438085011b97fddf" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>DataGap</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>dead</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>dt</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>elog</name></member>
@@ -299,14 +299,16 @@
       <member refid="classmspass_1_1utility_1_1_processing_history_1ad6acef2beb453d7034ab86087a3936aa" prot="protected" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>nodes</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>npts</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" prot="protected" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>nsamp</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1ab76f9a3fff90d7e5f179a745a511fe60" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>number_gaps</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a82d681c60d2e64fab12b92e3244ce052" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>number_inputs</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a95006e7f8009c6d9a5c43d7e086c441b" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>number_inputs</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a04eaa592369744d85f54da21b8de9776" prot="public" virt="virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>number_of_stages</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1acb19d36d0e3ed2e52eb77da34c65f4f3" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator*=</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a0254f287fe5fb2217fcda0131b65410f" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator+</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator+</name></member>
-      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a4824e03f8697c3f36fa7957bb82e122c" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a4824e03f8697c3f36fa7957bb82e122c" prot="public" virt="non-virtual" ambiguityscope="mspass::"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator+=</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1a5108ed469b93d3bf4da693da6af0972b" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::DataGap::"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator+=</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1ac44e27ef57299045b2e0c7a252e32a89" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator-</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1af749235404f3cf11808598ef133bf781" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator-=</name></member>
       <member refid="classmspass_1_1seismic_1_1_seismogram_w_gaps_1aa3a2fe04441c4c155106d15bfa2034a8" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator=</name></member>
@@ -316,6 +318,7 @@
       <member refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator=</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::ProcessingHistory::"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator=</name></member>
       <member refid="classmspass_1_1utility_1_1_basic_processing_history_1aa9795e245b241b3cf2ad87e91af071c9" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::BasicProcessingHistory::"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1a23f2f494e7932e012097309c8e08b901" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::DataGap::"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator=</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a1b8fc85ca5a5e14d2e2cdd51a9697fcc" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator[]</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1abdf52d3336018194da73d6832150169d" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>operator[]</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a41711bd9b0c88089e6e217f318c01de2" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>orthogonal</name></member>
@@ -371,6 +374,7 @@
       <member refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>size</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afe65cff0547c9b75ea3ce9a7aa6b20f7" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>stage</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a1ef35389afcd6d4305442a3720398a34" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>status</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1afd6343a1dc097ea5676239f62125af18" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>subset</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a629ae308ad656912abd32d086730f35d" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>sync_npts</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>t0</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" prot="protected" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>t0shift</name></member>
@@ -382,10 +386,11 @@
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ac0f23a3d725302665f4ff0c576b39237" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>timetype</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" prot="protected" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>tmatrix</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1ae9ea31f9e36577a51660c61e0749d4a6" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>transform</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1a5ae88f269425dccb3013c490e6c72295" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>translate_origin</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" prot="protected" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>tref</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1ad5cd3bfc81c7fccd83bbb30ef1c2774c" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>type</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>u</name></member>
-      <member refid="classmspass_1_1seismic_1_1_seismogram_w_gaps_1a976c7e2ae15527497d22fa9e82fcb4ad" prot="public" virt="virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>zero_gaps</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_w_gaps_1a976c7e2ae15527497d22fa9e82fcb4ad" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>zero_gaps</name></member>
       <member refid="classmspass_1_1utility_1_1_basic_metadata_1a1d7a9ab1e25e01694cc733ad2b98c6b7" prot="public" virt="virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>~BasicMetadata</name></member>
       <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a54309603aef4519ce67980b3cf58aef2" prot="public" virt="virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>~BasicProcessingHistory</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a2839e2405b168e0f1ad4d236f31eac8e" prot="public" virt="virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>~BasicTimeSeries</name></member>

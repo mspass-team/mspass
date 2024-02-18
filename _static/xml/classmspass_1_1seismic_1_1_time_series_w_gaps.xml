@@ -57,6 +57,27 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="21" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="21" bodyend="23"/>
       </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a6a5883ee439c559e493a9bb00d7e1fe4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::TimeSeriesWGaps::TimeSeriesWGaps</definition>
+        <argsstring>(const TimeSeries &amp;tsp, const DataGap &amp;dgp)</argsstring>
+        <name>TimeSeriesWGaps</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
+          <declname>tsp</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref> &amp;</type>
+          <declname>dgp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="24" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="24" bodyend="25"/>
+      </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1ab3e0fde691c59a13ae4220a8001e3ea3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kindref="compound">TimeSeriesWGaps</ref> &amp;</type>
         <definition>TimeSeriesWGaps &amp; mspass::seismic::TimeSeriesWGaps::operator=</definition>
@@ -72,7 +93,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="24" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="154" bodyend="162"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="26" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="154" bodyend="162"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1a6ba0f20ec3b6d6a1b7050a1e8b73e7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -85,7 +106,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="25" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="25" bodyend="25"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="27" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="27" bodyend="27"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1ac0738e8e0441f49d3c03b504dc7e44b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -114,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="37" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="16" bodyend="48"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="39" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="16" bodyend="48"/>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="23">mspass::algorithms::TimeWindow::end</references>
         <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">mspass::seismic::Relative</references>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="19">mspass::algorithms::TimeWindow::start</references>
@@ -145,7 +166,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="52" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="49" bodyend="73"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="54" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="49" bodyend="73"/>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="23">mspass::algorithms::TimeWindow::end</references>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="19">mspass::algorithms::TimeWindow::start</references>
         <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::UTC</references>
@@ -165,7 +186,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="64" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="74" bodyend="112"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="66" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="74" bodyend="112"/>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="23">mspass::algorithms::TimeWindow::end</references>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="19">mspass::algorithms::TimeWindow::start</references>
         <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::UTC</references>
@@ -188,14 +209,13 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="71" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="113" bodyend="132"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="73" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="113" bodyend="132"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1bc9a6c4ae0b21b8acabd0c3ee240761" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1bc9a6c4ae0b21b8acabd0c3ee240761" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void mspass::seismic::TimeSeriesWGaps::zero_gaps</definition>
         <argsstring>()</argsstring>
         <name>zero_gaps</name>
-        <reimplements refid="classmspass_1_1seismic_1_1_data_gap_1ad57272fa5685b99efb01bd4c740900d6">zero_gaps</reimplements>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -203,7 +223,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="74" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="133" bodyend="152"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="76" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="133" bodyend="152"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a42a8cb90831e476fdd4c8555abc5ad5a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -218,7 +238,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="84" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="163" bodyend="169"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="86" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="163" bodyend="169"/>
         <references refid="classmspass_1_1seismic_1_1_time_series_1a0f62a2e87fe26a6d08a978ebdde2b114" compoundref="_time_series_8cc" startline="96" endline="109">mspass::seismic::TimeSeries::memory_use</references>
       </memberdef>
       </sectiondef>
@@ -341,7 +361,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="6" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="7" bodyend="85"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="6" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="7" bodyend="87"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>accumulate</name></member>
       <member refid="classmspass_1_1seismic_1_1_data_gap_1a29bd754c4f58ce811c4e6e1e4056927c" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>add_gap</name></member>
@@ -369,6 +389,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
       <member refid="classmspass_1_1utility_1_1_processing_history_1a110c300dfa2a6f5236a7d254fa7bf663" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>current_nodedata</name></member>
       <member refid="classmspass_1_1seismic_1_1_data_gap_1aa2a1e74ae7bf6ef9f3ff79153b890146" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>DataGap</name></member>
       <member refid="classmspass_1_1seismic_1_1_data_gap_1a2a6b612559664dc5634cd34eb8182227" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>DataGap</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1ae2159a919dd8a0cf438085011b97fddf" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>DataGap</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>dead</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>dt</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>elog</name></member>
@@ -424,15 +445,17 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
       <member refid="classmspass_1_1utility_1_1_processing_history_1ad6acef2beb453d7034ab86087a3936aa" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>nodes</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>npts</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>nsamp</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1ab76f9a3fff90d7e5f179a745a511fe60" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>number_gaps</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a82d681c60d2e64fab12b92e3244ce052" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>number_inputs</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a95006e7f8009c6d9a5c43d7e086c441b" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>number_inputs</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a04eaa592369744d85f54da21b8de9776" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>number_of_stages</name></member>
       <member refid="classmspass_1_1seismic_1_1_time_series_1a293114ec4431687048e5abfe5d6c426e" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator*=</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1a7cb0e689d13cc1696eaafc0bbec24754" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator+</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator+</name></member>
-      <member refid="classmspass_1_1seismic_1_1_time_series_1adb6940f2dfd183f0b676cebc3fc0fce3" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_1adb6940f2dfd183f0b676cebc3fc0fce3" prot="public" virt="non-virtual" ambiguityscope="mspass::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator+=</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1aac97d69cfcec7f8b80eee2410adc4a6d" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::CoreTimeSeries::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator+=</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1a5108ed469b93d3bf4da693da6af0972b" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::DataGap::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator+=</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1a81c02e7cc6863d2c4002cb869620a1d6" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator-</name></member>
       <member refid="classmspass_1_1seismic_1_1_time_series_1a909f903e5a739c4c1bc1af8eadea3e5e" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator-=</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1afdc1e6ce07e1101b2f33c9b455b3a3b9" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::CoreTimeSeries::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator-=</name></member>
@@ -443,6 +466,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
       <member refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator=</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::ProcessingHistory::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator=</name></member>
       <member refid="classmspass_1_1utility_1_1_basic_processing_history_1aa9795e245b241b3cf2ad87e91af071c9" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::BasicProcessingHistory::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1a23f2f494e7932e012097309c8e08b901" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::DataGap::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator=</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1a8e379678ec0883c59d37612cf5f4f0a5" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator[]</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>ProcessingHistory</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a225e2e1941f342f3764c2c27854ad2f6" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>ProcessingHistory</name></member>
@@ -480,6 +504,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
       <member refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>size</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afe65cff0547c9b75ea3ce9a7aa6b20f7" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>stage</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a1ef35389afcd6d4305442a3720398a34" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>status</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1afd6343a1dc097ea5676239f62125af18" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>subset</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1ac2755952b5e490ba8ea7469d5d0273c7" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>sync_npts</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>t0</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>t0shift</name></member>
@@ -499,10 +524,12 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
       <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a6a4b2b0864ba62341790fc16d6aa222c" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>TimeSeriesWGaps</name></member>
       <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1af337b3275f34adc06dcb1cead3fece20" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>TimeSeriesWGaps</name></member>
       <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a2499cb34652f342028785384117d2ecb" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>TimeSeriesWGaps</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a6a5883ee439c559e493a9bb00d7e1fe4" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>TimeSeriesWGaps</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ac0f23a3d725302665f4ff0c576b39237" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>timetype</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1a5ae88f269425dccb3013c490e6c72295" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>translate_origin</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>tref</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1ad5cd3bfc81c7fccd83bbb30ef1c2774c" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>type</name></member>
-      <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1bc9a6c4ae0b21b8acabd0c3ee240761" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>zero_gaps</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1bc9a6c4ae0b21b8acabd0c3ee240761" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>zero_gaps</name></member>
       <member refid="classmspass_1_1utility_1_1_basic_metadata_1a1d7a9ab1e25e01694cc733ad2b98c6b7" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>~BasicMetadata</name></member>
       <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a54309603aef4519ce67980b3cf58aef2" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>~BasicProcessingHistory</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a2839e2405b168e0f1ad4d236f31eac8e" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>~BasicTimeSeries</name></member>

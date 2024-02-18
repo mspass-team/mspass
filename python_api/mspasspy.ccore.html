@@ -1343,7 +1343,7 @@ is usually not necessay.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.DataGap.clear_gaps">
-<span class="sig-name descname"><span class="pre">clear_gaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">mspasspy.ccore.seismic.DataGap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0:</span> <span class="pre">mspass::algorithms::TimeWindow</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DataGap.clear_gaps" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">clear_gaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.DataGap" title="mspasspy.ccore.seismic.DataGap"><span class="pre">mspasspy.ccore.seismic.DataGap</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DataGap.clear_gaps" title="Permalink to this definition"></a></dt>
 <dd><p>Flush the entire gaps container</p>
 </dd></dl>
 
@@ -1371,6 +1371,24 @@ is usually not necessay.</p>
 <dt class="sig sig-object py" id="mspasspy.ccore.seismic.DataGap.is_gap">
 <span class="sig-name descname"><span class="pre">is_gap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.DataGap" title="mspasspy.ccore.seismic.DataGap"><span class="pre">mspasspy.ccore.seismic.DataGap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DataGap.is_gap" title="Permalink to this definition"></a></dt>
 <dd><p>Return true if arg0 time is inside a data gap</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.DataGap.number_gaps">
+<span class="sig-name descname"><span class="pre">number_gaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.DataGap" title="mspasspy.ccore.seismic.DataGap"><span class="pre">mspasspy.ccore.seismic.DataGap</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DataGap.number_gaps" title="Permalink to this definition"></a></dt>
+<dd><p>Return number of defined gaps</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.DataGap.subset">
+<span class="sig-name descname"><span class="pre">subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">mspasspy.ccore.seismic.DataGap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0:</span> <span class="pre">mspass::algorithms::TimeWindow</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.seismic.DataGap" title="mspasspy.ccore.seismic.DataGap"><span class="pre">mspasspy.ccore.seismic.DataGap</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DataGap.subset" title="Permalink to this definition"></a></dt>
+<dd><p>Return a subset of content spanning input range</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.seismic.DataGap.translate_origin">
+<span class="sig-name descname"><span class="pre">translate_origin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.DataGap" title="mspasspy.ccore.seismic.DataGap"><span class="pre">mspasspy.ccore.seismic.DataGap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.seismic.DataGap.translate_origin" title="Permalink to this definition"></a></dt>
+<dd><p>Shift time origin by a specified value</p>
 </dd></dl>
 
 </dd></dl>
