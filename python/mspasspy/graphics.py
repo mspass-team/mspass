@@ -1038,7 +1038,7 @@ class SeismicPlotter:
             origin_position = "lower"
         pyplot.imshow(
             work,
-            aspect='auto',
+            aspect="auto",
             cmap=self._color_map,
             origin=origin_position,
             extent=extent,
@@ -1086,7 +1086,7 @@ class SeismicPlotter:
             vmax = scale
         pyplot.imshow(
             work,
-            aspect='auto',
+            aspect="auto",
             cmap=self._color_map,
             extent=extent,
             vmin=vmin,
