@@ -548,7 +548,7 @@ class SeismicPlotter:
     to plot data in the seismic reflection convention with time on the
     y axis and oriented backward (increasing downward).
 
-    Four times of plots are supported:  wiggle trace, wiggle trace variable
+    Four types of plots are supported:  wiggle trace, wiggle trace variable
     area (i.e. filled on positive peaks), image plots, and colored wiggle
     trace variable area (wtva overlays an image display).
     Ensembles of Seismogram objects (SeismogramEnsemble object) are plotted in
@@ -571,10 +571,10 @@ class SeismicPlotter:
         has a few common optional parameters to set at construction
         time.  Note style is intentionally not a constructor
         parameter because of parameter interdependence.  The default
-        plot style is wtvaimg.  Use change_style to use a different
-        plotting style.
+        plot style is "wtva".  Use change_style to use change plot
+        style.
 
-        :param scale:  optoinal scale factor to apply to data before plotting
+        :param scale:  optional scale factor to apply to data before plotting
           (default assumes data have been scaled to amplitude of order 1)
         :param  normalize:  Default assumes the data have been scaled with
         one of the mspass amplitude scaling functions to be of order one
@@ -594,7 +594,7 @@ class SeismicPlotter:
         # as it may duplicate the call to change_style at the end, BUT
         # if the default changes these initial values do not need to be
         # changed
-        self._style = "wtvaimg"
+        self._style = "wtva"
         self._fill_color = "k"  # black in matplotlib
         self._color_map = "seismic"
         # these are options to raw codes adapted from  fatiando a terra
