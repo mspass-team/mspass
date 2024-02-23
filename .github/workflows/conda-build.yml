@@ -26,7 +26,7 @@ jobs:
     - name: Build and Publish
       uses: openalea/action-build-publish-anaconda@v0.1.4
       with:
-        conda: conda
+        conda: .
         mamba: true
         python: ${{ matrix.python-minor-version }}
         token: 'cx-8248b24a-767b-41de-ab7d-446cdc390b23'
