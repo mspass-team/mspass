@@ -1,34 +1,22 @@
-name: build_publish_anaconda
+name: publish_conda
 
-on:
-  push:
-    branches:
-      - 'build-to-wheel-for-conda'
-  pull_request:
-    branches:
-      - '**'    
-  workflow_dispatch: # allows you to trigger manually
+on: [push, pull_request]
     
 jobs:
-  build-and-publish:
-    name: ${{ matrix.os }}, Python 3.${{ matrix.python-minor-version }} for conda deployment
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      max-parallel: 6
-      matrix:
-        os: [ ubuntu-latest ] # macos-latest , windows-latest
-        python-minor-version: [8] # , 9, 10, 11, 12
-
+  publish:
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Build and Publish
-      uses: openalea/action-build-publish-anaconda@v0.1.4
-      with:
-        conda: .
-        mamba: true
-        python: ${{ matrix.python-minor-version }}
-        token: 'cx-8248b24a-767b-41de-ab7d-446cdc390b23'
-        publish: 'true'
-        label: main
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - uses: s-weigand/setup-conda@v1
+      - run: conda --version
+      - run: which python
+      - run: pwd
+      - run: ls
+      - run: conda install conda-build anaconda-client
+             conda config --set anaconda_upload yes
+             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23
+             conda build .
