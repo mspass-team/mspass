@@ -16,5 +16,6 @@ jobs:
       - run: which python
       - run: pwd
       - run: ls
-      - run: conda install conda-build
+      - run: conda install conda-build pip
+      - run: pip install multitaper
       - run: conda build .
