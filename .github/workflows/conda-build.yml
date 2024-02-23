@@ -1,9 +1,9 @@
 name: publish_conda
 
-on: [push, pull_request]
+on: [pull_request]
     
 jobs:
-  publish:
+  conda-build-and-publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -12,10 +12,6 @@ jobs:
         with:
           python-version: 3.8
       - uses: s-weigand/setup-conda@v1
-      - run: conda --version
-      - run: which python
-      - run: pwd
-      - run: ls
       - run: conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
