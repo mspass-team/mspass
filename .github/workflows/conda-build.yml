@@ -16,4 +16,5 @@ jobs:
       - run: which python
       - run: pwd
       - run: ls
+      - run: conda install conda-build
       - run: conda build .
