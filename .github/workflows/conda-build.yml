@@ -16,7 +16,7 @@ jobs:
       - run: which python
       - run: pwd
       - run: ls
-      - run: conda install conda-build anaconda-client
-             conda config --set anaconda_upload yes
-             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23
+      - run: conda install conda-build anaconda-client &&
+             conda config --set anaconda_upload yes &&
+             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
              conda build .
