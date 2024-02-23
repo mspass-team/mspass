@@ -37,13 +37,6 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade --upgrade-strategy eager pytest pytest-cov 
         if [ -f requirements.txt ]; then pip install --upgrade --upgrade-strategy eager -r requirements.txt; fi
-
-    - uses: actions/checkout@v1
-    - name: publish-to-conda
-      uses: maxibor/conda-package-publish-action@v1.1
-      with:
-        subDir: '.'
-        AnacondaToken: 'cx-8248b24a-767b-41de-ab7d-446cdc390b23'
         
     - name: Install Apache Spark
       run: |
