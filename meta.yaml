@@ -3,26 +3,51 @@ package:
   version: 1.0.0
 
 source:
-  path: /home/runner/work/mspass/mspass/dist
-
-build:
-  number: 0
-  script: python -m pip install mspasspy-1.0.0-cp38-cp38-linux_x86_64.whl --no-deps --ignore-installed -vv
+  path: .
 
 requirements:
   build:
-    - python 3.8
+    - python >=3.8,<3.9
     - pip
+    - setuptools
     - numpy 
-
-  run:
-    - python 3.8
+    - ipympl
     - pyyaml
     - pymongo
     - numpy
     - dill
     - click
-    - dask[complete]
+    - dask
+    - distributed
+    - cloudpickle
+    - schema
+    - decorator
+    - boto3
+    - botocore
+    - moto
+    - requests 
+    - setuptools
+    - xarray
+    - zarr
+    - pandas==1.5.3
+    - numba
+
+
+  host:
+    - python >=3.8,<3.9
+    - pip
+    - ipympl
+
+  run:
+    - python >=3.8,<3.9
+    - pyyaml
+    - pymongo
+    - numpy
+    - dill
+    - click
+    - dask
+    - distributed
+    - cloudpickle
     - schema
     - decorator
     - boto3
@@ -35,6 +60,7 @@ requirements:
     - pandas==1.5.3
     - numba
     - ipympl
+
 
 about:
   home: https://github.com/mspass-team/mspass
