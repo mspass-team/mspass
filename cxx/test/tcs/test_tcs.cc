@@ -351,7 +351,7 @@ int main(int argc, char **argv)
   vt3[0]=0.0; vt3[1]=0.0;  vt3[2]=1.0;
   assert(is_close(s3.u,3,vt3));
 	cout << "Testing multiple, accumulated transformations" << endl;
-	s3.rotate(M_PI_4);
+	s3.rotate(-M_PI_4);
 	s3.transform(a);
         cout << "Accumulated transformation matrix from double transformation"
             <<endl;
