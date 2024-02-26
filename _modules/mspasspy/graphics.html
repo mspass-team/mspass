@@ -661,7 +661,7 @@
 <span class="sd">    to plot data in the seismic reflection convention with time on the</span>
 <span class="sd">    y axis and oriented backward (increasing downward).</span>
 
-<span class="sd">    Four times of plots are supported:  wiggle trace, wiggle trace variable</span>
+<span class="sd">    Four types of plots are supported:  wiggle trace, wiggle trace variable</span>
 <span class="sd">    area (i.e. filled on positive peaks), image plots, and colored wiggle</span>
 <span class="sd">    trace variable area (wtva overlays an image display).</span>
 <span class="sd">    Ensembles of Seismogram objects (SeismogramEnsemble object) are plotted in</span>
@@ -684,10 +684,10 @@
 <span class="sd">        has a few common optional parameters to set at construction</span>
 <span class="sd">        time.  Note style is intentionally not a constructor</span>
 <span class="sd">        parameter because of parameter interdependence.  The default</span>
-<span class="sd">        plot style is wtvaimg.  Use change_style to use a different</span>
-<span class="sd">        plotting style.</span>
+<span class="sd">        plot style is &quot;wtva&quot;.  Use change_style to use change plot</span>
+<span class="sd">        style.</span>
 
-<span class="sd">        :param scale:  optoinal scale factor to apply to data before plotting</span>
+<span class="sd">        :param scale:  optional scale factor to apply to data before plotting</span>
 <span class="sd">          (default assumes data have been scaled to amplitude of order 1)</span>
 <span class="sd">        :param  normalize:  Default assumes the data have been scaled with</span>
 <span class="sd">        one of the mspass amplitude scaling functions to be of order one</span>
@@ -707,7 +707,7 @@
         <span class="c1"># as it may duplicate the call to change_style at the end, BUT</span>
         <span class="c1"># if the default changes these initial values do not need to be</span>
         <span class="c1"># changed</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="s2">&quot;wtvaimg&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="s2">&quot;wtva&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span> <span class="o">=</span> <span class="s2">&quot;k&quot;</span>  <span class="c1"># black in matplotlib</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span> <span class="o">=</span> <span class="s2">&quot;seismic&quot;</span>
         <span class="c1"># these are options to raw codes adapted from  fatiando a terra</span>
@@ -1151,7 +1151,7 @@
             <span class="n">origin_position</span> <span class="o">=</span> <span class="s2">&quot;lower&quot;</span>
         <span class="n">pyplot</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
             <span class="n">work</span><span class="p">,</span>
-            <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span>
+            <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
             <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="p">,</span>
             <span class="n">origin</span><span class="o">=</span><span class="n">origin_position</span><span class="p">,</span>
             <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
@@ -1199,7 +1199,7 @@
             <span class="n">vmax</span> <span class="o">=</span> <span class="n">scale</span>
         <span class="n">pyplot</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
             <span class="n">work</span><span class="p">,</span>
-            <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span>
+            <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
             <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="p">,</span>
             <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
             <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span>
