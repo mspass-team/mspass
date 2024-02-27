@@ -775,7 +775,7 @@ def test_Seismogram():
     assert all(np.isclose(seis_copy.data[:, 3], [0, 0, 1]))
     seis.rotate_to_standard()
 
-    seis.rotate(np.pi / 4)
+    seis.rotate(-np.pi / 4)
     seis.transform(a)
     assert (
         np.isclose(
