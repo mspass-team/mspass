@@ -99,6 +99,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.rotate_to_standard"><code class="docutils literal notranslate"><span class="pre">rotate_to_standard()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.rtoa"><code class="docutils literal notranslate"><span class="pre">rtoa()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.transform"><code class="docutils literal notranslate"><span class="pre">transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.transform_to_LQT"><code class="docutils literal notranslate"><span class="pre">transform_to_LQT()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.transform_to_RTZ"><code class="docutils literal notranslate"><span class="pre">transform_to_RTZ()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.basic.vector_taper"><code class="docutils literal notranslate"><span class="pre">vector_taper()</span></code></a></li>
 </ul>
 </li>
@@ -592,21 +594,95 @@ define the key used to set that field in the data that is returned.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.basic.free_surface_transformation">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">free_surface_transformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uvec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vp0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/basic.html#free_surface_transformation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.basic.free_surface_transformation" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">free_surface_transformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uvec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vp0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ux_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uy_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vp0_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'vp0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs0_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'vs0'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/basic.html#free_surface_transformation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.basic.free_surface_transformation" title="Permalink to this definition"></a></dt>
 <dd><p>Computes and applies the Kennett [1991] free surface transformation matrix.</p>
 <p>Kennett [1991] gives the form for a free surface transformation operator
-that reduces to a nonorthogonal transformation matrix when the wavefield is
-not evanescent.  On output x1 will be transverse, x2 will be SV (radial),
-and x3 will be longitudinal.</p>
+that defines a transformation matrix that provides optimal separation
+of P, SV, and SH for a receiver at the free surface of an isotropic medium
+with constant P and S velocity.   The transformation is only valid if the
+incident wavefield is not evanescent (i.e. at or past the SV critical angle).
+It is important to realize the tranformation matrix does not define
+an orthogonal transformation.  It is also, of course, only an approximation
+since it is strictly correct only for a constant velocity medium.
+The tranformation operator requires: (1) a slowness vector, (2) an
+estimate of surface P wave velocity, and (3) an estimate of surface
+shear wave velocity.   In all cases the input for the slowness
+vector uses a local cartesian system with the vector specified as
+component ux and uy.  ux is the component of the slowness of
+an incident wavefield in the geographic x direction, which means
+positive at local east.  uy is the complementary component for the
+y direction defined by local north.  The components of the slowness
+vector are assumed to be in units of s/km.   (Warning:  obspy’s and
+other implementations of the commonly used tau-p calculator return
+slowness (ray parameter) in spherical units of s/radian - r sin(theta)/v)</p>
+<p>The required parameters (slowness vector and velocities) can be
+passed to the function one of two ways.   Because it is much simpler
+to implement in a map operator the default expect those parameters to
+be set in the data object’s Metadata container.  The default keys for
+fetching each attribute are defined by the four arguments
+“ux_key”, “uy_key”, “vp0_key”, and “vs0_key”.   All four have
+standard defaults defined in the function signature and below.
+The Metadata fetching algorithm can be overridden by defining
+the same data through the three optional arguments with the key
+names “uvec”, “vp0”, and “vs0”.   (see below for detailed descriptions)</p>
+<p>The switching between Metadata fetching and a constant arguments
+is not all or none.   If a slowness vector is defined through uvec
+it will always override metadata.  Handing of vp0 and vs0 is independent.
+i.e. you can define uvec and not define vp0 and vs0 or conversely
+you can (more commonly) define vp0 and vs0 but not define uvec.
+In all cases not defining an arg is a signal to fetch it from
+Metadata.</p>
+<p>When this function is applied to ensembles and the Metadata fetch
+approach is used (default) the function assumes all ensemble members
+have the required metadata keys defined.  Any that do not are killed.
+The same happens for atomic data passed to this function if any of
+the required keys are missing.  In fact, you should realize the
+ensemble algorithm simply applies this function in a recursion over all
+the members.</p>
+<p>The output components are in the order defined in Kennett’s original
+paper.  The order is 0=SH, 1=SV, 2=L.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – data object to be transformed.  For ensembles the transformation</p>
+</dd>
+</dl>
+<p>is applied to all members.  Note the Metadata fetch mechanism is the only
+recommended way to handle ensembles.  An elog message will be posted
+to the ensemble’s elog container if you try to use a constant slowness
+vector passed via uvec. It will not warn about constant vp0 and vs0
+as that case is common.
+:type data: <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> or
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code></a>
+:param ux_key:  key to use to fetch EW component of slowness vector
+from Metadata container.  Default is “ux”.
+:type ux_key:  string
+:param uy_key:  key to use to fetch NS component of slowness vector
+from Metadata container.  Default is “uy”.
+:type uy_key:  string
+:param vp0_key:  key to use to fetch free surface P wave velocity
+from Metadata container.  Default is “vp0”.
+:type vp0_key:  string
+:param vs0_key: key to use to fetch free surface S wave velocity
+from Metadata container.  Default is “vs0”.
+:type vs0_key:  string
+:param uvec: slowness vector of the incident wavefield defined via
+custom C++ class <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SlownessVector" title="mspasspy.ccore.seismic.SlownessVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">SlownessVector</span></code></a>.
+Default is None which is taken as a signal to fetch the slowness vector
+components from Metadata using ux_key and uy_key.
+:type uvec: <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SlownessVector" title="mspasspy.ccore.seismic.SlownessVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">SlownessVector</span></code></a>
+:param vp0: Surface P wave velocity.  Default is None which is taken
+as a signal to fetch this quantity from Metadata using the vp0_key.
+:type vp0: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param vs0: Surface S wave velocity.  Default is None which is taken
+as a signal to fetch this quantity from Metadata using the vs0_key.
+:type vs0: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param object_history: True to preserve the processing history. For details, refer to</p>
+<blockquote>
+<div><p><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be transformed.</p></li>
-<li><p><strong>uvec</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SlownessVector" title="mspasspy.ccore.seismic.SlownessVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">SlownessVector</span></code></a>) – slowness vector of the incident wavefield</p></li>
-<li><p><strong>vp0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Surface P wave velocity</p></li>
-<li><p><strong>vs0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Surface S wave velocity.</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.6.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -690,6 +766,9 @@ For efficiency it checks the components_are_cardinal variable and does nothing i
 it is set true.  Otherwise, it applies the inverse transformation and then sets this variable true.
 Note even if the current transformation matrix is not orthogonal it will be put back into
 cardinal coordinates.</p>
+<p>If inversion of the transformation matrix is not possible (e.g. two components are colinear)
+an error thrown by the C++ function is caught, posted to elog, and the
+datum return will be marked dead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -765,6 +844,146 @@ define the key used to set that field in the data that is returned.</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.basic.transform_to_LQT">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">transform_to_LQT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seaz_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seaz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ema_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ema'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'degrees'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/basic.html#transform_to_LQT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.basic.transform_to_LQT" title="Permalink to this definition"></a></dt>
+<dd><p>Applies coordinate transform to LQT version of ray coordinates.</p>
+<p>LQT is an orthogonal coordinate transformation for Seismogram
+objects that cause the output data to have x1-Longitudinal (positive up
+normally set to the predicted emergence angle of P particle motion),
+x2 - Q a rotated radial direction (in propagation direction but tilted by theta).
+and x3 - transverse (T) in direction to define a right handed coordinate
+system.  The function produces this transformation
+by the product f three transformation:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Uses rotate_to_standard to assure we start from cardinal directions.</p></li>
+<li><p>Transformation to what might be called TQL using the Seismogram
+C++ method rotate using a SphericalCoordinate definition.</p></li>
+<li><p>Transformation to LQT to rearrange the order of the Seismogram
+data matrix (also requires a sign change on T to keep the output
+right handed)</p></li>
+</ol>
+</div></blockquote>
+<p>The form of the transformation can be specified in one of two
+completely different ways.   By default the function attempts to
+extract the back azimuth from station to event with using the
+metadata key defined by ‘seaz_key’ (default ‘seaz’) and the P
+emergence angle with the metadata key defined by the ‘ema_key’
+argument (default ‘ema’).   If the arguments ‘phi’ and ‘theta’ are
+defined they are assumed angles to be used to defined the
+transformation and no attempt will be made to fetch the value from
+Metaata (Rarely a good idea with ensemble but can be useful for atomic data.
+Using Metadata is strongly preferred because it also preserves what
+the angles used where.  They are not if the argument approach is used.)
+Metadata values are required to be in degree units.  If the argument
+approach is used radian values can to used if you also set
+the argument “angle_units” to “radians”.</p>
+<p>Note the operation handles the singular case of theta==0.0 where it
+simply uses the phi value and rotates the coordinates in a variant of
+RTZ (variant because order is different).
+:param seaz_key:  key to use to fetch back azimuth value (assumed degrees always)
+:type key:  string (default “seaz”)
+:param ema_key:  key to use to fetch emergence angle defining L direction
+relative to local vertical.
+:type ema_key:  string (defautl “ema”)
+:param phi:   angle to rotate around vertical to define the transformation
+(positive anticlockwise convention NOT azimuth convention)  Default is None
+which means ignore this parameter and use key.  Setting this value to
+something other than None causes the Metadata fetch method to be overridden.
+WARNING:  this is not backazimuth but angle relative to E direction.
+Note that is not at all what is expected when using a Metadata key
+:type phi:  float
+:param theta:   angle relative to local vertical for defining the L
+coordinate direction.  It is the same as theta in spherical coordinates
+with emergence angle pointing upward.  Default is None which causes the
+algorithm to automatically assume the Metadata key method should be used.
+:type theta:  float
+:param angle_units:  should be either ‘degrees’ (default) or ‘radians’.
+An invalid value will be treated as an attempt to switch to radians
+but will generate an elog warning message.  This argument is ignored unless
+phi is not null (None type)
+:type angle_units: string
+:param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+:type alg_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+:type alg_id: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.6.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>
+:param dryrun: True for dry-run, which return “OK”. Used in the mspass_func_wrapper.
+:param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+:param function_return_key:  Some functions one might want to wrap with this decorator</p>
+<blockquote>
+<div><p>return something that is appropriate to save as Metadata.  If so, use this argument to
+define the key used to set that field in the data that is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">return<span class="colon">:</span></dt>
+<dd class="field-odd"><p>transformed version of input.  For ensembles the entire ensemble</p>
+</dd>
+</dl>
+<p>is transformed.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.basic.transform_to_RTZ">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.basic.</span></span><span class="sig-name descname"><span class="pre">transform_to_RTZ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seaz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'degrees'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_is_backazimuth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/basic.html#transform_to_RTZ"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.basic.transform_to_RTZ" title="Permalink to this definition"></a></dt>
+<dd><p>Applies coordinate transform to RTZ version of ray coordinates.</p>
+<p>RTZ is the simplest transformation for three component data to
+what is commonly called ray coordinates.  R-radial (SV), T-transverse
+(SH). and Z=vertical (bad measure of longitudinal).  The function
+first forces the data to cardinal direction using rotate_to_standard
+and then rotates the coordinates around the vertical axis.   The
+rotation can be defined in one of two ways.  The default behavior
+is to attempt to extract the back azimuth from the station to the
+source with the key defined by the “key” argument (defaults to ‘seaz’).
+That behavior will be overriden if the “phi” kwarg value is set.
+Phi is assumed to be the angle to rotate the coordinates using the
+math convention for the phi angle with positive anticlockwise.
+The units of the value retrieved with the key argument or the value
+passed via the phi argument are by default assumed to be in degrees.
+If using the phi argument you specify the angle in radians if you
+also set the “angle_units” argument to “radians”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> or
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>.) – data object to be transformed</p></li>
+<li><p><strong>key</strong> (<em>string</em>) – key to use to fetch back azimuth value (assumed degrees always)</p></li>
+<li><p><strong>phi</strong> – angle to rotate around vertical to define the transformation</p></li>
+</ul>
+</dd>
+</dl>
+<p>(positive anticlockwise convention NOT azimuth convention)  Default is None
+which means ignore this parameter and use key.  Setting this value to
+something other than None causes the key method to be overridden.
+:type phi:  float
+:param angle_units:  should be either ‘degrees’ (default) or ‘radians’.
+An invalid value will be treated as an attempt to switch to radians
+but will generate an elog warning message.  This argument is ignored unless
+phi is not null (None type)
+:type angle_units: string
+:param key_is_backazimuth: boolean that when True (default) assumes the
+angle extrated with the key argument value is a backazimuth in degrees.
+If set False, the angle will be assumed to be a rotation angle in
+with the anticlockwise positive convention.
+:param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+:type alg_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+:type alg_id: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.6.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>
+:param dryrun: True for dry-run, which return “OK”. Used in the mspass_func_wrapper.
+:param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+:param function_return_key:  Some functions one might want to wrap with this decorator</p>
+<blockquote>
+<div><p>return something that is appropriate to save as Metadata.  If so, use this argument to
+define the key used to set that field in the data that is returned.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>transformed version of input.  For ensembles the entire ensemble</p>
+</dd>
+</dl>
+<p>is transformed.</p>
 </dd></dl>
 
 <dl class="py function">

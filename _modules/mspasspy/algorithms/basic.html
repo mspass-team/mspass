@@ -121,7 +121,10 @@
     <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
     <span class="n">Seismogram</span><span class="p">,</span>
     <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+    <span class="n">SlownessVector</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">SphericalCoordinate</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
 <div class="viewcode-block" id="ExtractComponent"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.ExtractComponent">[docs]</a><span class="nd">@mspass_func_wrapper</span>
@@ -339,6 +342,10 @@
 <span class="sd">    Note even if the current transformation matrix is not orthogonal it will be put back into</span>
 <span class="sd">    cardinal coordinates.</span>
 
+<span class="sd">    If inversion of the transformation matrix is not possible (e.g. two components are colinear)</span>
+<span class="sd">    an error thrown by the C++ function is caught, posted to elog, and the</span>
+<span class="sd">    datum return will be marked dead.</span>
+
 <span class="sd">    :param data: data object to be rotated.</span>
 <span class="sd">    :type data: :class:`~mspasspy.ccore.seismic.Seismogram`</span>
 <span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
@@ -356,15 +363,23 @@
 <span class="sd">        transformation matrix is required and that matrix is singular.  This can happen if the</span>
 <span class="sd">        transformation matrix is incorrectly defined or the actual data are coplanar.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">rotate_to_standard</span><span class="p">()</span></div>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">rotate_to_standard</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">merr</span><span class="p">:</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">merr</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="free_surface_transformation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.free_surface_transformation">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span> <span class="nf">free_surface_transformation</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
-    <span class="n">uvec</span><span class="p">,</span>
-    <span class="n">vp0</span><span class="p">,</span>
-    <span class="n">vs0</span><span class="p">,</span>
+    <span class="n">uvec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">vp0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">vs0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ux_key</span><span class="o">=</span><span class="s2">&quot;ux&quot;</span><span class="p">,</span>
+    <span class="n">uy_key</span><span class="o">=</span><span class="s2">&quot;uy&quot;</span><span class="p">,</span>
+    <span class="n">vp0_key</span><span class="o">=</span><span class="s2">&quot;vp0&quot;</span><span class="p">,</span>
+    <span class="n">vs0_key</span><span class="o">=</span><span class="s2">&quot;vs0&quot;</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -378,17 +393,85 @@
 <span class="sd">    Computes and applies the Kennett [1991] free surface transformation matrix.</span>
 
 <span class="sd">    Kennett [1991] gives the form for a free surface transformation operator</span>
-<span class="sd">    that reduces to a nonorthogonal transformation matrix when the wavefield is</span>
-<span class="sd">    not evanescent.  On output x1 will be transverse, x2 will be SV (radial),</span>
-<span class="sd">    and x3 will be longitudinal.</span>
+<span class="sd">    that defines a transformation matrix that provides optimal separation</span>
+<span class="sd">    of P, SV, and SH for a receiver at the free surface of an isotropic medium</span>
+<span class="sd">    with constant P and S velocity.   The transformation is only valid if the</span>
+<span class="sd">    incident wavefield is not evanescent (i.e. at or past the SV critical angle).</span>
+<span class="sd">    It is important to realize the tranformation matrix does not define</span>
+<span class="sd">    an orthogonal transformation.  It is also, of course, only an approximation</span>
+<span class="sd">    since it is strictly correct only for a constant velocity medium.</span>
+<span class="sd">    The tranformation operator requires: (1) a slowness vector, (2) an</span>
+<span class="sd">    estimate of surface P wave velocity, and (3) an estimate of surface</span>
+<span class="sd">    shear wave velocity.   In all cases the input for the slowness</span>
+<span class="sd">    vector uses a local cartesian system with the vector specified as</span>
+<span class="sd">    component ux and uy.  ux is the component of the slowness of</span>
+<span class="sd">    an incident wavefield in the geographic x direction, which means</span>
+<span class="sd">    positive at local east.  uy is the complementary component for the</span>
+<span class="sd">    y direction defined by local north.  The components of the slowness</span>
+<span class="sd">    vector are assumed to be in units of s/km.   (Warning:  obspy&#39;s and</span>
+<span class="sd">    other implementations of the commonly used tau-p calculator return</span>
+<span class="sd">    slowness (ray parameter) in spherical units of s/radian - r sin(theta)/v)</span>
 
-<span class="sd">    :param data: data object to be transformed.</span>
-<span class="sd">    :type data: :class:`~mspasspy.ccore.seismic.Seismogram`</span>
-<span class="sd">    :param uvec: slowness vector of the incident wavefield</span>
+<span class="sd">    The required parameters (slowness vector and velocities) can be</span>
+<span class="sd">    passed to the function one of two ways.   Because it is much simpler</span>
+<span class="sd">    to implement in a map operator the default expect those parameters to</span>
+<span class="sd">    be set in the data object&#39;s Metadata container.  The default keys for</span>
+<span class="sd">    fetching each attribute are defined by the four arguments</span>
+<span class="sd">    &quot;ux_key&quot;, &quot;uy_key&quot;, &quot;vp0_key&quot;, and &quot;vs0_key&quot;.   All four have</span>
+<span class="sd">    standard defaults defined in the function signature and below.</span>
+<span class="sd">    The Metadata fetching algorithm can be overridden by defining</span>
+<span class="sd">    the same data through the three optional arguments with the key</span>
+<span class="sd">    names &quot;uvec&quot;, &quot;vp0&quot;, and &quot;vs0&quot;.   (see below for detailed descriptions)</span>
+
+<span class="sd">    The switching between Metadata fetching and a constant arguments</span>
+<span class="sd">    is not all or none.   If a slowness vector is defined through uvec</span>
+<span class="sd">    it will always override metadata.  Handing of vp0 and vs0 is independent.</span>
+<span class="sd">    i.e. you can define uvec and not define vp0 and vs0 or conversely</span>
+<span class="sd">    you can (more commonly) define vp0 and vs0 but not define uvec.</span>
+<span class="sd">    In all cases not defining an arg is a signal to fetch it from</span>
+<span class="sd">    Metadata.</span>
+
+<span class="sd">    When this function is applied to ensembles and the Metadata fetch</span>
+<span class="sd">    approach is used (default) the function assumes all ensemble members</span>
+<span class="sd">    have the required metadata keys defined.  Any that do not are killed.</span>
+<span class="sd">    The same happens for atomic data passed to this function if any of</span>
+<span class="sd">    the required keys are missing.  In fact, you should realize the</span>
+<span class="sd">    ensemble algorithm simply applies this function in a recursion over all</span>
+<span class="sd">    the members.</span>
+
+<span class="sd">    The output components are in the order defined in Kennett&#39;s original</span>
+<span class="sd">    paper.  The order is 0=SH, 1=SV, 2=L.</span>
+
+<span class="sd">    :param data: data object to be transformed.  For ensembles the transformation</span>
+<span class="sd">    is applied to all members.  Note the Metadata fetch mechanism is the only</span>
+<span class="sd">    recommended way to handle ensembles.  An elog message will be posted</span>
+<span class="sd">    to the ensemble&#39;s elog container if you try to use a constant slowness</span>
+<span class="sd">    vector passed via uvec. It will not warn about constant vp0 and vs0</span>
+<span class="sd">    as that case is common.</span>
+<span class="sd">    :type data: :class:`~mspasspy.ccore.seismic.Seismogram` or</span>
+<span class="sd">    :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`</span>
+<span class="sd">    :param ux_key:  key to use to fetch EW component of slowness vector</span>
+<span class="sd">    from Metadata container.  Default is &quot;ux&quot;.</span>
+<span class="sd">    :type ux_key:  string</span>
+<span class="sd">    :param uy_key:  key to use to fetch NS component of slowness vector</span>
+<span class="sd">    from Metadata container.  Default is &quot;uy&quot;.</span>
+<span class="sd">    :type uy_key:  string</span>
+<span class="sd">    :param vp0_key:  key to use to fetch free surface P wave velocity</span>
+<span class="sd">    from Metadata container.  Default is &quot;vp0&quot;.</span>
+<span class="sd">    :type vp0_key:  string</span>
+<span class="sd">    :param vs0_key: key to use to fetch free surface S wave velocity</span>
+<span class="sd">    from Metadata container.  Default is &quot;vs0&quot;.</span>
+<span class="sd">    :type vs0_key:  string</span>
+<span class="sd">    :param uvec: slowness vector of the incident wavefield defined via</span>
+<span class="sd">    custom C++ class :class:`~mspasspy.ccore.seismic.SlownessVector`.</span>
+<span class="sd">    Default is None which is taken as a signal to fetch the slowness vector</span>
+<span class="sd">    components from Metadata using ux_key and uy_key.</span>
 <span class="sd">    :type uvec: :class:`~mspasspy.ccore.seismic.SlownessVector`</span>
-<span class="sd">    :param vp0: Surface P wave velocity</span>
+<span class="sd">    :param vp0: Surface P wave velocity.  Default is None which is taken</span>
+<span class="sd">    as a signal to fetch this quantity from Metadata using the vp0_key.</span>
 <span class="sd">    :type vp0: :class:`float`</span>
-<span class="sd">    :param vs0: Surface S wave velocity.</span>
+<span class="sd">    :param vs0: Surface S wave velocity.  Default is None which is taken</span>
+<span class="sd">    as a signal to fetch this quantity from Metadata using the vs0_key.</span>
 <span class="sd">    :type vs0: :class:`float`</span>
 <span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
 <span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
@@ -402,7 +485,89 @@
 <span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
 <span class="sd">     define the key used to set that field in the data that is returned.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">free_surface_transformation</span><span class="p">(</span><span class="n">uvec</span><span class="p">,</span> <span class="n">vp0</span><span class="p">,</span> <span class="n">vs0</span><span class="p">)</span></div>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">uvec</span><span class="p">:</span>
+            <span class="n">slowness_vector</span> <span class="o">=</span> <span class="n">uvec</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">ux_key</span><span class="p">)</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">uy_key</span><span class="p">):</span>
+                <span class="n">ux</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">ux_key</span><span class="p">]</span>
+                <span class="n">uy</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">uy_key</span><span class="p">]</span>
+                <span class="n">slowness_vector</span> <span class="o">=</span> <span class="n">SlownessVector</span><span class="p">(</span><span class="n">ux</span><span class="p">,</span> <span class="n">uy</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;required Metadata with keys =&quot;</span> <span class="o">+</span> <span class="n">ux_key</span> <span class="o">+</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span> <span class="n">uy_key</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; are not defined - datum killed&quot;</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="s2">&quot;free_surface_transformation&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+                <span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">vp0</span><span class="p">:</span>
+            <span class="n">P_fs</span> <span class="o">=</span> <span class="n">vp0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">vp0_key</span><span class="p">):</span>
+                <span class="n">P_fs</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">vp0_key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;required Metadata attribute &quot;</span>
+                    <span class="o">+</span> <span class="n">vp0_key</span>
+                    <span class="o">+</span> <span class="s2">&quot; is not defined - datum killed&quot;</span>
+                <span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="s2">&quot;free_surface_transformation&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+                <span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">vs0</span><span class="p">:</span>
+            <span class="n">S_fs</span> <span class="o">=</span> <span class="n">vs0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">vs0_key</span><span class="p">):</span>
+                <span class="n">S_fs</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">vs0_key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;required Metadata attribute &quot;</span>
+                    <span class="o">+</span> <span class="n">vs0_key</span>
+                    <span class="o">+</span> <span class="s2">&quot; is not defined - datum killed&quot;</span>
+                <span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="s2">&quot;free_surface_transformation&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+                <span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">free_surface_transformation</span><span class="p">(</span><span class="n">slowness_vector</span><span class="p">,</span> <span class="n">P_fs</span><span class="p">,</span> <span class="n">S_fs</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">uvec</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Using a constant slowness vector and surface velocities for all ensemble members</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;That is ill advised unless this is an event gather for a small aperture array&quot;</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="s2">&quot;free_surface_transformation&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+            <span class="c1"># this is a recursion so be aware</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">free_surface_transformation</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="n">ux_key</span><span class="o">=</span><span class="n">ux_key</span><span class="p">,</span>
+                <span class="n">uy_key</span><span class="o">=</span><span class="n">uy_key</span><span class="p">,</span>
+                <span class="n">vp0_key</span><span class="o">=</span><span class="n">vp0_key</span><span class="p">,</span>
+                <span class="n">vs0_key</span><span class="o">=</span><span class="n">vs0_key</span><span class="p">,</span>
+                <span class="n">uvec</span><span class="o">=</span><span class="n">uvec</span><span class="p">,</span>
+                <span class="n">vp0</span><span class="o">=</span><span class="n">vp0</span><span class="p">,</span>
+                <span class="n">vs0</span><span class="o">=</span><span class="n">vs0</span><span class="p">,</span>
+                <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
+                <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
+                <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
+                <span class="n">dryrun</span><span class="o">=</span><span class="n">dryrun</span><span class="p">,</span>
+                <span class="n">inplace_return</span><span class="o">=</span><span class="n">inplace_return</span><span class="p">,</span>
+                <span class="n">function_return_key</span><span class="o">=</span><span class="n">function_return_key</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;free_surface_transform received invalid type for arg0 of </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be either a Seismogram or SeismogramEnsemble&quot;</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span></div>
 
 
 <div class="viewcode-block" id="transform"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.transform">[docs]</a><span class="nd">@mspass_func_wrapper</span>
@@ -442,6 +607,303 @@
 <span class="sd">     define the key used to set that field in the data that is returned.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="transform_to_RTZ"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.transform_to_RTZ">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">transform_to_RTZ</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">key</span><span class="o">=</span><span class="s2">&quot;seaz&quot;</span><span class="p">,</span>
+    <span class="n">phi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">angle_units</span><span class="o">=</span><span class="s2">&quot;degrees&quot;</span><span class="p">,</span>
+    <span class="n">key_is_backazimuth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies coordinate transform to RTZ version of ray coordinates.</span>
+
+<span class="sd">    RTZ is the simplest transformation for three component data to</span>
+<span class="sd">    what is commonly called ray coordinates.  R-radial (SV), T-transverse</span>
+<span class="sd">    (SH). and Z=vertical (bad measure of longitudinal).  The function</span>
+<span class="sd">    first forces the data to cardinal direction using rotate_to_standard</span>
+<span class="sd">    and then rotates the coordinates around the vertical axis.   The</span>
+<span class="sd">    rotation can be defined in one of two ways.  The default behavior</span>
+<span class="sd">    is to attempt to extract the back azimuth from the station to the</span>
+<span class="sd">    source with the key defined by the &quot;key&quot; argument (defaults to &#39;seaz&#39;).</span>
+<span class="sd">    That behavior will be overriden if the &quot;phi&quot; kwarg value is set.</span>
+<span class="sd">    Phi is assumed to be the angle to rotate the coordinates using the</span>
+<span class="sd">    math convention for the phi angle with positive anticlockwise.</span>
+<span class="sd">    The units of the value retrieved with the key argument or the value</span>
+<span class="sd">    passed via the phi argument are by default assumed to be in degrees.</span>
+<span class="sd">    If using the phi argument you specify the angle in radians if you</span>
+<span class="sd">    also set the &quot;angle_units&quot; argument to &quot;radians&quot;.</span>
+
+<span class="sd">    :param data:   data object to be transformed</span>
+<span class="sd">    :type data:  :class:`~mspasspy.ccore.seismic.Seismogram` or</span>
+<span class="sd">     :class:`~mspass.ccore.seismic.SeismogramEnsemble`.</span>
+<span class="sd">    :param key:  key to use to fetch back azimuth value (assumed degrees always)</span>
+<span class="sd">    :type key:  string</span>
+<span class="sd">    :param phi:   angle to rotate around vertical to define the transformation</span>
+<span class="sd">    (positive anticlockwise convention NOT azimuth convention)  Default is None</span>
+<span class="sd">    which means ignore this parameter and use key.  Setting this value to</span>
+<span class="sd">    something other than None causes the key method to be overridden.</span>
+<span class="sd">    :type phi:  float</span>
+<span class="sd">    :param angle_units:  should be either &#39;degrees&#39; (default) or &#39;radians&#39;.</span>
+<span class="sd">    An invalid value will be treated as an attempt to switch to radians</span>
+<span class="sd">    but will generate an elog warning message.  This argument is ignored unless</span>
+<span class="sd">    phi is not null (None type)</span>
+<span class="sd">    :type angle_units: string</span>
+<span class="sd">    :param key_is_backazimuth: boolean that when True (default) assumes the</span>
+<span class="sd">    angle extrated with the key argument value is a backazimuth in degrees.</span>
+<span class="sd">    If set False, the angle will be assumed to be a rotation angle in</span>
+<span class="sd">    with the anticlockwise positive convention.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">     define the key used to set that field in the data that is returned.</span>
+
+<span class="sd">    :return:  transformed version of input.  For ensembles the entire ensemble</span>
+<span class="sd">    is transformed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">phi</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">angle_units</span> <span class="o">==</span> <span class="s2">&quot;degrees&quot;</span><span class="p">:</span>
+            <span class="n">phi_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">angle_units</span> <span class="o">!=</span> <span class="s2">&quot;radians&quot;</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Illegal value for angle_units argument=&quot;</span> <span class="o">+</span> <span class="n">angle_units</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; assuming radians&quot;</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="s2">&quot;transform_to_RTZ&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
+                <span class="p">)</span>
+            <span class="n">phi_rad</span> <span class="o">=</span> <span class="n">phi</span>
+        <span class="n">use_metadata</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">use_metadata</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">use_metadata</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="n">phi_deg</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">key_is_backazimuth</span><span class="p">:</span>
+                    <span class="n">az</span> <span class="o">=</span> <span class="n">phi_deg</span> <span class="o">+</span> <span class="mf">180.0</span>
+                    <span class="n">phi_deg</span> <span class="o">=</span> <span class="mf">90.0</span> <span class="o">-</span> <span class="n">az</span>
+                <span class="n">phi_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">phi_deg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;required Metadata key=&quot;</span>
+                    <span class="o">+</span> <span class="n">key</span>
+                    <span class="o">+</span> <span class="s2">&quot; not defined for this datum - killed&quot;</span>
+                <span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;transform_to_RTZ&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">data</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">rotate_to_standard</span><span class="p">()</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">merr</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">merr</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+            <span class="c1"># this is a recursion so be aware</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">transform_to_RTZ</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+                <span class="n">phi</span><span class="o">=</span><span class="n">phi</span><span class="p">,</span>
+                <span class="n">angle_units</span><span class="o">=</span><span class="n">angle_units</span><span class="p">,</span>
+                <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
+                <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
+                <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
+                <span class="n">dryrun</span><span class="o">=</span><span class="n">dryrun</span><span class="p">,</span>
+                <span class="n">inplace_return</span><span class="o">=</span><span class="n">inplace_return</span><span class="p">,</span>
+                <span class="n">function_return_key</span><span class="o">=</span><span class="n">function_return_key</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;transform_to_RTZ received invalid type for arg0 of </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be either a Seismogram or SeismogramEnsemble&quot;</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="transform_to_LQT"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.transform_to_LQT">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">transform_to_LQT</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">seaz_key</span><span class="o">=</span><span class="s2">&quot;seaz&quot;</span><span class="p">,</span>
+    <span class="n">ema_key</span><span class="o">=</span><span class="s2">&quot;ema&quot;</span><span class="p">,</span>
+    <span class="n">phi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">theta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">angle_units</span><span class="o">=</span><span class="s2">&quot;degrees&quot;</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies coordinate transform to LQT version of ray coordinates.</span>
+
+<span class="sd">    LQT is an orthogonal coordinate transformation for Seismogram</span>
+<span class="sd">    objects that cause the output data to have x1-Longitudinal (positive up</span>
+<span class="sd">    normally set to the predicted emergence angle of P particle motion),</span>
+<span class="sd">    x2 - Q a rotated radial direction (in propagation direction but tilted by theta).</span>
+<span class="sd">    and x3 - transverse (T) in direction to define a right handed coordinate</span>
+<span class="sd">    system.  The function produces this transformation</span>
+<span class="sd">    by the product f three transformation:</span>
+<span class="sd">        1.  Uses rotate_to_standard to assure we start from cardinal directions.</span>
+<span class="sd">        2.  Transformation to what might be called TQL using the Seismogram</span>
+<span class="sd">            C++ method rotate using a SphericalCoordinate definition.</span>
+<span class="sd">        3.  Transformation to LQT to rearrange the order of the Seismogram</span>
+<span class="sd">            data matrix (also requires a sign change on T to keep the output</span>
+<span class="sd">            right handed)</span>
+
+<span class="sd">    The form of the transformation can be specified in one of two</span>
+<span class="sd">    completely different ways.   By default the function attempts to</span>
+<span class="sd">    extract the back azimuth from station to event with using the</span>
+<span class="sd">    metadata key defined by &#39;seaz_key&#39; (default &#39;seaz&#39;) and the P</span>
+<span class="sd">    emergence angle with the metadata key defined by the &#39;ema_key&#39;</span>
+<span class="sd">    argument (default &#39;ema&#39;).   If the arguments &#39;phi&#39; and &#39;theta&#39; are</span>
+<span class="sd">    defined they are assumed angles to be used to defined the</span>
+<span class="sd">    transformation and no attempt will be made to fetch the value from</span>
+<span class="sd">    Metaata (Rarely a good idea with ensemble but can be useful for atomic data.</span>
+<span class="sd">    Using Metadata is strongly preferred because it also preserves what</span>
+<span class="sd">    the angles used where.  They are not if the argument approach is used.)</span>
+<span class="sd">    Metadata values are required to be in degree units.  If the argument</span>
+<span class="sd">    approach is used radian values can to used if you also set</span>
+<span class="sd">    the argument &quot;angle_units&quot; to &quot;radians&quot;.</span>
+
+<span class="sd">    Note the operation handles the singular case of theta==0.0 where it</span>
+<span class="sd">    simply uses the phi value and rotates the coordinates in a variant of</span>
+<span class="sd">    RTZ (variant because order is different).</span>
+<span class="sd">    :param seaz_key:  key to use to fetch back azimuth value (assumed degrees always)</span>
+<span class="sd">    :type key:  string (default &quot;seaz&quot;)</span>
+<span class="sd">    :param ema_key:  key to use to fetch emergence angle defining L direction</span>
+<span class="sd">    relative to local vertical.</span>
+<span class="sd">    :type ema_key:  string (defautl &quot;ema&quot;)</span>
+<span class="sd">    :param phi:   angle to rotate around vertical to define the transformation</span>
+<span class="sd">    (positive anticlockwise convention NOT azimuth convention)  Default is None</span>
+<span class="sd">    which means ignore this parameter and use key.  Setting this value to</span>
+<span class="sd">    something other than None causes the Metadata fetch method to be overridden.</span>
+<span class="sd">    WARNING:  this is not backazimuth but angle relative to E direction.</span>
+<span class="sd">    Note that is not at all what is expected when using a Metadata key</span>
+<span class="sd">    :type phi:  float</span>
+<span class="sd">    :param theta:   angle relative to local vertical for defining the L</span>
+<span class="sd">    coordinate direction.  It is the same as theta in spherical coordinates</span>
+<span class="sd">    with emergence angle pointing upward.  Default is None which causes the</span>
+<span class="sd">    algorithm to automatically assume the Metadata key method should be used.</span>
+<span class="sd">    :type theta:  float</span>
+<span class="sd">    :param angle_units:  should be either &#39;degrees&#39; (default) or &#39;radians&#39;.</span>
+<span class="sd">    An invalid value will be treated as an attempt to switch to radians</span>
+<span class="sd">    but will generate an elog warning message.  This argument is ignored unless</span>
+<span class="sd">    phi is not null (None type)</span>
+<span class="sd">    :type angle_units: string</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">     define the key used to set that field in the data that is returned.</span>
+
+<span class="sd">     :return:  transformed version of input.  For ensembles the entire ensemble</span>
+<span class="sd">     is transformed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">phi</span> <span class="ow">and</span> <span class="n">theta</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">angle_units</span> <span class="o">==</span> <span class="s2">&quot;degrees&quot;</span><span class="p">:</span>
+            <span class="n">phi_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+            <span class="n">theta_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">angle_units</span> <span class="o">!=</span> <span class="s2">&quot;radians&quot;</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Illegal value for angle_units argument=&quot;</span> <span class="o">+</span> <span class="n">angle_units</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; assuming radians&quot;</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="s2">&quot;transform_to_LQT&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
+                <span class="p">)</span>
+            <span class="n">phi_rad</span> <span class="o">=</span> <span class="n">phi</span>
+            <span class="n">theta_rad</span> <span class="o">=</span> <span class="n">theta</span>
+        <span class="n">use_metadata</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">use_metadata</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">use_metadata</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">seaz_key</span><span class="p">)</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">ema_key</span><span class="p">):</span>
+                <span class="n">seaz</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">seaz_key</span><span class="p">]</span>
+                <span class="c1"># need azimuth not back azimuth</span>
+                <span class="n">az</span> <span class="o">=</span> <span class="n">seaz</span> <span class="o">-</span> <span class="mf">180.0</span>
+                <span class="n">phi_deg</span> <span class="o">=</span> <span class="mf">90.0</span> <span class="o">-</span> <span class="n">az</span>
+                <span class="c1"># trig funtions work the same if angle wraps so no neeed to test</span>
+                <span class="c1"># for fixed range</span>
+                <span class="n">phi_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">phi_deg</span><span class="p">)</span>
+                <span class="n">ema_deg</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">ema_key</span><span class="p">]</span>
+                <span class="n">theta_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">ema_deg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;At least one of required metadata keys=&quot;</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="n">seaz_key</span> <span class="o">+</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span> <span class="n">ema_key</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; are not defined in this datume - killed&quot;</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;transform_to_LQT&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">data</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">rotate_to_standard</span><span class="p">()</span>
+            <span class="n">sc</span> <span class="o">=</span> <span class="n">SphericalCoordinate</span><span class="p">()</span>
+            <span class="n">sc</span><span class="o">.</span><span class="n">phi</span> <span class="o">=</span> <span class="n">phi_rad</span>
+            <span class="n">sc</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">theta_rad</span>
+            <span class="n">sc</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># not strictly necessary but prudent</span>
+            <span class="c1"># rotate method is overloaded allowing this type of input</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+            <span class="c1"># The rotate method returns the data in TQL order.</span>
+            <span class="c1"># Standard convention is LQT so we reorder the data</span>
+            <span class="c1"># This could be done more efficiently with vector operators</span>
+            <span class="c1"># but we need to use the transform method to assure the</span>
+            <span class="c1"># internal tranformation matrix is properly updated</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+            <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="c1"># x = np.array(data.data[0,:])</span>
+            <span class="c1"># data.data[0,:] = data.data[2,:]</span>
+            <span class="c1"># change the sign of T to keep coordinates right handed == LQT</span>
+            <span class="c1"># data.data[2,:] = -x</span>
+        <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">merr</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">merr</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+            <span class="c1"># this is a recursion so be aware</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">transform_to_LQT</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="n">seaz_key</span><span class="o">=</span><span class="n">seaz_key</span><span class="p">,</span>
+                <span class="n">ema_key</span><span class="o">=</span><span class="n">ema_key</span><span class="p">,</span>
+                <span class="n">phi</span><span class="o">=</span><span class="n">phi</span><span class="p">,</span>
+                <span class="n">theta</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span>
+                <span class="n">angle_units</span><span class="o">=</span><span class="n">angle_units</span><span class="p">,</span>
+                <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
+                <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
+                <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
+                <span class="n">dryrun</span><span class="o">=</span><span class="n">dryrun</span><span class="p">,</span>
+                <span class="n">inplace_return</span><span class="o">=</span><span class="n">inplace_return</span><span class="p">,</span>
+                <span class="n">function_return_key</span><span class="o">=</span><span class="n">function_return_key</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;transform_to_LQT received invalid type for arg0 of </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be either a Seismogram or SeismogramEnsemble&quot;</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span></div>
 
 
 <div class="viewcode-block" id="linear_taper"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.linear_taper">[docs]</a><span class="nd">@mspass_func_wrapper</span>
