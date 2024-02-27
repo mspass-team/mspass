@@ -453,7 +453,7 @@ def free_surface_transformation(
             )
         )
         message += "Must be either a Seismogram or SeismogramEnsemble"
-        raise ValueError(message)
+        raise TypeError(message)
     return data
 
 
@@ -618,7 +618,7 @@ def transform_to_RTZ(
             type(data)
         )
         message += "Must be either a Seismogram or SeismogramEnsemble"
-        raise ValueError(message)
+        raise TypeError(message)
     return data
 
 
@@ -789,7 +789,7 @@ def transform_to_LQT(
             type(data)
         )
         message += "Must be either a Seismogram or SeismogramEnsemble"
-        raise ValueError(message)
+        raise TypeError(message)
     return data
 
 
