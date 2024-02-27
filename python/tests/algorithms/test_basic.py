@@ -3,6 +3,7 @@ import pytest
 import numpy as np
 
 from mspasspy.ccore.seismic import (
+    TimeSeries,
     Seismogram,
     SlownessVector,
     SeismogramEnsemble,
@@ -356,8 +357,9 @@ def test_free_surface_transform():
     assert sout.dead()
     assert sout.elog.size() == 1
     # invalid arg0 should throw an exception
-    x = "foobar"
-    with pytest.raises(ValueError, match="received invalid type"):
+    x = TimeSeries()
+    x.set_live()
+    with pytest.raises(TypeError, match="received invalid type"):
         sout = free_surface_transformation(x)
 
 
@@ -419,12 +421,12 @@ def test_transform_to_RTZ():
     # atomic version tests what is needed for arg method and
     # is not recommended for ensembles anyway
     nmembers = 3
-    e = SeismogramEnsemble(3)
+    e = SeismogramEnsemble(nmembers)
     az = 90.0 - phi
     seaz = az + 180.0
     seis = Seismogram(seis0)
     seis["seaz"] = seaz
-    for i in range(3):
+    for i in range(nmembers):
         e.member.append(Seismogram(seis))
     # ensemble is 3 copies of the same data this test used above
     # has seaz set
@@ -451,8 +453,9 @@ def test_transform_to_RTZ():
     assert sout.dead()
 
     # invalid data throws an exception
-    x = "foobar"
-    with pytest.raises(ValueError, match="received invalid type"):
+    x = TimeSeries()
+    x.set_live()
+    with pytest.raises(TypeError, match="received invalid type"):
         sout = transform_to_RTZ(x)
 
 
@@ -596,6 +599,7 @@ def test_transform_to_LQT():
     assert sout.dead()
 
     # invalid data throws an exception
-    x = "foobar"
-    with pytest.raises(ValueError, match="received invalid type"):
-        sout = transform_to_RTZ(x)
+    x = TimeSeries()
+    x.set_live()
+    with pytest.raises(TypeError, match="received invalid type"):
+        sout = transform_to_LQT(x)
