@@ -275,6 +275,7 @@ multicore processing on a current generation desktop.   On a desktop
 "cluster memory" and "system memory" are the same thing.  There are
 a few corollaries to that statement that are worth pointing out
 as warnings for desktop use:
+
 -  Beware running large memory apps if you are running MsPASS jobs
    on the same system.  Many common tools today are prone to extreme
    memory bloat.  It is standard practice today to keep commonly used
@@ -481,7 +482,7 @@ workflow to have :math:`K_c` be of the order of 2 or more to avoid
 spilling.  Workflows with highly variable memory requirements within
 a pipeline (e.g. anytime a smaller waveform segment is cut from
 larger ones.) may allow smaller values of :math:`K_c`, particularly if
-the initial read is the throttle on throughput. 
+the initial read is the throttle on throughput.
 
 The main way to control :math:`K_c` is to set :math:`N_{partitions}`
 when you create a bag/RDD.   In MsPASS that is normally set by
