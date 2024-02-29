@@ -1,9 +1,9 @@
 name: publish_conda
 
-on: [pull_request]
+on: [push, pull_request]
     
 jobs:
-  conda-build-and-publish:
+  py38-conda-build-and-publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -11,6 +11,58 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.8
+      - uses: s-weigand/setup-conda@v1
+      - run: conda install conda-build anaconda-client &&
+             conda config --set anaconda_upload yes &&
+             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
+             conda build .
+  py39-conda-build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - uses: s-weigand/setup-conda@v1
+      - run: conda install conda-build anaconda-client &&
+             conda config --set anaconda_upload yes &&
+             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
+             conda build .
+  py310-conda-build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - uses: s-weigand/setup-conda@v1
+      - run: conda install conda-build anaconda-client &&
+             conda config --set anaconda_upload yes &&
+             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
+             conda build .
+  py311-conda-build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - uses: s-weigand/setup-conda@v1
+      - run: conda install conda-build anaconda-client &&
+             conda config --set anaconda_upload yes &&
+             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
+             conda build .
+  py312-conda-build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
       - uses: s-weigand/setup-conda@v1
       - run: conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
