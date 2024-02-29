@@ -1,25 +1,18 @@
 name: publish_conda
 
 on: [pull_request]
+    
 jobs:
   conda-build-and-publish:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
-    name: Python ${{ matrix.python-version }} version
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup conda
-        uses: s-weigand/setup-conda@v1
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
         with:
-          update-conda: true
-          python-version: ${{ matrix.python-version }}
-          conda-channels: anaconda, conda-forge
-      - run: conda --version
-      - run: |
-          conda install -y conda-build anaconda-client &&
-          conda config --set anaconda_upload yes &&
-          export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-          conda build .
+          python-version: 3.8
+      - uses: s-weigand/setup-conda@v1
+      - run: conda install conda-build anaconda-client &&
+             conda config --set anaconda_upload yes &&
+             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
+             conda build .
