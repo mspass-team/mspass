@@ -221,6 +221,7 @@ The motivation is described in the section titled
 :ref:`Data Object Design Concepts<data_object_design_concepts>`.
 The result is that the array holding the sample data is a matrix
 instead of a vector.  Some implementation details of note are:
+
 1.  In MsPASS the matrix has 3 rows and `npts` columns.  That means the
     rows of the matrix an be extracted to create a `TimeSeries`
     subset of the data while the columns are single "vector" samples
@@ -319,4 +320,4 @@ to load the result into the object's `data` array.   The warning about
 making sure the `npts` member attribute is consistent with the result
 applies as well.   The only thing to remember with a `Seismogram` is that
 `npts` is the number of columns of the data matrix, not the total number of
-samples. 
+samples.

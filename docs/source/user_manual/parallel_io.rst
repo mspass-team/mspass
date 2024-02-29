@@ -29,6 +29,7 @@ different IO channels.
 Like everything in computing IO systems have evolved significantly with time.
 At present there are three fundamentally different IO systems MsPASS
 handles.
+
 1.  *Regular file IO*.   For decades normal reads and writes to a file system
     are defined by a couple of key abstractions.   The first is *buffering*.
     When you "open" a file in any computing language the language creates a data
@@ -177,6 +178,7 @@ to allow construction of one atomic seismic object from each document.
 Forming the initial bag/RDD of documents has different input delay issues for
 Dataframe versus Database input. It important to recognize the strengths and
 weaknesses of the alternative inputs.
+
 1. *Dataframe*.  Both dask and pyspark have parallel
    implementations for Dataframe.   For either scheduler creating the initial bag/RDD
    amounts to converter methods defined for that scheduler.  Specifically,
@@ -240,7 +242,7 @@ grouped bundles of atomic data.   In earlier versions of MsPASS we
 experimented with assembling ensembles with a reduce operator.
 That can be done and it works, BUT is subject to a very serious memory
 hogging problem as described in the section on
-:ref:`memory management<_memory_management>`.  For that reason, we
+:ref:`memory management<memory_management>`.  For that reason, we
 implemented some complexity in `read_distributed_data` to reduce
 the memory footprint of a parallel job using ensembles.
 
@@ -317,6 +319,7 @@ for a container of `TimeSeries` objects:
 
 Although the save operation will operate in parallel it is has two
 hidden inefficiencies that can increase run time.
+
 1.  Every single datum will invoke at least one transaction with the MongoDB
     server to save the wf document created from the Metadata of each
     `TimeSeries` in the container. Worse, if we had used the default
@@ -442,6 +445,7 @@ is that with ensembles the return is actually a list of lists of
 ids, with one list per ensemble and each list containing
 the list of ids saved from that ensemble.  In addition, the pipeline is
 streamlined to two stages (task) run through map operators:
+
 1.  Like the atomic case the first thing done is to save the sample data.
     A special feature of the ensemble writer is that if the
     storage_mode argument is set to 'file' and the format is not

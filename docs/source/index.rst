@@ -26,6 +26,7 @@ package.
    :maxdepth: 1
    :caption: Getting Started
 
+   getting_started/quick_start
    getting_started/run_mspass_with_docker
    getting_started/deploy_mspass_with_docker_compose
    getting_started/deploy_mspass_on_HPC
@@ -33,33 +34,59 @@ package.
 
 .. toctree::
    :maxdepth: 1
-   :caption: User Manual
+   :caption: Introduction
 
    user_manual/introduction
-   user_manual/data_object_design_concepts
-   user_manual/time_standard_constraints
-   user_manual/obspy_interface
-   user_manual/numpy_scipy_interface
+
+.. toctree::
+   :maxdepth: 1
+   :caption:  Data Management
+
    user_manual/database_concepts
    user_manual/CRUD_operations
    user_manual/mongodb_and_mspass
+   user_manual/normalization
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Seismic Data Objects
+
+   user_manual/data_object_design_concepts
+   user_manual/numpy_scipy_interface
+   user_manual/obspy_interface
+   user_manual/time_standard_constraints
+   user_manual/processing_history_concepts
+   user_manual/continuous_data
+   user_manual/schema_choices
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Data Processing
+
+   user_manual/algorithms
    user_manual/importing_data
    user_manual/handling_errors
    user_manual/data_editing
    user_manual/header_math
    user_manual/graphics
-   user_manual/processing_history_concepts
    user_manual/signal_to_noise
+   user_manual/adapting_algorithms
+
+.. toctree::
+   :maxdepth: 1
+   :caption: System Tuning
+
    user_manual/parallel_processing
-   user_manual/normalization
    user_manual/memory_management
    user_manual/io
    user_manual/parallel_io
-   user_manual/continuous_data
-   user_manual/adapting_algorithms
-   user_manual/schema_choices
-   user_manual/development_strategies
+
+.. toctree::
+   :maxdepth: 2
+   :caption:  FAQ
+
    user_manual/FAQ
+   user_manual/development_strategies
 
 
 .. toctree::

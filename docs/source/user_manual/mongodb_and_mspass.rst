@@ -473,6 +473,7 @@ channel data for station "PFO" and loads the results into a
 `TimeSeriesEnsemble`:
 
 .. code-block:: python
+
   from obspy import UTCDateTime
   # Example to select the month of June of 2012
   tsutc = UTCDateTime('2012-06-01T00:00:00.0')
@@ -677,7 +678,7 @@ are some major caveats and warnings:
     coordinates.  e.g. a specific lon-lat can be specified in "legacy"
     format like this:`{ "coords" : [-102.7724, 33.969601]}`.   The same
     information defined in geoJSON is:
-    
+
     .. code-block:: python
 
       { "coords" :
@@ -689,7 +690,7 @@ are some major caveats and warnings:
             ]
           }
       }
-    
+
     From my experience you should avoid the legacy format and only use
     geoJSON specifications in MongoDB documents.  To make that easier
     there is a convenience function in the `mspasspy.db.database`
@@ -876,6 +877,7 @@ saving documents.
 
 There are two methods of `Database.collection` that you can use to
 save "documents" in a MongoDB collection.  They are:
+
 1.  `insert_one` as the name implies is used to save on and only
     one document.   It is usually run with one argument that is assumed
     to be a python dictionary containing the name-value pairs that

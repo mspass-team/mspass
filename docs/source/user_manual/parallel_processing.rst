@@ -1,4 +1,4 @@
-.. _parallel_processesing:
+.. _parallel_processing:
 
 Parallel Processing
 ===========================
@@ -72,7 +72,7 @@ be a mix of the two
 because the MsPASS readers abstract the entire process of loading data
 for processing.  In addition, any required normalization data (i.e.
 data in the *site*, *channel*, and/or *source* collections) must be
-loaded and cross-referencing validated as described in :ref:`database_normalization`.
+loaded and cross-referencing validated as described in :ref:`normalization`.
 Once the data set is fully assembled the bag/RDD defining the abstraction of the
 data is easily defined by a variant of the following code section:
 

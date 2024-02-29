@@ -209,7 +209,7 @@ schema CSS3.0 used, for example, in Antelope.  The concepts involved are:
     distinctions are a bit subtle and better left to the more detailed
     discussion below.
 *   *Source related Metadata.*   Any event driven processing needs information
-    about seismic sources that are aassociated with the signals to be
+    about seismic sources that are associated with the signals to be
     analyzed.  That data is stored in this collection.
 
 A common feature of all "normalized" collection data is that they define a
@@ -248,7 +248,8 @@ has millions of documents. Although experience showed that expectation was
 true, we also found there are situations where embedded database operations
 can be a bottleneck in a workflow.   For that reason we developed a set of
 normalization classes in python that cache tables of attributes needed for
-normalization.   That idea is described below in the section :ref:`NEW SUBSECTION TO BE ADDE DTO THIS FILE`
+normalization.   That idea is described below in the
+:ref:`normalization` section.
 
 Waveform Processing
 ~~~~~~~~~~~~~~~~~~~~~~~
