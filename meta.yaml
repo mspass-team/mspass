@@ -7,42 +7,31 @@ source:
 
 requirements:
   build:
-    - python {{ PYTHON_VERSION }}
-    - pip
-    - setuptools
-    - numpy 
-    - ipympl
-    - pyyaml
-    - pymongo
-    - numpy
-    - dill
-    - click
-    - dask
-    - distributed
-    - cloudpickle
-    - schema
-    - decorator
-    - boto3
-    - botocore
-    - moto
-    - requests 
-    - setuptools
-    - xarray
-    - zarr
-    - pandas==1.5.3
-    - numba
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('gfortran') }}
+    - gsl
 
   host:
     - python {{ PYTHON_VERSION }}
     - pip
+    - gsl
     - ipympl
+    - boost
+    - boost-cpp
+    - lapack
+    - libblas
 
   run:
     - python {{ PYTHON_VERSION }}
+    - boost
+    - libboost-devel
+    - libzlib
+    - gsl
     - pyyaml
     - pymongo
     - numpy
+    - obspy
     - dill
     - click
     - dask
@@ -59,6 +48,7 @@ requirements:
     - zarr
     - pandas==1.5.3
     - numba
+    - multitaper
     - ipympl
 
 
