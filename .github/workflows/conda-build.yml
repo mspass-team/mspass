@@ -23,4 +23,8 @@ jobs:
           export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23
           PACKAGE_PATH=$(conda build . --python ${{ matrix.python-version }} --output)
           conda build . --python ${{ matrix.python-version }}
-          anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${{ matrix.python-version }} --force
+          if [ "${{ matrix.python-version }}" == "3.11" ]; then
+            anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label main --label py3.11 --force
+          else
+            anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${{ matrix.python-version }} --force
+          fi
