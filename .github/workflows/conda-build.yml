@@ -14,9 +14,11 @@ jobs:
       - uses: s-weigand/setup-conda@v1
       - run: export PYTHON_VERSION=3.8 &&
              conda install conda-build anaconda-client &&
-             conda config --set anaconda_upload yes &&
+             conda config --set anaconda_upload no &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-             conda build . --python 3.8
+             PACKAGE_PATH=$(conda build . --python 3.8 --output) &&
+             conda build . --python 3.8 &&
+             anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py3.8
   py39-conda-build-and-publish:
     runs-on: ubuntu-latest
     steps:
@@ -28,9 +30,11 @@ jobs:
       - uses: s-weigand/setup-conda@v1
       - run: export PYTHON_VERSION=3.9 &&
              conda install conda-build anaconda-client &&
-             conda config --set anaconda_upload yes &&
+             conda config --set anaconda_upload no &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-             conda build . --python 3.9
+             PACKAGE_PATH=$(conda build . --python 3.9 --output) &&
+             conda build . --python 3.9 &&
+             anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py3.9
   py310-conda-build-and-publish:
     runs-on: ubuntu-latest
     steps:
@@ -59,17 +63,3 @@ jobs:
              conda config --set anaconda_upload yes &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
              conda build . --python 3.11
-  py312-conda-build-and-publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
-      - uses: s-weigand/setup-conda@v1
-      - run: export PYTHON_VERSION=3.12 &&
-             conda install conda-build anaconda-client &&
-             conda config --set anaconda_upload yes &&
-             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-             conda build . --python 3.12
