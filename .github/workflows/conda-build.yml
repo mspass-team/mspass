@@ -15,7 +15,7 @@ jobs:
       - run: conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-             conda build .
+             conda build . --python 3.8
   py39-conda-build-and-publish:
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +28,7 @@ jobs:
       - run: conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-             conda build .
+             conda build . --python 3.9
   py310-conda-build-and-publish:
     runs-on: ubuntu-latest
     steps:
@@ -41,7 +41,7 @@ jobs:
       - run: conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-             conda build .
+             conda build . --python 3.10
   py311-conda-build-and-publish:
     runs-on: ubuntu-latest
     steps:
@@ -54,7 +54,7 @@ jobs:
       - run: conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-             conda build .
+             conda build . --python 3.11
   py312-conda-build-and-publish:
     runs-on: ubuntu-latest
     steps:
@@ -67,4 +67,4 @@ jobs:
       - run: conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-             conda build .
+             conda build . --python 3.12
