@@ -7,7 +7,7 @@ source:
 
 requirements:
   build:
-    - python >=3.8
+    - python {{ PYTHON_VERSION }}
     - pip
     - setuptools
     - numpy 
@@ -34,12 +34,12 @@ requirements:
 
 
   host:
-    - python >=3.8
+    - python {{ PYTHON_VERSION }}
     - pip
     - ipympl
 
   run:
-    - python >=3.8
+    - python {{ PYTHON_VERSION }}
     - pyyaml
     - pymongo
     - numpy

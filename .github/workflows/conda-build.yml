@@ -1,6 +1,6 @@
 name: publish_conda
 
-on: [push, pull_request]
+on: [push]
     
 jobs:
   py38-conda-build-and-publish:
@@ -11,6 +11,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.8
+        env:
+          PYTHON_VERSION: 3.8
       - uses: s-weigand/setup-conda@v1
       - run: conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
@@ -24,6 +26,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.9
+        env:
+          PYTHON_VERSION: 3.9
       - uses: s-weigand/setup-conda@v1
       - run: conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
@@ -37,6 +41,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+        env:
+          PYTHON_VERSION: 3.10
       - uses: s-weigand/setup-conda@v1
       - run: conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
@@ -50,6 +56,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
+        env:
+          PYTHON_VERSION: 3.11
       - uses: s-weigand/setup-conda@v1
       - run: conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
@@ -63,6 +71,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
+        env:
+          PYTHON_VERSION: 3.12
       - uses: s-weigand/setup-conda@v1
       - run: conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
