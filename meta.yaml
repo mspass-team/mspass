@@ -10,10 +10,12 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('gfortran') }}
+    - gsl
 
   host:
     - python {{ PYTHON_VERSION }}
     - pip
+    - gsl
     - ipympl
     - boost-cpp
     - boost
@@ -22,6 +24,7 @@ requirements:
 
   run:
     - python {{ PYTHON_VERSION }}
+    - gsl
     - pyyaml
     - pymongo
     - numpy
