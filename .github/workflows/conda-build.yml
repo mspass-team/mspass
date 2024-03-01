@@ -11,10 +11,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.8
-        env:
-          PYTHON_VERSION: 3.8
       - uses: s-weigand/setup-conda@v1
-      - run: conda install conda-build anaconda-client &&
+      - run: export PYTHON_VERSION=3.8 &&
+             conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
              conda build . --python 3.8
@@ -26,10 +25,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.9
-        env:
-          PYTHON_VERSION: 3.9
       - uses: s-weigand/setup-conda@v1
-      - run: conda install conda-build anaconda-client &&
+      - run: export PYTHON_VERSION=3.9 &&
+             conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
              conda build . --python 3.9
@@ -41,10 +39,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-        env:
-          PYTHON_VERSION: 3.10
       - uses: s-weigand/setup-conda@v1
-      - run: conda install conda-build anaconda-client &&
+      - run: export PYTHON_VERSION=3.10 &&
+             conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
              conda build . --python 3.10
@@ -56,10 +53,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
-        env:
-          PYTHON_VERSION: 3.11
       - uses: s-weigand/setup-conda@v1
-      - run: conda install conda-build anaconda-client &&
+      - run: export PYTHON_VERSION=3.11 &&
+             conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
              conda build . --python 3.11
@@ -71,10 +67,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
-        env:
-          PYTHON_VERSION: 3.12
       - uses: s-weigand/setup-conda@v1
-      - run: conda install conda-build anaconda-client &&
+      - run: export PYTHON_VERSION=3.12 &&
+             conda install conda-build anaconda-client &&
              conda config --set anaconda_upload yes &&
              export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
              conda build . --python 3.12
