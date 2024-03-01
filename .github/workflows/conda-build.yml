@@ -3,63 +3,23 @@ name: publish_conda
 on: [push]
     
 jobs:
-  py38-conda-build-and-publish:
+  conda-build-and-publish:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python 3.8
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: ${{ matrix.python-version }}
       - uses: s-weigand/setup-conda@v1
-      - run: export PYTHON_VERSION=3.8 &&
-             conda install conda-build anaconda-client &&
-             conda config --set anaconda_upload no &&
-             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-             PACKAGE_PATH=$(conda build . --python 3.8 --output) &&
-             conda build . --python 3.8 &&
-             anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py3.8
-  py39-conda-build-and-publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.9
-      - uses: s-weigand/setup-conda@v1
-      - run: export PYTHON_VERSION=3.9 &&
-             conda install conda-build anaconda-client &&
-             conda config --set anaconda_upload no &&
-             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-             PACKAGE_PATH=$(conda build . --python 3.9 --output) &&
-             conda build . --python 3.9 &&
-             anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py3.9
-  py310-conda-build-and-publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-      - uses: s-weigand/setup-conda@v1
-      - run: export PYTHON_VERSION=3.10 &&
-             conda install conda-build anaconda-client &&
-             conda config --set anaconda_upload yes &&
-             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-             conda build . --python 3.10
-  py311-conda-build-and-publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
-      - uses: s-weigand/setup-conda@v1
-      - run: export PYTHON_VERSION=3.11 &&
-             conda install conda-build anaconda-client &&
-             conda config --set anaconda_upload yes &&
-             export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 &&
-             conda build . --python 3.11
+      - run: |
+          export PYTHON_VERSION=${{ matrix.python-version }}
+          conda install conda-build anaconda-client
+          conda config --set anaconda_upload no
+          export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23
+          PACKAGE_PATH=$(conda build . --python ${{ matrix.python-version }} --output)
+          conda build . --python ${{ matrix.python-version }}
+          anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${{ matrix.python-version }} --force
