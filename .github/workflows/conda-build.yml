@@ -18,8 +18,8 @@ jobs:
       - run: |
           export PYTHON_VERSION=${{ matrix.python-version }}
           conda install conda-build anaconda-client
-          conda config --set anaconda_upload no
           conda config --add channels conda-forge
+          conda config --set anaconda_upload no
           export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23
           PACKAGE_PATH=$(conda build . --python ${{ matrix.python-version }} --output)
           conda build . --python ${{ matrix.python-version }}
