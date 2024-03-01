@@ -17,13 +17,14 @@ requirements:
     - pip
     - gsl
     - ipympl
-    - boost-cpp
     - boost
+    - boost-cpp
     - lapack
     - libblas
 
   run:
     - python {{ PYTHON_VERSION }}
+    - boost
     - gsl
     - pyyaml
     - pymongo
