@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Database Concepts" href="database_concepts.html" />
-    <link rel="prev" title="Time Standard Constraints" href="time_standard_constraints.html" />  
+    <link rel="next" title="Time Standard Constraints" href="time_standard_constraints.html" />
+    <link rel="prev" title="Using numpy/scipy with MsPASS" href="numpy_scipy_interface.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -61,11 +61,21 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
-<ul class="current">
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Using ObsPy with MsPASS</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#role-of-obspy-in-mspass">Role of ObsPy in MsPASS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#converters">Converters</a></li>
@@ -73,18 +83,33 @@
 <li class="toctree-l2"><a class="reference internal" href="#obspy-processing-in-parallel">ObsPy Processing in Parallel</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
 <ul>
@@ -287,7 +312,7 @@ For example, the following is a variant of filter algorithm but this example use
 <p>The key thing to note here is that the basic algorithm is identical to above: <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> and <code class="code docutils literal notranslate"><span class="pre">filter</span></code>.
 The difference is that the entire data set is read and filtered instead of one TimeSeries/Trace.
 The added incantations are needed to translate the function call to the <code class="code docutils literal notranslate"><span class="pre">map</span></code> method of the parallel API, but the basic structure is the same.
-For more on parallel processing constructs see <span class="xref std std-ref">parallel_processing</span>.</p>
+For more on parallel processing constructs see <a class="reference internal" href="parallel_processing.html#parallel-processing"><span class="std std-ref">Parallel Processing</span></a>.</p>
 </section>
 </section>
 
@@ -295,8 +320,8 @@ For more on parallel processing constructs see <span class="xref std std-ref">pa
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="time_standard_constraints.html" class="btn btn-neutral float-left" title="Time Standard Constraints" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="database_concepts.html" class="btn btn-neutral float-right" title="Database Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="numpy_scipy_interface.html" class="btn btn-neutral float-left" title="Using numpy/scipy with MsPASS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="time_standard_constraints.html" class="btn btn-neutral float-right" title="Time Standard Constraints" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

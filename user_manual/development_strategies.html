@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How do I develop a new workflow from scratch? &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Python API" href="../python_api/index.html" />
+    <link rel="prev" title="Frequency Asked Questions (FAQ)" href="FAQ.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How do I develop a new workflow from scratch?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simple-workflows">Simple workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#complex-developments">Complex developments</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">How do I develop a new workflow from scratch?</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/development_strategies.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="how-do-i-develop-a-new-workflow-from-scratch">
+<span id="development-strategies"></span><h1>How do I develop a new workflow from scratch?<a class="headerlink" href="#how-do-i-develop-a-new-workflow-from-scratch" title="Permalink to this heading"></a></h1>
+<p><em>Answer by Prof. Gary L. Pavlis</em></p>
+<p>The answer to this question depends on the complexity of the workflow you
+need to develop.   We discuss this here in terms of two endmembers:  (1) a
+workflow that can be reduced to a single python script with one or two simple
+adapter functions, and (2) a complex program that requires adapting algorithms
+from an external package. This page is designed in a progression from these
+endmembers.</p>
+<p>For all cases there it is important to first recognize a fundamental
+starting point, at least in present IT environment I suspect most
+seismologists work in.   That is, you should expect:</p>
+<ol class="arabic simple">
+<li><p>You absolutely will need an interactive framework to develop any
+workflow.  For most people, that means a local desktop or laptop
+with docker installed.  It is possible to use only a web browser
+and with connections to a cluster, but that is guaranteed to be
+a lot more difficult to do.  The fact that containerization makes
+the transition from a desktop a cluster much simpler makes the
+model of using a desktop for initial development theh only sensible
+norm.</p></li>
+<li><p>Every single example I have ever created to run MsPASS was
+best created by first writing the workflow as a serial process
+with a single outer loop over the dataset elements.  Using
+guidelines in <a class="reference internal" href="parallel_processing.html#parallel-processing"><span class="std std-ref">Parallel Processing</span></a> convert to a parallel
+equivalent only after you get the syntax and variables all defined
+with the serial job.</p></li>
+</ol>
+<ol class="arabic simple" start="2">
+<li><p>Most  workflows reduce to one or more sections that have the
+generic structure:  read data -&gt; process data -&gt; save result.
+To debug a parallel workflow on your desktop use a subset of
+your data copied to your workstation and run the test on
+the smaller subset that defines the “read data” section.
+That approach provides a simple way to validate the workflow has
+no obvious errors like python syntax errors and usage errors.
+It is also a very good idea to use your desktop’s system monitor
+to watch the workflow’s cpu and memory usage while running the
+test data set.   You may need to tune the memory use of the workflow
+based on concepts described in <a class="reference internal" href="memory_management.html#memory-management"><span class="std std-ref">Memory Management</span></a> section
+of this manual.</p></li>
+<li><p>If you are running on a (now ancient) computer with only on core
+you will not be able to test the parallel version on your desktop/laptop.
+If your machine has only two cores, keep your test data set to
+the minimum possible because you may bring the machine to its knees
+while you run the test. In general, my advice would be that to a
+desktop/laptop parallel test configure docker to only use two cores.
+I have found it is easy to bring a desktop/laptop to it’s knees if
+you use all or a large fraction of the available cores.  Hence, the
+corollary to keep in mind is you shouldn’t expect to do much else
+like web surfing or email
+on your desktop/laptop while running your test data set. You can expect
+sluggish performance if parallelization is working as it should.</p></li>
+</ol>
+<section id="simple-workflows">
+<h2>Simple workflows<a class="headerlink" href="#simple-workflows" title="Permalink to this heading"></a></h2>
+<p>Simple workflows can usually be developed using only the standard MsPASS
+container and the jupyter lab interface.  There are a number of approaches
+discussed in common tutorials found by searching with the keywords
+“jupyter debug” in this situation.</p>
+<ol class="arabic simple">
+<li><p>Inserting simple print statements to display the value of suspected variables.</p></li>
+<li><p>Inserting matplotlib graphics to visualize data at an intermediate stage of
+processing.</p></li>
+<li><p>If you have a box that throws a mysterious exception that is not self-explanatory
+the <cite>%debug</cite> magic command can be useful.
+To use this feature add a new code box after the cell with problems, put
+that command in the box, and push the jupyter run button.  You will get
+an ipython prompt you can use to investigate variables defined where the
+error occurred.</p></li>
+<li><p>Use the jupyter lab debugger.</p></li>
+<li><p>Enable the pdb debugger</p></li>
+</ol>
+<p>In addition to the technical approaches for code debugging it is worth
+pointing out a completely different point;  use the jupyter notebook
+structure to document your work.   Use <cite>Markdown</cite> boxes to at least provide
+notes to yourself about what you are trying to do with the code and
+any key background.   In addition, as always use comments within the code
+to clarify any sections using some less than obvious trick or dependent
+upon some obscure features that you exploited in writing that algorithm.</p>
+<p>For simple workflows the recently developed debugger for the jupyter lab
+will usually be sufficient.  If an error occurs outside your notebook,
+however, the best strategy at present is to use pdb, which is included
+in the standard mspass container.   There are numerous
+tutorials on using pdb to debug a jupyter notebook.  Here are a
+couple we found useful:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://notebook.community/tschinz/iPython_Workspace/00_Admin/Features/Jupyter%20Debug">This</a>
+concise but perhaps cryptic introduction for jupyter lab and pdb.</p></li>
+<li><p><a class="reference external" href="https://towardsdatascience.com/debugging-jupyter-notebooks-will-boost-your-productivity-a33387f4fa62">This</a>
+good overview that discusses a range of strategies for jupyter notebooks.</p></li>
+</ul>
+<p>As always for a topic like this a google search will give you a long
+string of variable quality resources.</p>
+</section>
+<section id="complex-developments">
+<h2>Complex developments<a class="headerlink" href="#complex-developments" title="Permalink to this heading"></a></h2>
+<p>Because MsPASS uses python as the job control language, developing
+a workflow differs little from programming.   Advanced users may decide
+they need to add features not in the framework that are too extensive
+to implement as code blocks in the jupyter format.   Alternatively,
+python has a wide range of open-source toolkits that you may find the
+need to add to facilitate your custom research code.   Here we provide
+suggestions on basic strategies.</p>
+<p>The first point is that advanced development is best done on a desktop
+where interactive access is the norm.   Jumping immediately to an HPC
+cluster is destined to create frustration.  Some recommended steps to
+create a development environment for MsPASS on a desktop are the
+following:</p>
+<ol class="arabic">
+<li><p>Install an IDE of your choice.
+If you are doing extensive python development you are likely already
+familiar with one of the standard Integrated Development Environments
+like <a class="reference external" href="https://www.jetbrains.com/pycharm/">pycharm</a> or
+<a class="reference external" href="https://www.spyder-ide.org/">spyder</a>, but there are
+a number of others.   IDEs dramatically improve most people’s ability
+to test and debug python applications compared to a simple editor
+and pdb.   If you aren’t already using one, choose one and use it.</p></li>
+<li><p>Install a local copy of MsPASS.  Unfortunately, there are currently
+no simple ways we know of to
+run any of these IDEs with an instance of mspass running via
+docker or singularity. For this reason you will likely find it necessary
+to install a local copy of mspass on your development desktop.
+The process for doing that is described in a wiki page on github
+found <a class="reference external" href="https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code">here</a>.</p></li>
+<li><p>The wiki page referenced above describes how to install dask and/or spark.
+We have found many projects do not require the parallel framework and
+can be reduced to writing and testing an appropriate set of functions
+and/or python classes that implement the extension you need.  Once a
+function to preform a task is written and thoroughly tested it can
+be plugged into the framework as just another python function used in
+a map or reduce operator.</p></li>
+<li><p>Design a local test of your application that can be tested in serial
+form on a small, test data set.  Move to a massive HPC or cloud system
+only when needed and you are confident your application is as well
+tested as realistically possible</p></li>
+<li><p>Here we assume the tool you are developing can be placed in one or
+more files that can serve as a standard python module; meaning something
+you can “import” with the right path to the file.  If you don’t know how
+to build a python module file there are huge numbers of internet
+resources easily found with a web search.</p></li>
+<li><p>To test a python function with the mspass container, copy your python
+code to a directory you mount with the appropriate docker or singularity run
+incantation.  The simplest way to do that is to just put your python
+script in the same directory as your notebook.   In that case, the
+notebook code need only include a simple <cite>import</cite>.   e.g. if you have
+your code saved in a file <cite>mymodule.py</cite> and you want to use a function
+in that module called <cite>myfunction</cite>, in your notebook you would just
+enter this simple, failry standard command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mymodule</span> <span class="kn">import</span> <span class="n">myfunction</span>
+</pre></div>
+</div>
+<p>If <cite>mymodule</cite> is located in a different directory use the
+docker “–mount” option or apptainer/singularity “-B” options to
+“bind” that directory to the container.   For example, suppose we have
+module <cite>mymodule.py</cite> stored in a directory called <cite>/home/myname/python</cite>.
+With docker this could be mounted on the standard container
+with the following incantation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--mount<span class="w"> </span><span class="nv">src</span><span class="o">=</span>/home/myname/python,target<span class="o">=</span>/mnt,type<span class="o">=</span><span class="nb">bind</span><span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>mspass/mspass
+</pre></div>
+</div>
+<p>To make that module accessible with the same import command as above you
+would need to change the python search path.  For this example, you could
+use this incanation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/mnt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Once you are finished testing you can do one of two things to make
+it a more durable feature. (a) Assimilante
+your module into mspass and submit
+you code as a pull request to the github site for mspass.   If accepted it
+becomes part of mspass.  (b) Build a custom docker container that
+adds your software as an extension of the mspass container.  The docker
+documentation and the examples in the top level directory for the MsPASS
+source code tree should get you started.  It is beyond the scope of this
+document to give details of that process.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="FAQ.html" class="btn btn-neutral float-left" title="Frequency Asked Questions (FAQ)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../python_api/index.html" class="btn btn-neutral float-right" title="Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

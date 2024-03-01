@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parallel IO in MsPASS &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Frequency Asked Questions (FAQ)" href="FAQ.html" />
+    <link rel="prev" title="I/O in MsPASS" href="io.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Parallel IO in MsPASS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gary-l-pavlis"><em>Gary L. Pavlis</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-parallel-io-and-why-is-it-needed">What is parallel IO and why is it needed?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#read-distributed-data-mspass-parallel-reader">read_distributed_data - MsPASS parallel reader</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#atomic-data">Atomic data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ensemble-data">Ensemble data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#write-distributed-data-mspass-parallel-writer">write_distributed_data - MsPASS parallel writer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Atomic data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ensembles">Ensembles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#handling-storage-mode-file">Handling storage_mode==”file”</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-1-default-read-write">Example 1:  Default read/write</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-2-atomic-writes-to-file-storage">Example 2:  atomic writes to file storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-3-parallel-read-write-of-ensembles">Example 3:   Parallel read/write of ensembles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-4-intermediate-processing-result-save">Example 4: Intermediate processing result save</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Parallel IO in MsPASS</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/parallel_io.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="parallel-io-in-mspass">
+<span id="parallel-io"></span><h1>Parallel IO in MsPASS<a class="headerlink" href="#parallel-io-in-mspass" title="Permalink to this heading"></a></h1>
+<section id="gary-l-pavlis">
+<h2><em>Gary L. Pavlis</em><a class="headerlink" href="#gary-l-pavlis" title="Permalink to this heading"></a></h2>
+</section>
+<section id="what-is-parallel-io-and-why-is-it-needed">
+<h2>What is parallel IO and why is it needed?<a class="headerlink" href="#what-is-parallel-io-and-why-is-it-needed" title="Permalink to this heading"></a></h2>
+<p>There is an old adage in higher performance computing that a supercomputer
+is a machine that turns CPU-bound jobs into IO-bound jobs.   Any user of
+MsPASS who runs the framework on a sufficiently large number of nodes will
+learn the truth of that adage if they throw enough cores at a data
+processing problem they need to solve.  Few seismologists have the
+background in computing to understand the fundamental reasons why that claim is
+true, so I will first briefly review the forms of IO in MsPASS and how they
+can limit performance.</p>
+<p>Axiom one to understand about IO is that ALL IO operations have a potential
+bottleneck defined by the size of the pipe (IO channel) the data are
+being pushed/pulled through.   If you are moving the data through a
+network channel the highest throughput possible is the number of bytes/s
+that channel can handle.   If you are reading/writing data to a local disk
+the most data you can push through is speed the disk can sustain for reads/writes.
+I next discuss factors in MsPASS that define how MsPASS may or may not saturate
+different IO channels.</p>
+<p>Like everything in computing IO systems have evolved significantly with time.
+At present there are three fundamentally different IO systems MsPASS
+handles.</p>
+<ol class="arabic simple">
+<li><p><em>Regular file IO</em>.   For decades normal reads and writes to a file system
+are defined by a couple of key abstractions.   The first is <em>buffering</em>.
+When you “open” a file in any computing language the language creates a data
+object we can generically call a “file handle” (a “FILE” in C and often
+called a “file object” in python documentation).  Under the hood that file
+handle always includes a “buffer” that is a block of contiguous memory
+used by any reads or writes with that file handle.  A write happens very fast if
+the buffer is not full because the pipe speed is defined by memory bandwidth.
+Similarly, reads are very fast if the data are already loaded into memory.
+That process has been tuned for decades in operating system code to
+make such operations as fast as possible.   Problems happen when you try to
+push more data than the buffer size or try to read a block of data larger
+than the buffer.  Then the speed depends upon how fast the disk controller
+(network file servers for distributed files)
+can move the data from a disk to the buffer.  Similar constraints occur when
+reading more data that can fit in the buffer.  The second concept
+that is important to undertand for
+regular file IO is <em>blocking</em>.   All current file IO operations in MsPASS use
+blocking IO, which is the default for standard IO operations in C++ and python.
+There are many online articles on this concept, but the simple idea is that
+when you issue a read or write function call in C++ or python
+(the two primary languages used directly in MsPASS) the program stops
+until the operating system defines the operation as completed.  That delay
+will be small if the data written fit in the buffer or being read are already
+loaded in the buffer.  It not, the program sits in a wait state until
+the operating system says it is ready.</p></li>
+<li><p><em>Network connections</em>.  Internet IO is a much more complex operation than
+file-based IO.  Complexity also means the variance of performance is wildly
+variable.  There are a least three fundamental reasons for that in the current
+environment.  First, the two ends of a connection are usually completely
+independent.   For example, MsPASS has support for web-service queries
+from FDSN data centers.  Those sources have wildly different performance, but
+they all have one thing in common:  they have glacial speeds relative to
+any HPC cluster IO channel.   Second, long-haul connections are always
+slower than a local connection.   Packets from remote sources often have
+to move through dozens of routers while local internet connections in
+a cluster/cloud system can by many orders of magnitude faster. Finally,
+in every example I know of internet data movement involves far more
+computer software lines to handle the complexity of the operations.
+As a result internet IO operations always consume more CPU cycles than
+simple file-based IO operations.  In MsPASS internet operation are
+currently limited to web-service interaction with FDSN data centers, but
+it is expected that cloud computing support that we are planning to
+develop will involve some form of internet-style IO within the cloud
+service.</p></li>
+<li><p><em>MongoDB transactions</em>.  In MsPASS we use MongoDB as a database to
+manage data.   MongoDB, like all modern dbms system, uses a
+client-server model for all transactions with the database.
+Without “getting into the weeds”, to use a cliche, the key idea
+is that interactions with MongoDB are all done through a manager
+(the MongoDB server).   That is, an application can’t get any
+data stored in the database without politely asking the manager (server).
+(Experienced readers will recognize that almost all internet services
+also use some form of this abstraction.)  The manager model
+will always introduce a delay because any operation requires
+multiple IO interactions:  request operation, server acknowledge,
+ready, receive, acknowledge success.   Some of those are not required in some
+operations but the point is a conversation is required between the
+application and the server that always introduces some delay. That
+delay is nearly always a lifetime in CPU cycles.  In our experience a
+typical single, simple MongoDB transaction like <cite>insert_one</cite> takes at
+least of the order of a millisecond.  That may seem fast to you as a human,
+but keep in mind that is about a million clock cycles on a modern CPU.
+On the other hand, “bulk” operations (e.g. <cite>insert_many</cite>) with this model
+often take about the same length of time as a single document
+transaction like <cite>insert_one</cite>.   In addition, MongoDB “cursor”
+objects help the server anticipate the next request and also dramatically
+improves database throughput.  The point is, that appropriate use
+of bulk operators can significantly enhance database throughput.  We
+discuss implementation details of how bulk read/writes
+have been exploited in the parallel readers and
+writers of MsPASS.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>At the time this document was written IRIS/Earthscope was in the process of
+developing a fundamental revision of their system to run in a cloud system.
+IO in cloud systems has it’s own complexity that we defer for now.
+When that system mature and MsPASS evolves to use it look for updates
+to this section.  Parallel IO and cloud systems have an intimate
+relation, and we anticipate future use of parallel file systems in the
+cloud environment could dramatically improve the performance of some workflows.</p>
+</div>
+<p>With that introduction what then is parallel IO?   Like most modern
+computing ideas that one can mean different things in different contexts.
+In the context of MsPASS at present it means exploiting the parallel
+framework to <em>reduce</em> IO bottlenecks.  I emphasize <em>reduce</em> because
+almost any workflow can become IO bound if you throw enough processors at
+it.  Tuning a workflow often means finding the right balance of memory and
+number of CPUs needed to get the most throughput possible.  In any case,
+the approach used at present is to utilize multiple workers operating
+independently.  Since almost all seismic processing jobs boil down to
+read, process, and write the results, the issue is how to balance the read
+and writes at the start and end of the chain with CPU tasks in the middle.</p>
+<p>In the current implementation of MsPASS parallel IO is centered on
+two functions defined in the module <cite>mspasspy.io.distributed</cite> called
+<cite>read_distributed_data</cite> and <cite>write_distributed_data</cite>.   At present the
+best strategy in MsPASS to reduce IO bottlenecks is to use these
+two functions as the first and last steps of a parallel workflow.
+I now describe details of how these two functions operate and limitations of what
+they can do.  I finish this section with examples of how the parallel
+readers and writes can be used in a parallel workflow.  Note that to
+simplify the API we designed this interface to handle both atomic
+and ensemble objects.  The way the two are handled in reads and writes,
+however, are drastically different.  Hence, there is a subsection for
+the reader and writer descriptions below for atomic (TimeSeries
+and Seismogram data) and ensemble (TimeSeriesEnsemble and SeismogramEnsemble data).</p>
+</section>
+<section id="read-distributed-data-mspass-parallel-reader">
+<h2>read_distributed_data - MsPASS parallel reader<a class="headerlink" href="#read-distributed-data-mspass-parallel-reader" title="Permalink to this heading"></a></h2>
+<section id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h3>
+<p>The <a class="reference external" href="https://www.mspass.org/python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data">docstring</a>
+for this function is an important sidebar to this section.   As usual it gives
+details about usage, but also discusses a bit of an oddity of this function
+I reiterate here.   The design goal to use a common function name to create a
+parallel container for all seismic data objects and at the same time
+provide the mechanism to parallelize the reader created some anomalies in
+the argument structure.  In particular, three arguments to this function
+interact to define the input needed to generate a parallel container
+when the lazy(spark)/delayed(dask) operations are initiated
+(the operation usually initiated by a dask <cite>compute</cite> or pyspark <cite>collect</cite>).
+The docstring for the <cite>read_distibuted_data</cite> function gives more details,
+but a key point is that
+arg0 (<cite>data</cite> in the function definition) can be one of three things:
+(1) a <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> object, (2) an implementation of
+a <cite>Dataframe</cite> (dask, pyspark, or pandas), or (3) a list of python
+dictionaries that define valid MongoDB queries.  The first two options
+can be used to create a parallel dataset of atomic seismic objects.
+Item 3 is the only direct mechanism in MsPASS to create a parallel dataset of
+ensembles.  I describe how that works in the two sections below on atomic and
+ensemble data.</p>
+</section>
+<section id="atomic-data">
+<h3>Atomic data<a class="headerlink" href="#atomic-data" title="Permalink to this heading"></a></h3>
+<p>A bag/RDD of atomic data can be constructed by <cite>read_distributed_data</cite>
+from one of two possible inputs:  (1) MongoDB documents retrieved through
+a <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> handle driven by an optional
+query, or (2) an implementation of a Dataframe.   It is
+important to realize that both cases set the initial
+content the bag/RDD as the same thing:  a sequence of python dictionaries
+that are assumed to be MongoDB documents with sufficient content
+to allow construction of one atomic seismic object from each document.</p>
+<p>Forming the initial bag/RDD of documents has different input delay issues for
+Dataframe versus Database input. It important to recognize the strengths and
+weaknesses of the alternative inputs.</p>
+<ol class="arabic simple">
+<li><p><em>Dataframe</em>.  Both dask and pyspark have parallel
+implementations for Dataframe.   For either scheduler creating the initial bag/RDD
+amounts to converter methods defined for that scheduler.  Specifically,
+for dask we use the <cite>to_bag</cite> method of their Dataframe and for pyspark
+we run the <cite>to_dict</cite> method to convert the Dataframe to a pyspark RDD.
+Whether or not this input type is overall faster than reading form
+a Database depends upon how you create the Dataframe.  We implemented
+Dataframe as an input option mainly to support import of data indexed
+via a relational database system. In particular, dask and spark both have
+well-polished interfaces for interaction with any SQL server.   In addition,
+although not fully tested at this writing,
+an Antelope “wfdisc” table can be imported into a dask or spark Dataframe
+through standard text file readers. I would warn any reader that the
+the devil is in the details in actually using a
+relational database via this mechanism, but
+prototypes demonstrate that approach is feasible for the framework.
+You should just realize there is not yet any standard solution.</p></li>
+<li><p><em>Database</em>. Creating a bag/RDD of atomic objects
+from a Database is done with a completely different algorithm but
+the algorithm uses a similar intermediate container to build the bag/RDD.
+An important detail we implemented for
+performance is that the process uses a MongoDB cursor to create an
+intermediate (potentially large) list of python dictionaries.   With
+dask that list is converted to a bag with the <cite>from_sequence</cite> method.
+With spark the RDD is created directly from the standard
+<cite>parallelize</cite> method of <cite>SparkContext</cite>.  A key point is that a using a
+cursor to sequentially load the entire data set has a huge impact on
+speed. The same list of data loaded using a MongoDB cursor versus the same
+documents loaded randomly by single document queries differ by many orders of
+magnitude.   The reason is that MongoDB stages (buffers) documents that
+define the cursor sequence.   A sequential read with a cursor is largely
+limited by the throughput of the network connection between a worker
+and the MongoDB server.  On the other hand, that approach is memory
+intensive as the <cite>read_distributed_data</cite> by default will attempt to
+read the entire set of documents into the memory of the scheduler node.
+Most wf documents when loaded are of the order of 100’s of bytes.  Hence,
+a million wf document list will require of the order of 0.1 Gbytes, which
+on modern computers is relatively small.   Anticipating the possibility of
+even larger data sets in the future, however, <cite>read_distributed_data</cite> has a
+<cite>scratchfile</cite> option that will first load
+the documents into a scratch file and use an appropriate dask or
+spark file-reader to reduce the memory footprint of creating the
+bag/RDD.</p></li>
+</ol>
+<p>Both input modes create an intermediate bag/RDD equivalent to a large
+list of documents.  The function internally contains a map operator that
+calls the constructor for either <cite>TimeSeries</cite> or <cite>Seismogram</cite> objects
+from the attributes stored in each document.   The output of the
+function with atomic data is then an bag/RDD of the atomic data
+defined by the specified collection argument.  Note that any
+constructor failures in the reader with have the boolean
+attribute with the key <cite>is_abortion</cite> set True.  The name is
+appropriate since objects that fail on constructor a “unborn”.</p>
+</section>
+<section id="ensemble-data">
+<h3>Ensemble data<a class="headerlink" href="#ensemble-data" title="Permalink to this heading"></a></h3>
+<p>Building a bag/RDD of ensembles is a very different problem than building
+a bag/RDD of atomic objects.   The reason is that ensembles are more-or-less
+grouped bundles of atomic data.   In earlier versions of MsPASS we
+experimented with assembling ensembles with a reduce operator.
+That can be done and it works, BUT is subject to a very serious memory
+hogging problem as described in the section on
+<a class="reference internal" href="memory_management.html#memory-management"><span class="std std-ref">memory management</span></a>.  For that reason, we
+implemented some complexity in <cite>read_distributed_data</cite> to reduce
+the memory footprint of a parallel job using ensembles.</p>
+<p>We accomplished that in <cite>read_distributed_data</cite> by using a completely
+different model to tell the function that the input is expected to
+define an ensemble.  Specifically, the third option for the type of
+arg0 (<cite>data</cite> symbol in the function signature) is a list of python
+dictionaries.  Each dictionary is ASSUMED to be a valid MongoDB query
+that defines the collection of documents that can be used to
+construct the group defining a particular ensemble.   Between the oddity of
+MongoDB’s query language and the abstraction of what an ensemble means
+it is probably best to provide an example to clarify what I mean.
+The following can be used to create a bag of <cite>TimeSeriesEnsemble</cite>
+objects that are a MsPASS version of a “common source/shot gather”:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">srcid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s1">&#39;source_id&#39;</span><span class="p">)</span>
+<span class="n">querylist</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">srcid_list</span><span class="p">:</span>
+  <span class="n">querylist</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;source_id&#39;</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">})</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">querylist</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="o">...</span> <span class="n">processing</span> <span class="n">code</span> <span class="n">goes</span> <span class="n">here</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Notice that the for loop creates a list of python dictionaries
+that when used with the MongoDB collection find method will
+yield a cursor.  Internally the function iterates over that cursor
+to load the atomic data to create ensemble container holding
+that collection of data.  A weird property of that concept
+in this context, however, is that when and where that happens
+is controlled by the scheduler.   That is, I reiterate that
+<cite>read_enemble_data</cite> only creates the template defining the task the
+workflow has to complete to “read” the data and emit a container of,
+in this case, <cite>TimeSeriesEnsemble</cite> objects.   That is why this
+is a parallel reader because for this workflow the scheduler would
+assign each worker a read operation for one ensemble as a task.
+Hence, constructing the ensembles, like the atomic case above, is
+always done with one each worker initiating a processing chain by
+constructing, in the case above, a <cite>TimeSeriesEnsemble</cite> that is passed
+down the processing chain.</p>
+<p>There is one other important bit of magic in the <cite>read_distributed_data</cite>
+that is important to recognize if you need to maximize input speed.
+<cite>read_distributed_data</cite> can exploit a feature of
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> that can dramatically reduce
+reading time for large ensembles.   When reading ensembles if the
+<cite>storage_mode</cite> argument is set to “file”, the data were originally
+written with the (default) format of “binary”, and the file grouping
+matches the ensemble (e.g. for the source grouping example above
+the sample data are stored in files grouped by source_id.)
+there is an optimized algorithm to load the data.   In detail, the
+algorithm sorts the inputs by the “foff” attribute and reads the sample
+data sequentially with C++ function using the low-level binary
+C function <cite>fread</cite>.   That algorithm can be very fast as buffering
+creates minimal delays in successive reads and, more importantly,
+reduces the number of file open/close pairs compared to
+a simpler iterative loop with atomic readers.
+See the docstring of <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> for details.</p>
+</section>
+</section>
+<section id="write-distributed-data-mspass-parallel-writer">
+<h2>write_distributed_data - MsPASS parallel writer<a class="headerlink" href="#write-distributed-data-mspass-parallel-writer" title="Permalink to this heading"></a></h2>
+<section id="id1">
+<h3>Overview<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<p>Parallel writes present a different problem from reading.
+The simplest, but not fastest, approach to writing data is to use the
+<cite>save_data</cite> method of <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> in a loop.
+Here is a (not recommended) way to terminate a workflow in that way
+for a container of <cite>TimeSeries</cite> objects:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>  <span class="n">Processing</span> <span class="n">workflow</span> <span class="n">above</span> <span class="k">with</span> <span class="nb">map</span><span class="o">/</span><span class="n">reduce</span> <span class="n">operations</span> <span class="o">...</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">,</span><span class="n">storage_mode</span><span class="o">=</span><span class="s1">&#39;file&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Although the save operation will operate in parallel it is has two
+hidden inefficiencies that can increase run time.</p>
+<ol class="arabic simple">
+<li><p>Every single datum will invoke at least one transaction with the MongoDB
+server to save the wf document created from the Metadata of each
+<cite>TimeSeries</cite> in the container. Worse, if we had used the default
+storage_mode of “gridfs” the sample data for each datum would have to
+be pushed through the same MongoDB server used for storing the wf documents.</p></li>
+<li><p>Each save is this algorithm requires an open, seek, write, close operation on a particular
+file defined for that datum.</p></li>
+</ol>
+<p>The <cite>write_distributed_data</cite> function was designed to reduce these known
+inefficiencies.  For the first, the approach used for both atomic and
+enemble data is to do bulk database insertions.   At present the only
+mechanism for reducing the impact of item 2 is to utilize ensembles
+and store the waveform data in naturally grouped files.  (see examples below)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A possible strategy to improve IO performance with atomic operations
+is to use on of several implementation of parallel files.
+With that model the atomic-level open/close inefficiency could
+potentially be removed.  The MsPASS team has experimented with this
+approach but because there is currently no standardized support
+for that feature. Future releases may add that capability.</p>
+</div>
+<p>An additional issue with saving data stored in a bag/RDD is a memory
+issue.   That is, most online examples of using dask or spark terminate
+a workflow with a call to the scheduler’s method used to convert a
+lazy/delayed/futures entity (bag or RDD) into a result.
+(The dask function is <cite>compute</cite> and the comparable pyspark function is <cite>collect</cite>.).
+Prior to V2 of MsPASS the <cite>save_data</cite> function, if used as above, would return
+a copy of the datum is saved.  In working with large data sets we learned
+that following such a save with <cite>compute</cite> or <cite>collect</cite> could easily abort
+the workflow with a memory fault.   The reason is that the return of <cite>compute</cite>
+and <cite>collect</cite> when called on a bag/RDD is an (in memory) python list of
+the data in the container.  To reduce the incidence of this problem
+beginning in V2 <cite>save_data</cite> was changed to return only the ObjectId of the
+saved waveform by default.  For the same reason <cite>write_distributed_data</cite>
+does something similar;  it returns a list of the ObjectIds of saved
+wf documents.  In fact, that is the only thing it ever returns.
+That has a very important corollary that all users must realize;
+<cite>write_distributed_data</cite> can ONLY be used as the termination of a
+distinct processing sequence.   It cannot appear as the function to be applied in
+a map operator.   In fact, user’s must recognize that unless it
+aborts with a usage exception, <cite>write_distributed_data</cite>
+always calls dask bag’s <cite>compute</cite> method or pyspark’s rdd <cite>collect</cite> method
+immediately before returning.   That means that <cite>write_distributed_data</cite>
+always initiates any pending delayed/lazy computations defined
+earlier in the script for the container.
+Here is a typical fragment for atomic data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">detrend</span><span class="p">)</span>
+<span class="c1"># other processing functions in map operators would typically go here</span>
+<span class="n">wfidslist</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="c1"># wfidslist will be a python list of ObjectIds</span>
+</pre></div>
+</div>
+<p>Saving an intermediate copy of a dataset within a workflow is
+currently considered a different problem than that solved by
+<cite>write_distributed_data</cite>.  Example 4 in the “Examples” section below
+illustrates how to do an intermediate save.</p>
+<p>In addition to efficiency concerns, users should also always keep in mind
+that before starting a large processing task they should be sure the
+target of the save has sufficient storage to hold the processed data.
+The target of all saves is controlled at the top level by the
+<cite>storage_mode</cite> argument.   There are currently two options.
+When using the default of “gridfs” keep in mind the data sample will be stored
+in the same file system as the database.   When <cite>storage_mode=”file”</cite> is
+used the storage target depends upon how the user chooses to set the two
+attributes <cite>dir</cite> and <cite>dfile</cite>.  They control the file names where the
+sample data will be written.   Below I describe how to set these two
+attributes in each datum of a parallel dataset.</p>
+</section>
+<section id="id2">
+<h3>Atomic data<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<p>Atomic data are handled in three stages by <cite>write_distributed_data</cite>.
+These three stages are a pipeline with a bag/RDD entering the top of the
+pipeline and a list of ObjectIds flowing out the bottom.</p>
+<ol class="arabic simple">
+<li><p>The sample data of all live data (The sample data for any datum marked dead
+are always dropped.) are saved.  That operation occurs in a map operator
+so each worker performs this operation independently.   Note the limitation
+that with gridfs storage all that data has to be pushed through the
+MongoDB server.  For file storage an open, seek, write, close operation is
+required for each datum.  If multiple workers attempt to write to the same
+file, file locking can impact throughput.   Note that is not, however,
+at all a recommendation to create one file per datum.  As discussed
+elsewhere that is a very bad idea with large data sets.</p></li>
+<li><p>Documents to be saved are created from the Metadata of each live datum.
+The resulting documents are returned in a map operation to overwrite the
+data in the bag/RDD.
+At the same stage dead data are either “buried” or “cremated”.   The
+former can be a bottleneck with large numbers of data marked dead as it
+initiates a transaction with MongoDB to save a skeleton of each dead datum in
+the “cemetery” collection.  If the data are “cremated” no record of them
+will appear in the Database.</p></li>
+<li><p>The documents that now make up the bag/RDD are saved to the Database.
+The speed of that operation is enhanced by using a bulk insert by
+“partition” (bag and RDD both define the idea of a partition.  See the
+appropriate documentation for details.)  That reduces the number of
+transactions with the MongoDB to the order of <span class="math notranslate nohighlight">\(N/N_p\)</span> where <span class="math notranslate nohighlight">\(N\)</span> is the
+number of atomic data and <span class="math notranslate nohighlight">\(N_p\)</span> is the number of partitions defined for
+the bag/RDD.  Said another way, that algorithm reduces the time to save
+the wf documents by approximately a factor of <span class="math notranslate nohighlight">\(1/N_p\)</span>.</p></li>
+</ol>
+<p>What anyone should conclude from the above is that there are a lot of complexities
+in the above that can produce large variances in the performance of a write operation
+with <cite>write_distributed_data</cite>.</p>
+</section>
+<section id="ensembles">
+<h3>Ensembles<a class="headerlink" href="#ensembles" title="Permalink to this heading"></a></h3>
+<p>Ensembles, in many respects, are simpler to deal with than atomic data.
+The grouping that is implicit in the concept of what defines
+an ensemble may, if properly exploited, add a level of
+homogeneity that can significantly improve write performance relative to the
+same quantity of data stored as a bag/RDD of atomic objects.  With
+ensembles the bag/RDD is assumed a container full of a common type of
+ensemble.   Like the atomic case the algorithm is a pipeline
+(set of map operators) with ensembles entering the top and ObjectIds
+exiting the pipeline that are returned by the function.   An anomaly
+is that with ensembles the return is actually a list of lists of
+ids, with one list per ensemble and each list containing
+the list of ids saved from that ensemble.  In addition, the pipeline is
+streamlined to two stages (task) run through map operators:</p>
+<ol class="arabic simple">
+<li><p>Like the atomic case the first thing done is to save the sample data.
+A special feature of the ensemble writer is that if the
+storage_mode argument is set to ‘file’ and the format is not
+changed from the default (‘binary’), the sample data will be written
+in contiguous blocks provided ‘dir’ and ‘dfile’ are set in the
+ensemble Metadata container.   In that situation the operation is done with
+a C++ function using fwrite in a mode limited only by the speed of
+the target file system.   As with the comparable feature noted
+above for the reader a further huge advantage this gives is
+reducing the number of file open/close pairs to the number of
+ensembles in the data set.</p></li>
+<li><p>A second function applied through a map operator does two
+different tasks that are done separately in the atomic algorithm:
+(a) translation of each member’s Metadata container to a
+python dictionary that is suitable as a MongoDB document, and
+(b) actually posting the documents to the
+defined collection with the MongoDB interface.
+There are two reasons these are merged in this algorithm.
+The first is that grouping for a bulk insert is natural
+with an ensemble.   The function calls insert_many on the collection
+of documents constructed from live members of the ensemble.
+The second is an efficiency in handling dead data.
+A problem arises because of the fact that
+ensemble members can be killed one of two ways:  (a) they arrive
+at the writer dead, or (b) the conversion from Metadata to
+a document has a flaw that the converter flags as invalid.
+The first is normal.  The second can happen if required Metadata
+attributes are invalid or, more commonly, if the <cite>mode</cite> argument
+is set as “cautious” or “pedantic”.   In both cases the contents of
+dead data are, by default, “buried”.   Like the atomic case large
+numbers of dead data can create a performance hit as each dead datum
+has a separate funeral (inserting a document in the “cemetery”
+collection).  In contrast, the documents for live data are saved
+with bulk write using the MongoDB <cite>insert_many</cite> collection method
+as noted above.
+With the same reasoning as above this algorithm reduces database transaction
+time for this writer by a factor of approximately <span class="math notranslate nohighlight">\(1/N_m\)</span>
+here <span class="math notranslate nohighlight">\(N_m\)</span> is the average number of live ensemble members
+in the data set.</p></li>
+</ol>
+</section>
+<section id="handling-storage-mode-file">
+<h3>Handling storage_mode==”file”<a class="headerlink" href="#handling-storage-mode-file" title="Permalink to this heading"></a></h3>
+<p>There are major complication in handling any data where the output is
+to be stored as a set of files. There are two technical issues
+users may need to consider if tuning performance is essential:</p>
+<ol class="arabic simple">
+<li><p>Read/write speed of a target file system can vary by orders of
+magnitude.   In most cases speed comes at a cost and the storage space
+available normally varies inversely with IO speed.  Our experience
+is that if multiple storage media are available the fastest
+file system should be used as the target used by MongoDB for
+data storage.   The target of sample data defined by the schema
+you use for <cite>dir</cite> and <cite>dfile</cite> may need to be different to assure
+sufficient free space.</p></li>
+<li><p>Many seismologists favor the model required by SAC for data storage.
+SAC requires a unique file name for each individual datum.
+(SAC only supports what we call a <cite>TimeSeries</cite>.)
+<em>For a large data set that is always a horrible model for defining
+the data storage layout.</em>  There are multiple reasons that
+make that statement a universal truth today, but the reasons are
+beside the point for this manual.   Do a web search if you want to
+know more.  The point is your file definition model should
+never use the one file per atomic datum unless your data set is small.
+On the other hand, the opposite end member of one file for the
+entire data set is an equally bad idea for the present implementation
+of MsPASS.   If all workers are reading or writing to a single
+file you are nearly guaranteed to throttle the workflow from
+contention for a single resource (file locking).  Note we have
+experimented with parallel file containers that may make the
+one file for the dataset model a good one, but that capability is
+not ready for prime time.  For now the general solution is to
+define the granularity in whatever structure makes sense for your
+data.  e.g. if you are working with event data, it usually makes sense
+to organize the files with one file per event.</p></li>
+</ol>
+<p>With those caveats, I now turn to the problem of how you actually
+define the file layout of files saved when you set <cite>storage_mode=’file’</cite>
+when running <cite>write_distributed_data</cite>.</p>
+<p>The problem faced in producing a storage layout is that different
+research projects typically need a different layout to define some
+rational organization.   MsPASS needs to support the range  of options
+from a single unique file name for each atomic datum saved to
+all the data stored in one and only one file.  As noted above, for
+most projects the layout requires some series of logically defined
+directories with files at the leaves of the directory tree.
+The approach we used utilizes Metadata (MongoDB document) attributes
+with key names
+borrowed from CSS3.0.  They are:</p>
+<ul class="simple">
+<li><p><cite>dir</cite> directory name.  This string can define a full or relative path.</p></li>
+<li><p><cite>dfile</cite> file name at the leaf node of a file system path.</p></li>
+<li><p><cite>foff</cite> is the file offset in bytes to the first byte of data for a given datum.  It is essential when multiple data objects are saved in a the same file.  Readers use a “seek” method to initiate read at that position.</p></li>
+<li><p><cite>npts</cite> the number of samples that define the signal for an atomic datum.
+Note that for <cite>TimeSeries</cite> data with default raw output that translates to
+<span class="math notranslate nohighlight">\(8 \times npts\)</span> bytes and for <cite>Seismogram</cite> objects the
+size is <span class="math notranslate nohighlight">\(3\times 8 \times npts\)</span>.</p></li>
+<li><p>When using a format other than the default of “binary”, we use the
+<cite>nbytes</cite> argument to define the total length of binary data to be loaded.
+That is necessary with formatted data because every format has a different
+formula to compute the size.</p></li>
+</ul>
+<p>In writing data to files, the first two attributes (<cite>dir</cite> and <cite>dfile</cite>)
+have to be defined for the writer as input.
+The others are computed and stored on writing in the document associated
+with that datum when the save is successful.  Rarely, if ever, do
+you want to read from files and have the writer use the same file to write
+the processed result.   That is, in fact, what will happen if you
+read from files and then run <cite>write_distributed_data</cite> with
+<cite>storage_mode=’file’</cite>.  Instead, you need a way to set/reset the values of
+<cite>dir</cite> and <cite>dfile</cite> for each datum.
+Note that “datum” in this context can
+be either each atomic datum or ensemble objects.  The default behavior
+for ensembles is to have all ensemble members written to a common file
+name defined by the <cite>dir</cite> and <cite>dfile</cite> string defined in the ensemble’s
+Metadata container.   In either case, the recommended way to set the
+<cite>dir</cite> and <cite>dfile</cite> arguments is with a custom function passed through a
+map operator.  Perhaps the easiest way to see this is to give an
+example that is a variant of that above:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_names</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Examples setting dir and dfile from Metadata attributes assumed</span>
+<span class="sd">  to have been set earlier.  Example sets a constant dir value</span>
+<span class="sd">  with file names set by the string representation of source_id.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="nb">dir</span> <span class="o">=</span> <span class="s1">&#39;wf/example_project&#39;</span>   <span class="c1"># sets dir the same for all data</span>
+  <span class="c1"># this makes setting dfile always resolve and not throw an exception</span>
+  <span class="c1"># elog entry is demontrates good practice in handling such errors.</span>
+  <span class="k">if</span> <span class="s1">&#39;source_id&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+    <span class="n">dfile</span> <span class="o">=</span> <span class="s2">&quot;source_</span><span class="si">{}</span><span class="s2">.dat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source_id</span><span class="p">))</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">dfile</span><span class="o">=</span><span class="s2">&quot;UNDEFINED_source_id_data&quot;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;set_names (WARNING):  source_id value is undefined for this datum</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Data written to default dfile name=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dfile</span><span class="p">)</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+  <span class="n">d</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span>
+  <span class="n">d</span><span class="p">[</span><span class="s1">&#39;dfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
+  <span class="k">return</span> <span class="n">d</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">detrend</span><span class="p">)</span>
+<span class="c1"># other processing functions in map operators would typically go here</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">set_names</span><span class="p">)</span>
+<span class="n">wfidslist</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="c1"># wfidslist will be a python list of ObjectIds</span>
+</pre></div>
+</div>
+<p>A final point for this section is that to make the writer as robust as
+possible there is a default behavior to handle the case where
+<cite>dir</cite> and/or <cite>dfile</cite> are not defined.  The default for <cite>dir</cite> is
+the current (run) directory.  The handling of <cite>dfile</cite> is more elaborate.
+We use a “uuid generator” to create a unique string to define dfile.
+Although that makes the save robust, be aware this creates the very
+case we stated above should never ever be used:  the SAC model with
+one file name per datum.</p>
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
+<section id="example-1-default-read-write">
+<h3>Example 1:  Default read/write<a class="headerlink" href="#example-1-default-read-write" title="Permalink to this heading"></a></h3>
+<p>This example illustrates the simplest example for initiating a workflow
+with <cite>read_distributed_data</cite> and terminating it with <cite>write_distributed_data</cite>.
+It also illustrates a couple of useful generic tests to verify
+things went as expected:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assumes imports and db defined above</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="c1"># processing functions in map operators would go here</span>
+<span class="c1">#</span>
+<span class="c1"># note we don&#39;t call computer/collect after write_distributed_data</span>
+<span class="c1"># it initates the lazy computations</span>
+<span class="n">wfidslist</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span>
+            <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;example1&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+<span class="c1"># this will give the maximum number of data possible to compare to nwf</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of list returned by write_distributed_data=&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">wfidslist</span><span class="p">))</span>
+<span class="c1"># This is the number actually saved</span>
+<span class="n">nwf</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s1">&#39;data_tag&#39;</span> <span class="p">:</span> <span class="s1">&#39;example1&#39;</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of saved wf documents=&quot;</span><span class="p">,</span><span class="n">nwf</span><span class="p">)</span>
+<span class="c1"># this works only if cemetery was empty at the start of processing</span>
+<span class="n">ndead</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cemetery</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of data killed in this run=&quot;</span><span class="p">,</span><span class="n">ndead</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note the reader always reads the data as directed by attributes of
+the documents in the <cite>wf_TimeSeries</cite> collection.
+The writer defaults to writing data to <cite>gridfs</cite> to the same collection,
+but with a <cite>data_tag</cite> used to separate data being written from the
+input indexed in the same collection.</p>
+</section>
+<section id="example-2-atomic-writes-to-file-storage">
+<h3>Example 2:  atomic writes to file storage<a class="headerlink" href="#example-2-atomic-writes-to-file-storage" title="Permalink to this heading"></a></h3>
+<p>This example is a minor variant of the example in the section discussing
+how <cite>dir</cite> and <cite>dfile</cite> are used with file IO above.  There are three differences:</p>
+<ol class="arabic simple">
+<li><p>It organizes output into directories defined by SEED station code and
+writes file all the files from a given year in different files.
+(e.g. path = “II_AAK_BHZ_00/1998”).</p></li>
+<li><p>The reader access the wf_miniseed collection.   That assures the seed
+station codes should be defined for each datum.</p></li>
+<li><p>I use the pyspark variant which requires the SparkContext constructs
+see in this example.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_dir_dfile</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Function used to set dir and dfile for example 2.</span>
+
+<span class="sd">  dir is set to a net_sta_chan_loc name (e.g. II_AAK_BHZ_00) and</span>
+<span class="sd">  dfile is set to the year of the start time of each datum.</span>
+<span class="sd">  Used for make so input d is assumed to be a TimeSeries.</span>
+<span class="sd">  Important:  assumes the seed codes are set with the</span>
+<span class="sd">  fixed keys &#39;net&#39;,&#39;sta&#39;,&#39;chan&#39;, and &#39;loc&#39;.   That works in this</span>
+<span class="sd">  example because example uses miniseed data as an origin.</span>
+<span class="sd">  Edited copy is returned.  Dead data are returned immediately with no change.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">d</span>
+  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;net&#39;</span><span class="p">):</span>
+    <span class="n">net</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">net</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;sta&#39;</span><span class="p">):</span>
+    <span class="n">sta</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">sta</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;chan&#39;</span><span class="p">):</span>
+    <span class="n">chan</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">chan</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;loc&#39;</span><span class="p">):</span>
+    <span class="n">loc</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+  <span class="c1"># notice that if none of the seed codes are defined the directory</span>
+  <span class="c1"># name is three &quot;_&quot; characters</span>
+  <span class="nb">dir</span> <span class="o">=</span> <span class="n">net</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">sta</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">chan</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">loc</span>
+  <span class="n">d</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span>
+  <span class="n">t0</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
+  <span class="n">year</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span><span class="o">.</span><span class="n">year</span>
+  <span class="n">d</span><span class="p">[</span><span class="s1">&#39;dffile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">d</span>
+
+<span class="c1"># these are needed to enable spark instead of dask defaults</span>
+<span class="kn">import</span> <span class="nn">pyspark</span>
+<span class="n">sc</span> <span class="o">=</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">SparkContext</span><span class="p">(</span><span class="s1">&#39;local&#39;</span><span class="p">,</span><span class="s1">&#39;example2&#39;</span><span class="p">)</span>
+<span class="c1"># Assume other imports and definition of db is above</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
+          <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_miniseed&#39;</span><span class="p">,</span>
+          <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;spark&#39;</span><span class="p">,</span>
+          <span class="n">spark_context</span><span class="o">=</span><span class="n">sc</span><span class="p">,</span>
+          <span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">set_dir_dfile</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>  <span class="c1"># spark syntax</span>
+<span class="c1"># processing functions in map operators would go here</span>
+<span class="c1">#</span>
+<span class="c1"># note we don&#39;t call computer/collect after write_distributed_data</span>
+<span class="c1"># it initates the lazy computations</span>
+<span class="n">wfidslist</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span>
+            <span class="n">storage_mode</span><span class="o">=</span><span class="s1">&#39;file&#39;</span><span class="p">,</span>
+            <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;spark&#39;</span><span class="p">,</span>
+            <span class="n">spark_context</span><span class="o">=</span><span class="n">sc</span><span class="p">,</span>
+            <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;example2&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+<span class="c1"># These are identical to example 1</span>
+<span class="c1"># this will give the maximum number of data possible to compare to nwf</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of list returned by write_distributed_data=&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">wfidslist</span><span class="p">))</span>
+<span class="c1"># This is the number actually saved</span>
+<span class="n">nwf</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s1">&#39;data_tag&#39;</span> <span class="p">:</span> <span class="s1">&#39;example2&#39;</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of saved wf documents=&quot;</span><span class="p">,</span><span class="n">nwf</span><span class="p">)</span>
+<span class="c1"># this works only if cemetery was empty at the start of processing</span>
+<span class="n">ndead</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cemetery</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of data killed in this run=&quot;</span><span class="p">,</span><span class="n">ndead</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-3-parallel-read-write-of-ensembles">
+<h3>Example 3:   Parallel read/write of ensembles<a class="headerlink" href="#example-3-parallel-read-write-of-ensembles" title="Permalink to this heading"></a></h3>
+<p>This example illustrates some special considerations needed to handle
+ensembles.  Features this illustrate are:</p>
+<ol class="arabic simple">
+<li><p>The example reads and forms <cite>TimeSeriesEnsemble</cite> objects grouped by
+the <cite>source_id</cite> attribute.   The algorithm shown will only work if
+a previous workflow has set the <cite>source_id</cite> value in each datum.
+Any datum without <cite>source_id</cite> defined would be dropped from this
+dataset.</p></li>
+<li><p>We show the full set of options for normalization with ensembles.
+Ensemble normalization is complicated by the fact that there are two
+completely different targets for normalization:  (a) ensemble Metadata, and
+(b) each (atomic) ensemble member.   The reader in this example
+does that at load time driven by the two arguments:
+<cite>normalize_ensemble</cite> and <cite>normalize</cite>.  As the names imply
+<cite>normalize_ensemble</cite> is applied to the ensemble’s Metadata
+container while the operators defined in <cite>normalize</cite> are applied in
+a loop over members. This example loads source data in the
+ensemble and channel data into ensemble members.</p></li>
+<li><p>This example uses an approach that is a complexity
+required as an implementation detail for the parallel reader
+to support normalization by ensemble by the reader.  It uses
+the <cite>container_to_merge</cite> option that provides a generic way
+to merge a consistent bag/RDD of other data into the container
+constructed by <cite>read_distributed_data</cite>.  By “consistent” I
+mean the size and number of partitions in the bag/RDD passed
+with that argument must match that of the container being constucted
+by <cite>read_distributed_data</cite>.  In this case, what using that argument
+does is load a <cite>source_id</cite> value in the ensemble Metadata of each
+component of the <cite>data</cite> container constucted by <cite>read_distibuted_data</cite>.
+The reader has a structure that the algorithm to merge the two
+containers is run before attempting to do any normalization.
+(i.e. any normalization defined by either <cite>normalize</cite> or <cite>normalize_ensemble</cite>.)</p></li>
+<li><p>The writer uses <cite>storage_mode=’files’</cite> and the default “format”.   As
+noted above when undefined the format defaults to a raw binary
+write of the sample data to files with the C fwrite function.
+We set <cite>dir</cite> and <cite>dfile</cite> in the ensemble’s Metadata container
+that the writer takes as a signal to write all ensemble data in
+the same file defined by the ensemble <cite>dir</cite> and <cite>dfile</cite>.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_dir_dfile</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Function used to set dir and dfile for example 3.</span>
+
+<span class="sd">  This example sets dir as a constant and sets the file</span>
+<span class="sd">  name, which is used by ensemble, with the source_id string</span>
+<span class="sd">  and a constant suffix of .dat</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">d</span>
+  <span class="nb">dir</span><span class="o">=</span><span class="s1">&#39;wf_example3&#39;</span>
+  <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.dat&#39;</span>
+  <span class="c1"># this example can assume source_id is set. Could not get</span>
+  <span class="c1"># here otherwise</span>
+  <span class="n">srcid</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span>
+  <span class="n">dfile</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">srcid</span><span class="p">)</span>
+  <span class="n">dfile</span> <span class="o">+=</span> <span class="n">suffix</span>
+  <span class="n">d</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span><span class="o">=</span><span class="nb">dir</span>
+  <span class="n">d</span><span class="p">[</span><span class="s1">&#39;dfile&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">dfile</span>
+  <span class="k">return</span> <span class="n">d</span>
+
+<span class="c1"># Assume other imports and definition of db is above</span>
+<span class="c1"># This loads a source collection normalizer using a cache method</span>
+<span class="c1"># for efficiency.  Note it is used in read_distibuted_data below</span>
+<span class="n">source_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
+                      <span class="s2">&quot;source&quot;</span><span class="p">,</span>
+                      <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+
+<span class="n">srcid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s1">&#39;source_id&#39;</span><span class="p">)</span>
+<span class="n">querylist</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">srcid_list</span><span class="p">:</span>
+  <span class="n">querylist</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;source_id&#39;</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">})</span>
+<span class="n">source_bag</span> <span class="o">=</span> <span class="n">bag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">querylist</span><span class="p">)</span>
+<span class="c1"># This is used to normalize each member datum using miniseed</span>
+<span class="c1"># station codes and time</span>
+<span class="n">mseed_matcher</span> <span class="o">=</span> <span class="n">MiniseedMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
+          <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_miniseed&#39;</span><span class="p">,</span>
+          <span class="n">normalize</span><span class="o">=</span><span class="p">[</span><span class="n">mseed_matcher</span><span class="p">],</span>
+          <span class="n">normalize_ensemble</span><span class="o">=</span><span class="p">[</span><span class="n">source_matcher</span><span class="p">],</span>
+          <span class="n">container_to_merge</span><span class="o">=</span><span class="n">source_bag</span><span class="p">,</span>
+          <span class="p">)</span>
+<span class="c1"># algorithms more appropriate for TimeSeries data would be run</span>
+<span class="c1"># here with one or more map operators</span>
+
+<span class="c1"># normalization with channel by mseed_matcher allows this</span>
+<span class="c1"># fundamenal algorithm to be run.  Converts TimeSeriesEnsemble</span>
+<span class="c1"># objects to SeismogramEnsemble objects</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">bundle</span><span class="p">)</span>
+
+<span class="c1"># other processing functions for Seismogram in map operators would go here</span>
+
+<span class="c1"># finally set the dir and dfile fields</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">set_dir_dfile</span><span class="p">)</span>
+<span class="c1"># note we don&#39;t call computer/collect after write_distributed_data</span>
+<span class="c1"># it initates the lazy computations</span>
+<span class="n">wfidslist</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_Seismogram&#39;</span><span class="p">,</span>
+            <span class="n">storage_mode</span><span class="o">=</span><span class="s1">&#39;file&#39;</span><span class="p">,</span>
+            <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;spark&#39;</span><span class="p">,</span>
+            <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;example3&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+<span class="c1"># These are identical to example 1</span>
+<span class="c1"># this will give the maximum number of data possible to compare to nwf</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of list returned by write_distributed_data=&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">wfidslist</span><span class="p">))</span>
+<span class="c1"># This is the number actually saved</span>
+<span class="n">nwf</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s1">&#39;data_tag&#39;</span> <span class="p">:</span> <span class="s1">&#39;example3&#39;</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of saved wf documents=&quot;</span><span class="p">,</span><span class="n">nwf</span><span class="p">)</span>
+<span class="c1"># this works only if cemetery was empty at the start of processing</span>
+<span class="n">ndead</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cemetery</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of data killed in this run=&quot;</span><span class="p">,</span><span class="n">ndead</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-4-intermediate-processing-result-save">
+<h3>Example 4: Intermediate processing result save<a class="headerlink" href="#example-4-intermediate-processing-result-save" title="Permalink to this heading"></a></h3>
+<p>It is sometimes necessary, particularly in a research context,
+to have a workflow save an intermediate result.   In the context of
+a parallel workflow, that means one needs to do a save
+within a sequence of calls to map/reduce operators.
+As noted above <cite>write_distributed_data</cite> always is a terminator
+for a chain of lazy/delayed calculations.  It always returns
+some version of a list of ObjectIds of the saved wf documents.</p>
+<p>One approach for an intermediate save is to immediately
+follow a call to <cite>write_distributed_data</cite> with a call to
+<cite>read_ensemble_data</cite>.   In general that approach, in fact,
+is what is most useful in the context.  Often the reason for
+an intermediate save is to verify things are working as you
+expected.   In that case, you likely will want to
+explore the data a bit before moving on anyway.
+e.g. I usually structure work with MsPASS into a set of
+notebooks were each one ends up with the data set saved in a particular,
+often partially processed, state.</p>
+<p>An alternative that can be useful for intermediate saves
+is illustrated in the following example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="c1"># set of map/reduce operators would go here</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span>
+                                  <span class="n">d</span><span class="p">,</span>
+                                  <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span>
+                                  <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;save1&#39;</span><span class="p">,</span>
+                                  <span class="n">return_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                  <span class="p">)</span>
+<span class="c1"># more map/reduce operators</span>
+<span class="n">wfids</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
+           <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span>
+           <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;finalsave&#39;</span><span class="p">,</span>
+           <span class="p">)</span>
+</pre></div>
+</div>
+<p>where we used mostly defaults on all the function calls to keep the
+example simple.  Rarely would that be the right usage.
+A critical feature is the <cite>return_data=True</cite> option send to the
+<cite>save_data</cite> method of <cite>Database</cite>.  With that option the method
+returns a copy of the atomic datum it received with additions/changes
+created by the saving operation.</p>
+<p>The approach above is most useful for production workflows where
+the only purpose of the intermediate save is as a checkpoint in the
+event something fails later in the workflow and you need to the
+intermediate case because it was expensive to compute.  As noted
+above, it may actually be faster to do the following instead:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="c1"># set of map/reduce operators would go here</span>
+<span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
+           <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span>
+           <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;save1&#39;</span><span class="p">,</span>
+           <span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
+           <span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;data_tag&#39;</span> <span class="p">:</span> <span class="s1">&#39;save1&#39;</span><span class="p">},</span>
+           <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+
+<span class="c1"># more map/reduce operators</span>
+<span class="n">wfids</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
+           <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span>
+           <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;finalsave&#39;</span><span class="p">,</span>
+           <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="io.html" class="btn btn-neutral float-left" title="I/O in MsPASS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="FAQ.html" class="btn btn-neutral float-right" title="Frequency Asked Questions (FAQ)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -24,7 +24,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Importing Data" href="importing_data.html" />
+    <link rel="next" title="Using MongoDB with MsPASS" href="mongodb_and_mspass.html" />
     <link rel="prev" title="Database Concepts" href="database_concepts.html" />  
 
   <style>
@@ -61,12 +61,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
-<ul class="current">
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
-<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">CRUD Operations in MsPASS</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
@@ -83,16 +83,41 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
 <ul>
@@ -167,7 +192,7 @@ alternative construct:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">Database</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span> <span class="s1">&#39;database_name&#39;</span><span class="p">,</span> <span class="n">db_schema</span><span class="o">=</span><span class="s1">&#39;wf_Seismogram&#39;</span><span class="p">)</span>
+<span class="n">db</span><span class="o">=</span><span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span> <span class="s1">&#39;database_name&#39;</span><span class="p">,</span> <span class="n">db_schema</span><span class="o">=</span><span class="s1">&#39;wf_Seismogram&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If your workflow requires reading both TimeSeries and Seismogram
@@ -182,7 +207,7 @@ the synonymous word “save”.   Here we list all save methods with a brief
 description of each method.  Consult the docstring pages for detailed
 and most up to date usage:</p>
 <ol class="arabic">
-<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a> is probably the most common method you will use.  The
+<li><p><code class="code docutils literal notranslate"><span class="pre">save_data</span></code> is probably the most common method you will use.  The
 first argument is one of the atomic objects defined in MsPASS
 (Seismogram or TimeSeries) that you wish to save.  Options are
 described in the docstring.  Here is an example usage:</p>
@@ -201,7 +226,7 @@ described in the docstring.  Here is an example usage:</p>
 normalized collections (<code class="code docutils literal notranslate"><span class="pre">source</span></code>, <code class="code docutils literal notranslate"><span class="pre">channel</span></code>, and/or <code class="code docutils literal notranslate"><span class="pre">site</span></code>) with no
 safety checks.  We discuss additional common options in a later section.</p>
 </li>
-<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_ensemble_data" title="mspasspy.db.database.Database.save_ensemble_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_ensemble_data</span></code></a> is similar to <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> except the first argument
+<li><p><code class="code docutils literal notranslate"><span class="pre">save_ensemble_data</span></code>  is similar to <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> except the first argument
 is an Ensemble object.  There are currently two of them:  (1) TimeSeriesEnsemble
 and (2) SeismogramEnsemble.   As discussed in the section
 <a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">Data Object Design Concepts</span></a> an Ensemble
@@ -216,12 +241,8 @@ common to the entire group in a separate Metadata container linked to the
 ensemble as a whole.  Prior to entering the loop for saving the atomic
 members of the ensemble the contents of the Ensemble’s Metadata container
 are copied verbatim to each member.  If previous values existed in any
-of the members they will be silently replaced by the ensemble groups version.</p>
-<p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_ensemble_data_binary_file" title="mspasspy.db.database.Database.save_ensemble_data_binary_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_ensemble_data_binary_file</span></code></a>
-is an optimized version of save_ensemble_data. It saves all objects of the
-ensemble into one file, and only opens the file once.</p>
-</li>
-<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_catalog" title="mspasspy.db.database.Database.save_catalog"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_catalog</span></code></a> should be viewed mostly as a convenience method to build
+of the members they will be silently replaced by the ensemble groups version.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> should be viewed mostly as a convenience method to build
 the <code class="code docutils literal notranslate"><span class="pre">source</span></code> collection from QUAKEML data downloaded from FDSN data
 centers via obspy’s web services functions.   <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> can be
 thought of as a converter that translates the contents of a QUAKEML
@@ -251,7 +272,7 @@ our <em>getting_started</em> tutorial.</p>
 <p>This particular example pulls 11 large aftershocks of the 2011 Tohoku
 Earthquake.</p>
 </li>
-<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_inventory" title="mspasspy.db.database.Database.save_inventory"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_inventory</span></code></a> is similar in concept to <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code>, but instead of
+<li><p><code class="code docutils literal notranslate"><span class="pre">save_inventory</span></code> is similar in concept to <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code>, but instead of
 translating data for source information it translates information to
 MsPASS for station metadata.  The station information problem is slightly
 more complicated than the source problem because of an implementation
@@ -309,28 +330,6 @@ If you need to modify an existing site or channel
 collection that has invalid documents you will need to write a custom function to override that
 behaviour or rebuild the collection as needed with web services.</p>
 </li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">write_distributed_data</span></code> is a parallel equivalent of <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> and <code class="code docutils literal notranslate"><span class="pre">save_ensemble_data</span></code>.
-MsPASS supports two parallel frameworks called SPARK and DASK.
-Both abstract the concept of the parallel data set in
-a container they call an RDD and Bag respectively.   Both are best thought
-of as a handle to the entire data set that can be passed between
-processing functions.  The function can be thought of as writing the entire data set
-from a parallel container to storage. The input is SPARK RDD or DASK BAG of objects (TimeSeries or Seismogram), and the
-output is a dataframe of metadata. From the container, it will firstly write to files distributedly
-using SPARK or DASK, and then write to the database sequentially. The two parts are done in two
-functions: <code class="code docutils literal notranslate"><span class="pre">write_files</span></code>, and <code class="code docutils literal notranslate"><span class="pre">write_to_db</span></code>. It returns a dataframe of metadata for
-each object in the original container. The return value can be used as input for <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code>
-function.</p>
-<p>Note that the objects should be written to different files, otherwise it may overwrite each other.
-dir and dfile should be stored in each object.</p>
-<p><code class="code docutils literal notranslate"><span class="pre">write_files</span></code> is the writer for writing the object to storage. Input is an object (TimeSeries/Seismogram),
-output is the metadata of the original object with some more parameters added. This is
-the reverse of <code class="code docutils literal notranslate"><span class="pre">read_files</span></code>.</p>
-<p><code class="code docutils literal notranslate"><span class="pre">write_to_db</span></code> is to save a list of atomic data objects (TimeSeries or Seismogram)
-to be managed with MongoDB. It will write to the doc and to the database for every metadata of the
-target mspass object. Then return a dataframe of the metadata for target mspass objects.
-The function is the reverse of <code class="code docutils literal notranslate"><span class="pre">read_to_dataframe</span></code>.</p>
-</li>
 </ol>
 </section>
 <section id="read">
@@ -341,7 +340,7 @@ and Seismogram.  There are also convenience functions for reading ensembles.
 As with the save operators we discuss here the key methods, but refer the
 reader to the sphinx documentation for full usage.</p>
 <ol class="arabic">
-<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_data</span></code></a> is the core method for reading atomic data.  The method has
+<li><p><code class="code docutils literal notranslate"><span class="pre">read_data</span></code> is the core method for reading atomic data.  The method has
 one required argument.  That argument is an ObjectID for the document used
 to define the read operation OR a MongoDB document (python dict) that
 contains the ObjectID.  The ObjectID is guaranteed to provide a
@@ -349,12 +348,15 @@ unique key to one and only one document and is the way this reader
 finds one and only one record to fetch per call.  The most common use
 is the for with a MongoDB document in a construct like the following
 in a serial job:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="o">...</span><span class="n">Some</span> <span class="n">MongoDB</span> <span class="n">query</span> <span class="nb">dict</span> <span class="n">entry</span><span class="o">...</span><span class="p">}</span>
-<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="c1"># Changed to wf_Seismogram for 3D data</span>
-<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>  <span class="c1"># Add option collection=&#39;wf_Seismogram&#39; for 3C reads</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
+<p>query={…Some MongoDB query dict entry…}
+cursor=db.wf_TimeSeries.find(query) # Changed to wf_Seismogram for 3D data
+for doc in cursor:</p>
+<blockquote>
+<div><p>d=db.read_data(doc)  # Add option collection=’wf_Seismogram’ for 3C reads</p>
+</div></blockquote>
 <p>By default <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> will use the waveform collection defined
 in the schema defined for the handle.  The default for the standard
 MsPASS schema is TimeSeries.   As the comment in the example states
@@ -414,7 +416,7 @@ algorithm.</p></li>
 type mismatch could produce invalid data required by another package.</p></li>
 </ol>
 </li>
-<li><p>A closely related function to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> is <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data" title="mspasspy.db.database.Database.read_ensemble_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_ensemble_data</span></code></a>.  Like
+<li><p>A closely related function to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> is <code class="code docutils literal notranslate"><span class="pre">read_ensemble_data</span></code>.  Like
 <code class="code docutils literal notranslate"><span class="pre">save_ensemble_data</span></code> it is mostly a loop to assemble an ensemble of
 atomic data using a sequence of calls to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code>.  The sequence of
 what to read is defined by arg 0.   That arg must be one of two things:
@@ -437,17 +439,11 @@ to impose constraints on the query. That is always good practice.</p>
     <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_ensemble_data</span><span class="p">(</span><span class="n">cursoe</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data_group" title="mspasspy.db.database.Database.read_ensemble_data_group"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_ensemble_data_group</span></code></a>
-is an optimized version of <code class="code docutils literal notranslate"><span class="pre">save_ensemble_data</span></code>. It groups the files firstly to avoid
-duplicate open for the same file. Open and close the file only when the dir or dfile change.
-When multiple objects store in the same file, this function will group the files first
-and collect their foffs in that file. Then open the file once, and sequentially read the data
-according to the foffs. This function only supports reading from binary files.</p>
 </li>
 <li><p>A workflow that needs to read and process a large data sets in
 a parallel environment should use
 the parallel equivalent of <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> and <code class="code docutils literal notranslate"><span class="pre">read_ensemble_data</span></code> called
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">read_distributed_data</span></code>.  MsPASS supports two parallel frameworks called
+<code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code>.  MsPASS supports two parallel frameworks called
 SPARK and DASK.   Both abstract the concept of the parallel data set in
 a container they call an RDD and Bag respectively.   Both are best thought
 of as a handle to the entire data set that can be passed between
@@ -481,21 +477,6 @@ a block of example code should make this clearer:</p>
 <p>The output of the read is the SPARK RDD that we assign the symbol rdd0.
 If you are using DASK instead of SPARK you would add the optional
 argument <code class="code docutils literal notranslate"><span class="pre">format='dask'</span></code>.</p>
-<p><code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> divide the process of reading into two parts:
-reading from database and reading from file, where reading from database is
-done in sequence, and reading from file is done with DASK or SPARK. The two parts
-are done in two functions: <code class="code docutils literal notranslate"><span class="pre">read_to_dataframe</span></code>, and <code class="code docutils literal notranslate"><span class="pre">read_files</span></code>.
-The division is to avoid using database in DASK or SPARK to improve efficiency.</p>
-<p>The input can also be a dataframe, which stores the information of the metadata.
-It will read from file/gridfs according to the metadata and construct the objects.</p>
-<p><code class="code docutils literal notranslate"><span class="pre">read_to_dataframe</span></code> firstly construct a list of objects using cursor.
-Then for each object, constrcut the metadata and add to the list. Finally it will
-convert the list to a dataframe.</p>
-<p><code class="code docutils literal notranslate"><span class="pre">read_files</span></code> is the reader for constructing the object from storage. Firstly construct the object,
-either TimeSeries or Seismogram, then read the stored data from a file or in gridfs and
-loads it into the mspasspy object. It will also load history in metadata. If the object is
-marked dead, it will not read and return an empty object with history. The logic of reading
-is same as <code class="code docutils literal notranslate"><span class="pre">Database.read_data</span></code>.</p>
 </li>
 </ol>
 </section>
@@ -566,7 +547,11 @@ with caution.</p></li>
 <p>We trust rules 1 and 2 require no further comment.  Rule 3, however,
 needs some clarification to understand how we handle deletes.
 A good starting point is to look at the signature of the simple core delete
-method of the Database class: <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.delete_data" title="mspasspy.db.database.Database.delete_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete_data</span></code></a></p>
+method of the Database class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">delete_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">id</span><span class="p">,</span><span class="n">remove_unreferenced_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">clear_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">clear_elog</span><span class="o">=</span><span class="kc">False</span><span class="p">):)</span>
+</pre></div>
+</div>
 <p>As with the read methods id is the ObjectID of the wf collection document
 that references the data to be deleted.
 Similarly, the idea of the <code class="code docutils literal notranslate"><span class="pre">clear_history</span></code> and <code class="code docutils literal notranslate"><span class="pre">clear_elog</span></code>
@@ -760,12 +745,12 @@ list of elog messages:</p>
 <blockquote>
 <div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This needs to be checked for correctness - done while off the grid</span>
 <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;$def&#39;</span> <span class="p">:</span> <span class="s1">&#39;tombstone&#39;</span><span class="p">}</span>
-<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="n">cursor</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-  <span class="n">wfmd</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;tombstone&#39;</span><span class="p">]</span>
+  <span class="n">wfmd</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;tombstone&#39;</span><span class="p">]</span>
   <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error log contents for this Seismogram marked dead:&#39;</span><span class="p">,</span>
-        <span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">],</span> <span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">],</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;startime&#39;</span><span class="p">]))</span>
-  <span class="n">err</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;logdata&#39;</span><span class="p">]</span>
+     <span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">],</span><span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">],</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;startime&#39;</span><span class="p">])</span>
+  <span class="n">err</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;logdata&#39;</span><span class="p">]</span>
   <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">err</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
 </pre></div>
@@ -888,7 +873,7 @@ do nothing to any existing tag (i.e. the tag is not updated).</p></li>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="database_concepts.html" class="btn btn-neutral float-left" title="Database Concepts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="importing_data.html" class="btn btn-neutral float-right" title="Importing Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mongodb_and_mspass.html" class="btn btn-neutral float-right" title="Using MongoDB with MsPASS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Normalization" href="normalization.html" />
-    <link rel="prev" title="Processing History Concepts" href="processing_history_concepts.html" />  
+    <link rel="next" title="Memory Management" href="memory_management.html" />
+    <link rel="prev" title="Adapting an Existing Algorithm to MsPASS" href="adapting_algorithms.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -61,20 +61,40 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">User Manual</span></p>
-<ul class="current">
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
-<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Parallel Processing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-model">Data Model</a></li>
@@ -90,11 +110,25 @@
 <li class="toctree-l3"><a class="reference internal" href="#ensemble-example">Ensemble Example</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#new-organization-for-discussion">New Organization for discussion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cluster-fundamentals">Cluster fundamentals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#start-of-old-section">Start of old section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workload-manager-setup">Workload Manager Setup</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
 <ul>
@@ -130,7 +164,7 @@
            <div itemprop="articleBody">
              
   <section id="parallel-processing">
-<span id="parallel-processesing"></span><h1>Parallel Processing<a class="headerlink" href="#parallel-processing" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Parallel Processing<a class="headerlink" href="#parallel-processing" title="Permalink to this heading"></a></h1>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
 <p>One of the primary goals of MsPASS was a framework to make
@@ -155,7 +189,7 @@ while migration takes an input ensemble and produces a (modified) ensemble.
 All these examples can be implemented in MsPASS framework to take advantage
 of the repetitious nature of the processors.  That is, all can be the thought of
 as black boxes that take one or more seismic data objects as input and emit
-one or more modified data objects (not necessarily of the same type or number as
+more or modified data objects (not necessarily of the same type or number as
 the inputs).  A full processing workflow is assembled by chaining a series of
 processing steps with data moving between the processing steps by a system
 dependent process.   Dask and Spark generalize this by fragmenting the processing
@@ -164,7 +198,7 @@ process largely opaque to you as the user.  An added benefit that is less
 obvious is that lower-level parallel granularity is possible for a
 python function designed to exploit the capability.  This user manual,
 however, focuses exclusively on algorithm level granularity.   We refer
-the reader to extensive printed and online documentation for Dask and Spark
+the reader to extensive printed and online documentation for DASK and Spark
 for functionality needed to add parallelism inside an individual python
 function.</p>
 </section>
@@ -185,11 +219,11 @@ computer’s memory.   Spark refers to this abstraction as a
 Resiliant Distributed Dataset (RDD) while Dask calls the same thing a “bag”.</p>
 <p>In MsPASS the normal content of a bag/RDD is a dataset made up of <em>N</em>
 MsPASS data objects:  TimeSeries, Seismogram, or one of the ensemble of
-either of the atomic types.   An implicit assumption in the current
+either of the atomic types.  An implicit assumption in the current
 implementation is that any processing
 was proceeded by a data assembly and validation phase.
 Procedures for data import and data validation
-are described in the section <a class="reference internal" href="importing_data.html#importing-data"><span class="std std-ref">Importing Data</span></a>.
+are described in this section <a class="reference internal" href="importing_data.html#importing-data"><span class="std std-ref">Importing Data</span></a>.
 A key concept here is that “importing” a data set to MsPASS means the
 entire data set has been assembled and loaded either into the gridfs
 file system internal to MongoDB or an index has been built for all data
@@ -198,7 +232,7 @@ be a mix of the two
 because the MsPASS readers abstract the entire process of loading data
 for processing.  In addition, any required normalization data (i.e.
 data in the <em>site</em>, <em>channel</em>, and/or <em>source</em> collections) must be
-loaded and cross-referencing validated as described in <span class="xref std std-ref">database_normalization</span>.
+loaded and cross-referencing validated as described in <a class="reference internal" href="normalization.html#normalization"><span class="std std-ref">Normalization</span></a>.
 Once the data set is fully assembled the bag/RDD defining the abstraction of the
 data is easily defined by a variant of the following code section:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">DBClient</span>
@@ -234,9 +268,9 @@ a common concept of a buffered list.</p>
 <h3>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h3>
 <p>A second key concept we utilize for processing algorithms in MsPASS is the
 abstraction of
-<a class="reference external" href="https://en.wikipedia.org/wiki/Functional_programming">functional programming</a>,
+<a href="#id4"><span class="problematic" id="id5">`functional programming&lt;https://en.wikipedia.org/wiki/Functional_programming&gt;`__</span></a>,
 which is a branch of programming founded on
-<a class="reference external" href="https://en.wikipedia.org/wiki/Lambda_calculus">lambda calculus</a>.
+<a href="#id4"><span class="problematic" id="id6">`lambda calculus&lt;https://en.wikipedia.org/wiki/Lambda_calculus&gt;`__</span></a>.
 For most seismologists that abstraction is likely best treated only as
 a foundational concept that may or may not be helpful depending on your
 background. It is important, however,
@@ -252,22 +286,13 @@ a bag or RDD.  There are two forms we use in MsPASS with these general forms:</p
 </div>
 <p>Noting that Spark calls the later operation the (more common) name <em>reduce</em>.</p>
 <p>These two constructs can be thought of as black boxes that handle inputs
-as illustrated below in Figure <code class="xref std std-numref docutils literal notranslate"><span class="pre">map_reduce_figure</span></code>:</p>
-<figure class="align-center" id="id2">
-<span id="map-reduce"></span><a class="reference internal image-reference" href="../_images/map_reduce.png"><img alt="../_images/map_reduce.png" src="../_images/map_reduce.png" style="width: 600px;" /></a>
-<figcaption>
-<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Figure <code class="xref std std-numref docutils literal notranslate"><span class="pre">map_reduce_figure</span></code>.  Illustration of map-reduce concepts.
-The boxes labeled “Transformation” are map operators and those
-labeled “Action” are reduce operators.  Both are alternative terms used
-by some sources for the same concepts. The top boxes illustrate the
-overall workflow as four steps.   The middle section shows how that
-would be fragmented and handled as distinct tasks by Spark (Dask is similar).
-The lower set of boxes illustrate how other component of MsPASS interact
-with Spark/Dask.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
-</figcaption>
-</figure>
-<p>We expand on the map/transformation and reduce/action operators in subsection
-below.</p>
+as illustrated below:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>simple figure here showing map and reduce in a graphical form -</p></li>
+</ul>
+</div></blockquote>
+<p>We expand on each of these constructs below.</p>
 </section>
 <section id="the-map-operator">
 <h3>The map operator<a class="headerlink" href="#the-map-operator" title="Permalink to this heading"></a></h3>
@@ -277,10 +302,10 @@ but not always (e.g the <em>bundle</em> algorithm takes a TimeSeriesEnsemble as
 and input and emits a SeismogramEnsemble).   A concrete example for
 the application of a simple filter in dask is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume dbhandle is set as a Database class as above</span>
-<span class="n">cursor</span> <span class="o">=</span> <span class="n">dbhandle</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
-<span class="n">d_in</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">dbhandle</span><span class="p">,</span><span class="n">cursor</span><span class="p">)</span>
-<span class="n">d_out</span> <span class="o">=</span> <span class="n">d_in</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
-<span class="n">d_compute</span> <span class="o">=</span> <span class="n">d_out</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+<span class="n">cursor</span><span class="o">=</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
+<span class="n">d_in</span><span class="o">=</span><span class="n">read_distributed_data</span><span class="p">(</span><span class="n">dbhandle</span><span class="p">,</span><span class="n">cursor</span><span class="p">)</span>
+<span class="n">d_out</span><span class="o">=</span><span class="n">d_in</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+<span class="n">d_compute</span><span class="o">=</span><span class="n">d_out</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>This example applies the obpsy default bandpass filter to all data
@@ -292,10 +317,9 @@ output in the created (new) bag <em>d_out</em>.    The last line is way you tell
 “go” (i.e. proceed with the calculations) and store the computed result in the <em>d_compute</em>.
 The idea and reasons for the concept of of “lazy” or “delayed”
 operation is discussed at length in various sources on dask (and Spark).
-We refer the reader to online sources easily found by searching for
-the keyword for more on this general topic.
+We refer the reader to (LIST OF A FEW KEY URLS) for more on this general topic.
 The final output, which we chose above to give a new symbol name
-of <code class="code docutils literal notranslate"><span class="pre">d_compute</span></code>, is a list containing the processed data.</p>
+of <code class="code docutils literal notranslate"><span class="pre">d_compute</span></code>, is bag containing the processed data.</p>
 <p>The same construct in Spark, unfortunately, requires a different set of
 constructs for two reasons:  (1) pyspark demands a functional
 programming construct called a lambda function, and (2) spark uses a
@@ -337,10 +361,10 @@ is an example familiar to all seismologists that can be used to illustrate
 what a <cite>Reduce</cite> operator is.
 The following is a crude MsPASS serial implementation of
 stacking all the members of an ensemble:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_ensemble_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
-<span class="n">stack</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-    <span class="n">stack</span> <span class="o">+=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ensemble</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">read_ensemble_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+<span class="n">stack</span><span class="o">=</span><span class="n">TimeSeries</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+  <span class="n">stack</span> <span class="o">+=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>That code is pretty simple because the += operator is defined for the TimeSeries
@@ -350,7 +374,8 @@ that the operation is summing a set of TimeSeries objects to produce the
 single result stored with the symbol <code class="code docutils literal notranslate"><span class="pre">stack</span></code>.</p>
 <p>We will get to the rules that constrain <cite>Reduce</cite> operators in a moment, but
 it might be more helpful to you as a user to see how that algorithm
-translates into dask/spark.  MsPASS has a parallel <a class="reference internal" href="../python_api/mspasspy.reduce.html#mspasspy.reduce.stack" title="mspasspy.reduce.stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">stack</span></code></a> algorithm.
+translates into dask/spark.  MsPASS has a parallel stack algorithm found
+<a href="#id13"><span class="problematic" id="id14">`here&lt;https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py&gt;`_</span></a>
 It is used in a parallel context as follows for dask:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">ddb</span><span class="o">.</span><span class="n">fold</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">stack</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
 </pre></div>
@@ -359,8 +384,8 @@ It is used in a parallel context as follows for dask:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">rdd</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">stack</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>The <a class="reference internal" href="../python_api/mspasspy.reduce.html#mspasspy.reduce.stack" title="mspasspy.reduce.stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">stack</span></code></a> symbol refers to a python function that is actually quite simple. You can view
-the source code <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py">here</a>.
+<p>The <code class="code docutils literal notranslate"><span class="pre">stack</span></code> symbol refers to a python function that is actually quite simple. You can view
+the source code <a href="#id15"><span class="problematic" id="id16">`here&lt;https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py&gt;`_</span></a>.
 It is simple because most of the complexity is hidden behind the +=
 symbol that invokes that operation in C++ (<cite>TimeSeries::operator+=</cite> for anyone
 familiar with C++) to add the right hand side to the left hand side of
@@ -373,7 +398,7 @@ the use of python decorator defined by this line in the stack source code:</p>
 <p>The final issue we need to cover in this section is what exactly is meant
 by the phrase “any suitable reduce function” at the end of the previous paragraph?
 To mesh with the reduce framework used by spark and dask a function has
-to satisfy <a class="reference external" href="https://en.wikipedia.org/wiki/Reduction_operator">the following rules</a></p>
+to satisfy <a href="#id17"><span class="problematic" id="id18">`the following rules&lt;https://en.wikipedia.org/wiki/Reduction_operator&gt;`_</span></a></p>
 <ol class="arabic simple">
 <li><p>The first two arguments (a and b symbols in the example above)
 must define two instances of the same type
@@ -435,8 +460,8 @@ are data driven. Usually this scheduling
 overhead is relatively small unless the execution time for
 processing is trivial.</p>
 <p>For more information, the dask documentation found
-<a class="reference external" href="https://docs.dask.org/en/latest/scheduling.html">here</a> is a good
-starting point..</p>
+<a href="#id19"><span class="problematic" id="id20">`here&lt;https://docs.dask.org/en/latest/scheduling.html&gt;`_</span></a> is a good
+starting point.</p>
 </section>
 </section>
 <section id="examples">
@@ -445,61 +470,224 @@ starting point..</p>
 <h3>Atomic Data Example<a class="headerlink" href="#atomic-data-example" title="Permalink to this heading"></a></h3>
 <p>The simplest workflow is one that works only with atomic
 data (i.e. TimeSeries or Seismogram objects).  The example
-in the Data Model section above is of this type.
+example in the Data Model section above is of this type.
 The following fragment is similar with a few additional processing steps.
 It reads all data indexed in the data base as Seismogram objects,
 runs a demean operator,
 runs a simple bandpass filter, windows the data to a smaller range
 defined by the window_seis function defined at he top, it
 using the data start time, and then saves the results.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cursor</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
 <span class="c1"># read -&gt; detrend -&gt; filter -&gt; window</span>
 <span class="c1"># example uses dask scheduler</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span><span class="s1">&#39;demean&#39;</span><span class="p">)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 <span class="c1"># windowing is relative to start time.  300 s window starting at d.t0+200</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">t0shift</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">))</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="mf">200.0</span><span class="p">,</span><span class="mf">500.0</span><span class="p">,</span><span class="n">t0shift</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">))</span>
 <span class="n">data_out</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
 <section id="ensemble-example">
 <h3>Ensemble Example<a class="headerlink" href="#ensemble-example" title="Permalink to this heading"></a></h3>
-<p>This example shows a common construct used to build ensembles as the
-working data object.  In this case the workflow is working with what
-in reflection processing would be called a common-source-gather.
-It uses a construct that exploits MongoDB’s functionality for selecting
-data.  It also demonstrates how a map operator can have drastically
-different inputs than outputs.   In this case, we first assemble
-a list of sources to be process defined by the <code class="code docutils literal notranslate"><span class="pre">source_id</span></code> attribute.
-This example uses a MongoDB incantation to get a list of unique source_id values.
-It then converts the list to a dask bag (<code class="code docutils literal notranslate"><span class="pre">bag.from_sequence</span></code> line).
-We then apply the custom function defined at the top of this code block to
-query MongoDB and return a ensemble of all data with that particular source id.
-It then applies a set of signal processing algorithms similar to above noting
-how the MsPASS functions automatically handle the type switch.</p>
+<p>This example needs to use function to build a query, put the query
+in a map call, and then run an ensemble process.
+Here is an untested prototype for this manual</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">read_common_source_gather</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="p">,</span><span class="n">srcid</span><span class="p">):</span>
   <span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
   <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span> <span class="p">:</span> <span class="n">srcid</span> <span class="p">}</span>
   <span class="c1"># note with logic of this use we don&#39;t need to test for</span>
   <span class="c1"># no matches because distinct returns only not null source_id values dbcol</span>
   <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-  <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_ensemble</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
+  <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_ensemble</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
   <span class="k">return</span> <span class="n">ensemble</span>
 
 <span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span>
 <span class="n">srcidlist</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">srcidlist</span><span class="p">)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">srcid</span> <span class="p">:</span> <span class="n">read_common_source_gather</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">,</span> <span class="n">srcid</span><span class="p">))</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span> <span class="s1">&#39;demean&#39;</span><span class="p">)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">srcid</span> <span class="p">:</span> <span class="n">read_common_source_gather</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">,</span><span class="n">srcid</span><span class="p">))</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span><span class="s1">&#39;demean&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 <span class="c1"># windowing is relative to start time.  300 s window starting at d.t0+200</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">t0shift</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">))</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="mf">200.0</span><span class="p">,</span><span class="mf">500.0</span><span class="p">,</span><span class="n">t0shift</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">))</span>
 <span class="n">data_out</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 </pre></div>
 </div>
+</section>
+</section>
+<section id="new-organization-for-discussion">
+<h2>New Organization for discussion<a class="headerlink" href="#new-organization-for-discussion" title="Permalink to this heading"></a></h2>
+</section>
+<section id="cluster-fundamentals">
+<h2>Cluster fundamentals<a class="headerlink" href="#cluster-fundamentals" title="Permalink to this heading"></a></h2>
+<p>Overview of what one has to deal with to configure a parallel system
+in a distributed cluster versus a multicore workstation.   Here are things
+I can think of we need to discuss:</p>
+<ul class="simple">
+<li><p>batch Schedulers</p></li>
+<li><p>node-to-node communications</p></li>
+<li><p>containers in a distributed environment</p></li>
+<li><p>to shard or not to shard, that is the question</p></li>
+<li><p>io performance issues and choices (relates to file system related configuration)</p></li>
+</ul>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h2>
+<p>subsections for each of the above topics centered on example.</p>
+<p>I think we should reorganize the script to have related
+setups grouped by the categories we choose for this
+user manual section (as much as possible - there may
+be some order dependence)</p>
+</section>
+<section id="start-of-old-section">
+<h2>Start of old section<a class="headerlink" href="#start-of-old-section" title="Permalink to this heading"></a></h2>
+</section>
+<section id="id2">
+<h2>Configuration<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<section id="id3">
+<h3>Overview<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<p>Some configuration will be needed to run MsPASS in a HPC system or
+a departmental cluster.   The reason is that the
+environment of an HPC cluster has numerous complications not found on a
+desktop system.  The example we give
+here is what we use for testing the system on Stampede2 at TACC.
+This section can be thought of as a lengthy explanation centered on
+the example in our github page for configuring MsPASS in a
+large, distributed memory system like TACC’s Stampede2.
+To read this page we recommend you open a second winodw or tab on
+your web browser to the current file in the mspass source code
+directory called <code class="code docutils literal notranslate"><span class="pre">scripts/tacc_examples/distributed_node.sh</span></code>.
+The link to the that file you can view on your web browser is
+<a href="#id4"><span class="problematic" id="id7">`here&lt;https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh&gt;`__</span></a>.
+We note there is an additional example there for running MsPASS
+on a single node at TACC called <code class="code docutils literal notranslate"><span class="pre">scripts/tacc_examples/single_node.sh</span></code>
+you can access directly
+<a href="#id4"><span class="problematic" id="id8">`here&lt;https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/single_node.sh&gt;`__</span></a>,
+The single node setup is useful for testing and may help your understanding
+of what is needed by being much simpler.  We do not discuss that
+example further here, however, because a primary purpose for using
+MsPASS is processing data in a large HPC cluster like TACC.</p>
+<p>nxt para needs to say tis is a shelll script and the section below
+are grouped by functional issues then list them (singularity, mongodb, and ?)</p>
+</section>
+<section id="workload-manager-setup">
+<h3>Workload Manager Setup<a class="headerlink" href="#workload-manager-setup" title="Permalink to this heading"></a></h3>
+<p>It uses a workload manager software installed there called <code class="code docutils literal notranslate"><span class="pre">Slurm</span></code>
+and the associated command keyword <code class="code docutils literal notranslate"><span class="pre">SBATCH</span></code>.   If your
+system does not have Slurm there will be something similar
+(notably Moab or Torque) that
+you will need to substitute.   Perhaps obvious but things like
+file system configuration will need changes to match your local environment.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">Slurm</span></code> is used as a batch control system to schedule a “batch” job on
+a large cluster like Stampede2.  Batch jobs are submitted to be run on
+compute notes by submitting a file the command line tool called <code class="code docutils literal notranslate"><span class="pre">sbatch</span></code>.
+The submitted file is a expected to be a unix shell script that runs
+your “batch job”.   To be run under <code class="code docutils literal notranslate"><span class="pre">Slurm</span></code> the
+shell script normally defines a set of run configuration parameters
+defined in the first few lines of the script.  Here is a typical examples:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#SBATCH -J mspass          # Job name - change as approrpiate</span>
+<span class="c1">#SBATCH -o mspass.o%j      # Name of stdout output file redirection</span>
+<span class="c1">#SBATCH -p normal          # Queue (partition) name</span>
+<span class="c1">#SBATCH -N 2               # Total # of nodes requested (2 for this example)</span>
+<span class="c1">#SBATCH -n 2               # Total # of mpi tasks</span>
+<span class="c1">#SBATCH -t 02:00:00        # Run time (hh:mm:ss)</span>
+</pre></div>
+</div>
+<p>This example requests 2 nodes (-N 2) for a run time of 2 hours (-t line) submitted
+to TACC’s “normal” queue (-p normal).   Note the <code class="code docutils literal notranslate"><span class="pre">Slurm</span></code> configuration parameters
+are preceded by the keyword <code class="code docutils literal notranslate"><span class="pre">#SBATCH</span></code>.   The lines begin with the “#”
+symbol which the unix shell will treat as a comment.   That is done for a
+variety of reasons but one important practical one is to test the syntax of a
+script on a head node without having to submit the full job.</p>
+<p>MsPASS was designed to be run in a container.   For a workstation environment
+we assume the container system being used is docker.   Running
+MsPASS with docker is described on
+<a href="#id4"><span class="problematic" id="id9">`this wiki page&lt;https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Docker&gt;`__</span></a>.
+All HPC systems we know have a docker compatible system called
+<code class="code docutils literal notranslate"><span class="pre">singularity</span></code>.   Singularity can be thought of as docker for a large
+HPC cluster.   The most important feature of singularity for you as a user
+is that it uses exactly the same container file as docker.  i.e. you “pull” the
+docker container and that is used by singularity in a very similar fashion to
+the way it used by docker as follows:</p>
+<p>For more about running MsPASS with singularity consult our
+wiki page found
+<a href="#id4"><span class="problematic" id="id10">`here&lt;https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Singularity-(on-HPC)&gt;`__</span></a>.
+Since our examples here were constructed on TACC’ Stampede2 you may also
+find it useful to read their page on using singularity found
+<a href="#id4"><span class="problematic" id="id11">`here&lt;https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html&gt;`__</span></a></p>
+<p>There is a single node mode you may want to run for testing.
+You can find an example of how to configure Stampede2 to run on a single
+node in the MsPASS scripts/tacc_examples found on github
+<a href="#id4"><span class="problematic" id="id12">`here&lt;https://github.com/mspass-team/mspass/tree/master/scripts/tacc_examples&gt;`__</span></a>.
+We focus is manual on configuration for a production run using multiple
+nodes, that is a primary purpose of using MsPASS for data processing.
+The example we give here is the</p>
+<p>There are two ways we could deploy our system on stampede2, which are single node mode and distributed mode.
+You could refer those two job script in our /scripts/tacc_examples folder in our source code. Here we would
+introduce the common parts and elements in both scripts.</p>
+<p>In both modes, we would specify the working directory and the place we store our docker image. That’s why
+these two lines are in the job scripts:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># working directory</span>
+<span class="nv">WORK_DIR</span><span class="o">=</span><span class="nv">$SCRATCH</span>/mspass/single_workdir
+<span class="c1"># directory where contains docker image</span>
+<span class="nv">MSPASS_CONTAINER</span><span class="o">=</span><span class="nv">$WORK2</span>/mspass/mspass_latest.sif
+</pre></div>
+</div>
+<p>The paths for these two variables can be changed according to your case and where you want to store the image.
+And it doesn’t matter if the directory doesn’t exist, the job script would create one if needed.</p>
+<p>Then we define the SING_COM variable to simplify the workflow in our job script. On Stampede2 and most of HPC
+systems, we use Singularity to manage and run the docker images. There are many options to start a container
+using singularity, which you could refer to their documentation. And for those who are not familiar with Singularity,
+here is a good <a href="#id21"><span class="problematic" id="id22">`source&lt;https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html&gt;`_</span></a>
+to get start with.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># command that start the container</span>
+module<span class="w"> </span>load<span class="w"> </span>tacc-singularity
+<span class="nv">SING_COM</span><span class="o">=</span><span class="s2">&quot;singularity run </span><span class="nv">$MSPASS_CONTAINER</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Then we create a login port based on the hostname of our primary compute node we have requested. The
+port number is created in a way that guaranteed to be unique and availale on your own machine. After the
+execution of your job script, you would get the ouput file, and you could get the url for accessing the
+notebook running on your compute node. However, from you own computer, you should use this login port to
+access it instead of 8888 which typically is the port we will be using in jupyter notebook because
+we reserve the port for transmitting all the data and bits through the reverse tunnel.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">NODE_HOSTNAME</span><span class="o">=</span><span class="sb">`</span>hostname<span class="w"> </span>-s<span class="sb">`</span>
+<span class="nv">LOGIN_PORT</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$NODE_HOSTNAME</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;&#39;</span><span class="sb">`</span>
+</pre></div>
+</div>
+<p>Next, we create reverse tunnel port to login nodes and make one tunnel for each login so the user can just
+connect to stampede.tacc. The reverse ssh tunnel is a tech trick that could make your own machine connect to
+the machines in the private TACC network.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="sb">`</span>seq<span class="w"> </span><span class="m">4</span><span class="sb">`</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span>ssh<span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span>-g<span class="w"> </span>-N<span class="w"> </span>-R<span class="w"> </span><span class="nv">$LOGIN_PORT</span>:<span class="nv">$NODE_HOSTNAME</span>:8888<span class="w"> </span>login<span class="nv">$i</span>
+<span class="k">done</span>
+</pre></div>
+</div>
+<p>For single node mode, the last thing we need to do is to start a container using the command we defined
+before:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">DB_PATH</span><span class="o">=</span><span class="s1">&#39;scratch&#39;</span>
+<span class="nv">SINGULARITYENV_MSPASS_DB_PATH</span><span class="o">=</span><span class="nv">$DB_PATH</span><span class="w"> </span><span class="se">\</span>
+<span class="nv">SINGULARITYENV_MSPASS_WORK_DIR</span><span class="o">=</span><span class="nv">$WORK_DIR</span><span class="w"> </span><span class="nv">$SING_COM</span>
+</pre></div>
+</div>
+<p>Here we set the environment variables inside the container using this syntactic sugar SINGULARITYENV_XXX.
+For more information, you could view the usage`here&lt;<a class="reference external" href="https://sylabs.io/guides/3.0/user-guide/appendix.html">https://sylabs.io/guides/3.0/user-guide/appendix.html</a>&gt;`_.
+We define and set different variables in different containers we start because in our start-mspass.sh, we
+define different bahavior under different <em>MSPASS_ROLE</em> so that for each role, it will execute the bash
+script we define in the start-mspass.sh. Though it looks complicated and hard to extend, this is prabably
+the best way we could do under stampede2 environment. In above code snippet, we basically start the container
+in all-in-one way.</p>
+<p>There are more other ways we start a container and it depends on what we need for the deployment. You could
+find more in the distributed_node.sh job script. For example, we start a scheduler, a dbmanager and a front-end
+jupyter notebook in our primary compute node and start a spark/dask worker and a MongoDB shard replica on each
+of our worker nodes. Also you could find that the environment variables needed are different and you could find
+the corresponding usage in the start-mspass.sh script in our source code. We hide the implementation detail and
+encapsulate it inside the Dockerfile. One more thing here is we specify number of nodes in our sbatch options,
+for example 4, stampede2 would reserve 4 compute nodes for us, and we would use 1 node as our primary
+compute nodes and 3 nodes as our worker nodes. Therefore, if you need 4 worker nodes, you should sepcify 5
+as your sbatch option for nodes.</p>
 </section>
 </section>
 </section>
@@ -508,8 +696,8 @@ how the MsPASS functions automatically handle the type switch.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="processing_history_concepts.html" class="btn btn-neutral float-left" title="Processing History Concepts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="normalization.html" class="btn btn-neutral float-right" title="Normalization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="adapting_algorithms.html" class="btn btn-neutral float-left" title="Adapting an Existing Algorithm to MsPASS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="memory_management.html" class="btn btn-neutral float-right" title="Memory Management" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

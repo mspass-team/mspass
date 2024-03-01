@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Management &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="I/O in MsPASS" href="io.html" />
+    <link rel="prev" title="Parallel Processing" href="parallel_processing.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Memory Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dags-tasks-and-the-map-reduce-model-of-processing">DAGs, tasks, and the map-reduce model of processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memory-complexities">Memory Complexities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bag-rdd-partitions-and-pure-map-workflows">bag/RDD Partitions and Pure Map Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reduce-operations">Reduce Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utilizing-ensembles-effectively">Utilizing Ensembles Effectively</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-mongodb-to-manage-memory">Using MongoDB to Manage Memory</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Memory Management</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/memory_management.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="memory-management">
+<span id="id1"></span><h1>Memory Management<a class="headerlink" href="#memory-management" title="Permalink to this heading"></a></h1>
+<p><em>Gary L. Pavlis and Ian (Yinzhi) Wang</em></p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<p>Dask and Spark, which are used in MsPASS to exploit parallel processing,
+are generic packages to implement the map-reduce paradigm of parallel processing.
+As generic frameworks Dask and Spark are flexible but not as efficient and
+bombproof as a typical seismic reflection processing package.   One of the
+biggest weaknesses we have found with these packages is default memory management
+can lead to poor performance or, in the worst case, memory faults.
+The biggest problem seems to be when the size of
+the data objects considered atomic (Components of the generalized list called
+an RDD by Spark and a bag by Dask) are a significant fraction of any nodes
+memory.</p>
+<p>In this document we discuss pitfalls we are aware of in
+memory management with MsPASS.  This document is focused mainly on dask
+because we have more experience using it.
+The main dask document on dask memory management is found
+<a class="reference external" href="https://distributed.dask.org/en/stable/memory.html">here</a>.
+The comparable page for spark is <a class="reference external" href="https://spark.apache.org/docs/latest/tuning.html">here</a>.
+As for most heavily used packages like this there are also numerous pages
+on the topic that will quickly bury you with a web search.   We produced this
+document to help you wade through the confusion by focusing on the practical
+experience with MsPASS.  When we are talking specifically about dask or
+spark we will say so.  We will use the term <cite>scheduler</cite> to refer to generic
+concepts common to both.</p>
+<p><em>WARNING:</em>  This is an evolving topic the authors of MsPASS are continuing
+to evaluate.   Treat any conclusions in this document with skepticism.</p>
+</section>
+<section id="dags-tasks-and-the-map-reduce-model-of-processing">
+<h2>DAGs, tasks, and the map-reduce model of processing<a class="headerlink" href="#dags-tasks-and-the-map-reduce-model-of-processing" title="Permalink to this heading"></a></h2>
+<p>To understand the challenge a scheduler faces in processing a workflow,
+and memory management we need to digress a bit and review the way a scheduler
+operates.
+Dask and spark both abstract processing as a sequence of “tasks”.
+A “task” in this context is more-or-less the operation defined in
+a particular call to a “map” or “reduce” operator.
+(If you are unfamiliar with this concept see section <a class="reference internal" href="parallel_processing.html#parallel-processing"><span class="std std-ref">Parallel Processing</span></a>
+and/or a web search for a tutorial on the topic.)  Each “task”
+can be visualized as a black box that takes one or more inputs and
+emits an output.  Since in a programming language that is the same
+thing conceptually as a “function call” map and reduce operators always
+have a function object as one of the arguments.   A “map” operator
+has one main input (arguments to the function
+are auxiliary data) and a single output (the function return).
+Reduce operators have many inputs of a common
+data type and one output.   Note, however, the restriction that
+they are always considered two at a time. For most MsPASS operators the inputs and
+outputs are seismic data objects.  The only common exception is constructs
+used to provide inputs to readers such as when <cite>read_distributed_data</cite>
+is used to load ensembles.</p>
+<p>Dask and spark both abstract the job they are asked to handle
+as a tree structure called a “Directed Acyclic Graph” (DAG).
+The nodes of the tree are individual “tasks”.  It has been our experience
+that most workflows end up being only a sequence of map operators.
+In that case, the DAG reduces to a forest of saplings (sticks with no
+branches) with the first task being a read operation and the last being
+a write (save) operation.</p>
+<p>To clarify that abstract idea consider a concrete example.   The
+code box below is a dask implementation of a simple job with
+7 steps:   query database to define the dataset, read data,
+detrend, bandpass filter, window around P arrival time,
+compute signa-to-noise estimates, and
+save result.   Here is a sketch of the workflow omitting complexities of
+imports and initializations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># assume database handle, db, and query are defined earlier</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="c1"># Npartitions assumed defined in initializations - see text below for</span>
+<span class="c1"># what this defines and why it is important for memory management</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">cursor</span><span class="p">,</span><span class="n">npartitions</span><span class="o">=</span><span class="n">Npartitions</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">detrend</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">filter</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">WindowData</span><span class="p">,</span><span class="o">-</span><span class="mf">200.0</span><span class="p">,</span><span class="mf">200.0</span><span class="p">)</span>
+<span class="c1"># assume nwin and swin defined initialization</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">arrival_snr</span><span class="p">,</span><span class="n">noise_window</span><span class="o">=</span><span class="n">nwin</span><span class="p">,</span><span class="n">signal_window</span><span class="o">=</span><span class="n">swin</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">,</span><span class="n">data_tag</span><span class="o">=</span><span class="s2">&quot;step1&quot;</span><span class="p">,</span><span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">mybag</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This simple workflow consists only of map operators and is terminated by
+a save followed by a compute to initiate the (lazy) computation of the bag.
+The DAG for this workflow is illustrated below</p>
+<figure class="align-center" id="id2">
+<span id="dag-figure"></span><a class="reference internal image-reference" href="../_images/MapDAGFigure.png"><img alt="../_images/MapDAGFigure.png" src="../_images/MapDAGFigure.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Block diagram illustration of DAG defined by example workflow.
+The example shows how work would be partitions with five processors
+and five partitions.   The labels at the top are function names
+matching those used in the python code above.   Each box denotes an
+instance of that function run on one processor (worker).   Data flow
+is from left to right.  Data enter each pipeline from a reader on the
+left hand side (<cite>read_distributed_data</cite> but here given the simpler name
+“reader”) and exit in the save operation.   For this simple case where the
+number of processors match the number of partitions each processor would
+be assigned 1/5th of the data.  Termination of the workflow with a database
+save (<cite>save_data</cite>) makes each pipeline largely independent of the others and
+can improve performance as not processor has to wait for another except in
+competition for attention from the database server.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Now remember that a bag (RDD in spark) can be conceptualized as a
+container that is a list of data objects that doesn’t necessarily fit
+into cluster memory, let alone
+a single node.   Both dask and spark divide the container into
+<cite>partitions</cite> illustrated in the figure above.   The partition size can be
+as small as one data object or some larger integer less than or equal to the
+number of data components.   Think of a partition as the size of a bite
+the system uses to eat the elephant (the whole data set).   That basic
+understanding should help you immediately realize that the partition
+size relative to system memory is a critical tuning component to optimize
+performance and make a workflow feasible.   Setting the number of partitions
+too large can overwhelm the scheduler requiring it to handle a potentially
+massive DAG.  The reasons, as you can see in the figure, is that the DAG
+size for a pure map workflow like this scales by the number of
+partitions (<cite>Npartitions</cite> in the python code above).   The effort required to
+do the bookeeping for a million partitions differs dramatically from
+that required to do a few hundred.
+On the other hand, because the memory
+use for the processing scales with the memory required to load each partition
+small numbers of partitions used with a huge dataset can, at best,
+degrade performance and at worse crash the workflow from a memory fault.
+Using our cutsy eating an elephant analogy, the issue can be stated this way.
+If you eat an elephant one atom at a time and then try to
+reassemble the elephant the problem is overwhelming.  On the other hand, if
+you cut the elephant up into chunks that are too big to handle, you can’t
+do the job at all.   The right size is something you can pick up and chew.</p>
+<p>The next concept to understand is how the scheduler
+needs to move data to workers and between processing steps.
+The figure below illustrates how that might work for
+the same situation illustrated above but with only two workers (processors).
+As the animation shows, the scheduler would assign the data
+in each partition to one of the two workers.  From what we have observed
+the normal pattern for a job like our simple chain of map operators
+in this example is this.  The data for the partition are loaded
+by each worker, which in this example means each worker issues a series of
+interactions with MongoDB to construct the input seismic data objects.
+Once that data is loaded in memory, the series of processing steps are
+applied sequentially by the worker.   On the final step, the result returned
+by the final map call, which in this case is
+the output of the <cite>save_data</cite> method of <cite>Database</cite>, is returned to
+the scheduler node running the master python script (the one shown above
+for this example).</p>
+<figure class="align-center" id="id3">
+<span id="twoprocessoranimation-figure"></span><a class="reference internal image-reference" href="../_images/MapProcessing.gif"><img alt="../_images/MapProcessing.gif" src="../_images/MapProcessing.gif" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 10 </span><span class="caption-text">Animated gif illustrating data flow for the same five partition
+data set as illustrated above with only two processors.  The animation
+illustrates how the scheduler would assign each processor a data partition.
+Each worker sequentially processes one data object at a time as illustrated
+by the moving arrow.  When a worker (processor) finishes a partition the
+scheduler assigns it another until the data set is exhausted.  This
+example illustrates an inevitable discretization issue that can degrade
+throughput.  Because 5 is not a multiple of 2 this example requires
+three passes to process and the last pass will only use one of the
+workers.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>There are some important complexities the figure above glosses over
+that are worth mentioning:</p>
+<ul class="simple">
+<li><p>Both dask and spark are generic schedulers.   Nothing in the algorithms
+described in the documentation guarantees the processing works at all
+like the figure above shows.  That figure shows what we’ve observed
+happen using real-time monitoring tools.  A working hypothesis is that
+the schedulers recognize the geometry as a pipeline structure that
+can be optimized easily by running each datum through the same
+worker to avoid serialization.</p></li>
+<li><p>The scheduler abstracts the concept of what a <cite>worker</cite> is.   In MsPASS
+jobs are run in a containerized environment and the cluster configuration
+defines how many workers are run for each physical node assigned to a job.
+A potential confusion to point out is that we refer to containers running on a compute
+node as part of a virtual cluster (see <a class="reference internal" href="parallel_processing.html#parallel-processing"><span class="std std-ref">Parallel Processing</span></a> section)
+as a “worker node”.   To dask and spark a “worker” is a process/thread
+the scheduler can send work to.   That means a single “worker node”
+will normally be running multiple dask/spark “workers”.
+There are complexities in how each “worker” interacts with thread pools
+and/or spawned processes
+that the dask or spark can be set up to launch.   This is a
+topic that authors have not fully resolved at the time this section
+was written.  It matters because optimal performance can be achieved
+by defining sufficient worker threads to do computing as fast as possible,
+but defining too many workers can create unintentional memory bloat issues.
+There are also more subtle issues with threading related to the python GIL
+(Global Interpreter Lock).   Pure python function work badly with worker
+threads because each thread shares a common GIL.
+The defaults, however, are clear.  For dask each worker container
+(running in a node by itself) will use a thread pool with the number of
+worker threads equal to the number of CPUs assigned to the container.
+That is normally the number of cores on that physical node.  Pyspark,
+in contrast, seems to always use one process per worker and default
+is less subject to the GIL locking problem.</p></li>
+<li><p>Both dask and spark have tunable features for memory management and the
+way scheduling is handled.   In dask they are optional arguments to the
+constructor for the dask client object.   For spark it is defined in
+the “context”.   See the documentation for the appropriate scheduler
+if you need to do heavy performance tuning.</p></li>
+<li><p>An important parameter for memory management we have not been able to
+ascertain from the documentation or real-time monitoring of jobs is how
+much dask or spark buffer a pipeline.   The animation above assumes the simplest
+case to understand where the answer is one.
+That is, each pipeline processes one thing at a time.
+i.e. we read one datum, process it through the chain functions in the
+map operators, and then save the result.  That is an oversimplification.
+Both schedulers handle some fraction (or all)  of a partition as the
+chunk of data moving through the pipeline.  That makes actual memory use
+difficult to predict with much precision.   The formulas we suggest
+below are best thought of as upper bounds.   That is, the largest memory
+use will happen if an entire partition is moved through the pipeline
+sequentially.   That is the opposite approach to the animation above.
+That is, done by partition all the data from each partition will first
+be read into memory, that partition will be run through the processing
+pipelines, and then saved.   Real operation seems to actually be
+between these extremes with some fraction of each partition being
+at different stages in the pipeline as data move through the
+processing chain.</p></li>
+</ul>
+</section>
+<section id="memory-complexities">
+<h2>Memory Complexities<a class="headerlink" href="#memory-complexities" title="Permalink to this heading"></a></h2>
+<p>In the modern world of computing the concept of what “computer memory”
+means is muddy.   The reason is that all computers for decades have
+extended the idea of memory hierarchy from the now ancient concepts of
+a memory cache and virtual memory.   Schedulers like dask and spark are fundamentally
+designed to provide functionality in a distributed memory cluster of
+computers that define all modern HPC and cloud systems.  Keep in
+mind that in such systems there are two very different definitions of
+system memory:  (1) memory available to each worker node, and (2) the
+aggregate memory pool of all worker nodes assigned to a job.   Dask and spark
+abstract the cluster and attempt to run a workflow within the physical
+limits of both node and total memory pools.  If they are asked to do
+something impossible, like unintentionally asking the system to fit an
+entire data set in cluster memory, we have seen them fail and abort.
+Even worse is that when prototyping a workflow on a desktop outside
+of the containerized environement we have seen
+dask crash the system by overwhelming memory.
+(Note this never seems to happen running in a container which is
+a type example of why containers are the norm for cloud systems.)
+How to avoid this
+in MsPASS is a work in progress, but is a possibility all users should be
+aware of when working on huge data sets.  We think the worst problems have been eliminated
+by fixing an issue with earlier version of the C++ code that was
+not properly set up to tell dask, at least, how much memory was being
+consumed.  All memory management depends on data objects being
+able to properly report their size and have mechanisms for dask or
+spark to clear memory stored in the data objects when no longer needed.
+If either are not working properly, catastrophic failure is likely
+to eventually occur with upscaling of a workflow.</p>
+<p>At this point it is worth noting a special issue about memory
+management on a desktop system.   Many to most users will likely want to
+prototype any python scripts on a desktop before porting the code to
+a large cluster.  Furthermore, many research applications
+don’t require a giant cluster to be feasible but can profit from
+multicore processing on a current generation desktop.   On a desktop
+“cluster memory” and “system memory” are the same thing.  There are
+a few corollaries to that statement that are worth pointing out
+as warnings for desktop use:</p>
+<ul class="simple">
+<li><p>Beware running large memory apps if you are running MsPASS jobs
+on the same system.  Many common tools today are prone to extreme
+memory bloat.  It is standard practice today to keep commonly used
+apps memory resident to provide instantaneous use by “clicking on”
+an app to make it active.  If you plan to process data with MsPASS
+on a desktop plan to reduce memory resident apps to a minimum.</p></li>
+<li><p>Running MsPASS on a desktop can produce unexpected memory faults
+from other processes that you may not be aware of consuming memory.
+If your job aborts with a memory fault, first try closing every other
+application and running the job again with the system memory monitor
+tool running simultaneously.</p></li>
+<li><p>Running MsPASS under docker with normal memory parameters should never
+actually crash your system.   The reason is docker by default will only
+allow the container to utilize some fraction of system memory.
+Memory allocation failures are then relative to container size not
+system memory size.</p></li>
+</ul>
+<p>In working with very large data sets there is the added constraint of
+what file systems are available to store the starting waveform data,
+the final results of a calculation, and any intermediate results that
+need to be stored.   File systems i/o performance is wildly variable
+today with different types of storage media and mass store systems having
+many orders of magnitude difference in speed, throughput,
+or storage capacity.  Thus, there is a
+different “memory” issue for storing original data, the
+MongoDB database, intermediate results, and final results.   That is,
+however, a different topic that is mostly a side issue for the topic
+here of processing memory use.   Dask and spark both assume auxiliary
+storage is always infinite and assume your job will handle any
+i/o errors gracefully or not so gracefully (i.e. aborting the job).
+Where the file systems enter in the memory issue
+is when the system has to do what
+both packages call <cite>spilling</cite>.  A worker
+needs to “spill to disk” if the scheduler pushes data to it and
+there is no space to hold it.   It is appropriate to think of
+“spilling” as a form of virtual memory management.  The main difference is
+that what is “spilled” is not “pages” but data managed by the worker.
+Dask and spark both “spill” data to disk when memory use exceeds some
+high water mark defined by the worker’s configuration.   It should be
+obvious that the target for spilling should be the fastest file system
+available that can hold the maximum sized chunk of data that might be
+expected for that workflow.  We discuss how to estimate worker
+memory requirements below.</p>
+<p>The final generic issue about memory management is a software
+issue that many seismologists may not recognize as an issue.
+That is, all modern computer languages (even modern FORTRAN) utilize
+dynamic memory allocation.   In a language like C/C++ memory allocation
+is explicit in the code with calls to the <cite>malloc</cite> family of functions in
+C and <cite>new</cite> in C++.   In object-oriented languages
+like python and java dynamic allocation is implicit.   For instance,
+in python every time a new symbol is introduced and set to a “value”
+an object constructor is called that allocates the space for the data
+the object requires.   A problem that happens
+in MsPASS is that we used a mixed language
+solution for the framework.   Part of that is implicit in assembling
+most python applications from open-source components.  A large fraction
+of python packages use numpy or scipy for which most of the code base is
+C/C++ and Fortran with python binding.   In MsPASS we used a similar
+approach for efficiency with the core seismic data containers
+implemented in C++.   The problem any mixed language solution faces
+is collisions in concept of different languages about memory management.
+That is, in C/C++ memory management is the responsibility of the
+programmer.  That is, every piece of data in a <cite>C/C++</cite> application
+that is dynamically allocated with <cite>malloc/new</cite> statement has to somewhere else
+be released with a call to <cite>free/delete</cite>.   Python, in contrast, uses
+what is universally called “garbage collection” to manage memory.
+(A web search will yield a huge list of sources explaining that concept.)
+What this creates in a mixed language solution like MsPASS is
+a potential misunderstanding between the two code bases.   That is,
+python and C components need to manage their memory independently.
+If one side or the other releases memory before the other side is finished
+your workflow will almost certainly crash (often stated as “unpredictable”).
+On the other hand, if one side holds onto data longer than necessary
+memory may fill and your workflow can abort from a memory fault.
+In MsPASS we use a package called <cite>pybind11</cite> to build the python
+bindings to our C/C++ code base.   Pybind11 handles this problem
+through a feature called <cite>return_value_policy</cite> described
+<a class="reference external" href="https://pybind11.readthedocs.io/en/stable/advanced/functions.html">here</a>.
+At the time this manual section was written we were actively working
+to get this setting right on all the C++ data objects, but be warned
+residual problems may exist.   If you experience memory bloat problems
+please report this to us wo we will try to fix the issue as quickly as possible.</p>
+</section>
+<section id="bag-rdd-partitions-and-pure-map-workflows">
+<h2>bag/RDD Partitions and Pure Map Workflows<a class="headerlink" href="#bag-rdd-partitions-and-pure-map-workflows" title="Permalink to this heading"></a></h2>
+<p>It has been our experience that most seismic data processing
+workflows can be reduced to a series of map only operators.
+The example above is a case in point.   For this class of workflow
+we have found memory use is relatively predictable and scales with
+the number of partitions defined for the bag/RDD.  In this section
+we summarize what we know about memory use predictions for this
+important subset of possible workflows.</p>
+<p>We need to first define some symbols we use for formulas we
+develop below:</p>
+<ul class="simple">
+<li><p>Let <span class="math notranslate nohighlight">\(N\)</span> denote the number of data objects loaded into the
+workflows bag/RDD.</p></li>
+<li><p>With seismic data the controlling factor for memory use is almost always
+the number of samples in the data windows being handled by the workflow.
+We will use <span class="math notranslate nohighlight">\(N_s\)</span> to define the number of samples per atomic
+data object.  In MsPASS all sample data are stored as double data so the
+number of bytes to store sample data for TimeSeries objects
+is <span class="math notranslate nohighlight">\(8 N_s\)</span> and the number
+of bytes to store sample data for Seismogram objects
+is <span class="math notranslate nohighlight">\(24 N_s\)</span>.</p></li>
+<li><p>All MsPASS atomic objects contain a generalized header discussed at
+length elsewhere in this user’s manual.   Because we store such
+data in a dictionary like container that is open-ended, it is
+difficult to compute exact size measures of that component of a data
+object.   However, for most seismic data the size of this “header” is
+small compared to the sample data.  A fair estimate can be obtained
+from the formula:
+<span class="math notranslate nohighlight">\(S_{header} = N_k N_{ks} + 8 ( N_{float} + N_{int} + N_{bool} ) + \bar{s} N_{string} + N_{other}\)</span>
+where <span class="math notranslate nohighlight">\(N_k\)</span> is the number of keys, <span class="math notranslate nohighlight">\(N_{ks}\)</span> is an estimate of the
+average (string) key size, <span class="math notranslate nohighlight">\(N_{float}, N_{int}\)</span> and <span class="math notranslate nohighlight">\(N_{bool}\)</span>
+are the number of decimal, integer, and boolean attributes respectively.
+The quantity <span class="math notranslate nohighlight">\(\bar{s} N_{string}\)</span> is an estimate of the average size
+(in bytes) of string values.  Finally, <span class="math notranslate nohighlight">\(N_{other}\)</span> is an estimate of the
+size of other data types that might be stored in each objects Metadata
+container (e.g. serialized obspy response object).</p></li>
+<li><p>Let <span class="math notranslate nohighlight">\(S_{worker}\)</span> denote the available memory (in bytes) for processing in
+each worker container.   Note that size is always significantly less than
+the total memory size of a single node.   If one worker is allocated
+to each node, the available work space is reduced by some fraction
+defined when the container is launched (implicit in defaults) to
+allow for use by the host operating system.   Spark and dask also each
+individually partition up memory for different uses.   The fractions
+involved are discussed in the documentation pages for
+<a class="reference external" href="https://spark.apache.org/docs/latest/tuning.html">Spark</a>
+and
+<a class="reference external" href="https://distributed.dask.org/en/stable/memory.html">Dask</a>.
+Web searches will also yield many additional documents
+that might be helpful.  With dask, at least, you can also establish the
+size of <span class="math notranslate nohighlight">\(S_{worker}\)</span> with the graphical display of
+worker memory in the
+<a class="reference external" href="https://docs.dask.org/en/stable/dashboard.html">dask dashboard diagnostics</a>.</p></li>
+<li><p>Let <span class="math notranslate nohighlight">\(N_{partitions}\)</span> define the number of partitions defined for
+the working bag/RDD.</p></li>
+<li><p>Let <span class="math notranslate nohighlight">\(N_{threads}\)</span> denote the number of threads in the thread pool
+used by each worker.  For a dedicated HPC node that is normally the
+number of cores per node.</p></li>
+</ul>
+<p>From the above it is useful to define two derived quantities.
+An estimate of the nominal size of TimeSeries objects in a workflow
+is:</p>
+<div class="math notranslate nohighlight">
+\[S_{ts} = 8 N_s + S_{header}\]</div>
+<p>and for Seismogram objects</p>
+<div class="math notranslate nohighlight">
+\[S_{seis} = 24 N_s + S_{header}\]</div>
+<p>For pure map operator jobs we have found dask, at least, always reduces the
+workflow to a pipeline that moves data as illustrated in the animated gif
+figure above.</p>
+<p>The pipeline structure reduces memory use to a small, integer multiple, which we
+will call <span class="math notranslate nohighlight">\(N_c\)</span> for number of copies, of the input object size.   i.e. as
+data flows through the pipeline only 2 or 3 copies are held in memory at the
+same time.   However, dask, at least, seems to try to push
+<span class="math notranslate nohighlight">\(N_{threads}\)</span> objects through the pipeline simultaneously assigning
+one thread per pipeline.  Pyspark seems to do the same thing
+but uses separate processes, by default, for each worker.  That means that
+the multiplier is at least about 2. Actual usage can be dynamic if the
+size of the objects in the pipeline are variable from the very common
+use of one of the time windowing functions.    In our experience workflows
+with variable sized objects have rapidly fluctuating memory use as
+data assigned to different workers moves through the pipeline.</p>
+<p>If we assume
+that model characterizes the memory use of a workflow it is useful
+to define the following nondimensional number:</p>
+<div class="math notranslate nohighlight">
+\[K_{map} = \frac{\frac{S_{worker}}{N_{threads}}}{\frac{N S_d}{N_{partitions}}}
+= \frac{S_{worker} N_{partitions}}{N_{theads} N S_d}\]</div>
+<p>where <span class="math notranslate nohighlight">\(S_d\)</span> denotes the data object size for each component.
+In MsPASS <span class="math notranslate nohighlight">\(S_d\)</span> is <span class="math notranslate nohighlight">\(S_{ts}\)</span> for TimeSeries data and
+<span class="math notranslate nohighlight">\(S_{seis}\)</span> for Seismogram data.  In words, <span class="math notranslate nohighlight">\(K_{map}\)</span>
+is the ratio of memory available per process to the chunk size
+implicit in the data partitioning.</p>
+<p>The same formula can be applied to ensembles, but the computation of
+<span class="math notranslate nohighlight">\(S_d\)</span> requires a different formula given in the section below
+on ensembles.  <span class="math notranslate nohighlight">\(K_c\)</span> is best thought of as a nondimensional
+number that characterizes the memory requirements for a pure map,
+workflow implemented by a pipeline with <span class="math notranslate nohighlight">\(N_{threads}\)</span>
+working on blocks of data with size defined by <span class="math notranslate nohighlight">\(S_d N_{partitions}\)</span>.
+If the ratio is large
+spilling is unlikely.   When the ratio is less than one spilling is
+likely.  In the worst case, a job may fail completely with a memory
+fault when <span class="math notranslate nohighlight">\(K_c\)</span> is small.  As stated repeatedly in this section
+this issue is a work in progress at the time of this writing, but
+from our experience for a typical work flow you should aim to tune the
+workflow to have <span class="math notranslate nohighlight">\(K_c\)</span> be of the order of 2 or more to avoid
+spilling.  Workflows with highly variable memory requirements within
+a pipeline (e.g. anytime a smaller waveform segment is cut from
+larger ones.) may allow smaller values of <span class="math notranslate nohighlight">\(K_c\)</span>, particularly if
+the initial read is the throttle on throughput.</p>
+<p>The main way to control <span class="math notranslate nohighlight">\(K_c\)</span> is to set <span class="math notranslate nohighlight">\(N_{partitions}\)</span>
+when you create a bag/RDD.   In MsPASS that is normally set by
+using the <cite>number_partitions</cite> optional argument in the <cite>read_distributed_data</cite>
+function.   Any other approach requires advanced configuration options
+described in documentation for dask and spark.</p>
+</section>
+<section id="reduce-operations">
+<h2>Reduce Operations<a class="headerlink" href="#reduce-operations" title="Permalink to this heading"></a></h2>
+<p>The schedulers used in MsPASS are commonly described as ways to
+implement the “map-reduce paradigm”.   As noted above, our experience is
+that most seismic processing workflows are most effectively expressed
+as a chain of map operators applied to a bag/RDD.   There are, however,
+two common algorithms that can be expressed as “reduce” operators:
+(1) one-pass stacking (i.e. an average that does not require an
+interative loop such as an M-estimator.), and (2) forming ensembles on the
+fly from a bag/RDD of atomic data.  These two examples have fundamentally different
+memory constraints.</p>
+<p>A stacking algorithm that produces a smaller number of output signals
+than inputs, which is the norm, is less subject to memory issues.
+That is particularly true if the termination of the workflow saves
+the stacked data to a databases.   To be more concrete, here is
+a sketch of a simple stacking algorithm summing common source gathers
+aligned by a P wave arrival time defined in each object’s Metadata
+container with the key “Ptime”.  The data are grouped for the
+reduce(fold) operation by the Metadata key <cite>source_id</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ator_by_Ptime</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Smaller helper function needed for alignment by Ptime key.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="c1"># A more robust version should test for validity - here assume data</span>
+  <span class="c1"># was preprocessed to be clean</span>
+  <span class="n">t0</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Ptime&quot;</span><span class="p">]</span>
+  <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">ator</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">key_func</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Used in foldby to define group operation - here with source_id</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;source_id&quot;</span><span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">mspasspy.reduce</span> <span class="kn">import</span> <span class="n">stack</span>
+<span class="c1"># Assumes data was preprocessed to be clean and saved with this tag</span>
+<span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;data_tag&quot;</span> <span class="p">:</span> <span class="s2">&quot;read_to_stack_data&quot;</span><span class="p">}</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
+<span class="c1"># assumes npartitions is set earlier in the code - see text for discussion</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">cursor</span><span class="p">,</span><span class="n">number_partitions</span><span class="o">=</span><span class="n">npartions</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">ator_by_Ptime</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">WindowData</span><span class="p">,</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span><span class="mf">30.0</span><span class="p">)</span>
+<span class="c1"># foldby is dask method of bag - pyspark has a different function mame</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">foldby</span><span class="p">(</span><span class="n">keyfunc</span><span class="p">,</span> <span class="n">stack</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">,</span><span class="n">data_tag</span><span class="o">=</span><span class="s2">&quot;stacked_data&quot;</span><span class="p">)</span>
+<span class="n">resulst</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The DAG for this workflow with 2 sources and 5 partitions looks like this:</p>
+<figure class="align-center" id="id4">
+<span id="reduce-figure"></span><a class="reference internal image-reference" href="../_images/ReduceFigure.png"><img alt="../_images/ReduceFigure.png" src="../_images/ReduceFigure.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 11 </span><span class="caption-text">Data flow diagram for example reduce operation to stack two
+sources with a bag/rdd made up of atomic TimeSeries data with
+five partitions.   Dashed lines show concept of how partitions
+divide up the container of data illustrated as a stack of black
+rectangles. Each rectangle represents a single TimeSeries object.
+The arrows illustrate data flow from left to right in the figure.
+As illustrated earlier the reader loads each partition and then
+makes that data available for processing by other tasks.   Processing
+tasks are illustrated by black rectangles with arrows joining them
+to other tasks that illustrate the DAG for this workflow.
+Note that in this case each partition has to be linked to each
+instance of the stack task.   This illustrates why the scheduler has
+to keep all data in memory before running the stack process as the
+foldby function has no way of knowing what data is in what partition.</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>We emphasize the following that are the lessons you should learn from
+the above:</p>
+<ul class="simple">
+<li><p>The dask <cite>foldby</cite> method of bag combines two concepts that define the
+“reduce” operation:  (1) a function defining how data to be
+stacked are grouped, and (2) a function telling dask how the data object
+are to be combined.  The first is the small function we created
+called <cite>keyfunc</cite> that returns the value of the <cite>source_id</cite>.  The second
+is the mspass stack function which will function correctly as a
+“reduce” operator (For more on that topic see the section titled <a class="reference internal" href="parallel_processing.html#parallel-processing"><span class="std std-ref">Parallel Processing</span></a>.)</p></li>
+<li><p>In this workflow the left side of the graph is a
+chain of two map operators like the earlier example in this section.
+The difference here is the set of pipelines terminate to foci
+directed at the stack function.   That illustrates graphically how
+the <cite>stack</cite> function merges multiple inputs into a single output.
+In this case, it does that by simply summing the inputs to produce
+one output for each <cite>source_id</cite>.  In terms of memory use this means
+the final output should normally be much smaller than the inputs.</p></li>
+<li><p>Our example above shows a best practice that would be normal use for
+any stack algorithm.  That is, the final operator is a call to the
+<cite>save_data</cite> method of the database handle (<cite>db</cite> symbol in this example).
+The default behavior of <cite>save_data</cite> is to return only the ObjectId
+of the inserted waveform document.
+As a result, on the last line when the <cite>compute</cite> method is
+called, dask initiates the calculations and arranges to have
+the output of <cite>save_data</cite> returned to the scheduler node.   That approach
+is useful to reduce memory use in the scheduler node and data traffic
+as calling the output of the <cite>compute</cite> method is the content of the
+bag converted to a python list.   If the output is known to be small
+one can change the options of <cite>save_data</cite> to return the outputs from stack.</p></li>
+<li><p>Notice that the number of branches on the left side of the DAG is set
+by the number of partitions in the bag, not the number of objects in the
+bag.  Dask and spark both do this, as noted above, to reduce the size of the
+DAG the scheduler has to handle.</p></li>
+<li><p>The biggest potential bottleneck in this workflow is the volume of
+interprocess communication required between the workers running the
+<cite>ator_by_Ptime</cite> and <cite>WindowData</cite> functions and the <cite>stack</cite> operator.
+With a large number of sources a significant fraction of the <cite>WindowData</cite>
+outputs may need to be moved to a different node running <cite>stack</cite>.</p></li>
+<li><p>The related issue with a <cite>foldby</cite> operation to that immediately above
+is the memory requirements.   The intermediate step, in this workflow,
+of creating the bag of <cite>stack</cite> outputs should, ideally, fit in memory
+to reduce the chances of significant “spilling” by workers assigned the
+<cite>stack</cite> task.   The reason is that the grouping function implicit in
+the above workflow cannot know until the entire input bag is processed
+where to send all the outputs of the map operations.   The stack outputs
+have to be held somewhere until the left side of the DAG completes.</p></li>
+<li><p>A final memory issue is the requirements for handling the input.
+As above the critical, easily set option is the value assigned to the <cite>npartitions</cite>
+parameter.   We recommend computing the value of <span class="math notranslate nohighlight">\(K_{map}\)</span> with
+the formula above and setting up the run to assure
+<span class="math notranslate nohighlight">\(K_{map}&lt;1\)</span>.  Unless the average number of inputs to <cite>stack</cite> are
+small that should normally also guarantee the output of the <cite>stack</cite>
+task would not spill.</p></li>
+</ul>
+<p>A second potential form of a “reduce” operation we know of in MsPASS is
+forming ensembles from a bag of atomic objects.   A common example where
+this will arise is converting <cite>TimeSeries</cite> data to <cite>Seismogram</cite> objects.
+A <cite>Seismogram</cite>, by definition, is a bundle created by grouping a set of
+three related component <cite>TimeSeries</cite> object.  The MsPASS <cite>bundle</cite> function,
+in fact, requires an input of a <cite>TimeSeriesEnsemble</cite>.  A workflow to do that
+process would be very similar to the example above using <cite>stack</cite>, but the
+<cite>stack</cite> function would need to be replaced by a specialized function that would
+assemble a <cite>TimeSeriesEnsemble</cite> from the outputs of the <cite>WindowData</cite> function.
+To do this process one could follow that function by a map operator
+to run <cite>bundle</cite>.   We have tried that, but found it is a really bad idea.
+Unless the entire data set is small enough to fit two copies of the data in
+memory that job can run for very long times from massive spilling or abort
+on a memory fault.   We recommend an ensemble approach utilizing
+the database to run bundle as described in the next section.</p>
+</section>
+<section id="utilizing-ensembles-effectively">
+<h2>Utilizing Ensembles Effectively<a class="headerlink" href="#utilizing-ensembles-effectively" title="Permalink to this heading"></a></h2>
+<p>A large fraction of seismic workflows are properly cast into a framework
+of processing data grouped into ensembles.   Ensemble-based processing,
+however, is prone to producing exceptional memory use pressure.  The reason
+is simply that the size of the chunks of data the system needs to handle
+are larger.</p>
+<p>Let us first consider a workflow that consists only of a pipeline of
+map processes like the example above.   The memory use can still be
+quantified by <span class="math notranslate nohighlight">\(K_{map}\)</span> but use the following to compute the
+nominal data object size:</p>
+<div class="math notranslate nohighlight">
+\[S_d = \bar{N}_{member} \bar {S}_d + S_{em}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\bar{N}_{member}\)</span> is the average number of ensemble
+members, <span class="math notranslate nohighlight">\(\bar {S}_d\)</span> is the average member size, and
+<span class="math notranslate nohighlight">\(S_{em}\)</span> is the nominal size of each ensemble Metadata container
+(normally a small factor anyway).   Note <span class="math notranslate nohighlight">\(S_d\)</span> is the value
+<span class="math notranslate nohighlight">\(S_d\)</span> defined above for <cite>TimeSeries</cite> or <cite>Seismogram</cite> objects for
+<cite>TimeSeriesEnsemble</cite> and <cite>SeismogramEnsemble</cite> objects respectively.
+An ensemble-based workflow that terminates in a stacking operation
+that reduces an ensemble to an atomic data object will have less
+memory pressure, but is still subject to the same memory pressure
+quantified by <span class="math notranslate nohighlight">\(K_{map}\)</span>.</p>
+<p>There is an important class of ensemble processing we noted in the
+previous section:   using the <cite>bundle</cite> function to create
+<cite>SeismogramEnsemble</cite> objects from an input <cite>TimeSeriesEnsemble</cite>
+container.  Any data originating as miniseed data from an FDSN
+data center that needs to be handled as three-component data
+would need to pass through that process.   The following is an
+abbreviated sketch of a standard workflow for that purpose for
+data logically organized as by source:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#imports would normally be here - omitted for brevity</span>
+<span class="k">def</span> <span class="nf">make_source_id_queries</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Demonstrates how to generate a list of queries to use as</span>
+<span class="sd">  input for read_distributed_data to build a bag of ensembles.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">srcidlist</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
+  <span class="n">querylist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+  <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">srcidlist</span><span class="p">:</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span> <span class="p">:</span> <span class="nb">id</span><span class="p">}</span>
+    <span class="n">querylist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">querylist</span>
+
+<span class="c1"># Initialization code for database handle (db) would normally be here</span>
+<span class="n">matcher</span> <span class="o">=</span> <span class="n">MiniseedMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+<span class="n">querylist</span> <span class="o">=</span> <span class="n">make_source_id_queries</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>  <span class="c1"># defined above</span>
+<span class="n">number_partitions</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">querylist</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">querylist</span><span class="p">,</span>
+            <span class="n">db</span><span class="p">,</span>
+            <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
+            <span class="n">npartitions</span><span class="o">=</span><span class="n">number_partitions</span><span class="p">,</span>
+            <span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">detrend</span><span class="p">)</span>  <span class="c1"># not required but more efficiently done at this stage</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span><span class="n">matcher</span><span class="p">)</span>  <span class="c1"># needed to define orientation attributes</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">bundle_seed_data</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">)</span>
+<span class="n">mybag</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This algorithm uses only map operators but can be very memory intensive if
+the ensembles are large.  The reason is that the function <cite>bundle_seed_data</cite>
+by necessity has to have two copies of the data in memory; it works through
+the <cite>TimeSeries</cite> and assembles the appropriate group of three such
+objects into <cite>Seismogram</cite> objects.   The example shows the simplest approach
+to reduce memory use.  We create the dask bag with the <cite>read_distributed_data</cite>
+function.  We pass it the optional parameter
+<cite>npartitions</cite> set so each enemble is treated as a single partition.
+If the ensemble size is large (<span class="math notranslate nohighlight">\(K_{map}&lt;1\)</span>) three approaches can be considered
+to improve performance.</p>
+<ol class="arabic simple">
+<li><p>A common approach is to download data over a longer window than actually
+needed for a particular study.  e.g. one might have an archive of
+teleseismic event files with miniseed data segments of the order of
+one hour in length.  If the focus is only P waves, windowing
+with <cite>WindowData</cite> as used in the earlier example could reduce the data
+size by an order of magnitude.</p></li>
+<li><p>Although we’ve never tried this, it should be feasible to create a
+sequence of MongoDB queries that would sort miniseed data appropriately
+and group them into smaller bundles of the order of 3 that could be
+scanned and “bundled” into atomic <cite>Seismogram</cite> objects with the
+function <code class="code docutils literal notranslate"><span class="pre">BundleSeedGroup</span></code>.  That workflow would be similar to
+the one above but the list of queries passed to <cite>read_distributed_data</cite>
+would be more complex and usually much larger.</p></li>
+<li><p>If all else fails the workflow can be run as a serial job.
+For small data sets that can be the best alternative.  For very large
+data sets the time required can be problematic and would only be
+feasible if the workflow is designed to be restarted from where the
+last run stopped.   For example, the authors ran a benchmark on
+a desktop system with
+an extended USArray dataset with all lower 48 station broadband stations
+in 2013.  A job to do the process above alone would have required of the
+order of weeks on a desktop machine
+for one year of data.   That is a feasible, but awkward calculation
+by any definition.</p></li>
+</ol>
+<p>There is one final type of ensemble processing worth noting.
+There are many examples where a logical organization is to
+read data as atomic data objects, apply some standard tasks like
+windowing and filtering, and then group the data and assemble them into
+ensembles for subsequent processing that requires the data to be grouped
+(e.g. a moment-tensor inversion requires data to be assembled into
+source-based ensembles.).  The problem is that the grouping operation is
+a form of “reduce/fold” that is can be done efficiently only if the
+results fit in cluster memory.  For that case most will likely find the
+approach using MongoDB discussed in the next section is superior
+because it is more readily scaled to arbitrarily large data sets.</p>
+</section>
+<section id="using-mongodb-to-manage-memory">
+<h2>Using MongoDB to Manage Memory<a class="headerlink" href="#using-mongodb-to-manage-memory" title="Permalink to this heading"></a></h2>
+<p>Users should always keep in mind that the ultimate, scalable solution for
+memory management is the MongoDB database.   If an algorithm applied to
+a dataset is memory intensive one question to consider is if there is a
+solution using MongoDB?  The example immediately above is an example;
+running the lower-level <code class="code docutils literal notranslate"><span class="pre">BundleSeedGroup</span></code> could, in principle, be
+used to break the problem into smaller chunks.   With the right incantation sent to
+MongoDB that algorithm is likely a good alternative way to create
+<cite>Seismogram</cite> objects from single station groups of <cite>TimeSeries</cite> objects.</p>
+<p>There are a number of other common algorithms that we know from experience
+can be handled most easily by utilizing MongoDB.</p>
+<ol class="arabic simple">
+<li><p>Any algorithm that requires data to be sorted into a specific order
+with one or more header (Metadata) attributes is best initiated with
+MongoDB.   There are ways to order a data set in the middle of a workflow,
+but dask and spark documentation warn that can create a performance
+issue.   Further, assembling the atomic data into ensembles with
+a function like dask foldby is subject to the memory issues discussed
+above.   Hence, in our experience using MongoDB is a more scalable approach.
+MongoDB sorting, particularly if used with an appropriate
+index, is a very efficient way to build a sorted and grouped data set.   We should
+note that ordered data ALWAYS require data to be grouped and
+loaded into an ensemble container.  The reason is that dask and spark
+do not necessarily preserve order in a map operator.  That is, the
+data in an output bag may be shuffled relative to the input in a map
+operation.  Hence,
+processing workflows cannot depend on order as is common practice in
+all seismic reflection processing packages we are aware of.</p></li>
+<li><p>Dismantling ensembles into atomic components can only be done at present by
+saving the ensemble data and then reading it back as atomic objects.</p></li>
+<li><p>As noted in many places in this user’s manual MsPASS uses the idea of
+a “live” attribute on the native data objects to flag a datum as bad.
+Such data are carried along in a bag/RDD and consume space because
+most functions that kill such data leave the data array intact.
+If a lot of data have been killed, which is common in a major editing
+step like the snr or edit module functions, memory pressure can often be
+drastically reduced by removing the dead data.  The cleanest way to do
+that, and preserve the record of what was killed, is to do an intermediate
+save of the data set and then recreate a new bag/RDD for subsequent
+processing of the edited data by reading it back again before continuing.
+In our experience, it is generally useful
+to treat this as step in processing where the result needs to be reviewed
+before continuing anyway.   The jupyter notebook you create
+along with records in the database will then
+preserve your edits.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="parallel_processing.html" class="btn btn-neutral float-left" title="Parallel Processing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="io.html" class="btn btn-neutral float-right" title="I/O in MsPASS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
