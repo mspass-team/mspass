@@ -25,6 +25,8 @@ requirements:
   run:
     - python {{ PYTHON_VERSION }}
     - boost
+    - libboost-devel
+    - libzlib
     - gsl
     - pyyaml
     - pymongo
