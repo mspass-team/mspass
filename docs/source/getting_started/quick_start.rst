@@ -66,7 +66,7 @@ This should generate a stream of output ending in something like the following:
   The start line using the unix shell trick with `pwd` can fail in some situations if
   the path to which it resolves has a space bar character (" ") such as "My Documents".
   If that happens choose a different work directory or replace `pwd` in the
-  incantation above with the space escaped (e.g. "My\ Documents").
+  incantation above with the space escaped (e.g. "My\\ Documents").
 
 5. Connect to the container with a web browser
 --------------------------------------------------
@@ -76,5 +76,5 @@ box of the browser. That should launch the jupyter lab control panel.  If you
 are not familiar with jupyter lab or jupyter notebook you will need to refer
 to tutorials for that application.  The jupyter developer's introduction
 can be found
-`here.<http://justinbois.github.io/bootcamp/2020_fsri/lessons/l01_welcome.html>`__
+`here <http://justinbois.github.io/bootcamp/2020_fsri/lessons/l01_welcome.html>`__.
 There are many other tutorials easily found with a web search.
