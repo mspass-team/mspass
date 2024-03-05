@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MsPASS C++ API &mdash; MsPASS 0.0.1 documentation</title>
+  <title>Getting Started in a Nutshell &mdash; MsPASS 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mspass::utility::Metadata" href="mspass.utility.Metadata.html" />
-    <link rel="prev" title="C++ API" href="index.html" />  
+    <link rel="next" title="Run MsPASS with Docker" href="run_mspass_with_docker.html" />
+    <link rel="prev" title="MsPASS Documentation" href="../index.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -55,12 +55,20 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started in a Nutshell</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-docker">1. Install docker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#launch-docker-desktop-macoos-and-windows">2. Launch docker desktop (MacoOS and Windows)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#get-or-refresh-the-container-optional">3. Get or Refresh the container (optional)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#launch-the-container">4. Launch the container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#connect-to-the-container-with-a-web-browser">5. Connect to the container with a web browser</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
@@ -107,15 +115,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">C++ API</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">MsPASS C++ API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
 
@@ -135,10 +137,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="index.html">C++ API</a></li>
-      <li class="breadcrumb-item active">MsPASS C++ API</li>
+      <li class="breadcrumb-item active">Getting Started in a Nutshell</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/cxx_api/mspass.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/getting_started/quick_start.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -146,23 +147,89 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="mspass-c-api">
-<span id="mspass-namespace"></span><h1>MsPASS C++ API<a class="headerlink" href="#mspass-c-api" title="Permalink to this heading"></a></h1>
-<script language="javascript" type="text/javascript">
-function resizeIframe(obj) {
-    obj.style.height = "500px"; // Temporarily reset height for recalculation
-    obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
-}
-</script>
+  <section id="getting-started-in-a-nutshell">
+<span id="quick-start"></span><h1>Getting Started in a Nutshell<a class="headerlink" href="#getting-started-in-a-nutshell" title="Permalink to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<p>This section is a concise summary of steps required to run a MsPASS.
+It has limited explanations for what is done at each step.   The main use
+is as a quick reminder for experienced users and as the starting point
+for the impatient.  This summary assumes you are running on a desktop
+using docker.   It is not appropriate if you are running on a cluster
+with multiple nodes.  If that is your situation, you should refer to
+the appropriate, longer sections of the <cite>Getting Started</cite> section.</p>
+</section>
+<section id="install-docker">
+<h2>1. Install docker<a class="headerlink" href="#install-docker" title="Permalink to this heading"></a></h2>
+<p>Fetch and install docker following instructions on the
+<a class="reference external" href="https://docs.docker.com/get-docker/">docker web site</a>.</p>
+</section>
+<section id="launch-docker-desktop-macoos-and-windows">
+<h2>2. Launch docker desktop (MacoOS and Windows)<a class="headerlink" href="#launch-docker-desktop-macoos-and-windows" title="Permalink to this heading"></a></h2>
+<p>MacOS and Windows have a GUI application (Icon tagged “Docker”) that you will
+need to launch unless it is already running.</p>
+</section>
+<section id="get-or-refresh-the-container-optional">
+<h2>3. Get or Refresh the container (optional)<a class="headerlink" href="#get-or-refresh-the-container-optional" title="Permalink to this heading"></a></h2>
+<p>If you have not run MsPASS before you will need to get the docker container
+from the standard repository.  Alternatively if you want to get the most
+recent updates you may also need to do this step.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>
+</pre></div>
+</div>
+</section>
+<section id="launch-the-container">
+<h2>4. Launch the container<a class="headerlink" href="#launch-the-container" title="Permalink to this heading"></a></h2>
+<p>Launch whatever version of a “terminal” is used on your platform.
+Decide what directory (folder) you want to use as a working directory.
+If you are running one of our tutorials use the top-level of the tutorials
+repository. Otherwise, use whatever is appropriate for your setup.
+Make whatever you choose your current directory and run this incantation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind mspass/mspass
+</pre></div>
+</div>
+<p>This should generate a stream of output ending in something like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[I 11:02:38.655 NotebookApp] Serving notebooks from local directory: /home
+[I 11:02:38.655 NotebookApp] Jupyter Notebook 6.2.0 is running at:
+[I 11:02:38.655 NotebookApp] http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
+[I 11:02:38.656 NotebookApp]  or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
+[I 11:02:38.656 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[C 11:02:38.673 NotebookApp]
 
-<iframe src="../_static/html/hierarchy.html" width="100%" height="600px" marginheight="0" frameborder="0" scrolling="yes" id="iframe" onload="javascript:resizeIframe(this);"></iframe></section>
+    To access the notebook, open this file in a browser:
+        file:///root/.local/share/jupyter/runtime/nbserver-57-open.html
+    Or copy and paste one of these URLs:
+        http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
+     or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The start line using the unix shell trick with <cite>pwd</cite> can fail in some situations if
+the path to which it resolves has a space bar character (” “) such as “My Documents”.
+If that happens choose a different work directory or replace <cite>pwd</cite> in the
+incantation above with the space escaped (e.g. “MyDocuments”).</p>
+</div>
+</section>
+<section id="connect-to-the-container-with-a-web-browser">
+<h2>5. Connect to the container with a web browser<a class="headerlink" href="#connect-to-the-container-with-a-web-browser" title="Permalink to this heading"></a></h2>
+<p>If you don’t have one running already, launch your favorite web browser.  Use
+cut-and-paste or type one of the http addresses in the output into the url
+box of the browser. That should launch the jupyter lab control panel.  If you
+are not familiar with jupyter lab or jupyter notebook you will need to refer
+to tutorials for that application.  The jupyter developer’s introduction
+can be found
+<a href="#id1"><span class="problematic" id="id2">`here.&lt;http://justinbois.github.io/bootcamp/2020_fsri/lessons/l01_welcome.html&gt;`__</span></a>
+There are many other tutorials easily found with a web search.</p>
+</section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="C++ API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="mspass.utility.Metadata.html" class="btn btn-neutral float-right" title="mspass::utility::Metadata" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="MsPASS Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="run_mspass_with_docker.html" class="btn btn-neutral float-right" title="Run MsPASS with Docker" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
