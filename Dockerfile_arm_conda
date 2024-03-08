@@ -1,0 +1,10 @@
+FROM --platform=linux/arm64 mambaorg/micromamba:latest as conda
+
+ENV PYTHON_VERSION=3.11
+RUN conda install conda-build anaconda-client \
+    && conda config --set anaconda_upload no \
+    && config --add channels conda-forge \
+    && ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 \
+    && PACKAGE_PATH=$(conda build . --python ${{ matrix.python-version }} --output) \
+    && conda build . --python ${{ matrix.python-version }} \
+    && anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${{ matrix.python-version }} --force
