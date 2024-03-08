@@ -1,4 +1,8 @@
 FROM --platform=linux/arm64 continuumio/anaconda3:latest
+COPY . /mspass
+WORKDIR /mspass
+RUN ls
+RUN pwd
 ENV PYTHON_VERSION=3.11
 RUN conda install conda-build anaconda-client \
     && conda config --set anaconda_upload yes \
