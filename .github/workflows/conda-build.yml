@@ -1,6 +1,6 @@
 name: publish_conda
 
-on: [pull_request]
+on: [push, pull_request]
     
 jobs:
   conda-build-arm:
@@ -25,6 +25,7 @@ jobs:
 
   conda-build-and-publish:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'push' }}
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
