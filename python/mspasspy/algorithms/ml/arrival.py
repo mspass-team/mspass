@@ -8,7 +8,12 @@ from seisbench.models.base import WaveformModel
 
 
 def annotate_arrival_time(
-    timeseries: TimeSeries, model: WaveformModel = None, model_args: dict = None
+    timeseries: TimeSeries,
+    threshold=0.2,
+    window_start_offset_sec=0,
+    window_length_sec=None,
+    model: WaveformModel = None,
+    model_args: dict = None,
 ):
     """
     Predict the arrival time of the seismic phase using the provided seisbench WaveformModel.
@@ -44,40 +49,33 @@ def annotate_arrival_time(
             break
     data = trace.data
 
-    # Step 2: Find the index of the maximum probability value
-    max_index = np.argmax(data)
+    # Step 2: Find all the index with probability value greater than the threshold
+    indices = np.where(data > threshold)[0]
 
     # Step 3: Calculate the corresponding time
     # Trace start time
     start_time = trace.stats.starttime
+    window_start = trace.stats.starttime + window_start_offset_sec
+    window_end = window_start + window_length_sec if window_length_sec else trace.stats.endtime
+    if not window_start < window_end:
+        raise ValueError("Invalid time window")
+
     # Sampling rate (samples per second)
     sampling_rate = trace.stats.sampling_rate
     # Calculate time offset in seconds
-    time_offset = max_index / sampling_rate
+    time_offsets = indices / sampling_rate
     # Calculate the absolute time of the highest probability
-    arrival_time = start_time + time_offset
+    arrival_times = start_time + time_offsets
 
-    # Convert to a more convenient format if necessary, e.g., UTCDateTime to string
-    arrival_time_str = arrival_time.strftime("%Y-%m-%d %H:%M:%S.%f")
+    # Step 4: Filter the indices and arrival times based on the time window
+    filtered_indices = []
+    filtered_arrival_times = []
+    for index, arrival_time in zip(indices, arrival_times):
+        if window_start <= arrival_time <= window_end:
+            filtered_indices.append(index)
+            filtered_arrival_times.append(arrival_time)
 
-    timeseries["p_time"] = arrival_time_str
+    # Step 5: Convert arrival times to a more convenient format if necessary
+    filtered_arrival_time_strs = [time.strftime("%Y-%m-%d %H:%M:%S.%f") for time in filtered_arrival_times]
 
-
-# TODO fix me
-def predict_P_wave_arrival_time_obspy(d: TimeSeries):
-    model = TauPyModel(model="iasp91")
-    srclat = d["source_lat"]
-    srclon = d["source_lon"]
-    srcdep = d["source_depth"]
-    srctime = d["source_time"]
-    stalat = d["channel_lat"]
-    stalon = d["channel_lon"]
-    staelev = d["channel_elev"]
-    georesult = gps2dist_azimuth(srclat, srclon, stalat, stalon)
-    degdist = kilometers2degrees(georesult[0] / 1000.0)
-
-    arr = model.get_travel_times(
-        distance_in_degree=degdist, source_depth_in_km=srcdep, phase_list=["P"]
-    )
-    atime = srctime + arr[0].time
-    d["Ptime"] = atime
+    timeseries["p_arrival_picks_time"] = filtered_arrival_time_strs
