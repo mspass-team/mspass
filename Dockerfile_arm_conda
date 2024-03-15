@@ -4,7 +4,8 @@ WORKDIR /mspass
 RUN ls
 RUN pwd
 ENV PYTHON_VERSION=3.11
-RUN conda install conda-build anaconda-client \
+RUN sed -i '38d' meta.yaml \
+    && conda install conda-build anaconda-client \
     && conda config --set anaconda_upload yes \
     && conda config --add channels conda-forge \
     && export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 \
