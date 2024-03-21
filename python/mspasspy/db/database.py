@@ -4188,6 +4188,7 @@ class Database(pymongo.database.Database):
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
 
+        alg = "Database._read_data_from_dfile:  "
         if not format:
             if isinstance(mspass_object, TimeSeries):
                 try:
@@ -4257,6 +4258,59 @@ class Database(pymongo.database.Database):
                             interpolation_samples=merge_interpolation_samples,
                         )
                     tr = st[0]
+                    # We can't use Trace2TimeSeries because we loose
+                    # all but miniseed metadata if we do that.
+                    # We do, however, need to compare post errors
+                    # if there is a mismatch
+                    if tr.stats.npts != mspass_object.npts:
+                        message = "Inconsistent number of data points (npts)\n"
+                        message += "Database npts={} but obspy reader created a vector {} points long\n".format(
+                            mspass_object.npts, tr.stats.npts
+                        )
+                        message += "Set to vector size defined by reader."
+                        mspass_object.elog.log_error(
+                            alg, message, ErrorSeverity.Complaint
+                        )
+                        mspass_object.set_npts(tr.stats.npts)
+                    if tr.stats.starttime.timestamp != mspass_object.t0:
+                        message = "Inconsistent starttimes detected\n"
+                        message += "Starttime in MongoDB document = {}\n".format(
+                            UTCDateTime(mspass_object.t0)
+                        )
+                        message += "Starttime returned by obspy reader = {}\n".format(
+                            tr.stats.starttime
+                        )
+                        message += "Set to time set by reader"
+                        mspass_object.elog.log_error(
+                            alg, message, ErrorSeverity.Complaint
+                        )
+                        mspass_object.set_t0(tr.stats.starttime.timestamp)
+                    if tr.stats.delta != mspass_object.dt:
+                        message = "Inconsistent sample intervals"
+                        message += "Database has delta={} but obspy reader set delta={}\n".format(
+                            mspass_object.dt, tr.stats.delta
+                        )
+                        message += "Set to value set by reader."
+                        mspass_object.elog.log_error(
+                            alg, message, ErrorSeverity.Complaint
+                        )
+                        mspass_object.dt = tr.stats.delta
+                    if tr.stats.endtime.timestamp != mspass_object.endtime():
+                        message = "Inconsistent endtimes detected\n"
+                        message += (
+                            "Endtime expected from MongoDB document = {}\n".format(
+                                UTCDateTime(mspass_object.endtime())
+                            )
+                        )
+                        message += "Endtime set by obspy reader = {}\n".format(
+                            tr.stats.endtime
+                        )
+                        message += "Endtime is derived in mspass and should have been repaired - cannot recover this datum so it was killed"
+                        mspass_object.elog.log_error(
+                            alg, message, ErrorSeverity.Invalid
+                        )
+                        mspass_object.kill()
+
                     # These two lines are needed to properly initialize
                     # the DoubleVector before calling Trace2TimeSeries
                     tr_data = tr.data.astype(
@@ -4264,11 +4318,14 @@ class Database(pymongo.database.Database):
                     )  #   Convert the nparray type to double, to match the DoubleVector
                     mspass_object.npts = len(tr_data)
                     mspass_object.data = DoubleVector(tr_data)
-                    # mspass_object = Trace2TimeSeries(tr)
+                    # We can't use Trace2TimeSeries because we loose
+                    # all but miniseed metadata if we do that.
+                    # We do, however, need to compare post errors
+                    # if there is a mismatch
+
                     if mspass_object.npts > 0:
                         mspass_object.set_live()
                     else:
-                        alg = "Database._read_data_from_dfile:  "
                         message = "Error during read with format={}\n".format(format)
                         message += "Unable to reconstruct data vector"
                         mspass_object.elog.log_error(
@@ -4290,7 +4347,6 @@ class Database(pymongo.database.Database):
                     if mspass_object.npts > 0:
                         mspass_object.set_live()
                     else:
-                        alg = "Database._read_data_from_dfile:  "
                         message = "Error during read with format={}\n".format(format)
                         message += "Unable to reconstruct Seismogram data matrix"
                         mspass_object.elog.log_error(
@@ -5698,7 +5754,9 @@ class Database(pymongo.database.Database):
         if dfile is None:
             dfile = self._get_dfile_uuid("mseed")
         fname = os.path.join(odir, dfile)
-        (ind, elog) = _mseed_file_indexer(fname)
+        # TODO:  should have a way to pass verbose to this function
+        # present verbose is not appropriate.
+        (ind, elog) = _mseed_file_indexer(fname,segment_time_tears)
         if len(elog.get_error_log()) > 0 and "No such file or directory" in str(
             elog.get_error_log()
         ):
