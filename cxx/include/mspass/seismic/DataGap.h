@@ -28,6 +28,7 @@ public:
     DataGap(){};
     /*! Construct with an initial list of TimeWindows defining gaps. */
     DataGap(const std::list<mspass::algorithms::TimeWindow>& twlist);
+    DataGap(const DataGap& parent):gaps(parent.gaps){};
     virtual ~DataGap(){};
 /*!
 Checks if data at time ttest is a gap or valid data.
@@ -59,20 +60,43 @@ Sometimes an algorithm detects or needs to create a gap (e.g. a mute,
 or a constructor).
 This function provides a common mechanism to define such a gap in the data.
 **/
-      void add_gap(const mspass::algorithms::TimeWindow tw){gaps.insert(tw);};
+      void add_gap(const mspass::algorithms::TimeWindow tw);
 /*! Getter returns a list of TimeWindows defining a set of gaps. */
       std::list<mspass::algorithms::TimeWindow> get_gaps() const;
       /*! \brief Clear gaps.
 
-It is sometimes necessary to clear gap definitions.
-This is particularly important when a descendent of this class
-is cloned and then morphed into something else.
-*/
+      It is sometimes necessary to clear gap definitions.
+      This is particularly important when a descendent of this class
+      is cloned and then morphed into something else.
+      This method clears the entire content.  This class assumes 
+      gaps are an immutable property of recorded data.  A subclass
+      could be used to add that functionality.
+      */
       void clear_gaps(){if(!gaps.empty())gaps.clear();};
-/*! \brief virtual method for zeroing data gaps.
-
-Any object using this object needs to implement this method */
-      virtual void zero_gaps()=0;
+      /*! Return number of defined gaps. */
+      int number_gaps() const{return gaps.size();};
+      /*! Return the subset of gaps within a specified time interval. 
+       *
+       * \param tw TimeWindow defining range to be returned.  Note 
+       * overlaps with the edge will be returned with range outside the
+       * range defined by tw.  If the tw is larger than the range of 
+       * the current content returns a copy of itself. 
+       */
+      DataGap subset(const mspass::algorithms::TimeWindow tw) const;
+      /*! Shift the times of all gaps by a value.
+       *
+       When used with a TimeSeries or Seismogram the concept of UTC 
+       versus relative time requires shifting the time origin.  
+       This method should be used in that context or any other context 
+       where the data origin is shifted.   The number passed as shift 
+       is subtracted from all the window start and end times that define 
+       data gaps. 
+       */
+       void translate_origin(double time_of_new_origin);
+      /*! Standard assignment operator.*/
+      DataGap& operator=(const DataGap& parent);
+      /*! Add contents of another DataGap container to this one.  */
+      DataGap& operator+=(const DataGap& other);
 protected:
   /*! \brief Holds data gap definitions.
   We use an STL set object to define data gaps for any time series

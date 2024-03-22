@@ -21,6 +21,8 @@ public:
   TimeSeriesWGaps(const TimeSeriesWGaps& parent)
       : TimeSeries(dynamic_cast<const TimeSeries&>(parent)),
               DataGap(dynamic_cast<const DataGap&>(parent)){};;
+  TimeSeriesWGaps(const TimeSeries& tsp, const DataGap& dgp) 
+	  : TimeSeries(tsp), DataGap(dgp) {};
   TimeSeriesWGaps& operator=(const TimeSeriesWGaps& parent);
   virtual ~TimeSeriesWGaps(){};
   /*!

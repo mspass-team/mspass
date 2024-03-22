@@ -621,7 +621,11 @@ void CoreSeismogram::rotate(const double nu[3])
 /* simplified procedure to rotate only zonal angle by phi radians.
  Similar to above but using only azimuth angle AND doing a simple
  rotation in the horizontal plane.  Efficient algorithm only
- alters 0 and 1 components. */
+ alters 0 and 1 components. 
+
+Note sign is spherical coordinate form with phi positive anticlockwise.
+Sign in rotate with spherical coordinate is different because phi is 
+converted to azimuth.  Note that is just the sign of b in the code.*/
 void CoreSeismogram::rotate(double phi)
 {
     if( (u.size()[1]<=0) || dead()) return; // do nothing in these situations
@@ -631,9 +635,9 @@ void CoreSeismogram::rotate(double phi)
     b=sin(phi);
     double tmnew[3][3];
     tmnew[0][0] = a;
-    tmnew[1][0] = b;
+    tmnew[1][0] = -b;
     tmnew[2][0] = 0.0;
-    tmnew[0][1] = -b;
+    tmnew[0][1] = b;
     tmnew[1][1] = a;
     tmnew[2][1] = 0.0;
     tmnew[0][2] = 0.0;
@@ -641,7 +645,7 @@ void CoreSeismogram::rotate(double phi)
     tmnew[2][2] = 1.0;
 
     /* Now multiply the data by this transformation matrix.
-     Not trick in this i only goes to 2 because 3 component
+     Note trick in this i only goes to 2 because 3 component
      is an identity.*/
     double *work[2];
     for(i=0; i<2; ++i)work[i] = new double[nsamp];

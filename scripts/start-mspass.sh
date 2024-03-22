@@ -317,6 +317,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
     start_mspass_frontend $2
     clean_up_single_node
   fi
+  wait
 else
   docker-entrypoint.sh $@
 fi
