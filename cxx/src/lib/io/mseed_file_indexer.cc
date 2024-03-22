@@ -19,6 +19,86 @@ namespace mspass::io
 {
 using namespace mspass::io;
 using mspass::utility::ErrorSeverity;
+/*! Inline class used to make a cleaner interface the ugly libmseed function 
+  for dealing with what they call an "sid".  
+  */
+class MSEED_sid
+{
+  public:
+    MSEED_sid()
+    {
+      string s("");
+      net=s;
+      sta=s;
+      chan=s;
+      loc=s;
+    }
+    MSEED_sid(const char *sid);
+    MSEED_sid(const MSEED_sid& parent)
+    {
+      net=parent.net;
+      sta=parent.sta;
+      chan=parent.chan;
+      loc=parent.loc;
+    };
+    string net;
+    string sta;
+    string chan;
+    string loc;
+    MSEED_sid& operator=(const MSEED_sid& parent)
+    {
+      if(this != &parent)
+      {
+        net=parent.net;
+        sta=parent.sta;
+        chan=parent.chan;
+        loc=parent.loc;
+      }
+      return *this;
+    };
+    bool operator!=(const MSEED_sid& other) const;
+    friend ostream& operator<<(ostream& os, MSEED_sid& self)
+    {
+      string sep(":");
+      os << self.net 
+        <<sep<<self.sta
+        <<sep<<self.chan
+        <<sep<<self.loc;
+      return os;
+    };
+    
+};
+/*! Constructor for this class.  
+
+  Just copies c strings to std::strings in the class.  Throws a simple 
+  int exception if the libmseed parser returns an error. 
+  This could be improved if I could make sense of the error logger by 
+  retrieving the message this obnoxious function posts to its error log. 
+  */
+MSEED_sid::MSEED_sid(const char *sid)
+{
+  char net[16],sta[16],loc[16],chan[16];  //larger than needed but  safe
+  /* sid apparently is not const in prototype so we need this cast to 
+     make it more kosher for this class */
+  if(ms_sid2nslc(const_cast<char *>(sid),net,sta,loc,chan)==0)
+  {
+    this->net = string(net);
+    this->sta = string(sta);
+    this->chan = string(chan);
+    this->loc = string(loc);
+  }
+  else
+  {
+    throw 1;
+  }
+}
+bool MSEED_sid::operator!=(const MSEED_sid& other) const
+{
+  if( this->net==other.net && this->sta==other.sta && this->chan==other.chan && this->loc==other.loc)
+    return false;
+  else
+    return true;
+};
 /* Using this file scope typedef to avoid the absurdly complex syntax of an
 std::pair constructor with complex objects like this */
 typedef std::pair<std::vector<mseed_index>,mspass::utility::ErrorLogger> MSDINDEX_returntype;
@@ -98,7 +178,8 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
   // int8_t ppackets = 0;
   int8_t verbose = 0;
   int retcode;
-  char last_sid[128],current_sid[128];
+  //char last_sid[128],current_sid[128];
+  MSEED_sid last_sid,current_sid;
   /* This is used to define a time tear (gap).  When the computed endtime of
   the previous packet read mismatches the starttime of the current packet we
   create  a segment by defining a new index entry terminated at the time
@@ -112,7 +193,6 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
   /* Loop over the input file record by record */
   int64_t fpos=0;
   uint64_t start_foff,nbytes;
-  char net[16],sta[16],loc[16],chan[16];  //larger than needed but  safe
   mseed_index ind;
   /* These values have a different time standard structure than 
    * epoch times.  These can only be compared with epoch times by 
@@ -120,7 +200,7 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
    */
   nstime_t stime;
   int64_t npts(0),current_npts;
-  uint64_t number_packets_read(0);
+  uint64_t number_packets_read(0),number_valid_packets(0);
   double last_packet_samprate,last_packet_endtime,expected_starttime, last_dt;
   /* These are used to handle long time series where the accumulated time 
    * from the start of a segment (many packets) gets inconsistent with 
@@ -155,11 +235,24 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
     switch(retcode)
     {
       case MS_NOERROR:
+        try
+        {
+          current_sid=MSEED_sid(msr->sid);
+        }catch(...)
+        {
+          stringstream ss;
+          ss << "source id string="<<current_sid<<" in packet number "<<number_packets_read
+                 << " of file "<< inputfile << " could not be decoded but reader did not flag an error"<<endl
+                 << "Segment break at this point is likely"<<endl;
+              elog.log_error(function_name,ss.str(),ErrorSeverity::Complaint);
+          continue;
+
+        }
         /* Land here for normal reads with no error return*/
-        if(number_packets_read == 0)
+        if(number_valid_packets == 0)
         {
           /* Initializations needed for first packet in the file */
-          strcpy(last_sid,msr->sid);
+          last_sid = current_sid;
           stime = msr->starttime;
           current_epoch_stime =  MS_NSTIME2EPOCH(static_cast<double>(stime));
           last_epoch_stime = current_epoch_stime;
@@ -177,8 +270,7 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
           current_epoch_stime = MS_NSTIME2EPOCH(static_cast<double>(stime));
           expected_starttime = last_packet_endtime + last_dt;
           computed_segment_starttime = segment_starttime + last_dt*static_cast<double>(npts);
-          strcpy(current_sid,msr->sid);
-          if(strcmp(current_sid,last_sid))
+          if(current_sid!=last_sid)
               sid_change_detected=true;
           if(segment_timetears)
           {
@@ -192,43 +284,22 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
 
           if( sid_change_detected || timetear_detected  )
           {
-            /* DEBUG*/
-            /*
-            cout << "Time tear detected: "<<endl
-              << current_epoch_stime-expected_starttime 
-              << " "
-              << current_epoch_stime-computed_segment_starttime <<endl;
-              */
-            /* New segments land hear to create a new entry for the index */
-            if(ms_sid2nslc(last_sid,net,sta,loc,chan)==0)
-            {
-              nbytes=fpos-start_foff;
-              ind.net=net;
-              ind.sta=sta;
-              ind.loc=loc;
-              ind.chan=chan;
-              ind.foff=start_foff;
-              ind.nbytes=nbytes;
-              ind.starttime=segment_starttime;
-              ind.last_packet_time=last_epoch_stime;
-              ind.samprate=last_packet_samprate;
-              ind.npts=npts;
-              ind.endtime=ind.starttime + (static_cast<double>(npts))/ind.samprate;
-              indexdata.push_back(ind);
-            }
-            else
-            {
-              stringstream ss;
-              ss << std::setprecision(15) 
-                 << "source id string="<<last_sid<<" in packet number "<<number_packets_read
-                 << " of file "<< inputfile << " could not be decoded"<<endl
-                 << "Data between epoch time="<<segment_starttime<<" and "
-                 << expected_starttime <<" will be dropped "<<endl;
-              elog.log_error(function_name,ss.str(),ErrorSeverity::Complaint);
-            }
+            nbytes=fpos-start_foff;
+            ind.net=last_sid.net;
+            ind.sta=last_sid.sta;
+            ind.chan=last_sid.chan;
+            ind.loc=last_sid.loc;
+            ind.foff=start_foff;
+            ind.nbytes=nbytes;
+            ind.starttime=segment_starttime;
+            ind.last_packet_time=last_epoch_stime;
+            ind.samprate=last_packet_samprate;
+            ind.npts=npts;
+            ind.endtime=ind.starttime + (static_cast<double>(npts))/ind.samprate;
+            indexdata.push_back(ind);
             /* Initate a new segment.  Note the only difference if there was a decoding 
              * error is the index entry will be dropped. */
-            strcpy(last_sid,msr->sid);
+            last_sid = current_sid;
             last_epoch_stime =  current_epoch_stime;
             last_packet_samprate = msr->samprate;
             last_dt = 1.0/last_packet_samprate;
@@ -241,7 +312,7 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
           else
           {
             /* Packets without a break land here */
-            strcpy(last_sid,msr->sid);
+            last_sid = current_sid;
             stime = msr->starttime;
             last_epoch_stime =  MS_NSTIME2EPOCH(static_cast<double>(stime));
             last_packet_samprate = msr->samprate;
@@ -252,37 +323,34 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
                               + static_cast<double>(current_npts-1)*last_dt;
           }
         }
+        ++number_valid_packets;
         data_available = true;
         break;
       case MS_ENDOFFILE:
-          if(ms_sid2nslc(last_sid,net,sta,loc,chan)==0)
-          {
-            nbytes=fpos-start_foff;
-            ind.net=net;
-            ind.sta=sta;
-            ind.loc=loc;
-            ind.chan=chan;
-            ind.foff=start_foff;
-            ind.nbytes=nbytes;
-            ind.starttime=segment_starttime;
-            ind.last_packet_time=last_epoch_stime;
-            ind.samprate=last_packet_samprate;
-            ind.npts=npts;
-            ind.endtime=ind.starttime + (static_cast<double>(npts))/ind.samprate;
-            indexdata.push_back(ind);
-            data_available = false;
-          }
-          else
-          {
-            stringstream ss;
-            ss << std::setprecision(15) 
-                 << "source id string="<<last_sid<<" in last packet of file could not be decoded "
-                 << " in file "<< inputfile<<endl
-                 << "Data between epoch time="<<segment_starttime<<" and "
-                 << expected_starttime <<" will be dropped "<<endl;
-            elog.log_error(function_name,ss.str(),ErrorSeverity::Complaint);
-          }
-          break;
+        if(number_valid_packets>0)
+        {
+          nbytes=fpos-start_foff;
+          ind.net = last_sid.net;
+          ind.sta = last_sid.sta;
+          ind.chan = last_sid.chan;
+          ind.loc = last_sid.loc;
+          ind.foff=start_foff;
+          ind.nbytes=nbytes;
+          ind.starttime=segment_starttime;
+          ind.last_packet_time=last_epoch_stime;
+          ind.samprate=last_packet_samprate;
+          ind.npts=npts;
+          ind.endtime=ind.starttime + (static_cast<double>(npts))/ind.samprate;
+          indexdata.push_back(ind);
+          data_available = false;
+        }
+        else
+        {
+          elog.log_error(function_name,
+              string("Hit end of file before reading any valid packets\nEmpty index"),
+              ErrorSeverity::Invalid);
+        }
+        break;
       default:
           /* All other error conditions end here.  Function MS_code_to_message
              translates to a rational error message return */
