@@ -1,10 +1,13 @@
-FROM --platform=linux/arm64 mambaorg/micromamba:latest as conda
-
+FROM --platform=linux/arm64 continuumio/anaconda3:latest
+COPY . /mspass
+WORKDIR /mspass
+RUN ls
+RUN pwd
 ENV PYTHON_VERSION=3.11
-RUN conda install conda-build anaconda-client \
-    && conda config --set anaconda_upload no \
-    && config --add channels conda-forge \
-    && ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 \
-    && PACKAGE_PATH=$(conda build . --python ${{ matrix.python-version }} --output) \
-    && conda build . --python ${{ matrix.python-version }} \
-    && anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${{ matrix.python-version }} --force
+RUN apt-get update && apt-get install -y cmake \
+    && sed -i '38d' meta.yaml \
+    && conda install conda-build anaconda-client \
+    && conda config --set anaconda_upload yes \
+    && conda config --add channels conda-forge \
+    && export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 \
+    && conda build . --python 3.11

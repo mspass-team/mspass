@@ -12,6 +12,7 @@ requirements:
     - {{ compiler('gfortran') }}
     - gsl
 
+
   host:
     - python {{ PYTHON_VERSION }}
     - pip
@@ -21,6 +22,7 @@ requirements:
     - boost-cpp
     - lapack
     - libblas
+    - yaml-cpp
 
   run:
     - python {{ PYTHON_VERSION }}
@@ -29,6 +31,8 @@ requirements:
     - libzlib
     - gsl
     - pyyaml
+    - yaml-cpp
+    - libblas
     - pymongo
     - numpy
     - obspy
