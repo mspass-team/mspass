@@ -70,7 +70,7 @@ PYBIND11_MODULE(io,m){
     "Builds an index for a miniseed file returning std::pair with index and ErrorLogger object",
     py::return_value_policy::copy,
     py::arg("file"),
-    py::arg("segment") = false,
+    py::arg("segment") = true,
     py::arg("verbose") = false
     )
   ;

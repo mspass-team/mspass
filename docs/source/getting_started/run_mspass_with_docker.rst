@@ -6,15 +6,18 @@ Run MsPASS with Docker
 Prerequisites
 -------------
 
-Docker is required for users to run MsPASS on desktop systems.
-It is the piece of software you will use to run and manage
+Docker is required in normal use to run MsPASS on desktop systems.
+The alternative is a more complicated installation of the components
+built from source as described on
+`this wiki page <https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code>`__.
+Docker is the piece of software you will use to run and manage
 any containers on your desktop system.
 
 Docker is well-supported on all current desktop operating systems and
 has simple install procedures described in detail in the
 product's documentation found `here <https://docs.docker.com/get-docker/>`__
 The software can currently be downloaded at no cost, but you must have
-administrative priveleges to install the software.
+administrative privileges to install the software.
 The remainder of this page assumes you have successfully installed
 docker.  For Windows or Apple user's it may be convenient to launch the
 "docker desktop" as an alternative to command line tools.
@@ -85,8 +88,8 @@ to save your results to your local system.   Without the
 ``--mount`` incantation any results
 you produce in a run will disappear when the container exits.
 
-An useful, alternative way to launch docker on a linux or MacOS system
-is use the shell ``cd`` command in the terminal you are using to make
+A useful, alternative way to launch docker on a linux or MacOS system
+is to use the shell ``cd`` command in the terminal you are using to make
 your project directory the "current directory".   Then you can
 cut-and-paste the following variation of the above into that terminal
 window and */home* in the container will be mapped to your
@@ -158,6 +161,26 @@ useful, but it is a sharp knife that can cut you.   Be sure you know what
 you are doing before you alter any files with bash commands in this
 terminal.   A more standard use is to run common monitoring commands like
 ``top`` to monitor memory and cpu usage by the container.
+
+If you are using dask on a desktop, we have found many algorithms perform
+badly because of a subtle issue with python and threads.   That is, by
+default dask uses a "thread pool" for workers with the number of threads
+equal to the number of cores defined for the docker container.
+Threading with python is subject to poor performance because of
+something called the Global Interpreter Lock (GIL) that causes multithread
+python functions to not run in parallel at all with dask.  The solution
+is to tell dask to run each worker task as a "process" not a thread.
+(Note pyspark does this by default.)  A way to do that with dask is to
+launch docker with the following variant of above:
+
+.. code-block::
+
+    docker run -p 8888:8888 -e MSPASS_WORKER_ARG="--nworkers 4 --nthreads 1" --mount src=`pwd`,target=/home,type=bind mspass/mspass
+
+where the value after `--nworkers` should be the number of worker tasks
+you want to have the container run.   Normally that would be the number of
+cores defined for the container which be default is less than the number of
+cores for the machine running docker.
 
 Finally, to exit close any notebook windows and the Jupyter notebook
 home page.   You will usually need to type a `ctrl-C` in the terminal

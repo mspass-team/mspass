@@ -76,6 +76,11 @@ jobs:
           images: |
             mspass/mspass
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=schedule,pattern=weekly
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
