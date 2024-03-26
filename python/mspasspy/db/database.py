@@ -5756,7 +5756,7 @@ class Database(pymongo.database.Database):
         fname = os.path.join(odir, dfile)
         # TODO:  should have a way to pass verbose to this function
         # present verbose is not appropriate.
-        (ind, elog) = _mseed_file_indexer(fname,segment_time_tears)
+        (ind, elog) = _mseed_file_indexer(fname, segment_time_tears)
         if len(elog.get_error_log()) > 0 and "No such file or directory" in str(
             elog.get_error_log()
         ):
