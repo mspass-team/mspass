@@ -1,4 +1,5 @@
 add_executable(test_mseed test_mseed.cc)
+configure_file(test.msd test.msd COPYONLY)
 include_directories(
   ${Boost_INCLUDE_DIRS}
   ${pybind11_INCLUDE_DIR}
