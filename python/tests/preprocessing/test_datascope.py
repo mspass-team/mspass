@@ -60,6 +60,26 @@ def test_DatascopeDatabase():
     dftest = db.df2table(df, "out", "arrival", append=True)
     df2 = db2.get_table("arrival")
     assert len(df2) == 2 * n0
+    # test get_primary_keys method
+    keylist = db.get_primary_keys("origin")
+    assert len(keylist) == 6
+    keylist = db.get_primary_keys("event")
+    assert len(keylist) == 1
+    assert keylist[0] == "evid"
+    # basic test of join method
+    # this test is not right for general use of this join in
+    # css3.0 but it works for this small database
+    dfj = db.join(df, "site", join_keys=["sta"])
+    # this magic number derived from interactive testing
+    # bote dataframe join does not duplicate sta as sta_site
+    # because it is a key.  Probably needs a test for suffix option
+    # of join
+    assert len(dfj.columns) == 37
+    # test get_nulls method.   expected to return a dict of
+    # the size in the assert after the call
+    nulls = db.get_nulls("site")
+    assert isinstance(nulls, dict)
+    assert len(nulls) == 12
     # Do a basic test on all the other tables in the test db
     for tbl in ["assoc", "event", "origin", "site", "wfdisc"]:
         df = db.get_table(tbl)
