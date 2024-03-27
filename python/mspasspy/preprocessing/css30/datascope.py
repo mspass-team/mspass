@@ -154,7 +154,7 @@ class DatascopeDatabase:
 
         return df
 
-    def get_keys(self, table) -> list:
+    def get_primary_keys(self, table) -> list:
         """
         Returns a list of the primary keys defined for this table
         in the parameter file used to create this handle.   These
