@@ -88,3 +88,53 @@ def test_DatascopeDatabase():
         dfo = db2.get_table(tbl)
         dftest = dfo.compare(df)
         assert len(dftest) == 0
+    # this method produces the stock catalog view
+    # numbers are magic for the test database only
+    df = db.CSS30Catalog2df()
+    assert len(df)==651
+    assert len(df.columns)==74
+    # finally a series of tests on the wfdisc parser
+    doclist = db.wfdisc2doclist(verbose=False)
+    assert len(doclist)==15
+
+    for doc in doclist:
+        sta = doc['sta']
+        net = doc['net']
+        if sta=='109C':
+            # this entry tests setting default_net value.  If default 
+            # changes this should change
+            assert net=='XX'
+        elif sta=='113A':
+            # this is a normal entry
+            assert net=='TA'
+        elif sta=='113A':
+            # 113A has a loc code set as 00 so we test that got 
+            # properly split here
+            assert net=='TA'
+            assert 'loc' in doc
+            assert doc['loc'] == '00'
+        elif sta=='114':
+            # Test the compound sation name.  wfdisc has rows for 
+            # 114 and X0_114.  snetsta defines which is which to 
+            # set net code.  Maybe should test row position but 
+            # that seems unnecessary
+            assert net=='TA' or net=='X0'
+            
+        # this tests deletion for data not seed
+        assert sta!='112A'
+            
+    # repeat with default_net changed 
+    doclist = db.wfdisc2doclist(default_net='X6')
+    assert len(doclist)==15
+    for doc in doclist:
+        sta = doc['sta']
+        net = doc['net']
+        if sta=='109C':
+            assert net=='X6'
+        
+    # verify existence check works.
+    # this is not as complete as it should be as there are no data files 
+    # this points to.   Verbose on verifies all the print statements 
+    # are interpretted correctly only - action the warn is tested simultaneously
+    doclist = db.wfdisc2doclist(test_existence=True,verbose=True)
+    assert len(doclist)==0
