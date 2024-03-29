@@ -44,20 +44,36 @@ You can configure Coiled with custom network configuration in the
 If you have not run MsPASS before you will need to get the 
 `conda package <https://anaconda.org/cxwang/mspasspy>`__.
 from our standard repository.  Alternatively if you want to get the most
-recent updates you may also need to do this step. The conda packages 
-should be installed locally in the conda environment from which you want 
-to run Coiled.
+recent updates you may also need to do this step. 
+
+We strongly advise you create a separate environment for mspass
+to avoiding breaking any existing python packages you may have 
+installed previous.  Make sure you are on the `base` environment 
+ant enter
 
 .. code-block::
 
-    conda install cxwang::mspasspy
+    conda create --name mspass
 
-You may need to add channel for this step:
+Noting the name "mspass" is not special and it can be changed if you 
+prefer something else.  You chould then make the new 
+environment current with the standand conda command:
+
+.. code-block::
+
+    conda activate mspass
+
+You will almost certainly need to add key "channels" as follows:
 
 .. code-block::
 
     conda config --add channels cxwang 
     conda config --add channels conda-forge 
+
+Then install mspass in this environment with
+
+.. code-block::
+
     conda install -y mspasspy
 
 4. Run MsPASS
