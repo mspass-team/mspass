@@ -71,7 +71,7 @@ same way but for different arithmetic operations with a constant.
 The following table summarizes the available operators:
 
 .. list-table:: Unary Metadata Operators
-   :widths: 50 50 50
+   :widths: 20 10 50
    :header-rows: 1
 
    * - Name
@@ -79,22 +79,22 @@ The following table summarizes the available operators:
      - Constructor
    * - Add
      - +=
-     - ``Add(key, const)``
+     - :py:meth:`Add<mspasspy.algorithms.edit.Add>`
    * - Subtract
      - -=
-     - ``Subtact(key, const)``
+     - :py:meth:`Subtract<mspasspy.algorithms.edit.Subtact>`
    * - Multiply
      - *=
-     - ``Multiply(key, const)``
+     - :py:meth:`Multiply<mspasspy.algorithms.edit.Multiply>`
    * - Divide
      - /=
-     - ``Divide(key, const)``
+     - :py:meth:`Divide<mspasspy.algorithms.edit.Divide>`
    * - IntegerDivide
      - //=
-     - ``IntegerDivide(key, const)``
+     - :py:meth:`IntegerDivide<mspasspy.algorithms.edit.IntegerDivide>`
    * - Mod
      - %=
-     - ``Mod(key, const)``
+     - :py:meth:`Mod<mspasspy.algorithms.edit.Mod>`
 
 As can be seen the class name is a word describing the arithmetic
 operator.  If you are not familiar with the python operator symbols
@@ -135,22 +135,22 @@ name.
      - Constructor
    * - Add2
      - \+
-     - ``Add(keyc, keya, keyb)``
+     - :py:meth:`Add<mspasspy.algorithms.edit.Add2>`
    * - Subtract2
      - \-
-     - ``Subtact(keyc, keya, keyb)``
+     - :py:meth:`Subtract<mspasspy.algorithms.edit.Subtact2>`
    * - Multiply2
      - \*
-     - ``Multiply(keyc, keya, keyb)``
+     - :py:meth:`Multiply<mspasspy.algorithms.edit.Multiply2>`
    * - Divide2
      - \/
-     - ``Divide2(keyc, keya, keyb)``
-   * - IntegerDivide
+     - :py:meth:`Divide2<mspasspy.algorithms.edit.Divide2>`
+   * - IntegerDivide2
      - //
-     - ``IntegerDivide(keyc, keya, keyb)``
+     - :py:meth:`IntegerDivide2<mspasspy.algorithms.edit.IntegerDivide2>`
    * - Mod2
      - %
-     - ``Mod(keyc, keya, keyb)``
+     - :py:meth:`Mod2<mspasspy.algorithms.edit.Mod2>`
 
 Non-arithmetic Operators
 -------------------------------
@@ -184,7 +184,8 @@ name defined by ``key`` to the constant value set with ``const``.
 
 Combining operators
 ------------------------
-We define a final operator class with the name ``MetadataOperatorChain``.
+We define a final operator class with the name
+:py:class:`mspasspy.algorithms.edit.MetadataOperatorChain`.
 As the name suggests it provides a mechanism to implement a (potentially complicated)
 formula from the lower level operators.  The class constructor has
 this usage:
@@ -257,7 +258,7 @@ Best Practices
    data when required attributes are missing.   If your data set has a lot of
    missing metadata required by the operator, the operators will
    kill every datum that is lacking that metadata attribute.
-2. It is far to easy to kill every datum in your data set if you read
+2. It is far too easy to kill every datum in your data set if you read
    data by ensembles and fail to use the `apply_to_members` switch correctly.
    With the default value of False if you mix up the names for fields you
    set in the ensemble container and which you load with each atomic data
@@ -267,7 +268,7 @@ Best Practices
    on a huge data set.
 3. When you are aware that some data have deficient metadata attributes
    that are required for a calculation, it is prudent to first pass the
-   workflow through one related Executioner classes to "kill" data that
+   workflow through one of the related Executioner classes to "kill" data that
    lack the required attributes.
 4. We have found that a chain of ``ChangeKey`` operator is almost always a
    far faster way to repair database name errors than to run
