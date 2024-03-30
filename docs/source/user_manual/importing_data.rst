@@ -10,7 +10,7 @@ want to process.   The focus of our initial development has been
 tools to assemble data acquired from `FDSN (Federated Digital
 Seismic Network) <https://www.fdsn.org/>`__
 data centers.  Decades ago FDSN adopted the
-`Standard for the Exchange of Earthquake Data (SEED)<http://www.fdsn.org/pdf/SEEDManual_V2.4.pdf>`__
+`Standard for the Exchange of Earthquake Data (SEED) <http://www.fdsn.org/pdf/SEEDManual_V2.4.pdf>`__
 format.   Since then a subset of SEED, commonly called miniseed,
 has become the universal tool for distributing earthquake data through
 all FDSN data centers.   Miniseed is compressed data format with
@@ -22,9 +22,9 @@ by ftp transfers of files to web services.  FDSN web services
 distribute three fundamentally different data types:
 (1) single channel, sample data delivered as images of miniseed files,
 (2) station metadata delivered with a standard format called
-`StationXML<https://www.fdsn.org/xml/station/>`__, and
+`StationXML <https://www.fdsn.org/xml/station/>`__, and
 (3) earthquake source data delivered through a standard format called
-`QuakeML<https://earthquake.usgs.gov/earthquakes/feed/v1.0/quakeml.php>`__.
+`QuakeML <https://earthquake.usgs.gov/earthquakes/feed/v1.0/quakeml.php>`__.
 Fortunately for our development efforts a well-developed solution for
 acquiring all three data types from FDSN sources was already available in
 obspy.   The sections below assume you can consult obspy's
@@ -45,7 +45,7 @@ FDSN data
 Importing Miniseed Data
 ----------------------------
 From the MsPASS perspective,
-at this point in time the best mechanism to obtain data from
+at this point in time, the best mechanism to obtain data from
 the FDSN confederation of data centers is to use obspy.
 Obspy has two different python functions that can be used to
 fetch miniseed data from one or more FDSN data centers.
@@ -53,7 +53,7 @@ fetch miniseed data from one or more FDSN data centers.
 #.  The simplest tool obspy provides is their :code:`get_waveform`
     method of the fdsn web service client.  The documentation for that
     function can be found
-    `here<https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_waveforms.html>`__.
+    `here <https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_waveforms.html>`__.
     :code:`get_waveform` retrieves a relatively small number of waveform
     at a time using station codes with wildcards and a time range.
     It is suitable only for small datasets or as a custom agent
@@ -61,11 +61,11 @@ fetch miniseed data from one or more FDSN data centers.
 #.  For most MsPASS users the obspy tool
     of choice is :code:`bulk_download`.
     An overview of the concepts of :code:`bulk_download` are given
-    `here<https://docs.obspy.org/tutorial/code_snippets/retrieving_data_from_datacenters.html>`__
+    `here <https://docs.obspy.org/tutorial/code_snippets/retrieving_data_from_datacenters.html>`__
     and the detailed docstring for the function can be found
-    `here<https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html>`__.
+    `here <https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html>`__.
 
-The obspy tools are well documented and relatively easy to use users
+The obspy tools are well documented and relatively easy to use.  Users
 are referred to the above pages and examples to build a workflow to
 retrieve a working data set.   We do, however, think it useful to
 give a few warnings.
@@ -107,7 +107,7 @@ transitioning to a cloud file service model as the next generation of
 data access.   It is a current development effort of MsPASS to
 provide a simple reader for cloud systems.   Examples of
 using our implementation for S3 on AWS
-can be found `here<https://github.com/mspass-team/mspass/tree/master/scripts/aws_lambda_examples>`__.
+can be found `here <https://github.com/mspass-team/mspass/tree/master/scripts/aws_lambda_examples>`__.
 As the word "prototype" implies that api
 is likely to change.  Check the docstring api for more recent changes if
 you are interested in this capability.
@@ -143,7 +143,7 @@ both are usually necessary to assemble a complete suite of receiver metadata.
     a few calls.   Be warned it retrieves the results into memory into a
     custom obspy data object they call an :code:`Inventory`.  The docstring
     for an :code:`Inventory` object can be found
-    `here<https://docs.obspy.org/packages/autogen/obspy.core.inventory.html?highlight=inventory>`__.
+    `here <https://docs.obspy.org/packages/autogen/obspy.core.inventory.html?highlight=inventory>`__.
     An :code:`Inventory` object can be viewed as more or less a
     StationXML format file translated into a python data structure with a
     few added decorations (e.g. plotting).   We return to this point
@@ -152,7 +152,7 @@ both are usually necessary to assemble a complete suite of receiver metadata.
     having that function download the station metadata and save the
     actual StationXML data files retrieved from web services.  The resulting
     files can then be read with their :code:`read_inventory` method
-    described `here<https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.read_inventory.html>`__.
+    described `here <https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.read_inventory.html>`__.
 
 Both of the approaches above can be used to create an obspy
 :code:`Inventory` object in python:  for (1) that is the return of the
@@ -160,7 +160,7 @@ function while for (2) it is the output of a call to :code:`read_inventory`
 with :code:`format="STATIONXML"`.  We use the obspy :code:`Inventory` object
 as an intermediary for storing receiver metadata in a MongoDB database.
 The :code:`Database` class has a method we call :code:`save_inventory`
-described `here<https://www.mspass.org/python_api/mspasspy.db.html#module-mspasspy.db.database>`__.
+described `here <https://www.mspass.org/python_api/mspasspy.db.html#module-mspasspy.db.database>`__.
 That method translates an :code:`Inventory` object into documents stored in
 what we call the :code:`channel` and :code:`site` collections.   As noted
 many other places in our documentation :code:`channel` contains receiver
@@ -257,7 +257,7 @@ retrieving source metadata.
 #.  :code:`get_events` is an obspy function that is very similar to the
     receiver equivalent :code:`get_stations` noted above.
     Their documentation on this function can be found
-    `here<https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_events.html>`__.
+    `here <https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_events.html>`__.
     Like the receiver equivalent it has search criteria to yield a set of source data
     based on some spatial, time, magnitude, and/or other criteria.
     In addition, like :code:`get_stations`, :code:`get_events` returns the
@@ -270,7 +270,7 @@ retrieving source metadata.
 
 #.  If you use the obspy :code:`mass_downloader` driven by source
     queries (see example titled "Earthquake Data" on the
-    mass_downloader page found `here<https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html>`__)
+    mass_downloader page found `here <https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html>`__)
     that function will create QuakeML data files defining the unique source data for
     all the waveforms downloaded with each call to that function.
 
@@ -281,7 +281,7 @@ intermediary for the import.  :code:`get_events` returns the
 obspy :code:`Catalog` class directly while the output QuakeML files from
 the :code:`mass_downloader` are easily created by calling the
 obspy function :code:`read_events` described
-`here<https://docs.obspy.org/master/packages/autogen/obspy.core.event.read_events.html>`__.
+`here <https://docs.obspy.org/master/packages/autogen/obspy.core.event.read_events.html>`__.
 A :code:`Catalog` instance can then be saved to a MongoDB source collection
 using the :code:`Database` method called :code:`save_catalog`.
 The following is a fragment of a workflow doing this with the output of
@@ -328,13 +328,13 @@ to be processed:
 
 where :code:`SOMEFORMAT` is a keyword from the list of obspy
 supported formats found
-`here<https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats>`__
+`here <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats>`__
 and :code:`converterfunction` is a format-specific python function you would need to
 write.  The function :code:`converterfunction` needs to handle
 the idiosyncrasies of how obspy handles that format and convert the stream
 :code:`st` to a TimeSeriesEnsemble using the MsPASS converter function
 :code:`Stream2TimeSeriesEnsemble` documented
-`here<https://www.mspass.org/python_api/mspasspy.util.html#module-mspasspy.util.converter>`__.
+`here <https://www.mspass.org/python_api/mspasspy.util.html#module-mspasspy.util.converter>`__.
 That is a necessary evil because as the authors of the obspy write in
 their documentation some formats have concepts incompatible with
 obspy's design.   Although we cannot provide unambiguous proof we have
@@ -355,7 +355,7 @@ TimeSeriesEnsemble:
     experience on the efficiency of their converters.   Don't enter that
     gate to hell, however, unless it is essential as you may face a real-life
     example of the Dante quote:  "abandon hope all ye who enter here".
-#.  Every format has a different header structure with few, if any overlaps in
+#.  Every format has a different header structure with few, if any, overlaps in
     the namespace (i.e. the key-value pair defining a concept).   That means
     both the string used in the api to refer to an attribute and the
     type of the value.  The obspy readers handle this issue differently for
@@ -364,7 +364,7 @@ TimeSeriesEnsemble:
     above.
 
 The MsPASS schema class
-(see `this page<https://www.mspass.org/python_api/mspasspy.db.html#module-mspasspy.db.schema>`__ for details)
+(see `this page <https://www.mspass.org/python_api/mspasspy.db.html#module-mspasspy.db.schema>`__ for details)
 has tools we designed to aid conversion of Metadata
 (i.e. item 2 above) from external representations
 (format) of data to MsPASS.   In particular, the :code:`apply_aliases` and

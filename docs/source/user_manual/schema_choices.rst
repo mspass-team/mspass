@@ -3,7 +3,7 @@
 What database schema should I use?
 =======================================
 
-This is another question with endmembers.  At one end is a research workflow
+This is a question with endmembers.  At one end is a research workflow
 that is highly experimental and subject to large changes.   At the other end
 is a production workflow you are constructing to run on a large dataset
 and a cluster with many processors.
