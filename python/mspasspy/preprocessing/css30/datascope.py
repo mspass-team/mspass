@@ -480,133 +480,134 @@ class DatascopeDatabase:
             attribute_list.append([temp[0], temp[5]])
         return attribute_list
 
-    def CSS30Catalog2df(self)->pd.DataFrame:
+    def CSS30Catalog2df(self) -> pd.DataFrame:
         """
-        Forms the standard catalog view of CSS3.0 sans the orid==prefor 
-        condition to return a DataFrame formed by using 
+        Forms the standard catalog view of CSS3.0 sans the orid==prefor
+        condition to return a DataFrame formed by using
         the DatascopeDatabase join method in sequence to produce:
             event->origin->assoc->arrival
         noting the the assoc->arrival join is done via arid.
-        The returned dataframe will have some attributes like the 
-        "time" attributes of `arrival` and `origin` altered to 
-        clarify which is which using the pandas stock method of 
-        appending a suffix.  The suffix is the parent table name.  
-        Hence, for the "time" example the output will have columns 
-        with the keys `time_origin` and `time_arrival`.   
+        The returned dataframe will have some attributes like the
+        "time" attributes of `arrival` and `origin` altered to
+        clarify which is which using the pandas stock method of
+        appending a suffix.  The suffix is the parent table name.
+        Hence, for the "time" example the output will have columns
+        with the keys `time_origin` and `time_arrival`.
 
-        Because this method is expected to normally be run interactively 
-        it will throw exceptions for a whole range of problems 
-        for which the authors of mspass have no control.   
+        Because this method is expected to normally be run interactively
+        it will throw exceptions for a whole range of problems
+        for which the authors of mspass have no control.
         In the usual python way the posted exception stack should
-        define the problem.  Exceptions could come from methods of 
-        this class called by the function or pandas.  
-        
+        define the problem.  Exceptions could come from methods of
+        this class called by the function or pandas.
+
         :return:  Pandad DataFrame with the standard css3.0 catalog view.
         Attribute names are css3.0 names.
-    
-        """   
-        
+
+        """
+
         df = self.get_table("event")
-        df = self.join(df,"origin",join_keys=["evid"])
-        df = self.join(df,"assoc",join_keys=["orid"])
-        df = self.join(df,"arrival",join_keys=["arid"])
-    
+        df = self.join(df, "origin", join_keys=["evid"])
+        df = self.join(df, "assoc", join_keys=["orid"])
+        df = self.join(df, "arrival", join_keys=["arid"])
+
         return df
 
-    def wfdisc2doclist(self,
-                    snetsta_xref=None,
-                    default_net="XX",
-                    test_existence=False,
-                    verbose=True,
-                    )->list:
+    def wfdisc2doclist(
+        self,
+        snetsta_xref=None,
+        default_net="XX",
+        test_existence=False,
+        verbose=True,
+    ) -> list:
         """
-        Special function to convert a wfdisc table to a list of docs that can 
-        be written to MongoDB.  Alternatively the output can be passed directly to 
+        Special function to convert a wfdisc table to a list of docs that can
+        be written to MongoDB.  Alternatively the output can be passed directly to
         :py:func:`mspasspy.io.distributed.read_distributed_data`
-        to initiate a parallel workflow or passed as a constructor to 
-        create a parallel container (i.e bag or RDD) to passed to 
-        the :py:meth:`mspasspy.db.database.read_data` method.  
+        to initiate a parallel workflow or passed as a constructor to
+        create a parallel container (i.e bag or RDD) to passed to
+        the :py:meth:`mspasspy.db.database.read_data` method.
         This method ONLY works for wfdiscs that index
-        a collection of miniseed files.  It will drop any data not 
-        marked as miniseed.  The conversions process is not trivial 
+        a collection of miniseed files.  It will drop any data not
+        marked as miniseed.  The conversions process is not trivial
         for several reasons:
-  
+
         1.  We need to add some computed attributes to match the attributes
             required in wf_miniseed in the mspass reader.
         2.  Handling Null values.
         3.  Filtering out rows not defining miniseed data.
         4.  the net code mismatch with css3.0 (see below)
         5.  The equally obnoxious loc code problem
-        
-        1. simply involves always posting some constants. 
-        2.  is handled by silently deleting any attribute defined by the 
+
+        1. simply involves always posting some constants.
+        2.  is handled by silently deleting any attribute defined by the
         Null value for that attribute in the wfdisc schema.
-        3. is handled by dropping any tuples for which the "datatype" 
-        attribute on "sd" (normal mseed) or "S1" miniseed in an older 
-        compression format.   When verbose is set true any entries 
-        dropped will geneate a warning print mesage. 
-        
-        Items 4 and 5 are a bigger complication.   The developers of 
-        Antelope created a solution to this problem by utilizing 
-        two tables called `snetsta` and `schanloc`.   The trick they 
-        used was whenever a station name was not unique, they 
-        create an alias merging the net and sta codes with a fixed 
-        separator of "_".  e.g. if their miniseed indexing program 
-        detected station "HELL" with net codes "66" and "33"  it 
-        would create two aliases called "66_HELL" and "77_HELL".  
-        The data defining that alias is stored in the "snetsta" 
-        table.   The problem is unique sta code values are not 
-        change to the merged net_sta form but only the sta name 
-        is used in processing.  This code deals with this issue 
-        assuming the "snetsta" table exists and defines the 
-        net code for every station it finds.  When it encounters 
-        names like "66_HELL" it automatically drops the name 
-        in wfdisc and sets the net and sta codes using the 
-        cross-reference defined in snetsta.   To handle the 
-        very common situation where snetsta is not complete 
-        (i.e. there are sta codes without an snetsta entry) 
-        when a wfdisc sta key has not entry in snetsta the value of 
-        the `default_net` optional argument is used to define the 
-        net name in the output.   The way Amtelope loc is easier to 
-        deal with because of a dogmatic naming convention for FDSN.  
-        That is, valid SEED channel codes are required to be 3 
-        characters in length and follow a rigid definition of 
-        what each of the 3 character imply about the data.  Antelope 
-        handles loc codes, which were not conceived as needed when 
-        the CSS3.0 schema was designed, by simply appending the 
-        loc code to the channel code to produce an extended channel 
+        3. is handled by dropping any tuples for which the "datatype"
+        attribute on "sd" (normal mseed) or "S1" miniseed in an older
+        compression format.   When verbose is set true any entries
+        dropped will geneate a warning print mesage.
+
+        Items 4 and 5 are a bigger complication.   The developers of
+        Antelope created a solution to this problem by utilizing
+        two tables called `snetsta` and `schanloc`.   The trick they
+        used was whenever a station name was not unique, they
+        create an alias merging the net and sta codes with a fixed
+        separator of "_".  e.g. if their miniseed indexing program
+        detected station "HELL" with net codes "66" and "33"  it
+        would create two aliases called "66_HELL" and "77_HELL".
+        The data defining that alias is stored in the "snetsta"
+        table.   The problem is unique sta code values are not
+        change to the merged net_sta form but only the sta name
+        is used in processing.  This code deals with this issue
+        assuming the "snetsta" table exists and defines the
+        net code for every station it finds.  When it encounters
+        names like "66_HELL" it automatically drops the name
+        in wfdisc and sets the net and sta codes using the
+        cross-reference defined in snetsta.   To handle the
+        very common situation where snetsta is not complete
+        (i.e. there are sta codes without an snetsta entry)
+        when a wfdisc sta key has not entry in snetsta the value of
+        the `default_net` optional argument is used to define the
+        net name in the output.   The way Amtelope loc is easier to
+        deal with because of a dogmatic naming convention for FDSN.
+        That is, valid SEED channel codes are required to be 3
+        characters in length and follow a rigid definition of
+        what each of the 3 character imply about the data.  Antelope
+        handles loc codes, which were not conceived as needed when
+        the CSS3.0 schema was designed, by simply appending the
+        loc code to the channel code to produce an extended channel
         code tag. (e.g. channel BHZ with loc code 00 would be set to BHZ_00)
         Antelope defines a schanloc table that is similar to snetsta but
         we don't actually need to use it in this method because the syntax
-        rules make splitting compound channel names unambiguous.   Hence, 
-        a reference to schanloc is not needed as it is to handle the 
-        net-sta problem.  
-        
+        rules make splitting compound channel names unambiguous.   Hence,
+        a reference to schanloc is not needed as it is to handle the
+        net-sta problem.
+
         The net-sta problem is handled by the argument snetsta_xref
-        argument.   If the database this object references has a 
-        complete snetsta table you can use the default and it will 
-        load and utilize the snetsta channel data to sort out 
-        net-sta ambiguities.  Unless you are 100% certain your 
+        argument.   If the database this object references has a
+        complete snetsta table you can use the default and it will
+        load and utilize the snetsta channel data to sort out
+        net-sta ambiguities.  Unless you are 100% certain your
         snetsta table has no missing entries (wfdisc sta values not in snetsta)
-        you should be sure to set the `default_net` optional argument value 
-        to what is appropriate for your data set.  
-        
-        :param snetsta_xref:   image of the snetsta table used as 
-        described above.  If set None (the default) this method will 
-        call another method of this class called `parse_snetsa` that 
-        reads the snetsta table and creates an instance of the 
-        data structure.   See the docstring of that method below for 
-        an explanation of the data structure of this object if you need to 
-        generate one by some other means.   
+        you should be sure to set the `default_net` optional argument value
+        to what is appropriate for your data set.
+
+        :param snetsta_xref:   image of the snetsta table used as
+        described above.  If set None (the default) this method will
+        call another method of this class called `parse_snetsa` that
+        reads the snetsta table and creates an instance of the
+        data structure.   See the docstring of that method below for
+        an explanation of the data structure of this object if you need to
+        generate one by some other means.
         :type snetsta_xref:  python dict or None
-        :param test_existence:   Boolean that when set 
-        True (default is False) enables a file existence check.  
-        This operation is expensive on a large wfdisc as it has to 
+        :param test_existence:   Boolean that when set
+        True (default is False) enables a file existence check.
+        This operation is expensive on a large wfdisc as it has to
         run an existence check on every tuple in the wfdisc.
-        :param verbose:  When True prints a warning for each tuple 
-        it drops.  If False it will drop problem tuples silently.  Note 
-        tuples can be dropped for two reasons:  (1) `datatype` values that 
-        do not define miniseed and (2) tuples failing the existence 
+        :param verbose:  When True prints a warning for each tuple
+        it drops.  If False it will drop problem tuples silently.  Note
+        tuples can be dropped for two reasons:  (1) `datatype` values that
+        do not define miniseed and (2) tuples failing the existence
         check (if enabled)
         """
         alg = "DatascopeDatabase.wfdisc2doclist"
@@ -614,115 +615,122 @@ class DatascopeDatabase:
             base_warning = "DatascopeDatabase.wfdisc2doclist (WARNING):  "
         if snetsta_xref is None:
             snetsta_xref = self.parse_snetsta()
-        if isinstance(snetsta_xref,dict):
+        if isinstance(snetsta_xref, dict):
             nets = dict()
             seedsta = dict()
             for k in snetsta_xref:
-                nets[k]=snetsta_xref[k][0]
-                seedsta[k]=snetsta_xref[k][1]
+                nets[k] = snetsta_xref[k][0]
+                seedsta[k] = snetsta_xref[k][1]
         else:
-            message = "snetsta_xref parameter is invalid type={}\n".format(type(snetsta_xref))
-            message += "Expected to be a python dictionary created by parse_snetsta method"
-            raise MsPASSError(alg,message,ErrorSeverity.Fatal)
+            message = "snetsta_xref parameter is invalid type={}\n".format(
+                type(snetsta_xref)
+            )
+            message += (
+                "Expected to be a python dictionary created by parse_snetsta method"
+            )
+            raise MsPASSError(alg, message, ErrorSeverity.Fatal)
         nets["default"] = default_net
-            
+
         df = self.get_table("wfdisc")
         nulls = self.get_nulls("wfdisc")
         keys = df.columns
-        olist=list()
-        # loop over the tuples 
-        count = 0 
+        olist = list()
+        # loop over the tuples
+        count = 0
         for i in df.index:
             doc = dict()
             for k in keys:
                 x = df[k][i]
                 nval = nulls[k]
-                # this drops null values 
+                # this drops null values
                 if x != nval:
                     doc[k] = x
-            # drop data not defined as mseed 
+            # drop data not defined as mseed
             # print a warning in verbose mode
-            # we let this throw an exception if 
-            # datatype is set Null as that should not happen if wfdisc 
+            # we let this throw an exception if
+            # datatype is set Null as that should not happen if wfdisc
             # is intact
-            if doc['datatype'] in ['sd','S1']:
+            if doc["datatype"] in ["sd", "S1"]:
                 save_me = True
                 if test_existence:
-                    path = doc['dir'] + '/' + doc['dfile']
+                    path = doc["dir"] + "/" + doc["dfile"]
                     if os.path.isfile(path):
                         save_me = True
                     else:
                         save_me = False
                         if verbose:
-                            # weirdness needed because we can't just assign 
-                            # message=base_warning or base_warning will be altered 
+                            # weirdness needed because we can't just assign
+                            # message=base_warning or base_warning will be altered
                             message = "" + base_warning
-                            message += "file {} not found - this tuple dropped".format(path)
+                            message += "file {} not found - this tuple dropped".format(
+                                path
+                            )
                             print(message)
                 if save_me:
                     # these are requirements for wf_miniseed
-                    doc['storage_mode'] ='file'
-                    doc['time_standard'] = 'UTC'
-                    doc['format'] = 'mseed'
+                    doc["storage_mode"] = "file"
+                    doc["time_standard"] = "UTC"
+                    doc["format"] = "mseed"
                     # handle net-sta issue
-                    wfsta = doc['sta']
+                    wfsta = doc["sta"]
                     if wfsta in seedsta:
                         sta = seedsta[wfsta]
                         net = nets[wfsta]
                     else:
                         sta = wfsta
                         net = default_net
-                    doc['sta'] = sta
-                    doc['net'] =  net
+                    doc["sta"] = sta
+                    doc["net"] = net
                     # now handle loc issue
                     # note we do nothing unless the code has an "_"
-                    chan = doc['chan']
-                    if '_' in chan:
-                        chanloc = chan.split('_')
-                        doc['chan'] = chanloc[0]
-                        doc['loc'] = chanloc[1]
+                    chan = doc["chan"]
+                    if "_" in chan:
+                        chanloc = chan.split("_")
+                        doc["chan"] = chanloc[0]
+                        doc["loc"] = chanloc[1]
                     olist.append(doc)
-                    
+
             elif verbose:
                 message = "" + base_warning
-                message += "datatype attribute is {} in tuple {}.  ".format(doc['datatype'],i)
+                message += "datatype attribute is {} in tuple {}.  ".format(
+                    doc["datatype"], i
+                )
                 message += "Only sd or S1 define miniseed data"
                 print(message)
 
         return olist
-        
-    def parse_snetsta(self)->dict:
+
+    def parse_snetsta(self) -> dict:
         """
-        Datascope is (mostly) linked to the CSS3.0 schema originally 
-        developed ine 1970s before SEED was adopted as a standard.  At the 
-        time the problem of duplicate station codes was not recognized and 
-        the SEED concept of a network code (also location code for channel) 
-        was not considered.   The developers of Datascope created a workaround 
-        for this problem in a special table (I am not sure if it was part 
-        of the original css3.0 schema or not) with the name `snetsta'.  
-        They use snetsta to handle duplicate station names in multiple networks. 
-        A common example is that more than one operator has used the 
-        colorful station code "HELL" so if we see an entry for HELL it can 
-        be ambiguous which level of HELL it refers to.  Antelope 
+        Datascope is (mostly) linked to the CSS3.0 schema originally
+        developed ine 1970s before SEED was adopted as a standard.  At the
+        time the problem of duplicate station codes was not recognized and
+        the SEED concept of a network code (also location code for channel)
+        was not considered.   The developers of Datascope created a workaround
+        for this problem in a special table (I am not sure if it was part
+        of the original css3.0 schema or not) with the name `snetsta'.
+        They use snetsta to handle duplicate station names in multiple networks.
+        A common example is that more than one operator has used the
+        colorful station code "HELL" so if we see an entry for HELL it can
+        be ambiguous which level of HELL it refers to.  Antelope
         handles this by creating compound keys like "66_HELL" for net "66"
-        and station code "HELL".   A complication is the compound keys 
-        are only used when duplicate sta codes a detected, which is not 
-        always easy to know.  In any case, the purpose of this method 
-        is to parse the snetsta table to return the data need to 
-        translate any station code (compound or not) to a unique 
-        combination of "net" and "sta" codes It does that by returning 
-        a dictionary keyed by expected station codes in other Datascope 
-        tables with a value containing a pair of string.  The 0 component 
-        is the net code associated with the key value and the 1 component 
-        the station code that would match what is expected in a parent 
-        miniseed file.  
+        and station code "HELL".   A complication is the compound keys
+        are only used when duplicate sta codes a detected, which is not
+        always easy to know.  In any case, the purpose of this method
+        is to parse the snetsta table to return the data need to
+        translate any station code (compound or not) to a unique
+        combination of "net" and "sta" codes It does that by returning
+        a dictionary keyed by expected station codes in other Datascope
+        tables with a value containing a pair of string.  The 0 component
+        is the net code associated with the key value and the 1 component
+        the station code that would match what is expected in a parent
+        miniseed file.
         """
         df = self.get_table("snetsta")
-        xref=dict()
+        xref = dict()
         for i in df.index:
-            sta = df['sta'][i]
-            net = df['snet'][i]
-            seed_sta = df['fsta'][i]
-            xref[sta] = tuple([net,seed_sta])
+            sta = df["sta"][i]
+            net = df["snet"][i]
+            seed_sta = df["fsta"][i]
+            xref[sta] = tuple([net, seed_sta])
         return xref
-        
