@@ -199,7 +199,7 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
    * calling the function MS_NSTIME2EPOCH
    */
   nstime_t stime;
-  int64_t npts(0),current_npts;
+  int64_t npts(0),current_npts,record_length(4096);
   uint64_t number_packets_read(0),number_valid_packets(0);
   double last_packet_samprate,last_packet_endtime,expected_starttime, last_dt;
   /* These are used to handle long time series where the accumulated time 
@@ -263,6 +263,10 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
                               + static_cast<double>(npts-1)*last_dt;
           segment_starttime = last_epoch_stime;
           start_foff = 0;
+          /* Set this for the first packet and assume it is constant for the 
+             whole file.  I don't think seed technically requires this but 
+             in practice it is alway the case. */
+          record_length = msr->reclen;
         }
         else
         {
@@ -295,7 +299,7 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
             ind.last_packet_time=last_epoch_stime;
             ind.samprate=last_packet_samprate;
             ind.npts=npts;
-            ind.endtime=ind.starttime + (static_cast<double>(npts))/ind.samprate;
+            ind.endtime=ind.starttime + (static_cast<double>(npts-1))/ind.samprate;
             indexdata.push_back(ind);
             /* Initate a new segment.  Note the only difference if there was a decoding 
              * error is the index entry will be dropped. */
@@ -329,7 +333,13 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
       case MS_ENDOFFILE:
         if(number_valid_packets>0)
         {
-          nbytes=fpos-start_foff;
+          /* VERY IMPORTANT:   reader handles data per packet.   fpos is updated by 
+             the reader but on EOF it is NOT updated. As a result we have to 
+             add the record length or we drop the last packet from 
+             the index. A too classic problem of use of a pointer to a pointer 
+             in plain C.  Furthermore had to save the record length earlier 
+             as msr is a NULL pointer when EOF is returned */
+          nbytes=fpos-start_foff + record_length;
           ind.net = last_sid.net;
           ind.sta = last_sid.sta;
           ind.chan = last_sid.chan;
@@ -340,7 +350,7 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
           ind.last_packet_time=last_epoch_stime;
           ind.samprate=last_packet_samprate;
           ind.npts=npts;
-          ind.endtime=ind.starttime + (static_cast<double>(npts))/ind.samprate;
+          ind.endtime=ind.starttime + (static_cast<double>(npts-1))/ind.samprate;
           indexdata.push_back(ind);
           data_available = false;
         }
@@ -357,6 +367,28 @@ MSDINDEX_returntype   mseed_file_indexer(const string inputfile,
           string message=MS_code_to_message(retcode);
           elog.log_error(function_name,message,ErrorSeverity::Complaint);
           data_available = false;
+          /* If we land here we need to add a final index entry to salvage what 
+             we can from this file.   This is almost identical to the eof section 
+             except here we intentionally drop the last packet assuming it 
+             is the problem. */
+          if(number_valid_packets>0)
+          {
+            // NOTE not the same as EOF section
+            nbytes=fpos-start_foff;
+            ind.net = last_sid.net;
+            ind.sta = last_sid.sta;
+            ind.chan = last_sid.chan;
+            ind.loc = last_sid.loc;
+            ind.foff=start_foff;
+            ind.nbytes=nbytes;
+            ind.starttime=segment_starttime;
+            ind.last_packet_time=last_epoch_stime;
+            ind.samprate=last_packet_samprate;
+            ind.npts=npts;
+            ind.endtime=ind.starttime + (static_cast<double>(npts-1))/ind.samprate;
+            indexdata.push_back(ind);
+            data_available = false;
+          }
     };
     ++number_packets_read;
   }while(data_available);
