@@ -11,6 +11,17 @@ using namespace mspass::seismic;
 using namespace mspass::utility;
 using namespace std;
 using mspass::algorithms::WindowData;
+
+/* A main idea of the functions in this file is to handle time 
+   tears created by a range of possibilities.  We have to handle 
+   overlaps and gaps.   Both are defined as existing when 
+   there is a time mismatch larger than the following fraction 
+   of a sample interval.  i.e. all tests are done using a tolerance 
+   of some variant of the sample interval in seconds time this 
+   multiplier. 
+Note:   if ever changed this constant should be consistent with 
+ the same constant used by the minised indexing function,. */
+const double TIME_TEAR_TOLERANCE(0.5);
 /*! File scope class to enscapsulate set of possible data problems.
 
 Merging multiple data segments to a single time series, which is
@@ -25,11 +36,11 @@ at present are:
 2.  segments marked dead
 3.  overlaps
 4.  gaps
-5.  Computes the length of the data are merged.  Callers should test that
+5.  Computes the length of the data being merged.  Callers should test that
    that number is not absurd and could cause a memory alloc fault.
 
 All attributes of this class are intentionally public as it should be
-though of as a struct with convenient constructors.
+thought of as a struct with convenient constructors.
 */
 class SegmentVectorProperties
 {
@@ -38,6 +49,7 @@ public:
   bool has_dead_components;
   bool is_sorted;
   bool has_overlaps;
+  bool has_gaps;
   int number_live;
   int first_live;
   /* This is set to the earliest start time of all segments. */
@@ -59,6 +71,7 @@ SegmentVectorProperties::SegmentVectorProperties() : elog()
   has_dead_components = false;
   is_sorted = true;
   has_overlaps = false;
+  has_gaps = false;
   number_live = 0;
   first_live = 0;
   t0=0.0;
@@ -73,6 +86,7 @@ SegmentVectorProperties::SegmentVectorProperties(const SegmentVectorProperties& 
   has_dead_components = parent.has_dead_components;
   is_sorted = parent.is_sorted;
   has_overlaps = parent.has_overlaps;
+  has_gaps = parent.has_gaps;
   number_live = parent.number_live;
   first_live = parent.first_live;
   t0=parent.t0;
@@ -90,6 +104,7 @@ SegmentVectorProperties::SegmentVectorProperties(const std::vector<TimeSeries>& 
     has_dead_components = false;
     is_sorted = true;
     has_overlaps = false;
+    has_gaps = false;
     if(segments[0].live())
     {
       number_live = 1;
@@ -115,6 +130,7 @@ SegmentVectorProperties::SegmentVectorProperties(const std::vector<TimeSeries>& 
     has_dead_components = false;
     is_sorted = true;
     has_overlaps = false;
+    has_gaps = false;
     number_live = 0;
     first_live = -1;
     t0 = 0.0;
@@ -161,11 +177,13 @@ SegmentVectorProperties::SegmentVectorProperties(const std::vector<TimeSeries>& 
         Purpose of this boolean is to define a serious error condition
         that functions using this class must handle */
         if(segments[i].t0() < previous_t0)  is_sorted = false;
-        /* Test for overlap - using a rotate_to_standard 1/2 sample
-        test.  Also might get set multiple times but need this as a test
-        for a group to know if it has to be handled. */
-        if((previous_endtime + test_dt/2.0)>segments[i].t0()) has_overlaps = true;
-        /* Check for sample intrval mistmatch */
+        /* Test for overlaps - note sign is important */
+        if((previous_endtime + test_dt*TIME_TEAR_TOLERANCE) > segments[i].t0()) 
+          has_overlaps = true;
+        /* test for gaps */
+        if( (segments[i].t0() - previous_endtime - test_dt)/test_dt > TIME_TEAR_TOLERANCE)
+          has_gaps = true;
+        /* Check for sample interval mismatch */
         dtfrac = fabs(segments[i].dt()-test_dt)/test_dt;
         if(dtfrac > dt_fraction_mismatch) dt_constant = false;
         previous_endtime = segments[i].endtime();
@@ -177,6 +195,40 @@ SegmentVectorProperties::SegmentVectorProperties(const std::vector<TimeSeries>& 
     this->spliced_nsamp = lround((previous_endtime-this->t0)/this->dt);
     ++this->spliced_nsamp;   //nsamp is always one sample longer than intervals
   }
+}
+/*! Convenience operator to dump content of SegmentVectorProperties object.   
+
+Writes a verbose dump of the content with labels.  This overloaded 
+function is for debugging and will not be in the MsPASS python bindings.  
+In fact, neither is SegmentVectorProperties.   
+Note this does not need to be declared friend because all attributes of the 
+class are declared public.
+*/
+ostream& operator<<(ostream& os, SegmentVectorProperties& svp)
+{
+  const string sep("=============================================================");
+  os << sep << endl;
+  if(svp.dt_constant)
+    os << "Segments have constant sample interval"<<endl;
+  if(svp.has_dead_components)
+    os << "Segments has one or more segments marked dead"<<endl;
+  if(!svp.is_sorted)
+    os << "Data do not appear to be sorted - this cause an exception to be thrown in the splice_segments function"<<endl;
+  if(svp.has_overlaps)
+    os << "Segments have one or more overlaps"<<endl;
+  if(svp.has_gaps)
+    os << "Segments have one or more gaps"<<endl;
+  os << "Sample interval of these data=" << svp.dt<<endl;
+  os << "spliced_nsamp attribute value=" << svp.spliced_nsamp<<endl;
+  os << "number of live segments=" << svp.number_live<<endl;
+  os << "vector component number of first live segment=" << svp.first_live<<endl;
+  os << std::setprecision(15);
+  os << "Start time of group=" << svp.t0<<endl;
+  os << "endtime of group=" << svp.endtime<<endl;
+  os << "time span of all segments="<<svp.endtime-svp.t0<<endl;
+  os << "Cross check of computed nsamp as a float value="<<(svp.endtime+svp.dt-svp.t0)/svp.dt<<endl;
+  os << sep << endl;
+  return os;
 }
 /* Splice TimeSeries data stored in a std::vector container.   Assume segments
 are sorted in time and otherwise consistent.
@@ -204,6 +256,8 @@ TimeSeriesWGaps splice_segments(std::vector<TimeSeries>& segments,
 {
   /* This class is created to look for potential data problems to handle. */
   SegmentVectorProperties issues(segments);
+  // DEBUG
+  cout << issues;
   /* Return a type conversion of the input when there is only one
   segment - nothing to splice in that case.  Error if it is empty */
   if(issues.number_live == 1)
@@ -310,6 +364,7 @@ TimeSeriesWGaps splice_segments(std::vector<TimeSeries>& segments,
   }
   else
   {
+    /* Land here when it appears ok to proceed.*/
     result.set_t0(issues.t0);
     result.set_dt(issues.dt);
     /* Note the algorithm used here assumes this method initializes the 
@@ -341,10 +396,11 @@ TimeSeriesWGaps splice_segments(std::vector<TimeSeries>& segments,
         }
         result.s[ii] = segments[i].s[j];
       }
-      /* We use a signed test here because we can be sure there are not
-      overlaps that create negative delta values larger than 0.5. */
+      /* We use a signed test here because we can be sure there are no
+      overlaps that create negative delta values larger than TIME_TEAR_TOLERANCE
+      value (currently const 0.5).*/
       delta = (segments[i].t0()-issues.dt-previous_endtime)/issues.dt;
-      if(delta>0.5)
+      if(delta>TIME_TEAR_TOLERANCE)
       {
         TimeWindow gap;
         gap.start = previous_endtime;
@@ -371,8 +427,11 @@ bool samples_match(std::vector<double>& v1, std::vector<double>& v2)
   for(v1ptr=v1.begin(),v2ptr=v2.begin();v1ptr!=v1.end();++v1ptr,++v2ptr)
   {
     double dtest;
+
     dtest = *v1ptr - *v2ptr;
     dtest = fabs(dtest/(*v1ptr));
+    //DEBUG
+    cout << *v1ptr << " "<<*v2ptr<<" "<<dtest<<endl;
     if(dtest>SCALED_EPS) return false;
   }
   return true;
@@ -396,11 +455,13 @@ always killed because with current generation data that situation always
 means there has been a time jump backward to create the apparent overlap.
 It is assumed that the segment killed had a timing problem.
 
-TODO;  need to handle exact duplicate more cleanly.
 */
 std::vector<TimeSeries> repair_overlaps(std::vector<TimeSeries>& segments)
 {
   SegmentVectorProperties issues(segments);
+  //DEBUG
+  cout << "In repair_overlaps"<<endl;
+  cout << issues;
   if(!issues.is_sorted)
   {
     stringstream ss;
@@ -447,14 +508,16 @@ std::vector<TimeSeries> repair_overlaps(std::vector<TimeSeries>& segments)
       if(segments[i].live())
       {
         double ttest;
-        ttest = segments[i].t0()-segments[i_previous].endtime()-(0.5*segments[i].dt());
-        if(ttest>=0.0)
+        ttest = segments[i_previous].endtime() + segments[i].dt() - segments[i].t0();
+        if(ttest<(TIME_TEAR_TOLERANCE*segments[i].dt()))
         {
           repaired_segments.push_back(segments[i_previous]);
           i_previous = i;
         }
         else
         {
+        //DEBUG
+        cout << "Handling overlap with ttest="<<ttest<<" at end of segment number "<<i_previous<<endl;
           /* We use these two vectors to hold overlapping section and
           pass them to comparison function */
           std::vector<double> vec1,vec2;
@@ -467,6 +530,8 @@ std::vector<TimeSeries> repair_overlaps(std::vector<TimeSeries>& segments)
             vec1.push_back(segments[i_previous].s[iw]);
           }
           w_npts=vec1.size();
+          //DEBUG
+          cout << "Testing overlap window of length="<<w_npts<<endl;
           for(size_t iw=0;iw<w_npts;++iw)
           {
             /* This is necessary for overlaps larger than the span of segments[i]*/
@@ -482,10 +547,14 @@ std::vector<TimeSeries> repair_overlaps(std::vector<TimeSeries>& segments)
           }
           if(samples_match(vec1,vec2))
           {
+            //DEBUG
+            cout << "samples_match returned true.  In repair section"<<endl;
             TimeSeries repaired_datum;
             TimeWindow repair_window;
             repair_window.start = segments[i_previous].t0();
             repair_window.end = segments[i].t0() - issues.dt;
+            //DEBUG
+            cout << "time span of repair window="<< repair_window.end-repair_window.start<<endl;
             /* This condition occurs when the current is a pure duplicate
             of the last or at least the start times match */
             if(repair_window.end<repair_window.start) continue;
@@ -495,7 +564,7 @@ std::vector<TimeSeries> repair_overlaps(std::vector<TimeSeries>& segments)
           else
           {
             /* We assume there is a serious problem with the i_previous
-            segment if the overlapping data to not match.  The only time
+            segment if the overlapping data do not match.  The only time
             I (glp) have seen this situation is if the timing system on
             an instrument as failed.   When the instrument acquires time
             it create a time jump to create an overlap where the data do
