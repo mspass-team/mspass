@@ -18,6 +18,7 @@ from mspasspy.db.normalize import (
     normalize_mseed,
     bulk_normalize,
 )
+from mspasspy.ccore.seismic import TimeSeries
 
 from mspasspy.db.database import Database
 from mspasspy.db.client import DBClient
@@ -677,10 +678,15 @@ class TestOriginTimeMatcher(TestNormalize):
         orig_ts = self.db.read_data(orig_doc, collection="wf_miniseed")
 
         #   get document for TimeSeries
-        ts_1 = copy.deepcopy(orig_ts)
-        ts_2 = copy.deepcopy(orig_ts)
+        ts_1 = TimeSeries(orig_ts)
+        ts_2 = TimeSeries(orig_ts)
+
         cached_retdoc = cached_matcher.find_one(ts_1)
+        # Failed find returns a none in component 0 so catch that 
+        assert cached_retdoc[0]
         db_retdoc = db_matcher.find_one(ts_2)
+        # same here if this fails 
+        assert db_retdoc[0]
         assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
 
         #   test using time key from Metadata
@@ -824,3 +830,10 @@ class TestMatcherHelperFunctions(TestNormalize):
             matcher_list=matcher_function_list,
         )
         assert ret == [3934, 3934, 3934]
+
+# Remove comments to allow this test to be run outside of pytest
+#import os
+#os.chdir('/home/pavlis/src/mspass')
+#tom = TestOriginTimeMatcher()
+#tom.setup_class()
+#tom.test_OriginTimeMatcher_find_one()
