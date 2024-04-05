@@ -83,7 +83,45 @@ and install them on your cluster. For running things on Coiled, you could
 try `coiled run your_code.py` (or follow one of the examples in 
 `coiled docs <https://docs.coiled.io/user_guide/usage/examples.html>`__)!
 
-For example, to use Coild with Dask:
+
+For example, to connect to MongoDB using Atlas:
+
+.. code-block::
+
+    from pymongo.mongo_client import MongoClient
+    from pymongo.server_api import ServerApi
+    from urllib.parse import quote_plus
+    username = "your username"
+    password = "your password"
+
+    # URL-encode the username and password
+    uri_username = quote_plus(username)
+    uri_password = quote_plus(password)
+    uri = "mongodb+srv://username:somestring@cluster0.domain.mongodb.net/"
+
+    # Create a new client and connect to the server
+    client = MongoClient(uri, server_api=ServerApi('1'))
+
+    # Send a ping to confirm a successful connection
+    try:
+        client.admin.command('ping')
+        print("Pinged your deployment. You successfully connected to MongoDB!")
+    except Exception as e:
+        print(e)
+
+If the ping success, it means we successfully connect to your remote mongo database.
+Let's build a MsPASS client and start to use MsPASS:
+
+.. code-block::
+    
+    from mspasspy.db.client import DBClient
+    dbclient=DBClient(uri)
+    dbclient.list_database_names() # view all the databases
+    db = dbclient['mspass']        # choose a database
+    db.index_mseed_file('CIGSC__BHZ___2017180.ms', some_path) # index mseed files
+
+
+To use Dask:
 
 .. code-block::
 
@@ -97,7 +135,6 @@ Here is a simple code you could run:
 
 .. code-block::
 
-    import mspasspy
     def inc(x):
         return x + 1
 
