@@ -257,7 +257,7 @@ TimeSeriesWGaps splice_segments(std::vector<TimeSeries>& segments,
   /* This class is created to look for potential data problems to handle. */
   SegmentVectorProperties issues(segments);
   // DEBUG
-  cout << issues;
+  //cout << issues;
   /* Return a type conversion of the input when there is only one
   segment - nothing to splice in that case.  Error if it is empty */
   if(issues.number_live == 1)
@@ -431,7 +431,7 @@ bool samples_match(std::vector<double>& v1, std::vector<double>& v2)
     dtest = *v1ptr - *v2ptr;
     dtest = fabs(dtest/(*v1ptr));
     //DEBUG
-    cout << *v1ptr << " "<<*v2ptr<<" "<<dtest<<endl;
+    //cout << *v1ptr << " "<<*v2ptr<<" "<<dtest<<endl;
     if(dtest>SCALED_EPS) return false;
   }
   return true;
@@ -460,8 +460,10 @@ std::vector<TimeSeries> repair_overlaps(std::vector<TimeSeries>& segments)
 {
   SegmentVectorProperties issues(segments);
   //DEBUG
+  /*
   cout << "In repair_overlaps"<<endl;
   cout << issues;
+  */
   if(!issues.is_sorted)
   {
     stringstream ss;
@@ -517,7 +519,7 @@ std::vector<TimeSeries> repair_overlaps(std::vector<TimeSeries>& segments)
         else
         {
         //DEBUG
-        cout << "Handling overlap with ttest="<<ttest<<" at end of segment number "<<i_previous<<endl;
+        //cout << "Handling overlap with ttest="<<ttest<<" at end of segment number "<<i_previous<<endl;
           /* We use these two vectors to hold overlapping section and
           pass them to comparison function */
           std::vector<double> vec1,vec2;
@@ -531,7 +533,7 @@ std::vector<TimeSeries> repair_overlaps(std::vector<TimeSeries>& segments)
           }
           w_npts=vec1.size();
           //DEBUG
-          cout << "Testing overlap window of length="<<w_npts<<endl;
+          //cout << "Testing overlap window of length="<<w_npts<<endl;
           for(size_t iw=0;iw<w_npts;++iw)
           {
             /* This is necessary for overlaps larger than the span of segments[i]*/
@@ -548,13 +550,13 @@ std::vector<TimeSeries> repair_overlaps(std::vector<TimeSeries>& segments)
           if(samples_match(vec1,vec2))
           {
             //DEBUG
-            cout << "samples_match returned true.  In repair section"<<endl;
+            //cout << "samples_match returned true.  In repair section"<<endl;
             TimeSeries repaired_datum;
             TimeWindow repair_window;
             repair_window.start = segments[i_previous].t0();
             repair_window.end = segments[i].t0() - issues.dt;
             //DEBUG
-            cout << "time span of repair window="<< repair_window.end-repair_window.start<<endl;
+            //cout << "time span of repair window="<< repair_window.end-repair_window.start<<endl;
             /* This condition occurs when the current is a pure duplicate
             of the last or at least the start times match */
             if(repair_window.end<repair_window.start) continue;
