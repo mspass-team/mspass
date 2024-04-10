@@ -242,7 +242,7 @@ forms of data seismologists deal with.
      problem we provide only a partial set of tools for associating
      waveforms with source data:  MongoDB normalization described in the section
      of this user's manual titled
-     :ref:`database_normalization`.
+     :ref:`normalization`.
 
 MsPASS currently supports directly only one mechanism for loading source
 metadata.  That method is a similar in approach to the way we handle
