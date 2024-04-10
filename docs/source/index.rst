@@ -46,6 +46,7 @@ package.
    user_manual/CRUD_operations
    user_manual/mongodb_and_mspass
    user_manual/normalization
+   user_manual/importing_tabular_data
 
 .. toctree::
    :maxdepth: 1
