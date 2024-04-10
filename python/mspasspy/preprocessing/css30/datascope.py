@@ -3,7 +3,7 @@
 """
 This file contains a DatascopeDatabase class that can be used to 
 interaction with an Antelope(Datascope) flat file database.   It is not 
-intended to be a fully functional database handle.  I can, however, 
+intended to be a fully functional database handle.  It can, however, 
 bu used as a base class to add additional functionality.
 
 The main point of this implementation is a mean to translate Antelope 
