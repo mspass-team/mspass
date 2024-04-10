@@ -177,7 +177,7 @@ Here is the first of several example queries in this section:
 
 *Query example:*
 
-.. code-block:: language
+.. code-block:: python
 
   query=dict()
   query['sta' : 'AAK']
@@ -1084,7 +1084,7 @@ there are two primary uses of indices:  (1) normalizing collections, and
 Both fit the
 constraint above.  In particular, the model you should use is to build the
 index(indices) as the last phase before running the workflow on an assembled
-data set.  
+data set.
 
 A first point to recognize is that MongoDB ALWAYS defines an index on the
 magic attribute key "_id" for any collection.   Any additional

@@ -117,7 +117,7 @@ through constructs similar to the following pythonic pseudocode:
 The kill method is described further in the next section.  The key point
 is that generic error handlers catch any exceptions and post message to
 the :py:class:`mspasspy.ccore.utility.ErrorLogger`
- carried with the data in a container
+carried with the data in a container
 with the symbolic name elog.   An error posted to the
 :py:class:`mspasspy.ccore.utility.ErrorLogger`
 always contains two components:  (1) a (hopefully informative)

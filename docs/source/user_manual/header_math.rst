@@ -84,7 +84,7 @@ The following table summarizes the available operators:
      - -=
      - :py:meth:`Subtract<mspasspy.algorithms.edit.Subtact>`
    * - Multiply
-     - *=
+     - \*=
      - :py:meth:`Multiply<mspasspy.algorithms.edit.Multiply>`
    * - Divide
      - /=
@@ -226,9 +226,9 @@ hand coded as needed.  The main thing they give you over a "roll you own"
 implementation is automatic handling of the following standard features of
 the MsPASS framework:
 
-* All handle error consistently using the ErrorLogging mechanism of MsPASS
+- All handle error consistently using the ErrorLogging mechanism of MsPASS
   data objects.
-* All behave identically on some common error situations.  There are three
+- All behave identically on some common error situations.  There are three
   common errors all handle that
   users need to be aware of.  (1) If a key-value that the operator needs to fetch from
   Metadata is not defined the operator will kill the datum missing and
@@ -238,7 +238,7 @@ the MsPASS framework:
   data object. An example of this would be trying to do arithmetic on
   an attribute with a string value.  (3) If the operator receives a datum that is not a MsPASS
   data object the operator will throw a MsPASSError object marked Fatal.
-* All operators handle Ensembles in a consistent manner.   Editing Metadata
+- All operators handle Ensembles in a consistent manner.   Editing Metadata
   for an Ensemble object has an ambiguity because Ensemble objects often
   have attributes independent of the members (e.g. a common source gather
   may only have the source coordinates in the ensemble container.)  To
@@ -246,7 +246,7 @@ the MsPASS framework:
   `apply_to_members`.   When set True the operator will automatically
   apply the operation to each member of the ensemble in a simple, serial loop.
   When false the operation is applied to the ensemble metadata container.
-* All the operators have wrappers to optionally enable the object-level
+- All the operators have wrappers to optionally enable the object-level
   history mechanism for each datum processed.
 
 
