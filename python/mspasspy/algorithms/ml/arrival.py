@@ -1,11 +1,12 @@
 import numpy as np
 import seisbench.models as sbm
 
+from seisbench.models.base import WaveformModel
 from obspy.taup import TauPyModel
 from obspy.geodetics import gps2dist_azimuth, kilometers2degrees
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
-from mspasspy.ccore.algorithms.basic import TimeWindow, WindowData
-from seisbench.models.base import WaveformModel
+from mspasspy.ccore.algorithms.basic import TimeWindow
+from mspasspy.algorithms.window import WindowData
 
 
 def annotate_arrival_time(
@@ -41,11 +42,15 @@ def annotate_arrival_time(
         # 'stead' model was trained on STEAD for 100 epochs with a learning rate of 0.01.
         # use sbm.PhaseNet.list_pretrained(details=True) to list out other supported models
         # when using this model, please reference the SeisBench publications listed at https://github.com/seisbench/seisbench
-        pretrained_model = "stead" if model_args["name"] == None else model_args["name"]
+        pretrained_model = "stead" if (model_args == None or "name" not in model_args) else model_args["name"]
         model = sbm.PhaseNet.from_pretrained(pretrained_model)
 
     # apply the window if provided and convert time series to stream
-    windowed_timeseries = WindowData(timeseries, time_window.start, time_window.end) if time_window else timeseries
+    windowed_timeseries = (
+        WindowData(timeseries, time_window.start, time_window.end)
+        if time_window
+        else timeseries
+    )
     ts_ensemble = TimeSeriesEnsemble()
     ts_ensemble.member.append(windowed_timeseries)
     stream = ts_ensemble.toStream()
