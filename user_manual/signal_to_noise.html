@@ -73,6 +73,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
 <ul>
@@ -97,7 +98,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#time-window-amplitude-metrics">Time Window Amplitude Metrics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#low-level-snr-estimation">Low-level SNR Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#broadband-snr-estimation">Broadband SNR Estimation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#practical-advice-about-amplitude-metrics">Practical Advice about Amplitude Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
@@ -305,8 +305,13 @@ A property of multitaper spectra is the spectra are smoothed at a scale of the
 number of frequency binds defined by the time-bandwidth product through
 the formula:</p>
 <div class="math notranslate nohighlight">
-\[\]</div>
-<p>x = need this formula</p>
+\[W = T \Delta f\]</div>
+<p>where <span class="math notranslate nohighlight">\(T\)</span> is the window length in seconds and
+<span class="math notranslate nohighlight">\(\Delta f\)</span> is the desired frequency resolution of a
+spectral estimate in Hz.   It is convenient to think of <span class="math notranslate nohighlight">\(Delta f\)</span>
+in terms of the number of Rayleigh bins, <span class="math notranslate nohighlight">\(\frac{1}{T}\)</span>
+which is the frequency resolution of the discrete Fourier
+transform for a signal of duration <span class="math notranslate nohighlight">\(T\)</span>.</p>
 <p>A key point is that increasing the time-bandwidth products causes the
 spectral estimates to progressively smoother.   For this application
 we found using <cite>tbp=4</cite> with 8 tapers or <cite>tbp=5</cite> and 10 tapers
@@ -320,19 +325,6 @@ practical problems easily found by any library search engine.
 We chose to use the multitaper because it always produces a more
 stable estimator for this application because of its reliable smoothing
 properties.</p>
-<p>need to note window normalization as a postscript</p>
-</section>
-<section id="practical-advice-about-amplitude-metrics">
-<h2>Practical Advice about Amplitude Metrics<a class="headerlink" href="#practical-advice-about-amplitude-metrics" title="Permalink to this heading"></a></h2>
-<p>THIS BELONGS LATER
-<span class="math notranslate nohighlight">\(| \bf{x} \|_{rms}\)</span> is
-the stock measure of noise amplitude.
-It is a useful measure of signal
-amplitude only if the signal window is restricted to the highest amplitude
-of the signal.  In particular a window is defined relative to an arrival
-time predicted from a model the signal start time should be well before any
-time shift from travel time errors.  That will, however, increase the
-number of points</p>
 </section>
 </section>
 

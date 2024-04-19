@@ -43,10 +43,11 @@ we have abstracted the process in a way that provides great flexibility
 in how normalizing data is loaded.   e.g. receiver location information can
 be loaded either through the MsPASS
 :code:`site` or :code:`channel` collections using MongoDB or by
-loading the data from a pandas Dataframe.
-An example of the utility of a Dataframe is that all Antelope CSS3.0
-tables are easily loaded into a Dataframe with one line of python code
-(:code:`read_csv`).  That abstraction is possible because a MongoDB "collection"
+loading the data from a pandas DataFrame.
+An example of the utility of a DataFrame is that all Antelope CSS3.0
+tables are easily loaded into a DataFrame with one line of python code
+(most require :code:`read_fwf` but some can be read with :code:`read_csv`)
+That abstraction is possible because a MongoDB "collection"
 is just an alternative way to represent a table (relation).
 
 Before proceeding it is important to give a pair of definitions we use repeatedly
@@ -140,10 +141,10 @@ for two reasons.   First, the complexity of SEED data makes it challenging
 to know if the :code:`channel` collection is complete.   We have found
 many examples of incomplete or inaccurate station data downloaded
 from FDSN that cause some fraction of waveforms in a large dataset to not have any
-matching :code`channel` entry.  A second, more minor issue, is that
+matching :code:`channel` entry.  A second, more minor issue, is that
 the complexity of the algorithm used by
 :py:class:`MiniseedMatcher<mspasspy.db.normalize.MiniseedMatcher>`
-makes it inevitably slower than the comparable Id-based algorithm
+makes it inevitably slower than the comparable Id-based algorithm called
 :py:class:`ObjectIdMatcher <mspasspy.db.normalize.ObjectIdMatcher>`.
 We suggest that unless you are absolutely certain of the
 completeness of the :code:`channel` collection, you should use the
@@ -166,7 +167,7 @@ development is preserved
 `here on github <https://github.com/mspass-team/mspass/discussions/307>`__.
 
 Normalizing source data is often a more complicated problem.   How difficult
-the problem is depends heavily upon how the data time segmentation is
+depends heavily upon how the data time segmentation is
 defined.   MsPASS currently has support for only two source association
 methods:  (1) one where the start time of each datum is a constant offset
 relative to an event origin time, and (2) a more complicated method based on
@@ -176,11 +177,12 @@ the assumption of the normalizing collection being small compared to the
 waveform collection.  The number of arrivals can easily exceed the number of
 waveform segments.
 In both cases, normalization to set :code:`source_id` values are best
-done with the mspass function :py:func:`bulk_normalize <mspasspy.db.normalize.bulk_normalize>`.
+done with the mspass function
+:py:func:`bulk_normalize <mspasspy.db.normalize.bulk_normalize>`.
 How to actually accomplish that is best understood by consulting the examples
 below.
 
-Here is a simple example of running normalize_mseed as a precursor to
+Here is an example of running :code:`normalize_mseed` as a precursor to
 reading and normalizing miniseed data:
 
 .. code-block:: python
@@ -197,7 +199,7 @@ Examples of normalization while reading
 +++++++++++++++++++++++++++++++++++++++++++
 
 This is an example serial job that would use the result
-from running normalize_mseed in the example above:
+from running :code:`normalize_mseed` in the example above:
 
 .. code-block:: python
 
@@ -367,7 +369,7 @@ Overview
 ++++++++++++
 This section covers the available normalization operators in MsPASS.
 It focuses on design concepts and listing the available features.
-See the examples above and following this section for more nuts and bolts
+See the examples above and near the end of this section for more nuts and bolts
 details.  The examples below all use the normalization within a workflow
 approach.
 
@@ -423,7 +425,7 @@ arbitrary.  They are the names used to implement the same concepts in MongoDB
 as methods of their database handle object.  In fact, as a convenience the
 normalize module defines the intermediate class
 :py:class:`DatabaseMatcher <mspasspy.db.normalize.DatabaseMatcher>`
-that provides a layer to simply creating a matcher to work directly with
+that provides a layer to simply the creation of a matcher to work directly with
 MongoDB.   That class implements :py:meth:`find <mspasspy.db.normalize.DatabaseMatcher.find>` and :py:meth:`find_one <mspasspy.db.normalize.DatabaseMatcher.find_one>` as
 generic wrapper code that translates MongoDB documents into the (different)
 structure required by the base class,
@@ -491,7 +493,7 @@ implemented as two intermediate classes used similarly to
     MsPASS data objects that are the target of the normalization.
 #.  :py:class:`DataFrameCacheMatcher <mspasspy.db.normalize.DataFrameCacheMatcher>`
     uses the more flexible
-    `Pandas Dataframe API <https://pandas.pydata.org/docs/reference/index.html>`__.
+    `Pandas DataFrame API <https://pandas.pydata.org/docs/reference/index.html>`__.
     to store it's internal cache.   The Pandas library is robust and
     has a complete set of logical constructs that can be used to construct
     any query possible with something like SQL and more.  Any custom,
@@ -504,12 +506,12 @@ These two intermediate-level classes have two features in common:
 
 #.  Both can load the normalizing collection in one of two forms: (a)
     via a MongoDB database handle combined with a :code:`collection`
-    name argument, or (b) a Pandas dataframe object handle.  The former,
+    name argument, or (b) a Pandas DataFrame object handle.  The former,
     for example, can be used to load :code:`site` collection metadata from
     MongoDB and the later can be used to load comparable data from an
     Antelope :code:`site` table via the
     `Pandas read_csv method <https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html#pandas.read_csv>`__
-    or similar methods for loading a Dataframe from an SQL relational database.
+    or similar methods for loading a DataFrame from an SQL relational database.
 #.  Both provide generic implementations of the :code:`find` and
     :code:`find_one` methods required by
     :py:class:`BasicMatcher <mspasspy.db.normalize.BasicMatcher>`.
@@ -535,7 +537,7 @@ code base that defines data objects.
 :py:class:`DataFrameCacheMatcher <mspasspy.db.normalize.DataFrameCacheMatcher>`
 requires only the method
 :py:meth:`subset <mspasspy.db.normalize.DataFrameCacheMatcher.subset>`
-used to select only the rows in the Dataframe that define a "match"
+used to select only the rows in the DataFrame that define a "match"
 for the complete, concrete class.   For more details see the docstrings that
 can be viewed by following the hyperlinks above.  We also discuss these
 issues further in the subsection on writing a custom matcher below.
@@ -900,7 +902,7 @@ intermediate classes you should use to build your custom matcher are:
    :code:`subset` method you implement needs to fetch attributes from
    the input data object's Metadata (header) and/or the data objects
    internals (e.g. start time, end time, and orientation data) to construct
-   a pandas query to select the rows of the cached dataframe that match
+   a pandas query to select the rows of the cached DataFrame that match
    that stored internally with the data.
 
 We close this section by emphasizing that the value of using class inheritance

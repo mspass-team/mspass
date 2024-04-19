@@ -24,7 +24,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Data Object Design Concepts" href="data_object_design_concepts.html" />
+    <link rel="next" title="Importing Tabular Data" href="importing_tabular_data.html" />
     <link rel="prev" title="Using MongoDB with MsPASS" href="mongodb_and_mspass.html" />  
 
   <style>
@@ -96,6 +96,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#custom-normalization-functions">Custom Normalization Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
 <ul>
@@ -205,10 +206,11 @@ we have abstracted the process in a way that provides great flexibility
 in how normalizing data is loaded.   e.g. receiver location information can
 be loaded either through the MsPASS
 <code class="code docutils literal notranslate"><span class="pre">site</span></code> or <code class="code docutils literal notranslate"><span class="pre">channel</span></code> collections using MongoDB or by
-loading the data from a pandas Dataframe.
-An example of the utility of a Dataframe is that all Antelope CSS3.0
-tables are easily loaded into a Dataframe with one line of python code
-(<code class="code docutils literal notranslate"><span class="pre">read_csv</span></code>).  That abstraction is possible because a MongoDB “collection”
+loading the data from a pandas DataFrame.
+An example of the utility of a DataFrame is that all Antelope CSS3.0
+tables are easily loaded into a DataFrame with one line of python code
+(most require <code class="code docutils literal notranslate"><span class="pre">read_fwf</span></code> but some can be read with <code class="code docutils literal notranslate"><span class="pre">read_csv</span></code>)
+That abstraction is possible because a MongoDB “collection”
 is just an alternative way to represent a table (relation).</p>
 <p>Before proceeding it is important to give a pair of definitions we use repeatedly
 in the text below.   We define the <code class="code docutils literal notranslate"><span class="pre">normalizing</span></code> collection/table as the
@@ -295,10 +297,10 @@ for two reasons.   First, the complexity of SEED data makes it challenging
 to know if the <code class="code docutils literal notranslate"><span class="pre">channel</span></code> collection is complete.   We have found
 many examples of incomplete or inaccurate station data downloaded
 from FDSN that cause some fraction of waveforms in a large dataset to not have any
-matching :code`channel` entry.  A second, more minor issue, is that
+matching <code class="code docutils literal notranslate"><span class="pre">channel</span></code> entry.  A second, more minor issue, is that
 the complexity of the algorithm used by
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher" title="mspasspy.db.normalize.MiniseedMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiniseedMatcher</span></code></a>
-makes it inevitably slower than the comparable Id-based algorithm
+makes it inevitably slower than the comparable Id-based algorithm called
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdMatcher" title="mspasspy.db.normalize.ObjectIdMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectIdMatcher</span></code></a>.
 We suggest that unless you are absolutely certain of the
 completeness of the <code class="code docutils literal notranslate"><span class="pre">channel</span></code> collection, you should use the
@@ -319,7 +321,7 @@ orders of magnitude slower than the current algorithm.  The data on that
 development is preserved
 <a class="reference external" href="https://github.com/mspass-team/mspass/discussions/307">here on github</a>.</p>
 <p>Normalizing source data is often a more complicated problem.   How difficult
-the problem is depends heavily upon how the data time segmentation is
+depends heavily upon how the data time segmentation is
 defined.   MsPASS currently has support for only two source association
 methods:  (1) one where the start time of each datum is a constant offset
 relative to an event origin time, and (2) a more complicated method based on
@@ -329,10 +331,11 @@ the assumption of the normalizing collection being small compared to the
 waveform collection.  The number of arrivals can easily exceed the number of
 waveform segments.
 In both cases, normalization to set <code class="code docutils literal notranslate"><span class="pre">source_id</span></code> values are best
-done with the mspass function <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.bulk_normalize" title="mspasspy.db.normalize.bulk_normalize"><code class="xref py py-func docutils literal notranslate"><span class="pre">bulk_normalize</span></code></a>.
+done with the mspass function
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.bulk_normalize" title="mspasspy.db.normalize.bulk_normalize"><code class="xref py py-func docutils literal notranslate"><span class="pre">bulk_normalize</span></code></a>.
 How to actually accomplish that is best understood by consulting the examples
 below.</p>
-<p>Here is a simple example of running normalize_mseed as a precursor to
+<p>Here is an example of running <code class="code docutils literal notranslate"><span class="pre">normalize_mseed</span></code> as a precursor to
 reading and normalizing miniseed data:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">mspasspy.database.normalize</span> <span class="kn">import</span> <span class="n">normalize_mseed</span>
@@ -347,7 +350,7 @@ reading and normalizing miniseed data:</p>
 <section id="examples-of-normalization-while-reading">
 <h3>Examples of normalization while reading<a class="headerlink" href="#examples-of-normalization-while-reading" title="Permalink to this heading"></a></h3>
 <p>This is an example serial job that would use the result
-from running normalize_mseed in the example above:</p>
+from running <code class="code docutils literal notranslate"><span class="pre">normalize_mseed</span></code> in the example above:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">mspasspy.database.normalize</span> <span class="kn">import</span> <span class="n">MiniseedMatcher</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
@@ -507,7 +510,7 @@ produce identical result by different paths.</p>
 <h3>Overview<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
 <p>This section covers the available normalization operators in MsPASS.
 It focuses on design concepts and listing the available features.
-See the examples above and following this section for more nuts and bolts
+See the examples above and near the end of this section for more nuts and bolts
 details.  The examples below all use the normalization within a workflow
 approach.</p>
 </section>
@@ -561,7 +564,7 @@ arbitrary.  They are the names used to implement the same concepts in MongoDB
 as methods of their database handle object.  In fact, as a convenience the
 normalize module defines the intermediate class
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher" title="mspasspy.db.normalize.DatabaseMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher</span></code></a>
-that provides a layer to simply creating a matcher to work directly with
+that provides a layer to simply the creation of a matcher to work directly with
 MongoDB.   That class implements <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find" title="mspasspy.db.normalize.DatabaseMatcher.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find_one" title="mspasspy.db.normalize.DatabaseMatcher.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one</span></code></a> as
 generic wrapper code that translates MongoDB documents into the (different)
 structure required by the base class,
@@ -639,7 +642,7 @@ We do that for efficiency as Metadata containers are native to
 MsPASS data objects that are the target of the normalization.</p></li>
 <li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher" title="mspasspy.db.normalize.DataFrameCacheMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrameCacheMatcher</span></code></a>
 uses the more flexible
-<a class="reference external" href="https://pandas.pydata.org/docs/reference/index.html">Pandas Dataframe API</a>.
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/index.html">Pandas DataFrame API</a>.
 to store it’s internal cache.   The Pandas library is robust and
 has a complete set of logical constructs that can be used to construct
 any query possible with something like SQL and more.  Any custom,
@@ -652,12 +655,12 @@ best advised to utilize the pandas API.</p></li>
 <ol class="arabic simple">
 <li><p>Both can load the normalizing collection in one of two forms: (a)
 via a MongoDB database handle combined with a <code class="code docutils literal notranslate"><span class="pre">collection</span></code>
-name argument, or (b) a Pandas dataframe object handle.  The former,
+name argument, or (b) a Pandas DataFrame object handle.  The former,
 for example, can be used to load <code class="code docutils literal notranslate"><span class="pre">site</span></code> collection metadata from
 MongoDB and the later can be used to load comparable data from an
 Antelope <code class="code docutils literal notranslate"><span class="pre">site</span></code> table via the
 <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html#pandas.read_csv">Pandas read_csv method</a>
-or similar methods for loading a Dataframe from an SQL relational database.</p></li>
+or similar methods for loading a DataFrame from an SQL relational database.</p></li>
 <li><p>Both provide generic implementations of the <code class="code docutils literal notranslate"><span class="pre">find</span></code> and
 <code class="code docutils literal notranslate"><span class="pre">find_one</span></code> methods required by
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher" title="mspasspy.db.normalize.BasicMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code></a>.</p></li>
@@ -682,7 +685,7 @@ code base that defines data objects.</p>
 <p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher" title="mspasspy.db.normalize.DataFrameCacheMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrameCacheMatcher</span></code></a>
 requires only the method
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher.subset" title="mspasspy.db.normalize.DataFrameCacheMatcher.subset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subset</span></code></a>
-used to select only the rows in the Dataframe that define a “match”
+used to select only the rows in the DataFrame that define a “match”
 for the complete, concrete class.   For more details see the docstrings that
 can be viewed by following the hyperlinks above.  We also discuss these
 issues further in the subsection on writing a custom matcher below.</p>
@@ -1040,7 +1043,7 @@ a reasonable starting point.  In any case, a key point is that the
 <code class="code docutils literal notranslate"><span class="pre">subset</span></code> method you implement needs to fetch attributes from
 the input data object’s Metadata (header) and/or the data objects
 internals (e.g. start time, end time, and orientation data) to construct
-a pandas query to select the rows of the cached dataframe that match
+a pandas query to select the rows of the cached DataFrame that match
 that stored internally with the data.</p></li>
 </ul>
 <p>We close this section by emphasizing that the value of using class inheritance
@@ -1071,7 +1074,7 @@ an <code class="code docutils literal notranslate"><span class="pre">ObjectIdMat
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="mongodb_and_mspass.html" class="btn btn-neutral float-left" title="Using MongoDB with MsPASS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="data_object_design_concepts.html" class="btn btn-neutral float-right" title="Data Object Design Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="importing_tabular_data.html" class="btn btn-neutral float-right" title="Importing Tabular Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -73,6 +73,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
 <ul class="current">
@@ -254,8 +255,8 @@ all of the following will work and do what is expected:</p>
 </pre></div>
 </div>
 <p>The main thing to avoid is an assignment where the left hand side
-and right hand side resolve to different types.   For instance, either of
-the following will fail with a <cite>TypeError</cite> exception if you try to run them:</p>
+and right hand side resolve to different types.   For instance,
+the following will fail with a <cite>TypeError</cite> exception if you try to run it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">x_numpy</span>
 <span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">x_numpy</span> <span class="o">+</span> <span class="n">z</span>
@@ -285,11 +286,11 @@ exception:</p>
 <span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="n">z</span>
 </pre></div>
 </div>
-<p>Works and does set <cite>x_mspass.data</cite> to the vector sum of the two symbols
+<p>works and does set <cite>x_mspass.data</cite> to the vector sum of the two symbols
 on the right hand side.  The reason is that the + operator in python
-seems to resolve the type to the type of the leftside of the + operator.
+seems to resolve the type to the type of the left side of the + operator.
 Why is “deep in the weeds”, but the best advice is to avoid mixed type
-operations if possible.  The more robust way to write the above is this:</p>
+operations if possible.  The more robust way to write the above as:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">=</span><span class="n">TimeSeries</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
@@ -297,15 +298,15 @@ operations if possible.  The more robust way to write the above is this:</p>
 </pre></div>
 </div>
 <p>Finally, users who are matlab fans may like to write python code using
-the vector “:” operator.  For example, with numpy operations like the
-following can be used in a typical numpy algorithm:</p>
+the vector “:” operator.  For example, with numpy functions operations like the
+following are commonly used:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">x</span><span class="o">=</span><span class="n">z</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>That will print “5” - the length of the subvector extracted in x.
-The : operator DOES NOT work with a <cite>DoubleVector</cite>.  If you have an
+The : operator does not always work with a <cite>DoubleVector</cite>.  If you have an
 algorithm using the colon operator, do the vector operations with
 numpy and then copy the result into the <cite>TimeSeries</cite> data member.
 An important warning about any such assignments to <cite>TimeSeries.data</cite> is you

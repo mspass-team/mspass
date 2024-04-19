@@ -72,6 +72,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
 <ul>
@@ -210,12 +211,12 @@ operation that is to be performed.  In the example that means
 <p>All the unary operators use exactly the same API and can be used the
 same way but for different arithmetic operations with a constant.
 The following table summarizes the available operators:</p>
-<table class="docutils align-default" id="id5">
-<caption><span class="caption-number">Table 8 </span><span class="caption-text">Unary Metadata Operators</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-number">Table 8 </span><span class="caption-text">Unary Metadata Operators</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
 <colgroup>
-<col style="width: 33.3%" />
-<col style="width: 33.3%" />
-<col style="width: 33.3%" />
+<col style="width: 25.0%" />
+<col style="width: 12.5%" />
+<col style="width: 62.5%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
@@ -226,27 +227,27 @@ The following table summarizes the available operators:</p>
 <tbody>
 <tr class="row-even"><td><p>Add</p></td>
 <td><p>+=</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Add(key,</span> <span class="pre">const)</span></code></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add" title="mspasspy.algorithms.edit.Add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Add</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Subtract</p></td>
 <td><p>-=</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Subtact(key,</span> <span class="pre">const)</span></code></p></td>
+<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Subtract</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Multiply</p></td>
-<td><p><a href="#id1"><span class="problematic" id="id2">*</span></a>=</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Multiply(key,</span> <span class="pre">const)</span></code></p></td>
+<td><p>*=</p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply" title="mspasspy.algorithms.edit.Multiply"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Multiply</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Divide</p></td>
 <td><p>/=</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Divide(key,</span> <span class="pre">const)</span></code></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide" title="mspasspy.algorithms.edit.Divide"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Divide</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p>IntegerDivide</p></td>
 <td><p>//=</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">IntegerDivide(key,</span> <span class="pre">const)</span></code></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide" title="mspasspy.algorithms.edit.IntegerDivide"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IntegerDivide</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Mod</p></td>
 <td><p>%=</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Mod(key,</span> <span class="pre">const)</span></code></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod" title="mspasspy.algorithms.edit.Mod"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Mod</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -276,8 +277,8 @@ overwritten.</p>
 <p>The names for the <code class="docutils literal notranslate"><span class="pre">op</span></code> variable above are illustrated in the table below.
 They are essentially the same as the unary operators with a “2” added to the
 name.</p>
-<table class="docutils align-default" id="id6">
-<caption><span class="caption-number">Table 9 </span><span class="caption-text">Binary Metadata Operators</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-number">Table 9 </span><span class="caption-text">Binary Metadata Operators</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33.3%" />
 <col style="width: 33.3%" />
@@ -292,27 +293,27 @@ name.</p>
 <tbody>
 <tr class="row-even"><td><p>Add2</p></td>
 <td><p>+</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Add(keyc,</span> <span class="pre">keya,</span> <span class="pre">keyb)</span></code></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add2" title="mspasspy.algorithms.edit.Add2"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Add</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Subtract2</p></td>
 <td><p>-</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Subtact(keyc,</span> <span class="pre">keya,</span> <span class="pre">keyb)</span></code></p></td>
+<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Subtract</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Multiply2</p></td>
 <td><p>*</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Multiply(keyc,</span> <span class="pre">keya,</span> <span class="pre">keyb)</span></code></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply2" title="mspasspy.algorithms.edit.Multiply2"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Multiply</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Divide2</p></td>
 <td><p>/</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Divide2(keyc,</span> <span class="pre">keya,</span> <span class="pre">keyb)</span></code></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide2" title="mspasspy.algorithms.edit.Divide2"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Divide2</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>IntegerDivide</p></td>
+<tr class="row-even"><td><p>IntegerDivide2</p></td>
 <td><p>//</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">IntegerDivide(keyc,</span> <span class="pre">keya,</span> <span class="pre">keyb)</span></code></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide2" title="mspasspy.algorithms.edit.IntegerDivide2"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IntegerDivide2</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Mod2</p></td>
 <td><p>%</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Mod(keyc,</span> <span class="pre">keya,</span> <span class="pre">keyb)</span></code></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod2" title="mspasspy.algorithms.edit.Mod2"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Mod2</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -342,7 +343,8 @@ name defined by <code class="docutils literal notranslate"><span class="pre">key
 </section>
 <section id="combining-operators">
 <h2>Combining operators<a class="headerlink" href="#combining-operators" title="Permalink to this heading"></a></h2>
-<p>We define a final operator class with the name <code class="docutils literal notranslate"><span class="pre">MetadataOperatorChain</span></code>.
+<p>We define a final operator class with the name
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperatorChain" title="mspasspy.algorithms.edit.MetadataOperatorChain"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.edit.MetadataOperatorChain</span></code></a>.
 As the name suggests it provides a mechanism to implement a (potentially complicated)
 formula from the lower level operators.  The class constructor has
 this usage:</p>
@@ -383,7 +385,7 @@ common errors all handle that
 users need to be aware of.  (1) If a key-value that the operator needs to fetch from
 Metadata is not defined the operator will kill the datum missing and
 log a standard message.  (2) if
-the value extracted fails for the defined <a href="#id3"><span class="problematic" id="id4">`</span></a>arithmetic operation the datum will again
+the value extracted fails for the defined <a href="#id1"><span class="problematic" id="id2">`</span></a>arithmetic operation the datum will again
 be killed with a standard message posted to the elog attribute of the
 data object. An example of this would be trying to do arithmetic on
 an attribute with a string value.  (3) If the operator receives a datum that is not a MsPASS
@@ -408,7 +410,7 @@ for a data set before running these operators.  They will dogmatically kill
 data when required attributes are missing.   If your data set has a lot of
 missing metadata required by the operator, the operators will
 kill every datum that is lacking that metadata attribute.</p></li>
-<li><p>It is far to easy to kill every datum in your data set if you read
+<li><p>It is far too easy to kill every datum in your data set if you read
 data by ensembles and fail to use the <cite>apply_to_members</cite> switch correctly.
 With the default value of False if you mix up the names for fields you
 set in the ensemble container and which you load with each atomic data
@@ -418,7 +420,7 @@ the operation does what you think it will before releasing a workflow
 on a huge data set.</p></li>
 <li><p>When you are aware that some data have deficient metadata attributes
 that are required for a calculation, it is prudent to first pass the
-workflow through one related Executioner classes to “kill” data that
+workflow through one of the related Executioner classes to “kill” data that
 lack the required attributes.</p></li>
 <li><p>We have found that a chain of <code class="docutils literal notranslate"><span class="pre">ChangeKey</span></code> operator is almost always a
 far faster way to repair database name errors than to run

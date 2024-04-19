@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Processing History Concepts &mdash; MsPASS 0.0.1 documentation</title>
+  <title>Historical Perspective on Seismology Formats and Vestigal IO Concepts &mdash; MsPASS 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -23,9 +23,7 @@
         <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Continuous Data Handling with MsPASS" href="continuous_data.html" />
-    <link rel="prev" title="Time Standard Constraints" href="time_standard_constraints.html" />  
+    <link rel="search" title="Search" href="../search.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -75,15 +73,12 @@
 <li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Processing History Concepts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#global-versus-object-level-history">Global versus object level history</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
@@ -133,9 +128,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Processing History Concepts</li>
+      <li class="breadcrumb-item active">Historical Perspective on Seismology Formats and Vestigal IO Concepts</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/processing_history_concepts.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/appendix_historical_perspective_essay.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -143,78 +138,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="processing-history-concepts">
-<span id="id1"></span><h1>Processing History Concepts<a class="headerlink" href="#processing-history-concepts" title="Permalink to this heading"></a></h1>
-<section id="global-versus-object-level-history">
-<h2>Global versus object level history<a class="headerlink" href="#global-versus-object-level-history" title="Permalink to this heading"></a></h2>
-<p>The mechanism we use to preserve processing history in MsPASS makes an
-assumption that the workflow can be broken down into a series of
-black boxes (algorithms) that input one or more atomic data objects and emit
-one or more (potentially different) <em>atomic data objects</em>. MsPASS currently defines
-two object types as atomic:  <em>Seismogram</em> and <em>TimeSeries</em>.  By <em>atomic</em> we mean
-they are indivisible.  This is in contrast to <em>Ensemble</em> objects that are
-collections of atomic objects grouped by an unspecified method.</p>
-<p>With this conceptual model (the concept behind this design),
-preserving processing history has two components.</p>
-<ol class="arabic simple">
-<li><p><em>Global history</em> is the list of <em>unique definitions</em> of algorithms used
-in a workflow.   The <em>unique</em> qualifier is necessary because most
-algorithms have one to thousands of numbers/strings that define a unique
-behavior.   To keep the discuss concise in this document we define a
-<em>parameter</em> as data used by an algorithm that is NOT one of the the atomic
-data to MsPASS.   A parameter can thus be something as simple as a
-single integer or real number, or as elaborate as any python object (e.g.
-a dict or list container).  We assume the behavior of a particular algorithm
-can be uniquely defined by a unique name assigned to the algorithm and
-a particular set of parameters used to control it’s behavior.   The
-simplest example is a function call with the algorithm set to the name
-of the function and the parameters as a set of simple real and integer
-inputs.   More complicated examples may require some more elaborate recipe
-with hierarchies and/or auxiliary data inputs.   The conceptual model
-here puts no restriction on what the parameters are but treat that as
-an implementation detail.  Any algorithm that aims to preserve processing
-history must define a mechanism to load and store the parameters that
-define a unique instance of that algorithm.</p></li>
-<li><p><em>Object level history</em>.  To fully recreate the processing history of a
-processed data set one needs to retain the chain of processes that operated
-on what data to produce the final output.  In every seismic reflection processing
-system we are aware of the problem is reduced to what we are calling global
-history.   Traditional labels displayed the chain of processing modules
-applied to produce a final stacked section on a side bar on paper plots.
-Digital forms largely replicated that model as a button to display the same
-information on a screen.  In designing MsPASS we recognized there was a need
-for object level history from at least two sources:  (1) python is a much
-richer language than traditional, custom job control languages used by
-processing packages and (2) some machine learning algorithms are iterative
-at the object level.   On the other hand, although the need object-level history
-is clear a naive implementation is potentially problematic in two
-ways:  (1) memory bloat, and (2) performance.  We created a mechanism for
-preserving object level history that is lightweight by preserving
-only the minimum information needed to reconstruct a tree structure that
-defines that tree.  We made the mechanism fast by implementing the
-mechanism in C++ using an std::multimap container for which insertion
-is about as fast as possible.  The user interface hides the implementation
-details.   You as a user need only consult the API references to a
-object we call <em>mspass.ProcessingHistory</em>.     (NEED A LINK HERE TO python
-documentation)  User’s need only recognize that <em>Seismogram</em> and <em>TimeSeries</em>
-objects (THESE ALSO NEED TO BE LINKS TO PYTHON API PAGES) have a
-ProcessingHistory component.  Algorithms can and should at least allow
-the option of registering themselves through this mechanism.   All
-algorithms supported in MsPASS have an option to enable object level
-history.   NEED A FEW MORE SENTENCES HERE WITH A LINK TO PAGE WITH THE TOPIC
-OF WRITING YOUR OWN PROCESSING MODULE EXTENSION.  THAT DOCUMENT CAN AND
-SHOULD CONTAIN A SECTION ON HOW TO SET UP THE HISTORY MECHANISM.</p></li>
-</ol>
-</section>
+  <section id="historical-perspective-on-seismology-formats-and-vestigal-io-concepts">
+<span id="historical-seismology-io"></span><h1>Historical Perspective on Seismology Formats and Vestigal IO Concepts<a class="headerlink" href="#historical-perspective-on-seismology-formats-and-vestigal-io-concepts" title="Permalink to this heading"></a></h1>
+<p>The idea of this section is for it to be an appendix with my name
+attached and a warning it is part essay and part educational material.</p>
+<p>May want to start with a autobiograph8cal sketch noting my 50 yr history in computing
+Key points are:
+- linear files and impact on common Formats
+- miniseed first format to break the linear file model
+- format is not the data is a key idea of MsPASS abstractions
+- modern systems have fully abstracted io complexities; a common misunderstanding of many scientists
+- point to another planned new section on io that covers modern abstractions:  files on disk, files in a lustre type system, and cloud storage.</p>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="time_standard_constraints.html" class="btn btn-neutral float-left" title="Time Standard Constraints" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="continuous_data.html" class="btn btn-neutral float-right" title="Continuous Data Handling with MsPASS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

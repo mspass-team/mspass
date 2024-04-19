@@ -73,6 +73,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
 <ul>
@@ -235,7 +236,7 @@ The DAG for this workflow is illustrated below</p>
 <figure class="align-center" id="id2">
 <span id="dag-figure"></span><a class="reference internal image-reference" href="../_images/MapDAGFigure.png"><img alt="../_images/MapDAGFigure.png" src="../_images/MapDAGFigure.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Block diagram illustration of DAG defined by example workflow.
+<p><span class="caption-number">Fig. 13 </span><span class="caption-text">Block diagram illustration of DAG defined by example workflow.
 The example shows how work would be partitions with five processors
 and five partitions.   The labels at the top are function names
 matching those used in the python code above.   Each box denotes an
@@ -295,7 +296,7 @@ for this example).</p>
 <figure class="align-center" id="id3">
 <span id="twoprocessoranimation-figure"></span><a class="reference internal image-reference" href="../_images/MapProcessing.gif"><img alt="../_images/MapProcessing.gif" src="../_images/MapProcessing.gif" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 10 </span><span class="caption-text">Animated gif illustrating data flow for the same five partition
+<p><span class="caption-number">Fig. 14 </span><span class="caption-text">Animated gif illustrating data flow for the same five partition
 data set as illustrated above with only two processors.  The animation
 illustrates how the scheduler would assign each processor a data partition.
 Each worker sequentially processes one data object at a time as illustrated
@@ -657,7 +658,7 @@ reduce(fold) operation by the Metadata key <cite>source_id</cite>:</p>
 <figure class="align-center" id="id4">
 <span id="reduce-figure"></span><a class="reference internal image-reference" href="../_images/ReduceFigure.png"><img alt="../_images/ReduceFigure.png" src="../_images/ReduceFigure.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 11 </span><span class="caption-text">Data flow diagram for example reduce operation to stack two
+<p><span class="caption-number">Fig. 15 </span><span class="caption-text">Data flow diagram for example reduce operation to stack two
 sources with a bag/rdd made up of atomic TimeSeries data with
 five partitions.   Dashed lines show concept of how partitions
 divide up the container of data illustrated as a stack of black

@@ -72,6 +72,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
 <ul class="current">
@@ -284,7 +285,7 @@ Hence, a comparable algorithm in MsPASS to the above is the following:</p>
 <span class="c1"># These three lines are comparable to ObsPy example above</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
 <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
-<span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s1">&#39;bandpass&#39;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="n">ed</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s1">&#39;bandpass&#39;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We include the top section of code to emphasize that building a database handle, which above is set to the symbol db, is comparable in some respects to opening a data file.
@@ -306,8 +307,8 @@ For example, the following is a variant of filter algorithm but this example use
 <span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">cursor</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;dask&#39;</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
-<span class="n">res</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+<span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>The key thing to note here is that the basic algorithm is identical to above: <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> and <code class="code docutils literal notranslate"><span class="pre">filter</span></code>.

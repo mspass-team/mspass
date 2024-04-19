@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Importing Tabular Data &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Object Design Concepts" href="data_object_design_concepts.html" />
+    <link rel="prev" title="Normalization" href="normalization.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Importing Tabular Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prof-gary-l-pavlis"><em>Prof. Gary L. Pavlis</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#concepts">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-export-tables-stored-in-files">Import/Export Tables Stored in Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-export-data-from-an-sql-server">Import/Export Data from an SQL server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-export-of-data-from-datascope">Import/Export of Data from Datascope</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Importing Tabular Data</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/importing_tabular_data.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="importing-tabular-data">
+<span id="id1"></span><h1>Importing Tabular Data<a class="headerlink" href="#importing-tabular-data" title="Permalink to this heading"></a></h1>
+<section id="prof-gary-l-pavlis">
+<h2><em>Prof. Gary L. Pavlis</em><a class="headerlink" href="#prof-gary-l-pavlis" title="Permalink to this heading"></a></h2>
+</section>
+<section id="concepts">
+<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h2>
+<p>Few seismologists and surprising few “IT professionals” appreciate
+the full significance of the
+generic concept encapsulated by the term <code class="code docutils literal notranslate"><span class="pre">Tabular</span> <span class="pre">Data</span></code> in the title of
+this section.  Tabular data are ubiquitous in the modern IT world
+largely due to the intimate connection with relational databases.
+In fact, it is worth stressing that a “relation” in database jargon
+means “table”.</p>
+<p>MsPASS supports mechanisms to import/export the following
+types of tabular data:</p>
+<ul class="simple">
+<li><p>A large range of file-based formats.   Common exampes include:
+comma separated value (csv) files, Excel speadsheets,
+most white-space separated text files, and various legacy fixed format
+tabular data files.</p></li>
+<li><p>The standard query language for relational database servers is the
+language called “Structured Query Language” that is commmonly referred to
+by the jargon term “SQL server”.  SQL queries return tabular data that
+is readily handled in MsPASS with common python packages.</p></li>
+<li><p>A special form of relational database in the seismology community is
+what is most properly called a “Datascope database” but which is commonly
+referred to as a “Antelope database”.   Technically “Datascope” is a
+component of the larger “Antelope” software suite.   Those tables are important
+as a number of regional seismic networks use Antelope as their database
+engine.  Furthermore, the Array Network Facility of the Earthscope project
+used Antelope and the database tables are still accessible at
+the AUG web site <a href="#id2"><span class="problematic" id="id3">`here&lt;https://anf.ucsd.edu/tools/events/&gt;`__</span></a>.
+In any case, the key concept to remember is that Antelope/Datascope
+is just a different implementation of a relational database.  Below we
+describe a special interface in MsPASS to import data from Datascope tables.</p></li>
+</ul>
+<p>In MsPASS the central concept used to unify these diverse sources is the
+concept of a <code class="code docutils literal notranslate"><span class="pre">DataFrame</span></code> that is THE data structure that is the
+focus of the commonly used
+<a href="#id2"><span class="problematic" id="id4">`pandas&lt;https://pandas.pydata.org/docs/&gt;`__</span></a> python package.
+The name does not come from a fuzzy animal but is apparently
+a acronymn derived from “PANel DAta”.  “panel” is, in fact,
+an odd synonym for “table”.  Pandas and their extension in
+dask and pyspark are an API to manipulate tabular data.
+Because both dask and pyspark have DataFrame implementations
+it is particular natural that the way we suggest to best manipulate
+tabular data in MsPASS is to use the DataFrame API.
+All “imports” below can be thought of as ways to convert a table
+stored some other way to a DataFrame.</p>
+</section>
+<section id="import-export-tables-stored-in-files">
+<h2>Import/Export Tables Stored in Files<a class="headerlink" href="#import-export-tables-stored-in-files" title="Permalink to this heading"></a></h2>
+<p>Importing data from any common tabular data format I know if is
+essentially a solved problem via the <code class="code docutils literal notranslate"><span class="pre">DataFrame</span></code> API.</p>
+<ul class="simple">
+<li><p>The documentation on reading tabular data files can be found
+<a href="#id2"><span class="problematic" id="id5">`here&lt;https://pandas.pydata.org/pandas-docs/stable/reference/io.html&gt;`__</span></a>.
+There are also writers for most of the same formats documented on that
+same page.</p></li>
+<li><p>Dask has a more limited set of readers described
+<a href="#id2"><span class="problematic" id="id6">`here&lt;https://examples.dask.org/dataframes/01-data-access.html&gt;`__</span></a>.
+The reason is that the large data model of DataFrame for a dask
+workflow is most applicable when the table is large compared to
+the memory space of a single node. Hence, something like an
+Excel spreadsheet can never be expected to hold gigantic tables.
+In constrast, a huge cvs file is easy to construct from many identical
+pieces using the standard unix “cat” command.</p></li>
+<li><p>Pyspark has similar functionallity, but a very different API than
+pandas and dask.  The documentation for the read/write interface can be found
+<a href="#id2"><span class="problematic" id="id7">`here&lt;https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/io.html&gt;`__</span></a>.
+The list of formats pyspark can read or write is similar to pandas.</p></li>
+</ul>
+<p>The most common application for reading tabular data is importing
+some nonstandard data from a research application stored in one of the
+standard formats.  For example, here an example extracted from our jupyter notebook
+tutorial on MongoDB.  It shows how one can import the output of
+<a href="#id2"><span class="problematic" id="id8">`PhaseNet&lt;https://github.com/AI4EPS/PhaseNet&gt;`__</span></a>
+with it’s output structured as a csv file.
+It also shows how the results can be written to MongoDB in a collection it
+creates called “arrival”:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./data/picks.csv&#39;</span><span class="p">)</span>
+<span class="n">doclist</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">&#39;records&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">doclist</span><span class="p">:</span>
+  <span class="n">station_id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;station_id&#39;</span><span class="p">]</span>
+  <span class="n">slist</span><span class="o">=</span><span class="n">station_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+  <span class="n">net</span><span class="o">=</span><span class="n">slist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+  <span class="n">sta</span><span class="o">=</span><span class="n">slist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+  <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">sta</span>
+  <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">net</span>
+
+<span class="n">insert_many_output</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">arrival</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">doclist</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Noting the complexity using the python string <cite>split</cite> method is a necessary
+evil for the file format.  See the tutorial for a more extensive
+explanation of this example.</p>
+</section>
+<section id="import-export-data-from-an-sql-server">
+<h2>Import/Export Data from an SQL server<a class="headerlink" href="#import-export-data-from-an-sql-server" title="Permalink to this heading"></a></h2>
+<p>Importing data from an SQL server or writing a DataFrame to an
+SQL server are best thought of different methods of the
+DataFrame implementation.  e.g. if the data in the example above
+had been stored on an SQL server you would change the line
+<code class="code docutils literal notranslate"><span class="pre">df</span> <span class="pre">=</span> <span class="pre">pd.read_csv('./data/picks.csv')</span></code> to use the variant
+for interacting with an SQL server.   See the links above the to
+io sections for pandas, dask, and pyspark for details on what the
+work out the correct incantation for your needs.</p>
+</section>
+<section id="import-export-of-data-from-datascope">
+<h2>Import/Export of Data from Datascope<a class="headerlink" href="#import-export-of-data-from-datascope" title="Permalink to this heading"></a></h2>
+<p>Although the Datascope (Antelope) database is an implementation of
+a relational database, it does not work with the SQL API of
+pandas, dask, and pyspark because Datascope does not speak SQL.
+On the other hand, Datascope is heavily used in seismology as a
+means to create earthquake catalogs from local earthquake networks.
+It also has a set of useful tools that complement MsPASS.   Therefore,
+there are a lot of known ways that the Antelope software can be used
+in combination with MsPASS to handle novel research problems.
+As a result, we created a special API to interact with data
+managed by an Antelope database.   The MsPASS API aims to
+loosely mimic the SQL functionality using an pandas
+DataFrame as the intermediary.</p>
+<p>A python class called
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code>
+is used as the agent for interacting with an
+Antelope/Datascope database.   Unlike all common SQL
+database of today, Datascope does not use a client-server model
+to manage the data it contains.   It is an example of what is
+commonly called a “flat-file database” because the tables it manages
+are stored in text files.  That is relevant for this discussion
+only because of how those files are defined.   That is, in
+Datascope the file names are special and take the form
+<cite>dbname</cite>.`table`.   <cite>dbname</cite> is the name of the collection
+of tables that is the “database”:  the “database name”.  As the
+word implies <cite>table</cite> is the schema name for a particular table
+that that file contains.   For example, if one sees an
+Datascope table with the file name “usarray.arrival” that file
+is the “arrival” table in a database someone chose to call “usarray”.
+With that background, an instance of a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code>
+can be created with a variant of the following code fragment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dsdb</span> <span class="o">=</span> <span class="n">DatascopeDatabase</span><span class="p">(</span><span class="s2">&quot;usarray&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where “usrray” is the “name” used for this database instance.
+Experienced Datascope users will know that Datascope has a useful,
+albeit confusing, feature that allows the collection of
+files that define the database to be spread through multiple directories.
+That features is nearly always exploited, in practice, by placing
+more static tables in a separate directory.   For that reason
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code>
+has an optional <cite>dir</cite> argument to point the constructor to read
+data files from a different directory.   e.g. a variant of the
+above example to access files in a “dbmaster” (common practice)
+directory is the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dsdbm</span> <span class="o">=</span> <span class="n">DatascopeDatabase</span><span class="p">(</span><span class="s2">&quot;usarray&quot;</span><span class="p">,</span><span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;~/dbmaster&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once, an instance of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code>
+is created that points to the directory from which you want to import
+one or more tables, the usage to fetch the data that table contains
+is similar to that for the pandas SQL readers.   Use the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table()</span></code>
+method of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code>
+to retrieve individual tables from the Datascope database
+as a pandas DataFrame.   An important option descibed in the
+docstrng is a python list passed via the optional argument
+with key <cite>attributes_to_load</cite>.  The default loads the entire css3.0
+schema table.  Use a list to limit what attributes are retrieved.
+As an example of a typical use of the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table()</span></code>
+method the following would retrieve the coordinate data from
+the usarray “site” tables using the handle <cite>dsdbm</cite> created with
+the code line above:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coordlist</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">,</span><span class="s1">&#39;ondate&#39;</span><span class="p">,</span><span class="s1">&#39;offdate&#39;</span><span class="p">,</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;elev&#39;</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">dsdbm</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;site&quot;</span><span class="p">,</span><span class="n">attributes_to_load</span><span class="o">=</span><span class="n">coordlist</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The result could be used for normalization to load coordinates by
+station name.  (In reality there are some additional complications
+related to the time fields and seed station codes.   Those, however are a side issue
+that would only confuse the topic of discussion so ignore it here.)</p>
+<p>The inverse of the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table()</span></code>
+method is the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table()</span></code>
+method.  As it’s name implies it attempts to write a pandas
+DataFrame to a particular Datascope table, which means it will attempt to
+write a properly formatted text file for the table name passed to the
+method function.</p>
+<p>Finally, the <code class="code docutils literal notranslate"><span class="pre">datascope.py</span></code> module also contains two
+convenience methods that simply two common operations with
+Datascope database tables:</p>
+<ol class="arabic simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df()</span></code>
+creates the standard “catalog-view” of CSS3.0.   In seismology a
+“catalog” is a image of what in ancient times was distributed as book
+tabulating earthquake hypocenter estimates and arrival time data used
+to create those estimates.   CSS3.0 standardized a schema for creating
+a “catalog” as the join of four tables that this method creates:
+event-&gt;origin-&gt;assoc-&gt;arrival where “-&gt;” symbolizes a right database
+join operator.  It returns a pandas DataFrame that is the “catalog”.
+Usage details can be gleaned from the docstring.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist()</span></code>
+can be thought of as an alternative to the MsPASS
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.index_mseed_file()</span></code></a> method.
+It returns a list of python dictionaries (documents) that are roughly equivalent to
+documents created by
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.index_mseed_file()</span></code></a>.
+The main application is to use the alternative miniseed indexer
+of Antelope.   There are many ways that raw miniseed files from
+experimental data (i.e. data not sanitized for storage in the archives)
+can be flawed.   The Antelope implementation has more robust handlers
+for known problems than that in MsPASS.  For most uses we would encourage
+immediately dumping the output to the standard MsPASS collection
+<code class="code docutils literal notranslate"><span class="pre">wf_miniseed</span></code> using a variant of this example.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;myproject&quot;</span><span class="p">)</span>
+<span class="n">dsdb</span> <span class="o">=</span> <span class="n">DatascopeDatabase</span><span class="p">(</span><span class="s2">&quot;usarray&quot;</span><span class="p">)</span>
+<span class="n">doclist</span> <span class="o">=</span> <span class="n">dsdb</span><span class="o">.</span><span class="n">wfdisc2doclist</span><span class="p">()</span>
+<span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">doclist</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="normalization.html" class="btn btn-neutral float-left" title="Normalization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="data_object_design_concepts.html" class="btn btn-neutral float-right" title="Data Object Design Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

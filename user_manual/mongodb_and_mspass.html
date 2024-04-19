@@ -97,6 +97,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
 <ul>
@@ -175,19 +176,20 @@
 Database Management system used in MsPASS called <cite>MongoDB</cite>.
 The reason is that MongoDB is one of the most heavily used open source
 packages in the modern software ecosystem.  For that reason in earlier
-verisions of our User’s Manual we simply punted the ball and told User’s
+versions of our User’s Manual we simply punted the ball and told User’s
 to consult online sources.  It became clear, however, that the
 firehose of information that approach creates is not for everyone.
 Hence, we created this section to reduce the firehose to a, hopefully,
 manageable stream of information.</p>
 <p>The first section, which is titled “Concepts”, is introductory material.
-The material, however, is broken into subsections directed a people
-with specific backgrounds.   If the title matches you start there.  If
+The material, however, is broken into subsections directed at people
+with specific backgrounds.   If the title matches you, start there.  If
 you fit none of the descriptions, read them all.  The sections after that
 are organized by the letters of the standard acronymn used in
-many sources on database system:  CRUD (Create, Read, Update, and Delete).
-The final section covers an auxiliary issue of MongoDB indexes.
-indexes are critical for read performnce, but are not required.</p>
+many sources on database system:  CRUD (Create, Read, Update, and Delete),
+although not that order for pedagogic reasons.
+The final section covers an auxiliary issue of MongoDB: indexes.
+Indexes are critical for query performance, but are not required.</p>
 </section>
 <section id="concepts">
 <h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h2>
@@ -195,39 +197,52 @@ indexes are critical for read performnce, but are not required.</p>
 <h3>MongoDB for RDBMS Users<a class="headerlink" href="#mongodb-for-rdbms-users" title="Permalink to this heading"></a></h3>
 <p>Users who are familiar with Relational DataBase Management Systems (RDBMS)
 will find MongoDB has many similar concepts, but also is fundamentally
-different from any RDBMS.  In and RDBMS the conceptual model of the data
+different from any RDBMS.  In an RDBMS the conceptual model of the data
 structure the system manages is a table (A “relation” in database theory
 is synonymous with “table”.) That is, however, better thought of as an
 implementation detail for what the system is aiming to do.
 Computer science textbooks on database theory make heavy use of set theory
-at think of a database as an abstract set of “attribute” that define
-some property and have some relationship.   Some kinds of data fit the
+and treat a database as an abstract set of “attributes” that each define
+some quantity of interest and have some relationship.   Some kinds of data fit the
 tabular model well, but some do not fit the concept at all.
 Seismic data objects are a case in point;  traditional “header” attributes
-like those in SAC or SEGY map well into the RDBMS model well things like
+like those in SAC or SEGY map well into the RDBMS mode.
+On the other hand, it is well known that things like
 the sample data and response information are awkward, at best, to handle
 that way.   If you are a user of a system like Antelope that uses CSS3.0
 you will know what I mean.  The other fundamental weakness of the
 tabular model is handling the “null” problem.   That is, if an attribute
-is optional the table has too define what defines a null value.
+is optional the table has to define what defines a null value.
 MongoDB suffers neither of those issues, but has its own “implementation
 details” that we will discuss later.</p>
 <p>A relation (table) indexes a given piece of data by row and column.
-aka key that defines the column index.  The rows (tuples) have
-an implicit index defined by the “primary keys” of the relation.
+Although a system like Antelope actually uses integers to efficiently
+access cells in a table, the normal abstraction is that both
+the columns (attributes) and rows (tuples) are defined by some
+index.   Columns are always indexed by an “attribute name”
+that is a keyword associated with the concept that column of
+data define.
+The rows (tuples) in any RDBMS have
+an index defined by the “primary keys” of the relation.
 (They sometimes have alternate keys, but that is a detail.)
 The primary key always has some indexing scheme to speed lookup
 by that key.   One way to think of MongoDB’s data model is to
 think of it a collection of binary blobs (a list) with one or more
 fast indexing methods that allow random retrieval of any of the
-things it stores by the index.   It is like a relation with only
-tuples and the tuples have no restrictions other than
-a requirement that they contain the
-indexing attribute.  These open-ended tuples are called “documents”.
-The contents of the documents are not, however, just a binary blob.
-The contents are REQUIRED to be indexable as key-value pairs
-(The same concept as a python dictionary discussed in the next section.).
-The “value” associated with the key has no restriction, but
+things it stores by the index.   It may be useful to think of
+a MongoDB collection as a relation with only 1 attribute per tuple,
+which MongoDB calls a “document”.   That one attribute is itself
+a more complex data structure that maps into a python dictionary.
+That is in contrast to more traditional RDBMS tables where the
+cells are usually only allowed to be simple types
+(i.e. string, integers, real numbers, or boolean values).
+The tuple-level indexing is also very different as any key(s) in the document can
+serve as an index.  The more profound difference is that a “document”
+is infinitely more flexible than an RDBMS table.   In an RDBMS table
+every cell needs an entry even if the value is Null.   In MongoDB
+a “document” can contain anything that can be reduced to a
+name-value pair (the data structure of a python dictionary).
+The “value” associated with the key has few restriction, but
 the approach makes no sense unless the “value” can be translated into
 something that matches the concept that key is supposed to reference.
 For example, a seismic station “name” is a unique tag seismologists
@@ -253,10 +268,8 @@ as latitude, longitude, and elevation.</p>
 A more technical definition of a “collection” is a set of “documents”
 accessible with a random access iterator.   What that means, in practice,
 is that a collection act like an RDBMS table in the sense that the
-contents can be sorted into any order or subsetted with a query.
-There is not such thing, however, as “SELECT”.   Documents have to
-always be eaten whole and chewed on a bit if you need to access only
-a limited set of attributes in each document.  The thing that makes
+contents can be sorted into any order or subsetted with a query.</p>
+<p>On the other hand, The thing that makes
 a relational database “relational” is not done well by MongoDB.
 That is, various forms of a “join” between two tables are a fundamental
 operation in most, if not all operational relational database systems.
@@ -267,12 +280,14 @@ related section of the User’s Manual titled <a class="reference internal" href
 The results of a query
 can also be “grouped”, but require very different programming constructs than
 SQL.</p>
-<p>Perhap the most important common construct used by all RDBMS systems I
-know of and MongoDB is the concept of a “cursor”.   In an RDBMS a cursor
-is a forward-iterator (i.e. it can only be incremented) that loops over the set of tuples returned by a query.
+<p>Perhaps the most important common construct used by all RDBMS systems I
+know of that is also a part of MongoDB is the concept of a “cursor”.
+In an RDBMS a cursor
+is a forward-iterator (i.e. it can only be incremented)
+that loops over the set of tuples returned by a query.
 In MongoDB is is more-or-less the same thing with different words.
 A MongoDB cursor is a forward-iterator that can be used to work through
-a set of documents returned by a query.  We will see numerous examples
+a set of documents returned by a query.  You will see numerous examples
 of using cursors in the MsPASS User’s manual and any source discussing
 MongoDB.</p>
 </section>
@@ -281,7 +296,7 @@ MongoDB.</p>
 <p>All python programmers will be familiar with the container
 commonly called a “dictionary” (dict).   Other sources call the same concept
 an “associative array” (Antelope) or “map container” (C++ and Java).
-Why that is important for MongoDB is simple:  the python binds for
+Why that is important for MongoDB is simple:  the python bindings for
 MongoDB (<cite>pymongo</cite>) used a dict to structure the content of what
 MongoDB calls a “document” AND pymongo uses dict containers as the base of
 its query language.   Two simple examples from the related tutorial notebook
@@ -293,19 +308,38 @@ illustrate this.</p>
 </pre></div>
 </div>
 <p>Produces:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Paste</span> <span class="n">here</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;$oid&quot;</span><span class="p">:</span> <span class="s2">&quot;65f6e45e4f0f9fe8183675eb&quot;</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="s2">&quot;IUGFS&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="s2">&quot;2G&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;chan&quot;</span><span class="p">:</span> <span class="s2">&quot;BHE&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;sampling_rate&quot;</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>
+  <span class="s2">&quot;delta&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+  <span class="s2">&quot;starttime&quot;</span><span class="p">:</span> <span class="mf">1355020458.049998</span><span class="p">,</span>
+  <span class="s2">&quot;last_packet_time&quot;</span><span class="p">:</span> <span class="mf">1355024042.649848</span><span class="p">,</span>
+  <span class="s2">&quot;foff&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;npts&quot;</span><span class="p">:</span> <span class="mi">72000</span><span class="p">,</span>
+  <span class="s2">&quot;storage_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;mseed&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/N/slate/pavlis/usarray/wf/2012&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;dfile&quot;</span><span class="p">:</span> <span class="s2">&quot;event70.mseed&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;time_standard&quot;</span><span class="p">:</span> <span class="s2">&quot;UTC&quot;</span><span class="p">,</span>
+<span class="p">}</span>
 </pre></div>
 </div>
+<p>Here is the first of several example queries in this section:</p>
 <p><em>Query example:</em></p>
-<div class="highlight-language notranslate"><div class="highlight"><pre><span></span>query=dict()
-query[&#39;sta&#39; : &#39;AAK&#39;]
-query[&#39;chan&#39;] : &#39;BHZ&#39;
-query[&#39;loc&#39;] = &#39;00&#39;
-print(&quot;query content in pretty form&quot;)
-print(json_util.dumps(doc,indent=2))
-doc=db.wf_miniseed.find_one(query)
-print(&quot;output of query&quot;)
-print(json_util.dumps(doc,indent=2))
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span><span class="o">=</span><span class="nb">dict</span><span class="p">()</span>
+<span class="n">query</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span> <span class="p">:</span> <span class="s1">&#39;AAK&#39;</span><span class="p">]</span>
+<span class="n">query</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="p">:</span> <span class="s1">&#39;BHZ&#39;</span>
+<span class="n">query</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;00&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;query content in pretty form&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">doc</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;output of query&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
 </section>
@@ -313,10 +347,10 @@ print(json_util.dumps(doc,indent=2))
 <h3>MongoDB for Pandas Users<a class="headerlink" href="#mongodb-for-pandas-users" title="Permalink to this heading"></a></h3>
 <p>Most users who have had any significant experience with python will
 likely have encountered pandas.   The name “pandas” is
-one of those strained acronymns.   Multiple online sources indicate the
-name comes from “panel data”, which is basically an stretch of a name for
-a table.  That insight is fundamental as pandas can be thought of as
-little more a python version of a spreadsheet.   In addition, more
+one of those strained acronyms.   Multiple online sources indicate the
+name comes from “panel data”, which is basically a stretch of a synonym for
+a table.  That insight is fundamental,however, as pandas can be thought of as
+little more than python version of a spreadsheet.   In addition, more
 elaborate features of the panda API can be used to mimic much of
 an RDBMS functionality.</p>
 <p>Since pandas are little more than an API for manipulating tables,
@@ -327,11 +361,11 @@ used by many seismologists is a “flat-file” RDBMS.  It stores tabular
 data in simple text files that can be viewed with standard unix tools.
 (Note most RDBMS systems hide data behind the API like MongoDB does and
 the data are stored in some binary set of files accessible only through
-a server.)  Antelope uses the CSS3.0 schema.   One of way pandas can
+a server.)  Antelope uses the CSS3.0 schema.   One of the way pandas can
 be used with MsPASS is to import CSS3.0 tables.   With Antelope
-files that is easily done with the <cite>read_fsf</cite> function in pandas.  The
+files that can be done with the <cite>read_fsf</cite> function in pandas.  The
 following illustrates an alternative way to create a <cite>site</cite> collection
-from an Antelope “site” table.</p>
+from an Antelope <cite>site</cite> table.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span>
 <span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">UTCDateTime</span>
 <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">,</span><span class="s1">&#39;ondate&#39;</span><span class="p">,</span><span class="s1">&#39;offdate&#39;</span><span class="p">,</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;elev&#39;</span><span class="p">,</span><span class="s1">&#39;statype&#39;</span><span class="p">,</span><span class="s1">&#39;refsta&#39;</span><span class="p">,</span><span class="s1">&#39;dnorth&#39;</span><span class="p">,</span><span class="s1">&#39;deast&#39;</span><span class="p">,</span><span class="s1">&#39;lddate&#39;</span><span class="p">]</span>
@@ -377,8 +411,8 @@ unix epoch time through obspy’s UTCDateTime class.</p></li>
 like this are seen below.  A key point here is that <cite>insert_many</cite> can
 handle any number of documents defined in doclist.   It is, of course,
 memory limited because pandas and <cite>doclist</cite> are all in memory.  The
-del call in the script demonstates good practice to release potentially
-large memor objects like <cite>df</cite> after they are no longer needed.</p></li>
+del call in the script demonstrates good practice to release potentially
+large memory objects like <cite>df</cite> after they are no longer needed.</p></li>
 </ul>
 <p>The above example works for the special case of Antelope text-based
 database files.   The pandas API, as experienced pandas users know,
@@ -422,7 +456,7 @@ the biggest weakness I’ve seen in any
 online source I’ve found on MongoDB usage is a failure to
 address the fundamental syntax of the query language.
 All sources seem to think the best way to understand the
-language is from examples.  Somewhat true, but many of us find it
+language is from examples.  That is somewhat true, but many of us find it
 easier to remember a few basic rules than a long list of
 incantations.   This section is an attempt to provide some
 simple rules that can, I hope, help you better understand the
@@ -436,7 +470,8 @@ for the logical OR and logical AND operators (discussed below).</p></li>
 <li><p>The “value” of each key-value pair is normally itself a python
 dictionary.   The contents of the dictionary define a simple
 language (Mongo Query Language) that resolves True for a match
-and False if there is no match.</p></li>
+and False if there is no match.  The key point is the overall
+expression the query dictionary has to resolve to a boolean condition.</p></li>
 <li><p>The keys of the dict containers that are on the value side of
 a query dict are normally operators.  Operators are defined with
 strings that begin with the “$” symbol.</p></li>
@@ -447,6 +482,9 @@ query could be either <cite>{“sta” : “AAK”}</cite> or <cite>{“sta” :
 The form with constant value only works for “$eq”.</p></li>
 <li><p>Compound queries (e.g. time interval expressions) have a value
 with multiple operator keys.</p></li>
+<li><p>There is an implied logical AND operation
+between multiple key operations.  An OR must be specified differently
+(see below).</p></li>
 </ol>
 <p>In the examples below, refer back to these rules to help you remember
 these fundamentals.</p>
@@ -493,7 +531,7 @@ excluded from the returned value(s).   For RDBMS users a “projection”
 in MongoDB is like the SELECT clause in SQL.  That idea is best
 illustrated by examples below.</p></li>
 <li><p><cite>arg2</cite> is an “options” operator.   I have personally never found a
-use for any of the listed options in the MongoDB documenation.  I can’t
+use for any of the listed options in the MongoDB documentation.  I can’t
 even find an online example so “options” are clearly an example of
 “an advanced feature” you can ignore until needed.</p></li>
 </ol>
@@ -551,7 +589,7 @@ search for more examples.</p>
 <section id="multiple-key-queries">
 <h3>Multiple key queries<a class="headerlink" href="#multiple-key-queries" title="Permalink to this heading"></a></h3>
 <p>A query to test the value of more than one attribute uses a dictionary
-with multiple keys.  In most cases the key
+with multiple keys.  In most cases each key
 defines an attribute to be each tested for matches by the query operation.
 The key can, however, also sometimes be an operator, in which case
 the dictionary would be called a “compound query” (see example below).
@@ -575,12 +613,12 @@ above:</p>
 </pre></div>
 </div>
 <p>For simple queries the inline form is generally easier.  I  have found,
-however, that for complex queries like examples below the form using
+however, that for complex queries like some examples below the form using
 key-value setting pairs is less error prone.  Complex inline expressions
-can easily get confused with which curly backet belongs where.</p>
+can easily get confused by confusions about which curly backet belongs where.</p>
 <p>A final important point about multiple attribute queries is that
-there is and implied “AND” opertions between the dictionary components.
-For example, the example query above could be stated in workds as:
+there is an implied “AND” operations between the dictionary components.
+For example, the example query above could be stated in works as:
 <cite>net attribute is ‘II’ AND sta attribute is ‘PFO’</cite>.  A logical “OR”
 query equivalent requires a compound query (next section).</p>
 </section>
@@ -661,8 +699,8 @@ the point.  That is, a query defined by a series of expressions has
 an implied “AND” logical operator for all separate expressions.
 For this example, you would say that in words as:
 net code is II AND sta code is PFO AND channel code is LHZ AND …
-For that reason the used of the $and opertor above is not actually
-required.  Note, however, if an query logical expression involves
+For that reason the $and opertor above is not actually
+required.  Note, however, if a query logical expression involves
 an OR clause the list of expressions syntax is required.  Here,
 for example, is a similar query to above with an OR clause.
 This query would always retrieve horizontal components and handle the
@@ -704,8 +742,8 @@ special data type called a
 The only example packaged that way by MsPASS is the coordinates of
 seismic instruments stored in the “site” and”channel” collections
 and source spatial coordinates defined in the standard “source” collection.
-For all the “lat” and “lon” keys define the latitude
-and longitude directly and are copied stored in a GeoJSON point object
+For all three the “lat” and “lon” keys define the latitude
+and longitude directly, but copies are stored in a GeoJSON point object
 with the key <cite>location</cite> in “site” and “channel” and “epicenter” in “source”.
 A limitation of MongoDB’s geospatial query engine is it is much like
 ArcGIS and is tuned to coordinate-based queries.  To add a depth
@@ -720,13 +758,13 @@ The “2d” index is not accurate for the scale of most seismology
 research problems.  An exception is that UTM coordinates may work
 with a “2d” index, but I have no direct experience
 with that approach.  That could be useful with active source data
-where survey coordinates are use UTM coordinates.</p></li>
+where survey coordinates often use UTM coordinates.</p></li>
 </ol>
 <p>The most common usage for geespatial queries I know in seismology is
 limiting the set of seismic instruments and/or sources based on a
 geographical area.   MQL implements geospatial queries as
 a special type of operator.  i.e. the definitions of the query
-are used like ‘$gt’, ‘$eq’, etc.</p>
+are used like ‘$gt’, ‘$eq’, etc., but use different keywords.</p>
 <p>Here is a simple example to retrieve documents from the site collection
 for all stations within 500 km of my home in Bloomington, Indiana.
 It is a minor variant of a similar example in the tutorial linked to
@@ -818,9 +856,8 @@ document structure MongoDB requires for simple lat,lon point data.</p>
 <li><p>A limitation of the (current) MongoDB implementation is the
 <cite>count_documents</cite> method does not seem to work for any valid
 query I can construct.  Internet chatter suggests that is the norm.
-I have found that using <cite>count_documents</cite> to test a query to
-report the size of a query return is a good way to debug complex
-queries.  Since all geospatial queries are complex by
+I have found <cite>count_documents</cite> a useful tool to test a query while
+developing a workflow script.  Since all geospatial queries are complex by
 almost any definition that is problematic.  I find that to debug
 a geospatial query it is helpful to isolate the query in a
 jupyter notebook box run it until the query runs without an error.
@@ -863,12 +900,12 @@ from above) but this time we sort the result by starttime
 <li><p><cite>sort</cite> is defined as a “method” of the “Cursor” object returned by find.
 That is more than a little
 weird but a common construct in python which is an object-oriented language.
-Most of us can remember it better by just thinking of it as an clause
+Most of us can remember it better by just thinking of it as a clause
 added after find and separated by the “.” symbol.  Because it is a method
 of cursor the sort clause could have been expressed as another statement
-after the find like this:  <cite>cursor = cursor.sort(“starttime,1)”)</cite></p></li>
+after the find operator done like this:  <cite>cursor = cursor.sort(“starttime,1)”)</cite></p></li>
 <li><p>The sort expression for a single key can be thought of as calling a
-function with two arguments.  The first it the key to use for the
+function with two arguments.  The first is the key to use for the
 sort and the second defines the direction of the sort. Here I
 used “1” which means sort into an ascending sequence.  When the result is
 passed to the <cite>read_data</cite> it guarantees the waveforms in the
@@ -876,7 +913,7 @@ ensemble created by <cite>read_data</cite> will be in increasing starttime order
 You would use -1 if you wanted to sort in descending order.
 (Note:  some sources will use the verbose symbols <cite>pymongo.ASCENDING</cite>
 instead of 1 and <cite>pymongo.DESCENDING</cite> instead of -1.  For me 1 and -1
-are a lot easier to remember.)   In typical python way there is also
+are a lot easier to remember.)   In a typical python way there is also
 a default for the sort order of 1.  i.e. in the sort call above
 we could have omitted the second argument.</p></li>
 </ol>
@@ -957,7 +994,7 @@ formatted table display.  As noted above pandas are your friend in
 creating such a report.  Here is an example that creates a report of all
 stations listed in the site collection with coordinates and the time
 range of recording.  It is a variant of a code block in our
-MsPASS <a href="#id1"><span class="problematic" id="id2">`mongodb_tutorial&lt;&gt;`__</span></a> (TODO:  hyperlink to github )</p>
+<a href="#id1"><span class="problematic" id="id2">`mongodb_tutorial&lt;https://github.com/mspass-team/mspass_tutorial/tree/master/notebooks&gt;`__</span></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span>
 <span class="n">cursor</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
 <span class="n">doclist</span><span class="o">=</span><span class="p">[]</span>
@@ -985,11 +1022,13 @@ An example, which we use for the hands on supplement to this section
 in our notebook tutorials, is downloading and loading the current CMT
 catalog and loading it into a nonstandard collection we all “CMT”.
 In this manual we focus on the fundamentals of the pymongo API for
-saving documents.</p>
+saving documents.  See the
+<a href="#id1"><span class="problematic" id="id3">`mongodb_tutorial&lt;https://github.com/mspass-team/mspass_tutorial/tree/master/notebooks&gt;`__</span></a>
+for the examples.</p>
 <p>There are two methods of <cite>Database.collection</cite> that you can use to
 save “documents” in a MongoDB collection.  They are:</p>
 <ol class="arabic simple">
-<li><p><cite>insert_one</cite> as the name implies is used to save on and only
+<li><p><cite>insert_one</cite> as the name implies is used to save one and only
 one document.   It is usually run with one argument that is assumed
 to be a python dictionary containing the name-value pairs that
 define the document to be saved and subsequently managed by
@@ -1036,11 +1075,11 @@ this section.</p>
 are usually called with two arguments. <em>arg0</em> is an MQL matching query and
 <em>arg1</em> defines what is to be changed/added.   The only real difference
 between <cite>update_one</cite> and <cite>update_many</cite> is that <cite>update_one</cite> will only
-change the first occurence it finds if the match query is not unique.
+change the first occurrence it finds if the match query is not unique.
 For that reason, <cite>update_one</cite> is most commonly used with an <cite>ObjectId</cite>
 match key.  For example, this segment would be a (slow) way to add
 a cross-reference id link to wf_TimeSeries documents with
-documents from a channel collection produced
+documents from a channel collection
 created by loading from an Antelope sitechan table.  It uses the foreign
 key “chanid” in CSS3.0 to find a record and then uses <cite>update_one</cite> to
 set the MsPASS standard cross-reference name <cite>channel_id</cite> in wf_TimeSeries.</p>
@@ -1136,10 +1175,13 @@ Without an index a query requires a linear search through the entire
 database to find matching records.  As a result read and update performance on
 any database system can be improved by orders of magnitude with a properly
 constructed index.   On the other hand, an indexes can slow write performance
-significantly.  I have found that in data processing with MsPASS the main
-application of indexes is to normalizing collections.   They fit the
-constraint above.  That is, normalizing data is normally written once with
-occasional updates and is mostly used during read operations.</p>
+significantly.  I have found that in data processing with MsPASS
+there are two primary uses of indices:  (1) normalizing collections, and
+(2) ensemble processing (index is the key(s) used for grouping).
+Both fit the
+constraint above.  In particular, the model you should use is to build the
+index(indices) as the last phase before running the workflow on an assembled
+data set.</p>
 <p>A first point to recognize is that MongoDB ALWAYS defines an index on the
 magic attribute key “_id” for any collection.   Any additional
 index needs to be created with the collection method called

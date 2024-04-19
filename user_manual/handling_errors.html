@@ -72,6 +72,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
 <ul>
@@ -91,8 +92,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exceptions-and-error-handlers">Exceptions and Error Handlers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#error-logger">Error Logger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#kills">Kills</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#undertaker">Undertaker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kills">Kills</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#concepts">Concepts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#database-handling-of-dead-data">Database handling of dead data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#handling-dead-data-as-an-intermediate-step">Handling Dead Data as an Intermediate Step</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
@@ -169,7 +174,7 @@ would to a challenge to implement from scratch.   We originally considered
 using python’s logging mechanism, but recognized that would not solve the
 large log file issue.</p>
 <p>The above issues led us to a completely different solution for error logging.
-We include an ErrorLogger class a member of all supported data
+We include an ErrorLogger class as a member of all supported data
 objects.  That model simplifies the error handling because the error
 handling model can be stated as two simple rules:</p>
 <ol class="arabic simple">
@@ -183,7 +188,7 @@ on this concept further below in the section titled “Kills”.</p></li>
 error handling system of MsPASS:   standardized exception handling,
 the error logger api, and concepts related to marking data dead.  The
 last item has two important subtopics:  the kill concept and
-special class we tag with the descriptive, albeit perhaps overly cute,
+a special class we tag with the descriptive, albeit perhaps overly cute,
 name of <code class="code docutils literal notranslate"><span class="pre">Undertaker</span></code>.</p>
 </section>
 <section id="exceptions-and-error-handlers">
@@ -197,16 +202,17 @@ treat errors with one of three approaches.</p>
 <li><p>The python language is flexible, but standard practice encourages the
 use of the try-raise-except construct (the try-throw-catch keywords in C++).
 We use that exception mechanism internally to handle most error conditions.
-To provide some regularity any error raised by a MsPASS function or
-method will be the exception class called MsPASSError.   Following
+To provide some regularity, most error raised by a MsPASS function or
+method will be the exception class called MsPASSError.
+(The exception is error that match standard python exception types.)  Following
 standard practice the MsPASSError is defined as a subclass of the
 base class Exception.  That allows generic error handlers like the
 following to catch MsPASSError exceptions as described in most
 books and online python tutorials
 (<a class="reference external" href="https://medium.com/better-programming/a-comprehensive-guide-to-handling-exceptions-in-python-7175f0ce81f7">Follow this link for a good example</a>)</p></li>
-<li><p>As with most python packages, with some algorithms we sometimes return
-something that can indicate full or partial success.   We reserve that
-model to situations where “partial success” is not really an error but
+<li><p>Many algorithms are not black and white but need to return
+something that can indicate the degree of success.   We reserve that
+model to situations where partial success is not really an error but
 the result of an algorithm that is expected to behave in different ways
 with different inputs.  For example, the save_inventory method of
 <a class="reference external" href="../python_api/mspasspy.db.html#module-mspasspy.db.database">database</a>
@@ -227,14 +233,18 @@ kill method described below.</p></li>
 environment presents special problems.  A key issue is that the schedulers
 MsPASS supports (Spark and Dask) both will abort a job if any function
 throws an unhandled exception.  For that reason, if a MsPASS processing
-function ever throws an exception it is a bug.  Instead, we always aim
+function ever throws an exception it is a bug or an unrecoverable
+error that does invalidate an entire run.  Instead, we always aim
 to handle errors with what we call our ErrorLogger and a classic approach
 using a kill mechanism.</p>
-<p>The atomic data objects of MsPASS, which we call TimeSeries and Seismogram,
+<p>All seismic data objects of MsPASS
 are defined and implemented in C++.  (They are bound to python through
-wrappers using a package called pybind11.)  Both atomic data objects
+wrappers using a package called pybind11.)  All
 have a C++ class called <a class="reference external" href="../_static/html/classmspass_1_1utility_1_1_error_logger.html">ErrorLogger</a>
-as a public attribute we define with the symbol <code class="code docutils literal notranslate"><span class="pre">elog</span></code>.  That mechanism
+as a public attribute we define with the symbol <code class="code docutils literal notranslate"><span class="pre">elog</span></code>.
+(The python bindings are also defined in this link:
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger" title="mspasspy.ccore.utility.ErrorLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.ErrorLogger</span></code></a>. )
+That mechanism
 allows processing functions to handle all exceptions without aborting
 through constructs similar to the following pythonic pseudocode:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -250,8 +260,10 @@ through constructs similar to the following pythonic pseudocode:</p>
 </div>
 <p>The kill method is described further in the next section.  The key point
 is that generic error handlers catch any exceptions and post message to
-the ErrorLogger carried with the data in a container
-with the symbolic name elog.   An error posted to the ErrorLogger
+the <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger" title="mspasspy.ccore.utility.ErrorLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.ErrorLogger</span></code></a>
+carried with the data in a container
+with the symbolic name elog.   An error posted to the
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger" title="mspasspy.ccore.utility.ErrorLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.ErrorLogger</span></code></a>
 always contains two components:  (1) a (hopefully informative)
 string that describes the error, and (2) a severity tag.   The
 class description
@@ -288,6 +300,8 @@ a special collection in MongoDB we call the <code class="code docutils literal n
 </section>
 <section id="kills">
 <h2>Kills<a class="headerlink" href="#kills" title="Permalink to this heading"></a></h2>
+<section id="concepts">
+<h3>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h3>
 <p>The approach of marking a piece of seismic data bad/dead is familiar to
 anyone who has ever done seismic reflection processing.  All seismic
 processing systems have a set of trace editing functions to mark
@@ -305,6 +319,39 @@ defined by the RDD or Bag container.  The kill mechanism is a simple
 mechanism to define data that should be considered no longer valid.   All
 properly designed python functions in MsPASS automatically do nothing if
 data are marked dead leaving the dead data as elements of the RDD/Bag.</p>
+<p>Since v2 of MsPASS the package defines two forms of dead dead:
+(1) normal kills created during data processing and (2) what we
+(colorfully) call “abortions”.   The name is descriptive because a
+dead datum marked as an “abortion” was never born.   The tag is
+defined only during read operations if the construction of the object
+fails.   Users should put aside any political views on the human
+version of this topic and take a strictly pro life stance on
+MsPASS abortions.  All abortions are a bad thing that should be
+eliminated if they happen.   For the same reason MsPASS algorithms rarely
+throw exceptions, when abortions occur (always during reading)
+the <code class="code docutils literal notranslate"><span class="pre">Metadata</span></code> created from a MongoDB document are stored in
+a dead datum with no sample data.   That body will be carried
+through a workflow.   Abortions are handled specially by during a save
+as described below.</p>
+<p>A second feature added to MsPASS since v2 is that an entire ensemble
+can be killed.  Killing an ensemble is equivalent to killing all the
+atomic data members.</p>
+<p>Handling dead data has two important, practical constraints:</p>
+<ol class="arabic simple">
+<li><p>Any careful scientist will want to have a record of what data was
+killed and why it was killed.</p></li>
+<li><p>As noted earlier with a parallel container the body needs to be
+carried through the processing.   If the data objects are large
+moving the entire body around is inefficient and unnecessarily
+consumes memory.</p></li>
+</ol>
+<p>How we address these two constraints is described in two sections
+below.  The first is handled automatically by the
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.save_data()</span></code></a> method of
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.  The second has
+options that are implemented as methods of the class
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.util.Undertaker.Undertaker</span></code> that is the
+topic of the second subsection below.</p>
 <p>A final point is that if a job is expected to kill a large fraction of data
 there is a point where it becomes more efficient to clear the dataset of
 dead data.   That needs to be done with some care if one wishes to preserve
@@ -312,35 +359,127 @@ error log entries that document why a datum was killed.   The
 <code class="code docutils literal notranslate"><span class="pre">Undertaker</span></code> class, which described in the next section was designed
 to handle such issues.</p>
 </section>
-<section id="undertaker">
-<h2>Undertaker<a class="headerlink" href="#undertaker" title="Permalink to this heading"></a></h2>
-<p>The class name is a programming joke, but the name is descriptive;  its jobs
-is to deal with dead data.  The class is an extension of Database and has
-three methods that are most useful for parallel jobs handling ensembles.</p>
+<section id="database-handling-of-dead-data">
+<h3>Database handling of dead data<a class="headerlink" href="#database-handling-of-dead-data" title="Permalink to this heading"></a></h3>
+<p>The standard way in MsPASS to preserve a record of killed data is
+implicit when the data are saved via the Database method
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.save_data()</span></code></a>.
+The <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> class internally
+creates an instance of
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker</span></code></a>
+(Described in more detail the next section and the docstring
+viewable via the above link.) that handles the dead data during the save
+operation.  The
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.save_data()</span></code></a>
+method has these features:</p>
 <ol class="arabic simple">
-<li><p>The <code class="code docutils literal notranslate"><span class="pre">bury_the_dead</span></code> method is the recommended method for many workflows
-to clear dead data from ensembles.
-It saves error logs and metadata for killed data
-in the elog collection as a subdocument with the key “tombstone”.
-It returns an edited version of the
-ensemble with the dead data removed.</p></li>
-<li><p>The <code class="code docutils literal notranslate"><span class="pre">cremate</span></code> method is a variant of <code class="code docutils literal notranslate"><span class="pre">bury_the_dead</span></code>  It
-also clears the dead data members from an ensemble and returns a clean
-copy with he dead data removed.  We call it <code class="code docutils literal notranslate"><span class="pre">cremate</span></code> because
-all traces of the data vanish; neither the error log or any identifiers
-of the destroyed data will be retained.</p></li>
-<li><p>The <code class="code docutils literal notranslate"><span class="pre">bring_out_your_dead</span></code> method, other than being the best python programming
-joke ever, is more specialized.  It returns two ensembles:  one with all the live and one
-with all the dead data.  That approach can be used, for example, in
-testing automatic editing code.  An interactive job to evaluate
-how well the editing worked could use this method.</p></li>
+<li><p>If an atomic datum is marked dead,
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.save_data()</span></code></a>
+calls the <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker.bury()</span></code></a>
+method of <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker</span></code></a> on the
+contents.  The default behavior of
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker.bury()</span></code></a>
+is to create a document in the
+<code class="code docutils literal notranslate"><span class="pre">cemetery</span></code> collection with two primary key-value pairs:
+(a) The <code class="code docutils literal notranslate"><span class="pre">logdata</span></code> key is associated with a readable dump of the
+<code class="code docutils literal notranslate"><span class="pre">ErrorLogger</span></code> content.  (b) The <code class="code docutils literal notranslate"><span class="pre">tombstone</span></code> key is
+associated with a python dictionary (subdocument in MongoDB jargon)
+that is an image of the datum’s <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.Metadata</span></code></a>
+container. If the <code class="code docutils literal notranslate"><span class="pre">return_data</span></code> boolean is set True (default is False),
+the sample vector/array will be cleared and set to zero length on the
+returned object.</p></li>
+<li><p>A special case is atomic data that are marked as “abortions”.
+That property is marked by the reader by setting a Metadata boolean
+with the key
+<code class="code docutils literal notranslate"><span class="pre">is_abortion</span></code> to True.  The only difference
+in how these are handled is that “abortions”
+are saved to the <code class="code docutils literal notranslate"><span class="pre">abortions</span></code> collection instead of the
+<code class="code docutils literal notranslate"><span class="pre">cemetery</span></code> collection used for data killed during processing.
+The reason for that separation is to emphasize the pro-life
+stance of MsPASS - abortions should always be considered a serious error.</p></li>
+<li><p>Handling ensembles is a more complex problem because there are two
+very different definintions of dead:  (a) the entire ensemble can be
+marked dead or (b) only some members are marked dead.
+If the entire ensemble is marked dead, a common message is posted to
+all members and the <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker.bury()</span></code></a>
+method is called on all members.   If <code class="code docutils literal notranslate"><span class="pre">return_data</span></code> is
+set True, the member data vector is cleared.  In the more common
+situation where only some of the ensemble members are marked dead,
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.save_data()</span></code></a>
+calls a special member of <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker</span></code></a>
+with a name that is the best python joke ever:
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead" title="mspasspy.util.Undertaker.Undertaker.bring_out_your_dead"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker.bring_out_your_dead()</span></code></a>.
+The dead members are separated from those marked live and
+passed in a serial loop to <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker.bury()</span></code></a>.
+If <code class="code docutils literal notranslate"><span class="pre">return_data</span></code> is set True, the member vector is replaced with
+a smaller version with the dead removed.</p></li>
+<li><p>Saves of both atomic an ensemble data have a <code class="code docutils literal notranslate"><span class="pre">cremate</span></code> option.
+When set True dead data will be cleared without a trace.</p></li>
 </ol>
-<p>The <code class="code docutils literal notranslate"><span class="pre">Undertaker</span></code> class only works on ensembles because clearing a
-dead datum in a serial job makes little sense.   In all cases we know
-the same functionality is achieved in a python script by conditionals to
-test if the datum is marked live.  Furthermore, the user should recognize that
-any call to the <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> method will lead to a <code class="code docutils literal notranslate"><span class="pre">tombstone</span></code>
-subdocument being written for all data marked dead.</p>
+<p>Since V2 of MsPASS the recommended way to terminate a parallel
+processing sequence is to use the mspass
+<a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data" title="mspasspy.io.distributed.write_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.io.distributed.write_distributed_data()</span></code></a> function.
+It handles dead data the same way as
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.save_data()</span></code></a> described above.</p>
+<p>Finally, users are warned that data that are passed through a reduce operator
+will normally discard dead data with no trace.  If your workflow has a
+reduce operator, it is recommended that you use the inline methods for
+handling dead data described in the next section immediately before
+the reduce operator is called.</p>
+</section>
+<section id="handling-dead-data-as-an-intermediate-step">
+<h3>Handling Dead Data as an Intermediate Step<a class="headerlink" href="#handling-dead-data-as-an-intermediate-step" title="Permalink to this heading"></a></h3>
+<p>If your workflow has edit procedures that kill a significant fraction
+of your dataset, you should consider using the MsPASS
+facility for handling dead data within a processing sequence.
+The main tool for doing so are methods of the
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker</span></code></a> class.
+The class name is a programming joke, but the name is descriptive;  its job
+is to deal with dead data.  The class interacts with a Database and has
+three methods that are most useful for any MsPASS workflow.</p>
+<ol class="arabic simple">
+<li><p>The <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker.bury()</span></code></a> method
+is the normal tool of choice to handle dead data.   It has the
+behavior noted above creating a document in the <code class="code docutils literal notranslate"><span class="pre">cemetery</span></code>
+collection for every dead datum.  For atomic data the return
+is a copy of the input object with the sample data cleared and
+the objects <code class="code docutils literal notranslate"><span class="pre">npts</span></code> attribute is set to 0.   For ensembles,
+this method returns a copy of the ensemble with the dead
+members completely removed.   A <code class="code docutils literal notranslate"><span class="pre">cemetery</span></code> document is
+saved for each datum removed from the ensemble.</p></li>
+<li><p>The <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.cremate" title="mspasspy.util.Undertaker.Undertaker.cremate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker.cremate()</span></code></a> method
+can be used if you do not want to preserve the error messages that
+caused kills.   With atomic data it returns the smallest ashes
+possible; a default constructed instance of the parent data object.
+For ensembles dead data are completely removed.</p></li>
+<li><p>The <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead" title="mspasspy.util.Undertaker.Undertaker.bring_out_your_dead"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker.bring_out_your_dead()</span></code></a> method,
+will raise an exception if it receives anything but an ensemble.
+It returns two ensembles:  one with all the live and one
+with all the dead data.  It is actually used internally by
+both the <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker.bury()</span></code></a>
+and <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.cremate" title="mspasspy.util.Undertaker.Undertaker.cremate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker.cremate()</span></code></a> methods
+when the input is an ensemble.</p></li>
+<li><p><a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.mummify" title="mspasspy.util.Undertaker.Undertaker.mummify"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker.mummify()</span></code></a> is useful for
+reducing the memory footprint of a dataset while preserving the data
+that is normally saved in <code class="code docutils literal notranslate"><span class="pre">cemetery</span></code> at the end of a workflow.
+It does so by only clearing the sample data arrays and setting the
+<code class="code docutils literal notranslate"><span class="pre">npts</span></code> attribute for dead data to 0.   With ensembles the
+algorithm runs through all members clear the sample arrays of all
+members marked dead.</p></li>
+</ol>
+<p>The following is a sketch of a typical use of an instance of
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker.Undertaker</span></code></a> within a workflow.
+A key point is an instance of the class has to be instantiated
+prior to the data processing workflow steps.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stedronsky</span> <span class="o">=</span> <span class="n">Undertaker</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>  <span class="c1"># db is an instance of Database created earlier</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">query</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">customfunction</span><span class="p">)</span>  <span class="c1"># some custom function that may kill</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">squad</span><span class="p">)</span>  <span class="c1"># kills with an instance of the FiringSquad editor</span>
+<span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">bury</span><span class="p">)</span>
+<span class="c1"># other processing commands would go here.</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 

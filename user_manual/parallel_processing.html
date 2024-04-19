@@ -72,6 +72,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
 <ul>
@@ -373,10 +374,10 @@ class and handles time mismatches.  It is not robust for several reasons and
 could be done other ways, but that is not the key point.  The point is
 that the operation is summing a set of TimeSeries objects to produce the
 single result stored with the symbol <code class="code docutils literal notranslate"><span class="pre">stack</span></code>.</p>
-<p>We will get to the rules that constrain <cite>Reduce</cite> operators in a moment, but
+<p>We will get to the rules that constrain <code class="code docutils literal notranslate"><span class="pre">Reduce</span></code> operators in a moment, but
 it might be more helpful to you as a user to see how that algorithm
 translates into dask/spark.  MsPASS has a parallel stack algorithm found
-<a href="#id13"><span class="problematic" id="id14">`here&lt;https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py&gt;`_</span></a>
+<a href="#id4"><span class="problematic" id="id7">`here&lt;https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py&gt;`__</span></a>
 It is used in a parallel context as follows for dask:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">ddb</span><span class="o">.</span><span class="n">fold</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">stack</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
 </pre></div>
@@ -386,7 +387,7 @@ It is used in a parallel context as follows for dask:</p>
 </pre></div>
 </div>
 <p>The <code class="code docutils literal notranslate"><span class="pre">stack</span></code> symbol refers to a python function that is actually quite simple. You can view
-the source code <a href="#id15"><span class="problematic" id="id16">`here&lt;https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py&gt;`_</span></a>.
+the source code <a href="#id4"><span class="problematic" id="id8">`here&lt;https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py&gt;`__</span></a>.
 It is simple because most of the complexity is hidden behind the +=
 symbol that invokes that operation in C++ (<cite>TimeSeries::operator+=</cite> for anyone
 familiar with C++) to add the right hand side to the left hand side of
@@ -399,7 +400,7 @@ the use of python decorator defined by this line in the stack source code:</p>
 <p>The final issue we need to cover in this section is what exactly is meant
 by the phrase “any suitable reduce function” at the end of the previous paragraph?
 To mesh with the reduce framework used by spark and dask a function has
-to satisfy <a href="#id17"><span class="problematic" id="id18">`the following rules&lt;https://en.wikipedia.org/wiki/Reduction_operator&gt;`_</span></a></p>
+to satisfy <a href="#id4"><span class="problematic" id="id9">`the following rules&lt;https://en.wikipedia.org/wiki/Reduction_operator&gt;`__</span></a> :</p>
 <ol class="arabic simple">
 <li><p>The first two arguments (a and b symbols in the example above)
 must define two instances of the same type
@@ -461,7 +462,7 @@ are data driven. Usually this scheduling
 overhead is relatively small unless the execution time for
 processing is trivial.</p>
 <p>For more information, the dask documentation found
-<a href="#id19"><span class="problematic" id="id20">`here&lt;https://docs.dask.org/en/latest/scheduling.html&gt;`_</span></a> is a good
+<a href="#id4"><span class="problematic" id="id10">`here&lt;https://docs.dask.org/en/latest/scheduling.html&gt;`__</span></a> is a good
 starting point.</p>
 </section>
 </section>
@@ -560,11 +561,11 @@ To read this page we recommend you open a second winodw or tab on
 your web browser to the current file in the mspass source code
 directory called <code class="code docutils literal notranslate"><span class="pre">scripts/tacc_examples/distributed_node.sh</span></code>.
 The link to the that file you can view on your web browser is
-<a href="#id4"><span class="problematic" id="id7">`here&lt;https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh&gt;`__</span></a>.
+<a href="#id4"><span class="problematic" id="id11">`here&lt;https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh&gt;`__</span></a>.
 We note there is an additional example there for running MsPASS
 on a single node at TACC called <code class="code docutils literal notranslate"><span class="pre">scripts/tacc_examples/single_node.sh</span></code>
 you can access directly
-<a href="#id4"><span class="problematic" id="id8">`here&lt;https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/single_node.sh&gt;`__</span></a>,
+<a href="#id4"><span class="problematic" id="id12">`here&lt;https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/single_node.sh&gt;`__</span></a>,
 The single node setup is useful for testing and may help your understanding
 of what is needed by being much simpler.  We do not discuss that
 example further here, however, because a primary purpose for using
@@ -605,23 +606,26 @@ script on a head node without having to submit the full job.</p>
 <p>MsPASS was designed to be run in a container.   For a workstation environment
 we assume the container system being used is docker.   Running
 MsPASS with docker is described on
-<a href="#id4"><span class="problematic" id="id9">`this wiki page&lt;https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Docker&gt;`__</span></a>.
+<a href="#id4"><span class="problematic" id="id13">`this wiki page&lt;https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Docker&gt;`__</span></a>.
 All HPC systems we know have a docker compatible system called
 <code class="code docutils literal notranslate"><span class="pre">singularity</span></code>.   Singularity can be thought of as docker for a large
 HPC cluster.   The most important feature of singularity for you as a user
 is that it uses exactly the same container file as docker.  i.e. you “pull” the
 docker container and that is used by singularity in a very similar fashion to
 the way it used by docker as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span>build<span class="w"> </span>mspass.simg<span class="w"> </span>docker://wangyinz/mspass
+</pre></div>
+</div>
 <p>For more about running MsPASS with singularity consult our
 wiki page found
-<a href="#id4"><span class="problematic" id="id10">`here&lt;https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Singularity-(on-HPC)&gt;`__</span></a>.
+<a href="#id4"><span class="problematic" id="id14">`here&lt;https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Singularity-(on-HPC)&gt;`__</span></a>.
 Since our examples here were constructed on TACC’ Stampede2 you may also
 find it useful to read their page on using singularity found
-<a href="#id4"><span class="problematic" id="id11">`here&lt;https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html&gt;`__</span></a></p>
+<a href="#id4"><span class="problematic" id="id15">`here&lt;https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html&gt;`__</span></a></p>
 <p>There is a single node mode you may want to run for testing.
 You can find an example of how to configure Stampede2 to run on a single
 node in the MsPASS scripts/tacc_examples found on github
-<a href="#id4"><span class="problematic" id="id12">`here&lt;https://github.com/mspass-team/mspass/tree/master/scripts/tacc_examples&gt;`__</span></a>.
+<a href="#id4"><span class="problematic" id="id16">`here&lt;https://github.com/mspass-team/mspass/tree/master/scripts/tacc_examples&gt;`__</span></a>.
 We focus is manual on configuration for a production run using multiple
 nodes, that is a primary purpose of using MsPASS for data processing.
 The example we give here is the</p>
@@ -641,7 +645,7 @@ And it doesn’t matter if the directory doesn’t exist, the job script would c
 <p>Then we define the SING_COM variable to simplify the workflow in our job script. On Stampede2 and most of HPC
 systems, we use Singularity to manage and run the docker images. There are many options to start a container
 using singularity, which you could refer to their documentation. And for those who are not familiar with Singularity,
-here is a good <a href="#id21"><span class="problematic" id="id22">`source&lt;https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html&gt;`_</span></a>
+here is a good <a href="#id4"><span class="problematic" id="id17">`source&lt;https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html&gt;`__</span></a>
 to get start with.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># command that start the container</span>
 module<span class="w"> </span>load<span class="w"> </span>tacc-singularity
@@ -674,7 +678,7 @@ before:</p>
 </pre></div>
 </div>
 <p>Here we set the environment variables inside the container using this syntactic sugar SINGULARITYENV_XXX.
-For more information, you could view the usage`here&lt;<a class="reference external" href="https://sylabs.io/guides/3.0/user-guide/appendix.html">https://sylabs.io/guides/3.0/user-guide/appendix.html</a>&gt;`_.
+For more information, you could view the usage <a href="#id18"><span class="problematic" id="id19">`here&lt;https://sylabs.io/guides/3.0/user-guide/appendix.html&gt;`_</span></a>.
 We define and set different variables in different containers we start because in our start-mspass.sh, we
 define different bahavior under different <em>MSPASS_ROLE</em> so that for each role, it will execute the bash
 script we define in the start-mspass.sh. Though it looks complicated and hard to extend, this is prabably

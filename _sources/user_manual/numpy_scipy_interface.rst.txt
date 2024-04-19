@@ -120,8 +120,8 @@ all of the following will work and do what is expected:
   x_mspass.data *= 10.0
 
 The main thing to avoid is an assignment where the left hand side
-and right hand side resolve to different types.   For instance, either of
-the following will fail with a `TypeError` exception if you try to run them:
+and right hand side resolve to different types.   For instance,
+the following will fail with a `TypeError` exception if you try to run it:
 
 .. code-block:: python
 
@@ -160,11 +160,11 @@ while simply reversing the order of `z` and `ts.data` like this
   z=np.ones(100)
   x_mspass.data = ts.data + z
 
-Works and does set `x_mspass.data` to the vector sum of the two symbols
+works and does set `x_mspass.data` to the vector sum of the two symbols
 on the right hand side.  The reason is that the + operator in python
-seems to resolve the type to the type of the leftside of the + operator.
+seems to resolve the type to the type of the left side of the + operator.
 Why is "deep in the weeds", but the best advice is to avoid mixed type
-operations if possible.  The more robust way to write the above is this:
+operations if possible.  The more robust way to write the above as:
 
 .. code-block:: python
 
@@ -174,8 +174,8 @@ operations if possible.  The more robust way to write the above is this:
   x_mspass.data = DoubleVector(x)
 
 Finally, users who are matlab fans may like to write python code using
-the vector ":" operator.  For example, with numpy operations like the
-following can be used in a typical numpy algorithm:
+the vector ":" operator.  For example, with numpy functions operations like the
+following are commonly used:
 
 .. code-block:: python
 
@@ -184,7 +184,7 @@ following can be used in a typical numpy algorithm:
   print(len(x))
 
 That will print "5" - the length of the subvector extracted in x.
-The : operator DOES NOT work with a `DoubleVector`.  If you have an
+The : operator does not always work with a `DoubleVector`.  If you have an
 algorithm using the colon operator, do the vector operations with
 numpy and then copy the result into the `TimeSeries` data member.
 An important warning about any such assignments to `TimeSeries.data` is you

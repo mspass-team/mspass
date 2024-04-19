@@ -72,6 +72,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
 <ul>
@@ -160,7 +161,7 @@ want to process.   The focus of our initial development has been
 tools to assemble data acquired from <a class="reference external" href="https://www.fdsn.org/">FDSN (Federated Digital
 Seismic Network)</a>
 data centers.  Decades ago FDSN adopted the
-<a href="#id2"><span class="problematic" id="id3">`Standard for the Exchange of Earthquake Data (SEED)&lt;http://www.fdsn.org/pdf/SEEDManual_V2.4.pdf&gt;`__</span></a>
+<a class="reference external" href="http://www.fdsn.org/pdf/SEEDManual_V2.4.pdf">Standard for the Exchange of Earthquake Data (SEED)</a>
 format.   Since then a subset of SEED, commonly called miniseed,
 has become the universal tool for distributing earthquake data through
 all FDSN data centers.   Miniseed is compressed data format with
@@ -171,9 +172,9 @@ by ftp transfers of files to web services.  FDSN web services
 distribute three fundamentally different data types:
 (1) single channel, sample data delivered as images of miniseed files,
 (2) station metadata delivered with a standard format called
-<a href="#id2"><span class="problematic" id="id4">`StationXML&lt;https://www.fdsn.org/xml/station/&gt;`__</span></a>, and
+<a class="reference external" href="https://www.fdsn.org/xml/station/">StationXML</a>, and
 (3) earthquake source data delivered through a standard format called
-<a href="#id2"><span class="problematic" id="id5">`QuakeML&lt;https://earthquake.usgs.gov/earthquakes/feed/v1.0/quakeml.php&gt;`__</span></a>.
+<a class="reference external" href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/quakeml.php">QuakeML</a>.
 Fortunately for our development efforts a well-developed solution for
 acquiring all three data types from FDSN sources was already available in
 obspy.   The sections below assume you can consult obspy’s
@@ -192,7 +193,7 @@ mismatch that is inevitable in dealing with other formats.</p>
 <section id="importing-miniseed-data">
 <h3>Importing Miniseed Data<a class="headerlink" href="#importing-miniseed-data" title="Permalink to this heading"></a></h3>
 <p>From the MsPASS perspective,
-at this point in time the best mechanism to obtain data from
+at this point in time, the best mechanism to obtain data from
 the FDSN confederation of data centers is to use obspy.
 Obspy has two different python functions that can be used to
 fetch miniseed data from one or more FDSN data centers.</p>
@@ -200,7 +201,7 @@ fetch miniseed data from one or more FDSN data centers.</p>
 <li><p>The simplest tool obspy provides is their <code class="code docutils literal notranslate"><span class="pre">get_waveform</span></code>
 method of the fdsn web service client.  The documentation for that
 function can be found
-<a href="#id2"><span class="problematic" id="id6">`here&lt;https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_waveforms.html&gt;`__</span></a>.
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_waveforms.html">here</a>.
 <code class="code docutils literal notranslate"><span class="pre">get_waveform</span></code> retrieves a relatively small number of waveform
 at a time using station codes with wildcards and a time range.
 It is suitable only for small datasets or as a custom agent
@@ -208,11 +209,11 @@ to run for weeks acquiring data driven by some large list.</p></li>
 <li><p>For most MsPASS users the obspy tool
 of choice is <code class="code docutils literal notranslate"><span class="pre">bulk_download</span></code>.
 An overview of the concepts of <code class="code docutils literal notranslate"><span class="pre">bulk_download</span></code> are given
-<a href="#id2"><span class="problematic" id="id7">`here&lt;https://docs.obspy.org/tutorial/code_snippets/retrieving_data_from_datacenters.html&gt;`__</span></a>
+<a class="reference external" href="https://docs.obspy.org/tutorial/code_snippets/retrieving_data_from_datacenters.html">here</a>
 and the detailed docstring for the function can be found
-<a href="#id2"><span class="problematic" id="id8">`here&lt;https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html&gt;`__</span></a>.</p></li>
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html">here</a>.</p></li>
 </ol>
-<p>The obspy tools are well documented and relatively easy to use users
+<p>The obspy tools are well documented and relatively easy to use.  Users
 are referred to the above pages and examples to build a workflow to
 retrieve a working data set.   We do, however, think it useful to
 give a few warnings.</p>
@@ -254,7 +255,7 @@ transitioning to a cloud file service model as the next generation of
 data access.   It is a current development effort of MsPASS to
 provide a simple reader for cloud systems.   Examples of
 using our implementation for S3 on AWS
-can be found <a href="#id2"><span class="problematic" id="id9">`here&lt;https://github.com/mspass-team/mspass/tree/master/scripts/aws_lambda_examples&gt;`__</span></a>.
+can be found <a class="reference external" href="https://github.com/mspass-team/mspass/tree/master/scripts/aws_lambda_examples">here</a>.
 As the word “prototype” implies that api
 is likely to change.  Check the docstring api for more recent changes if
 you are interested in this capability.</p>
@@ -287,7 +288,7 @@ is usually comprehensive enough to fetch what you need in no more than
 a few calls.   Be warned it retrieves the results into memory into a
 custom obspy data object they call an <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code>.  The docstring
 for an <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> object can be found
-<a href="#id2"><span class="problematic" id="id10">`here&lt;https://docs.obspy.org/packages/autogen/obspy.core.inventory.html?highlight=inventory&gt;`__</span></a>.
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.html?highlight=inventory">here</a>.
 An <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> object can be viewed as more or less a
 StationXML format file translated into a python data structure with a
 few added decorations (e.g. plotting).   We return to this point
@@ -296,7 +297,7 @@ below when we discuss how these data are imported to MsPASS.</p></li>
 having that function download the station metadata and save the
 actual StationXML data files retrieved from web services.  The resulting
 files can then be read with their <code class="code docutils literal notranslate"><span class="pre">read_inventory</span></code> method
-described <a href="#id2"><span class="problematic" id="id11">`here&lt;https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.read_inventory.html&gt;`__</span></a>.</p></li>
+described <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.read_inventory.html">here</a>.</p></li>
 </ol>
 <p>Both of the approaches above can be used to create an obspy
 <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> object in python:  for (1) that is the return of the
@@ -304,7 +305,7 @@ function while for (2) it is the output of a call to <code class="code docutils 
 with <code class="code docutils literal notranslate"><span class="pre">format=&quot;STATIONXML&quot;</span></code>.  We use the obspy <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> object
 as an intermediary for storing receiver metadata in a MongoDB database.
 The <code class="code docutils literal notranslate"><span class="pre">Database</span></code> class has a method we call <code class="code docutils literal notranslate"><span class="pre">save_inventory</span></code>
-described <a href="#id2"><span class="problematic" id="id12">`here&lt;https://www.mspass.org/python_api/mspasspy.db.html#module-mspasspy.db.database&gt;`__</span></a>.
+described <a class="reference external" href="https://www.mspass.org/python_api/mspasspy.db.html#module-mspasspy.db.database">here</a>.
 That method translates an <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> object into documents stored in
 what we call the <code class="code docutils literal notranslate"><span class="pre">channel</span></code> and <code class="code docutils literal notranslate"><span class="pre">site</span></code> collections.   As noted
 many other places in our documentation <code class="code docutils literal notranslate"><span class="pre">channel</span></code> contains receiver
@@ -383,7 +384,7 @@ data in multiple input data files.   Because of the complexity of this
 problem we provide only a partial set of tools for associating
 waveforms with source data:  MongoDB normalization described in the section
 of this user’s manual titled
-<span class="xref std std-ref">database_normalization</span>.</p></li>
+<a class="reference internal" href="normalization.html#normalization"><span class="std std-ref">Normalization</span></a>.</p></li>
 </ol>
 <p>MsPASS currently supports directly only one mechanism for loading source
 metadata.  That method is a similar in approach to the way we handle
@@ -397,7 +398,7 @@ retrieving source metadata.</p>
 <li><p><code class="code docutils literal notranslate"><span class="pre">get_events</span></code> is an obspy function that is very similar to the
 receiver equivalent <code class="code docutils literal notranslate"><span class="pre">get_stations</span></code> noted above.
 Their documentation on this function can be found
-<a href="#id2"><span class="problematic" id="id13">`here&lt;https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_events.html&gt;`__</span></a>.
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_events.html">here</a>.
 Like the receiver equivalent it has search criteria to yield a set of source data
 based on some spatial, time, magnitude, and/or other criteria.
 In addition, like <code class="code docutils literal notranslate"><span class="pre">get_stations</span></code>, <code class="code docutils literal notranslate"><span class="pre">get_events</span></code> returns the
@@ -409,7 +410,7 @@ it is too easy to create a collection of source data that is much
 larger than the number of events actually in the data set.</p></li>
 <li><p>If you use the obspy <code class="code docutils literal notranslate"><span class="pre">mass_downloader</span></code> driven by source
 queries (see example titled “Earthquake Data” on the
-mass_downloader page found <a href="#id2"><span class="problematic" id="id14">`here&lt;https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html&gt;`__</span></a>)
+mass_downloader page found <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html">here</a>)
 that function will create QuakeML data files defining the unique source data for
 all the waveforms downloaded with each call to that function.</p></li>
 </ol>
@@ -420,7 +421,7 @@ intermediary for the import.  <code class="code docutils literal notranslate"><s
 obspy <code class="code docutils literal notranslate"><span class="pre">Catalog</span></code> class directly while the output QuakeML files from
 the <code class="code docutils literal notranslate"><span class="pre">mass_downloader</span></code> are easily created by calling the
 obspy function <code class="code docutils literal notranslate"><span class="pre">read_events</span></code> described
-<a href="#id2"><span class="problematic" id="id15">`here&lt;https://docs.obspy.org/master/packages/autogen/obspy.core.event.read_events.html&gt;`__</span></a>.
+<a class="reference external" href="https://docs.obspy.org/master/packages/autogen/obspy.core.event.read_events.html">here</a>.
 A <code class="code docutils literal notranslate"><span class="pre">Catalog</span></code> instance can then be saved to a MongoDB source collection
 using the <code class="code docutils literal notranslate"><span class="pre">Database</span></code> method called <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code>.
 The following is a fragment of a workflow doing this with the output of
@@ -462,13 +463,13 @@ to be processed:</p>
 </div>
 <p>where <code class="code docutils literal notranslate"><span class="pre">SOMEFORMAT</span></code> is a keyword from the list of obspy
 supported formats found
-<a href="#id2"><span class="problematic" id="id16">`here&lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats&gt;`__</span></a>
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats">here</a>
 and <code class="code docutils literal notranslate"><span class="pre">converterfunction</span></code> is a format-specific python function you would need to
 write.  The function <code class="code docutils literal notranslate"><span class="pre">converterfunction</span></code> needs to handle
 the idiosyncrasies of how obspy handles that format and convert the stream
 <code class="code docutils literal notranslate"><span class="pre">st</span></code> to a TimeSeriesEnsemble using the MsPASS converter function
 <code class="code docutils literal notranslate"><span class="pre">Stream2TimeSeriesEnsemble</span></code> documented
-<a href="#id2"><span class="problematic" id="id17">`here&lt;https://www.mspass.org/python_api/mspasspy.util.html#module-mspasspy.util.converter&gt;`__</span></a>.
+<a class="reference external" href="https://www.mspass.org/python_api/mspasspy.util.html#module-mspasspy.util.converter">here</a>.
 That is a necessary evil because as the authors of the obspy write in
 their documentation some formats have concepts incompatible with
 obspy’s design.   Although we cannot provide unambiguous proof we have
@@ -488,7 +489,7 @@ optimize that step more than what obspy supplies as we have no
 experience on the efficiency of their converters.   Don’t enter that
 gate to hell, however, unless it is essential as you may face a real-life
 example of the Dante quote:  “abandon hope all ye who enter here”.</p></li>
-<li><p>Every format has a different header structure with few, if any overlaps in
+<li><p>Every format has a different header structure with few, if any, overlaps in
 the namespace (i.e. the key-value pair defining a concept).   That means
 both the string used in the api to refer to an attribute and the
 type of the value.  The obspy readers handle this issue differently for
@@ -497,7 +498,7 @@ will require developing a function like that we call <code class="code docutils 
 above.</p></li>
 </ol>
 <p>The MsPASS schema class
-(see <a href="#id2"><span class="problematic" id="id18">`this page&lt;https://www.mspass.org/python_api/mspasspy.db.html#module-mspasspy.db.schema&gt;`__</span></a> for details)
+(see <a class="reference external" href="https://www.mspass.org/python_api/mspasspy.db.html#module-mspasspy.db.schema">this page</a> for details)
 has tools we designed to aid conversion of Metadata
 (i.e. item 2 above) from external representations
 (format) of data to MsPASS.   In particular, the <code class="code docutils literal notranslate"><span class="pre">apply_aliases</span></code> and

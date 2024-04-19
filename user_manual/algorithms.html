@@ -72,6 +72,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
 <ul>
@@ -90,6 +91,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#processing-functions">Processing Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nonstandard-processing-functions">Nonstandard Processing Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#processing-objects">Processing Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deconvolution-algorithms">Deconvolution algorithms</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
@@ -157,7 +159,7 @@ for each algorithm function.</p>
 <h2>Processing Functions<a class="headerlink" href="#processing-functions" title="Permalink to this heading"></a></h2>
 <p>These algorithms have a function form to allow their use in parallel map
 operations.   They are functions that have one or more seismic data
-objects as is the inputs and return the output of the algorithm that
+objects as inputs and return the output of the algorithm.  The output
 may or may not be the same type.   Some are wrappers
 for obspy functions, some are written in C++ with python wrappers, and
 some are pure C++ functions with python bindings.   Note the name field in the
@@ -384,7 +386,9 @@ utility for writing custom functions that use them inside another algorithm.</p>
 <h2>Processing Objects<a class="headerlink" href="#processing-objects" title="Permalink to this heading"></a></h2>
 <p>This collection of things are “processing objects” meaning they implement
 processing using a C++ or python class that has a method that runs
-an algorithm on seismic data.</p>
+an algorithm on seismic data.  All are effectively functions that
+take inputs and emit an output.  The only difference is the syntax
+of a “method” compared to a simple function.</p>
 <table class="docutils align-default" id="id4">
 <caption><span class="caption-number">Table 5 </span><span class="caption-text">Processing Objects</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
 <colgroup>
@@ -561,6 +565,34 @@ an algorithm on seismic data.</p>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="deconvolution-algorithms">
+<h2>Deconvolution algorithms<a class="headerlink" href="#deconvolution-algorithms" title="Permalink to this heading"></a></h2>
+<p>MsPASS has a specialized algorithms module on “deconvolution”.  Users
+should recognize that currently the module has algorithms for “deconvolution”
+in form of estimation of so called “receiver functions”.  Receiver functions
+are a special type of deconvolution useful only, at present anyway, for
+application to teleseismic body wave phase data.</p>
+<p>A suite of “conventional” scalar methods are available through two different
+mechanisms:</p>
+<ol class="arabic simple">
+<li><p>The wrapper function <code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.alorithms.RFdeconProcessor.RFdecon()</span></code>
+is a functional form that can be used directly in map operators.</p></li>
+<li><p>The <cite>RFdecon</cite> function instantiates an instance of the class
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor" title="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor</span></code></a>
+in each call to the function.  It is more efficient (i.e. faster)
+to instantiate a single instance of this class and run it’s
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply" title="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply()</span></code></a>
+method, especially for multitaper methods that require computing
+the Slepian tapers.</p></li>
+</ol>
+<p>See the docstrings with links above for usage.</p>
+<p>A different, unpublished (aka experimental) algorithm called
+“Colored Noise Regularized Three Component Decon “ is
+implemented in the C++ class
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon" title="mspasspy.ccore.algorithms.deconvolution.CNR3CDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.deconvolution.CNR3CDecon</span></code></a>.
+See the mspass deconvolution tutorial for guidance on using this
+experimental algorithm.</p>
 </section>
 </section>
 
