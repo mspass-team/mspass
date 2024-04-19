@@ -60,7 +60,7 @@ def annotate_arrival_time(
 
     # Step 1: Access the probability data
     for tr in pred_st:
-        if trace.stats.channel == "PhaseNet_P":
+        if tr.stats.channel == "PhaseNet_P":
             trace = tr
             break
     data = trace.data
@@ -70,12 +70,13 @@ def annotate_arrival_time(
 
     # Step 3: Calculate the corresponding time
     # Trace start time
-    start_time = trace.stats.starttime
+    start_time = trace.stats.starttime # obspy.UTCDateTime
     # Sampling rate (samples per second)
     sampling_rate = trace.stats.sampling_rate
     # Calculate time offset and arrival time of picks in seconds
     time_offsets = indices / sampling_rate
-    p_wave_picks = start_time + time_offsets
+    breakpoint()
+    p_wave_picks = start_time.timestamp + time_offsets
 
     # Step 4: Save the arrival time in the relative format
     # Adjust the arrival time if a time window is provided
