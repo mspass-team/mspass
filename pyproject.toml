@@ -9,7 +9,7 @@ authors = [
 dynamic = ["dependencies", "scripts"]
 
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools", "wheel", "numpy"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
