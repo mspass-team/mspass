@@ -23,4 +23,5 @@ pandas==1.5.3
 numba
 multitaper
 ipympl
-seisbench
+seisbench==0.4.1; python_version < '3.9'
+seisbench>0.4.1; python_version >= '3.9'
