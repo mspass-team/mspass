@@ -98,5 +98,8 @@ setup(
     ),
     package_data={"": ["*.yaml", "*.pf"]},
     include_package_data=True,
-    install_requires=["pyyaml"],
+    install_requires = [
+        "pyyaml",
+        "seisbench>0.4.1" if sys.version_info >= (3, 9) else "seisbench"
+    ]
 )
