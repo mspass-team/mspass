@@ -11,11 +11,16 @@ boto3
 botocore
 moto
 requests 
+<<<<<<< HEAD
 setuptools<60.0
 xarray<=2024.3.0
+=======
+setuptools
+xarray
+>>>>>>> 2d0880b2 (pin numba version to latest)
 zarr
 pandas==1.5.3
-numba>0.27
+numba==0.56.4
 multitaper
 ipympl
 seisbench
