@@ -45,18 +45,20 @@ def annotate_arrival_time(
         pretrained_model = "stead" if (model_args == None or "name" not in model_args) else model_args["name"]
         model = sbm.PhaseNet.from_pretrained(pretrained_model)
 
-    # apply the window if provided and convert time series to stream
-    windowed_timeseries = (
-        WindowData(timeseries, time_window.start, time_window.end)
-        if time_window
-        else timeseries
-    )
     ts_ensemble = TimeSeriesEnsemble()
-    ts_ensemble.member.append(windowed_timeseries)
+    ts_ensemble.member.append(timeseries)
     stream = ts_ensemble.toStream()
 
+    # apply the window if provided and convert time series to stream
+    start_time = stream[0].stats.starttime
+    windowed_stream = (
+        stream.trim(starttime=start_time + time_window.start, endtime=start_time + time_window.end)
+        if time_window
+        else stream
+    )
+
     # prediction result is the probability for picks over time
-    pred_st = model.annotate(stream)
+    pred_st = model.annotate(windowed_stream)
 
     # Step 1: Access the probability data
     for tr in pred_st:
@@ -68,15 +70,8 @@ def annotate_arrival_time(
     # Step 2: Find all the index with probability value greater than the threshold
     indices = np.where(data > threshold)[0]
 
-    # Step 3: Calculate the corresponding time
-    # Trace start time
-    start_time = trace.stats.starttime # obspy.UTCDateTime
-    # Sampling rate (samples per second)
-    sampling_rate = trace.stats.sampling_rate
-    # Calculate time offset and arrival time of picks in seconds
-    time_offsets = indices / sampling_rate
-    breakpoint()
-    p_wave_picks = start_time.timestamp + time_offsets
+    # # Step 3: Calculate the corresponding time
+    p_wave_picks = trace.times()[indices]
 
     # Step 4: Save the arrival time in the relative format
     # Adjust the arrival time if a time window is provided
