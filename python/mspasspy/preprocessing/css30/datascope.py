@@ -24,7 +24,7 @@ large network operations with Antelope, the  dask DataFrame `merge`
 method can be used to combine a string of multiple, common tables. 
 
 The inverse of writing a DataFrame to an Datascope table is also 
-supported via the `df2table` method.   The forward an inverse 
+supported via the `df2table` method.   The forward and inverse 
 translations can be used as the basis for workflows that 
 utilize both MsPASS an Antelope.   e.g. if you have a license 
 for Antelope you could use their database-driven event detection 
@@ -36,7 +36,13 @@ tables it knows how to parse.  A master pf for most tables is
 distributed with mspass.   To parse uncommon tables not defined in 
 the master pf file you will need a license for antelope to run the 
 python script found in Antelope contrib and in mspass called 
-TO DO NEED TO BUILD THIS AN DUPDATE THIS DOCSTTRNG.
+`Database_schema`.  We include a copy of that script in the 
+"scripts" directory one level below this one in the directory tree.  
+Be aware that script will not run, however, without a license for
+Antelope because it requires proprietary libraries supplied with Antelope. 
+An alternative for those unable to secure an antelope license is to 
+build the pf that script generates by hand.  You can use the 
+standard version for css3.0 tables to see the clear pattern.
 It is VERY IMPORTANT to realize that if you build that pf by hand 
 you must list attributes in the "attributes Tbl" in the 
 left to right table order of the Datascope schema definition.  
@@ -279,7 +285,9 @@ class DatascopeDatabase:
         # intended application - beware though
         return df
 
-    def df2table(self, df, db, table, dir=None, append=True) -> pd.DataFrame:
+    def df2table(
+        self, df, db=None, table="wfdisc", dir=None, append=True
+    ) -> pd.DataFrame:
         """
         Inverse of get_table method.   Writes contents of DataFrame
         `df` to Datascope table inferred from the `table` argument.
@@ -291,13 +299,26 @@ class DatascopeDatabase:
         null value defined for the schema using the pf file loaded
         with the class constructor.
 
-        :param df: pandas DataFrame containing data to be written.
+        Default behavior is to write to the Datascope handle defined as
+        the "self" by the class constructor.   An alternative instance
+        of the class can be used to override the default by passing that
+        instance via the db argument.  Default always appends to any
+        existing data in the output table.   Set append to False to
+        clear any previous content.
+
+        :param df: pandas DataFrame containing data to be written.  Note the
+        column names must match css3.0 schema mames or an exception will
+        be thrown.
         :type df:  pandas DataFrame
-        :param db:  output database root name
-        :type db: string
+        :param db:  output handle.   Default is None which is taken to mean
+        use this instance.
+        :type db: an instance of this class (`DatascopeDatabase`) or
+        None (default).  If None output is to the handle defined by self.
+        An exception will be thrown if db is anything but None or a
+        `DatascopeDatabase` instance.
         :param table:  Datascope table to which the data should be
         written.
-        :type table:  string
+        :type table:  string (default 'wfdisc')
         :param dir: optional director name where the table data should be
         saved.   Default is None which is taken to mean the current director.
         If the directory does not exist it will be created.
@@ -310,6 +331,16 @@ class DatascopeDatabase:
         values inserted and columns rearrange to match Datascope table
         order,
         """
+        message = "DatascopeDatabase.db2table:  "
+        if db is None:
+            dbname = self.dbname
+        elif isinstance(db, DatascopeDatabase):
+            dbname = db.dbname
+        else:
+            message += "Illegal type for db argument of {}\n".format(str(type(db)))
+            message += "Must be an instance of DatascopeDatabase or None"
+            raise ValueError(message)
+
         if dir:
             outdir = dir
             # make sure dir ends with a / for this way we create path here
@@ -391,7 +422,7 @@ class DatascopeDatabase:
         else:
             # in this case we just set the symbol and don't even cpy it
             dfout = df
-        fname = outdir + db + "." + table
+        fname = outdir + dbname + "." + table
         if append:
             mode = "a"
         else:
