@@ -312,10 +312,14 @@ class DatascopeDatabase:
         :type df:  pandas DataFrame
         :param db:  output handle.   Default is None which is taken to mean
         use this instance.
-        :type db: an instance of this class (`DatascopeDatabase`) or
-        None (default).  If None output is to the handle defined by self.
-        An exception will be thrown if db is anything but None or a
-        `DatascopeDatabase` instance.
+        :type db:  Can be any of:  (1) instance of `DatascopeDatabase`,
+        (2) a string defining the Datascope database base name, or
+        (3) None.   In all cases this argument is used only to generate
+        file names for the Datascope files.   For case 1 the name defined in
+        the class instance is used.  For case 2 the string received is used
+        as the base file name (e.g. if db="mydb" and table="arrival" this
+        method will write to a file called "mydb.arrival".)
+        In case 3 the name associated with this instance (self) will be used.
         :param table:  Datascope table to which the data should be
         written.
         :type table:  string (default 'wfdisc')
@@ -336,6 +340,8 @@ class DatascopeDatabase:
             dbname = self.dbname
         elif isinstance(db, DatascopeDatabase):
             dbname = db.dbname
+        elif isinstance(db, str):
+            dbname = db
         else:
             message += "Illegal type for db argument of {}\n".format(str(type(db)))
             message += "Must be an instance of DatascopeDatabase or None"
