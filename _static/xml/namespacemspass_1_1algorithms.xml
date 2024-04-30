@@ -976,6 +976,49 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="172" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="172" bodyend="188"/>
       </memberdef>
+      <memberdef kind="function" id="splicing_8cc_1aaffc545e79b5d1d55641df05eea740bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const double</type>
+        <definition>const double mspass::algorithms::TIME_TEAR_TOLERANCE</definition>
+        <argsstring>(0.5)</argsstring>
+        <name>TIME_TEAR_TOLERANCE</name>
+        <param>
+          <type>0.</type>
+          <declname>5</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="24" column="14" declfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" declline="24" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="splicing_8cc_1a49855858a1259f1bc83365bf27cbc749" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ostream &amp;</type>
+        <definition>ostream&amp; mspass::algorithms::operator&lt;&lt;</definition>
+        <argsstring>(ostream &amp;os, SegmentVectorProperties &amp;svp)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>ostream &amp;</type>
+          <declname>os</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1algorithms_1_1_segment_vector_properties" kindref="compound">SegmentVectorProperties</ref> &amp;</type>
+          <declname>svp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Convenience operator to dump content of <ref refid="classmspass_1_1algorithms_1_1_segment_vector_properties" kindref="compound">SegmentVectorProperties</ref> object. <linebreak/>
+</para>
+<para>Writes a verbose dump of the content with labels. This overloaded function is for debugging and will not be in the MsPASS python bindings. <linebreak/>
+ In fact, neither is <ref refid="classmspass_1_1algorithms_1_1_segment_vector_properties" kindref="compound">SegmentVectorProperties</ref>. <linebreak/>
+ Note this does not need to be declared friend because all attributes of the class are declared public. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="207" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="207" bodyend="232"/>
+      </memberdef>
       <memberdef kind="function" id="splicing_8cc_1ae512ac20f0a5fd8185dc8e9efac3503a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kindref="compound">TimeSeriesWGaps</ref></type>
         <definition>TimeSeriesWGaps mspass::algorithms::splice_segments</definition>
@@ -995,7 +1038,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="202" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="202" bodyend="359"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="254" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="254" bodyend="415"/>
       </memberdef>
       <memberdef kind="function" id="splicing_8cc_1a6b792528a77eac3ed19d8159fde853ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1016,7 +1059,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="361" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="361" bodyend="379"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="417" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="417" bodyend="438"/>
       </memberdef>
       <memberdef kind="function" id="splicing_8cc_1a8a5bc3ba8f1972af801958ab572b17db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt;</type>
@@ -1032,12 +1075,11 @@ It is common to need to extract a smaller segment of data from a larger time win
         <detaileddescription>
 <para>Function to handle overlapping data segments.</para>
 <para>Overlapping data is a common raw data issue. Data retrieved from data centers has normally been purged from archives, but overlaps can still occur. The most common example is two miniseed files may contain the same data and the user did not realize that data was present in the files.</para>
-<para>The approach of this algorithm is to try to repair overlaps that have matching sample data. It looks for matches in a way that should work even if the data have been scaled AS LONG AS the scaling is the same for the two overlappign sections. Whenever an overlap is found the first segment of the pair is truncated and the second is retained. If the overlapping segment data do not compare sample for sample the first segmet of the pair (in time order) is killed, and error message is posted, and the killed datum is pushed to the output. The first is always killed because with current generation data that situation always means there has been a time jump backward to create the apparent overlap. It is assumed that the segment killed had a timing problem.</para>
-<para>TODO; need to handle exact duplicate more cleanly. </para>
+<para>The approach of this algorithm is to try to repair overlaps that have matching sample data. It looks for matches in a way that should work even if the data have been scaled AS LONG AS the scaling is the same for the two overlappign sections. Whenever an overlap is found the first segment of the pair is truncated and the second is retained. If the overlapping segment data do not compare sample for sample the first segmet of the pair (in time order) is killed, and error message is posted, and the killed datum is pushed to the output. The first is always killed because with current generation data that situation always means there has been a time jump backward to create the apparent overlap. It is assumed that the segment killed had a timing problem. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="401" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="401" bodyend="524"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="459" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="459" bodyend="595"/>
       </memberdef>
       <memberdef kind="function" id="_taper_8cc_1ab043d6b598f13edb61af41804bf6e9ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
