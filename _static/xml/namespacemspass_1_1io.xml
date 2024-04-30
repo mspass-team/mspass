@@ -3,6 +3,7 @@
   <compounddef id="namespacemspass_1_1io" kind="namespace" language="C++">
     <compoundname>mspass::io</compoundname>
     <innerclass refid="classmspass_1_1io_1_1mseed__index" prot="public">mspass::io::mseed_index</innerclass>
+    <innerclass refid="classmspass_1_1io_1_1_m_s_e_e_d__sid" prot="public">mspass::io::MSEED_sid</innerclass>
       <sectiondef kind="typedef">
       <memberdef kind="typedef" id="mseed__file__indexer_8cc_1aa275d5cdd02cce12a851eb9db14e0fee" prot="public" static="no">
         <type>std::pair&lt; std::vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;, <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> &gt;</type>
@@ -15,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="24" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="24" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="104" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="101" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="var">
@@ -30,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="25" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="25" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="105" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="105" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
@@ -889,22 +890,23 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="275" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="275" bodyend="283"/>
       </memberdef>
-      <memberdef kind="function" id="mseed__file__indexer_8cc_1a7ee6e258cc4a7dd22e0f27463228c44a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
-        <definition>void mspass::io::save_error_message</definition>
-        <argsstring>(const char *message)</argsstring>
-        <name>save_error_message</name>
+      <memberdef kind="function" id="mseed__file__indexer_8cc_1ac470c9ed9b76ba66420a7eaf74f16bd8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string mspass::io::MS_code_to_message</definition>
+        <argsstring>(int retcode)</argsstring>
+        <name>MS_code_to_message</name>
         <param>
-          <type>const char *</type>
-          <declname>message</declname>
+          <type>int</type>
+          <declname>retcode</declname>
         </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Internal function translates miniseed reader function return codes to readable messages posted in mseed_file_indexer to ErrorLogger. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="26" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="26" bodyend="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="109" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="109" bodyend="140"/>
       </memberdef>
       <memberdef kind="function" id="mseed__file__indexer_8cc_1afe2800b7fa24249de92f7ff6ec6db65b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>MSDINDEX_returntype</type>
@@ -924,12 +926,25 @@
           <declname>Verbose</declname>
         </param>
         <briefdescription>
+<para>Indexing function using libmseed low level function ms3_readmsr_r. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function uses what has become the standard reader for miniseed from IRIS DMC called libmseed. It uses the low level C function ms3_readmsr_r to read an input file one packet at a time. It uses the version that is claimed to be thread safe. <linebreak/>
+</para>
+<para>The complexities of seed can cause a number of problems. This version tries to deal these complexities:<orderedlist>
+<listitem><para>miniseed files are often produced by concatenation of data form multiple channel. Any change in station id returned by the function triggers a new index entry.</para>
+</listitem><listitem><para>Packet errors will force a new segment.</para>
+</listitem><listitem><para>Time tears defined by either a jump or accumulated time mismatch of more than 1/2 sample will trigger a new segments.</para>
+</listitem><listitem><para>Changes in sample interval trigger a new segments. That is actually implicit in point 1 with the &quot;sid&quot; because of the seed channel code naming convention. <simplesect kind="return"><para>std::pair first is a vector of index data. second is an ErrorLogger object. Caller should test for empty vector that is a signal for a open failure or a file that probably isn&apos;t miniseed. The content of elog should always be tested as any errors there should be inspected/handled. <linebreak/>
+ </para>
+</simplesect>
+</para>
+</listitem></orderedlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="31" column="23" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="31" bodyend="248"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="165" column="23" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="165" bodyend="401"/>
       </memberdef>
       <memberdef kind="function" id="mseed__index_8cc_1a50d9221df57b0d6ea5bad8fc3f5b2b1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::ostringstream &amp;</type>
