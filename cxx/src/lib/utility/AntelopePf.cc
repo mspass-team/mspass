@@ -378,7 +378,7 @@ AntelopePf::AntelopePf(string pfbase)
           {
             // This was necessary to avoid seg faults when s was a null pointer
             // which happens when PFPATH is not set 
-            throw MsPASSError(string("PFPATH is no defined and default pf=")
+            throw MsPASSError(string("PFPATH is not defined and default pf=")
                + pfbase + " was not found",ErrorSeverity::Invalid);
           }
           else
