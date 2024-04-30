@@ -809,18 +809,6 @@
     <member refid="classmspass_1_1io_1_1mseed__index_1af441bc6a6380bf2a852956ccdc4181b3" kind="function"><name>operator=</name></member>
     <member refid="classmspass_1_1io_1_1mseed__index_1ae6d7ee340b7009c88346cfc6b7589f15" kind="friend"><name>operator&lt;&lt;</name></member>
   </compound>
-  <compound refid="classmspass_1_1io_1_1_m_s_e_e_d__sid" kind="class"><name>mspass::io::MSEED_sid</name>
-    <member refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a0dc305a3ce20c48250896d1072b2e7c1" kind="variable"><name>net</name></member>
-    <member refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a6cc4090cfe00a64df96f4b2abe5e1473" kind="variable"><name>sta</name></member>
-    <member refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a11db25870debc12cb89aaea4facecc1b" kind="variable"><name>chan</name></member>
-    <member refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a9dc1f9b4c1c1b2ef16f0edca5ec86b12" kind="variable"><name>loc</name></member>
-    <member refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a00334b2f3ab245ba2a7c5efc2c2dde8a" kind="function"><name>MSEED_sid</name></member>
-    <member refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a95ad8bc3242340d973b6bb99241bb6fe" kind="function"><name>MSEED_sid</name></member>
-    <member refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1abedb90d9a61a4991ef9eb36fff65301d" kind="function"><name>MSEED_sid</name></member>
-    <member refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a87e853fdaf55354d3dcf250ee771ae6c" kind="function"><name>operator=</name></member>
-    <member refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a6bd91f63cdb13d2814582dbf4d7823ad" kind="function"><name>operator!=</name></member>
-    <member refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a8ee02f04ebdf9e952c18d9ae7a92fd57" kind="friend"><name>operator&lt;&lt;</name></member>
-  </compound>
   <compound refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kind="class"><name>mspass::utility::MsPASSError</name>
     <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" kind="variable"><name>message</name></member>
     <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" kind="variable"><name>badness</name></member>
@@ -1034,7 +1022,6 @@
     <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a991e4f3870196d6120b832786853cbf4" kind="variable"><name>has_dead_components</name></member>
     <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1affb1d954686717fd246d0a5e67f5d76d" kind="variable"><name>is_sorted</name></member>
     <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a180e3eff3e8d5b85dbefa73a8ea12eb2" kind="variable"><name>has_overlaps</name></member>
-    <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a743814df75873144d91110052625e9b1" kind="variable"><name>has_gaps</name></member>
     <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1aa090679005192b1d0ac6479eb4c9e5f1" kind="variable"><name>number_live</name></member>
     <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab6a08a067593409fc701a307b6a978df" kind="variable"><name>first_live</name></member>
     <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2fa190c700e90a501cf2f31814269a46" kind="variable"><name>t0</name></member>
@@ -1257,8 +1244,6 @@
     <member refid="seismogram__helpers_8cc_1aa5fee528b7b72e0ad47786869fdb3630" kind="function"><name>ArrivalTimeReference</name></member>
     <member refid="seismogram__helpers_8cc_1aa87c23638933c414c340a20893d81a27" kind="function"><name>ArrivalTimeReference</name></member>
     <member refid="seismogram__helpers_8cc_1a5989a2f816a058b5a8b94a67dea74ac3" kind="function"><name>HorizontalRotation</name></member>
-    <member refid="splicing_8cc_1aaffc545e79b5d1d55641df05eea740bc" kind="function"><name>TIME_TEAR_TOLERANCE</name></member>
-    <member refid="splicing_8cc_1a49855858a1259f1bc83365bf27cbc749" kind="function"><name>operator&lt;&lt;</name></member>
     <member refid="splicing_8cc_1ae512ac20f0a5fd8185dc8e9efac3503a" kind="function"><name>splice_segments</name></member>
     <member refid="splicing_8cc_1a6b792528a77eac3ed19d8159fde853ae" kind="function"><name>samples_match</name></member>
     <member refid="splicing_8cc_1a8a5bc3ba8f1972af801958ab572b17db" kind="function"><name>repair_overlaps</name></member>
@@ -1346,7 +1331,7 @@
     <member refid="fileio_8cc_1aa6a536e819148eb66f735ed6ab002e11" kind="function"><name>fread_sample_data</name></member>
     <member refid="fileio_8cc_1ae1f3e216145ee0c136324079ebd24b6e" kind="function"><name>fread_from_file</name></member>
     <member refid="fileio_8cc_1acf03563760e97d0c44fa7f3262264ddf" kind="function"><name>fread_from_file</name></member>
-    <member refid="mseed__file__indexer_8cc_1ac470c9ed9b76ba66420a7eaf74f16bd8" kind="function"><name>MS_code_to_message</name></member>
+    <member refid="mseed__file__indexer_8cc_1a7ee6e258cc4a7dd22e0f27463228c44a" kind="function"><name>save_error_message</name></member>
     <member refid="mseed__file__indexer_8cc_1afe2800b7fa24249de92f7ff6ec6db65b" kind="function"><name>mseed_file_indexer</name></member>
     <member refid="mseed__index_8cc_1a50d9221df57b0d6ea5bad8fc3f5b2b1e" kind="function"><name>operator&lt;&lt;</name></member>
   </compound>

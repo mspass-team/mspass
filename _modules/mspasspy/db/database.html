@@ -4328,7 +4328,6 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
 
-        <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;Database._read_data_from_dfile:  &quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">format</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -4398,59 +4397,6 @@
                             <span class="n">interpolation_samples</span><span class="o">=</span><span class="n">merge_interpolation_samples</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="n">tr</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="c1"># We can&#39;t use Trace2TimeSeries because we loose</span>
-                    <span class="c1"># all but miniseed metadata if we do that.</span>
-                    <span class="c1"># We do, however, need to compare post errors</span>
-                    <span class="c1"># if there is a mismatch</span>
-                    <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">npts</span> <span class="o">!=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span><span class="p">:</span>
-                        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Inconsistent number of data points (npts)</span><span class="se">\n</span><span class="s2">&quot;</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Database npts=</span><span class="si">{}</span><span class="s2"> but obspy reader created a vector </span><span class="si">{}</span><span class="s2"> points long</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">npts</span>
-                        <span class="p">)</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Set to vector size defined by reader.&quot;</span>
-                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                            <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
-                        <span class="p">)</span>
-                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">starttime</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">!=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">t0</span><span class="p">:</span>
-                        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Inconsistent starttimes detected</span><span class="se">\n</span><span class="s2">&quot;</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Starttime in MongoDB document = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
-                        <span class="p">)</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Starttime returned by obspy reader = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">starttime</span>
-                        <span class="p">)</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Set to time set by reader&quot;</span>
-                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                            <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
-                        <span class="p">)</span>
-                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_t0</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">starttime</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">delta</span> <span class="o">!=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span><span class="p">:</span>
-                        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Inconsistent sample intervals&quot;</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Database has delta=</span><span class="si">{}</span><span class="s2"> but obspy reader set delta=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">delta</span>
-                        <span class="p">)</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Set to value set by reader.&quot;</span>
-                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                            <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
-                        <span class="p">)</span>
-                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">delta</span>
-                    <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">endtime</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">!=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">endtime</span><span class="p">():</span>
-                        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Inconsistent endtimes detected</span><span class="se">\n</span><span class="s2">&quot;</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
-                            <span class="s2">&quot;Endtime expected from MongoDB document = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">endtime</span><span class="p">())</span>
-                            <span class="p">)</span>
-                        <span class="p">)</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Endtime set by obspy reader = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">endtime</span>
-                        <span class="p">)</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Endtime is derived in mspass and should have been repaired - cannot recover this datum so it was killed&quot;</span>
-                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                            <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
-                        <span class="p">)</span>
-                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-
                     <span class="c1"># These two lines are needed to properly initialize</span>
                     <span class="c1"># the DoubleVector before calling Trace2TimeSeries</span>
                     <span class="n">tr_data</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
@@ -4458,14 +4404,11 @@
                     <span class="p">)</span>  <span class="c1">#   Convert the nparray type to double, to match the DoubleVector</span>
                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
-                    <span class="c1"># We can&#39;t use Trace2TimeSeries because we loose</span>
-                    <span class="c1"># all but miniseed metadata if we do that.</span>
-                    <span class="c1"># We do, however, need to compare post errors</span>
-                    <span class="c1"># if there is a mismatch</span>
-
+                    <span class="c1"># mspass_object = Trace2TimeSeries(tr)</span>
                     <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
                     <span class="k">else</span><span class="p">:</span>
+                        <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;Database._read_data_from_dfile:  &quot;</span>
                         <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Error during read with format=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
                         <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Unable to reconstruct data vector&quot;</span>
                         <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
@@ -4487,6 +4430,7 @@
                     <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
                     <span class="k">else</span><span class="p">:</span>
+                        <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;Database._read_data_from_dfile:  &quot;</span>
                         <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Error during read with format=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
                         <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Unable to reconstruct Seismogram data matrix&quot;</span>
                         <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
@@ -5894,9 +5838,7 @@
         <span class="k">if</span> <span class="n">dfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dfile_uuid</span><span class="p">(</span><span class="s2">&quot;mseed&quot;</span><span class="p">)</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">odir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
-        <span class="c1"># TODO:  should have a way to pass verbose to this function</span>
-        <span class="c1"># present verbose is not appropriate.</span>
-        <span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">elog</span><span class="p">)</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">segment_time_tears</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">elog</span><span class="p">)</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="s2">&quot;No such file or directory&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span>
             <span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">()</span>
         <span class="p">):</span>

@@ -2570,7 +2570,6 @@
                 <span class="n">test_time</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">test_time</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
 
         <span class="c1"># depends upon self.query being initialized by constructor</span>
         <span class="c1"># as python dictionary</span>
@@ -2742,7 +2741,6 @@
                 <span class="n">test_time</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-        <span class="n">test_time</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
 
         <span class="n">tmin</span> <span class="o">=</span> <span class="n">test_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span>
         <span class="n">tmax</span> <span class="o">=</span> <span class="n">test_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span>
