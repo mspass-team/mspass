@@ -2430,6 +2430,7 @@ class OriginTimeDBMatcher(DatabaseMatcher):
                 test_time = mspass_object[self.data_time_key]
             else:
                 return None
+        test_time -= self.t0offset
 
         # depends upon self.query being initialized by constructor
         # as python dictionary
@@ -2601,6 +2602,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
                 test_time = mspass_object[self.data_time_key]
             else:
                 return pd.DataFrame()
+        test_time -= self.t0offset
 
         tmin = test_time - self.tolerance
         tmax = test_time + self.tolerance
