@@ -26,8 +26,8 @@ The current support for graphics has three component.
     sample arrays of all seismic objects act like numpy arrays that
     is often the simplest mechanism to make a quick plot.  The basics of
     that approach are described below.
-#.  We have plotting classes called :code:`SeismicPlotter`
-    and :code:`Sectionplotter` to plot our native data types.
+#.  We have plotting classes called :py:class:`SeismicPlotter<mspasspy.graphics.SeismicPlotter>`
+    and :py:class:`SectionPlotter<mspasspy.graphics.SectionPlotter>` to plot our native data types.
 #.  As noted elsewhere a core component of MsPASS are fast conversions routines
     to and from obspy's native data types (:code:`Trace` and :code:`Stream`).
     That is relevant because obspy's native data types have integrated
@@ -38,12 +38,12 @@ The current support for graphics has three component.
 Matplotlib graphics
 ~~~~~~~~~~~~~~~~~~~~
 Because data vectors of
-:py:func:`mspasspy.ccore.seismic.TimeSeries` and
-:py:func:`mspasspy.ccore.seismic.Seismogram` objects
+:py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` and
+:py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects
 act like numpy arrays the symbol defining the data vector
 can be passed directly to matplotlib low-level plotters.
 Here, for example, is a code fragment that would plot the
-data in a :py:func:`mspasspy.ccore.seismic.TimeSeries` object
+data in a :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` object
 with a simple wiggle plot and a time axis with 0 defined as start time.
 
 .. code-block:: python
@@ -58,7 +58,7 @@ with a simple wiggle plot and a time axis with 0 defined as start time.
   plt.plot(t,d_shifted.data)
   plt.show()
 
-Similarly, one way to plot a :py:func:`mspasspy.ccore.seismic.Seismogram`
+Similarly, one way to plot a :py:class:`mspasspy.ccore.seismic.Seismogram`
 object is the following with subplots:
 
 .. code-block:: python
@@ -81,8 +81,8 @@ A few comments about these examples:
     starttime.  Without that step the time axis would be useless as it
     would be in epoch times, which are huge numbers.
 #.  Both define the time axis manually using a loop and the
-    :code:`time` method common to both :code:`TimeSeries` and
-    :code:`Seismogram`.   We have considered adding a
+    :code:`time` method common to both :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` and
+    :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>`.   We have considered adding a
     :code:`time_axis` method to the API, but the example shows it
     would be so trivial we viewed it unnecessary baggage for the API.
 #.  Note there are many options in matplotlib that could be used to
@@ -97,19 +97,19 @@ Native Graphics
 The goal of the graphics module in MsPASS was to
 provide simple tools to plot native data types.  We thousands first remind
 the user what is considered "native data" in MsPASS.  They are:
-(1) :code:`TimeSeries` objects are scalar, uniformly sampled seismic
-seismic signals (a single channel), (2) :code:`Seismogram` objects are
-bundled three-component seismic data, and (3) :code:`TimeSeriesEnsemble` and
+(1) :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` objects are scalar, uniformly sampled seismic
+seismic signals (a single channel), (2) :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects are
+bundled three-component seismic data, and (3) :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.TimeSeriesEnsemble>` and
 :code:`SeismogramEnsemble` objects are logical groupings of the two
 "atomic" objects in their names.
 
 The second issue is what types of plots are most essential?   Our core
 graphics support two plot conventions:
 
-1.  :code:`SeismicPlotter` plots data in the standard convention used to plot
-    nearly all earthquake data.  :code:`SeismicPlotter` plots data with
+1.  :py:class:`SeismicPlotter<mspasspy.graphics.SeismicPlotter>` plots data in the standard convention used to plot
+    nearly all earthquake data.  :py:class:`SeismicPlotter<mspasspy.graphics.SeismicPlotter>` plots data with
     time as the x (horizontal axis).
-2.  :code:`SectionPlotter` plots data in the standard convention for seismic
+2.  :py:class:`SectionPlotter<mspasspy.graphics.SectionPlotter>` plots data in the standard convention for seismic
     reflection data.  Because with seismic reflection data normal moveout
     corrected time is a proxy for depth it is universal to plot time
     as the y axis (vertical) and running backward from the normal
@@ -209,9 +209,9 @@ Finally, we would note that the plotters automatically handle switching to
 plot all the standard MsPASS data objects.   Some implementation details
 we note are:
 
-1.  :code:`TimeSeries`  data generate one plot frame with a time axis and
+1.  :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>`  data generate one plot frame with a time axis and
     a y axis of amplitude.
-2.  :code:`Seismogram` data are displayed on one plot frame.  The three
+2.  :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` data are displayed on one plot frame.  The three
     components are plotted at equal y intervals in SeismicPlotter
     (equal x intervals in SectionPlotter) with the x1, x2, x3 components arranged
     from the bottom up (left to right for SectionPlotter).   There is an option

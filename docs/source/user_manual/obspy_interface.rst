@@ -25,7 +25,7 @@ They have similarities but some major differences that a software engineer might
 ObsPy defines two core data objects:
 
 #.  ObsPy :py:class:`Trace <obspy.core.trace.Trace>` containers hold a single channel of seismic data.
-    An ObsPy :code:`Trace` maps almost directly into the MsPASS atomic object we call a :code:`TimeSeries`.
+    An ObsPy :code:`Trace` maps almost directly into the MsPASS atomic object we call a :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>`.
     Both containers store sample data in a contiguous block of memory that implement the linear algebra concept of an N-component vector.
     Both store the sample data as Python float values that always map to 64 bit floating point numbers (double in C/C++).
     Both containers also put auxiliary data used to expand on the definition of what the data are in an indexed container that behaves like a Python dict.
@@ -36,10 +36,10 @@ ObsPy defines two core data objects:
     In ObsPy the header parameters are stored in an attribute with a different name (Stats) while in MsPASS the dict behavior is part of the TimeSeries object.
     (For those familiar with Object Oriented Programming generic concepts ObsPy views metadata using the concept that a Trace object "has a Stats" container while in MsPASS we say a TimeSeries "is a Metadata".)
 #.  ObsPy :py:class:`Stream <obspy.core.stream.Stream>` containers are little more than a Python list of :code:`Trace` objects.
-    A :code:`Stream` is very similar in concept to the MsPASS data object we call a :code:`TimeSeriesEnsemble`.
+    A :code:`Stream` is very similar in concept to the MsPASS data object we call a :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.TimeSeriesEnsemble>`.
     Both are containers holding a collection of single channel seismic data.
     In terms of the data they contain there is only one fundamental difference;
-    a :code:`TimeSeriesEnsemble` is not just a list of data but it also contains a :code:`Metadata` container that contains attributes common to all members of the ensemble.
+    a :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.TimeSeriesEnsemble>` is not just a list of data but it also contains a :code:`Metadata` container that contains attributes common to all members of the ensemble.
 
 There are some major collisions in concept between ObsPy's approach and that we use in MsPASS that impose some limitations on switching between the packages.
 
@@ -51,8 +51,8 @@ There are some major collisions in concept between ObsPy's approach and that we 
     They only add overhead in constructing ObsPy data objects.
 #.  ObsPy's support for three-component data is mixed in the concept of a :code:`Stream`.
     A novel feature of MsPASS is support for an atomic data class we call a Seismogram that is a container designed for consistent handling of three component data.
-#.  In MsPASS we define a second type of "Ensemble" we call a :code:`SeismogramEnsemble` that is a collection of :code:`Seismogram` objects.
-    It is conceptually identical to a :code:`TimeSeriesEnsemble` except the members are :code:`Seismogram` objects instead of :code:`TimeSeries` objects.
+#.  In MsPASS we define a second type of "Ensemble" we call a :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.SeismogramEnsemble>` that is a collection of :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects.
+    It is conceptually identical to a :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.TimeSeriesEnsemble>` except the members are :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects instead of :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` objects.
 
 The concept collision between Seismograms objects and any ObsPy data creates some limitations in conversions.
 A good starting point is this axiom:  converting from MsPASS Seismogram objects or SeismogramEnsemble to ObsPy Stream objects is simple and robust;
@@ -69,7 +69,7 @@ With that background the set of converters are:
   Currently the only retained channel properties are orientation information (:code:`hang` and :code:`vang` attributes).
   For most users the critical information lost in the opposite conversion (:code:`Stream2Seismogram`) is any system response data.
   A corollary that follows logically is that if you need to do response corrections for your workflow you need to do so equally on all three components before converting the data to Seismogram objects.
-  Because of complexities in converting from :code:`Stream` to :code:`Seismogram` objects we, in fact, do not recommend using :code:`Stream2Seismogram` for that purpose.
+  Because of complexities in converting from :code:`Stream` to :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects we, in fact, do not recommend using :code:`Stream2Seismogram` for that purpose.
   If the parent data originated as miniSEED from an FDSN data center, a more reliable and flexible algorithm is the :code:`BundleSEEDGroup` function.
 - The MsPASS ensemble data converters can be used to convert to and from ObsPy :code:`Stream` objects, although with side effects in some situations.
   As with the other converters the (verbose) names are mnemonic for their purpose.

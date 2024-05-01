@@ -37,7 +37,7 @@ data are:
     two segments you need to merge have conflicting time stamps.
     To make this clear it is helpful to review two MsPASS concepts in
     the TimeSeries and Seismogram data objects.  Let *d1* and *d2* be
-    two :code:`TimeSeries` objects that are successive segments we
+    two :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` objects that are successive segments we
     expect to merge with *d2* being the segment following *d1* in time.
     In MsPASS we use the attribute *t0* (alternatively the method
     *starttime*) for the time of sample 0.  We also use the method
@@ -64,10 +64,10 @@ covered by MsPASS.
 Gap Processing
 ~~~~~~~~~~~~~~~~~~
 Internally MsPASS handles data gaps with a subclass of the
-:code:`TimeSeries` called :code:`TimeSeriesWGaps`.   That extension of
-:code:`TimeSeries` is written in C++ and is documented
+:py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` called :py:class:`TimeSeriesWGaps<mspasspy.ccore.seismic.TimeSeriesWGaps>``.   That extension of
+:py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` is written in C++ and is documented
 `here <https://www.mspass.org/cxx_api/mspass.html#mspass-namespace>`__.
-Like :code:`TimeSeries` this class has python bindings created
+Like :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` this class has python bindings created
 with pybind11.  All the methods described in the C++ documentation
 page have python bindings.  There are methods for defining gaps,
 zeroing data in defined gaps, and deleting gaps.
@@ -81,12 +81,13 @@ Merging Data Segments
 ~~~~~~~~~~~~~~~~~~~~~~~~
 There are currently two different methods in MsPASS to handle merging
 continuous data segments:  (1) a special, implicit option of the
-:py:meth:`mspasspy.db.database.Database.read_data` method of the
-:py:class:`mspasspy.db.database.Database` class, and (2) the
-processing function :py:func:`mspasspy.algorithms.window.merge`.
+:py:meth:`read_data<mspasspy.db.database.Database.read_data>` method of the
+:py:class:`Database<mspasspy.db.database.Database>` class, and (2) the
+processing function :py:func:`merge<mspasspy.algorithms.window.merge>`.
 In addition, there is a special reader function called
-:py:func:`mspasspy.db.ensembles.TimeIntervalReader` that can be used
-to read fixed time windows of data.  That function uses :code:`merge`
+:py:func:`TimeIntervalReader<mspasspy.db.ensembles.TimeIntervalReader>` that can be used
+to read fixed time windows of data.  That function uses
+:py:func:`merge<mspasspy.algorithms.window.merge>`
 to do gap and overlap repair.
 
 read_data merge algorithm
@@ -101,8 +102,8 @@ waveform.   If the station codes ("net", "sta", "chan", and "loc" attributes
 in all MsPASS schemas) change in a sequence of packets readers
 universally assume that is the end of a given segment.  How readers handle
 a second issue is, however, variable.  Each miniseed packet has a time
-tag that is comparable to the `t0` attribute of a :class:`TimeSeries` object
-and end time field equivalent to the output of the :class:`TimeSeries`
+tag that is comparable to the `t0` attribute of a :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` object
+and end time field equivalent to the output of the :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>`
 endtime method.   If the `t0` value of a packet is greater than some
 fractional tolerance of 1 sample more than the endtime of the previous
 packet, a reader will invoke a gap handler.  A reader's gap handler
@@ -112,7 +113,7 @@ handles this problem with their :class:`Stream` merge method described
 `here <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html>`__.
 That particular algorithm is invoked when reading miniseed data
 if and only if a block of data defined running the mspass
-function :py:meth:`mspasspy.db.database.Database.index_mseed_file` is
+function :py:meth:`index_mseed_file<mspasspy.db.database.Database.index_mseed_file>` is
 run with the optional argument `segment_time_tears` is set False.
 (Note the default is True.).   If you need to use this approach, you will
 need to also take care in defining the value of the following arguments
@@ -132,7 +133,7 @@ the obspy merge function noted above.  The MsPASS function add some additional
 features and, although not verified by formal testing,
 is likely much faster than the obpsy version due to fundamental differences
 in the implementation.
-The docstring for :py:func:`mspasspy.algorithms.window.merge` describes more
+The docstring for :py:func:`merge<mspasspy.algorithms.window.merge>` describes more
 details but some key features of this function are:
 
 - Like obspy's function of the same name its purpose is to glue/merge
@@ -148,7 +149,7 @@ details but some key features of this function are:
   options for gap handling that are inseparable from the function.
   Any detected gaps in the
   MsPASS merge function are posted to the Metadata component of the
-  :class:`TimeSeries` it returns accessible with the key "gaps".
+  :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` it returns accessible with the key "gaps".
   The content of the "gaps" attribute is a list of one or more
   python dictionaries with the keyworks "starttime" and "endtime"
   defining the epoch time range of all gaps in the returned datum.
@@ -167,29 +168,30 @@ details but some key features of this function are:
   a data quality problem that invalidates the data when the samples
   do not match.  If you need
   the obspy functionality use the
-  :py:func:`mspasspy.util.converter.TimeSeriesEnsemble2Stream` and the
-  inverse :py:func:`mspasspy.util.converter.Trace2TimeSeriesEnsemble`
+  :py:func:`TimeSeriesEnsemble2Stream<mspasspy.util.converter.TimeSeriesEnsemble2Stream>` and the
+  inverse :py:func:`Trace2TimeSeriesEnsemble<mspasspy.util.converter.Trace2TimeSeriesEnsemble>`
   to create the obspy input and then restore the returned data to
   the MsPASS internal data structures
 
 TimeIntervalReader
 -----------------------
 A second MsPASS tool for working with continuous data is a function
-with the descriptive name :py:func:`mspasspy.db.ensembles.TimeIntervalReader`.
+with the descriptive name
+:py:func:`TimeIntervalReader<mspasspy.db.ensembles.TimeIntervalReader>`.
 It is designed to do the high-level task of cutting a fixed time
 interval of data from one or more channels of a continuous data archive.
 This function is built on top of the lower-level
-:py:func:`mspasspy.algorithms.window.merge` but is best thought of as
+:py:func:`merge<mspasspy.algorithms.window.merge>` but is best thought of as
 an alternative reader to create ensembles cut from a continuous data archive.
 For that reason the required arguments are a database handle and the
 time interval of data to be extracted from the archive.  Gap and overlap
-handling is handled by :code:`merge`.
+handling is handled by :py:func:`merge<mspasspy.algorithms.window.merge>`.
 
 Examples
 ------------
 *Example 1:  Create a single waveform in a defined time window
 from continuous data archive.*
-This script will create a longer :class:`TimeSeries` object from a set day files
+This script will create a longer :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` object from a set day files
 for the BHZ channel of GSN station AAK.   Ranges are constant for a simple
 illustration:
 
