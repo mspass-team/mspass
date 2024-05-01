@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.preprocessing &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mspasspy.reduce" href="mspasspy.reduce.html" />
+    <link rel="prev" title="mspasspy.io" href="mspasspy.io.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.preprocessing.css30.datascope">css30</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="docutils literal notranslate"><span class="pre">DatascopeDatabase</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.check_for_ambiguous_sta"><code class="docutils literal notranslate"><span class="pre">check_for_ambiguous_sta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.extract_unique_css30_sources"><code class="docutils literal notranslate"><span class="pre">extract_unique_css30_sources()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.find_duplicate_sta"><code class="docutils literal notranslate"><span class="pre">find_duplicate_sta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.find_null_net_stations"><code class="docutils literal notranslate"><span class="pre">find_null_net_stations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.find_unique_sta"><code class="docutils literal notranslate"><span class="pre">find_unique_sta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.force_net"><code class="docutils literal notranslate"><span class="pre">force_net()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.load_css30_arrivals"><code class="docutils literal notranslate"><span class="pre">load_css30_arrivals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.load_css30_sources"><code class="docutils literal notranslate"><span class="pre">load_css30_sources()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.make_css30_composite_sta"><code class="docutils literal notranslate"><span class="pre">make_css30_composite_sta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.parse_snetsta"><code class="docutils literal notranslate"><span class="pre">parse_snetsta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.set_arrival_by_time_interval"><code class="docutils literal notranslate"><span class="pre">set_arrival_by_time_interval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.set_netcode_from_site"><code class="docutils literal notranslate"><span class="pre">set_netcode_from_site()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.set_netcode_snetsta"><code class="docutils literal notranslate"><span class="pre">set_netcode_snetsta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.set_netcode_time_interval"><code class="docutils literal notranslate"><span class="pre">set_netcode_time_interval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.css30.dbarrival.set_source_id_from_evid"><code class="docutils literal notranslate"><span class="pre">set_source_id_from_evid()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.preprocessing.seed.ensembles">seed</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.ensembles.dbsave_raw_index"><code class="docutils literal notranslate"><span class="pre">dbsave_raw_index()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.ensembles.dbsave_seed_ensemble_file"><code class="docutils literal notranslate"><span class="pre">dbsave_seed_ensemble_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.ensembles.erase_seed_metadata"><code class="docutils literal notranslate"><span class="pre">erase_seed_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.ensembles.link_source_collection"><code class="docutils literal notranslate"><span class="pre">link_source_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.ensembles.load_arrivals_by_id"><code class="docutils literal notranslate"><span class="pre">load_arrivals_by_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.ensembles.load_channel_data"><code class="docutils literal notranslate"><span class="pre">load_channel_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.ensembles.load_hypocenter_data_by_time"><code class="docutils literal notranslate"><span class="pre">load_hypocenter_data_by_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.ensembles.load_one_ensemble"><code class="docutils literal notranslate"><span class="pre">load_one_ensemble()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.ensembles.load_site_data"><code class="docutils literal notranslate"><span class="pre">load_site_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.ensembles.load_source_data_by_id"><code class="docutils literal notranslate"><span class="pre">load_source_data_by_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.ensembles.obspy_mseed_file_indexer"><code class="docutils literal notranslate"><span class="pre">obspy_mseed_file_indexer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.util.channel_report"><code class="docutils literal notranslate"><span class="pre">channel_report()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.preprocessing.seed.util.site_report"><code class="docutils literal notranslate"><span class="pre">site_report()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html">mspasspy.util</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Python API</a></li>
+      <li class="breadcrumb-item active">mspasspy.preprocessing</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/python_api/mspasspy.preprocessing.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mspasspy-preprocessing">
+<h1>mspasspy.preprocessing<a class="headerlink" href="#mspasspy-preprocessing" title="Permalink to this heading"></a></h1>
+<section id="module-mspasspy.preprocessing.css30.datascope">
+<span id="css30"></span><h2>css30<a class="headerlink" href="#module-mspasspy.preprocessing.css30.datascope" title="Permalink to this heading"></a></h2>
+<p>This file contains a DatascopeDatabase class that can be used to 
+interaction with an Antelope(Datascope) flat file database.   It is not 
+intended to be a fully functional database handle.  It can, however, 
+bu used as a base class to add additional functionality.</p>
+<p>The main point of this implementation is a mean to translate Antelope 
+tables that can be used for related seismic data processing.   The 
+two main known uses are:  (1) translating a table to a MongoDB 
+collection and (2) loadng a small table to create a normalizing 
+operator via a subclass of the generic <a class="reference internal" href="mspasspy.db.html#mspasspy.db.normalize.BasicMatcher" title="mspasspy.db.normalize.BasicMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.normalize.BasicMatcher</span></code></a>
+class.  Although not currently implementd it could also, for example, 
+but used to create a reader driven by a wfdisc table.</p>
+<p>The “translation” model this class uses is to create a DataFrame 
+image of the a single table or what Antelope developers call a 
+database view.  The class only supports pandas DataFrame assuming that 
+tables are small enough to fit in memory.   An extremely good assumption 
+since Datascope uses that model.  Note, however, that if one needs to 
+create a giant table from many fragmented databases as is common with 
+large network operations with Antelope, the  dask DataFrame <cite>merge</cite>
+method can be used to combine a string of multiple, common tables.</p>
+<p>The inverse of writing a DataFrame to an Datascope table is also 
+supported via the <cite>df2table</cite> method.   The forward and inverse 
+translations can be used as the basis for workflows that 
+utilize both MsPASS an Antelope.   e.g. if you have a license 
+for Antelope you could use their database-driven event detection 
+and association algorithms to create a catalog and use MsPASS 
+for waveform processing that utilizes the catalog data.</p>
+<p>The class constructor uses an Antelope pf file to define the 
+tables it knows how to parse.  A master pf for most tables is 
+distributed with mspass.   To parse uncommon tables not defined in 
+the master pf file you will need a license for antelope to run the 
+python script found in Antelope contrib and in mspass called 
+<cite>Database_schema</cite>.  We include a copy of that script in the 
+“scripts” directory one level below this one in the directory tree.  
+Be aware that script will not run, however, without a license for
+Antelope because it requires proprietary libraries supplied with Antelope. 
+An alternative for those unable to secure an antelope license is to 
+build the pf that script generates by hand.  You can use the 
+standard version for css3.0 tables to see the clear pattern.
+It is VERY IMPORTANT to realize that if you build that pf by hand 
+you must list attributes in the “attributes Tbl” in the 
+left to right table order of the Datascope schema definition.  
+Readers will work if you violate that rule, but the writer will 
+scramble the output if you do and the result will almost certainly 
+by unreadable by Datascope.</p>
+<p>&#64;author: Gary L. Pavlis</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.datascope.DatascopeDatabase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.datascope.</span></span><span class="sig-name descname"><span class="pre">DatascopeDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pffile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/datascope.html#DatascopeDatabase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df">
+<span class="sig-name descname"><span class="pre">CSS30Catalog2df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/datascope.html#DatascopeDatabase.CSS30Catalog2df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df" title="Permalink to this definition"></a></dt>
+<dd><p>Forms the standard catalog view of CSS3.0 sans the orid==prefor
+condition to return a DataFrame formed by using
+the DatascopeDatabase join method in sequence to produce:</p>
+<blockquote>
+<div><p>event-&gt;origin-&gt;assoc-&gt;arrival</p>
+</div></blockquote>
+<p>noting the the assoc-&gt;arrival join is done via arid.
+The returned dataframe will have some attributes like the
+“time” attributes of <cite>arrival</cite> and <cite>origin</cite> altered to
+clarify which is which using the pandas stock method of
+appending a suffix.  The suffix is the parent table name.
+Hence, for the “time” example the output will have columns
+with the keys <cite>time_origin</cite> and <cite>time_arrival</cite>.</p>
+<p>Because this method is expected to normally be run interactively
+it will throw exceptions for a whole range of problems
+for which the authors of mspass have no control.
+In the usual python way the posted exception stack should
+define the problem.  Exceptions could come from methods of
+this class called by the function or pandas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pandad DataFrame with the standard css3.0 catalog view.</p>
+</dd>
+</dl>
+<p>Attribute names are css3.0 names.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table">
+<span class="sig-name descname"><span class="pre">df2table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wfdisc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">append</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/datascope.html#DatascopeDatabase.df2table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table" title="Permalink to this definition"></a></dt>
+<dd><p>Inverse of get_table method.   Writes contents of DataFrame
+<cite>df</cite> to Datascope table inferred from the <cite>table</cite> argument.
+That is, the method attempts to write the contents of df to
+a file “db.table” with an optional diretory (dir argument).
+It will immediately throw an exception if any of the df column
+keys do not match an attribute name for the schema defined for
+the specified table.  Missing keys will be written as the
+null value defined for the schema using the pf file loaded
+with the class constructor.</p>
+<p>Default behavior is to write to the Datascope handle defined as
+the “self” by the class constructor.   An alternative instance
+of the class can be used to override the default by passing that
+instance via the db argument.  Default always appends to any
+existing data in the output table.   Set append to False to
+clear any previous content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> – pandas DataFrame containing data to be written.  Note the</p>
+</dd>
+</dl>
+<p>column names must match css3.0 schema mames or an exception will
+be thrown.
+:type df:  pandas DataFrame
+:param db:  output handle.   Default is None which is taken to mean
+use this instance.
+:type db:  Can be any of:  (1) instance of <cite>DatascopeDatabase</cite>,
+(2) a string defining the Datascope database base name, or
+(3) None.   In all cases this argument is used only to generate
+file names for the Datascope files.   For case 1 the name defined in
+the class instance is used.  For case 2 the string received is used
+as the base file name (e.g. if db=”mydb” and table=”arrival” this
+method will write to a file called “mydb.arrival”.)
+In case 3 the name associated with this instance (self) will be used.
+:param table:  Datascope table to which the data should be
+written.
+:type table:  string (default ‘wfdisc’)
+:param dir: optional director name where the table data should be
+saved.   Default is None which is taken to mean the current director.
+If the directory does not exist it will be created.
+:type:  string or None
+:param append: boolean that when set causes the data to be appended
+to a file if it already exist.  Default is True.  When set False
+if the file exists it will be overwritten.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>possibly edited copy of input dataframe with null</p>
+</dd>
+</dl>
+<p>values inserted and columns rearrange to match Datascope table
+order,</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_nulls">
+<span class="sig-name descname"><span class="pre">get_nulls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/datascope.html#DatascopeDatabase.get_nulls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_nulls" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve dictionary of null values for attributes in a table.</p>
+<p>Unlike MongoDB a relational database requires a Null value to
+define when a table cell is not defined.   This method
+returns the Null value defined for Datascope tables in their
+schema.   This method returns all the null values for a
+table in a python dictionary keyed by the attibute
+names defined for the schema for that table. That algorithm
+is used instead of a function retrievng a value given table
+and attribute as arguments for two reasons.  (1) Most
+conceivale applications would need most if not all of the
+Null values to use the data anyway and (2) the difference in
+time to fetch one value versus all is near zero because a
+linear search through a list is required to fetch a single
+value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>table</strong> – name of the table for which Null values is to</p>
+</dd>
+</dl>
+<p>be retrieved.
+:type table:  string
+:return:  python dictionary key by attribute names with Nulls
+as the value associated with that attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_primary_keys">
+<span class="sig-name descname"><span class="pre">get_primary_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/datascope.html#DatascopeDatabase.get_primary_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_primary_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list of the primary keys defined for this table
+in the parameter file used to create this handle.   These
+keys are used to produce a form of “natural join” in the
+join method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table">
+<span class="sig-name descname"><span class="pre">get_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wfdisc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes_to_use</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/datascope.html#DatascopeDatabase.get_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table" title="Permalink to this definition"></a></dt>
+<dd><p>This method converts a specified table to a dataframe.   Default
+will load all attributes of the specified table.  The equivalent of
+an SQL select clause can be done by passing a list of attribute
+names through the <cite>attributes_to_use</cite> argument.  Note that list
+does not need to be in the same order as the attributes are stored
+in the Datascope text files from which the requested data will be
+retrieved.</p>
+<p>Note if you want to change the names of the attributes of the
+DataFrame this method returns, use the pandas <cite>rename</cite> method
+on the return.   See numerous online sources for use of
+the <cite>rename</cite> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rename_attributes</strong> – optional python dictionary used to</p>
+</dd>
+</dl>
+<p>change the names of one or more columns of the output dataframe.
+This argument is passed directly to the dataframe rename method.
+Default is None which cause the rename call to be bypassed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>attributes_to_use</strong> – optional python list of attribute</p>
+</dd>
+</dl>
+<p>names to extract from the larger table.  If used only the attributes
+defined in the list will be returned in the dataframe. Default is
+None which cause all attributes in the table to be returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame representation of requested table with optional</p>
+</dd>
+</dl>
+<p>edits applied.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.join">
+<span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right_primary'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">how</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/datascope.html#DatascopeDatabase.join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.join" title="Permalink to this definition"></a></dt>
+<dd><p>This method provides a limited join functionality between an
+input dataframe and a specified table.  It works with multiple
+join keys but the only matches supported are exact matches using
+string or integer keys.  It is really just a front end on
+dataframe merge that loads and joins a named table to the
+input dataframe passed through arg 0 (df_left).   If more
+sophisticated join operators are needed there are two options:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Do the join operator externally in Datascaope,
+save the result as a Datascope view in a csv format, and then
+inport the csv file with the pandas read_csv method.</p></li>
+<li><p>Save the larger of the two tables you want to join to
+MongoDB and use one of the generic matchers that are
+subclasses of <a class="reference internal" href="mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher" title="mspasspy.db.normalize.DataFrameCacheMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.normalize.DataFrameCacheMatcher</span></code></a>.
+If the matching operation you need is not already defined you
+may need to develop a custom subclass of that matcher.</p></li>
+</ol>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_left</strong> – dataframe to which table (arg1) is to be joined.</p></li>
+<li><p><strong>table</strong> – antelope database table name to be joined with df_left.</p></li>
+<li><p><strong>join_keys</strong> – If not specified the keys returned by the</p></li>
+</ul>
+</dd>
+</dl>
+<p>get_primary_keys method will be used for left and right tables in the join.
+Can be a list of attribute names and if so left and right join
+keys will be the same.  Can also be a python dictionary.  Use
+that form if you want to use different keys for the left and
+right tables in the join.  The keys of the dict are used for
+the left and the values are used for the right.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>right_suffix</strong> – Duplicate attribute names in a merge</p>
+</dd>
+</dl>
+<p>need a way to be identified. Default uses the table name with
+a leading underscore. (e.g. joining site would produce an lddate_site
+attribute in the output dataframe).   If any other string is used
+it is passed directly to the dataframe merge method and you will
+get different names for ambiguous column names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>how</strong> – defines the type of join operation to use.</p>
+</dd>
+</dl>
+<p>Passed directly to the merge dataframe method.  See documentation
+for dataframe merge to see options allowed for how.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dataframe resulting from the join</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.parse_snetsta">
+<span class="sig-name descname"><span class="pre">parse_snetsta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/datascope.html#DatascopeDatabase.parse_snetsta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.parse_snetsta" title="Permalink to this definition"></a></dt>
+<dd><p>Datascope is (mostly) linked to the CSS3.0 schema originally
+developed ine 1970s before SEED was adopted as a standard.  At the
+time the problem of duplicate station codes was not recognized and
+the SEED concept of a network code (also location code for channel)
+was not considered.   The developers of Datascope created a workaround
+for this problem in a special table (I am not sure if it was part
+of the original css3.0 schema or not) with the name <a href="#id1"><span class="problematic" id="id2">`</span></a>snetsta’.
+They use snetsta to handle duplicate station names in multiple networks.
+A common example is that more than one operator has used the
+colorful station code “HELL” so if we see an entry for HELL it can
+be ambiguous which level of HELL it refers to.  Antelope
+handles this by creating compound keys like “66_HELL” for net “66”
+and station code “HELL”.   A complication is the compound keys
+are only used when duplicate sta codes a detected, which is not
+always easy to know.  In any case, the purpose of this method
+is to parse the snetsta table to return the data need to
+translate any station code (compound or not) to a unique
+combination of “net” and “sta” codes It does that by returning
+a dictionary keyed by expected station codes in other Datascope
+tables with a value containing a pair of string.  The 0 component
+is the net code associated with the key value and the 1 component
+the station code that would match what is expected in a parent
+miniseed file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist">
+<span class="sig-name descname"><span class="pre">wfdisc2doclist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snetsta_xref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_net</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'XX'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_existence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/datascope.html#DatascopeDatabase.wfdisc2doclist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist" title="Permalink to this definition"></a></dt>
+<dd><p>Special function to convert a wfdisc table to a list of docs that can
+be written to MongoDB.  Alternatively the output can be passed directly to
+<a class="reference internal" href="mspasspy.io.html#mspasspy.io.distributed.read_distributed_data" title="mspasspy.io.distributed.read_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.io.distributed.read_distributed_data()</span></code></a>
+to initiate a parallel workflow or passed as a constructor to
+create a parallel container (i.e bag or RDD) to passed to
+the <code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.read_data()</span></code> method.
+This method ONLY works for wfdiscs that index
+a collection of miniseed files.  It will drop any data not
+marked as miniseed.  The conversions process is not trivial
+for several reasons:</p>
+<ol class="arabic simple">
+<li><p>We need to add some computed attributes to match the attributes
+required in wf_miniseed in the mspass reader.</p></li>
+<li><p>Handling Null values.</p></li>
+<li><p>Filtering out rows not defining miniseed data.</p></li>
+<li><p>the net code mismatch with css3.0 (see below)</p></li>
+<li><p>The equally obnoxious loc code problem</p></li>
+</ol>
+<ol class="arabic simple">
+<li><p>simply involves always posting some constants.</p></li>
+</ol>
+<p>2.  is handled by silently deleting any attribute defined by the
+Null value for that attribute in the wfdisc schema.
+3. is handled by dropping any tuples for which the “datatype”
+attribute on “sd” (normal mseed) or “S1” miniseed in an older
+compression format.   When verbose is set true any entries
+dropped will geneate a warning print mesage.</p>
+<p>Items 4 and 5 are a bigger complication.   The developers of
+Antelope created a solution to this problem by utilizing
+two tables called <cite>snetsta</cite> and <cite>schanloc</cite>.   The trick they
+used was whenever a station name was not unique, they
+create an alias merging the net and sta codes with a fixed
+separator of “_”.  e.g. if their miniseed indexing program
+detected station “HELL” with net codes “66” and “33”  it
+would create two aliases called “66_HELL” and “77_HELL”.
+The data defining that alias is stored in the “snetsta”
+table.   The problem is unique sta code values are not
+change to the merged net_sta form but only the sta name
+is used in processing.  This code deals with this issue
+assuming the “snetsta” table exists and defines the
+net code for every station it finds.  When it encounters
+names like “66_HELL” it automatically drops the name
+in wfdisc and sets the net and sta codes using the
+cross-reference defined in snetsta.   To handle the
+very common situation where snetsta is not complete
+(i.e. there are sta codes without an snetsta entry)
+when a wfdisc sta key has not entry in snetsta the value of
+the <cite>default_net</cite> optional argument is used to define the
+net name in the output.   The way Amtelope loc is easier to
+deal with because of a dogmatic naming convention for FDSN.
+That is, valid SEED channel codes are required to be 3
+characters in length and follow a rigid definition of
+what each of the 3 character imply about the data.  Antelope
+handles loc codes, which were not conceived as needed when
+the CSS3.0 schema was designed, by simply appending the
+loc code to the channel code to produce an extended channel
+code tag. (e.g. channel BHZ with loc code 00 would be set to BHZ_00)
+Antelope defines a schanloc table that is similar to snetsta but
+we don’t actually need to use it in this method because the syntax
+rules make splitting compound channel names unambiguous.   Hence,
+a reference to schanloc is not needed as it is to handle the
+net-sta problem.</p>
+<p>The net-sta problem is handled by the argument snetsta_xref
+argument.   If the database this object references has a
+complete snetsta table you can use the default and it will
+load and utilize the snetsta channel data to sort out
+net-sta ambiguities.  Unless you are 100% certain your
+snetsta table has no missing entries (wfdisc sta values not in snetsta)
+you should be sure to set the <cite>default_net</cite> optional argument value
+to what is appropriate for your data set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>snetsta_xref</strong> – image of the snetsta table used as</p>
+</dd>
+</dl>
+<p>described above.  If set None (the default) this method will
+call another method of this class called <cite>parse_snetsa</cite> that
+reads the snetsta table and creates an instance of the
+data structure.   See the docstring of that method below for
+an explanation of the data structure of this object if you need to
+generate one by some other means.
+:type snetsta_xref:  python dict or None
+:param test_existence:   Boolean that when set
+True (default is False) enables a file existence check.
+This operation is expensive on a large wfdisc as it has to
+run an existence check on every tuple in the wfdisc.
+:param verbose:  When True prints a warning for each tuple
+it drops.  If False it will drop problem tuples silently.  Note
+tuples can be dropped for two reasons:  (1) <cite>datatype</cite> values that
+do not define miniseed and (2) tuples failing the existence
+check (if enabled)</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mspasspy.preprocessing.css30.dbarrival"></span><p>Created on Sat Oct 24 06:31:28 2020</p>
+<p>&#64;author: Gary Pavlis, Dept. of Earth and Atmos Sci, Indiana University</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.check_for_ambiguous_sta">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">check_for_ambiguous_sta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stalist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#check_for_ambiguous_sta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.check_for_ambiguous_sta" title="Permalink to this definition"></a></dt>
+<dd><p>Scans db.collection for any station in the list of station codes
+defined by the list container stalist.  By default it reports only
+the count of the number of hits for each sta.   If verbose is set it
+prints a summary of every record it finds - warning this can get huge
+so always run verbose=false first to find the scope of the problem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – Mongodb database pointer - can also be a mspass Database class
+object.</p></li>
+<li><p><strong>stalist</strong> – required list of station names to be checked</p></li>
+<li><p><strong>verbose</strong> – turn on verbose mode (see overview paragraph)</p></li>
+<li><p><strong>verbose_attributes</strong> – list container of database attributes to
+be printed in verbose mode.  Note is default is None and the
+function will exit immediately with an error message if verbose is
+enable and this list is not defined.   The current version blindly
+assumes every document found will contain these attributes.   It will
+abort if an attribute is not defined.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.extract_unique_css30_sources">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">extract_unique_css30_sources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['evid',</span> <span class="pre">'source_lat',</span> <span class="pre">'source_lon',</span> <span class="pre">'source_depth',</span> <span class="pre">'source_time',</span> <span class="pre">'mb',</span> <span class="pre">'ms',</span> <span class="pre">'sta',</span> <span class="pre">'phase',</span> <span class="pre">'iphase',</span> <span class="pre">'delta',</span> <span class="pre">'seaz',</span> <span class="pre">'esaz',</span> <span class="pre">'residual',</span> <span class="pre">'time',</span> <span class="pre">'deltim']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#extract_unique_css30_sources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.extract_unique_css30_sources" title="Permalink to this definition"></a></dt>
+<dd><p>Utility function to scan the same table used by load_css30_arrivals to
+create a dict of unique sources keyed by the parent css30 database
+key evid.   This will only work if evid is set correctly for
+each row in the input table.  The algorithm used is a bit ugly
+and exploits the unique key insertion of a python dict container
+that also behaves like a C++ std::map container.   That is, if new
+data is inserted with a matching key to something already in the container
+the new data silently replaces the old data.   This is a clean way to
+create a unique set of data keyed by evid, BUT as noted it will create
+extraneous results if evid value are not consistent with the arrivals
+(That shouldn’t happen if the parent css3.0 database was properly formed).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – text file to scan created form datascope shell command ending
+with dbselect to produce attributes in the order listedfor attribute_names
+(the default anyway)</p></li>
+<li><p><strong>attribute_name</strong> – is a list of keys to assign to each column of
+data in the input file. Default is for output of a particular shell
+script ending a unix chain with dbselect with attributes in the order
+listed.   If the dbselect line changes this attribute will need to be
+changed too.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict keyed by evid of source coordinate data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.find_duplicate_sta">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">find_duplicate_sta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'site'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#find_duplicate_sta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.find_duplicate_sta" title="Permalink to this definition"></a></dt>
+<dd><p>Scans collection requested (site is default be can be run on channel)
+for combinations of net:sta where the sta is not unique.   This can
+cause problem in associating data from css3.0 databases that do not
+have a net code for station names.   Returns a dict with sta names
+as key and a set container with net codes associated with that sta.
+The algorithm used here is a large memory algorithm but considered
+acceptable since the total number of instruments in a data set is
+not currently expected to be a limiting factor. If the collection
+were huge it would be better to use a well crafted incantation to
+mongodb.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – mspass Database handle or just a plain MongoDB database
+handle.  (mspass Database is a child of MongoDBs top level database
+handle)</p></li>
+<li><p><strong>collection</strong> – string defining the collection name to scan
+(default is site)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict of stations with nonunique sta codes as the key.  The
+value returned in each field is a set container with net codes that use that
+sta code.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.find_null_net_stations">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">find_null_net_stations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#find_null_net_stations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.find_null_net_stations" title="Permalink to this definition"></a></dt>
+<dd><p>Return a set container of sta fields for documents with a null net
+code (key=net).  Scans collection defined by collection argument.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.find_unique_sta">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">find_unique_sta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'site'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#find_unique_sta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.find_unique_sta" title="Permalink to this definition"></a></dt>
+<dd><p>This function is the complement to find_duplicate_sta.  It returns
+a list of stations with one and only one matching net code.
+Stations in that list can normally be forced in arrival assuming
+the arrival data are not disjoint with the station data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – mspass Database handle or just a plain MongoDB database
+handle.  (mspass Database is a child of MongoDBs top level database
+handle)</p></li>
+<li><p><strong>collection</strong> – string defining the collection name to scan
+(default is site)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict with sta as keys an net as unique net code</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.force_net">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">force_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#force_net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.force_net" title="Permalink to this definition"></a></dt>
+<dd><p>Forces all entries in arrival collection matching input station code
+sta to input value of parameter net.  This is the most brute force
+solution to set a net code, but is often the right tool.  Kind of
+like every toolbox needs a hammer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – Database handle (function hits only arrival collection)</p></li>
+<li><p><strong>sta</strong> – station to set</p></li>
+<li><p><strong>net</strong> – network code to set sta entries to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>number or documents set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.load_css30_arrivals">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">load_css30_arrivals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['evid',</span> <span class="pre">'source_lat',</span> <span class="pre">'source_lon',</span> <span class="pre">'source_depth',</span> <span class="pre">'source_time',</span> <span class="pre">'mb',</span> <span class="pre">'ms',</span> <span class="pre">'sta',</span> <span class="pre">'phase',</span> <span class="pre">'iphase',</span> <span class="pre">'delta',</span> <span class="pre">'seaz',</span> <span class="pre">'esaz',</span> <span class="pre">'residual',</span> <span class="pre">'time',</span> <span class="pre">'deltim']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#load_css30_arrivals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.load_css30_arrivals" title="Permalink to this definition"></a></dt>
+<dd><p>Loads an ascii table of arrival time data extracted from an
+antelope (css3.0) database.   The default format of the table
+is that produced by a shell script linked to this function that
+has the (current) name of dbexport_to_mongodb.csh (that name is
+likely to change before a release).  The names are locked to
+css3.0 attribute names that form the argument list to a
+program called dbselect.   Users of other database can easily
+simulate this in sql by listing the same attributes in the same
+order.  The names used here are translations of concept to mspass.
+Note not all of these attributes would always be required and
+alternative implementation may want to change that list - hence
+attribute_name is a defaulted parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – is a MongoDB database handle.  It can be as basic as
+the return of client(‘dbname’) but it can also be an instance
+of the mspass Database class.  There is no default</p></li>
+<li><p><strong>filename</strong> – is the string defining a file containing the expected
+text file with columns in the order defined by attribute_names.</p></li>
+<li><p><strong>attribute_names</strong> – is the list of MongoDB attribute keys to assign
+to each column of data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>MongoDB InsertManyResult object.  This can be used, for
+example, to get the number of rows inserted in arrival from
+len(r.insertedIds) where r is the symbol given the return.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.load_css30_sources">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">load_css30_sources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srcdict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'source'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['evid',</span> <span class="pre">'lat',</span> <span class="pre">'lon',</span> <span class="pre">'depth',</span> <span class="pre">'time']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#load_css30_sources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.load_css30_sources" title="Permalink to this definition"></a></dt>
+<dd><p>Companion to extract_unique_css30_sources to load output of that
+function into a MongoDB database.   The algorithm is cautious and
+first scans the existing source collection for any matching evids.
+If it finds any it prints them and does nothing but issue an error
+message. That was done because this function is only expected to be
+done interactively for preprocessing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – MongoDB database handle</p></li>
+<li><p><strong>srcdict</strong> – dict output of extract_unique_css30_sources</p></li>
+<li><p><strong>collection</strong> – optional alternative collection to save (default</p></li>
+</ul>
+</dd>
+</dl>
+<p>is source)
+:param attribute_names: list of keys to copy from srcdict to database.</p>
+<blockquote>
+<div><p>Note currently no aliases are allowed and we don’t test that these
+are found.  We assume the list is consistent with what is
+posted by extract_unique_css30_events</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.make_css30_composite_sta">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">make_css30_composite_sta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#make_css30_composite_sta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.make_css30_composite_sta" title="Permalink to this definition"></a></dt>
+<dd><p>Small helper for below but of potential general use.  Creates a
+composite station code using antelope rules for mixing sta and net
+passed as args.  Returns the composite name. (eg. AAK_II or XYZTXX)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.parse_snetsta">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">parse_snetsta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#parse_snetsta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.parse_snetsta" title="Permalink to this definition"></a></dt>
+<dd><p>Parses the raw text file in an antelope db.snetsta file.  It returns a dict with their sta attribute
+as the key (their sta is not necessarily the seed sta).  Each entry points to a dict with keys net and fsta.
+We use fsta as that is the field BRTT defines for the seed sta field in snetsta.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> – is the snetsta file to be parsed.</p></li>
+<li><p><strong>verbose</strong> – if True the function will print all stations for which fsta does not match sta</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.set_arrival_by_time_interval">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">set_arrival_by_time_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">86401.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_immortal_cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#set_arrival_by_time_interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.set_arrival_by_time_interval" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the net code in an arrival collection for occurrences of a specified
+station code using the net code for a given time interval defined in the
+site collection.   This function only works reliably if the time intervals
+of the duplicate station names do overlap in time.  The type example this
+function is useful is station adoption by other networks of TA net code
+station.  Those stations typically change nothing except the network
+code at some specific time, although often the channel configuration also
+changes (e.g. many N4 sites turned on 100 sps data as H channels).</p>
+<p>This function is a bit like a related function called set_netcode_time_interval
+but here the site time intervals for a specified sta field are used.
+set_netcode_time_interval is brutal and will blindly set all matching
+sta in an optional time range to a specified value.   This function is
+preferable when the site collection has an unambiguous net defined by
+time invervals that do not overlap.</p>
+<p>The function will throw an exception and do nothing if the time intervals
+returned by the match to sta overlap.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – mspasspy.db.Database handle (requires arrival and site collections)</p></li>
+<li><p><strong>sta</strong> – station code in arrival to be updated.</p></li>
+<li><p><strong>allowed_overlap</strong> – There are lots of errors in stationxml files
+that cause bogus one day overlap.  This defaults to 1 day but
+it can be set larger or smaller.</p></li>
+<li><p><strong>use_immortal_cursor</strong> – If true the cursor in the update is made
+“immortal” meaning it won’t time out.  This may be necessary if the
+arrival collection is large.</p></li>
+<li><p><strong>verbose</strong> – if true prints a bunch a few messages. Silent (default) otherwise</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>count of number of documents updated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.set_netcode_from_site">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">set_netcode_from_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_immortal_cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stations_to_ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#set_netcode_from_site"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.set_netcode_from_site" title="Permalink to this definition"></a></dt>
+<dd><p>This function scans a MongoDB collection that is assumed to contain
+a “sta” for station code to be cross referenced with metadata stored in
+the site collection.   (The default collection is arrival, but this could
+be used for any table for which sta needs to be regularized to a seed
+net:sta pair.)  The entire objective of the function is to add missing
+seed net codes.   The algorithm used here is the most basic possible and
+looks only for a match of sta and and option time matched with
+a site’s operation interval defined by a starttime to endtime time interval.
+I returns two lists of problem children that have to be handled
+separately:  (1) a set container of station names that have no matching
+value in the current site collection, and (2) a set container with
+a tuple of [net, sta, startime, endtime] values of net:sta combinations
+that are ambiguous.  They are defined as ambiguous if a common sta
+code appears in two or more networks.   Both cases need to be handled
+by subsequent processing. The first, requires scrounging for the
+station metadata.  A good foundation for that is obspy’s get_stations
+function.  The ambiguous station code problem requires rules and special
+handling.   That will be deal with in tools planned for the near future
+but which do not exist at the time this function was finalized.
+The key idea in both cases is to use the output of this function to
+guide additional processing with two different workflows aimed at
+building a clean database to initiate processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – is a MongoDB database handle.  It can be as basic as
+the return of client(‘dbname’) but it can also be an instance
+of the mspass Database class.  There is no default.</p></li>
+<li><p><strong>collection</strong> – MongoDB collection to be updated.  Processing
+keys on the data with key=”sta” and (optional) value of time_key arg.
+(Default is arrival)</p></li>
+<li><p><strong>time_key</strong> – is a document key in collection containing a time
+used to match any site’s operational starttime to endtime time window.
+Default is None which turns off that selection.  Ambiguous keys may
+be reduce in large datasets by using a time key.</p></li>
+<li><p><strong>use_immortal_cursor</strong> – If true the cursor in the update is made
+“immortal” meaning it won’t time out.  This may be necessary if the
+arrival collection is large.</p></li>
+<li><p><strong>stations_to_ignore</strong> – is expected to be a set container listing
+any station codes to be ignored in processing.   This can be used to
+reduce processing overhead or handle sites where net is null and
+not needed at all.   Default is None which turns this option off.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Summary of results in the form of a 4 element tuple.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>tuple with the following contents:
+0 - number of documents processed
+1 - number of documents updated in this run
+2 - set container of tuples with content (net,sta,starttime,endtime)</p>
+<blockquote>
+<div><p>of all documents matching the reference sta code but having
+different net codes or time spans.   These data are stored in a
+set container to easily sort out the unique combinations.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>3 - set container of station codes that found in collection that</dt><dd><p>had no matching entry in the site collection.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.set_netcode_snetsta">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">set_netcode_snetsta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">staindex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_immortal_cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#set_netcode_snetsta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.set_netcode_snetsta" title="Permalink to this definition"></a></dt>
+<dd><p>Takes the dict staindex that defines how snetsta defines seed codes for
+antelope tables and updates a specified collection to add net code and,
+when necessary, repair station name used by antelope to deal with
+multiple sites have the same station code (sta) but different network
+codes.</p>
+<p>Antelope uses the css3.0 schema which was invented before anyone conceived
+the need for handling the quantity of data seen today assembled from
+multiple sources.  As a result the schema has a fundamental flaw
+wherein a channel is defined in css3.0 by two codes we refer to in
+mspass as “sta” and “chan” (these happen to be the same as those used by
+antelope).   When the SEED standard was defined the committee drafting the
+standard had the wisdom to realize sta and chan were not sufficient to
+describe data assembled from multiple sources when station codes were
+chosen independently by network operators.  Hence, they adopted the idea of
+adding a network (net) and location (loc) code to tag all data.   Hence
+all seed and miniseed (seed contains metadata as well as data.  A subset
+of seed called miniseed is the norm today which has only data bunched in
+packets with each packet keyed by net:sta:loc:chan:startime:endtime).</p>
+<p>All that background is included for users to understand the background to
+this function.  BRTT, the developers of Antelope, recognized the limitations
+of css3.0 early on but realized the depth of the problem long after their
+code base was deeply locked into css3.0.  Rather than fix the problem
+right they chose to use a kludge solution that has created a weakness in
+antelope ever since.  To handle duplicate stations they created a composite
+net:sta key with names like AAK_II and composite channel names (for loc
+codes) like BHZ_00.   Things might have been better had they made all
+sta keys this composite, but because users are locked into sta codes
+for a variety of reason they elected to retain sta and use the composite
+ONLY IF a duplicate sta was present.   That method works fine for
+largely static data in fixed network operations (their primary
+customers) but is a huge mess for research data sets bringing in data
+from multiple sources.  Hence, for mspass we need to get rid of anything
+remotely linked to snetsta and schanloc as cleanly as possible.  This
+function is aimed at fixing snetsta problems.</p>
+<p>The function works off an index passed as staindex created by a
+companions function called “parse_snetsta”.   This function scans
+the collection it is pointed at (default is arrival, but any collection
+containing “sta” as an attribute can be handled) and looks for matching
+entries for the “fsta” field in snetsta.  When it finds a match it
+adds the net code it finds in the index, corrects the sta code
+(expanded in a moment), and sets a new attribute “css30_sta”.
+The function handles composite names defined for sta by a simple algorithm
+that duplicates the way antelope handles duplicate station codes.
+If the station code is 3 characters or less the name is created in the
+form sta_net (e.g. sta=’AAK’ and net=’II’ will yield AAK_II).  If
+the sta code is 4 characters long the css30_sta is of the simple
+concatenation ofthe two strings (e.g. sta=’HELL’ and net=’XX’ yields
+‘HELLXX’).   If the code found is longer than 4 characters it is
+assumed to be already a composite created with the same rules.  In that
+case the name is split to pieces and compared to the index fsta and net
+values.  If they match the composite is used unaltered for the css30_sta name and
+the fsta and net values are added as sta and net in the update of the
+document to which they are linked.</p>
+<p>The function also tests documents it processes for an existing net code.
+If it finds one it tests for the existence of css30_sta.   If that
+attribute is already defined it skips updating that document.  If css30_sta
+is not defined it is the only field updated. This was done as a way to
+use a scan of the site collection as an alternative to setting net and
+then using this to set css30_sta as an alias for sta for some operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – is a mongodb database handle.  It can either be the plain result
+of a client(‘dbname’) definition or a mspass.Database class instance.</p></li>
+<li><p><strong>staindex</strong> – is a dict returned by parse_snetsta.  The key of this index is a sta name it function
+expects to find in an arrivals document.  the dict value is a dict with two keys: fsta and net.
+net is the seed network code and fsta is the expected seed station code.  Updates replace the sta
+field in arrivals with the fsta values and put the original sta value in arrival_sta.</p></li>
+<li><p><strong>use_immortal_cursor</strong> – If true the cursor in the update is made
+“immortal” meaning it won’t time out.  This may be necessary if the
+arrival collection is large.</p></li>
+<li><p><strong>collection</strong> – MongoDB collection to scan to apply snetsta correction.
+(default is arrival)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>tuple with these contentss:
+0 - number of documents scanned
+1 - number update
+2 - set of stations names with no match in the snetsta index.</p>
+<blockquote>
+<div><p>(these will often need additonal attention through another
+mechanism)</p>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.set_netcode_time_interval">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">set_netcode_time_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starttime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_filter_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_immortal_cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#set_netcode_time_interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.set_netcode_time_interval" title="Permalink to this definition"></a></dt>
+<dd><p>Forces setting net code for data with a given station code within a
+specified time interval.</p>
+<p>Arrivals measured with Antelope using Datascope to manage the catalog
+data has a disconnect with seed’s required net:sta to specify a unique
+seismic observatory (what we call site). The css3.0 schema does not
+include the net attribute.  This collides with modern stationxml
+files used to deliver instrument metadata because they are always
+indexed by net:sta.   This function is one a collection of functions
+to set the net field in a collection (normally arrival but could
+be other collections with ambiguous sta keys).  This particular function
+is intended as a last resort to more or less force setting net to a
+single value for all documents matching the sta key.   There is an
+optional time range that can be used to fix ambiguous entries like
+some TA stations that were adopted and nothing changed but the net
+code on a particular day.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – Database handle (can be a raw top level MongoDB database pointer
+or a mspass Database class</p></li>
+<li><p><strong>sta</strong> – station name to use as key to set net</p></li>
+<li><p><strong>net</strong> – net code to which all data matching sta will be set
+(a warning is issued if this field in the retrieved docs is already set)</p></li>
+<li><p><strong>collection</strong> – MongoDB collection to be updated (default is arrival)</p></li>
+<li><p><strong>starttime</strong> – starting time period of (optional) time filter.
+(default turns this off) Must be UTCDateTime</p></li>
+<li><p><strong>endtime</strong> – end of time period for (optional) time selection.
+(default is off) Note a MsPASSError will be thrown if endtime is not
+defined by starttime is or vice versa.  Must be a UTCDateTime object</p></li>
+<li><p><strong>time_filter_key</strong> – key used to access document entry to use
+for time range test (startime&lt;=time&lt;=endtime).</p></li>
+<li><p><strong>use_immortal_cursor</strong> – If true the cursor in the update is made
+“immortal” meaning it won’t time out.  This may be necessary if the
+arrival collection is large.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>number of documents updated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.css30.dbarrival.set_source_id_from_evid">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.css30.dbarrival.</span></span><span class="sig-name descname"><span class="pre">set_source_id_from_evid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_immortal_cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/dbarrival.html#set_source_id_from_evid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.dbarrival.set_source_id_from_evid" title="Permalink to this definition"></a></dt>
+<dd><p>Sets source_id in arrivals by matching evid attributes in the
+source collection.   The concept here is that source_id is the
+unique key in MsPASS but evid is a foreign key defined when
+importing data from a CSS3.0 database.   The evid key can thus
+not be trusted so if we override it with a source_id we can
+guarantee it is unique.  This function will only work if the evid
+attribute is set in documents in the source collection.  Currently
+this can be done with a function called load_css30_sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – MongoDB handle or MsPASS Database object managing these data.</p></li>
+<li><p><strong>collection</strong> – collection to search default is arrival, but any
+collection that has evid defined could be scanned.  The algorithm
+simply tries to match evid and updates documents it finds with
+the object id of the source record it matches.</p></li>
+<li><p><strong>use_immortal_cursor</strong> – If true the cursor in the update is made
+“immortal” meaning it won’t time out.  This may be necessary if the
+arrival collection is large.</p></li>
+<li><p><strong>update_all</strong> – if true the function will force cross referencing and
+setting every document in arrival.  The default (False) updates only
+documents where the source_id is not yet set.  The default behavior,
+for example, would be the norm when new arrival data is added to a
+database and need that indexing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple of results with mixed content.  0 and 1 are integers
+defining number of documents processed and the number altered
+respectively.   2 is a dict keyed by evid with a value equal to the
+count of the number of documents found and altered with that evid.
+Component 3 is the dict of the complement to 2; evid keyed dict
+with the count of the number of documents encountered but which
+for which evid did not match any document in source.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mspasspy.preprocessing.seed.ensembles">
+<span id="seed"></span><h2>seed<a class="headerlink" href="#module-mspasspy.preprocessing.seed.ensembles" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.ensembles.dbsave_raw_index">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.ensembles.</span></span><span class="sig-name descname"><span class="pre">dbsave_raw_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'import_miniseed_ensemble'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/ensembles.html#dbsave_raw_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.ensembles.dbsave_raw_index" title="Permalink to this definition"></a></dt>
+<dd><p>Database save to db for a panda data frame pdframe.
+This crude version collection name is frozen as import_miniseed_ensemble.  db is
+assumed to be the client root for mongodb or the mspasspy Client
+that is a child of MongoClient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – MongoClient or mspass Client to save data desired</p></li>
+<li><p><strong>pdframe</strong> – panda data frame to be saved</p></li>
+<li><p><strong>collection</strong> – collection to which the data in pdframe is to be
+saved.  Default is ‘import_miniseed_ensemble’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.ensembles.dbsave_seed_ensemble_file">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.ensembles.</span></span><span class="sig-name descname"><span class="pre">dbsave_seed_ensemble_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gather_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'event'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/ensembles.html#dbsave_seed_ensemble_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.ensembles.dbsave_seed_ensemble_file" title="Permalink to this definition"></a></dt>
+<dd><p>Indexer for SEED files that are already assembled in a
+“gather” meaning the data have some relation through one or more
+keys.   The association may be predefined by input though a
+keys array or left null for later association.   There is a large
+overhead in this function as it has to read the entire seed file
+to acquire the metadata it needs.  This version uses a bigger
+memory bloat than required because it uses obspy’s seed reader
+that always eats up the whole file and returns a list of
+Trace object.  A less memory intensive approach would be to
+scan the seed blockettes to assemble the metadata, but
+that would be a future development.</p>
+<p>A KEY POINT about this function is that it ONLY builds an index
+for the data file it is given.  That index is loosely equivalent to
+the css3.0 wfdisc table, but organized completely differently.</p>
+<p>This function writes records into a import_miniseed_ensemble collection.
+The records written are a hierarchy expressed in json (bson) of
+how a Ensemble object is define: i.e. ensemble Metadata
+combined with a container of TimeSeries of Seismogram objects.
+Because SEED data always defines something that directly maps to
+TimeSeries this only works to create an index to build
+TimeSeriesEnsemble objects.</p>
+<p>This function was written to index ensembles that are passive
+array common event (source) gathers.  These are the passive array
+equivalent of a shot gather in reflection processing.   The
+format of the json(bson) document used for the index, however,
+is not limited to that case.  The gather type is defined by a
+metadata key (for this prototype the key is “gather_type”).  The
+concept is the gather_type can be used as both a filter to select
+data and as a hint to readers on how to handle the data bundle.</p>
+<p>The gather (ensemble) metadata include a list of dict
+data that define a json/bson document defining the members of
+an ensemble.   Other documentation will be needed to define this
+concept more clearly with figures.</p>
+<p>A design constraint we impose for now is that one file generates
+one document in the import_miniseed_ensemble collection.   This means if
+the data for an ensemble is spread through several files the
+best approach is to convert all the data to TimeSeries objects and
+assemble them with a different algorithm</p>
+<p>A final point about this function is that it dogmatically always produces a
+unique uuid string using the ProcessingHistory newid method.   Be warned
+that that string CANNOT be converted to a MongoDB ObjectId as it is
+generated by a completely different algorithm.  The uuid is posted with
+the key “seed_file_id” to provide a unique name.  That id is used
+by the reader in this module to define a unique origin for a channel of
+data.  We note that usage is problematic for finding a particular
+waveform linked to a seed_file_id because the index storeds that
+attribute in subdocuments for each ensemble.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – MongoDB database pointer - may also be a mspass Database
+class</p></li>
+<li><p><strong>file</strong> – seed file containing the data to be indexed.</p></li>
+<li><p><strong>gather_type</strong> – <dl class="simple">
+<dt>character string defining a name that defines</dt><dd><p>a particular ensemble type.  Default is “event”, which is the
+only currently supported format.  (others keyword will cause an
+error to be thrown)  Anticipated alternatives are:  “common_receiver”
+or “station”, “image_point”, and “time_window”.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">return<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ObjectId of the document inserted that is the index for
+the file processed.</p>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.ensembles.erase_seed_metadata">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.ensembles.</span></span><span class="sig-name descname"><span class="pre">erase_seed_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['mseed',</span> <span class="pre">'_format']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/ensembles.html#erase_seed_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.ensembles.erase_seed_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Erase a set of debris obspy’s reader adds to stats array that get copied to data.  We
+don’t need that debris once data are converted to MsPASS data objects and stored in
+MongoDB.  Use this function when importing seed data with obspy’s reader to
+reduce junk in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – is the data object to be cleaned (assumed only to be a child of Metadata so
+erase will work.</p></li>
+<li><p><strong>keys</strong> – list of keys to clear.  Default should be all that is needed for
+standard use.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.ensembles.link_source_collection">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.ensembles.</span></span><span class="sig-name descname"><span class="pre">link_source_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefer_evid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/ensembles.html#link_source_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.ensembles.link_source_collection" title="Permalink to this definition"></a></dt>
+<dd><p>This prototype function uses a not at all generic method to link data
+indexed in a import_miniseed_ensemble collection to source data assumed stored
+in the source collection.   The algorithm is appropriate ONLY if the
+data are downloaded by obspy with a time window defined by a start time
+equal to the origin time of the event.   We use a generic test to check
+if the median ensemble start time (pulled from import_miniseed_ensemble record)
+is within +-dt of any origin time in source.   If found we extract the
+source_id of the maching event document and then update the record in
+import_miniseed_ensemble being handled.  Tha process is repeated for each
+document in the import_miniseed_ensemble collection.</p>
+<p>To handle css3.0 set the prefer_evid boolean True (default is False).
+When used the program will use a document with an evid set as a match
+if it finds multiple source matches.  This feature is used to match
+data with arrivals exported from a css3.0 database where the source
+data is embedded in the exported database view table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – MongoDB top level handle or a mspasspy.Database object to
+be accessed - this function is  pure database function talking to
+this db</p></li>
+<li><p><strong>dt</strong> – time range of match (search is + to - this value)</p></li>
+<li><p><strong>prefer_evid</strong> – As noted above if True select the source doc with
+evid set when there are multiple matches.</p></li>
+<li><p><strong>verbose</strong> – when true output will be more verbose.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.ensembles.load_arrivals_by_id">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.ensembles.</span></span><span class="sig-name descname"><span class="pre">load_arrivals_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tsens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'P'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required_key_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'phase':</span> <span class="pre">'phase',</span> <span class="pre">'time':</span> <span class="pre">'arrival_time'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_key_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'deltim':</span> <span class="pre">'deltim',</span> <span class="pre">'iphase':</span> <span class="pre">'iphase'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/ensembles.html#load_arrivals_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.ensembles.load_arrivals_by_id" title="Permalink to this definition"></a></dt>
+<dd><p>Special prototype function to load arrival times in arrival collection
+to TimeSeries data in a TimeSeriesEnsemble. Match is a fixed query
+that uses source_id tht is assumed set for the ensemble AND previously
+defined for all arrival documents to be matched.  The correct record
+in arrival is found by the combination of matching source_id, net, and sta.
+This algorithm does a lot of queries to the arrival collection so an
+index on net and sta is essential.   Probably would be good to add source_id
+to the index as well.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – MongoDB database handle or mspsspy.Database object</p></li>
+<li><p><strong>tsens</strong> – TimeSeriesEnsemble to be processed</p></li>
+<li><p><strong>required_key_map</strong> – a  dict of pairs defining how keys in
+arrival should map to metadata keys of ensemble members.  The key of
+each entry in the dict is used to fetch the required attribute from
+the MongoDB doc found in a query.  The value of that attribute is
+posted to each member TimeSeries object with the value of the key
+value pair associated with that entry.  e.g. for the default
+we fetch the data from the MongoDB document with the key time and
+write the value retrieved to Metadata with the key arrival.time.
+If a required key is not found in the arrival document a MsPASSError
+will be logged  and that member will be marked dead.  Users should
+always test for an empty ensemble after running this function.</p></li>
+<li><p><strong>optional_key_map</strong> – similar to required_key_map but missing attributes
+only geneate a complaint message and the data will be left live</p></li>
+<li><p><strong>verbose</strong> – print some messages otherwise only posted to elog</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>count of number of live members in the ensemble at completion</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.ensembles.load_channel_data">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.ensembles.</span></span><span class="sig-name descname"><span class="pre">load_channel_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/ensembles.html#load_channel_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.ensembles.load_channel_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loads channel data into ens.  Similar to load_source_data but uses a diffrent
+match:  net,sta,loc,time matching startdate-&gt;enddate.   Mark members dead and
+post an elog message if required metadata are not found.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.ensembles.load_hypocenter_data_by_time">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.ensembles.</span></span><span class="sig-name descname"><span class="pre">load_hypocenter_data_by_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbtime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdtime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time_P'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_id_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'evid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'P'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'iasp91'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0_definition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'origin_time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_null</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/ensembles.html#load_hypocenter_data_by_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.ensembles.load_hypocenter_data_by_time" title="Permalink to this definition"></a></dt>
+<dd><p>Loads hypocenter data (space time coordinates) into an ensemble using
+an arrival time matching algorithm.  This is a generalization of earlier
+prototypes with the objective of a single interface to a common concept -
+that is, matching arrival documents to ensemble data using timing
+based on travel times.</p>
+<p>We frequently guide processing by the time of one or more seismic phases.
+Those times can be either measured times done by a human or an automated
+system or theoretical times from an earth model.   This function should
+work with either approach provided some earlier function created an
+arrival document that can be used for matching.  The matching algorithm uses
+three keys:  an exact match for net, an exact match for sta, and a time
+range travel time association.</p>
+<p>The algorithm is not a general associator.  It assumes we have access to
+an arrival collection that has been previously associated.  For those
+familiar with CSS3.0 the type example is the join of event-&gt;origin-&gt;assoc-&gt;arrival
+grouped by evid or orid.  We use a staged match to the ensemble to
+reduce compute time.  That is, we first run a db find on arrival to select
+only arrival documents within the time span of the ensemble with the
+defined arrival name key.  From each matching arrival we compute a theoretical
+origin time using obspy’s taup calculator and a specified model and
+hypocenter coordinates in the arrival document that we assume was loaded
+previously from a css3.0 database (i.e. the event-&gt;origin-&gt;assoc-&gt;arrival
+view).   We then select and load source coordinates for the closest
+origin time match in the source collection.   This is much simpler than
+the general phase association (determine source coordinates from a random
+bad of arrival times) but still has one complication - if multiple
+events have arrivals within the time span of the ensemble the simple match
+described above is ambiguous.   We resolve that with a switch defined by
+the argument t0_definition.   Currently there are two options defining
+the only two options I know of for time selection of downloaded segments.
+(1) if set to ‘origin_time’ we assume member t0 values are near the origin
+time of the event.  (2) if set to ‘phase_time’ we assume the member t0
+values are relative to the phase used as a reference.  In both cases an
+optional t0_offset can be specified to offset each start time by a constant.
+The sign of the shift is to compare the data start time to the computed
+time MINUS the specified offset.  (e.g. if the reference is a P phase time
+and we expect the data to have been windowed with a start time 100 s before
+the theoretical P time, the offset would be 100.0)   Note if arrival windowing
+is selected the source information in arrival will not be referenced but
+that data is required if using origin time matching.  In any case when
+multiple sources are found to match the ensemble the one with the smallest
+rms misfit for the windowing is chosen.  A warning message is always
+posted in that situation.</p>
+<p>By default any ensemble members without a match in arrival will be
+killed. Note we use the kill method which only marks the data dead but
+does not clear the contents. Hence, on exit most ensembles will have
+at least some members marked dead.  The function returns the number of
+members set.  The caller should test and complain if there are no matches.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.ensembles.load_one_ensemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.ensembles.</span></span><span class="sig-name descname"><span class="pre">load_one_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jobname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Default</span> <span class="pre">job'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jobid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'99999'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'99999'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_mdkeys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_calib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/ensembles.html#load_one_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.ensembles.load_one_ensemble" title="Permalink to this definition"></a></dt>
+<dd><p>This function can be used to load a full ensemble indexed in the
+collection import_miniseed_ensemble.  It uses a large memory model
+that eat up the entire file using obspy’s miniseed reader.   It contains
+some relics of early ideas of potentially having the function
+utilize the history mechanism.  Those may not work, but were retained.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doc</strong> – is one record in the import_miniseed_ensemble collection</p></li>
+<li><p><strong>create_history</strong> – if true each member of the ensemble will be
+defined in the history chain as an origin and jobname and jobid will be
+be used to construct the ProcessingHistory object.</p></li>
+<li><p><strong>jobname</strong> – as used in ProcessingHistory (default “Default job”)</p></li>
+<li><p><strong>jobid</strong> – as used in processingHistory</p></li>
+<li><p><strong>algid</strong> – as used in processingHistory</p></li>
+<li><p><strong>ensemble_mdkeys</strong> – list of keys to copy from first member to ensemble
+Metadata (no type checking is done)</p></li>
+<li><p><strong>apply_calib</strong> – if True tells obspy’s reader to apply the calibration
+factor to convert the data to ground motion units.  Default is false.</p></li>
+<li><p><strong>verbose</strong> – write informational messages while processing</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.ensembles.load_site_data">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.ensembles.</span></span><span class="sig-name descname"><span class="pre">load_site_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/ensembles.html#load_site_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.ensembles.load_site_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loads site data into ens.  Similar to load_source_data but uses a diffrent
+match:  net,sta, time matching startdate-&gt;enddate.   Mark members dead and
+post an elog message if the site coordinates are not found.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.ensembles.load_source_data_by_id">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.ensembles.</span></span><span class="sig-name descname"><span class="pre">load_source_data_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/ensembles.html#load_source_data_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.ensembles.load_source_data_by_id" title="Permalink to this definition"></a></dt>
+<dd><p>Prototype function to load source data to any MsPASS data object
+based on the normalization key.  That keys is frozen in this version
+as “source_id” but may be changed to force constraints by the mspasspy
+schema classes.</p>
+<p>Handling of Ensembles and atomic objects are different conceptually but
+in fact do exactly the same thing.   That is, in all cases the
+algorithm queries the input object for the key “source_id”.  If that
+fails it returns an error.  Otherwise, it finds the associated document
+in the source collection.   It then posts a frozen set of metadata to
+mspass_object.   If that is an ensemble it is posted to the ensemble
+metadata area.  If it is an atomic object it gets posted to the atomic object’s
+metadata area.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.ensembles.obspy_mseed_file_indexer">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.ensembles.</span></span><span class="sig-name descname"><span class="pre">obspy_mseed_file_indexer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/ensembles.html#obspy_mseed_file_indexer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.ensembles.obspy_mseed_file_indexer" title="Permalink to this definition"></a></dt>
+<dd><p>Use obspy’s miniseed reader to eat up a (potentially large) file and
+build an index as a table (returned) of data that can be written to
+a database.   Obspy’s reader was written to accept the abomination of
+miniseed with random packets scattered through the file (or so it seems,
+since they have no foff concept in their reader).  Hence, what this reader
+does is make a table entry for each net:sta:chan:loc trace object their
+reader returns.   It does this with panda dataframes to build the
+table.  One required argument is the file name containing the miniseed data.</p>
+</dd></dl>
+
+<span class="target" id="module-mspasspy.preprocessing.seed.util"></span><dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.util.channel_report">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.util.</span></span><span class="sig-name descname"><span class="pre">channel_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/util.html#channel_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.util.channel_report" title="Permalink to this definition"></a></dt>
+<dd><p>Prints a nicely formatted table of information about channel documents
+matching a set of seed codes.</p>
+<p>SEED uses net, sta, chan, and loc codes along with time intervals
+to define a unique set of metadata for a particular channel of
+seismic observatory data.  This function can be used to produce a
+human readable table of data linked to one or more of these keys.
+All queries are exact matches against defined keys for the
+net, sta, chan, and loc arguments.  If a time stamp is given it will
+produce an interval query for records where
+starttime&lt;=time&lt;=endtime.   Omiting any key will cause all values
+for that key to be returned.  e.g. specifying only net, sta, and
+loc will produce a table of all matching net, sta, loc entries
+for all channels and all times (if there are multiple time interval
+documents).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – required mspasspy.db.Database handle.</p></li>
+<li><p><strong>net</strong> – seed network code</p></li>
+<li><p><strong>sta</strong> – seed station code</p></li>
+<li><p><strong>chan</strong> – seed channel code</p></li>
+<li><p><strong>loc</strong> – seed location code</p></li>
+<li><p><strong>time</strong> – time stamp used as described above.  Can be either
+a unix epoch time or a UTCDateTime.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.preprocessing.seed.util.site_report">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.util.</span></span><span class="sig-name descname"><span class="pre">site_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/util.html#site_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.util.site_report" title="Permalink to this definition"></a></dt>
+<dd><p>Prints a nicely formatted table of information about site documents
+matching a set of seed codes.</p>
+<p>SEED uses net, sta, chan, and loc codes along with time intervals
+to define a unique set of metadata for a particular channel of
+seismic observatory data.  This function can be used to produce a
+human readable table of data linked to one or more of these keys
+save as documents in the MsPASS site collection.   The site
+collection has no information on channels and is used only to
+define the spatial location of a “seismic station”.  Hence
+not channel information will be printed by this function since
+there is none in the site collection.</p>
+<p>All queries are exact matches against defined keys for the
+net, sta, and loc arguments.  If a time stamp is given it will
+produce an interval query for records where
+starttime&lt;=time&lt;=endtime.   Omiting any key will cause all values
+for that key to be returned.  e.g. specifying only net and
+stat will produce a table of all matching net and sta entries
+for all location codes and all times (if there are multiple time interval
+documents).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – required mspasspy.db.Database handle.</p></li>
+<li><p><strong>net</strong> – seed network code</p></li>
+<li><p><strong>sta</strong> – seed station code</p></li>
+<li><p><strong>loc</strong> – seed location code</p></li>
+<li><p><strong>time</strong> – time stamp used as described above.  Can be either
+a unix epoch time or a UTCDateTime.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mspasspy.io.html" class="btn btn-neutral float-left" title="mspasspy.io" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mspasspy.reduce.html" class="btn btn-neutral float-right" title="mspasspy.reduce" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

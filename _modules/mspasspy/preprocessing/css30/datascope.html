@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.preprocessing.css30.datascope &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=f6245a2f"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../../../../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mspasspy.preprocessing.css30.datascope</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mspasspy.preprocessing.css30.datascope</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This file contains a DatascopeDatabase class that can be used to </span>
+<span class="sd">interaction with an Antelope(Datascope) flat file database.   It is not </span>
+<span class="sd">intended to be a fully functional database handle.  It can, however, </span>
+<span class="sd">bu used as a base class to add additional functionality.</span>
+
+<span class="sd">The main point of this implementation is a mean to translate Antelope </span>
+<span class="sd">tables that can be used for related seismic data processing.   The </span>
+<span class="sd">two main known uses are:  (1) translating a table to a MongoDB </span>
+<span class="sd">collection and (2) loadng a small table to create a normalizing </span>
+<span class="sd">operator via a subclass of the generic :class:`mspasspy.db.normalize.BasicMatcher`</span>
+<span class="sd">class.  Although not currently implementd it could also, for example, </span>
+<span class="sd">but used to create a reader driven by a wfdisc table.  </span>
+
+<span class="sd">The &quot;translation&quot; model this class uses is to create a DataFrame </span>
+<span class="sd">image of the a single table or what Antelope developers call a </span>
+<span class="sd">database view.  The class only supports pandas DataFrame assuming that </span>
+<span class="sd">tables are small enough to fit in memory.   An extremely good assumption </span>
+<span class="sd">since Datascope uses that model.  Note, however, that if one needs to </span>
+<span class="sd">create a giant table from many fragmented databases as is common with </span>
+<span class="sd">large network operations with Antelope, the  dask DataFrame `merge`</span>
+<span class="sd">method can be used to combine a string of multiple, common tables. </span>
+
+<span class="sd">The inverse of writing a DataFrame to an Datascope table is also </span>
+<span class="sd">supported via the `df2table` method.   The forward and inverse </span>
+<span class="sd">translations can be used as the basis for workflows that </span>
+<span class="sd">utilize both MsPASS an Antelope.   e.g. if you have a license </span>
+<span class="sd">for Antelope you could use their database-driven event detection </span>
+<span class="sd">and association algorithms to create a catalog and use MsPASS </span>
+<span class="sd">for waveform processing that utilizes the catalog data.   </span>
+
+<span class="sd">The class constructor uses an Antelope pf file to define the </span>
+<span class="sd">tables it knows how to parse.  A master pf for most tables is </span>
+<span class="sd">distributed with mspass.   To parse uncommon tables not defined in </span>
+<span class="sd">the master pf file you will need a license for antelope to run the </span>
+<span class="sd">python script found in Antelope contrib and in mspass called </span>
+<span class="sd">`Database_schema`.  We include a copy of that script in the </span>
+<span class="sd">&quot;scripts&quot; directory one level below this one in the directory tree.  </span>
+<span class="sd">Be aware that script will not run, however, without a license for</span>
+<span class="sd">Antelope because it requires proprietary libraries supplied with Antelope. </span>
+<span class="sd">An alternative for those unable to secure an antelope license is to </span>
+<span class="sd">build the pf that script generates by hand.  You can use the </span>
+<span class="sd">standard version for css3.0 tables to see the clear pattern.</span>
+<span class="sd">It is VERY IMPORTANT to realize that if you build that pf by hand </span>
+<span class="sd">you must list attributes in the &quot;attributes Tbl&quot; in the </span>
+<span class="sd">left to right table order of the Datascope schema definition.  </span>
+<span class="sd">Readers will work if you violate that rule, but the writer will </span>
+<span class="sd">scramble the output if you do and the result will almost certainly </span>
+<span class="sd">by unreadable by Datascope.   </span>
+
+
+<span class="sd">@author: Gary L. Pavlis</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">AntelopePf</span><span class="p">,</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="DatascopeDatabase"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase">[docs]</a><span class="k">class</span> <span class="nc">DatascopeDatabase</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbname</span><span class="p">,</span> <span class="n">pffile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor for this class.  It parses either the master</span>
+<span class="sd">        file describing the CSS3.0 schema or the (optional) alternative</span>
+<span class="sd">        defined with the pffile argument.  The schema properties are loaded</span>
+<span class="sd">        into memory and stored as an internal data structure used to</span>
+<span class="sd">        efficiently deal with the ugly formatting issues. The</span>
+<span class="sd">        database name, which is passed by the arg dbname, is not used until</span>
+<span class="sd">        one of the methods is called.  Only the name is stored in the</span>
+<span class="sd">        instance of the object this constructor creates.   Hence, you</span>
+<span class="sd">        won&#39;t know if the reader works until you try reading a table</span>
+<span class="sd">        with the `get_table` method,.</span>
+
+<span class="sd">        :param dbname:  dbname is the root name for the</span>
+<span class="sd">        flat files used by antelope.  (e.g. if we had a file usarray.wfdisc,</span>
+<span class="sd">        the dbname would be usarray and wfdisc is a table name).</span>
+
+<span class="sd">        :param pffile:  parameter file name used to create the data structure</span>
+<span class="sd">        used internally by this class.   If None (the default)</span>
+<span class="sd">        the constructor looks for a master file called DatascopeDatabase.pf</span>
+<span class="sd">        that it will attempt to read from $MsPASS_HOME/data/pf.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbname</span> <span class="o">=</span> <span class="n">dbname</span>
+        <span class="k">if</span> <span class="n">pffile</span> <span class="o">==</span> <span class="s2">&quot;master&quot;</span><span class="p">:</span>
+            <span class="n">home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MSPASS_HOME&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">home</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">&quot;AntelopeDatabase constructor: &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;MSPASS_HOME not defined.  Needed for default constructor</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;Specify a full path for pf file name or set MsPASS_HOME&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="s2">&quot;data/pf&quot;</span><span class="p">,</span> <span class="s2">&quot;AntelopeDatabase.pf&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">pffile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pf</span> <span class="o">=</span> <span class="n">AntelopePf</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DatascopeDatabase.get_table"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table">[docs]</a>    <span class="k">def</span> <span class="nf">get_table</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">table</span><span class="o">=</span><span class="s2">&quot;wfdisc&quot;</span><span class="p">,</span>
+        <span class="n">attributes_to_use</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method converts a specified table to a dataframe.   Default</span>
+<span class="sd">        will load all attributes of the specified table.  The equivalent of</span>
+<span class="sd">        an SQL select clause can be done by passing a list of attribute</span>
+<span class="sd">        names through the `attributes_to_use` argument.  Note that list</span>
+<span class="sd">        does not need to be in the same order as the attributes are stored</span>
+<span class="sd">        in the Datascope text files from which the requested data will be</span>
+<span class="sd">        retrieved.</span>
+
+<span class="sd">        Note if you want to change the names of the attributes of the</span>
+<span class="sd">        DataFrame this method returns, use the pandas `rename` method</span>
+<span class="sd">        on the return.   See numerous online sources for use of</span>
+<span class="sd">        the `rename` method.</span>
+
+<span class="sd">        :param rename_attributes:  optional python dictionary used to</span>
+<span class="sd">        change the names of one or more columns of the output dataframe.</span>
+<span class="sd">        This argument is passed directly to the dataframe rename method.</span>
+<span class="sd">        Default is None which cause the rename call to be bypassed.</span>
+
+<span class="sd">        :param attributes_to_use:  optional python list of attribute</span>
+<span class="sd">        names to extract from the larger table.  If used only the attributes</span>
+<span class="sd">        defined in the list will be returned in the dataframe. Default is</span>
+<span class="sd">        None which cause all attributes in the table to be returned.</span>
+
+<span class="sd">        :return:  DataFrame representation of requested table with optional</span>
+<span class="sd">        edits applied.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">cols</span><span class="p">,</span> <span class="n">alldtypes</span><span class="p">,</span> <span class="n">nullvalues</span><span class="p">,</span> <span class="n">fmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_attribute_name_tbl</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">attributes_to_use</span><span class="p">:</span>
+            <span class="n">load_list</span> <span class="o">=</span> <span class="n">attributes_to_use</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Don&#39;t use the keys of the returned dictionaries as they</span>
+            <span class="c1"># won&#39;t be in table order.  More efficient, i assume, to read</span>
+            <span class="c1"># the file wthout scrampling the columns</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_line_format_pf</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+            <span class="n">load_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">:</span>
+                <span class="n">load_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">colspecs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dtypes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">load_list</span><span class="p">:</span>
+            <span class="n">colspecs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="n">dtypes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">alldtypes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="c1"># Antelope specific syntax.  The flat files in antelope are</span>
+        <span class="c1"># constructed in the form dbname.table.  We construct that file</span>
+        <span class="c1"># name here.  Note support for antelope&#39;s alias mechanism to</span>
+        <span class="c1"># put tables in multiple directories is not supported here.</span>
+        <span class="c1"># if someone else needs that they can write it - it will be tedious.</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbname</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">table</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">colspecs</span><span class="o">=</span><span class="n">colspecs</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">load_list</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtypes</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="DatascopeDatabase.get_primary_keys"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_primary_keys">[docs]</a>    <span class="k">def</span> <span class="nf">get_primary_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of the primary keys defined for this table</span>
+<span class="sd">        in the parameter file used to create this handle.   These</span>
+<span class="sd">        keys are used to produce a form of &quot;natural join&quot; in the</span>
+<span class="sd">        join method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pf</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+        <span class="n">tbl</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">get_tbl</span><span class="p">(</span><span class="s2">&quot;primary_keys&quot;</span><span class="p">)</span>
+        <span class="c1"># This is necessary to convert a C++ std::list defined by pybind11</span>
+        <span class="c1"># to a python list</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">tbl</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="DatascopeDatabase.get_nulls"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_nulls">[docs]</a>    <span class="k">def</span> <span class="nf">get_nulls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve dictionary of null values for attributes in a table.</span>
+
+<span class="sd">        Unlike MongoDB a relational database requires a Null value to</span>
+<span class="sd">        define when a table cell is not defined.   This method</span>
+<span class="sd">        returns the Null value defined for Datascope tables in their</span>
+<span class="sd">        schema.   This method returns all the null values for a</span>
+<span class="sd">        table in a python dictionary keyed by the attibute</span>
+<span class="sd">        names defined for the schema for that table. That algorithm</span>
+<span class="sd">        is used instead of a function retrievng a value given table</span>
+<span class="sd">        and attribute as arguments for two reasons.  (1) Most</span>
+<span class="sd">        conceivale applications would need most if not all of the</span>
+<span class="sd">        Null values to use the data anyway and (2) the difference in</span>
+<span class="sd">        time to fetch one value versus all is near zero because a</span>
+<span class="sd">        linear search through a list is required to fetch a single</span>
+<span class="sd">        value.</span>
+
+<span class="sd">        :param table:  name of the table for which Null values is to</span>
+<span class="sd">        be retrieved.</span>
+<span class="sd">        :type table:  string</span>
+<span class="sd">        :return:  python dictionary key by attribute names with Nulls</span>
+<span class="sd">        as the value associated with that attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">allproperties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_attribute_name_tbl</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">allproperties</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DatascopeDatabase.join"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">df_left</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">join_keys</span><span class="o">=</span><span class="s2">&quot;right_primary&quot;</span><span class="p">,</span> <span class="n">right_suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;right&quot;</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method provides a limited join functionality between an</span>
+<span class="sd">        input dataframe and a specified table.  It works with multiple</span>
+<span class="sd">        join keys but the only matches supported are exact matches using</span>
+<span class="sd">        string or integer keys.  It is really just a front end on</span>
+<span class="sd">        dataframe merge that loads and joins a named table to the</span>
+<span class="sd">        input dataframe passed through arg 0 (df_left).   If more</span>
+<span class="sd">        sophisticated join operators are needed there are two options:</span>
+<span class="sd">            1.  Do the join operator externally in Datascaope,</span>
+<span class="sd">                save the result as a Datascope view in a csv format, and then</span>
+<span class="sd">                inport the csv file with the pandas read_csv method.</span>
+<span class="sd">            2.  Save the larger of the two tables you want to join to</span>
+<span class="sd">                MongoDB and use one of the generic matchers that are</span>
+<span class="sd">                subclasses of :class:`mspasspy.db.normalize.DataFrameCacheMatcher`.</span>
+<span class="sd">                If the matching operation you need is not already defined you</span>
+<span class="sd">                may need to develop a custom subclass of that matcher.</span>
+
+<span class="sd">        :param df_left:  dataframe to which table (arg1) is to be joined.</span>
+
+<span class="sd">        :param table:  antelope database table name to be joined with df_left.</span>
+
+<span class="sd">        :param join_keys:  If not specified the keys returned by the</span>
+<span class="sd">        get_primary_keys method will be used for left and right tables in the join.</span>
+<span class="sd">        Can be a list of attribute names and if so left and right join</span>
+<span class="sd">        keys will be the same.  Can also be a python dictionary.  Use</span>
+<span class="sd">        that form if you want to use different keys for the left and</span>
+<span class="sd">        right tables in the join.  The keys of the dict are used for</span>
+<span class="sd">        the left and the values are used for the right.</span>
+
+<span class="sd">        :param right_suffix:  Duplicate attribute names in a merge</span>
+<span class="sd">        need a way to be identified. Default uses the table name with</span>
+<span class="sd">        a leading underscore. (e.g. joining site would produce an lddate_site</span>
+<span class="sd">        attribute in the output dataframe).   If any other string is used</span>
+<span class="sd">        it is passed directly to the dataframe merge method and you will</span>
+<span class="sd">        get different names for ambiguous column names.</span>
+
+<span class="sd">        :param how:  defines the type of join operation to use.</span>
+<span class="sd">        Passed directly to the merge dataframe method.  See documentation</span>
+<span class="sd">        for dataframe merge to see options allowed for how.</span>
+
+<span class="sd">        :return:  dataframe resulting from the join</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">right_suffix</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">right_suffix</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">table</span>
+        <span class="n">df_right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">join_keys</span> <span class="o">==</span> <span class="s2">&quot;right_primary&quot;</span><span class="p">:</span>
+            <span class="n">right_jkeys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_keys</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+            <span class="n">left_jkeys</span> <span class="o">=</span> <span class="n">right_jkeys</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">join_keys</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">right_jkeys</span> <span class="o">=</span> <span class="n">join_keys</span>
+            <span class="n">left_jkeys</span> <span class="o">=</span> <span class="n">join_keys</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">join_keys</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">right_jkeys</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">left_jkeys</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">join_keys</span><span class="p">:</span>
+                <span class="n">left_jkeys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="n">right_jkeys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">join_keys</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;AntelopeDatabase.join:  Illegal type=&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">join_keys</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot; for join_key arg.</span><span class="se">\n</span><span class="s2">Must be string, list, or dict&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="c1"># merge allows variations for left, right, inner, outter, and cross</span>
+        <span class="c1"># for the how clause.  Default users the merge default of &#39;inner&#39;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df_left</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+            <span class="n">df_right</span><span class="p">,</span>
+            <span class="n">how</span><span class="o">=</span><span class="n">how</span><span class="p">,</span>
+            <span class="n">left_on</span><span class="o">=</span><span class="n">left_jkeys</span><span class="p">,</span>
+            <span class="n">right_on</span><span class="o">=</span><span class="n">right_jkeys</span><span class="p">,</span>
+            <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">right_suffix</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># online sources suggest merge can clobber the index for the</span>
+        <span class="c1"># merged dataframe but I don&#39;t think that matters for this</span>
+        <span class="c1"># intended application - beware though</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="DatascopeDatabase.df2table"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table">[docs]</a>    <span class="k">def</span> <span class="nf">df2table</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="s2">&quot;wfdisc&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inverse of get_table method.   Writes contents of DataFrame</span>
+<span class="sd">        `df` to Datascope table inferred from the `table` argument.</span>
+<span class="sd">        That is, the method attempts to write the contents of df to</span>
+<span class="sd">        a file &quot;db.table&quot; with an optional diretory (dir argument).</span>
+<span class="sd">        It will immediately throw an exception if any of the df column</span>
+<span class="sd">        keys do not match an attribute name for the schema defined for</span>
+<span class="sd">        the specified table.  Missing keys will be written as the</span>
+<span class="sd">        null value defined for the schema using the pf file loaded</span>
+<span class="sd">        with the class constructor.</span>
+
+<span class="sd">        Default behavior is to write to the Datascope handle defined as</span>
+<span class="sd">        the &quot;self&quot; by the class constructor.   An alternative instance</span>
+<span class="sd">        of the class can be used to override the default by passing that</span>
+<span class="sd">        instance via the db argument.  Default always appends to any</span>
+<span class="sd">        existing data in the output table.   Set append to False to</span>
+<span class="sd">        clear any previous content.</span>
+
+<span class="sd">        :param df: pandas DataFrame containing data to be written.  Note the</span>
+<span class="sd">        column names must match css3.0 schema mames or an exception will</span>
+<span class="sd">        be thrown.</span>
+<span class="sd">        :type df:  pandas DataFrame</span>
+<span class="sd">        :param db:  output handle.   Default is None which is taken to mean</span>
+<span class="sd">        use this instance.</span>
+<span class="sd">        :type db:  Can be any of:  (1) instance of `DatascopeDatabase`,</span>
+<span class="sd">        (2) a string defining the Datascope database base name, or</span>
+<span class="sd">        (3) None.   In all cases this argument is used only to generate</span>
+<span class="sd">        file names for the Datascope files.   For case 1 the name defined in</span>
+<span class="sd">        the class instance is used.  For case 2 the string received is used</span>
+<span class="sd">        as the base file name (e.g. if db=&quot;mydb&quot; and table=&quot;arrival&quot; this</span>
+<span class="sd">        method will write to a file called &quot;mydb.arrival&quot;.)</span>
+<span class="sd">        In case 3 the name associated with this instance (self) will be used.</span>
+<span class="sd">        :param table:  Datascope table to which the data should be</span>
+<span class="sd">        written.</span>
+<span class="sd">        :type table:  string (default &#39;wfdisc&#39;)</span>
+<span class="sd">        :param dir: optional director name where the table data should be</span>
+<span class="sd">        saved.   Default is None which is taken to mean the current director.</span>
+<span class="sd">        If the directory does not exist it will be created.</span>
+<span class="sd">        :type:  string or None</span>
+<span class="sd">        :param append: boolean that when set causes the data to be appended</span>
+<span class="sd">        to a file if it already exist.  Default is True.  When set False</span>
+<span class="sd">        if the file exists it will be overwritten.</span>
+
+<span class="sd">        :return:  possibly edited copy of input dataframe with null</span>
+<span class="sd">        values inserted and columns rearrange to match Datascope table</span>
+<span class="sd">        order,</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;DatascopeDatabase.db2table:  &quot;</span>
+        <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dbname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbname</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">DatascopeDatabase</span><span class="p">):</span>
+            <span class="n">dbname</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">dbname</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">dbname</span> <span class="o">=</span> <span class="n">db</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal type for db argument of </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">db</span><span class="p">)))</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be an instance of DatascopeDatabase or None&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">dir</span><span class="p">:</span>
+            <span class="n">outdir</span> <span class="o">=</span> <span class="nb">dir</span>
+            <span class="c1"># make sure dir ends with a / for this way we create path here</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">outdir</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">outdir</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+                <span class="n">outdir</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">outdir</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span>
+        <span class="n">fmtlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_line_format_pf</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+        <span class="c1"># Datascope always adds a space between attributes</span>
+        <span class="c1"># this creates the format string for numpy&#39;s savetxt</span>
+        <span class="c1"># function that way because the format string is as in C</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>  <span class="c1"># used to define required output order</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fmtlist</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fmtlist</span><span class="p">)):</span>
+            <span class="n">fmt</span> <span class="o">+=</span> <span class="n">fmtlist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># fmtlist is a list of lists - returns str</span>
+            <span class="c1"># drop the blank from last entry or line length gets botched</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">fmt</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span>
+            <span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fmtlist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># only rearrange columns if necessary - an expensive operation</span>
+        <span class="n">dfkeys</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">need_to_rearrange</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfkeys</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">dfkeys</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">need_to_rearrange</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">need_to_rearrange</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">need_to_rearrange</span><span class="p">:</span>
+            <span class="c1"># note we can use the keys list as is for input to dataframe&#39;s</span>
+            <span class="c1"># reindex method.  However, to do that we have to add nulls</span>
+            <span class="c1"># for any dfkeys that don&#39;t have values for an attribute defines</span>
+            <span class="c1"># in keys.  First, however, we have to delete any dfkey</span>
+            <span class="c1"># columns not define in keys</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dfkeys</span><span class="p">:</span>
+                <span class="n">dropped_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="n">dropped_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dropped_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># intentionally do not throw an exception here but</span>
+                    <span class="c1"># just post a warning because this method is expected</span>
+                    <span class="c1"># to only be run interactively</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Warning:   The following attributes in the &quot;</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="s2">&quot;input DataFrame are not defined in the schema for table &quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="n">table</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dropped_keys</span><span class="p">:</span>
+                        <span class="n">message</span> <span class="o">+=</span> <span class="n">k</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                    <span class="n">dfout</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">dropped_keys</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># we need this copy if we don&#39;t have any key issues</span>
+                    <span class="n">dfout</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+            <span class="c1"># since they could change we have to reset this list</span>
+            <span class="n">dfkeys</span> <span class="o">=</span> <span class="n">dfout</span><span class="o">.</span><span class="n">columns</span>
+            <span class="c1"># now get alist of missing attributes and add them using</span>
+            <span class="c1"># the null value for that attribute defined by the table schema</span>
+            <span class="n">null_columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dfkeys</span><span class="p">:</span>
+                    <span class="n">null_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">null_columns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">attributes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_attribute_name_tbl</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+                <span class="n">nulls</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">null_columns</span><span class="p">:</span>
+                    <span class="n">nullvalue</span> <span class="o">=</span> <span class="n">nulls</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                    <span class="c1"># a bit obscure python syntax to full array with null values and</span>
+                    <span class="c1"># insert in one line</span>
+                    <span class="n">dfout</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="n">nullvalue</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dfout</span><span class="o">.</span><span class="n">index</span><span class="p">))])</span>
+
+            <span class="c1"># Now we rearrange - simple with reindex method of pandas</span>
+            <span class="n">dfout</span> <span class="o">=</span> <span class="n">dfout</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">keys</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># in this case we just set the symbol and don&#39;t even cpy it</span>
+            <span class="n">dfout</span> <span class="o">=</span> <span class="n">df</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">outdir</span> <span class="o">+</span> <span class="n">dbname</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">table</span>
+        <span class="k">if</span> <span class="n">append</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">ofile</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">ofile</span><span class="p">,</span> <span class="n">dfout</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dfout</span></div>
+
+    <span class="k">def</span> <span class="nf">_parse_attribute_name_tbl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private method to parse special parameter file format for defining</span>
+<span class="sd">        Antelope flat file table data for reading.   The algorithm parses the</span>
+<span class="sd">        parameter file image defied by the constructor (self.pf) returning</span>
+<span class="sd">        a tuple that contains data that pandas (or dask) read_fwf can use</span>
+<span class="sd">        to load the content of the specified table.   The return is</span>
+<span class="sd">        a tuple with three dictionaries keyed by the attribute names</span>
+<span class="sd">        defined for table.   The order is:</span>
+<span class="sd">            0 - column specification tuples that can be passed to</span>
+<span class="sd">                read_fwf (note read_fwf does not reuire these to be sequential)</span>
+<span class="sd">                list of tuples with column range</span>
+<span class="sd">            1 - python type expected for the attribute (supports only</span>
+<span class="sd">                float int, bool, and string as intent is to only use this</span>
+<span class="sd">                on table not antelope views).  dict keyed by attribute name</span>
+<span class="sd">            3 - null values dictionary.  key is attribute name</span>
+<span class="sd">            4 - format string dictionary keyed by attribute name</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">pf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pf</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+        <span class="c1"># magic name for this pf format</span>
+        <span class="n">tbl</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">get_tbl</span><span class="p">(</span><span class="s2">&quot;attributes&quot;</span><span class="p">)</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">dtypes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">nullvalues</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">tbl</span><span class="p">:</span>
+            <span class="c1"># assumed order of items in each tbl line is:</span>
+            <span class="c1"># name, type, first_column, eidth, null_value</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">colwidth</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">colstart</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">typenamein</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>  <span class="c1"># allows upper or lower case in names</span>
+            <span class="k">if</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span> <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;str&quot;</span><span class="p">:</span>
+                <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s2">&quot;foobar&quot;</span><span class="p">)</span>
+                <span class="n">nullval</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;integer&quot;</span> <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;int&quot;</span> <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;long&quot;</span><span class="p">:</span>
+                <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">nullval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;float&quot;</span>
+                <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;double&quot;</span>
+                <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;real&quot;</span>
+                <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;epochtime&quot;</span>
+            <span class="p">):</span>
+                <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+                <span class="n">nullval</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span> <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;boolean&quot;</span><span class="p">:</span>
+                <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">nullval</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">&quot;parse_attribute_name_tbl:  unsupported data type file=&quot;</span>
+                    <span class="o">+</span> <span class="n">typenamein</span><span class="p">,</span>
+                    <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="n">dtypes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">typ</span>
+            <span class="c1"># this works becasue typ is now a python &quot;type&quot; class which</span>
+            <span class="c1"># allows type casting like this via its constructor</span>
+            <span class="n">nullvalues</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">typ</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+            <span class="n">fmt</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">cols</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">colstart</span><span class="p">,</span> <span class="n">colstart</span> <span class="o">+</span> <span class="n">colwidth</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">cols</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">,</span> <span class="n">nullvalues</span><span class="p">,</span> <span class="n">fmt</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_get_line_format_pf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">pf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pf</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+        <span class="c1"># magic name for this pf format</span>
+        <span class="n">tbl</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">get_tbl</span><span class="p">(</span><span class="s2">&quot;attributes&quot;</span><span class="p">)</span>
+        <span class="n">attribute_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">tbl</span><span class="p">:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="c1"># tuples are name and format string</span>
+            <span class="c1"># IMPORTANT ASSUMPTION:  pf items are in table order</span>
+            <span class="n">attribute_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">temp</span><span class="p">[</span><span class="mi">5</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="n">attribute_list</span>
+
+<div class="viewcode-block" id="DatascopeDatabase.CSS30Catalog2df"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df">[docs]</a>    <span class="k">def</span> <span class="nf">CSS30Catalog2df</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Forms the standard catalog view of CSS3.0 sans the orid==prefor</span>
+<span class="sd">        condition to return a DataFrame formed by using</span>
+<span class="sd">        the DatascopeDatabase join method in sequence to produce:</span>
+<span class="sd">            event-&gt;origin-&gt;assoc-&gt;arrival</span>
+<span class="sd">        noting the the assoc-&gt;arrival join is done via arid.</span>
+<span class="sd">        The returned dataframe will have some attributes like the</span>
+<span class="sd">        &quot;time&quot; attributes of `arrival` and `origin` altered to</span>
+<span class="sd">        clarify which is which using the pandas stock method of</span>
+<span class="sd">        appending a suffix.  The suffix is the parent table name.</span>
+<span class="sd">        Hence, for the &quot;time&quot; example the output will have columns</span>
+<span class="sd">        with the keys `time_origin` and `time_arrival`.</span>
+
+<span class="sd">        Because this method is expected to normally be run interactively</span>
+<span class="sd">        it will throw exceptions for a whole range of problems</span>
+<span class="sd">        for which the authors of mspass have no control.</span>
+<span class="sd">        In the usual python way the posted exception stack should</span>
+<span class="sd">        define the problem.  Exceptions could come from methods of</span>
+<span class="sd">        this class called by the function or pandas.</span>
+
+<span class="sd">        :return:  Pandad DataFrame with the standard css3.0 catalog view.</span>
+<span class="sd">        Attribute names are css3.0 names.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;event&quot;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;origin&quot;</span><span class="p">,</span> <span class="n">join_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evid&quot;</span><span class="p">])</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;assoc&quot;</span><span class="p">,</span> <span class="n">join_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;orid&quot;</span><span class="p">])</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;arrival&quot;</span><span class="p">,</span> <span class="n">join_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;arid&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="DatascopeDatabase.wfdisc2doclist"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist">[docs]</a>    <span class="k">def</span> <span class="nf">wfdisc2doclist</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">snetsta_xref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">default_net</span><span class="o">=</span><span class="s2">&quot;XX&quot;</span><span class="p">,</span>
+        <span class="n">test_existence</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Special function to convert a wfdisc table to a list of docs that can</span>
+<span class="sd">        be written to MongoDB.  Alternatively the output can be passed directly to</span>
+<span class="sd">        :py:func:`mspasspy.io.distributed.read_distributed_data`</span>
+<span class="sd">        to initiate a parallel workflow or passed as a constructor to</span>
+<span class="sd">        create a parallel container (i.e bag or RDD) to passed to</span>
+<span class="sd">        the :py:meth:`mspasspy.db.database.read_data` method.</span>
+<span class="sd">        This method ONLY works for wfdiscs that index</span>
+<span class="sd">        a collection of miniseed files.  It will drop any data not</span>
+<span class="sd">        marked as miniseed.  The conversions process is not trivial</span>
+<span class="sd">        for several reasons:</span>
+
+<span class="sd">        1.  We need to add some computed attributes to match the attributes</span>
+<span class="sd">            required in wf_miniseed in the mspass reader.</span>
+<span class="sd">        2.  Handling Null values.</span>
+<span class="sd">        3.  Filtering out rows not defining miniseed data.</span>
+<span class="sd">        4.  the net code mismatch with css3.0 (see below)</span>
+<span class="sd">        5.  The equally obnoxious loc code problem</span>
+
+<span class="sd">        1. simply involves always posting some constants.</span>
+<span class="sd">        2.  is handled by silently deleting any attribute defined by the</span>
+<span class="sd">        Null value for that attribute in the wfdisc schema.</span>
+<span class="sd">        3. is handled by dropping any tuples for which the &quot;datatype&quot;</span>
+<span class="sd">        attribute on &quot;sd&quot; (normal mseed) or &quot;S1&quot; miniseed in an older</span>
+<span class="sd">        compression format.   When verbose is set true any entries</span>
+<span class="sd">        dropped will geneate a warning print mesage.</span>
+
+<span class="sd">        Items 4 and 5 are a bigger complication.   The developers of</span>
+<span class="sd">        Antelope created a solution to this problem by utilizing</span>
+<span class="sd">        two tables called `snetsta` and `schanloc`.   The trick they</span>
+<span class="sd">        used was whenever a station name was not unique, they</span>
+<span class="sd">        create an alias merging the net and sta codes with a fixed</span>
+<span class="sd">        separator of &quot;_&quot;.  e.g. if their miniseed indexing program</span>
+<span class="sd">        detected station &quot;HELL&quot; with net codes &quot;66&quot; and &quot;33&quot;  it</span>
+<span class="sd">        would create two aliases called &quot;66_HELL&quot; and &quot;77_HELL&quot;.</span>
+<span class="sd">        The data defining that alias is stored in the &quot;snetsta&quot;</span>
+<span class="sd">        table.   The problem is unique sta code values are not</span>
+<span class="sd">        change to the merged net_sta form but only the sta name</span>
+<span class="sd">        is used in processing.  This code deals with this issue</span>
+<span class="sd">        assuming the &quot;snetsta&quot; table exists and defines the</span>
+<span class="sd">        net code for every station it finds.  When it encounters</span>
+<span class="sd">        names like &quot;66_HELL&quot; it automatically drops the name</span>
+<span class="sd">        in wfdisc and sets the net and sta codes using the</span>
+<span class="sd">        cross-reference defined in snetsta.   To handle the</span>
+<span class="sd">        very common situation where snetsta is not complete</span>
+<span class="sd">        (i.e. there are sta codes without an snetsta entry)</span>
+<span class="sd">        when a wfdisc sta key has not entry in snetsta the value of</span>
+<span class="sd">        the `default_net` optional argument is used to define the</span>
+<span class="sd">        net name in the output.   The way Amtelope loc is easier to</span>
+<span class="sd">        deal with because of a dogmatic naming convention for FDSN.</span>
+<span class="sd">        That is, valid SEED channel codes are required to be 3</span>
+<span class="sd">        characters in length and follow a rigid definition of</span>
+<span class="sd">        what each of the 3 character imply about the data.  Antelope</span>
+<span class="sd">        handles loc codes, which were not conceived as needed when</span>
+<span class="sd">        the CSS3.0 schema was designed, by simply appending the</span>
+<span class="sd">        loc code to the channel code to produce an extended channel</span>
+<span class="sd">        code tag. (e.g. channel BHZ with loc code 00 would be set to BHZ_00)</span>
+<span class="sd">        Antelope defines a schanloc table that is similar to snetsta but</span>
+<span class="sd">        we don&#39;t actually need to use it in this method because the syntax</span>
+<span class="sd">        rules make splitting compound channel names unambiguous.   Hence,</span>
+<span class="sd">        a reference to schanloc is not needed as it is to handle the</span>
+<span class="sd">        net-sta problem.</span>
+
+<span class="sd">        The net-sta problem is handled by the argument snetsta_xref</span>
+<span class="sd">        argument.   If the database this object references has a</span>
+<span class="sd">        complete snetsta table you can use the default and it will</span>
+<span class="sd">        load and utilize the snetsta channel data to sort out</span>
+<span class="sd">        net-sta ambiguities.  Unless you are 100% certain your</span>
+<span class="sd">        snetsta table has no missing entries (wfdisc sta values not in snetsta)</span>
+<span class="sd">        you should be sure to set the `default_net` optional argument value</span>
+<span class="sd">        to what is appropriate for your data set.</span>
+
+<span class="sd">        :param snetsta_xref:   image of the snetsta table used as</span>
+<span class="sd">        described above.  If set None (the default) this method will</span>
+<span class="sd">        call another method of this class called `parse_snetsa` that</span>
+<span class="sd">        reads the snetsta table and creates an instance of the</span>
+<span class="sd">        data structure.   See the docstring of that method below for</span>
+<span class="sd">        an explanation of the data structure of this object if you need to</span>
+<span class="sd">        generate one by some other means.</span>
+<span class="sd">        :type snetsta_xref:  python dict or None</span>
+<span class="sd">        :param test_existence:   Boolean that when set</span>
+<span class="sd">        True (default is False) enables a file existence check.</span>
+<span class="sd">        This operation is expensive on a large wfdisc as it has to</span>
+<span class="sd">        run an existence check on every tuple in the wfdisc.</span>
+<span class="sd">        :param verbose:  When True prints a warning for each tuple</span>
+<span class="sd">        it drops.  If False it will drop problem tuples silently.  Note</span>
+<span class="sd">        tuples can be dropped for two reasons:  (1) `datatype` values that</span>
+<span class="sd">        do not define miniseed and (2) tuples failing the existence</span>
+<span class="sd">        check (if enabled)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;DatascopeDatabase.wfdisc2doclist&quot;</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">base_warning</span> <span class="o">=</span> <span class="s2">&quot;DatascopeDatabase.wfdisc2doclist (WARNING):  &quot;</span>
+        <span class="k">if</span> <span class="n">snetsta_xref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">snetsta_xref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_snetsta</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">snetsta_xref</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">nets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">seedsta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">snetsta_xref</span><span class="p">:</span>
+                <span class="n">nets</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">snetsta_xref</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">seedsta</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">snetsta_xref</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;snetsta_xref parameter is invalid type=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">type</span><span class="p">(</span><span class="n">snetsta_xref</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="s2">&quot;Expected to be a python dictionary created by parse_snetsta method&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
+        <span class="n">nets</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_net</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;wfdisc&quot;</span><span class="p">)</span>
+        <span class="n">nulls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nulls</span><span class="p">(</span><span class="s2">&quot;wfdisc&quot;</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">olist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="c1"># loop over the tuples</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">nval</span> <span class="o">=</span> <span class="n">nulls</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="c1"># this drops null values</span>
+                <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">nval</span><span class="p">:</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+            <span class="c1"># drop data not defined as mseed</span>
+            <span class="c1"># print a warning in verbose mode</span>
+            <span class="c1"># we let this throw an exception if</span>
+            <span class="c1"># datatype is set Null as that should not happen if wfdisc</span>
+            <span class="c1"># is intact</span>
+            <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;datatype&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sd&quot;</span><span class="p">,</span> <span class="s2">&quot;S1&quot;</span><span class="p">]:</span>
+                <span class="n">save_me</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">test_existence</span><span class="p">:</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                        <span class="n">save_me</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">save_me</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                            <span class="c1"># weirdness needed because we can&#39;t just assign</span>
+                            <span class="c1"># message=base_warning or base_warning will be altered</span>
+                            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="o">+</span> <span class="n">base_warning</span>
+                            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;file </span><span class="si">{}</span><span class="s2"> not found - this tuple dropped&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">path</span>
+                            <span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">save_me</span><span class="p">:</span>
+                    <span class="c1"># these are requirements for wf_miniseed</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;file&quot;</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;time_standard&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;UTC&quot;</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mseed&quot;</span>
+                    <span class="c1"># handle net-sta issue</span>
+                    <span class="n">wfsta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">wfsta</span> <span class="ow">in</span> <span class="n">seedsta</span><span class="p">:</span>
+                        <span class="n">sta</span> <span class="o">=</span> <span class="n">seedsta</span><span class="p">[</span><span class="n">wfsta</span><span class="p">]</span>
+                        <span class="n">net</span> <span class="o">=</span> <span class="n">nets</span><span class="p">[</span><span class="n">wfsta</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">sta</span> <span class="o">=</span> <span class="n">wfsta</span>
+                        <span class="n">net</span> <span class="o">=</span> <span class="n">default_net</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
+                    <span class="c1"># now handle loc issue</span>
+                    <span class="c1"># note we do nothing unless the code has an &quot;_&quot;</span>
+                    <span class="n">chan</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="s2">&quot;_&quot;</span> <span class="ow">in</span> <span class="n">chan</span><span class="p">:</span>
+                        <span class="n">chanloc</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+                        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">olist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="o">+</span> <span class="n">base_warning</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;datatype attribute is </span><span class="si">{}</span><span class="s2"> in tuple </span><span class="si">{}</span><span class="s2">.  &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;datatype&quot;</span><span class="p">],</span> <span class="n">i</span>
+                <span class="p">)</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Only sd or S1 define miniseed data&quot;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">olist</span></div>
+
+<div class="viewcode-block" id="DatascopeDatabase.parse_snetsta"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.parse_snetsta">[docs]</a>    <span class="k">def</span> <span class="nf">parse_snetsta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Datascope is (mostly) linked to the CSS3.0 schema originally</span>
+<span class="sd">        developed ine 1970s before SEED was adopted as a standard.  At the</span>
+<span class="sd">        time the problem of duplicate station codes was not recognized and</span>
+<span class="sd">        the SEED concept of a network code (also location code for channel)</span>
+<span class="sd">        was not considered.   The developers of Datascope created a workaround</span>
+<span class="sd">        for this problem in a special table (I am not sure if it was part</span>
+<span class="sd">        of the original css3.0 schema or not) with the name `snetsta&#39;.</span>
+<span class="sd">        They use snetsta to handle duplicate station names in multiple networks.</span>
+<span class="sd">        A common example is that more than one operator has used the</span>
+<span class="sd">        colorful station code &quot;HELL&quot; so if we see an entry for HELL it can</span>
+<span class="sd">        be ambiguous which level of HELL it refers to.  Antelope</span>
+<span class="sd">        handles this by creating compound keys like &quot;66_HELL&quot; for net &quot;66&quot;</span>
+<span class="sd">        and station code &quot;HELL&quot;.   A complication is the compound keys</span>
+<span class="sd">        are only used when duplicate sta codes a detected, which is not</span>
+<span class="sd">        always easy to know.  In any case, the purpose of this method</span>
+<span class="sd">        is to parse the snetsta table to return the data need to</span>
+<span class="sd">        translate any station code (compound or not) to a unique</span>
+<span class="sd">        combination of &quot;net&quot; and &quot;sta&quot; codes It does that by returning</span>
+<span class="sd">        a dictionary keyed by expected station codes in other Datascope</span>
+<span class="sd">        tables with a value containing a pair of string.  The 0 component</span>
+<span class="sd">        is the net code associated with the key value and the 1 component</span>
+<span class="sd">        the station code that would match what is expected in a parent</span>
+<span class="sd">        miniseed file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;snetsta&quot;</span><span class="p">)</span>
+        <span class="n">xref</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">sta</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">net</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;snet&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">seed_sta</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;fsta&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">xref</span><span class="p">[</span><span class="n">sta</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">net</span><span class="p">,</span> <span class="n">seed_sta</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">xref</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

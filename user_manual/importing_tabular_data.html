@@ -272,7 +272,7 @@ managed by an Antelope database.   The MsPASS API aims to
 loosely mimic the SQL functionality using an pandas
 DataFrame as the intermediary.</p>
 <p>A python class called
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code></a>
 is used as the agent for interacting with an
 Antelope/Datascope database.   Unlike all common SQL
 database of today, Datascope does not use a client-server model
@@ -288,7 +288,7 @@ that that file contains.   For example, if one sees an
 Datascope table with the file name “usarray.arrival” that file
 is the “arrival” table in a database someone chose to call “usarray”.
 With that background, an instance of a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code></a>
 can be created with a variant of the following code fragment:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dsdb</span> <span class="o">=</span> <span class="n">DatascopeDatabase</span><span class="p">(</span><span class="s2">&quot;usarray&quot;</span><span class="p">)</span>
 </pre></div>
@@ -299,7 +299,7 @@ albeit confusing, feature that allows the collection of
 files that define the database to be spread through multiple directories.
 That features is nearly always exploited, in practice, by placing
 more static tables in a separate directory.   For that reason
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code></a>
 has an optional <cite>dir</cite> argument to point the constructor to read
 data files from a different directory.   e.g. a variant of the
 above example to access files in a “dbmaster” (common practice)
@@ -308,20 +308,20 @@ directory is the following:</p>
 </pre></div>
 </div>
 <p>Once, an instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code></a>
 is created that points to the directory from which you want to import
 one or more tables, the usage to fetch the data that table contains
 is similar to that for the pandas SQL readers.   Use the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table()</span></code>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table()</span></code></a>
 method of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code></a>
 to retrieve individual tables from the Datascope database
 as a pandas DataFrame.   An important option descibed in the
 docstrng is a python list passed via the optional argument
 with key <cite>attributes_to_load</cite>.  The default loads the entire css3.0
 schema table.  Use a list to limit what attributes are retrieved.
 As an example of a typical use of the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table()</span></code>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table()</span></code></a>
 method the following would retrieve the coordinate data from
 the usarray “site” tables using the handle <cite>dsdbm</cite> created with
 the code line above:</p>
@@ -334,9 +334,9 @@ station name.  (In reality there are some additional complications
 related to the time fields and seed station codes.   Those, however are a side issue
 that would only confuse the topic of discussion so ignore it here.)</p>
 <p>The inverse of the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table()</span></code>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table()</span></code></a>
 method is the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table()</span></code>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table()</span></code></a>
 method.  As it’s name implies it attempts to write a pandas
 DataFrame to a particular Datascope table, which means it will attempt to
 write a properly formatted text file for the table name passed to the
@@ -345,7 +345,7 @@ method function.</p>
 convenience methods that simply two common operations with
 Datascope database tables:</p>
 <ol class="arabic simple">
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df()</span></code>
+<li><p><a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df()</span></code></a>
 creates the standard “catalog-view” of CSS3.0.   In seismology a
 “catalog” is a image of what in ancient times was distributed as book
 tabulating earthquake hypocenter estimates and arrival time data used
@@ -354,7 +354,7 @@ a “catalog” as the join of four tables that this method creates:
 event-&gt;origin-&gt;assoc-&gt;arrival where “-&gt;” symbolizes a right database
 join operator.  It returns a pandas DataFrame that is the “catalog”.
 Usage details can be gleaned from the docstring.</p></li>
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist()</span></code>
+<li><p><a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist()</span></code></a>
 can be thought of as an alternative to the MsPASS
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.index_mseed_file()</span></code></a> method.
 It returns a list of python dictionaries (documents) that are roughly equivalent to

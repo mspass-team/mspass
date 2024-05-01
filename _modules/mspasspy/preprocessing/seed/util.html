@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.preprocessing.seed.util &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=f6245a2f"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../../../../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mspasspy.preprocessing.seed.util</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mspasspy.preprocessing.seed.util</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">UTCDateTime</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span>
+
+
+<div class="viewcode-block" id="channel_report"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.util.channel_report">[docs]</a><span class="k">def</span> <span class="nf">channel_report</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prints a nicely formatted table of information about channel documents</span>
+<span class="sd">    matching a set of seed codes.</span>
+
+<span class="sd">    SEED uses net, sta, chan, and loc codes along with time intervals</span>
+<span class="sd">    to define a unique set of metadata for a particular channel of</span>
+<span class="sd">    seismic observatory data.  This function can be used to produce a</span>
+<span class="sd">    human readable table of data linked to one or more of these keys.</span>
+<span class="sd">    All queries are exact matches against defined keys for the</span>
+<span class="sd">    net, sta, chan, and loc arguments.  If a time stamp is given it will</span>
+<span class="sd">    produce an interval query for records where</span>
+<span class="sd">    starttime&lt;=time&lt;=endtime.   Omiting any key will cause all values</span>
+<span class="sd">    for that key to be returned.  e.g. specifying only net, sta, and</span>
+<span class="sd">    loc will produce a table of all matching net, sta, loc entries</span>
+<span class="sd">    for all channels and all times (if there are multiple time interval</span>
+<span class="sd">    documents).</span>
+
+<span class="sd">    :param db:  required mspasspy.db.Database handle.</span>
+<span class="sd">    :param net:  seed network code</span>
+<span class="sd">    :param sta: seed station code</span>
+<span class="sd">    :param chan:  seed channel code</span>
+<span class="sd">    :param loc:  seed location code</span>
+<span class="sd">    :param time:  time stamp used as described above.  Can be either</span>
+<span class="sd">      a unix epoch time or a UTCDateTime.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">net</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sta</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">chan</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">loc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+            <span class="s2">&quot;channel_report usage error:  must specify at least one of sta, net, or loc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">net</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
+    <span class="k">if</span> <span class="n">sta</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
+    <span class="k">if</span> <span class="n">chan</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span>
+    <span class="k">if</span> <span class="n">loc</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>
+    <span class="k">if</span> <span class="n">time</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">UTCDateTime</span><span class="p">):</span>
+            <span class="n">t_to_use</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">timestamp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t_to_use</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$lte&quot;</span><span class="p">:</span> <span class="n">t_to_use</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">t_to_use</span><span class="p">}</span>
+    <span class="n">dbchan</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">channel</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">dbchan</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;site collection has no documents matching the following query&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="si">{:&gt;4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;net&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;</span><span class="si">{:&gt;8}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;</span><span class="si">{:&gt;6}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;chan&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;</span><span class="si">{:=^6}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;latitude longitude starttime endtime&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">curs</span> <span class="o">=</span> <span class="n">dbchan</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">curs</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{:&gt;4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]),</span>
+            <span class="s2">&quot;</span><span class="si">{:&gt;8}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]),</span>
+            <span class="s2">&quot;</span><span class="si">{:&gt;6}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]),</span>
+            <span class="s2">&quot;</span><span class="si">{:=^6}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]),</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">],</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">],</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;elev&quot;</span><span class="p">],</span>
+            <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]),</span>
+            <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="site_report"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.util.site_report">[docs]</a><span class="k">def</span> <span class="nf">site_report</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prints a nicely formatted table of information about site documents</span>
+<span class="sd">    matching a set of seed codes.</span>
+
+<span class="sd">    SEED uses net, sta, chan, and loc codes along with time intervals</span>
+<span class="sd">    to define a unique set of metadata for a particular channel of</span>
+<span class="sd">    seismic observatory data.  This function can be used to produce a</span>
+<span class="sd">    human readable table of data linked to one or more of these keys</span>
+<span class="sd">    save as documents in the MsPASS site collection.   The site</span>
+<span class="sd">    collection has no information on channels and is used only to</span>
+<span class="sd">    define the spatial location of a &quot;seismic station&quot;.  Hence</span>
+<span class="sd">    not channel information will be printed by this function since</span>
+<span class="sd">    there is none in the site collection.</span>
+
+<span class="sd">    All queries are exact matches against defined keys for the</span>
+<span class="sd">    net, sta, and loc arguments.  If a time stamp is given it will</span>
+<span class="sd">    produce an interval query for records where</span>
+<span class="sd">    starttime&lt;=time&lt;=endtime.   Omiting any key will cause all values</span>
+<span class="sd">    for that key to be returned.  e.g. specifying only net and</span>
+<span class="sd">    stat will produce a table of all matching net and sta entries</span>
+<span class="sd">    for all location codes and all times (if there are multiple time interval</span>
+<span class="sd">    documents).</span>
+
+<span class="sd">    :param db:  required mspasspy.db.Database handle.</span>
+<span class="sd">    :param net:  seed network code</span>
+<span class="sd">    :param sta: seed station code</span>
+<span class="sd">    :param loc:  seed location code</span>
+<span class="sd">    :param time:  time stamp used as described above.  Can be either</span>
+<span class="sd">      a unix epoch time or a UTCDateTime.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">net</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sta</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">loc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+            <span class="s2">&quot;site_report usage error:  must specify at least one of sta, net, or loc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">net</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
+    <span class="k">if</span> <span class="n">sta</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
+    <span class="k">if</span> <span class="n">loc</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>
+    <span class="k">if</span> <span class="n">time</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">UTCDateTime</span><span class="p">):</span>
+            <span class="n">t_to_use</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">timestamp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t_to_use</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$lte&quot;</span><span class="p">:</span> <span class="n">t_to_use</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">t_to_use</span><span class="p">}</span>
+    <span class="n">dbsite</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">site</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;site collection has no documents matching the following query&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="si">{:&gt;4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;net&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;</span><span class="si">{:&gt;8}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;</span><span class="si">{:=^6}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;latitude longitude starttime endtime&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">curs</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">curs</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{:&gt;4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]),</span>
+            <span class="s2">&quot;</span><span class="si">{:&gt;8}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]),</span>
+            <span class="s2">&quot;</span><span class="si">{:=^6}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]),</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">],</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">],</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;elev&quot;</span><span class="p">],</span>
+            <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]),</span>
+            <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]),</span>
+        <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
