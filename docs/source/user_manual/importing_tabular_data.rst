@@ -35,7 +35,7 @@ types of tabular data:
   as a number of regional seismic networks use Antelope as their database
   engine.  Furthermore, the Array Network Facility of the Earthscope project
   used Antelope and the database tables are still accessible at
-  the AUG web site `here<https://anf.ucsd.edu/tools/events/>`__.
+  the AUG web site `here <https://anf.ucsd.edu/tools/events/>`__.
   In any case, the key concept to remember is that Antelope/Datascope
   is just a different implementation of a relational database.  Below we
   describe a special interface in MsPASS to import data from Datascope tables.
@@ -43,7 +43,7 @@ types of tabular data:
 In MsPASS the central concept used to unify these diverse sources is the
 concept of a :code:`DataFrame` that is THE data structure that is the
 focus of the commonly used
-`pandas<https://pandas.pydata.org/docs/>`__ python package.
+`pandas <https://pandas.pydata.org/docs/>`__ python package.
 The name does not come from a fuzzy animal but is apparently
 a acronymn derived from "PANel DAta".  "panel" is, in fact,
 an odd synonym for "table".  Pandas and their extension in
@@ -60,11 +60,11 @@ Importing data from any common tabular data format I know if is
 essentially a solved problem via the :code:`DataFrame` API.
 
 - The documentation on reading tabular data files can be found
-  `here<https://pandas.pydata.org/pandas-docs/stable/reference/io.html>`__.
+  `here <https://pandas.pydata.org/pandas-docs/stable/reference/io.html>`__.
   There are also writers for most of the same formats documented on that
   same page.
 - Dask has a more limited set of readers described
-  `here<https://examples.dask.org/dataframes/01-data-access.html>`__.
+  `here <https://examples.dask.org/dataframes/01-data-access.html>`__.
   The reason is that the large data model of DataFrame for a dask
   workflow is most applicable when the table is large compared to
   the memory space of a single node. Hence, something like an
@@ -73,14 +73,14 @@ essentially a solved problem via the :code:`DataFrame` API.
   pieces using the standard unix "cat" command.
 - Pyspark has similar functionallity, but a very different API than
   pandas and dask.  The documentation for the read/write interface can be found
-  `here<https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/io.html>`__.
+  `here <https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/io.html>`__.
   The list of formats pyspark can read or write is similar to pandas.
 
 The most common application for reading tabular data is importing
 some nonstandard data from a research application stored in one of the
 standard formats.  For example, here an example extracted from our jupyter notebook
 tutorial on MongoDB.  It shows how one can import the output of
-`PhaseNet<https://github.com/AI4EPS/PhaseNet>`__
+`PhaseNets <https://github.com/AI4EPS/PhaseNet>`__
 with it's output structured as a csv file.
 It also shows how the results can be written to MongoDB in a collection it
 creates called "arrival":

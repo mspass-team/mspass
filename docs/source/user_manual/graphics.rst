@@ -22,7 +22,7 @@ with finite resources.
 The current support for graphics has three component.
 
 #.  The lowest level support is to use the commonly used package
-    called `matplotlib<https://matplotlib.org/>`__.   Because the
+    called `matplotlib <https://matplotlib.org/>`__.   Because the
     sample arrays of all seismic objects act like numpy arrays that
     is often the simplest mechanism to make a quick plot.  The basics of
     that approach are described below.
