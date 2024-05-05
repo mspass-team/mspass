@@ -2357,7 +2357,7 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         t0offset=0.0,
         tolerance=4.0,
         query=None,
-        attributes_to_load=["lat", "lon", "depth", "time"],
+        attributes_to_load=["_id", "lat", "lon", "depth", "time"],
         load_if_defined=["magnitude"],
         aliases=None,
         require_unique_match=False,
@@ -2549,7 +2549,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
 
     :param source_time_key:  dataframe column name to use as source
     origin time field.  Default is "time"
-    :type source_time_key:  string  Can also be a None type which 
+    :type source_time_key:  string  Can also be a None type which
     is causes the internal value to be set to "time"
     """
 
@@ -2559,7 +2559,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         collection="source",
         t0offset=0.0,
         tolerance=4.0,
-        attributes_to_load=["_id","lat", "lon", "depth", "time"],
+        attributes_to_load=["_id", "lat", "lon", "depth", "time"],
         load_if_defined=["magnitude"],
         aliases=None,
         require_unique_match=False,
