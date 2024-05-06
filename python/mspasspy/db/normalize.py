@@ -2508,7 +2508,12 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
       be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
       some calls to find_one will fail.   Default is
-      ["lat","lon","depth","time"]
+      ["_id","lat","lon","depth","time"].  Note if constructing from a
+      DataFrame created from something like a Datascope origin table
+      this list will need to be changed to remove _id as it in that context
+      no ObjectID would normally be defined.  Be warned, however, that if
+      used with a normalize function the _id may be required to match a
+      "source_id" cross reference in a seismic data object.
     :type attributes_to_load:  list of string defining keys in collection
       documents
 
