@@ -146,12 +146,23 @@ class TestDataFrameCacheMatcherUtil(TestNormalize):
             "time": np.nan,
             "magnitude": np.nan,
         }
-        originTimeMatcher = OriginTimeMatcher(
-            self.df, source_time_key="time", custom_null_values=null_value_dict
+        # Default for constructor demands _id which is not used in this
+        # context.  DataFrame sets undefined to nan and this test will
+        # fail without turning _id off.   _id is needed, however, in any
+        # id based normalization so it is an appropriate default
+        otm = OriginTimeMatcher(
+            self.df,
+            source_time_key="time",
+            custom_null_values=null_value_dict,
+            attributes_to_load=["lat", "lon", "depth", "time", "magnitude"],
         )
-        assert Metadata_cmp(
-            originTimeMatcher.cache.to_dict(orient="records")[-1], matched_dict
-        )
+        print("DEBUG")
+        print("cache value")
+        val = otm.cache.to_dict(orient="records")[-1]
+        print(val)
+        print("match output")
+        print(matched_dict)
+        assert Metadata_cmp(otm.cache.to_dict(orient="records")[-1], matched_dict)
 
 
 class TestObjectIdMatcher(TestNormalize):
