@@ -1131,7 +1131,7 @@
         <span class="k">if</span> <span class="n">mdlist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">findreturn</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdlist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">mdlist</span><span class="p">,</span> <span class="n">findreturn</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">mdlist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">findreturn</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdlist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">require_unique_match</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
@@ -2497,7 +2497,7 @@
         <span class="n">t0offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">tolerance</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
         <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">],</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">],</span>
         <span class="n">load_if_defined</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;magnitude&quot;</span><span class="p">],</span>
         <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">require_unique_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -2648,7 +2648,12 @@
 <span class="sd">      be returned in the output of the find method.   The keys listed</span>
 <span class="sd">      must ALL have defined values for all documents in the collection or</span>
 <span class="sd">      some calls to find_one will fail.   Default is</span>
-<span class="sd">      [&quot;lat&quot;,&quot;lon&quot;,&quot;depth&quot;,&quot;time&quot;]</span>
+<span class="sd">      [&quot;_id&quot;,&quot;lat&quot;,&quot;lon&quot;,&quot;depth&quot;,&quot;time&quot;].  Note if constructing from a</span>
+<span class="sd">      DataFrame created from something like a Datascope origin table</span>
+<span class="sd">      this list will need to be changed to remove _id as it in that context</span>
+<span class="sd">      no ObjectID would normally be defined.  Be warned, however, that if</span>
+<span class="sd">      used with a normalize function the _id may be required to match a</span>
+<span class="sd">      &quot;source_id&quot; cross reference in a seismic data object.</span>
 <span class="sd">    :type attributes_to_load:  list of string defining keys in collection</span>
 <span class="sd">      documents</span>
 
@@ -2688,9 +2693,9 @@
 <span class="sd">    :type data_time_key:  string</span>
 
 <span class="sd">    :param source_time_key:  dataframe column name to use as source</span>
-<span class="sd">    origin time field.   Default is None which is translated to</span>
-<span class="sd">    collection + &quot;_time&quot;  (default default is &quot;source_time&quot;).</span>
-<span class="sd">    :type source_time_key:  string</span>
+<span class="sd">    origin time field.  Default is &quot;time&quot;</span>
+<span class="sd">    :type source_time_key:  string  Can also be a None type which</span>
+<span class="sd">    is causes the internal value to be set to &quot;time&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -2699,13 +2704,13 @@
         <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
         <span class="n">t0offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">tolerance</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
-        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">],</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">],</span>
         <span class="n">load_if_defined</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;magnitude&quot;</span><span class="p">],</span>
         <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">require_unique_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">data_time_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">source_time_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">source_time_key</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
         <span class="n">custom_null_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -2722,7 +2727,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span> <span class="o">=</span> <span class="n">tolerance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span> <span class="o">=</span> <span class="n">data_time_key</span>
         <span class="k">if</span> <span class="n">source_time_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span> <span class="o">=</span> <span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_time&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span> <span class="o">=</span> <span class="n">source_time_key</span>
 

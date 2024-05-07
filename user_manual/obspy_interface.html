@@ -169,18 +169,18 @@ We describe more details on converters below and how ObsPy processing algorithms
 They have similarities but some major differences that a software engineer might call “a collision in concept”.
 ObsPy defines two core data objects:</p>
 <ol class="arabic simple">
-<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.4.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> containers hold a single channel of seismic data.
+<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.4.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> containers hold a single channel of seismic data.
 An ObsPy <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> maps almost directly into the MsPASS atomic object we call a <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>.
 Both containers store sample data in a contiguous block of memory that implement the linear algebra concept of an N-component vector.
 Both store the sample data as Python float values that always map to 64 bit floating point numbers (double in C/C++).
 Both containers also put auxiliary data used to expand on the definition of what the data are in an indexed container that behaves like a Python dict.
-ObsPy calls that container a <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html#obspy.core.trace.Stats" title="(in ObsPy v1.4.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stats</span></code></a> attribute.
+ObsPy calls that container a <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html#obspy.core.trace.Stats" title="(in ObsPy v1.4.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stats</span></code></a> attribute.
 MsPASS defines a similar entity we call <code class="code docutils literal notranslate"><span class="pre">Metadata</span></code>.
 Some users may find it convenient to think of both as a generalized “header” that defines a fixed namespace like that in <a class="reference external" href="https://wiki.seismic-unix.org/doku.php">Seismic Unix</a>.
 From a user’s perspective the “headers” in ObsPy and MsPASS behave the same but the API is different.
 In ObsPy the header parameters are stored in an attribute with a different name (Stats) while in MsPASS the dict behavior is part of the TimeSeries object.
 (For those familiar with Object Oriented Programming generic concepts ObsPy views metadata using the concept that a Trace object “has a Stats” container while in MsPASS we say a TimeSeries “is a Metadata”.)</p></li>
-<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.4.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> containers are little more than a Python list of <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> objects.
+<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.4.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> containers are little more than a Python list of <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> objects.
 A <code class="code docutils literal notranslate"><span class="pre">Stream</span></code> is very similar in concept to the MsPASS data object we call a <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>.
 Both are containers holding a collection of single channel seismic data.
 In terms of the data they contain there is only one fundamental difference;
