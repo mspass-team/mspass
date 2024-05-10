@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 continuumio/anaconda3:latest
+FROM --platform=linux/arm64 continuumio/anaconda3:2023.09-0
 COPY . /mspass
 WORKDIR /mspass
 RUN ls
@@ -6,7 +6,7 @@ RUN pwd
 ENV PYTHON_VERSION=3.11
 RUN apt-get update 
 RUN apt-cache madison cmake
-RUN apt-get install -y cmake=3.13.4-1 \
+RUN apt-get install -y cmake \
     && sed -i '38d' meta.yaml \
     && conda install conda-build anaconda-client \
     && conda config --set anaconda_upload yes \
