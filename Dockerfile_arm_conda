@@ -4,7 +4,7 @@ WORKDIR /mspass
 RUN ls
 RUN pwd
 ENV PYTHON_VERSION=3.11
-RUN apt-get update && apt-get install -y cmake=3.10 \
+RUN apt-get update && apt-get install -y cmake=3.13 \
     && sed -i '38d' meta.yaml \
     && conda install conda-build anaconda-client \
     && conda config --set anaconda_upload yes \
