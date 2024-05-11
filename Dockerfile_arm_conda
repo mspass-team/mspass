@@ -4,7 +4,6 @@ WORKDIR /mspass
 RUN ls
 RUN pwd
 ENV PYTHON_VERSION=3.11
-RUN apt-get update 
 RUN apt-cache madison cmake
 RUN apt-get install -y cmake \
     && sed -i '38d' meta.yaml \
