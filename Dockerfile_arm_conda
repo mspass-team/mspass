@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 continuumio/anaconda3:2023.03-1
+FROM --platform=linux/arm64 continuumio/miniconda3:24.3.0-0
 COPY . /mspass
 WORKDIR /mspass
 RUN ls
