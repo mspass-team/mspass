@@ -21,7 +21,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aar
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-arm64 /usr/bin/tini
 RUN chmod +x /usr/bin/tini
-
+RUN apt-get update && apt-get install -y cmake
 RUN cd /mspass && sed -i '38d' meta.yaml \
     && conda install conda-build anaconda-client \
     && conda config --set anaconda_upload yes \
