@@ -27,4 +27,5 @@ RUN cd /mspass && sed -i '38d' meta.yaml \
     && conda config --set anaconda_upload yes \
     && conda config --add channels conda-forge \
     && export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 \
-    && conda build . --python 3.11
+    && export CONDA_BUILD_DEBUG=1 \
+    && conda build . --python 3.11 --debug
