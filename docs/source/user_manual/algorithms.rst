@@ -12,7 +12,7 @@ Processing Functions
 --------------------------
 These algorithms have a function form to allow their use in parallel map
 operations.   They are functions that have one or more seismic data
-objects as is the inputs and return the output of the algorithm that
+objects as inputs and return the output of the algorithm.  The output
 may or may not be the same type.   Some are wrappers
 for obspy functions, some are written in C++ with python wrappers, and
 some are pure C++ functions with python bindings.   Note the name field in the
@@ -186,7 +186,9 @@ Processing Objects
 -------------------------------------
 This collection of things are "processing objects" meaning they implement
 processing using a C++ or python class that has a method that runs
-an algorithm on seismic data.
+an algorithm on seismic data.  All are effectively functions that
+take inputs and emit an output.  The only difference is the syntax
+of a "method" compared to a simple function.
 
 .. list-table:: Processing Objects
    :widths: 10 70 10 10 10
@@ -327,3 +329,33 @@ an algorithm on seismic data.
      - kill_if_true
      - Any seismic data object
      - Edited version of input
+
+Deconvolution algorithms
+----------------------------
+MsPASS has a specialized algorithms module on "deconvolution".  Users
+should recognize that currently the module has algorithms for "deconvolution"
+in form of estimation of so called "receiver functions".  Receiver functions
+are a special type of deconvolution useful only, at present anyway, for
+application to teleseismic body wave phase data.
+
+A suite of "conventional" scalar methods are available through two different
+mechanisms:
+
+1.  The wrapper function :py:func:`mspasspy.alorithms.RFdeconProcessor.RFdecon`
+    is a functional form that can be used directly in map operators.
+2.  The `RFdecon` function instantiates an instance of the class
+    :py:class:`mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor`
+    in each call to the function.  It is more efficient (i.e. faster)
+    to instantiate a single instance of this class and run it's
+    :py:meth:`mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply`
+    method, especially for multitaper methods that require computing
+    the Slepian tapers.
+
+See the docstrings with links above for usage.
+
+A different, unpublished (aka experimental) algorithm called
+"Colored Noise Regularized Three Component Decon " is
+implemented in the C++ class
+:py:class:`mspasspy.ccore.algorithms.deconvolution.CNR3CDecon`.
+See the mspass deconvolution tutorial for guidance on using this
+experimental algorithm.  

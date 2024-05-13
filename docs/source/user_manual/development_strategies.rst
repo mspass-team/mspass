@@ -15,7 +15,7 @@ For all cases there it is important to first recognize a fundamental
 starting point, at least in present IT environment I suspect most
 seismologists work in.   That is, you should expect:
 
-1.  You absolutely will need an interactive framework to develop any
+#.  You absolutely will need an interactive framework to develop any
     workflow.  For most people, that means a local desktop or laptop
     with docker installed.  It is possible to use only a web browser
     and with connections to a cluster, but that is guaranteed to be
@@ -23,13 +23,13 @@ seismologists work in.   That is, you should expect:
     the transition from a desktop a cluster much simpler makes the
     model of using a desktop for initial development theh only sensible
     norm.
-2.  Every single example I have ever created to run MsPASS was
+#.  Every single example I have ever created to run MsPASS was
     best created by first writing the workflow as a serial process
     with a single outer loop over the dataset elements.  Using
     guidelines in :ref:`parallel_processing` convert to a parallel
     equivalent only after you get the syntax and variables all defined
     with the serial job.
-2.  Most  workflows reduce to one or more sections that have the
+#.  Most  workflows reduce to one or more sections that have the
     generic structure:  read data -> process data -> save result.
     To debug a parallel workflow on your desktop use a subset of
     your data copied to your workstation and run the test on
@@ -41,7 +41,7 @@ seismologists work in.   That is, you should expect:
     test data set.   You may need to tune the memory use of the workflow
     based on concepts described in :ref:`memory_management` section
     of this manual.
-3.  If you are running on a (now ancient) computer with only on core
+#.  If you are running on a (now ancient) computer with only on core
     you will not be able to test the parallel version on your desktop/laptop.
     If your machine has only two cores, keep your test data set to
     the minimum possible because you may bring the machine to its knees
@@ -52,7 +52,7 @@ seismologists work in.   That is, you should expect:
     corollary to keep in mind is you shouldn't expect to do much else
     like web surfing or email
     on your desktop/laptop while running your test data set. You can expect
-    sluggish performance if parallelization is working as it should. 
+    sluggish performance if parallelization is working as it should.
 
 Simple workflows
 ~~~~~~~~~~~~~~~~~~~~

@@ -57,8 +57,10 @@ jobs:
         pytest --cov=mspasspy python/tests/
         make test -C build/temp.*/
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v4
       with:
+        fail_ci_if_error: false 
+        token: ${{ secrets.CODECOV_TOKEN }} # required
         env_vars: OS,PYTHON
         verbose: true
     - name: Build Documentation

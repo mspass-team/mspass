@@ -991,7 +991,7 @@ class DataFrameCacheMatcher(BasicMatcher):
         if mdlist is None:
             return findreturn
         elif len(mdlist) == 1:
-            return [mdlist, findreturn[1]]
+            return [mdlist[0], findreturn[1]]
         elif len(mdlist) > 1:
             if self.require_unique_match:
                 raise MsPASSError(
@@ -2357,7 +2357,7 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         t0offset=0.0,
         tolerance=4.0,
         query=None,
-        attributes_to_load=["lat", "lon", "depth", "time"],
+        attributes_to_load=["_id", "lat", "lon", "depth", "time"],
         load_if_defined=["magnitude"],
         aliases=None,
         require_unique_match=False,
@@ -2430,6 +2430,7 @@ class OriginTimeDBMatcher(DatabaseMatcher):
                 test_time = mspass_object[self.data_time_key]
             else:
                 return None
+        test_time -= self.t0offset
 
         # depends upon self.query being initialized by constructor
         # as python dictionary
@@ -2507,7 +2508,12 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
       be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
       some calls to find_one will fail.   Default is
-      ["lat","lon","depth","time"]
+      ["_id","lat","lon","depth","time"].  Note if constructing from a
+      DataFrame created from something like a Datascope origin table
+      this list will need to be changed to remove _id as it in that context
+      no ObjectID would normally be defined.  Be warned, however, that if
+      used with a normalize function the _id may be required to match a
+      "source_id" cross reference in a seismic data object.
     :type attributes_to_load:  list of string defining keys in collection
       documents
 
@@ -2547,9 +2553,9 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
     :type data_time_key:  string
 
     :param source_time_key:  dataframe column name to use as source
-    origin time field.   Default is None which is translated to
-    collection + "_time"  (default default is "source_time").
-    :type source_time_key:  string
+    origin time field.  Default is "time"
+    :type source_time_key:  string  Can also be a None type which
+    is causes the internal value to be set to "time"
     """
 
     def __init__(
@@ -2558,13 +2564,13 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         collection="source",
         t0offset=0.0,
         tolerance=4.0,
-        attributes_to_load=["lat", "lon", "depth", "time"],
+        attributes_to_load=["_id", "lat", "lon", "depth", "time"],
         load_if_defined=["magnitude"],
         aliases=None,
         require_unique_match=False,
         prepend_collection_name=True,
         data_time_key=None,
-        source_time_key=None,
+        source_time_key="time",
         custom_null_values=None,
     ):
         super().__init__(
@@ -2581,7 +2587,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         self.tolerance = tolerance
         self.data_time_key = data_time_key
         if source_time_key is None:
-            self.source_time_key = collection + "_time"
+            self.source_time_key = "time"
         else:
             self.source_time_key = source_time_key
 
@@ -2601,6 +2607,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
                 test_time = mspass_object[self.data_time_key]
             else:
                 return pd.DataFrame()
+        test_time -= self.t0offset
 
         tmin = test_time - self.tolerance
         tmax = test_time + self.tolerance

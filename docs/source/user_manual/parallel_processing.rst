@@ -228,10 +228,10 @@ could be done other ways, but that is not the key point.  The point is
 that the operation is summing a set of TimeSeries objects to produce the
 single result stored with the symbol :code:`stack`.
 
-We will get to the rules that constrain `Reduce` operators in a moment, but
+We will get to the rules that constrain :code:`Reduce` operators in a moment, but
 it might be more helpful to you as a user to see how that algorithm
 translates into dask/spark.  MsPASS has a parallel stack algorithm found
-`here<https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`_
+`here<https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`__
 It is used in a parallel context as follows for dask:
 
 .. code-block:: python
@@ -245,7 +245,7 @@ For spark the syntax is identical but the name of the method changes to reduce:
   res = rdd.reduce(lambda a, b: stack(a, b))
 
 The :code:`stack` symbol refers to a python function that is actually quite simple. You can view
-the source code `here<https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`_.
+the source code `here<https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`__.
 It is simple because most of the complexity is hidden behind the +=
 symbol that invokes that operation in C++ (`TimeSeries::operator+=` for anyone
 familiar with C++) to add the right hand side to the left hand side of
@@ -261,7 +261,7 @@ which is a generic wrapper to adapt any suitable reduce function to MsPASS.
 The final issue we need to cover in this section is what exactly is meant
 by the phrase "any suitable reduce function" at the end of the previous paragraph?
 To mesh with the reduce framework used by spark and dask a function has
-to satisfy `the following rules<https://en.wikipedia.org/wiki/Reduction_operator>`_
+to satisfy `the following rules<https://en.wikipedia.org/wiki/Reduction_operator>`__ :
 
 1. The first two arguments (a and b symbols in the example above)
    must define two instances of the same type
@@ -328,7 +328,7 @@ overhead is relatively small unless the execution time for
 processing is trivial.
 
 For more information, the dask documentation found
-`here<https://docs.dask.org/en/latest/scheduling.html>`_ is a good
+`here<https://docs.dask.org/en/latest/scheduling.html>`__ is a good
 starting point.
 
 Examples:
@@ -485,6 +485,7 @@ docker container and that is used by singularity in a very similar fashion to
 the way it used by docker as follows:
 
 .. code-block:: bash
+
   singularity build mspass.simg docker://wangyinz/mspass
 
 For more about running MsPASS with singularity consult our
@@ -522,7 +523,7 @@ And it doesn't matter if the directory doesn't exist, the job script would creat
 Then we define the SING_COM variable to simplify the workflow in our job script. On Stampede2 and most of HPC
 systems, we use Singularity to manage and run the docker images. There are many options to start a container
 using singularity, which you could refer to their documentation. And for those who are not familiar with Singularity,
-here is a good `source<https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html>`_
+here is a good `source<https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html>`__ 
 to get start with.
 
 .. code-block:: bash
@@ -563,7 +564,7 @@ before:
   SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR $SING_COM
 
 Here we set the environment variables inside the container using this syntactic sugar SINGULARITYENV_XXX.
-For more information, you could view the usage`here<https://sylabs.io/guides/3.0/user-guide/appendix.html>`_.
+For more information, you could view the usage `here<https://sylabs.io/guides/3.0/user-guide/appendix.html>`_.
 We define and set different variables in different containers we start because in our start-mspass.sh, we
 define different bahavior under different *MSPASS_ROLE* so that for each role, it will execute the bash
 script we define in the start-mspass.sh. Though it looks complicated and hard to extend, this is prabably

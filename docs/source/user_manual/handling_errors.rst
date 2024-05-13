@@ -25,7 +25,7 @@ using python's logging mechanism, but recognized that would not solve the
 large log file issue.
 
 The above issues led us to a completely different solution for error logging.
-We include an ErrorLogger class a member of all supported data
+We include an ErrorLogger class as a member of all supported data
 objects.  That model simplifies the error handling because the error
 handling model can be stated as two simple rules:
 
@@ -39,7 +39,7 @@ This section is organized around three key concepts used in the
 error handling system of MsPASS:   standardized exception handling,
 the error logger api, and concepts related to marking data dead.  The
 last item has two important subtopics:  the kill concept and
-special class we tag with the descriptive, albeit perhaps overly cute,
+a special class we tag with the descriptive, albeit perhaps overly cute,
 name of :code:`Undertaker`.
 
 Exceptions and Error Handlers
@@ -53,17 +53,18 @@ treat errors with one of three approaches.
 1.  The python language is flexible, but standard practice encourages the
     use of the try-raise-except construct (the try-throw-catch keywords in C++).
     We use that exception mechanism internally to handle most error conditions.
-    To provide some regularity any error raised by a MsPASS function or
-    method will be the exception class called MsPASSError.   Following
+    To provide some regularity, most error raised by a MsPASS function or
+    method will be the exception class called MsPASSError.
+    (The exception is error that match standard python exception types.)  Following
     standard practice the MsPASSError is defined as a subclass of the
     base class Exception.  That allows generic error handlers like the
     following to catch MsPASSError exceptions as described in most
     books and online python tutorials
     (`Follow this link for a good example <https://medium.com/better-programming/a-comprehensive-guide-to-handling-exceptions-in-python-7175f0ce81f7>`__)
 
-2.  As with most python packages, with some algorithms we sometimes return
-    something that can indicate full or partial success.   We reserve that
-    model to situations where "partial success" is not really an error but
+2.  Many algorithms are not black and white but need to return
+    something that can indicate the degree of success.   We reserve that
+    model to situations where partial success is not really an error but
     the result of an algorithm that is expected to behave in different ways
     with different inputs.  For example, the save_inventory method of
     `database <../python_api/mspasspy.db.html#module-mspasspy.db.database>`__
@@ -85,15 +86,19 @@ As discussed in the overview section above, handling errors in a parallel
 environment presents special problems.  A key issue is that the schedulers
 MsPASS supports (Spark and Dask) both will abort a job if any function
 throws an unhandled exception.  For that reason, if a MsPASS processing
-function ever throws an exception it is a bug.  Instead, we always aim
+function ever throws an exception it is a bug or an unrecoverable
+error that does invalidate an entire run.  Instead, we always aim
 to handle errors with what we call our ErrorLogger and a classic approach
 using a kill mechanism.
 
-The atomic data objects of MsPASS, which we call TimeSeries and Seismogram,
+All seismic data objects of MsPASS
 are defined and implemented in C++.  (They are bound to python through
-wrappers using a package called pybind11.)  Both atomic data objects
+wrappers using a package called pybind11.)  All
 have a C++ class called `ErrorLogger <../_static/html/classmspass_1_1utility_1_1_error_logger.html>`__
-as a public attribute we define with the symbol :code:`elog`.  That mechanism
+as a public attribute we define with the symbol :code:`elog`.
+(The python bindings are also defined in this link:
+:py:class:`mspasspy.ccore.utility.ErrorLogger`. )
+That mechanism
 allows processing functions to handle all exceptions without aborting
 through constructs similar to the following pythonic pseudocode:
 
@@ -111,8 +116,10 @@ through constructs similar to the following pythonic pseudocode:
 
 The kill method is described further in the next section.  The key point
 is that generic error handlers catch any exceptions and post message to
-the ErrorLogger carried with the data in a container
-with the symbolic name elog.   An error posted to the ErrorLogger
+the :py:class:`mspasspy.ccore.utility.ErrorLogger`
+carried with the data in a container
+with the symbolic name elog.   An error posted to the
+:py:class:`mspasspy.ccore.utility.ErrorLogger`
 always contains two components:  (1) a (hopefully informative)
 string that describes the error, and (2) a severity tag.   The
 class description
@@ -156,6 +163,8 @@ a special collection in MongoDB we call the :code:`elog` collection.
 
 Kills
 ~~~~~~~~~
+Concepts
+----------
 The approach of marking a piece of seismic data bad/dead is familiar to
 anyone who has ever done seismic reflection processing.  All seismic
 processing systems have a set of trace editing functions to mark
@@ -175,6 +184,42 @@ mechanism to define data that should be considered no longer valid.   All
 properly designed python functions in MsPASS automatically do nothing if
 data are marked dead leaving the dead data as elements of the RDD/Bag.
 
+Since v2 of MsPASS the package defines two forms of dead dead:
+(1) normal kills created during data processing and (2) what we
+(colorfully) call "abortions".   The name is descriptive because a
+dead datum marked as an "abortion" was never born.   The tag is
+defined only during read operations if the construction of the object
+fails.   Users should put aside any political views on the human
+version of this topic and take a strictly pro life stance on
+MsPASS abortions.  All abortions are a bad thing that should be
+eliminated if they happen.   For the same reason MsPASS algorithms rarely
+throw exceptions, when abortions occur (always during reading)
+the :code:`Metadata` created from a MongoDB document are stored in
+a dead datum with no sample data.   That body will be carried
+through a workflow.   Abortions are handled specially by during a save
+as described below.
+
+A second feature added to MsPASS since v2 is that an entire ensemble
+can be killed.  Killing an ensemble is equivalent to killing all the
+atomic data members.
+
+Handling dead data has two important, practical constraints:
+
+#.  Any careful scientist will want to have a record of what data was
+    killed and why it was killed.
+#.  As noted earlier with a parallel container the body needs to be
+    carried through the processing.   If the data objects are large
+    moving the entire body around is inefficient and unnecessarily
+    consumes memory.
+
+How we address these two constraints is described in two sections
+below.  The first is handled automatically by the
+:py:meth:`mspasspy.db.database.Database.save_data` method of
+:py:class:`mspasspy.db.database.Database`.  The second has
+options that are implemented as methods of the class
+:py:class:`mspasspy.db.util.Undertaker.Undertaker` that is the
+topic of the second subsection below.
+
 A final point is that if a job is expected to kill a large fraction of data
 there is a point where it becomes more efficient to clear the dataset of
 dead data.   That needs to be done with some care if one wishes to preserve
@@ -182,32 +227,125 @@ error log entries that document why a datum was killed.   The
 :code:`Undertaker` class, which described in the next section was designed
 to handle such issues.
 
-Undertaker
-~~~~~~~~~~~~~
-The class name is a programming joke, but the name is descriptive;  its jobs
-is to deal with dead data.  The class is an extension of Database and has
-three methods that are most useful for parallel jobs handling ensembles.
+Database handling of dead data
+---------------------------------
+The standard way in MsPASS to preserve a record of killed data is
+implicit when the data are saved via the Database method
+:py:meth:`mspasspy.db.database.Database.save_data`.
+The :py:class:`mspasspy.db.database.Database` class internally
+creates an instance of
+:py:class:`mspasspy.util.Undertaker.Undertaker`
+(Described in more detail the next section and the docstring
+viewable via the above link.) that handles the dead data during the save
+operation.  The
+:py:meth:`mspasspy.db.database.Database.save_data`
+method has these features:
 
-1.  The :code:`bury_the_dead` method is the recommended method for many workflows
-    to clear dead data from ensembles.
-    It saves error logs and metadata for killed data
-    in the elog collection as a subdocument with the key "tombstone".
-    It returns an edited version of the
-    ensemble with the dead data removed.
-2.  The :code:`cremate` method is a variant of :code:`bury_the_dead`  It
-    also clears the dead data members from an ensemble and returns a clean
-    copy with he dead data removed.  We call it :code:`cremate` because
-    all traces of the data vanish; neither the error log or any identifiers
-    of the destroyed data will be retained.
-3.  The :code:`bring_out_your_dead` method, other than being the best python programming
-    joke ever, is more specialized.  It returns two ensembles:  one with all the live and one
-    with all the dead data.  That approach can be used, for example, in
-    testing automatic editing code.  An interactive job to evaluate
-    how well the editing worked could use this method.
+#.  If an atomic datum is marked dead,
+    :py:meth:`mspasspy.db.database.Database.save_data`
+    calls the :py:meth:`mspasspy.util.Undertaker.Undertaker.bury`
+    method of :py:class:`mspasspy.util.Undertaker.Undertaker` on the
+    contents.  The default behavior of
+    :py:meth:`mspasspy.util.Undertaker.Undertaker.bury`
+    is to create a document in the
+    :code:`cemetery` collection with two primary key-value pairs:
+    (a) The :code:`logdata` key is associated with a readable dump of the
+    :code:`ErrorLogger` content.  (b) The :code:`tombstone` key is
+    associated with a python dictionary (subdocument in MongoDB jargon)
+    that is an image of the datum's :py:class:`mspasspy.ccore.utility.Metadata`
+    container. If the :code:`return_data` boolean is set True (default is False),
+    the sample vector/array will be cleared and set to zero length on the
+    returned object.
+#.  A special case is atomic data that are marked as "abortions".
+    That property is marked by the reader by setting a Metadata boolean
+    with the key
+    :code:`is_abortion` to True.  The only difference
+    in how these are handled is that "abortions"
+    are saved to the :code:`abortions` collection instead of the
+    :code:`cemetery` collection used for data killed during processing.
+    The reason for that separation is to emphasize the pro-life
+    stance of MsPASS - abortions should always be considered a serious error.
+#.  Handling ensembles is a more complex problem because there are two
+    very different definintions of dead:  (a) the entire ensemble can be
+    marked dead or (b) only some members are marked dead.
+    If the entire ensemble is marked dead, a common message is posted to
+    all members and the :py:meth:`mspasspy.util.Undertaker.Undertaker.bury`
+    method is called on all members.   If :code:`return_data` is
+    set True, the member data vector is cleared.  In the more common
+    situation where only some of the ensemble members are marked dead,
+    :py:meth:`mspasspy.db.database.Database.save_data`
+    calls a special member of :py:class:`mspasspy.util.Undertaker.Undertaker`
+    with a name that is the best python joke ever:
+    :py:meth:`mspasspy.util.Undertaker.Undertaker.bring_out_your_dead`.
+    The dead members are separated from those marked live and
+    passed in a serial loop to :py:meth:`mspasspy.util.Undertaker.Undertaker.bury`.
+    If :code:`return_data` is set True, the member vector is replaced with
+    a smaller version with the dead removed.
+#.  Saves of both atomic an ensemble data have a :code:`cremate` option.
+    When set True dead data will be cleared without a trace.
 
-The :code:`Undertaker` class only works on ensembles because clearing a
-dead datum in a serial job makes little sense.   In all cases we know
-the same functionality is achieved in a python script by conditionals to
-test if the datum is marked live.  Furthermore, the user should recognize that
-any call to the :code:`save_data` method will lead to a :code:`tombstone`
-subdocument being written for all data marked dead.
+Since V2 of MsPASS the recommended way to terminate a parallel
+processing sequence is to use the mspass
+:py:func:`mspasspy.io.distributed.write_distributed_data` function.
+It handles dead data the same way as
+:py:meth:`mspasspy.db.database.Database.save_data` described above.
+
+Finally, users are warned that data that are passed through a reduce operator
+will normally discard dead data with no trace.  If your workflow has a
+reduce operator, it is recommended that you use the inline methods for
+handling dead data described in the next section immediately before
+the reduce operator is called.
+
+Handling Dead Data as an Intermediate Step
+---------------------------------------------
+If your workflow has edit procedures that kill a significant fraction
+of your dataset, you should consider using the MsPASS
+facility for handling dead data within a processing sequence.
+The main tool for doing so are methods of the
+:py:class:`mspasspy.util.Undertaker.Undertaker` class.
+The class name is a programming joke, but the name is descriptive;  its job
+is to deal with dead data.  The class interacts with a Database and has
+three methods that are most useful for any MsPASS workflow.
+
+1.  The :py:meth:`mspasspy.util.Undertaker.Undertaker.bury` method
+    is the normal tool of choice to handle dead data.   It has the
+    behavior noted above creating a document in the :code:`cemetery`
+    collection for every dead datum.  For atomic data the return
+    is a copy of the input object with the sample data cleared and
+    the objects :code:`npts` attribute is set to 0.   For ensembles,
+    this method returns a copy of the ensemble with the dead
+    members completely removed.   A :code:`cemetery` document is
+    saved for each datum removed from the ensemble.
+2.  The :py:meth:`mspasspy.util.Undertaker.Undertaker.cremate` method
+    can be used if you do not want to preserve the error messages that
+    caused kills.   With atomic data it returns the smallest ashes
+    possible; a default constructed instance of the parent data object.
+    For ensembles dead data are completely removed.
+3.  The :py:meth:`mspasspy.util.Undertaker.Undertaker.bring_out_your_dead` method,
+    will raise an exception if it receives anything but an ensemble.
+    It returns two ensembles:  one with all the live and one
+    with all the dead data.  It is actually used internally by
+    both the :py:meth:`mspasspy.util.Undertaker.Undertaker.bury`
+    and :py:meth:`mspasspy.util.Undertaker.Undertaker.cremate` methods
+    when the input is an ensemble.
+4.  :py:meth:`mspasspy.util.Undertaker.Undertaker.mummify` is useful for
+    reducing the memory footprint of a dataset while preserving the data
+    that is normally saved in :code:`cemetery` at the end of a workflow.
+    It does so by only clearing the sample data arrays and setting the
+    :code:`npts` attribute for dead data to 0.   With ensembles the
+    algorithm runs through all members clear the sample arrays of all
+    members marked dead.
+
+The following is a sketch of a typical use of an instance of
+:py:class:`mspasspy.util.Undertaker.Undertaker` within a workflow.
+A key point is an instance of the class has to be instantiated
+prior to the data processing workflow steps.
+
+.. code-block:: python
+
+  stedronsky = Undertaker(db)  # db is an instance of Database created earlier
+  data = read_distributed_data(db,query)
+  data = data.map(customfunction)  # some custom function that may kill
+  data = data.map(squad)  # kills with an instance of the FiringSquad editor
+  data.map(stedronsky.bury)
+  # other processing commands would go here.

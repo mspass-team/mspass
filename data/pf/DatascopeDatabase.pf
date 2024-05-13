@@ -1,0 +1,1014 @@
+arrival &Arr{
+primary_keys &Tbl{
+sta
+time
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+time 17 7 float -9999999999.999 %17.5f 
+arid 8 25 int -1 %8ld 
+jdate 8 34 int -1 %8ld 
+stassid 8 43 int -1 %8ld 
+chanid 8 52 int -1 %8ld 
+chan 8 61 string - %-8s 
+iphase 8 70 string - %-8s 
+stype 1 79 string - %-1s 
+deltim 6 81 float -1.0 %6.3f 
+azimuth 7 88 float -1.0 %7.2f 
+delaz 7 96 float -1.0 %7.2f 
+slow 7 104 float -1.0 %7.2f 
+delslo 7 112 float -1.0 %7.2f 
+ema 7 120 float -1.0 %7.2f 
+rect 7 128 float -1.0 %7.3f 
+amp 10 136 float -1.0 %10.1f 
+per 7 147 float -1.0 %7.2f 
+logat 7 155 float -999.0 %7.2f 
+clip 1 163 string - %-1s 
+fm 2 165 string - %-2s 
+snr 10 168 float -1.0 %10.5g 
+qual 1 179 string - %-1s 
+auth 15 181 string - %-15s 
+commid 8 197 int -1 %8ld 
+lddate 17 206 float -9999999999.999 %17.5f 
+}
+}
+assoc &Arr{
+primary_keys &Tbl{
+arid
+orid
+}
+attributes &Tbl{
+arid 8 0 int -1 %8ld 
+orid 8 9 int -1 %8ld 
+sta 6 18 string - %-6s 
+phase 8 25 string - %-8s 
+belief 4 34 float 9.99 %4.2f 
+delta 8 39 float -1.0 %8.3f 
+seaz 7 48 float -999.0 %7.2f 
+esaz 7 56 float -999.0 %7.2f 
+timeres 8 64 float -999.0 %8.3f 
+timedef 1 73 string - %-1s 
+azres 7 75 float -999.0 %7.1f 
+azdef 1 83 string - %-1s 
+slores 7 85 float -999.0 %7.2f 
+slodef 1 93 string - %-1s 
+emares 7 95 float -999.0 %7.1f 
+wgt 6 103 float -1.0 %6.3f 
+vmodel 15 110 string - %-15s 
+commid 8 126 int -1 %8ld 
+lddate 17 135 float -9999999999.999 %17.5f 
+}
+}
+calibration &Arr{
+primary_keys &Tbl{
+sta
+chan
+time::endtime
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+chan 8 7 string - %-8s 
+time 17 16 float -9999999999.999 %17.5f 
+endtime 17 34 float 9999999999.999 %17.5f 
+insname 50 52 string - %-50s 
+snname 32 103 string - %s 
+dlname 32 136 string - %s 
+samprate 11 169 float -1.0 %11.7f 
+segtype 1 181 string - %-1s 
+dlsta 16 183 string - %s 
+dlchan 16 200 string - %s 
+lead 4 217 string - %s 
+stream 8 222 int -1 %8ld 
+calib 16 231 float 0.0 %16.9g 
+calper 16 248 float -1.0 %16.6f 
+fc 11 265 float -1.0 %11.6f 
+units 12 277 string - %-12s 
+lddate 17 290 float -9999999999.999 %17.5f 
+}
+}
+detection &Arr{
+primary_keys &Tbl{
+time
+sta
+chan
+filter
+state
+}
+attributes &Tbl{
+srcid 64 0 string - %-64s 
+tagname 8 65 string - %-8s 
+sta 6 74 string - %-6s 
+chan 8 81 string - %-8s 
+time 17 90 float -9999999999.999 %17.5f 
+arid 8 108 int -1 %8ld 
+state 3 117 string - %-3s 
+filter 30 121 string - %-30s 
+snr 10 152 float -1.0 %10.5g 
+lddate 17 163 float -9999999999.999 %17.5f 
+}
+}
+digitizer &Arr{
+primary_keys &Tbl{
+net
+sta
+chan
+time::endtime
+}
+attributes &Tbl{
+net 8 0 string - %-8s 
+sta 6 9 string - %-6s 
+chan 8 16 string - %-8s 
+time 17 25 float -9999999999.999 %17.5f 
+endtime 17 43 float 9999999999.999 %17.5f 
+model 15 61 string  %-15s 
+manu 15 77 string  %-15s 
+ssident 16 93 string - %-16s 
+samprate 11 110 float -1.0 %11.7f 
+phchan 3 122 int 999 %3ld 
+lddate 17 126 float -9999999999.999 %17.5f 
+}
+}
+emodel &Arr{
+primary_keys &Tbl{
+orid
+}
+attributes &Tbl{
+orid 8 0 int -1 %8ld 
+emodelx 15 9 float -1.0 %15.6lg 
+emodely 15 25 float -1.0 %15.6lg 
+emodelz 15 41 float -1.0 %15.6lg 
+emodelt 15 57 float -1.0 %15.6lg 
+lddate 17 73 float -9999999999.999 %17.5f 
+}
+}
+event &Arr{
+primary_keys &Tbl{
+evid
+}
+attributes &Tbl{
+evid 8 0 int -1 %8ld 
+evname 15 9 string - %-15s 
+prefor 8 25 int -1 %8ld 
+auth 15 34 string - %-15s 
+commid 8 50 int -1 %8ld 
+lddate 17 59 float -9999999999.999 %17.5f 
+}
+}
+fplane &Arr{
+primary_keys &Tbl{
+mechid
+}
+attributes &Tbl{
+orid 8 0 int -1 %8ld 
+mechid 8 9 int -1 %8ld 
+str1 5 18 float 999.9 %5.1f 
+dip1 5 24 float 999.9 %5.1f 
+rake1 6 30 float 9999.9 %6.1f 
+str2 5 37 float 999.9 %5.1f 
+dip2 5 43 float 999.9 %5.1f 
+rake2 6 49 float 9999.9 %6.1f 
+taxazm 5 56 float 999.9 %5.1f 
+taxplg 5 62 float 999.9 %5.1f 
+paxazm 5 68 float 999.9 %5.1f 
+paxplg 5 74 float 999.9 %5.1f 
+algorithm 15 80 string - %-15s 
+auth 15 96 string - %-15s 
+lddate 17 112 float -9999999999.999 %17.5f 
+}
+}
+gap &Arr{
+primary_keys &Tbl{
+sta
+chan
+time
+}
+attributes &Tbl{
+tagname 8 0 string - %-8s 
+sta 6 9 string - %-6s 
+chan 8 16 string - %-8s 
+time 17 25 float -9999999999.999 %17.5f 
+tgap 17 43 float -9999999999999.99 %17.5f 
+filled 1 61 string - %-1s 
+lddate 17 63 float -9999999999.999 %17.5f 
+}
+}
+gps &Arr{
+primary_keys &Tbl{
+net
+sta
+time
+lat
+lon
+elev
+}
+attributes &Tbl{
+net 8 0 string - %-8s 
+sta 6 9 string - %-6s 
+time 17 16 float -9999999999.999 %17.5f 
+lat 9 34 float -999.0 %9.4f 
+lon 9 44 float -999.0 %9.4f 
+elev 9 54 float -999.0 %9.4f 
+nsat 6 64 int -1 %6ld 
+gpsqual 6 71 string - %-6s 
+insname 50 78 string - %-50s 
+lddate 17 129 float -9999999999.999 %17.5f 
+}
+}
+gregion &Arr{
+primary_keys &Tbl{
+grn
+}
+attributes &Tbl{
+grn 8 0 int -1 %8ld 
+grname 40 9 string - %-40s 
+lddate 17 50 float -9999999999.999 %17.5f 
+}
+}
+hypocentroid &Arr{
+primary_keys &Tbl{
+gridname
+gridid
+}
+attributes &Tbl{
+gridname 15 0 string - %-15s 
+gridid 8 16 int -1 %8d 
+dlat 15 25 float -999.0 %15.9lf 
+dlon 15 41 float -999.0 %15.9lf 
+depth 9 57 float -999.0 %9.4f 
+hclat 15 67 float -999.0 %15.9lf 
+hclon 15 83 float -999.0 %15.9lf 
+hcdepth 9 99 float -999.0 %9.4lf 
+nass 4 109 int -1 %4ld 
+delta 8 114 float -1.0 %8.3f 
+ztop 9 123 float -999.0 %9.4lf 
+zbot 9 133 float -999.0 %9.4lf 
+lddate 17 143 float -9999999999.999 %17.5f 
+}
+}
+instrument &Arr{
+primary_keys &Tbl{
+inid
+}
+attributes &Tbl{
+inid 8 0 int -1 %8ld 
+insname 50 9 string - %-50s 
+instype 6 60 string - %-6s 
+band 1 67 string - %-1s 
+digital 1 69 string - %-1s 
+samprate 11 71 float -1.0 %11.7f 
+ncalib 16 83 float -99.999999 %16.6f 
+ncalper 16 100 float -1.0 %16.6f 
+dir 64 117 string - %-64s 
+dfile 32 182 string - %-32s 
+rsptype 6 215 string - %-6s 
+lddate 17 222 float -9999999999.999 %17.5f 
+}
+}
+lastid &Arr{
+primary_keys &Tbl{
+keyname
+}
+attributes &Tbl{
+keyname 15 0 string - %-15s 
+keyvalue 8 16 int -1 %8ld 
+lddate 17 25 float -9999999999.999 %17.5f 
+}
+}
+moment &Arr{
+primary_keys &Tbl{
+orid
+}
+attributes &Tbl{
+orid 8 0 int -1 %8ld 
+mexpon 3 9 int 999 %3ld 
+mrr 5 13 float 99.99 %5.2f 
+mtt 5 19 float 99.99 %5.2f 
+mff 5 25 float 99.99 %5.2f 
+mrt 5 31 float 99.99 %5.2f 
+mrf 5 37 float 99.99 %5.2f 
+mtf 5 43 float 99.99 %5.2f 
+mrrerr 5 49 float 99.99 %5.2f 
+mtterr 5 55 float 99.99 %5.2f 
+mfferr 5 61 float 99.99 %5.2f 
+mrterr 5 67 float 99.99 %5.2f 
+mrferr 5 73 float 99.99 %5.2f 
+mtferr 5 79 float 99.99 %5.2f 
+taxval 6 85 float 99.99 %6.2f 
+taxplg 5 92 float 999.9 %5.1f 
+taxazm 5 98 float 999.9 %5.1f 
+paxval 5 104 float 99.99 %5.2f 
+paxplg 5 110 float 999.9 %5.1f 
+paxazm 5 116 float 999.9 %5.1f 
+naxval 5 122 float 99.99 %5.2f 
+naxplg 5 128 float 999.9 %5.1f 
+naxazm 5 134 float 999.9 %5.1f 
+bestdc 5 140 float 99.99 %5.2f 
+str1 5 146 float 999.9 %5.1f 
+dip1 5 152 float 999.9 %5.1f 
+rake1 6 158 float 9999.9 %6.1f 
+str2 5 165 float 999.9 %5.1f 
+dip2 5 171 float 999.9 %5.1f 
+rake2 6 177 float 9999.9 %6.1f 
+dused 10 184 string - %-10s 
+auth 15 195 string - %-15s 
+commid 8 211 int -1 %8ld 
+lddate 17 220 float -9999999999.999 %17.5f 
+}
+}
+mt &Arr{
+primary_keys &Tbl{
+mtid
+}
+attributes &Tbl{
+mtid 8 0 int -1 %8ld 
+pubid 80 9 string - %-80s 
+qmlid 80 90 string - %-80s 
+orid 8 171 int -1 %8ld 
+tmpp 12 180 float -9.99999e+99 %12.5e 
+tmrp 12 193 float -9.99999e+99 %12.5e 
+tmrr 12 206 float -9.99999e+99 %12.5e 
+tmrt 12 219 float -9.99999e+99 %12.5e 
+tmtp 12 232 float -9.99999e+99 %12.5e 
+tmtt 12 245 float -9.99999e+99 %12.5e 
+taxlength 12 258 float -9.99999e+99 %12.5e 
+taxplg 5 271 float 999.9 %5.1f 
+taxazm 5 277 float 999.9 %5.1f 
+paxlength 12 283 float -9.99999e+99 %12.5e 
+paxplg 5 296 float 999.9 %5.1f 
+paxazm 5 302 float 999.9 %5.1f 
+naxlength 12 308 float -9.99999e+99 %12.5e 
+naxplg 5 321 float 999.9 %5.1f 
+naxazm 5 327 float 999.9 %5.1f 
+scm 12 333 float -9.99999e+99 %12.5e 
+pdc 6 346 float -999.0 %6.2f 
+str1 5 353 float 999.9 %5.1f 
+dip1 5 359 float 999.9 %5.1f 
+rake1 6 365 float 9999.9 %6.1f 
+str2 5 372 float 999.9 %5.1f 
+dip2 5 378 float 999.9 %5.1f 
+rake2 6 384 float 9999.9 %6.1f 
+drdepth 9 391 float -999.0 %9.4f 
+drtime 17 401 float 9999999999.999 %17.5f 
+drlat 9 419 float -999.0 %9.4f 
+drlon 9 429 float -999.0 %9.4f 
+drmag 7 439 float -99.99 %7.2f 
+drmagt 6 447 string - %-6s 
+estatus 12 454 string - %-12s 
+rstatus 12 467 string - %-12s 
+utime 17 480 float 9999999999.999 %17.5f 
+auth 15 498 string - %-15s 
+lddate 17 514 float -9999999999.999 %17.5f 
+}
+}
+netmag &Arr{
+primary_keys &Tbl{
+magid
+}
+attributes &Tbl{
+magid 8 0 int -1 %8ld 
+net 8 9 string - %-8s 
+orid 8 18 int -1 %8ld 
+evid 8 27 int -1 %8ld 
+magtype 6 36 string - %-6s 
+nsta 8 43 int -1 %8ld 
+magnitude 7 52 float -99.99 %7.2f 
+uncertainty 7 60 float -1.0 %7.2f 
+auth 15 68 string - %-15s 
+commid 8 84 int -1 %8ld 
+lddate 17 93 float -9999999999.999 %17.5f 
+}
+}
+netmw &Arr{
+primary_keys &Tbl{
+orid
+}
+attributes &Tbl{
+orid 8 0 int -1 %8ld 
+evid 8 9 int -1 %8ld 
+netmw 7 18 float -999.0 %7.2f 
+ml 7 26 float -999.0 %7.2f 
+sigmamw 7 34 float -999.0 %7.2f 
+netm0 9 42 float -9.99 %9.3e 
+netf0 7 52 float -999.0 %7.2f 
+neteqR 7 60 float -999.0 %7.2f 
+usta 8 68 int -1 %8d 
+rjsta 8 77 int -1 %8d 
+quality 7 86 float -999.0 %7.2f 
+auth 15 94 string - %-15s 
+commid 8 110 int -1 %8ld 
+lddate 17 119 float -9999999999.999 %17.5f 
+}
+}
+network &Arr{
+primary_keys &Tbl{
+net
+}
+attributes &Tbl{
+net 8 0 string - %-8s 
+netname 80 9 string - %-80s 
+nettype 4 90 string - %-4s 
+auth 15 95 string - %-15s 
+commid 8 111 int -1 %8ld 
+lddate 17 120 float -9999999999.999 %17.5f 
+}
+}
+nominalresp &Arr{
+primary_keys &Tbl{
+net
+sta
+chan
+time::endtime
+}
+attributes &Tbl{
+net 8 0 string - %-8s 
+sta 6 9 string - %-6s 
+chan 8 16 string - %-8s 
+time 17 25 float -9999999999.999 %17.5f 
+endtime 17 43 float 9999999999.999 %17.5f 
+samprate 11 61 float -1.0 %11.7f 
+fp 8 73 float 0.0 %10.5lf 
+damp0 8 82 float -1.0 %8.5lf 
+calib 16 91 float 0.0 %16.9g 
+calper 16 108 float -1.0 %16.6f 
+calibl 16 125 float 0.0 %16.6lf 
+rsptype 6 142 string - %-6s 
+dir 64 149 string - %-64s 
+dfile 32 214 string - %-32s 
+dfilel 32 247 string - %-32s 
+lddate 17 280 float -9999999999.999 %17.5f 
+}
+}
+origerr &Arr{
+primary_keys &Tbl{
+orid
+}
+attributes &Tbl{
+orid 8 0 int -1 %8ld 
+sxx 15 9 float -999999999.9999 %15.4f 
+syy 15 25 float -999999999.9999 %15.4f 
+szz 15 41 float -999999999.9999 %15.4f 
+stt 15 57 float -999999999.9999 %15.4f 
+sxy 15 73 float -999999999.9999 %15.4f 
+sxz 15 89 float -999999999.9999 %15.4f 
+syz 15 105 float -999999999.9999 %15.4f 
+stx 15 121 float -999999999.9999 %15.4f 
+sty 15 137 float -999999999.9999 %15.4f 
+stz 15 153 float -999999999.9999 %15.4f 
+sdobs 9 169 float -1.0 %9.4f 
+smajax 9 179 float -1.0 %9.4f 
+sminax 9 189 float -1.0 %9.4f 
+strike 6 199 float -1.0 %6.2f 
+sdepth 9 206 float -1.0 %9.4f 
+stime 8 216 float -1.0 %8.2f 
+conf 5 225 float 0.0 %5.3f 
+commid 8 231 int -1 %8ld 
+lddate 17 240 float -9999999999.999 %17.5f 
+}
+}
+origin &Arr{
+primary_keys &Tbl{
+time
+lat
+lon
+depth
+ndef
+nass
+}
+attributes &Tbl{
+lat 9 0 float -999.0 %9.4f 
+lon 9 10 float -999.0 %9.4f 
+depth 9 20 float -999.0 %9.4f 
+time 17 30 float -9999999999.999 %17.5f 
+orid 8 48 int -1 %8ld 
+evid 8 57 int -1 %8ld 
+jdate 8 66 int -1 %8ld 
+nass 4 75 int -1 %4ld 
+ndef 4 80 int -1 %4ld 
+ndp 4 85 int -1 %4ld 
+grn 8 90 int -1 %8ld 
+srn 8 99 int -1 %8ld 
+etype 2 108 string - %-2s 
+review 4 111 string - %-4s 
+depdp 9 116 float -999.0 %9.4f 
+dtype 1 126 string - %-1s 
+mb 7 128 float -999.0 %7.2f 
+mbid 8 136 int -1 %8ld 
+ms 7 145 float -999.0 %7.2f 
+msid 8 153 int -1 %8ld 
+ml 7 162 float -999.0 %7.2f 
+mlid 8 170 int -1 %8ld 
+algorithm 15 179 string - %-15s 
+auth 15 195 string - %-15s 
+commid 8 211 int -1 %8ld 
+lddate 17 220 float -9999999999.999 %17.5f 
+}
+}
+predarr &Arr{
+primary_keys &Tbl{
+arid
+orid
+}
+attributes &Tbl{
+arid 8 0 int -1 %8ld 
+orid 8 9 int -1 %8ld 
+time 17 18 float -9999999999.999 %17.5f 
+slow 7 36 float -1.0 %7.2f 
+seaz 7 44 float -999.0 %7.2f 
+ema 7 52 float -1.0 %7.2f 
+esaz 7 60 float -999.0 %7.2f 
+dip 5 68 float 999.9 %5.1f 
+lddate 17 74 float -9999999999.999 %17.5f 
+}
+}
+predmech &Arr{
+primary_keys &Tbl{
+arid
+orid
+mechid
+}
+attributes &Tbl{
+arid 8 0 int -1 %8ld 
+orid 8 9 int -1 %8ld 
+mechid 8 18 int -1 %8ld 
+fm 2 27 string - %-2s 
+radamp 10 30 float -1.0 %10.7f 
+lddate 17 41 float -9999999999.999 %17.5f 
+}
+}
+remark &Arr{
+primary_keys &Tbl{
+commid
+lineno
+}
+attributes &Tbl{
+commid 8 0 int -1 %8ld 
+lineno 8 9 int -1 %8ld 
+remark 80 18 string - %-80s 
+lddate 17 99 float -9999999999.999 %17.5f 
+}
+}
+schanloc &Arr{
+primary_keys &Tbl{
+sta
+chan
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+fchan 8 7 string - %-8s 
+loc 8 16 string - %-8s 
+chan 8 25 string - %-8s 
+lddate 17 34 float -9999999999.999 %17.5f 
+}
+}
+seismometer &Arr{
+primary_keys &Tbl{
+net
+sta
+chan
+time::endtime
+}
+attributes &Tbl{
+net 8 0 string - %-8s 
+sta 6 9 string - %-6s 
+chan 8 16 string - %-8s 
+time 17 25 float -9999999999.999 %17.5f 
+endtime 17 43 float 9999999999.999 %17.5f 
+model 15 61 string  %-15s 
+manu 15 77 string  %-15s 
+ssident 16 93 string - %-16s 
+sensortype 4 110 string  %-4s 
+caldrive 1 115 string - %-1s 
+active 3 117 string  %-3s 
+calgen 15 121 float 0.0 %15.7e 
+cal2rsp 3 137 int 999 %3ld 
+samprate 11 141 float -1.0 %11.7f 
+calib 16 153 float 0.0 %16.9g 
+calper 16 170 float -1.0 %16.6f 
+rsptype 6 187 string - %-6s 
+lddate 17 194 float -9999999999.999 %17.5f 
+}
+}
+sensor &Arr{
+primary_keys &Tbl{
+sta
+chan
+time::endtime
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+chan 8 7 string - %-8s 
+time 17 16 float -9999999999.999 %17.5f 
+endtime 17 34 float 9999999999.999 %17.5f 
+inid 8 52 int -1 %8ld 
+chanid 8 61 int -1 %8ld 
+jdate 8 70 int -1 %8ld 
+calratio 16 79 float 1.0 %16.6f 
+calper 16 96 float -1.0 %16.6f 
+tshift 6 113 float 0.0 %6.2f 
+instant 1 120 string - %-1s 
+lddate 17 122 float -9999999999.999 %17.5f 
+}
+}
+sensorcal &Arr{
+primary_keys &Tbl{
+sta
+chan
+rsta
+rchan
+time
+rtime
+dlcaltype
+runtime
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+chan 8 7 string - %-8s 
+rsta 6 16 string - %-6s 
+rchan 8 23 string - %-8s 
+tstart 17 32 float -9999999999.999 %17.5f 
+tend 17 50 float -9999999999.999 %17.5f 
+time 17 68 float -9999999999.999 %17.5f 
+rtime 17 86 float -9999999999.999 %17.5f 
+endtime 17 104 float 9999999999.999 %17.5f 
+dlcalseq 30 122 string  %-30s 
+dlcalseqr 30 153 string  %-30s 
+dlcaltype 16 184 string - %-16s 
+ptype 16 201 string - %-16s 
+pnoise 4 218 string - %-4s 
+runtime 17 223 float 9999999999.999 %17.5lf 
+auth 15 241 string - %-15s 
+hostname 25 257 string - %-25s 
+dlcalref 3 283 string - %-3s 
+dlmodel 15 287 string  %-15s 
+dlident 16 303 string - %-16s 
+snmodel 15 320 string  %-15s 
+snident 16 336 string - %-16s 
+dlmodelr 15 353 string  %-15s 
+dlidentr 16 369 string - %-16s 
+snmodelr 15 386 string  %-15s 
+snidentr 16 402 string - %-16s 
+samprate 11 419 float -1.0 %11.7f 
+sngen 10 431 float 0.0 %10.5g 
+calper 16 442 float -1.0 %16.6f 
+rsptype 6 459 string - %-6s 
+sngenerr 10 466 float -1.0 %10.3f 
+sngcmp 3 477 string - %-3s 
+rspcmp 3 481 string - %-3s 
+dir 64 485 string - %-64s 
+dfile 32 550 string - %-32s 
+dfilee 32 583 string - %-32s 
+dfilen 32 616 string - %-32s 
+lddate 17 649 float -9999999999.999 %17.5f 
+}
+}
+sensormodel &Arr{
+primary_keys &Tbl{
+snmodel
+}
+attributes &Tbl{
+snmodel 15 0 string  %-15s 
+sensortype 4 16 string  %-4s 
+caldrive 1 21 string - %-1s 
+active 3 23 string  %-3s 
+calgen 15 27 float 0.0 %15.7e 
+cal2rsp 3 43 int 999 %3ld 
+sngen 10 47 float 0.0 %10.5g 
+calper 16 58 float -1.0 %16.6f 
+dir 64 75 string - %-64s 
+dfile 32 140 string - %-32s 
+lddate 17 173 float -9999999999.999 %17.5f 
+}
+}
+site &Arr{
+primary_keys &Tbl{
+sta
+ondate::offdate
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+ondate 8 7 int -1 %8ld 
+offdate 8 16 int -1 %8ld 
+lat 9 25 float -999.0 %9.4f 
+lon 9 35 float -999.0 %9.4f 
+elev 9 45 float -999.0 %9.4f 
+staname 50 55 string - %-50s 
+statype 4 106 string - %-4s 
+refsta 6 111 string - %-6s 
+dnorth 9 118 float 0.0 %9.4f 
+deast 9 128 float 0.0 %9.4f 
+lddate 17 138 float -9999999999.999 %17.5f 
+}
+}
+sitechan &Arr{
+primary_keys &Tbl{
+chanid
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+chan 8 7 string - %-8s 
+ondate 8 16 int -1 %8ld 
+chanid 8 25 int -1 %8ld 
+offdate 8 34 int -1 %8ld 
+ctype 4 43 string - %-4s 
+edepth 9 48 float -9.9999 %9.4f 
+hang 6 58 float -999.9 %6.1f 
+vang 6 65 float -999.9 %6.1f 
+descrip 50 72 string - %-50s 
+lddate 17 123 float -9999999999.999 %17.5f 
+}
+}
+snetsta &Arr{
+primary_keys &Tbl{
+sta
+}
+attributes &Tbl{
+snet 8 0 string - %-8s 
+fsta 6 9 string - %-6s 
+sta 6 16 string - %-6s 
+lddate 17 23 float -9999999999.999 %17.5f 
+}
+}
+specdisc &Arr{
+primary_keys &Tbl{
+sta
+chan
+time
+twin
+spectype
+rsptype
+}
+attributes &Tbl{
+tagname 8 0 string - %-8s 
+sta 6 9 string - %-6s 
+chan 8 16 string - %-8s 
+time 17 25 float -9999999999.999 %17.5f 
+endtime 17 43 float 9999999999.999 %17.5f 
+phase 8 61 string - %-8s 
+arid 8 70 int -1 %8ld 
+rsptype 6 79 string - %-6s 
+freqmin 15 86 float -1.0 %15.6lg 
+freqmax 15 102 float -1.0 %15.6lg 
+nfreq 8 118 int -1 %8ld 
+df 15 127 float -1.0 %15.6lg 
+rayleigh 15 143 float -1.0 %15.6lg 
+tbp 10 159 float -1.0 %10.1f 
+scalib 15 170 float 0.0 %15.6lg 
+twin 9 186 float 0.0 %9.2f 
+nwin 6 196 int -1 %6ld 
+offset 6 203 float -1.0 %6.2f 
+totdur 12 210 float -1.0 %12.2f 
+demean 1 223 string - %-1s 
+rsprm 1 225 string - %-1s 
+taper 12 227 string - %-12s 
+method 12 240 string - %-12s 
+spectype 8 253 string  %-8s 
+units 12 262 string - %-12s 
+specfmt 12 275 string - %-12s 
+foff 10 288 int 0 %10ld 
+dir 64 299 string - %-64s 
+dfile 32 364 string - %-32s 
+auth 15 397 string - %-15s 
+lddate 17 413 float -9999999999.999 %17.5f 
+}
+}
+trigger &Arr{
+primary_keys &Tbl{
+time0
+sta
+chan
+state
+filter
+}
+attributes &Tbl{
+time0 17 0 float 9999999999.999 %17.5f 
+tagname 8 18 string - %-8s 
+sta 6 27 string - %-6s 
+chan 8 34 string - %-8s 
+time 17 43 float -9999999999.999 %17.5f 
+state 3 61 string - %-3s 
+filter 30 65 string - %-30s 
+lddate 17 96 float -9999999999.999 %17.5f 
+}
+}
+wfdisc &Arr{
+primary_keys &Tbl{
+sta
+chan
+time::endtime
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+chan 8 7 string - %-8s 
+time 17 16 float -9999999999.999 %17.5f 
+wfid 8 34 int -1 %8ld 
+chanid 8 43 int -1 %8ld 
+jdate 8 52 int -1 %8ld 
+endtime 17 61 float 9999999999.999 %17.5f 
+nsamp 8 79 int -1 %8ld 
+samprate 11 88 float -1.0 %11.7f 
+calib 16 100 float 0.0 %16.9g 
+calper 16 117 float -1.0 %16.6f 
+instype 6 134 string - %-6s 
+segtype 1 141 string - %-1s 
+datatype 2 143 string - %-2s 
+clip 1 146 string - %-1s 
+dir 64 148 string - %-64s 
+dfile 32 213 string - %-32s 
+foff 10 246 int 0 %10ld 
+commid 8 257 int -1 %8ld 
+lddate 17 266 float -9999999999.999 %17.5f 
+}
+}
+wfdisc_tshift &Arr{
+primary_keys &Tbl{
+wfid
+}
+attributes &Tbl{
+wfid 8 0 int -1 %8ld 
+time 17 9 float -9999999999.999 %17.5f 
+original_time 17 27 float -9999999999.999 %17.5f 
+endtime 17 45 float 9999999999.999 %17.5f 
+original_endtime 17 63 float 9999999999.999 %17.5f 
+original_samprate 11 81 float -1.0 %11.7f 
+straddle 1 93 string - %-1s 
+lddate 17 95 float -9999999999.999 %17.5f 
+}
+}
+wfedit &Arr{
+primary_keys &Tbl{
+sta
+chan
+time::endtime
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+chan 8 7 string - %-8s 
+edid 8 16 int -1 %8ld 
+time 17 25 float -9999999999.999 %17.5f 
+endtime 17 43 float 9999999999.999 %17.5f 
+probtype 8 61 string - %-8s 
+edittype 8 70 string - %-8s 
+auth 15 79 string - %-15s 
+commid 8 95 int -1 %8ld 
+lddate 17 104 float -9999999999.999 %17.5f 
+}
+}
+wfmeas &Arr{
+primary_keys &Tbl{
+sta
+chan
+meastype
+filter
+time
+endtime
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+chan 8 7 string - %-8s 
+meastype 10 16 string  %-10s 
+filter 30 27 string - %-30s 
+time 17 58 float -9999999999.999 %17.5f 
+endtime 17 76 float 9999999999.999 %17.5f 
+tmeas 17 94 float -9999999999.999 %17.5f 
+twin 9 112 float 0.0 %9.2f 
+val1 12 122 float -9999999.999 %12.3f 
+val2 12 135 float -9999999.999 %12.3f 
+units1 12 148 string - %-12s 
+units2 12 161 string - %-12s 
+arid 8 174 int -1 %8ld 
+auth 15 183 string - %-15s 
+lddate 17 199 float -9999999999.999 %17.5f 
+}
+}
+wfmgme &Arr{
+primary_keys &Tbl{
+sta
+filter
+time
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+filter 30 7 string - %-30s 
+time 17 38 float -9999999999.999 %17.5f 
+pva 13 56 float -9e+99 %13.6e 
+trpva 12 70 float -99999.99999 %12.5f 
+snrpva 10 83 float -1.0 %10.2lf 
+pvv 13 94 float -9e+99 %13.6e 
+trpvv 12 108 float -99999.99999 %12.5f 
+snrpvv 10 121 float -1.0 %10.2lf 
+wa 13 132 float -9e+99 %13.6e 
+trwa 12 146 float -99999.99999 %12.5f 
+snrwa 10 159 float -1.0 %10.2lf 
+chanwa 8 170 string - %-8s 
+lddate 17 179 float -9999999999.999 %17.5f 
+}
+}
+wfoffset &Arr{
+primary_keys &Tbl{
+sta
+chan
+time
+endtime
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+chan 8 7 string - %-8s 
+time 17 16 float -9999999999.999 %17.5f 
+endtime 17 34 float 9999999999.999 %17.5f 
+valoffset 20 52 float 0.0 %20.12g 
+lddate 17 73 float -9999999999.999 %17.5f 
+}
+}
+wfparam &Arr{
+primary_keys &Tbl{
+sta
+chan
+orid
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+chan 8 7 string - %-8s 
+orid 8 16 int -1 %8ld 
+filter 30 25 string - %-30s 
+time 17 56 float -9999999999.999 %17.5f 
+endtime 17 74 float 9999999999.999 %17.5f 
+ml 7 92 float -999.0 %7.2f 
+dista 7 100 float -1.0 %7.2f 
+seaz 7 108 float -999.0 %7.2f 
+PGA 15 116 float -999.0 %15.6f 
+PGV 15 132 float -999.0 %15.6f 
+PSA03 15 148 float -999.0 %15.6f 
+PSA10 15 164 float -999.0 %15.6f 
+PSA30 15 180 float -999.0 %15.6f 
+Arias 15 196 float -999.0 %15.6f 
+Housner 15 212 float -999.0 %15.6f 
+arid 8 228 int -1 %8ld 
+auth 15 237 string - %-15s 
+lddate 17 253 float -9999999999.999 %17.5f 
+}
+}
+wfrms &Arr{
+primary_keys &Tbl{
+sta
+chan
+time
+twin
+filter
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+chan 8 7 string - %-8s 
+time 17 16 float -9999999999.999 %17.5f 
+twin 9 34 float 0.0 %9.2f 
+filter 30 44 string - %-30s 
+fc 11 75 float -1.0 %11.6f 
+arid 8 87 int -1 %8ld 
+stype 1 96 string - %-1s 
+segtype 1 98 string - %-1s 
+rms 13 100 float -9e+99 %13.6e 
+lddate 17 114 float -9999999999.999 %17.5f 
+}
+}
+wfsrb &Arr{
+primary_keys &Tbl{
+sta
+chan
+time::endtime
+}
+attributes &Tbl{
+sta 6 0 string - %-6s 
+chan 8 7 string - %-8s 
+time 17 16 float -9999999999.999 %17.5f 
+wfid 8 34 int -1 %8ld 
+chanid 8 43 int -1 %8ld 
+jdate 8 52 int -1 %8ld 
+endtime 17 61 float 9999999999.999 %17.5f 
+nsamp 8 79 int -1 %8ld 
+samprate 11 88 float -1.0 %11.7f 
+calib 16 100 float 0.0 %16.9g 
+calper 16 117 float -1.0 %16.6f 
+instype 6 134 string - %-6s 
+segtype 1 141 string - %-1s 
+datatype 2 143 string - %-2s 
+clip 1 146 string - %-1s 
+Szone 30 148 string - %-30s 
+Scoll 256 179 string - %-256s 
+Sobj 64 436 string - %-64s 
+foff 10 501 int 0 %10ld 
+commid 8 512 int -1 %8ld 
+lddate 17 521 float -9999999999.999 %17.5f 
+}
+}
+wftag &Arr{
+primary_keys &Tbl{
+tagname
+tagid
+wfid
+}
+attributes &Tbl{
+tagname 8 0 string - %-8s 
+tagid 8 9 int -1 %8ld 
+wfid 8 18 int -1 %8ld 
+lddate 17 27 float -9999999999.999 %17.5f 
+}
+}
