@@ -178,12 +178,20 @@ number of frequency binds defined by the time-bandwidth product through
 the formula:
 
 .. math::
-x = need this formula
+
+    W = T \Delta f
+
+where :math:`T` is the window length in seconds and
+:math:`\Delta f` is the desired frequency resolution of a
+spectral estimate in Hz.   It is convenient to think of :math:`Delta f`
+in terms of the number of Rayleigh bins, :math:`\frac{1}{T}`
+which is the frequency resolution of the discrete Fourier
+transform for a signal of duration :math:`T`.
 
 A key point is that increasing the time-bandwidth products causes the
 spectral estimates to progressively smoother.   For this application
 we found using `tbp=4` with 8 tapers or `tbp=5` and 10 tapers
-are good choices as they produce 
+are good choices as they produce
 smoother spectra that produces more stable results.
 Readers unfamiliar with
 multitaper spectral methods may find it useful begin with
@@ -193,18 +201,3 @@ practical problems easily found by any library search engine.
 We chose to use the multitaper because it always produces a more
 stable estimator for this application because of its reliable smoothing
 properties.
-
-
-need to note window normalization as a postscript
-
-Practical Advice about Amplitude Metrics
-____________________________________________
-THIS BELONGS LATER
-:math:`| \bf{x} \|_{rms}` is
-the stock measure of noise amplitude.
-It is a useful measure of signal
-amplitude only if the signal window is restricted to the highest amplitude
-of the signal.  In particular a window is defined relative to an arrival
-time predicted from a model the signal start time should be well before any
-time shift from travel time errors.  That will, however, increase the
-number of points

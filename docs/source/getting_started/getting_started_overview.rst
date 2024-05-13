@@ -484,7 +484,7 @@ and example 1 are:
 
 
 Example 3: Multiple nodes with optional Sharding
------------------------------------------------
+---------------------------------------------------
 
 :numref:`Configuration_figure3` is the first example
 that is known to give reasonable load balancing on an HPC system.

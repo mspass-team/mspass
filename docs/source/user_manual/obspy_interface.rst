@@ -145,7 +145,7 @@ Hence, a comparable algorithm in MsPASS to the above is the following:
   # These three lines are comparable to ObsPy example above
   doc = db.wf_TimeSeries.find_one()
   d = db.read_data(doc['_id'])
-  signals.filter(d, 'bandpass', freqmin=0.05, freqmax=2.0)
+  ed = signals.filter(d, 'bandpass', freqmin=0.05, freqmax=2.0)
 
 We include the top section of code to emphasize that building a database handle, which above is set to the symbol db, is comparable in some respects to opening a data file.
 That step is hidden in the ObsPy read function behind several layers of functions to make their reader generic.
@@ -169,8 +169,8 @@ For example, the following is a variant of filter algorithm but this example use
    from mspasspy.db.database import read_distributed_data
    cursor = db.wf_TimeSeries.find({})
    data = read_distributed_data(db, cursor, format='dask')
-   res = data.map(signals.filter, "bandpass", freqmin=0.05, freqmax=2.0).compute()
-   res.compute()
+   data = data.map(signals.filter, "bandpass", freqmin=0.05, freqmax=2.0).compute()
+   data.compute()
 
 The key thing to note here is that the basic algorithm is identical to above: :code:`read_distributed_data` and :code:`filter`.
 The difference is that the entire data set is read and filtered instead of one TimeSeries/Trace.
