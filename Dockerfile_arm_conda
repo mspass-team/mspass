@@ -1,11 +1,28 @@
-FROM --platform=linux/arm64 continuumio/miniconda3:24.3.0-0
+FROM --platform=linux/arm64/v8 ubuntu:22.04
 COPY . /mspass
 WORKDIR /mspass
 RUN ls
 RUN pwd
 ENV PYTHON_VERSION=3.11
-RUN apt-get update && apt-cache madison cmake && apt-get install -y cmake
-RUN sed -i '38d' meta.yaml \
+ENV PATH /opt/conda/bin:$PATH
+RUN apt-get update --fix-missing && \
+    apt-get install -y wget bzip2 ca-certificates curl git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+    rm ~/miniconda.sh && \
+    /opt/conda/bin/conda clean -tipsy && \
+    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+    echo "conda activate base" >> ~/.bashrc
+
+ENV TINI_VERSION v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-arm64 /usr/bin/tini
+RUN chmod +x /usr/bin/tini
+
+RUN cd /mspass && sed -i '38d' meta.yaml \
     && conda install conda-build anaconda-client \
     && conda config --set anaconda_upload yes \
     && conda config --add channels conda-forge \
