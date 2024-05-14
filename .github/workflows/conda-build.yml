@@ -5,6 +5,9 @@ on: [push, pull_request]
 jobs:
   conda-build-arm:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -22,6 +25,8 @@ jobs:
           context: .
           file: Dockerfile_arm_conda
           platforms: linux/arm64
+          build-args: |
+            PYTHON_VERSION=${{ matrix.python-version }}
 
   conda-build-and-publish:
     runs-on: ubuntu-latest

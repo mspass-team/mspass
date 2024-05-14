@@ -1,9 +1,10 @@
 FROM --platform=linux/arm64/v8 ubuntu:22.04
 COPY . /mspass
-WORKDIR /mspass
+RUN mv /mspass /mspasspy1
+WORKDIR /mspasspy1
 RUN ls
 RUN pwd
-ENV PYTHON_VERSION=3.11
+ARG PYTHON_VERSION
 ENV PATH /opt/conda/bin:$PATH
 RUN apt-get update --fix-missing && \
     apt-get install -y wget bzip2 ca-certificates curl git && \
@@ -22,10 +23,12 @@ ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-arm64 /usr/bin/tini
 RUN chmod +x /usr/bin/tini
 RUN apt-get update && apt-get install -y cmake
-RUN cd /mspass && sed -i '38d' meta.yaml \
-    && conda install conda-build anaconda-client \
-    && conda config --set anaconda_upload yes \
+RUN cd /mspasspy1 && sed -i '38d' meta.yaml \
+    && conda install -y conda-build anaconda-client \
+    && conda config --set anaconda_upload no \
     && conda config --add channels conda-forge \
     && export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 \
     && export CONDA_BUILD_DEBUG=1 \
-    && conda build . --python 3.11 --debug
+    && PACKAGE_PATH=$(conda build . --python ${PYTHON_VERSION} --output) \
+    && conda build . --python ${PYTHON_VERSION} --debug \
+    && anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${PYTHON_VERSION} --force
