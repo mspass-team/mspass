@@ -5,17 +5,10 @@ package:
   version: {{ version }}
 
 source:
-  path:
-    - cxx
-    - data
-    - python/mspasspy
-    - setup.py
-    - pyproject.toml
-    - requirements.txt
+  path: .
 
 build:
-  exclude_files:
-    - cxx/test
+  script: scripts/build.sh
 
 requirements:
   build:
