@@ -1,8 +1,9 @@
-{% set my_version = load_file_regex(load_file='pyproject.toml', regex_pattern='^version = "(.*)"$') %}
+{% set version_match = load_file_regex(load_file='pyproject.toml', regex_pattern='version = "(.*)"') %}
+{% set version = version_match[1] %}
 
 package:
   name: mspasspy
-  version: {{ my_version }}
+  version: {{ version }}
 
 source:
   path: .
