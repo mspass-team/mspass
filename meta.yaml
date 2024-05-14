@@ -8,7 +8,9 @@ source:
   path: .
 
 build:
-  script: scripts/build.sh
+  exclude_files:
+    - cxx/test
+    - python/tests
 
 requirements:
   build:
