@@ -1,7 +1,7 @@
 FROM --platform=linux/arm64/v8 ubuntu:22.04
 COPY . /mspass
-RUN mv /mspass /mspasspy1
-WORKDIR /mspasspy1
+RUN mv /mspass /mspasspy_build
+WORKDIR /mspasspy_build
 RUN ls
 RUN pwd
 ARG PYTHON_VERSION
@@ -19,16 +19,15 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aar
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-ENV TINI_VERSION v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-arm64 /usr/bin/tini
-RUN chmod +x /usr/bin/tini
+ARG ANACONDA_API_TOKEN
+
 RUN apt-get update && apt-get install -y cmake
-RUN cd /mspasspy1 && sed -i '38d' meta.yaml \
+RUN cd /mspasspy_build && sed -i '38d' meta.yaml \
     && conda install -y conda-build anaconda-client \
     && conda config --set anaconda_upload no \
     && conda config --add channels conda-forge \
-    && export ANACONDA_API_TOKEN=cx-8248b24a-767b-41de-ab7d-446cdc390b23 \
     && export CONDA_BUILD_DEBUG=1 \
     && PACKAGE_PATH=$(conda build . --python ${PYTHON_VERSION} --output) \
     && conda build . --python ${PYTHON_VERSION} --debug \
     && anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${PYTHON_VERSION} --force
+

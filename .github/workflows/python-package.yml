@@ -1,6 +1,6 @@
 name: Python package
 
-on: [pull_request]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -80,3 +80,4 @@ jobs:
         BRANCH: gh-pages 
         FOLDER: docs/build/html 
         CLEAN: false
+
