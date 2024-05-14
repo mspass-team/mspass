@@ -10,6 +10,7 @@ source:
 
 build:
   script: scripts/build_conda.sh
+  include_recipe: False
 
 requirements:
   build:
