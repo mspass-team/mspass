@@ -1,16 +1,14 @@
-{% set version = load_file_regex(load_file='pyproject.toml', regex_pattern='^version = "(.*)"$') %}
+{% set my_version = load_file_regex(load_file='pyproject.toml', regex_pattern='^version = "(.*)"$') %}
 
 package:
   name: mspasspy
-  version: {{ version }}
+  version: {{ my_version }}
 
 source:
   path: .
 
 build:
-  exclude_files:
-    - cxx/test
-    - python/tests
+  script: scripts/build_conda.sh
 
 requirements:
   build:
