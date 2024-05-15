@@ -10,7 +10,7 @@ Overview
   atomic objects in seismology waveform processing:  scalar (i.e. single
   channel) signals, and three-component signals.   The versions of these
   you as a user should normally interact with are two objects defined in
-  MsPASS as :code:`TimeSeries` and :code:`Seismogram` respectively.  
+  MsPASS as :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` and :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` respectively.  
 
 | These data objects were designed to simply interactions with MongoDB. 
   MongoDB is completely flexible in attribute names handled by the
@@ -34,8 +34,9 @@ Overview
   generic ensemble.   A limitation of the current capability to link C++
   binary code with python is that templates do not translate directly.  
   Consequently, the python interface uses two different names to define
-  Ensembles of TimeSeries and Seismogram objects:  :code:`TimeSeriesEnsemble`
-  and :code:`SeismogramEnsemble` respectively.
+  Ensembles of TimeSeries and Seismogram objects: 
+  :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.TimeSeriesEnsemble>`
+  and :py:class:`SeismogramEnsemble<mspasspy.ccore.seismic.SeismogramEnsemble>` respectively.
 
 | The C++ objects have wrappers for python that hide implementation details from
   the user.   All MongoDB operations implemented with the pymongo
@@ -52,8 +53,7 @@ History
   developed by one of the authors (Pavlis) over a period of more than 15
   years.   The original implementation was developed as a component of
   Antelope.  It was distributed via the open source additions to
-  Antelope distributed through the `Antelope user's
-  group
+  Antelope distributed through the `Antelope user's group
   <https://github.com/antelopeusersgroup/antelope_contrib>`__ and referred to as SEISPP.   The bulk of
   the original code can be found
   `here <https://github.com/antelopeusersgroup/antelope_contrib/tree/master/lib/seismic/libseispp>`__
@@ -105,7 +105,7 @@ History
    :code:`Schema` object to reduce all Metadata to pure
    name:value pairs. 
 #. obspy does not handle three component data in a native way, but mixes
-   up the concepts we call :code:`Seismogram` and :code:`Ensemble` in to a common
+   up the concepts we call :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` and :code:`Ensemble` in to a common
    python object they define as a
    `Stream <http://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream>`__.  
    We would argue our model is a more logical encapsulation of the
@@ -113,7 +113,7 @@ History
    component data like a seismic reflection shot gather is a very different
    thing than a set of three component channels that define the output of
    three sensors at a common point in space.   Hence, we carefully
-   separate :code:`TimeSeries` and :code:`Seismogram` (our name for Three-Component
+   separate :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` and :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` (our name for Three-Component
    data).  We further distinguish :code:`Ensembles` of each atomic type.
 
 Core Concepts
@@ -141,7 +141,7 @@ Overview - Inheritance Relationships
   inheritance from three base classes:  :code:`BasicTimeSeries`,
   :code:`BasicMetadata`, and :code:`BasicProcessingHistory`.   Python supports multiple
   inheritance and the wrappers make dynamic casting within the hierarchy
-  (mostly) automatic.  e.g. a :code:`Seismogram` object can be passed directly to a
+  (mostly) automatic.  e.g. a :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` object can be passed directly to a
   python function that does only Metadata operations and it will be
   handled seamlessly because python does not enforce type signatures on
   functions.  CoreTimeSeries and CoreSeismogram should be thought of a
@@ -157,7 +157,7 @@ Overview - Inheritance Relationships
   completely different framework. 
 
 | We emphasize here that users should normally expect to only interact with
-  the :code:`TimeSeries` and :code:`Seismogram` objects.  The lower levels sometimes
+  the :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` and :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects.  The lower levels sometimes
   but not always have python bindings.
 
 | The remainder of this section discusses the individual components in
@@ -536,12 +536,12 @@ Scalar versus 3C data
    container.  
 
 | We handle three component data in MsPASS by using a matrix to store the data
-  for a given :code:`Seismogram`.   The data are directly accessible in C++ through a public
+  for a given :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>`.   The data are directly accessible in C++ through a public
   variable called u that is mnemonic for the standard symbol used in the
   old testament of seismology by Aki and Richards.  In python we use the
   symbol :code:`data` for consistency with TimeSeries.
   There are two choices of the order of indices for this matrix. 
-  The MsPASS implementation makes this choice:  a :code:`Seismogram`
+  The MsPASS implementation makes this choice:  a :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>`
   defines index 0(1) as the channel number and index 1(2) as the time
   index.  The following python code section illustrates this more
   clearly than any words:
@@ -645,7 +645,7 @@ Core versus Top-level Data Objects
   focus on the data structure they impose.   Other sections expand on
   the details of both classes.
 
-|  Both :code:`TimeSeries` and :code:`Seismogram` objects extend their
+|  Both :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` and :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects extend their
    "core" parents by adding two classes:
 
 #. :code:`ProcessingHistory`, as the name implies, can (optionally) store the
@@ -678,9 +678,9 @@ Core versus Top-level Data Objects
    for Seismogram and TimeSeries, but it does not satisfy the basic rule of
    making a concept a base class if the child "is a" ErrorLogger.
    It does, however, perfectly satisfy the idea that the object "has an"
-   ErrorLogger.  Both :code:`TimeSeries` and :code:`Seismogram` use the
+   ErrorLogger.  Both :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` and :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` use the
    symbol :code:`elog` as the name for the ErrorLogger object
-   (e.g. If *d* is a :code:`Seismogram` object, *d.elog*, would refer to
+   (e.g. If *d* is a :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` object, *d.elog*, would refer to
    the error logger component of *d*.)''
 
 Object Level History Design Concepts
@@ -822,7 +822,7 @@ Error Logging Concepts
     d.elog.log_error(d.job_id(),alg,err)
     d.kill()  
 
-| To understand the code above assume the symbol d is a :code:`Seismogram`
+| To understand the code above assume the symbol d is a :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>`
   object with a singular transformation matrix created, for example, by
   incorrectly building the object with two redundant east-west
   components.   The rotate_to_standard method tries to compute a matrix

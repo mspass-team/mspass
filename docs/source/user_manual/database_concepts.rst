@@ -279,7 +279,9 @@ With that background, there are two collections used to manage waveform data.
 They are called :code:`wf_TimeSeries` and :code:`wf_Seismogram`.
 These two collection are the primary work areas to assemble a working data set.
 We elected to keep data describing each of the two atomic data types in MsPASS,
-:code:`TimeSeries` and :code:`Seismogram`, in two different collections.  The
+:py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>`
+and :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>`, 
+in two different collections.  The
 main reason we made the decision to create two collections instead of one
 is that there are some minor differences in the Metadata that would
 create inefficiencies if we mixed the two data types in one place.
@@ -839,7 +841,7 @@ imports data through a two step procedure:
     function builds only an index of the given file and writes the index to
     a special collection called :code:`wf_miniseed`.
 
-2.  The same data can be loaded into memory as a MsPASS :code:`TimeSeriesEnsemble`
+2.  The same data can be loaded into memory as a MsPASS :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.TimeSeriesEnsemble>`
     object using the related function with this signature:
 
     .. code-block:: python

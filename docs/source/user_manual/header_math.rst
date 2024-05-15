@@ -185,7 +185,7 @@ name defined by ``key`` to the constant value set with ``const``.
 Combining operators
 ------------------------
 We define a final operator class with the name
-:py:class:`mspasspy.algorithms.edit.MetadataOperatorChain`.
+:py:class:`MetadataOperatorChain<mspasspy.algorithms.edit.MetadataOperatorChain>`.
 As the name suggests it provides a mechanism to implement a (potentially complicated)
 formula from the lower level operators.  The class constructor has
 this usage:
