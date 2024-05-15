@@ -1,0 +1,61 @@
+name: publish_conda
+
+on:
+  push:
+    branches: [ master ]
+    # Publish semver tags as releases.
+    tags: [ 'v*.*.*' ]
+    
+jobs:
+  conda-build-arm:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Setup for Multi-platform image
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+          
+      - name: Build and push Docker image arm64
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile_arm_conda
+          platforms: linux/arm64
+          build-args: |
+            PYTHON_VERSION=${{ matrix.python-version }}
+            ANACONDA_API_TOKEN=${{ secrets.CONDA_TOKEN }}
+
+  conda-build-amd64:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: s-weigand/setup-conda@v1
+      - run: |
+          export PYTHON_VERSION=${{ matrix.python-version }}
+          conda install conda-build anaconda-client
+          conda config --set anaconda_upload no
+          conda config --add channels conda-forge
+          export ANACONDA_API_TOKEN=${{ secrets.CONDA_TOKEN }}
+          PACKAGE_PATH=$(conda build . --python ${{ matrix.python-version }} --output)
+          conda build . --python ${{ matrix.python-version }}
+          if [ "${{ matrix.python-version }}" == "3.11" ]; then
+            anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label main --label py3.11 --force
+          else
+            anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${{ matrix.python-version }} --force
+          fi
+
