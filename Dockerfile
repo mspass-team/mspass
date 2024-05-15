@@ -190,6 +190,7 @@ ADD setup.py /mspass/setup.py
 ADD pyproject.toml /mspass/pyproject.toml
 ADD requirements.txt /mspass/requirements.txt
 ADD python /mspass/python
+ADD .git /mspass/.git
 RUN pip3 install /mspass -v \
 	&& rm -rf /mspass/build && docker-clean
 
