@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '21 21 * * 5'
   push:
-    branches: [ master, build-conda-fix-2 ]
+    branches: [ master ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   release:
@@ -68,7 +68,7 @@ jobs:
             PYTHON_VERSION=${{ matrix.python-version }}
             ANACONDA_API_TOKEN=${{ secrets.CONDA_TOKEN }}
 
-  conda-build-osx-arm64:
+  conda-build-osx:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
