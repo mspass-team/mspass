@@ -1,6 +1,7 @@
 FROM continuumio/miniconda3:latest
-COPY . /mspass
-RUN mv /mspass /mspasspy_build
+ADD . /mspass
+ADD .git /mspass/.git
+RUN mv /mspass /mspasspy_build && cd /mspasspy_build && git status
 
 ARG PYTHON_VERSION
 ARG TARGETARCH
@@ -20,5 +21,7 @@ RUN cd /mspasspy_build \
     && export CONDA_BUILD_DEBUG=1 \
     && PACKAGE_PATH=$(conda build . --python ${PYTHON_VERSION} --output) \
     && conda build . --python ${PYTHON_VERSION} --debug \
-    && anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${PYTHON_VERSION} --force
+    && if [ "$PYTHON_VERSION" == "3.11" ]; then \
+       anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label main --label py${PYTHON_VERSION} --force ; \
+       else anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${PYTHON_VERSION} --force ; fi
 
