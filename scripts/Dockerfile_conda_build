@@ -21,7 +21,7 @@ RUN cd /mspasspy_build \
     && export CONDA_BUILD_DEBUG=1 \
     && PACKAGE_PATH=$(conda build . --python ${PYTHON_VERSION} --output) \
     && conda build . --python ${PYTHON_VERSION} --debug \
-    && if [ "$PYTHON_VERSION" == "3.11" ]; then \
+    && if [ "$PYTHON_VERSION" = "3.11" ]; then \
        anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label main --label py${PYTHON_VERSION} --force ; \
        else anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${PYTHON_VERSION} --force ; fi
 
