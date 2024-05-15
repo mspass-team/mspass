@@ -16,7 +16,9 @@ jobs:
         python-version: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
 
       # Setup for Multi-platform image
       - name: Set up QEMU
@@ -42,7 +44,9 @@ jobs:
         python-version: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
 
       # Setup for Multi-platform image
       - name: Set up QEMU
