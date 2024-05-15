@@ -42,7 +42,7 @@ You can configure Coiled with custom network configuration in the
 3. Get MsPASS Conda package
 -------------------------------------------
 If you have not run MsPASS before you will need to get the 
-`conda package <https://anaconda.org/cxwang/mspasspy>`__.
+`conda package <https://anaconda.org/mspass/mspasspy>`__.
 from our standard repository.  Alternatively if you want to get the most
 recent updates you may also need to do this step. 
 
@@ -67,7 +67,7 @@ You will almost certainly need to add key "channels" as follows:
 
 .. code-block::
 
-    conda config --add channels cxwang 
+    conda config --add channels mspass
     conda config --add channels conda-forge 
 
 Then install mspass in this environment with
