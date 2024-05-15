@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '21 21 * * 5'
   push:
-    branches: [ master ]
+    branches: [ master, build-conda-fix-2 ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   release:
@@ -67,4 +67,32 @@ jobs:
           build-args: |
             PYTHON_VERSION=${{ matrix.python-version }}
             ANACONDA_API_TOKEN=${{ secrets.CONDA_TOKEN }}
+
+  conda-build-osx-arm64:
+    runs-on: osx-14
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: s-weigand/setup-conda@v1
+      - run: |
+          export PYTHON_VERSION=${{ matrix.python-version }}
+          conda install -y conda-build anaconda-client
+          conda config --set anaconda_upload no
+          conda config --add channels conda-forge
+          export ANACONDA_API_TOKEN=${{ secrets.CONDA_TOKEN }}
+          PACKAGE_PATH=$(conda build . --python ${{ matrix.python-version }} --output)
+          conda build . --python ${{ matrix.python-version }}
+          if [ "${{ matrix.python-version }}" == "3.11" ]; then
+            anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label main --label py3.11 --force
+          else
+            anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${{ matrix.python-version }} --force
+          fi
 
