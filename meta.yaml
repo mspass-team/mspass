@@ -36,6 +36,9 @@ requirements:
     - lapack
     - libblas
     - yaml-cpp
+    - setuptools>=64
+    - setuptools_scm>=8.0
+    - wheel
 
   run:
     - python {{ PYTHON_VERSION }}
@@ -64,7 +67,7 @@ requirements:
     - setuptools
     - xarray
     - zarr
-    - pandas
+    - pandas==1.5.3
     - numba
     - multitaper
     - ipympl
