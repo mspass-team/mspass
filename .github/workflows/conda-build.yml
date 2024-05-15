@@ -80,6 +80,8 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
+          channels: conda-forge,defaults
+          activate-environment: anaconda-client-env
           python-version: ${{ matrix.python-version }}
       - run: |
           export PYTHON_VERSION=${{ matrix.python-version }}
