@@ -167,12 +167,12 @@ with finite resources.</p>
 <p>The current support for graphics has three component.</p>
 <ol class="arabic simple">
 <li><p>The lowest level support is to use the commonly used package
-called <a href="#id5"><span class="problematic" id="id6">`matplotlib&lt;https://matplotlib.org/&gt;`__</span></a>.   Because the
+called <a class="reference external" href="https://matplotlib.org/">matplotlib</a>.   Because the
 sample arrays of all seismic objects act like numpy arrays that
 is often the simplest mechanism to make a quick plot.  The basics of
 that approach are described below.</p></li>
-<li><p>We have plotting classes called <code class="code docutils literal notranslate"><span class="pre">SeismicPlotter</span></code>
-and <code class="code docutils literal notranslate"><span class="pre">Sectionplotter</span></code> to plot our native data types.</p></li>
+<li><p>We have plotting classes called <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter" title="mspasspy.graphics.SeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismicPlotter</span></code></a>
+and <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SectionPlotter" title="mspasspy.graphics.SectionPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionPlotter</span></code></a> to plot our native data types.</p></li>
 <li><p>As noted elsewhere a core component of MsPASS are fast conversions routines
 to and from obspy’s native data types (<code class="code docutils literal notranslate"><span class="pre">Trace</span></code> and <code class="code docutils literal notranslate"><span class="pre">Stream</span></code>).
 That is relevant because obspy’s native data types have integrated
@@ -184,12 +184,12 @@ matplotlib plots from primitives - item 1.</p></li>
 <section id="matplotlib-graphics">
 <h2>Matplotlib graphics<a class="headerlink" href="#matplotlib-graphics" title="Permalink to this heading"></a></h2>
 <p>Because data vectors of
-<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries()</span></code></a> and
-<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram()</span></code></a> objects
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> objects
 act like numpy arrays the symbol defining the data vector
 can be passed directly to matplotlib low-level plotters.
 Here, for example, is a code fragment that would plot the
-data in a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries()</span></code></a> object
+data in a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> object
 with a simple wiggle plot and a time axis with 0 defined as start time.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -202,7 +202,7 @@ with a simple wiggle plot and a time axis with 0 defined as start time.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Similarly, one way to plot a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram()</span></code></a>
+<p>Similarly, one way to plot a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>
 object is the following with subplots:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -223,8 +223,8 @@ object is the following with subplots:</p>
 starttime.  Without that step the time axis would be useless as it
 would be in epoch times, which are huge numbers.</p></li>
 <li><p>Both define the time axis manually using a loop and the
-<code class="code docutils literal notranslate"><span class="pre">time</span></code> method common to both <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> and
-<code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>.   We have considered adding a
+<code class="code docutils literal notranslate"><span class="pre">time</span></code> method common to both <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>.   We have considered adding a
 <code class="code docutils literal notranslate"><span class="pre">time_axis</span></code> method to the API, but the example shows it
 would be so trivial we viewed it unnecessary baggage for the API.</p></li>
 <li><p>Note there are many options in matplotlib that could be used to
@@ -240,18 +240,18 @@ itself uses matplotlib.</p></li>
 <p>The goal of the graphics module in MsPASS was to
 provide simple tools to plot native data types.  We thousands first remind
 the user what is considered “native data” in MsPASS.  They are:
-(1) <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects are scalar, uniformly sampled seismic
-seismic signals (a single channel), (2) <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> objects are
-bundled three-component seismic data, and (3) <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code> and
+(1) <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> objects are scalar, uniformly sampled seismic
+seismic signals (a single channel), (2) <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> objects are
+bundled three-component seismic data, and (3) <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code></a> and
 <code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code> objects are logical groupings of the two
 “atomic” objects in their names.</p>
 <p>The second issue is what types of plots are most essential?   Our core
 graphics support two plot conventions:</p>
 <ol class="arabic simple">
-<li><p><code class="code docutils literal notranslate"><span class="pre">SeismicPlotter</span></code> plots data in the standard convention used to plot
-nearly all earthquake data.  <code class="code docutils literal notranslate"><span class="pre">SeismicPlotter</span></code> plots data with
+<li><p><a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter" title="mspasspy.graphics.SeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismicPlotter</span></code></a> plots data in the standard convention used to plot
+nearly all earthquake data.  <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter" title="mspasspy.graphics.SeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismicPlotter</span></code></a> plots data with
 time as the x (horizontal axis).</p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">SectionPlotter</span></code> plots data in the standard convention for seismic
+<li><p><a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SectionPlotter" title="mspasspy.graphics.SectionPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionPlotter</span></code></a> plots data in the standard convention for seismic
 reflection data.  Because with seismic reflection data normal moveout
 corrected time is a proxy for depth it is universal to plot time
 as the y axis (vertical) and running backward from the normal
@@ -332,9 +332,9 @@ is created with the “style” set to “img”.
 plot all the standard MsPASS data objects.   Some implementation details
 we note are:</p>
 <ol class="arabic simple">
-<li><p><code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>  data generate one plot frame with a time axis and
+<li><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>  data generate one plot frame with a time axis and
 a y axis of amplitude.</p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> data are displayed on one plot frame.  The three
+<li><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> data are displayed on one plot frame.  The three
 components are plotted at equal y intervals in SeismicPlotter
 (equal x intervals in SectionPlotter) with the x1, x2, x3 components arranged
 from the bottom up (left to right for SectionPlotter).   There is an option

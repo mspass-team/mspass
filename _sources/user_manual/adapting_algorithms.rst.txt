@@ -153,7 +153,7 @@ objects from their ancestors (TimeSeries and ThreeComponentSeismogram).
 The current version of the implementations of these two algorithms can be
 found `here <https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc>`__.
 
-MsPASS uses the `pybind11 package<https://pybind11.readthedocs.io/en/stable/>`
+MsPASS uses the `pybind11 package <https://pybind11.readthedocs.io/en/stable/>`
 to bind C++ or C code for use by the python interpreter.  For the present
 all C/C++ code is bound to a single module we call mspasspy.ccore.
 The details of the build system used in MsPASS are best discussed in a
@@ -183,11 +183,11 @@ We note a few details about this block of code:
 
 1. The :code:`m` symbol is defined earlier in this file as a tag for the module to which we aim to bind this function.
    It is defined earlier in the file with this construct:
-   
+
    .. code-block:: c
 
     PYBIND11_MODULE(ccore,m)
-   
+
    That is, this construct defines the symbol :code:`m` as an abstraction for the
    python module ccore.
 

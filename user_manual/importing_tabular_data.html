@@ -180,15 +180,15 @@ component of the larger “Antelope” software suite.   Those tables are import
 as a number of regional seismic networks use Antelope as their database
 engine.  Furthermore, the Array Network Facility of the Earthscope project
 used Antelope and the database tables are still accessible at
-the AUG web site <a href="#id2"><span class="problematic" id="id3">`here&lt;https://anf.ucsd.edu/tools/events/&gt;`__</span></a>.
+the AUG web site <a class="reference external" href="https://anf.ucsd.edu/tools/events/">here</a>.
 In any case, the key concept to remember is that Antelope/Datascope
 is just a different implementation of a relational database.  Below we
 describe a special interface in MsPASS to import data from Datascope tables.</p></li>
 </ul>
 <p>In MsPASS the central concept used to unify these diverse sources is the
-concept of a <code class="code docutils literal notranslate"><span class="pre">DataFrame</span></code> that is THE data structure that is the
+concept of a <code class="code docutils literal notranslate"><span class="pre">DataFrame</span></code>.   <a href="#id2"><span class="problematic" id="id3">:code:`DataFrame`s are THE data structure that is the
 focus of the commonly used
-<a href="#id2"><span class="problematic" id="id4">`pandas&lt;https://pandas.pydata.org/docs/&gt;`__</span></a> python package.
+`pandas &lt;https://pandas.pydata.org/docs/&gt;`__</span></a> python package.
 The name does not come from a fuzzy animal but is apparently
 a acronymn derived from “PANel DAta”.  “panel” is, in fact,
 an odd synonym for “table”.  Pandas and their extension in
@@ -201,15 +201,15 @@ stored some other way to a DataFrame.</p>
 </section>
 <section id="import-export-tables-stored-in-files">
 <h2>Import/Export Tables Stored in Files<a class="headerlink" href="#import-export-tables-stored-in-files" title="Permalink to this heading"></a></h2>
-<p>Importing data from any common tabular data format I know if is
-essentially a solved problem via the <code class="code docutils literal notranslate"><span class="pre">DataFrame</span></code> API.</p>
+<p>Importing data from any common tabular data format I know is
+essentially a solved problem through the pandas, <code class="code docutils literal notranslate"><span class="pre">DataFrame</span></code> API.</p>
 <ul class="simple">
 <li><p>The documentation on reading tabular data files can be found
-<a href="#id2"><span class="problematic" id="id5">`here&lt;https://pandas.pydata.org/pandas-docs/stable/reference/io.html&gt;`__</span></a>.
+<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/io.html">here</a>.
 There are also writers for most of the same formats documented on that
 same page.</p></li>
 <li><p>Dask has a more limited set of readers described
-<a href="#id2"><span class="problematic" id="id6">`here&lt;https://examples.dask.org/dataframes/01-data-access.html&gt;`__</span></a>.
+<a class="reference external" href="https://examples.dask.org/dataframes/01-data-access.html">here</a>.
 The reason is that the large data model of DataFrame for a dask
 workflow is most applicable when the table is large compared to
 the memory space of a single node. Hence, something like an
@@ -218,14 +218,17 @@ In constrast, a huge cvs file is easy to construct from many identical
 pieces using the standard unix “cat” command.</p></li>
 <li><p>Pyspark has similar functionallity, but a very different API than
 pandas and dask.  The documentation for the read/write interface can be found
-<a href="#id2"><span class="problematic" id="id7">`here&lt;https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/io.html&gt;`__</span></a>.
+<a class="reference external" href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/io.html">here</a>.
 The list of formats pyspark can read or write is similar to pandas.</p></li>
 </ul>
-<p>The most common application for reading tabular data is importing
-some nonstandard data from a research application stored in one of the
+<p>The most common requirement for reading tabular data is needing to import
+some nonstandard data from a research application.   There are
+some common examples in seismology that won’t work with standard reader like
+the CMT catalog.   Most tabular data downloadable on the internet today,
+however, is stored in one of the
 standard formats.  For example, here an example extracted from our jupyter notebook
 tutorial on MongoDB.  It shows how one can import the output of
-<a href="#id2"><span class="problematic" id="id8">`PhaseNet&lt;https://github.com/AI4EPS/PhaseNet&gt;`__</span></a>
+<a class="reference external" href="https://github.com/AI4EPS/PhaseNet">PhaseNets</a>
 with it’s output structured as a csv file.
 It also shows how the results can be written to MongoDB in a collection it
 creates called “arrival”:</p>
@@ -250,13 +253,13 @@ explanation of this example.</p>
 <section id="import-export-data-from-an-sql-server">
 <h2>Import/Export Data from an SQL server<a class="headerlink" href="#import-export-data-from-an-sql-server" title="Permalink to this heading"></a></h2>
 <p>Importing data from an SQL server or writing a DataFrame to an
-SQL server are best thought of different methods of the
+SQL server are best thought of as different methods of the
 DataFrame implementation.  e.g. if the data in the example above
 had been stored on an SQL server you would change the line
 <code class="code docutils literal notranslate"><span class="pre">df</span> <span class="pre">=</span> <span class="pre">pd.read_csv('./data/picks.csv')</span></code> to use the variant
 for interacting with an SQL server.   See the links above the to
-io sections for pandas, dask, and pyspark for details on what the
-work out the correct incantation for your needs.</p>
+IO sections for pandas, dask, and pyspark for details on the
+correct incantation for your needs.</p>
 </section>
 <section id="import-export-of-data-from-datascope">
 <h2>Import/Export of Data from Datascope<a class="headerlink" href="#import-export-of-data-from-datascope" title="Permalink to this heading"></a></h2>
@@ -270,10 +273,10 @@ there are a lot of known ways that the Antelope software can be used
 in combination with MsPASS to handle novel research problems.
 As a result, we created a special API to interact with data
 managed by an Antelope database.   The MsPASS API aims to
-loosely mimic the SQL functionality using an pandas
-DataFrame as the intermediary.</p>
+loosely mimic core SQL functionality using pandas
+:code:<a href="#id4"><span class="problematic" id="id5">`</span></a>DataFrame`s as the intermediary.</p>
 <p>A python class called
-<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code></a>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatascopeDatabase</span></code></a>
 is used as the agent for interacting with an
 Antelope/Datascope database.   Unlike all common SQL
 database of today, Datascope does not use a client-server model
@@ -285,11 +288,11 @@ Datascope the file names are special and take the form
 <cite>dbname</cite>.`table`.   <cite>dbname</cite> is the name of the collection
 of tables that is the “database”:  the “database name”.  As the
 word implies <cite>table</cite> is the schema name for a particular table
-that that file contains.   For example, if one sees an
+that that file contains.   For example, if one sees a
 Datascope table with the file name “usarray.arrival” that file
-is the “arrival” table in a database someone chose to call “usarray”.
-With that background, an instance of a
-<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code></a>
+is the “arrival” table in a database someone chose to call “usarray”.</p>
+<p>With that background, an instance of a
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatascopeDatabase</span></code></a>
 can be created with a variant of the following code fragment:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dsdb</span> <span class="o">=</span> <span class="n">DatascopeDatabase</span><span class="p">(</span><span class="s2">&quot;usarray&quot;</span><span class="p">)</span>
 </pre></div>
@@ -300,7 +303,7 @@ albeit confusing, feature that allows the collection of
 files that define the database to be spread through multiple directories.
 That features is nearly always exploited, in practice, by placing
 more static tables in a separate directory.   For that reason
-<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code></a>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatascopeDatabase</span></code></a>
 has an optional <cite>dir</cite> argument to point the constructor to read
 data files from a different directory.   e.g. a variant of the
 above example to access files in a “dbmaster” (common practice)
@@ -309,21 +312,23 @@ directory is the following:</p>
 </pre></div>
 </div>
 <p>Once, an instance of
-<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code></a>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatascopeDatabase</span></code></a>
 is created that points to the directory from which you want to import
 one or more tables, the usage to fetch the data that table contains
 is similar to that for the pandas SQL readers.   Use the
-<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table()</span></code></a>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_table</span></code></a>
 method of
-<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase</span></code></a>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatascopeDatabase</span></code></a>
 to retrieve individual tables from the Datascope database
-as a pandas DataFrame.   An important option descibed in the
+as a pandas DataFrame.   An important option described in the
 docstrng is a python list passed via the optional argument
 with key <cite>attributes_to_load</cite>.  The default loads the entire css3.0
 schema table.  Use a list to limit what attributes are retrieved.
-As an example of a typical use of the
-<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table()</span></code></a>
-method the following would retrieve the coordinate data from
+That is frequently desirable as all CSS3.0 tables have attributes that
+are often or nearly always null.</p>
+<p>The following eexample shows a typical use of the
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_table</span></code></a>
+method.  This example retrieves the coordinate data from
 the usarray “site” tables using the handle <cite>dsdbm</cite> created with
 the code line above:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coordlist</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">,</span><span class="s1">&#39;ondate&#39;</span><span class="p">,</span><span class="s1">&#39;offdate&#39;</span><span class="p">,</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;elev&#39;</span><span class="p">]</span>
@@ -333,11 +338,11 @@ the code line above:</p>
 <p>The result could be used for normalization to load coordinates by
 station name.  (In reality there are some additional complications
 related to the time fields and seed station codes.   Those, however are a side issue
-that would only confuse the topic of discussion so ignore it here.)</p>
+that would only confuse the topic of discussion so I ignore it here.)</p>
 <p>The inverse of the
-<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table()</span></code></a>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_table</span></code></a>
 method is the
-<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table()</span></code></a>
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">df2table</span></code></a>
 method.  As it’s name implies it attempts to write a pandas
 DataFrame to a particular Datascope table, which means it will attempt to
 write a properly formatted text file for the table name passed to the
@@ -346,7 +351,7 @@ method function.</p>
 convenience methods that simply two common operations with
 Datascope database tables:</p>
 <ol class="arabic simple">
-<li><p><a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df()</span></code></a>
+<li><p><a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df"><code class="xref py py-meth docutils literal notranslate"><span class="pre">CSS30Catalog2df</span></code></a>
 creates the standard “catalog-view” of CSS3.0.   In seismology a
 “catalog” is a image of what in ancient times was distributed as book
 tabulating earthquake hypocenter estimates and arrival time data used
@@ -355,12 +360,12 @@ a “catalog” as the join of four tables that this method creates:
 event-&gt;origin-&gt;assoc-&gt;arrival where “-&gt;” symbolizes a right database
 join operator.  It returns a pandas DataFrame that is the “catalog”.
 Usage details can be gleaned from the docstring.</p></li>
-<li><p><a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist()</span></code></a>
+<li><p><a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wfdisc2doc</span></code></a>
 can be thought of as an alternative to the MsPASS
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.index_mseed_file()</span></code></a> method.
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">index_mseed_file</span></code></a> method.
 It returns a list of python dictionaries (documents) that are roughly equivalent to
 documents created by
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.index_mseed_file()</span></code></a>.
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">index_mseed_file</span></code></a>.
 The main application is to use the alternative miniseed indexer
 of Antelope.   There are many ways that raw miniseed files from
 experimental data (i.e. data not sanitized for storage in the archives)
@@ -375,6 +380,12 @@ immediately dumping the output to the standard MsPASS collection
 <span class="n">doclist</span> <span class="o">=</span> <span class="n">dsdb</span><span class="o">.</span><span class="n">wfdisc2doclist</span><span class="p">()</span>
 <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">doclist</span><span class="p">)</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be warned that py:meth:<cite>wfdisc2doc&lt;mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist&gt;</cite>
+only work with a wfdisc that is an index to miniseed data.   It does not currently
+support other formats defined by CSS3.0.</p>
 </div>
 </section>
 </section>

@@ -186,7 +186,7 @@ span a range of time scales from a single sample to years.</p></li>
 two segments you need to merge have conflicting time stamps.
 To make this clear it is helpful to review two MsPASS concepts in
 the TimeSeries and Seismogram data objects.  Let <em>d1</em> and <em>d2</em> be
-two <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects that are successive segments we
+two <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> objects that are successive segments we
 expect to merge with <em>d2</em> being the segment following <em>d1</em> in time.
 In MsPASS we use the attribute <em>t0</em> (alternatively the method
 <em>starttime</em>) for the time of sample 0.  We also use the method
@@ -213,10 +213,10 @@ covered by MsPASS.</p>
 <section id="gap-processing">
 <h2>Gap Processing<a class="headerlink" href="#gap-processing" title="Permalink to this heading"></a></h2>
 <p>Internally MsPASS handles data gaps with a subclass of the
-<code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> called <code class="code docutils literal notranslate"><span class="pre">TimeSeriesWGaps</span></code>.   That extension of
-<code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> is written in C++ and is documented
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> called <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesWGaps&lt;mspasspy.ccore.seismic.TimeSeriesWGaps&gt;`</span></code>.   That extension of
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> is written in C++ and is documented
 <a class="reference external" href="https://www.mspass.org/cxx_api/mspass.html#mspass-namespace">here</a>.
-Like <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> this class has python bindings created
+Like <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> this class has python bindings created
 with pybind11.  All the methods described in the C++ documentation
 page have python bindings.  There are methods for defining gaps,
 zeroing data in defined gaps, and deleting gaps.
@@ -229,12 +229,13 @@ of those functions.</p>
 <h2>Merging Data Segments<a class="headerlink" href="#merging-data-segments" title="Permalink to this heading"></a></h2>
 <p>There are currently two different methods in MsPASS to handle merging
 continuous data segments:  (1) a special, implicit option of the
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.read_data()</span></code></a> method of the
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> class, and (2) the
-processing function <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge" title="mspasspy.algorithms.window.merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.algorithms.window.merge()</span></code></a>.
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_data</span></code></a> method of the
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> class, and (2) the
+processing function <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge" title="mspasspy.algorithms.window.merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge</span></code></a>.
 In addition, there is a special reader function called
-<code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.db.ensembles.TimeIntervalReader()</span></code> that can be used
-to read fixed time windows of data.  That function uses <code class="code docutils literal notranslate"><span class="pre">merge</span></code>
+<code class="xref py py-func docutils literal notranslate"><span class="pre">TimeIntervalReader</span></code> that can be used
+to read fixed time windows of data.  That function uses
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge" title="mspasspy.algorithms.window.merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge</span></code></a>
 to do gap and overlap repair.</p>
 <section id="read-data-merge-algorithm">
 <h3>read_data merge algorithm<a class="headerlink" href="#read-data-merge-algorithm" title="Permalink to this heading"></a></h3>
@@ -248,8 +249,8 @@ waveform.   If the station codes (“net”, “sta”, “chan”, and “loc�
 in all MsPASS schemas) change in a sequence of packets readers
 universally assume that is the end of a given segment.  How readers handle
 a second issue is, however, variable.  Each miniseed packet has a time
-tag that is comparable to the <cite>t0</cite> attribute of a <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code> object
-and end time field equivalent to the output of the <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code>
+tag that is comparable to the <cite>t0</cite> attribute of a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> object
+and end time field equivalent to the output of the <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>
 endtime method.   If the <cite>t0</cite> value of a packet is greater than some
 fractional tolerance of 1 sample more than the endtime of the previous
 packet, a reader will invoke a gap handler.  A reader’s gap handler
@@ -259,7 +260,7 @@ handles this problem with their <code class="xref py py-class docutils literal n
 <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html">here</a>.
 That particular algorithm is invoked when reading miniseed data
 if and only if a block of data defined running the mspass
-function <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.index_mseed_file()</span></code></a> is
+function <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">index_mseed_file</span></code></a> is
 run with the optional argument <cite>segment_time_tears</cite> is set False.
 (Note the default is True.).   If you need to use this approach, you will
 need to also take care in defining the value of the following arguments
@@ -278,7 +279,7 @@ the obspy merge function noted above.  The MsPASS function add some additional
 features and, although not verified by formal testing,
 is likely much faster than the obpsy version due to fundamental differences
 in the implementation.
-The docstring for <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge" title="mspasspy.algorithms.window.merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.algorithms.window.merge()</span></code></a> describes more
+The docstring for <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge" title="mspasspy.algorithms.window.merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge</span></code></a> describes more
 details but some key features of this function are:</p>
 <ul class="simple">
 <li><p>Like obspy’s function of the same name its purpose is to glue/merge
@@ -294,7 +295,7 @@ reducing the memory footprint of a parallel job.</p></li>
 options for gap handling that are inseparable from the function.
 Any detected gaps in the
 MsPASS merge function are posted to the Metadata component of the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code> it returns accessible with the key “gaps”.
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> it returns accessible with the key “gaps”.
 The content of the “gaps” attribute is a list of one or more
 python dictionaries with the keyworks “starttime” and “endtime”
 defining the epoch time range of all gaps in the returned datum.
@@ -313,8 +314,8 @@ been our experience that, in general, overlapping data always indicate
 a data quality problem that invalidates the data when the samples
 do not match.  If you need
 the obspy functionality use the
-<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.converter.TimeSeriesEnsemble2Stream" title="mspasspy.util.converter.TimeSeriesEnsemble2Stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.util.converter.TimeSeriesEnsemble2Stream()</span></code></a> and the
-inverse <code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.util.converter.Trace2TimeSeriesEnsemble()</span></code>
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.converter.TimeSeriesEnsemble2Stream" title="mspasspy.util.converter.TimeSeriesEnsemble2Stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">TimeSeriesEnsemble2Stream</span></code></a> and the
+inverse <code class="xref py py-func docutils literal notranslate"><span class="pre">Trace2TimeSeriesEnsemble</span></code>
 to create the obspy input and then restore the returned data to
 the MsPASS internal data structures</p></li>
 </ul>
@@ -322,21 +323,22 @@ the MsPASS internal data structures</p></li>
 <section id="timeintervalreader">
 <h3>TimeIntervalReader<a class="headerlink" href="#timeintervalreader" title="Permalink to this heading"></a></h3>
 <p>A second MsPASS tool for working with continuous data is a function
-with the descriptive name <code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.db.ensembles.TimeIntervalReader()</span></code>.
+with the descriptive name
+<code class="xref py py-func docutils literal notranslate"><span class="pre">TimeIntervalReader</span></code>.
 It is designed to do the high-level task of cutting a fixed time
 interval of data from one or more channels of a continuous data archive.
 This function is built on top of the lower-level
-<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge" title="mspasspy.algorithms.window.merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.algorithms.window.merge()</span></code></a> but is best thought of as
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge" title="mspasspy.algorithms.window.merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge</span></code></a> but is best thought of as
 an alternative reader to create ensembles cut from a continuous data archive.
 For that reason the required arguments are a database handle and the
 time interval of data to be extracted from the archive.  Gap and overlap
-handling is handled by <code class="code docutils literal notranslate"><span class="pre">merge</span></code>.</p>
+handling is handled by <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge" title="mspasspy.algorithms.window.merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge</span></code></a>.</p>
 </section>
 <section id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h3>
 <p><em>Example 1:  Create a single waveform in a defined time window
 from continuous data archive.</em>
-This script will create a longer <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code> object from a set day files
+This script will create a longer <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> object from a set day files
 for the BHZ channel of GSN station AAK.   Ranges are constant for a simple
 illustration:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># code above would define database handle db</span>

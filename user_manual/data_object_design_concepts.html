@@ -169,7 +169,7 @@
 atomic objects in seismology waveform processing:  scalar (i.e. single
 channel) signals, and three-component signals.   The versions of these
 you as a user should normally interact with are two objects defined in
-MsPASS as <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> respectively.</div>
+MsPASS as <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> respectively.</div>
 </div>
 <div class="line-block">
 <div class="line">These data objects were designed to simply interactions with MongoDB.
@@ -193,8 +193,9 @@ in a parallel processing environment.</p></li>
 generic ensemble.   A limitation of the current capability to link C++
 binary code with python is that templates do not translate directly.
 Consequently, the python interface uses two different names to define
-Ensembles of TimeSeries and Seismogram objects:  <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>
-and <code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code> respectively.</div>
+Ensembles of TimeSeries and Seismogram objects:
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code></a>
+and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code></a> respectively.</div>
 </div>
 <div class="line-block">
 <div class="line">The C++ objects have wrappers for python that hide implementation details from
@@ -213,8 +214,7 @@ objects in MsPASS are the second generation of a set of data objects
 developed by one of the authors (Pavlis) over a period of more than 15
 years.   The original implementation was developed as a component of
 Antelope.  It was distributed via the open source additions to
-Antelope distributed through the <a class="reference external" href="https://github.com/antelopeusersgroup/antelope_contrib">Antelope user’s
-group</a> and referred to as SEISPP.   The bulk of
+Antelope distributed through the <a class="reference external" href="https://github.com/antelopeusersgroup/antelope_contrib">Antelope user’s group</a> and referred to as SEISPP.   The bulk of
 the original code can be found
 <a class="reference external" href="https://github.com/antelopeusersgroup/antelope_contrib/tree/master/lib/seismic/libseispp">here</a>
 in github, and doxygen generated pages comparable to those found with
@@ -269,7 +269,7 @@ or MongoDB normalized data structures) behind the (python)
 <code class="code docutils literal notranslate"><span class="pre">Schema</span></code> object to reduce all Metadata to pure
 name:value pairs.</p></li>
 <li><p>obspy does not handle three component data in a native way, but mixes
-up the concepts we call <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> and <code class="code docutils literal notranslate"><span class="pre">Ensemble</span></code> in to a common
+up the concepts we call <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> and <code class="code docutils literal notranslate"><span class="pre">Ensemble</span></code> in to a common
 python object they define as a
 <a class="reference external" href="http://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream">Stream</a>.
 We would argue our model is a more logical encapsulation of the
@@ -277,7 +277,7 @@ concepts that define these ideas. For example, a collection of single
 component data like a seismic reflection shot gather is a very different
 thing than a set of three component channels that define the output of
 three sensors at a common point in space.   Hence, we carefully
-separate <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> (our name for Three-Component
+separate <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> (our name for Three-Component
 data).  We further distinguish <code class="code docutils literal notranslate"><span class="pre">Ensembles</span></code> of each atomic type.</p></li>
 </ol>
 </section>
@@ -308,7 +308,7 @@ Seismogram objects generated by doxygen are illustrated below</div>
 inheritance from three base classes:  <code class="code docutils literal notranslate"><span class="pre">BasicTimeSeries</span></code>,
 <code class="code docutils literal notranslate"><span class="pre">BasicMetadata</span></code>, and <code class="code docutils literal notranslate"><span class="pre">BasicProcessingHistory</span></code>.   Python supports multiple
 inheritance and the wrappers make dynamic casting within the hierarchy
-(mostly) automatic.  e.g. a <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> object can be passed directly to a
+(mostly) automatic.  e.g. a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> object can be passed directly to a
 python function that does only Metadata operations and it will be
 handled seamlessly because python does not enforce type signatures on
 functions.  CoreTimeSeries and CoreSeismogram should be thought of a
@@ -325,7 +325,7 @@ completely different framework.</div>
 </div>
 <div class="line-block">
 <div class="line">We emphasize here that users should normally expect to only interact with
-the <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> objects.  The lower levels sometimes
+the <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> objects.  The lower levels sometimes
 but not always have python bindings.</div>
 </div>
 <div class="line-block">
@@ -727,12 +727,12 @@ container.</p></li>
 </ul>
 <div class="line-block">
 <div class="line">We handle three component data in MsPASS by using a matrix to store the data
-for a given <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>.   The data are directly accessible in C++ through a public
+for a given <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>.   The data are directly accessible in C++ through a public
 variable called u that is mnemonic for the standard symbol used in the
 old testament of seismology by Aki and Richards.  In python we use the
 symbol <code class="code docutils literal notranslate"><span class="pre">data</span></code> for consistency with TimeSeries.
 There are two choices of the order of indices for this matrix.
-The MsPASS implementation makes this choice:  a <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>
+The MsPASS implementation makes this choice:  a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>
 defines index 0(1) as the channel number and index 1(2) as the time
 index.  The following python code section illustrates this more
 clearly than any words:</div>
@@ -838,7 +838,7 @@ focus on the data structure they impose.   Other sections expand on
 the details of both classes.</div>
 </div>
 <div class="line-block">
-<div class="line">Both <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> objects extend their
+<div class="line">Both <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> objects extend their
 “core” parents by adding two classes:</div>
 </div>
 <ol class="arabic simple">
@@ -871,9 +871,9 @@ In our design we considered making the ErrorLogger a base class
 for Seismogram and TimeSeries, but it does not satisfy the basic rule of
 making a concept a base class if the child “is a” ErrorLogger.
 It does, however, perfectly satisfy the idea that the object “has an”
-ErrorLogger.  Both <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> use the
+ErrorLogger.  Both <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> use the
 symbol <code class="code docutils literal notranslate"><span class="pre">elog</span></code> as the name for the ErrorLogger object
-(e.g. If <em>d</em> is a <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> object, <em>d.elog</em>, would refer to
+(e.g. If <em>d</em> is a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> object, <em>d.elog</em>, would refer to
 the error logger component of <em>d</em>.)’’</p></li>
 </ol>
 </section>
@@ -1011,7 +1011,7 @@ small python code segment may illustrate this more clearly.</div>
 </pre></div>
 </div>
 <div class="line-block">
-<div class="line">To understand the code above assume the symbol d is a <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>
+<div class="line">To understand the code above assume the symbol d is a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>
 object with a singular transformation matrix created, for example, by
 incorrectly building the object with two redundant east-west
 components.   The rotate_to_standard method tries to compute a matrix

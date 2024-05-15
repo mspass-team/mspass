@@ -462,7 +462,9 @@ a large job.</p>
 They are called <code class="code docutils literal notranslate"><span class="pre">wf_TimeSeries</span></code> and <code class="code docutils literal notranslate"><span class="pre">wf_Seismogram</span></code>.
 These two collection are the primary work areas to assemble a working data set.
 We elected to keep data describing each of the two atomic data types in MsPASS,
-<code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>, in two different collections.  The
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>
+and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>,
+in two different collections.  The
 main reason we made the decision to create two collections instead of one
 is that there are some minor differences in the Metadata that would
 create inefficiencies if we mixed the two data types in one place.
@@ -1002,7 +1004,7 @@ object, which is our database handle class.  The <code class="code docutils lite
 function builds only an index of the given file and writes the index to
 a special collection called <code class="code docutils literal notranslate"><span class="pre">wf_miniseed</span></code>.</p>
 </li>
-<li><p>The same data can be loaded into memory as a MsPASS <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>
+<li><p>The same data can be loaded into memory as a MsPASS <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code></a>
 object using the related function with this signature:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_one_ensemble</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span>
            <span class="n">create_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
