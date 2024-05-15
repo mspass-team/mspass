@@ -1,9 +1,10 @@
-{% set version_match = load_file_regex(load_file='pyproject.toml', regex_pattern='version = "(.*)"') %}
-{% set version = version_match[1] %}
+#{% set version_match = load_file_regex(load_file='pyproject.toml', regex_pattern='version = "(.*)"') %}
+#{% set version = version_match[1] %}
 
 package:
   name: mspasspy
-  version: {{ version }}
+  version: {{ environ.get('GIT_DESCRIBE_TAG', '') }}
+  #  version: {{ version }}
 
 source:
   path: .
@@ -11,6 +12,8 @@ source:
 build:
   script: scripts/conda_build.sh
   include_recipe: False
+  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+  string: {{ environ.get('GIT_BUILD_STR', '') }}
 
 requirements:
   build:
@@ -66,5 +69,17 @@ requirements:
 
 about:
   home: https://github.com/mspass-team/mspass
-  license: MIT
-  summary: "The Massive Parallel Analysis System for Seismologists is an open source framework for seismic data processing and management. It has three core components: A scalable parallel processing framework based on a dataflow computation model. A NoSQL database system centered on document store. A container-based virtualization environment."
+  license: BSD 3-Clause
+  license_file: LICENSE
+  license_family: BSD
+  license_url: https://github.com/mspass-team/mspass/blob/master/LICENSE
+  summary: Massive Parallel Analysis System for Seismologists
+  description: |
+    The Massive Parallel Analysis System for Seismologists is an open source framework 
+    for seismic data processing and management. It has three core components. 
+    A scalable parallel processing framework based on a dataflow computation model. 
+    A NoSQL database system centered on document store. 
+    A container-based virtualization environment.
+  dev_url: https://github.com/mspass-team/mspass
+  doc_url: https://www.mspass.org
+  doc_source_url: https://github.com/mspass-team/mspass/blob/master/docs/source/index.rst

@@ -1,6 +1,10 @@
 name: publish_conda
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ master ]
+    # Publish semver tags as releases.
+    tags: [ 'v*.*.*' ]
     
 jobs:
   conda-build-arm:
