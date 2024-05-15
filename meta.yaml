@@ -9,7 +9,7 @@ source:
   path: .
 
 build:
-  script: scripts/build_conda.sh
+  script: scripts/conda_build.sh
   include_recipe: False
 
 requirements:
@@ -58,7 +58,7 @@ requirements:
     - setuptools
     - xarray
     - zarr
-    - pandas==1.5.3
+    - pandas
     - numba
     - multitaper
     - ipympl
