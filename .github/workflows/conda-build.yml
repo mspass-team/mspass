@@ -1,10 +1,14 @@
-name: publish_conda
+name: Conda build
 
 on:
+  schedule:
+    - cron: '21 21 * * 5'
   push:
     branches: [ master ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
+  release:
+    types: [published]
 
 jobs:
   conda-build-arm64:
@@ -20,13 +24,14 @@ jobs:
 
       # Setup for Multi-platform image
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
           
-      - name: Build and push Docker image arm64
+      - name: Build and publish conda package arm64
         uses: docker/build-push-action@v4
+        if: ${{ github.event_name == 'schedule' || github.event_name == 'release' }}
         with:
           context: .
           file: scripts/Dockerfile_conda_build
@@ -48,12 +53,12 @@ jobs:
 
       # Setup for Multi-platform image
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
           
-      - name: Build and push Docker image arm64
+      - name: Build and publish conda package amd64
         uses: docker/build-push-action@v4
         with:
           context: .
