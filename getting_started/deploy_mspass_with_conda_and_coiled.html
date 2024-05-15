@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deploy MsPASS with Conda and Coiled &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction" href="../user_manual/introduction.html" />
+    <link rel="prev" title="MsPASS Virtual Cluster Concepts" href="getting_started_overview.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Getting Started in a Nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Deploy MsPASS with Conda and Coiled</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-coiled">1. Install Coiled</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#connect-to-your-cloud">2. Connect to your cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#get-mspass-conda-package">3. Get MsPASS Conda package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-mspass">4. Run MsPASS</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Deploy MsPASS with Conda and Coiled</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/getting_started/deploy_mspass_with_conda_and_coiled.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deploy-mspass-with-conda-and-coiled">
+<span id="id1"></span><h1>Deploy MsPASS with Conda and Coiled<a class="headerlink" href="#deploy-mspass-with-conda-and-coiled" title="Permalink to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<p>This section provides a concise summary of the steps required to run
+MsPASS using Conda and Coiled. The instructions assume you are working
+in a cloud environment (AWS, GCP, Azure). You can also only use conda
+to install MsPASS locally without Coiled (step 3).</p>
+</section>
+<section id="install-coiled">
+<h2>1. Install Coiled<a class="headerlink" href="#install-coiled" title="Permalink to this heading"></a></h2>
+<p>Fetch and install Coiled following instructions on the
+<a class="reference external" href="https://docs.coiled.io/user_guide/setup/index.html">Coiled web site</a>.</p>
+<p>Install the Coiled client Python library with pip or conda.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">coiled</span> <span class="s2">&quot;dask[complete]&quot;</span>
+<span class="n">coiled</span> <span class="n">login</span>
+</pre></div>
+</div>
+<p>This will redirect you to the Coiled website to authenticate your computer.</p>
+</section>
+<section id="connect-to-your-cloud">
+<h2>2. Connect to your cloud<a class="headerlink" href="#connect-to-your-cloud" title="Permalink to this heading"></a></h2>
+<p>Next grant Coiled permission to run in your cloud account(AWS, GCP, Azure).
+Coiled creates the IAM policies and network configuration for your account,
+asking you for permission at each step.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">coiled</span> <span class="n">setup</span> <span class="n">aws</span>
+<span class="n">coiled</span> <span class="n">setup</span> <span class="n">gcp</span>
+</pre></div>
+</div>
+<p>You can configure Coiled with custom network configuration in the
+<a class="reference external" href="https://cloud.coiled.io/settings/setup/infrastructure">user portal</a>.</p>
+</section>
+<section id="get-mspass-conda-package">
+<h2>3. Get MsPASS Conda package<a class="headerlink" href="#get-mspass-conda-package" title="Permalink to this heading"></a></h2>
+<p>If you have not run MsPASS before you will need to get the
+<a class="reference external" href="https://anaconda.org/mspass/mspasspy">conda package</a>.
+from our standard repository.  Alternatively if you want to get the most
+recent updates you may also need to do this step.</p>
+<p>We strongly advise you create a separate environment for mspass
+to avoiding breaking any existing python packages you may have
+installed previous.  Make sure you are on the <cite>base</cite> environment
+ant enter</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="n">mspass</span>
+</pre></div>
+</div>
+<p>Noting the name “mspass” is not special and it can be changed if you
+prefer something else.  You chould then make the new
+environment current with the standand conda command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="n">mspass</span>
+</pre></div>
+</div>
+<p>You will almost certainly need to add key “channels” as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="n">add</span> <span class="n">channels</span> <span class="n">mspass</span>
+<span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="n">add</span> <span class="n">channels</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>
+</pre></div>
+</div>
+<p>Then install mspass in this environment with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">mspasspy</span>
+</pre></div>
+</div>
+</section>
+<section id="run-mspass">
+<h2>4. Run MsPASS<a class="headerlink" href="#run-mspass" title="Permalink to this heading"></a></h2>
+<p>After installing, Coiled will then pick up all those things installed locally,
+and install them on your cluster. For running things on Coiled, you could
+try <cite>coiled run your_code.py</cite> (or follow one of the examples in
+<a class="reference external" href="https://docs.coiled.io/user_guide/usage/examples.html">coiled docs</a>)!</p>
+<p>For example, to connect to MongoDB using Atlas:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymongo.mongo_client</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">from</span> <span class="nn">pymongo.server_api</span> <span class="kn">import</span> <span class="n">ServerApi</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">quote_plus</span>
+<span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;your username&quot;</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;your password&quot;</span>
+
+<span class="c1"># URL-encode the username and password</span>
+<span class="n">uri_username</span> <span class="o">=</span> <span class="n">quote_plus</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+<span class="n">uri_password</span> <span class="o">=</span> <span class="n">quote_plus</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="s2">&quot;mongodb+srv://username:somestring@cluster0.domain.mongodb.net/&quot;</span>
+
+<span class="c1"># Create a new client and connect to the server</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">server_api</span><span class="o">=</span><span class="n">ServerApi</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">))</span>
+
+<span class="c1"># Send a ping to confirm a successful connection</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;ping&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pinged your deployment. You successfully connected to MongoDB!&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the ping success, it means we successfully connect to your remote mongo database.
+Let’s build a MsPASS client and start to use MsPASS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">DBClient</span>
+<span class="n">dbclient</span><span class="o">=</span><span class="n">DBClient</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+<span class="n">dbclient</span><span class="o">.</span><span class="n">list_database_names</span><span class="p">()</span> <span class="c1"># view all the databases</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="p">[</span><span class="s1">&#39;mspass&#39;</span><span class="p">]</span>        <span class="c1"># choose a database</span>
+<span class="n">db</span><span class="o">.</span><span class="n">index_mseed_file</span><span class="p">(</span><span class="s1">&#39;CIGSC__BHZ___2017180.ms&#39;</span><span class="p">,</span> <span class="n">some_path</span><span class="p">)</span> <span class="c1"># index mseed files</span>
+</pre></div>
+</div>
+<p>To use Dask:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">coiled</span> <span class="kn">import</span> <span class="n">Cluster</span>
+
+<span class="n">cluster</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="n">n_workers</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Once you have a Dask cluster you can then run Python code on that cluster.
+Here is a simple code you could run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">future</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">inc</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="c1"># returns 11</span>
+</pre></div>
+</div>
+<p>You can find more useful examples in Coiled documentation and reach out to
+Coiled team (<a class="reference external" href="mailto:support&#37;&#52;&#48;coiled&#46;io">support<span>&#64;</span>coiled<span>&#46;</span>io</a>) for any usage questions.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started_overview.html" class="btn btn-neutral float-left" title="MsPASS Virtual Cluster Concepts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../user_manual/introduction.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

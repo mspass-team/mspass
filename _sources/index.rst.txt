@@ -31,6 +31,7 @@ package.
    getting_started/deploy_mspass_with_docker_compose
    getting_started/deploy_mspass_on_HPC
    getting_started/getting_started_overview
+   getting_started/deploy_mspass_with_conda_and_coiled
 
 .. toctree::
    :maxdepth: 1
