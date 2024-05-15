@@ -2613,9 +2613,12 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         tmax = test_time + self.tolerance
         # For this matcher we dogmatically use <= equivalent in the between
         # construct here - inclusive=True.  In this context seems appropriate
+        inclusive = '"both"'
         dfquery = (
             self.source_time_key
-            + ".between({tmin},{tmax},inclusive=True)".format(tmin=tmin, tmax=tmax)
+            + ".between({tmin},{tmax},inclusive={inclusive})".format(
+                tmin=tmin, tmax=tmax, inclusive=inclusive
+            )
         )
         dfret = self.cache.query(dfquery)
 

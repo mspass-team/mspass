@@ -130,7 +130,7 @@ class TestDataFrameCacheMatcherUtil(TestNormalize):
             "magnitude": np.nan,
         }
 
-        self.df = self.df.append(null_row, ignore_index=True)
+        self.df = pd.concat([self.df, pd.DataFrame([null_row])], ignore_index=True)
         null_value_dict = {
             "lat": 0.0,  #   Matching a float using a float
             "lon": -100,  #   Matching a float using an int
