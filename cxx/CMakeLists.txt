@@ -111,7 +111,7 @@ fetch_mseed (
 message (STATUS "MSEED_LIBRARIES   = ${MSEED_LIBRARIES}")
 message (STATUS "MSEED_INCLUDE_DIR = ${MSEED_INCLUDE_DIR}")
 
-find_package (PythonInterp 3)
+find_package (Python COMPONENTS Interpreter Development)
 
 if (PYTHONINTERP_FOUND)
   find_package (pybind11)
