@@ -5,4 +5,4 @@ include_directories(
   ${Python_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include/)
 
-target_link_libraries(test_history PRIVATE mspass)
+target_link_libraries(test_history PRIVATE mspass ${Python_LIBRARIES})
