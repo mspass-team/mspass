@@ -4,7 +4,7 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${GSL_INCLUDE_DIRS}
     ${pybind11_INCLUDE_DIR}
-    ${PYTHON_INCLUDE_DIRS}
+    ${Python_INCLUDE_DIRS}
     ${PROJECT_BINARY_DIR}/include
     ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(test_spectrum PRIVATE mspass ${Boost_LIBRARIES})

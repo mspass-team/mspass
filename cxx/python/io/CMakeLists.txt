@@ -1,7 +1,7 @@
 include_directories(
   ${MSEED_INCLUDE_DIR}
   ${pylib11_INCLUDE_DIRS}
-  ${PYTHON_INCLUDE_DIRS}
+  ${Python_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include
   ${PROJECT_SOURCE_DIR}
   ${PROJECT_BINARY_DIR}/include
@@ -9,7 +9,7 @@ include_directories(
 )
 
 #add_library(mspasspython STATIC ${sources_python})
-#target_link_libraries(mspasspython PRIVATE mspass ${PYTHON_LIBRARIES})
+#target_link_libraries(mspasspython PRIVATE mspass ${Python_LIBRARIES})
 
 pybind11_add_module(pyio io_py.cc)
 
