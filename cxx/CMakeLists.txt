@@ -113,7 +113,7 @@ message (STATUS "MSEED_INCLUDE_DIR = ${MSEED_INCLUDE_DIR}")
 
 find_package (Python COMPONENTS Interpreter Development)
 
-if (PYTHONINTERP_FOUND)
+if (Python_FOUND)
   find_package (pybind11)
   if (NOT pybind11_FOUND)
     message (STATUS "Building Pybind11")
