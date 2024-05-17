@@ -126,8 +126,8 @@ else()
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_STRIP_TRAILING_WHITESPACE
     )
-    
-    string(REGEX MATCH "Python ([0-9]+\\.[0-9]+\\.[0-9]+)" _ ${PYTHON_VERSION_OUTPUT})
+
+    string(REGEX MATCH "Python ([0-9]+\\.[0-9]+)" _ ${PYTHON_VERSION_OUTPUT})
     set(MY_PYTHON_VERSION ${CMAKE_MATCH_1})
     
     message(STATUS "Found Python version: ${MY_PYTHON_VERSION}")
