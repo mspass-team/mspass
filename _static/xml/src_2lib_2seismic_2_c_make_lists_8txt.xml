@@ -3,13 +3,13 @@
   <compounddef id="src_2lib_2seismic_2_c_make_lists_8txt" kind="file" language="C++">
     <compoundname>CMakeLists.txt</compoundname>
       <sectiondef kind="func">
-      <memberdef kind="function" id="src_2lib_2seismic_2_c_make_lists_8txt_1ae23dd037353b7ba1172f65b437694d0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="src_2lib_2seismic_2_c_make_lists_8txt_1a834bb48b8bfb6aa37a4e0e26c170db54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>include_directories</definition>
-        <argsstring>(${Boost_INCLUDE_DIRS} ${pybind11_INCLUDE_DIR} ${PYTHON_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include) add_library(seismic OBJECT $</argsstring>
+        <argsstring>(${Boost_INCLUDE_DIRS} ${pybind11_INCLUDE_DIR} ${Python_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include) add_library(seismic OBJECT $</argsstring>
         <name>include_directories</name>
         <param>
-          <declname>${Boost_INCLUDE_DIRS} ${pybind11_INCLUDE_DIR} ${PYTHON_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/</declname>
+          <declname>${Boost_INCLUDE_DIRS} ${pybind11_INCLUDE_DIR} ${Python_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -29,7 +29,7 @@
 <codeline lineno="2"><highlight class="normal">include_directories(</highlight></codeline>
 <codeline lineno="3"><highlight class="normal"><sp/><sp/>${Boost_INCLUDE_DIRS}</highlight></codeline>
 <codeline lineno="4"><highlight class="normal"><sp/><sp/>${pybind11_INCLUDE_DIR}</highlight></codeline>
-<codeline lineno="5"><highlight class="normal"><sp/><sp/>${PYTHON_INCLUDE_DIRS}</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"><sp/><sp/>${Python_INCLUDE_DIRS}</highlight></codeline>
 <codeline lineno="6"><highlight class="normal"><sp/><sp/>${PROJECT_BINARY_DIR}/include</highlight></codeline>
 <codeline lineno="7"><highlight class="normal"><sp/><sp/>${PROJECT_SOURCE_DIR}/include)</highlight></codeline>
 <codeline lineno="8"><highlight class="normal"></highlight></codeline>

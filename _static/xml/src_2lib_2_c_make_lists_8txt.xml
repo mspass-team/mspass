@@ -13,9 +13,27 @@
 <codeline lineno="4"><highlight class="normal">add_subdirectory(io)</highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal">add_library(mspass<sp/>$&lt;TARGET_OBJECTS:seismic&gt;<sp/>$&lt;TARGET_OBJECTS:utility&gt;<sp/>$&lt;TARGET_OBJECTS:alg_basics&gt;<sp/>$&lt;TARGET_OBJECTS:amplitudes&gt;<sp/>$&lt;TARGET_OBJECTS:deconvolution&gt;<sp/>$&lt;TARGET_OBJECTS:io&gt;)</highlight></codeline>
-<codeline lineno="7"><highlight class="normal">target_link_libraries(mspass<sp/>PRIVATE<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES}<sp/>${YAML_CPP_LIBRARIES}<sp/>${PYTHON_LIBRARIES}<sp/>${GSL_LIBRARIES}<sp/>${MSEED_LIBRARIES})</highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal">install<sp/>(TARGETS<sp/>mspass<sp/>DESTINATION<sp/>lib)</highlight></codeline>
+<codeline lineno="7"><highlight class="normal">target_link_libraries(mspass<sp/></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/>PRIVATE<sp/></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/>${BLAS_LIBRARIES}<sp/></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/>${LAPACK_LIBRARIES}<sp/></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>${YAML_CPP_LIBRARIES}<sp/></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/>${GSL_LIBRARIES}<sp/></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/>${MSEED_LIBRARIES}<sp/></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/>${Boost_LIBRARIES}</highlight></codeline>
+<codeline lineno="15"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="16"><highlight class="normal">target_link_libraries(mspass<sp/></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/>INTERFACE<sp/></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>${BLAS_LIBRARIES}<sp/></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>${LAPACK_LIBRARIES}<sp/></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>${YAML_CPP_LIBRARIES}<sp/></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/>${GSL_LIBRARIES}<sp/></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>${MSEED_LIBRARIES}</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>${Boost_LIBRARIES}</highlight></codeline>
+<codeline lineno="24"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="25"><highlight class="normal">#set_target_properties(mspass<sp/>PROPERTIES<sp/>LINK_FLAGS<sp/></highlight><highlight class="stringliteral">&quot;-Wl,--unresolved-symbols=ignore-in-shared-libs<sp/>-Wl,--export-dynamic&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal">install<sp/>(TARGETS<sp/>mspass<sp/>DESTINATION<sp/>lib)</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/CMakeLists.txt"/>
   </compounddef>
