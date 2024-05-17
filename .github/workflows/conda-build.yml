@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '21 21 * * 5'
   push:
-    branches: [ master ]
+    branches: [ master, fix_PyMUTEX_LOCK_error ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   release:
@@ -13,6 +13,7 @@ on:
 jobs:
   conda-build-arm64:
     runs-on: ubuntu-latest
+    if: false
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
@@ -42,6 +43,7 @@ jobs:
 
   conda-build-amd64:
     runs-on: ubuntu-latest
+    if: false
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
