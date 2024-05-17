@@ -41,7 +41,6 @@ endif ()
 message (STATUS "YAML_CPP_LIBRARIES   = ${YAML_CPP_LIBRARIES}")
 message (STATUS "YAML_CPP_INCLUDE_DIR = ${YAML_CPP_INCLUDE_DIR}")
 
-
 find_package (Boost 1.64.0 COMPONENTS serialization)
 if (NOT Boost_FOUND)
   message (STATUS "Building Boost")
@@ -111,7 +110,29 @@ fetch_mseed (
 message (STATUS "MSEED_LIBRARIES   = ${MSEED_LIBRARIES}")
 message (STATUS "MSEED_INCLUDE_DIR = ${MSEED_INCLUDE_DIR}")
 
-find_package (Python COMPONENTS Interpreter Development)
+
+find_program(MY_PYTHON_EXECUTABLE NAMES python3 python)
+
+if(NOT MY_PYTHON_EXECUTABLE)
+    message(WARNING "Python interpreter not found.")
+    find_package(Python COMPONENTS Interpreter Development)
+else()
+
+    # Get the version of the Python interpreter
+    execute_process(
+        COMMAND ${MY_PYTHON_EXECUTABLE} --version
+        OUTPUT_VARIABLE PYTHON_VERSION_OUTPUT
+        ERROR_VARIABLE PYTHON_VERSION_OUTPUT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_STRIP_TRAILING_WHITESPACE
+    )
+    
+    string(REGEX MATCH "Python ([0-9]+\\.[0-9]+\\.[0-9]+)" _ ${PYTHON_VERSION_OUTPUT})
+    set(MY_PYTHON_VERSION ${CMAKE_MATCH_1})
+    
+    message(STATUS "Found Python version: ${MY_PYTHON_VERSION}")
+    find_package(Python ${MY_PYTHON_VERSION} EXACT COMPONENTS Interpreter Development)
+endif()
 
 if (Python_FOUND)
   find_package (pybind11)
