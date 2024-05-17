@@ -16,7 +16,7 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${pybind11_INCLUDE_DIR}
   ${GSL_INCLUDE_DIRS}
-  ${PYTHON_INCLUDE_DIRS}
+  ${Python_INCLUDE_DIRS}
   ${PROJECT_BINARY_DIR}/include
   ${PROJECT_SOURCE_DIR}/include)
 
