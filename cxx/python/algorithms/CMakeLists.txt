@@ -10,16 +10,19 @@ include_directories(
 #add_library(mspasspython STATIC ${sources_python})
 #target_link_libraries(mspasspython PRIVATE mspass ${Python_LIBRARIES})
 
-pybind11_add_module(pybasic basic_py.cc)
-target_link_libraries(pybasic PRIVATE mspass ${Boost_LIBRARIES})
+#pybind11_add_module(pybasic basic_py.cc)
+Python_add_library(pybasic basic_py.cc)
+target_link_libraries(pybasic PRIVATE mspass ${Boost_LIBRARIES} pybind11::headers)
 set_target_properties(pybasic PROPERTIES OUTPUT_NAME "basic")
 
-pybind11_add_module(pyamplitudes amplitudes_py.cc)
-target_link_libraries(pyamplitudes PRIVATE mspass ${Boost_LIBRARIES})
+#pybind11_add_module(pyamplitudes amplitudes_py.cc)
+Python_add_library(pyamplitudes amplitudes_py.cc)
+target_link_libraries(pyamplitudes PRIVATE mspass ${Boost_LIBRARIES} pybind11::headers)
 set_target_properties(pyamplitudes PROPERTIES OUTPUT_NAME "amplitudes")
 
-pybind11_add_module(pydeconvolution deconvolution_py.cc)
-target_link_libraries(pydeconvolution PRIVATE mspass ${Boost_LIBRARIES})
+#pybind11_add_module(pydeconvolution deconvolution_py.cc)
+Python_add_library(pydeconvolution deconvolution_py.cc)
+target_link_libraries(pydeconvolution PRIVATE mspass ${Boost_LIBRARIES} pybind11::headers)
 set_target_properties(pydeconvolution PROPERTIES OUTPUT_NAME "deconvolution")
 
 if(DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY)
