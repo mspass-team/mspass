@@ -163,8 +163,24 @@
     <span class="n">ErrorLogger</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">dask</span>
-<span class="kn">import</span> <span class="nn">pyspark</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">dask</span>
+
+    <span class="n">_mspasspy_has_dask</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">_mspasspy_has_dask</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pyspark</span>
+
+    <span class="n">_mspasspy_has_pyspark</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">_mspasspy_has_pyspark</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">_mspasspy_has_dask</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_mspasspy_has_pyspark</span><span class="p">:</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> requires either dask or pyspark module. Please install dask or pyspark&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="vm">__name__</span>
+    <span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="read_ensemble_parallel"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_ensemble_parallel">[docs]</a><span class="k">def</span> <span class="nf">read_ensemble_parallel</span><span class="p">(</span>
@@ -601,6 +617,11 @@
         <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Unsupported value for scheduler=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scheduler</span><span class="p">)</span>
         <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be either &#39;dask&#39; or &#39;spark&#39;&quot;</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_mspasspy_has_pyspark</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;WARNING(read_distributed_data): pyspark not found, will use dask instead. The scheduler argument is ignored.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">scheduler</span> <span class="o">=</span> <span class="s2">&quot;dask&quot;</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">ensemble_mode</span> <span class="o">=</span> <span class="kc">True</span>
@@ -632,9 +653,10 @@
         <span class="n">ensemble_mode</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">dataframe_input</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">db</span> <span class="o">=</span> <span class="n">data</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span>
-        <span class="n">data</span><span class="p">,</span>
-        <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">dask</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">),</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="n">_mspasspy_has_dask</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dask</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">))</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="n">_mspasspy_has_pyspark</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">))</span>
     <span class="p">):</span>
         <span class="n">ensemble_mode</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">dataframe_input</span> <span class="o">=</span> <span class="kc">True</span>
@@ -680,7 +702,6 @@
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="n">container_partitions</span> <span class="o">=</span> <span class="n">container_to_merge</span><span class="o">.</span><span class="n">getNumPartitions</span><span class="p">()</span>
-
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">container_to_merge</span><span class="p">,</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Bag</span><span class="p">):</span>
                 <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
@@ -1653,6 +1674,11 @@
             <span class="p">)</span>
             <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be either dask or spark&quot;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_mspasspy_has_pyspark</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;WARNING(write_distributed_data): pyspark not found, will use dask instead. The scheduler argument is ignored.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">scheduler</span> <span class="o">=</span> <span class="s2">&quot;dask&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">scheduler</span> <span class="o">=</span> <span class="s2">&quot;dask&quot;</span>
     <span class="c1"># This use of the collection name to establish the schema is</span>
