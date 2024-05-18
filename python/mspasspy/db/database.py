@@ -14,23 +14,12 @@ import pandas as pd
 import fcntl
 
 try:
-    import dask.bag as daskbag
+    import dask.dataframe as daskdf
 
     _mspasspy_has_dask = True
 except ImportError:
     _mspasspy_has_dask = False
 
-try:
-    import dask.dataframe as daskdf
-except ImportError:
-    _mspasspy_has_dask = False
-
-try:
-    import pyspark
-
-    _mspasspy_has_pyspark = True
-except ImportError:
-    _mspasspy_has_pyspark = False
 
 import gridfs
 import pymongo
@@ -5864,7 +5853,7 @@ class Database(pymongo.database.Database):
         """
         dbcol = self[collection]
 
-        if parallel:
+        if parallel and _mspasspy_has_dask:
             df = daskdf.from_pandas(df, chunksize=1, sort=False)
 
         if not one_to_one:
@@ -5880,7 +5869,7 @@ class Database(pymongo.database.Database):
                     df[key] = df[key].mask(df[key] == val, None)
 
         """
-        if parallel:
+        if parallel and _mspasspy_has_dask:
             df = daskdf.from_pandas(df, chunksize=1, sort=False)
             df = df.apply(lambda x: x.dropna(), axis=1).compute()
         else:
