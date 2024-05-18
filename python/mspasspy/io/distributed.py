@@ -22,8 +22,22 @@ from mspasspy.ccore.utility import (
     ErrorLogger,
 )
 
-import dask
-import pyspark
+try:
+    import dask
+    _mspasspy_has_dask = True
+except ImportError:
+    _mspasspy_has_dask = False
+try:
+    import pyspark
+    _mspasspy_has_pyspark = True
+except ImportError:
+    _mspasspy_has_pyspark = False
+
+if not _mspasspy_has_dask and not _mspasspy_has_pyspark:
+    message = (
+        "{} requires either dask or pyspark module. Please install dask or pyspark".format(__name__)
+    )
+    raise ModuleNotFoundError(message)
 
 
 def read_ensemble_parallel(
@@ -460,6 +474,9 @@ def read_distributed_data(
         message += "Unsupported value for scheduler={}\n".format(scheduler)
         message += "Must be either 'dask' or 'spark'"
         raise ValueError(message)
+    if scheduler == "spark" and not _mspasspy_has_pyspark:
+        print("WARNING(read_distributed_data): pyspark not found, will use dask instead. The scheduler argument is ignored.")
+        scheduler = "dask"
 
     if isinstance(data, list):
         ensemble_mode = True
@@ -491,10 +508,7 @@ def read_distributed_data(
         ensemble_mode = False
         dataframe_input = False
         db = data
-    elif isinstance(
-        data,
-        (pd.DataFrame, pyspark.sql.dataframe.DataFrame, dask.dataframe.core.DataFrame),
-    ):
+    elif isinstance(data, pd.DataFrame) or (_mspasspy_has_dask and isinstance(data, dask.dataframe.core.DataFrame)) or (_mspasspy_has_pyspark and isinstance(data, pyspark.sql.dataframe.DataFrame)):
         ensemble_mode = False
         dataframe_input = True
         if isinstance(db, Database):
@@ -539,7 +553,6 @@ def read_distributed_data(
                 )
                 raise TypeError(message)
             container_partitions = container_to_merge.getNumPartitions()
-
         else:
             if not isinstance(container_to_merge, dask.bag.core.Bag):
                 message += (
@@ -655,7 +668,7 @@ def read_distributed_data(
                 plist = spark_context.parallelize(
                     data.to_dict("records"), numSlices=npartitions
                 )
-            else:
+            elif _mspasspy_has_dask:
                 # Seems we ahve to convert a pandas df to a dask
                 # df to have access to the "to_bag" method of dask
                 # DataFrame.   It may be better to write a small
@@ -1512,6 +1525,9 @@ def write_distributed_data(
             )
             message += "Must be either dask or spark"
             raise ValueError(message)
+        if scheduler == "spark" and not _mspasspy_has_pyspark:
+            print("WARNING(write_distributed_data): pyspark not found, will use dask instead. The scheduler argument is ignored.")
+            scheduler = "dask"
     else:
         scheduler = "dask"
     # This use of the collection name to establish the schema is
