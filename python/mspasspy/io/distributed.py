@@ -668,7 +668,7 @@ def read_distributed_data(
                 plist = spark_context.parallelize(
                     data.to_dict("records"), numSlices=npartitions
                 )
-            elif _mspasspy_has_dask:
+            else:
                 # Seems we ahve to convert a pandas df to a dask
                 # df to have access to the "to_bag" method of dask
                 # DataFrame.   It may be better to write a small
