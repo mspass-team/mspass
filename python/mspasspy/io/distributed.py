@@ -24,18 +24,20 @@ from mspasspy.ccore.utility import (
 
 try:
     import dask
+
     _mspasspy_has_dask = True
 except ImportError:
     _mspasspy_has_dask = False
 try:
     import pyspark
+
     _mspasspy_has_pyspark = True
 except ImportError:
     _mspasspy_has_pyspark = False
 
 if not _mspasspy_has_dask and not _mspasspy_has_pyspark:
-    message = (
-        "{} requires either dask or pyspark module. Please install dask or pyspark".format(__name__)
+    message = "{} requires either dask or pyspark module. Please install dask or pyspark".format(
+        __name__
     )
     raise ModuleNotFoundError(message)
 
@@ -475,7 +477,9 @@ def read_distributed_data(
         message += "Must be either 'dask' or 'spark'"
         raise ValueError(message)
     if scheduler == "spark" and not _mspasspy_has_pyspark:
-        print("WARNING(read_distributed_data): pyspark not found, will use dask instead. The scheduler argument is ignored.")
+        print(
+            "WARNING(read_distributed_data): pyspark not found, will use dask instead. The scheduler argument is ignored."
+        )
         scheduler = "dask"
 
     if isinstance(data, list):
@@ -508,7 +512,11 @@ def read_distributed_data(
         ensemble_mode = False
         dataframe_input = False
         db = data
-    elif isinstance(data, pd.DataFrame) or (_mspasspy_has_dask and isinstance(data, dask.dataframe.core.DataFrame)) or (_mspasspy_has_pyspark and isinstance(data, pyspark.sql.dataframe.DataFrame)):
+    elif (
+        isinstance(data, pd.DataFrame)
+        or (_mspasspy_has_dask and isinstance(data, dask.dataframe.core.DataFrame))
+        or (_mspasspy_has_pyspark and isinstance(data, pyspark.sql.dataframe.DataFrame))
+    ):
         ensemble_mode = False
         dataframe_input = True
         if isinstance(db, Database):
@@ -1526,7 +1534,9 @@ def write_distributed_data(
             message += "Must be either dask or spark"
             raise ValueError(message)
         if scheduler == "spark" and not _mspasspy_has_pyspark:
-            print("WARNING(write_distributed_data): pyspark not found, will use dask instead. The scheduler argument is ignored.")
+            print(
+                "WARNING(write_distributed_data): pyspark not found, will use dask instead. The scheduler argument is ignored."
+            )
             scheduler = "dask"
     else:
         scheduler = "dask"
