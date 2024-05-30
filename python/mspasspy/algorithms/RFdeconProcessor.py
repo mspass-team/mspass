@@ -274,6 +274,7 @@ class RFdeconProcessor:
             processor.loadwavelet(DoubleVector(self.wvector))
         if self.__uses_noise and hasattr(self, "nvector"):
             processor.loadnoise(DoubleVector(self.nvector))
+        processor.process()
         return processor.actual_output()
 
     def ideal_output(self):
