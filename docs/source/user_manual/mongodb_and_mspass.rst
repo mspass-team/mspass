@@ -883,7 +883,7 @@ formatted table display.  As noted above pandas are your friend in
 creating such a report.  Here is an example that creates a report of all
 stations listed in the site collection with coordinates and the time
 range of recording.  It is a variant of a code block in our
-`mongodb_tutorial<https://github.com/mspass-team/mspass_tutorial/tree/master/notebooks>`__
+`mongodb_tutorial <https://github.com/mspass-team/mspass_tutorial/tree/master/notebooks>`__
 
 .. code-block:: python
 
@@ -912,7 +912,7 @@ in our notebook tutorials, is downloading and loading the current CMT
 catalog and loading it into a nonstandard collection we all "CMT".
 In this manual we focus on the fundamentals of the pymongo API for
 saving documents.  See the
-`mongodb_tutorial<https://github.com/mspass-team/mspass_tutorial/tree/master/notebooks>`__
+`mongodb_tutorial <https://github.com/mspass-team/mspass_tutorial/tree/master/notebooks>`__
 for the examples.
 
 There are two methods of `Database.collection` that you can use to

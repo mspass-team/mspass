@@ -1,15 +1,14 @@
 [project]
 name = "mspasspy"
-version = "1.0.0"
 description = "Massive Parallel Analysis System for Seismologists"
 authors = [
     {name = "Ian Wang", email = "yinzhi.wang.cug@gmail.com"},
     {name = "Gary Pavlis", email = "pavlis@indiana.edu"},
 ]
-dynamic = ["dependencies", "scripts"]
+dynamic = ["dependencies", "scripts", "version"]
 
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=64", "setuptools_scm>=8", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
@@ -29,4 +28,6 @@ complete = ["numpy", "pandas", "scipy", "matplotlib"]
 mspass-dbclean = "mspasspy.db.script.dbclean:main"
 mspass-dbverify = "mspasspy.db.script.dbverify:main"
 mspass-normalize_mseed = "mspasspy.db.script.normalize_mseed:main"
+
+[tool.setuptools_scm]
 

@@ -190,8 +190,9 @@ ADD setup.py /mspass/setup.py
 ADD pyproject.toml /mspass/pyproject.toml
 ADD requirements.txt /mspass/requirements.txt
 ADD python /mspass/python
+ADD .git /mspass/.git
 RUN pip3 install /mspass -v \
-	&& rm -rf /mspass/build && docker-clean
+	&& rm -rf /mspass/build /mspass/.git && docker-clean
 
 # Install jedi
 RUN pip3 --no-cache-dir install jedi==0.17.2 && docker-clean

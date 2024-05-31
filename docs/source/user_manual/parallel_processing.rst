@@ -110,9 +110,9 @@ Overview
 -----------
 A second key concept we utilize for processing algorithms in MsPASS is the
 abstraction of
-`functional programming<https://en.wikipedia.org/wiki/Functional_programming>`__,
+`functional programming <https://en.wikipedia.org/wiki/Functional_programming>`__,
 which is a branch of programming founded on
-`lambda calculus<https://en.wikipedia.org/wiki/Lambda_calculus>`__.
+`lambda calculus <https://en.wikipedia.org/wiki/Lambda_calculus>`__.
 For most seismologists that abstraction is likely best treated only as
 a foundational concept that may or may not be helpful depending on your
 background. It is important, however,
@@ -231,7 +231,7 @@ single result stored with the symbol :code:`stack`.
 We will get to the rules that constrain :code:`Reduce` operators in a moment, but
 it might be more helpful to you as a user to see how that algorithm
 translates into dask/spark.  MsPASS has a parallel stack algorithm found
-`here<https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`__
+`here <https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`__
 It is used in a parallel context as follows for dask:
 
 .. code-block:: python
@@ -245,7 +245,7 @@ For spark the syntax is identical but the name of the method changes to reduce:
   res = rdd.reduce(lambda a, b: stack(a, b))
 
 The :code:`stack` symbol refers to a python function that is actually quite simple. You can view
-the source code `here<https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`__.
+the source code `here <https://github.com/mspass-team/mspass/blob/master/python/mspasspy/reduce.py>`__.
 It is simple because most of the complexity is hidden behind the +=
 symbol that invokes that operation in C++ (`TimeSeries::operator+=` for anyone
 familiar with C++) to add the right hand side to the left hand side of
@@ -261,7 +261,7 @@ which is a generic wrapper to adapt any suitable reduce function to MsPASS.
 The final issue we need to cover in this section is what exactly is meant
 by the phrase "any suitable reduce function" at the end of the previous paragraph?
 To mesh with the reduce framework used by spark and dask a function has
-to satisfy `the following rules<https://en.wikipedia.org/wiki/Reduction_operator>`__ :
+to satisfy `the following rules <https://en.wikipedia.org/wiki/Reduction_operator>`__ :
 
 1. The first two arguments (a and b symbols in the example above)
    must define two instances of the same type
@@ -328,7 +328,7 @@ overhead is relatively small unless the execution time for
 processing is trivial.
 
 For more information, the dask documentation found
-`here<https://docs.dask.org/en/latest/scheduling.html>`__ is a good
+`here <https://docs.dask.org/en/latest/scheduling.html>`__ is a good
 starting point.
 
 Examples:
@@ -425,11 +425,11 @@ To read this page we recommend you open a second winodw or tab on
 your web browser to the current file in the mspass source code
 directory called :code:`scripts/tacc_examples/distributed_node.sh`.
 The link to the that file you can view on your web browser is
-`here<https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh>`__.
+`here <https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh>`__.
 We note there is an additional example there for running MsPASS
 on a single node at TACC called :code:`scripts/tacc_examples/single_node.sh`
 you can access directly
-`here<https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/single_node.sh>`__,
+`here <https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/single_node.sh>`__,
 The single node setup is useful for testing and may help your understanding
 of what is needed by being much simpler.  We do not discuss that
 example further here, however, because a primary purpose for using
@@ -476,7 +476,7 @@ script on a head node without having to submit the full job.
 MsPASS was designed to be run in a container.   For a workstation environment
 we assume the container system being used is docker.   Running
 MsPASS with docker is described on
-`this wiki page<https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Docker>`__.
+`this wiki page <https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Docker>`__.
 All HPC systems we know have a docker compatible system called
 :code:`singularity`.   Singularity can be thought of as docker for a large
 HPC cluster.   The most important feature of singularity for you as a user
@@ -490,15 +490,15 @@ the way it used by docker as follows:
 
 For more about running MsPASS with singularity consult our
 wiki page found
-`here<https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Singularity-(on-HPC)>`__.
+`here <https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Singularity-(on-HPC)>`__.
 Since our examples here were constructed on TACC' Stampede2 you may also
 find it useful to read their page on using singularity found
-`here<https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html>`__
+`here <https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html>`__
 
 There is a single node mode you may want to run for testing.
 You can find an example of how to configure Stampede2 to run on a single
 node in the MsPASS scripts/tacc_examples found on github
-`here<https://github.com/mspass-team/mspass/tree/master/scripts/tacc_examples>`__.
+`here <https://github.com/mspass-team/mspass/tree/master/scripts/tacc_examples>`__.
 We focus is manual on configuration for a production run using multiple
 nodes, that is a primary purpose of using MsPASS for data processing.
 The example we give here is the
@@ -523,7 +523,7 @@ And it doesn't matter if the directory doesn't exist, the job script would creat
 Then we define the SING_COM variable to simplify the workflow in our job script. On Stampede2 and most of HPC
 systems, we use Singularity to manage and run the docker images. There are many options to start a container
 using singularity, which you could refer to their documentation. And for those who are not familiar with Singularity,
-here is a good `source<https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html>`__ 
+here is a good `source <https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html>`__
 to get start with.
 
 .. code-block:: bash
@@ -564,7 +564,7 @@ before:
   SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR $SING_COM
 
 Here we set the environment variables inside the container using this syntactic sugar SINGULARITYENV_XXX.
-For more information, you could view the usage `here<https://sylabs.io/guides/3.0/user-guide/appendix.html>`_.
+For more information, you could view the usage `here <https://sylabs.io/guides/3.0/user-guide/appendix.html>`_.
 We define and set different variables in different containers we start because in our start-mspass.sh, we
 define different bahavior under different *MSPASS_ROLE* so that for each role, it will execute the bash
 script we define in the start-mspass.sh. Though it looks complicated and hard to extend, this is prabably
