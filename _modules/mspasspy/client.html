@@ -374,6 +374,10 @@
                         <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span><span class="p">,</span>
                         <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
                     <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;There is no spark or dask installed, this client has no scheduler&quot;</span>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="Client.get_database_client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_database_client">[docs]</a>    <span class="k">def</span> <span class="nf">get_database_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
