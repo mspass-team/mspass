@@ -1,6 +1,14 @@
 mspasspy.algorithms
 ===================
 
+MTPowerSpectrumEngine
+---------------------
+
+.. automodule:: mspasspy.algorithms.MTPowerSpectrumEngine
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 RFdeconProcessor
 ----------------
 
@@ -32,6 +40,15 @@ edit
     :members:
     :undoc-members:
     :show-inheritance:
+
+resample
+--------
+
+.. automodule:: mspasspy.algorithms.resample
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 signals
 -------

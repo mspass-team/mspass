@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.algorithms.MTPowerSpectrumEngine &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../../../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mspasspy.algorithms.MTPowerSpectrumEngine</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mspasspy.algorithms.MTPowerSpectrumEngine</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">multitaper.mtspec</span> <span class="kn">import</span> <span class="n">MTSpec</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="p">,</span> <span class="n">Metadata</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">DoubleVector</span><span class="p">,</span> <span class="n">PowerSpectrum</span>
+
+
+<div class="viewcode-block" id="MTPowerSpectrumEngine"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine">[docs]</a><span class="k">class</span> <span class="nc">MTPowerSpectrumEngine</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper class to use German Prieto&#39;s multitaper package as a plug</span>
+<span class="sd">    in replacement for the MsPASS class of the same name.   The MsPASS</span>
+<span class="sd">    version is in C++ and there are some collisions in concept.  It should</span>
+<span class="sd">    be used only in a python script where it might be useful to use</span>
+<span class="sd">    features of Prieto&#39;s library not available in the cruder implementation</span>
+<span class="sd">    in MsPASS.   (e.g. adaptive weights in multitaper power spectrum estimation).</span>
+
+<span class="sd">    The biggest collision in concept is that the MsPASS version with this class</span>
+<span class="sd">    name was designed to be created and moved around to avoid the overhead of</span>
+<span class="sd">    recreating the Slepian tapers on each use.  Prieto&#39;s class creates these</span>
+<span class="sd">    in the constructor but caches a number of things when first created that</span>
+<span class="sd">    allows secondary calls to run faster.  The implementation attempts</span>
+<span class="sd">    to overcome this collision by caching an instance of Prieto&#39;s mstspec class</span>
+<span class="sd">    on the first call to the apply method.   Secondary calls to apply test</span>
+<span class="sd">    for consistency with the previous call and only recreate the mtspec</span>
+<span class="sd">    instance if something that invalidates the previous call has changed.</span>
+
+<span class="sd">    :param winsize:   Number of samples expected for data window.  Note this</span>
+<span class="sd">    argument defines the size of the eigentapers so it defines the size of</span>
+<span class="sd">    input time series the object expect to process.</span>
+<span class="sd">    :param tbp:  multitaper time-bandwidth product</span>
+<span class="sd">    :param number_tapers:  number of tapers to use for estimators (See Prieto&#39;s)</span>
+<span class="sd">    documentation for details)</span>
+<span class="sd">    :param nfft:  optional size of the fft work arrays to use.  nfft should be</span>
+<span class="sd">    greater than or equal winsize.  When greater zero padding is used in the</span>
+<span class="sd">    usual way.  Default is 0 which sets nfft to 2*winsize.  If nfft&lt;winsize</span>
+<span class="sd">    a diagnostic message will be printed and nfft will be set equal to winsize.</span>
+<span class="sd">    :param iadapt:  integer argument passed to Prieto&#39;s MTspec that sets the</span>
+<span class="sd">    eigentaper weighting scheme.  See Prieto&#39;s MTspect class documentation</span>
+<span class="sd">    for options.  Default is 0 which enables the adaptive weighting scheme.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">winsize</span><span class="p">,</span>
+        <span class="n">tbp</span><span class="p">,</span>
+        <span class="n">number_tapers</span><span class="p">,</span>
+        <span class="n">nfft</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">iadapt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">winsize</span> <span class="o">=</span> <span class="n">winsize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tbp</span> <span class="o">=</span> <span class="n">tbp</span>  <span class="c1"># nw in multitaper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_tapers</span> <span class="o">=</span> <span class="n">number_tapers</span>  <span class="c1"># kspec in multitaper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vn</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># constructor for MTSpec will set this when passed None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nfft</span> <span class="o">=</span> <span class="n">nfft</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idapt</span> <span class="o">=</span> <span class="n">iadapt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lamb</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># constructor for MTSpec set this</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="MTPowerSpectrumEngine.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        need to support vector input or a TimeSeries - returns a PowerSpectrum</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># All inputs end up filling a numpy array passed to MTSpec below</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">DoubleVector</span><span class="p">):</span>
+            <span class="c1"># pybind11 bindings defined std::vector as a DoubleVector</span>
+            <span class="c1"># This is exactly like the use for TimeSeries where data</span>
+            <span class="c1"># is a DoubleVector</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
+            <span class="c1"># These are mspass schema standard names - could be</span>
+            <span class="c1"># a future maintenance issue</span>
+            <span class="n">md</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">md</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">d</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
+            <span class="c1"># These are mspass schema standard names - could be</span>
+            <span class="c1"># a future maintenance issue</span>
+            <span class="n">md</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">md</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;MTPowerSpectrumEngine.apply:  arg0 has invalid type - must be TimeSeries, DoubleVector, or numpy array&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span> <span class="o">=</span> <span class="n">MTSpec</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">nw</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tbp</span><span class="p">,</span>
+            <span class="n">kspec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">number_tapers</span><span class="p">,</span>
+            <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+            <span class="n">nfft</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nfft</span><span class="p">,</span>
+            <span class="n">iadapt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">idapt</span><span class="p">,</span>
+            <span class="n">vn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vn</span><span class="p">,</span>
+            <span class="n">lamb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lamb</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Set these so they will be automatically reused on a</span>
+        <span class="c1"># successive call.   May need to trap size mismatch above</span>
+        <span class="c1"># if these were previously set - this needs some testing</span>
+        <span class="c1">#  REMOVE ME WHEN VERIFIED</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">vn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lamb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">lamb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nfft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">nfft</span>
+        <span class="c1"># We copy these attributes to metadata for optional downstream use</span>
+        <span class="n">md</span><span class="p">[</span><span class="s2">&quot;MTSpec_dt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">md</span><span class="p">[</span><span class="s2">&quot;MTSpec_df&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">df</span>
+        <span class="n">md</span><span class="p">[</span><span class="s2">&quot;MTSpec_nw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">nw</span>
+        <span class="n">md</span><span class="p">[</span><span class="s2">&quot;MTSpec_kspec&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">kspec</span>
+        <span class="n">md</span><span class="p">[</span><span class="s2">&quot;MTSpec_nfft&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">nfft</span>
+        <span class="n">md</span><span class="p">[</span><span class="s2">&quot;MTSpec_npts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">npts</span>
+
+        <span class="c1"># these could be set as aliases but we set the explicitly for now</span>
+        <span class="c1"># even if it is redundamt</span>
+        <span class="n">md</span><span class="p">[</span><span class="s2">&quot;time_bandwith_product&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">nw</span>
+        <span class="n">md</span><span class="p">[</span><span class="s2">&quot;number_tapers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">kspec</span>
+        <span class="c1"># This method returns only the positive frequencies and spectra values</span>
+        <span class="n">f</span><span class="p">,</span> <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">rspec</span><span class="p">()</span>
+        <span class="c1"># this is an obnoxious collision with the C++ api DoubleVector</span>
+        <span class="n">npts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">npts</span>
+        <span class="n">work</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="p">)):</span>
+            <span class="n">work</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">PowerSpectrum</span><span class="p">(</span>
+            <span class="n">md</span><span class="p">,</span>
+            <span class="n">work</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">df</span><span class="p">,</span>
+            <span class="s2">&quot;multitaper.MTSpec&quot;</span><span class="p">,</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">dt</span><span class="p">,</span>
+            <span class="n">md</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="MTPowerSpectrumEngine.frequencies"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.frequencies">[docs]</a>    <span class="k">def</span> <span class="nf">frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a numpy array of the frequencies</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">freq</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;MTPowerSpectrumEngine.frequencies:   engine has not been initialized.  Method undefined until apply method called&quot;</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MTPowerSpectrumEngine.time_bandwidth_product"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.time_bandwidth_product">[docs]</a>    <span class="k">def</span> <span class="nf">time_bandwidth_product</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return time bandwidth product for this operator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">nw</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;MTPowerSpectrumEngine.time_bandwidth_product:   engine has not been initialized.  Method undefined until apply method called&quot;</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MTPowerSpectrumEngine.number_tapers"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.number_tapers">[docs]</a>    <span class="k">def</span> <span class="nf">number_tapers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of tapers defined for this operator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">kspec</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;MTPowerSpectrumEngine.number_tapers:   engine has not been initialized.  Method undefined until apply method called&quot;</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MTPowerSpectrumEngine.set_df"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.set_df">[docs]</a>    <span class="k">def</span> <span class="nf">set_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Explicit setter for frequency bin interval.  Needed when</span>
+<span class="sd">        changing sample interval for input data. Rarely of use but</span>
+<span class="sd">        included for compatibility with the C++ class with the</span>
+<span class="sd">        same name.</span>
+
+<span class="sd">        This maybe should just be pass or throw an error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

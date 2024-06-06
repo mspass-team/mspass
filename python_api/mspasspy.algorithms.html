@@ -114,6 +114,10 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.MTPowerSpectrumEngine">MTPowerSpectrumEngine</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine"><code class="docutils literal notranslate"><span class="pre">MTPowerSpectrumEngine</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.RFdeconProcessor">RFdeconProcessor</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.RFdeconProcessor.RFdecon"><code class="docutils literal notranslate"><span class="pre">RFdecon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor"><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor</span></code></a></li>
@@ -168,6 +172,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Subtract"><code class="docutils literal notranslate"><span class="pre">Subtract</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Subtract2"><code class="docutils literal notranslate"><span class="pre">Subtract2</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.erase_metadata"><code class="docutils literal notranslate"><span class="pre">erase_metadata()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.resample">resample</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.resample.BasicResampler"><code class="docutils literal notranslate"><span class="pre">BasicResampler</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.resample.ScipyDecimator"><code class="docutils literal notranslate"><span class="pre">ScipyDecimator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.resample.ScipyResampler"><code class="docutils literal notranslate"><span class="pre">ScipyResampler</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.resample.resample"><code class="docutils literal notranslate"><span class="pre">resample()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.signals">signals</a><ul>
@@ -248,6 +259,81 @@
              
   <section id="mspasspy-algorithms">
 <h1>mspasspy.algorithms<a class="headerlink" href="#mspasspy-algorithms" title="Permalink to this heading"></a></h1>
+<section id="module-mspasspy.algorithms.MTPowerSpectrumEngine">
+<span id="mtpowerspectrumengine"></span><h2>MTPowerSpectrumEngine<a class="headerlink" href="#module-mspasspy.algorithms.MTPowerSpectrumEngine" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MTPowerSpectrumEngine.</span></span><span class="sig-name descname"><span class="pre">MTPowerSpectrumEngine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">winsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tbp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_tapers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfft</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iadapt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MTPowerSpectrumEngine.html#MTPowerSpectrumEngine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Wrapper class to use German Prieto’s multitaper package as a plug
+in replacement for the MsPASS class of the same name.   The MsPASS
+version is in C++ and there are some collisions in concept.  It should
+be used only in a python script where it might be useful to use
+features of Prieto’s library not available in the cruder implementation
+in MsPASS.   (e.g. adaptive weights in multitaper power spectrum estimation).</p>
+<p>The biggest collision in concept is that the MsPASS version with this class
+name was designed to be created and moved around to avoid the overhead of
+recreating the Slepian tapers on each use.  Prieto’s class creates these
+in the constructor but caches a number of things when first created that
+allows secondary calls to run faster.  The implementation attempts
+to overcome this collision by caching an instance of Prieto’s mstspec class
+on the first call to the apply method.   Secondary calls to apply test
+for consistency with the previous call and only recreate the mtspec
+instance if something that invalidates the previous call has changed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>winsize</strong> – Number of samples expected for data window.  Note this</p>
+</dd>
+</dl>
+<p>argument defines the size of the eigentapers so it defines the size of
+input time series the object expect to process.
+:param tbp:  multitaper time-bandwidth product
+:param number_tapers:  number of tapers to use for estimators (See Prieto’s)
+documentation for details)
+:param nfft:  optional size of the fft work arrays to use.  nfft should be
+greater than or equal winsize.  When greater zero padding is used in the
+usual way.  Default is 0 which sets nfft to 2*winsize.  If nfft&lt;winsize
+a diagnostic message will be printed and nfft will be set equal to winsize.
+:param iadapt:  integer argument passed to Prieto’s MTspec that sets the
+eigentaper weighting scheme.  See Prieto’s MTspect class documentation
+for options.  Default is 0 which enables the adaptive weighting scheme.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.apply">
+<span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MTPowerSpectrumEngine.html#MTPowerSpectrumEngine.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.apply" title="Permalink to this definition"></a></dt>
+<dd><p>need to support vector input or a TimeSeries - returns a PowerSpectrum</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.frequencies">
+<span class="sig-name descname"><span class="pre">frequencies</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MTPowerSpectrumEngine.html#MTPowerSpectrumEngine.frequencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.frequencies" title="Permalink to this definition"></a></dt>
+<dd><p>Return a numpy array of the frequencies</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.number_tapers">
+<span class="sig-name descname"><span class="pre">number_tapers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MTPowerSpectrumEngine.html#MTPowerSpectrumEngine.number_tapers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.number_tapers" title="Permalink to this definition"></a></dt>
+<dd><p>Return the number of tapers defined for this operator.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.set_df">
+<span class="sig-name descname"><span class="pre">set_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MTPowerSpectrumEngine.html#MTPowerSpectrumEngine.set_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.set_df" title="Permalink to this definition"></a></dt>
+<dd><p>Explicit setter for frequency bin interval.  Needed when
+changing sample interval for input data. Rarely of use but
+included for compatibility with the C++ class with the
+same name.</p>
+<p>This maybe should just be pass or throw an error.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.time_bandwidth_product">
+<span class="sig-name descname"><span class="pre">time_bandwidth_product</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MTPowerSpectrumEngine.html#MTPowerSpectrumEngine.time_bandwidth_product"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.time_bandwidth_product" title="Permalink to this definition"></a></dt>
+<dd><p>Return time bandwidth product for this operator.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-mspasspy.algorithms.RFdeconProcessor">
 <span id="rfdeconprocessor"></span><h2>RFdeconProcessor<a class="headerlink" href="#module-mspasspy.algorithms.RFdeconProcessor" title="Permalink to this heading"></a></h2>
 <p>This file contains a class definition for a wrapper for
@@ -2684,6 +2770,274 @@ is ignored if the input is an atomic data type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>edited copy of d</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mspasspy.algorithms.resample">
+<span id="resample"></span><h2>resample<a class="headerlink" href="#module-mspasspy.algorithms.resample" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.algorithms.resample.BasicResampler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.resample.</span></span><span class="sig-name descname"><span class="pre">BasicResampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/resample.html#BasicResampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.resample.BasicResampler" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Base class for family of resampling operators.   All this class really does is
+define the interface and standardize the target of the operator.
+A key concept of this family of operator is they are intended to
+be used in a map operator to regularize the sample rate to a
+constant.   Hence, the base class defines that constant output
+sample rate (alternatively the sample interval, dt).</p>
+<dl class="simple">
+<dt>ALL implementations must recognize a couple fundamental concepts:</dt><dd><ol class="arabic simple">
+<li><p>This is intended to ONLY be used on waveform segments.
+The problem of resampling continuous data requires different
+algorithms.  The reason is boundary effects.  All
+implementations are subject to edge transients.  How the
+implementation does or does not handle that issue is
+viewed as an implementation detail,</p></li>
+<li><p>Downsampling ALWAYS requires some method to avoid aliasing of
+the output.  How that is done is considered an implementation
+detail.</p></li>
+</ol>
+</dd>
+</dl>
+<p>This is a sketch of an algorithm is pseudopython code showing how
+a typical instance of this class (in the example ScipyResampler)
+would be used in  parallel workflow sketch:</p>
+<p class="rubric">Example</p>
+<p>resamp_op = ScipyResampler(10.0)   # target sample rate of 10 sps
+cursor = db.TimeSeries.find({})
+bag = read_distributed_data(cursor,collection=”wf_TimeSeries”)
+bag = bag.map(resamp_op.resample)
+bag.map(db.save_data())
+bag.compute()</p>
+<p>A point to emphasize is the model is to generate the operator
+through a constructor (ScipResampler in the example) that defines
+the target sample rate.  All data passed through that operator
+through the map operator call will be returned to create a bag/rdd
+with a uniform sample rate.   All implementations should also
+follow the MsPASS rule for parallel algorithms to kill data that
+cannot be handled and not throw exceptions unless the whole usage is
+wrong.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.resample.BasicResampler.dec_factor">
+<span class="sig-name descname"><span class="pre">dec_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/resample.html#BasicResampler.dec_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.resample.BasicResampler.dec_factor" title="Permalink to this definition"></a></dt>
+<dd><p>All implementations of decimation algorithms should use this
+method to test if resampling by decimation is feasible.
+A decimation operator only works for downsampling with
+the restriction that the ouptut sample interval is an integer
+multiple of the input sample interval.</p>
+<p>The function returns a decimation factor to use for atomic data d
+being tested.  The algorithm uses the numpy “isclose”
+function to establish if the sample interval is feasible.
+If so it returns the decimation factor as an integer that should be
+used on d.  Not implementations should handle a return of 1
+specially for efficiency.  A return of 1 means no resampling
+is needed.  A return of 0 or -1 is used for two slightly different
+cases that indicate a decimation operation is not feasible.
+A return of 0 should be taken as a signal that the data requires
+upsampling to match the target sampling rate (interval).
+A return of -1 means the data require downsampling but the
+a decimator operator is not feasible.  (e.g. needing to create
+10 sps data from 25 sps input.)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>d</strong> – input mspass data object to be tested.   All that is</p>
+</dd>
+</dl>
+<p>actually required is d have a “dt” attribute (i.e. d.dt is defined)
+that is the sample interval for that datum.
+:type d:   assumed to be a MsPASS atomic data object for which the
+dt attribute is defined.  This method has no safeties to test
+input type.  It will throw an exception if d.dt does not resolve.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.resample.BasicResampler.resample">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/resample.html#BasicResampler.resample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.resample.BasicResampler.resample" title="Permalink to this definition"></a></dt>
+<dd><p>Main operator a concrete class must implement.  It should accept
+any mspass data object and return a clone that has been resampled
+to the sample interface defined by this base class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.resample.BasicResampler.target_dt">
+<span class="sig-name descname"><span class="pre">target_dt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/resample.html#BasicResampler.target_dt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.resample.BasicResampler.target_dt" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.resample.BasicResampler.target_samprate">
+<span class="sig-name descname"><span class="pre">target_samprate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/resample.html#BasicResampler.target_samprate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.resample.BasicResampler.target_samprate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.algorithms.resample.ScipyDecimator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.resample.</span></span><span class="sig-name descname"><span class="pre">ScipyDecimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ftype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'iir'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/resample.html#ScipyDecimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.resample.ScipyDecimator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.resample.BasicResampler" title="mspasspy.algorithms.resample.BasicResampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicResampler</span></code></a></p>
+<p>This class defines a generic operator where a decimator can be used
+to downsample any input data to a common sample rate.  A decimator
+requires the ratio of the input to output sample rate to be an
+integer (equivalently the ratio of the output sample interval to the
+input sample interval).  The operator will fail on any data it
+receives that are irregular in that sense.   For example, 10 sps
+data can be created by downsampling 40 sps data by a factor of 4.
+In constract, 10 sps can not be created by decimation of 25 sps
+data because the ratio is 2.5 (not an integer).</p>
+<p>This operator satisfies the concept defined in BasicResampler.
+That is, a particular concrete instance once constructed will
+define an operator that will resample any input data to a common sample
+rate/interval.  Because of the requirement of this algorithm that
+the sample intervals/rates are related by integers the operator
+has to be able to handle irregular sample rate data.  The algorithm
+is brutal and will kill any datum for which the integer test fails
+and post an elog message.</p>
+<p>This operator is really little more than a wrapper around a
+scipy function with a similar same name (scipy.signal.decimate).
+The resample method handles any supported MsPASS data object type
+but will fail with a TypeError if it receives any other data type.</p>
+<p>Be aware decimators all have unavoidable edge effects.   The anitialias
+filter that has to be applied (you can get garbage otherwise) will always
+produce an edge transient.  A key to success with any downsampling
+operator is to always have a pad zone if possible.  That is, you start
+with a longer time window than you will need for final processing and
+discard the pad zone when you enter the final stage.   Note that is
+actually true of ALL filtering.</p>
+<p>The constructor has almost the same arguments defined in the documentation
+page for scipy.signal.decimate.   The only exception is the axis
+argument.  It needs to be defined internally.
+For scalar data we pass 0 while for three component data we sent it 1 which is
+means the decimator is applied per channel.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.resample.ScipyDecimator.resample">
+<span class="sig-name descname"><span class="pre">resample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/resample.html#ScipyDecimator.resample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.resample.ScipyDecimator.resample" title="Permalink to this definition"></a></dt>
+<dd><p>Implementation of required abstract method for this operator.
+The only argument is mspass_object.   The operator will downsample
+the contents of the sample data container for any valid input.
+If the input is not a mspass data object (i.e. atomic TimeSeries
+or Seismogram) or one of the enemble objects it will throw a
+TypeError exception.</p>
+<p>Note for ensembles the algorithm simply applies this method in
+a loop over all the members of the ensemble.  Be aware that any
+members of the ensemble cannot be resampled to the target sampling
+frequency (interval) they will be killed.  For example, if you
+are downsampling to 20 sps and you have 25 sps data in the ensemble
+the 25 sps data will be killed on output with an elog message
+posted.</p>
+<p>Returns an edited clone of the input with revised sample data but
+no changes to any Metadata.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.algorithms.resample.ScipyResampler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.resample.</span></span><span class="sig-name descname"><span class="pre">ScipyResampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hann'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/resample.html#ScipyResampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.resample.ScipyResampler" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.resample.BasicResampler" title="mspasspy.algorithms.resample.BasicResampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicResampler</span></code></a></p>
+<p>This class is a wrapper for the scipy resample algorithm.  Obspy users
+should note that the Trace and Stream method called “resample”
+is only a light wrapper to apply the scipy resample function.</p>
+<p>The algorithm and its limitations are described in the scipy
+documentation you can easily find with a web search.   A key point
+about this algorithm is that unlike decimate it allows resampling to
+something not an integer multiple or division from the input OR
+if you need to upsample data to match the rest of the data set
+(Note that is not usually a good idea unless the upsampling is followed</p>
+<blockquote>
+<div><p>by a decimator to get all data to a lower, uniform sample rate.)</p>
+</div></blockquote>
+<p>A type example where that is essential is some old OBS data from
+Scripps instruments that had a sample rate that was a multiple of
+one of the more standard rates like 20 or 100.  Such data can be
+downsampled immediately too something like 10 sps with this operator
+or upsampled to something like 50 and then downsampled to something
+like 10 with a factor of 5 decimator.</p>
+<p>We emphasize a nice feature of the scipy implementation is that
+it automatically applies a rational antialiasing filter when downsampling,
+If, however, you need to do something like regularize a data set with
+irregular sample rates but preserve a common upper frequency response
+controlled at the high frequency end by digizer antialias filters
+(e.g. LH channels from Q330 data) you will need to crack the
+scipy documentation on setting up a custom antialias filter using
+FIR filters defined through the window argument.  All common digitizer
+FIR filter coefficients can be found in appropriate response files.
+That should, in principle, be feasible but mspass developers have
+not tested that hypothesis.</p>
+<p>The concept of the window argument in this constructor is idential
+to that described in the documentation for scipy.signal.resample.
+The value passed, in fact, is used as the argument whenever the scipy
+function is called.   Note the other optional arguments to scipy
+resample are always defaulted because the current default apply to
+all cases we handle.  Be careful if resample changes.</p>
+<p>The primary method of this class is a concrete implementation of the
+resample method.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.resample.ScipyResampler.resample">
+<span class="sig-name descname"><span class="pre">resample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/resample.html#ScipyResampler.resample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.resample.ScipyResampler.resample" title="Permalink to this definition"></a></dt>
+<dd><p>Applies the scipy.signal.resample function to all data held in
+a mspass container passed through arg0 (mspass_object).
+This method will accept all supported MsPASS datat objects:
+TimeSeries, Seismogram, TimeSeriesEnsemble, and SeismogramEnsemble.
+For Ensembles the method is called recursively on each of the
+members.</p>
+<p>The method returns mspass_object with the sample data altered
+by the operator defined by a particular instance, which is defined
+exclusively by the target sample rate for the output.  All metadata
+will be clone without checking.  If the metadata have attributes
+linked to the sample interval the metadata of the result may not
+match the data.</p>
+<p>If the input is marked dead it will be returned immediately with
+no change.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.resample.resample">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.resample.</span></span><span class="sig-name descname"><span class="pre">resample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resampler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify_operators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'resample'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/resample.html#resample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.resample.resample" title="Permalink to this definition"></a></dt>
+<dd><p>Resample any valid data object to a common sample rate (sample interval).</p>
+<p>This function is a wrapper that automates handling of resampling.
+Its main use is in a dask/spark map operator where the input can
+be a set of irregularly sampled data and the output is required to be
+at a common sample rate (interval).   The problem has some complexity
+because decimation is normally the preferred method of resampling
+when possible due to speed and more predictable behavior.
+The problem is that downsampling by decimation is only possible if
+the output sampling interval is an integer multiple of the input
+sample interval.   With modern seismology data that is usually
+possible, but there are some common exceptions.  For example,
+10 sps cannot be created from 25 sps by decimation.   The algorithm
+tests the data sample rate and if decimation is possible it
+applies a decimation operator passed as the argument “decimator”.
+If not, it calls the operator “resampler” that is assumed to be
+capable of handling any sample rate change.   The two operators
+must have been constructed with the same output target sampling
+frequency (interval).  Both must also be a subclass of BasicResampler
+to match the api requirements.</p>
+<p>The parameters object_history, alg_name, alg_id, dryrun, inplace_return,
+and function_return_key are handled by the decorator called
+mspass_func_wrapper used by this function.  See the docstring for
+mspass_func_wrapper for the generic use of those parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mspass_object</strong> (<em>Must a TimeSeries</em><em>, </em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><em>Seismogram</em></a><em>, </em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><em>TimeSeriesEnsemble</em></a><em>,
+or </em><em>SeismogramEnsemble object.</em>) – mspass datum to be resampled</p></li>
+<li><p><strong>decimator</strong> (<em>Must be a subclass</em><em> of </em><a class="reference internal" href="#mspasspy.algorithms.resample.BasicResampler" title="mspasspy.algorithms.resample.BasicResampler"><em>BasicResampler</em></a>) – decimation operator.</p></li>
+<li><p><strong>resampler</strong> (<em>Must be a subclass</em><em> of </em><a class="reference internal" href="#mspasspy.algorithms.resample.BasicResampler" title="mspasspy.algorithms.resample.BasicResampler"><em>BasicResampler</em></a>) – resampling operator</p></li>
+<li><p><strong>verify_operators</strong> – boolean controlling whether safety checks
+are applied to inputs.  When True (default) the contents of
+decimator and resampler are verified as subclasses of BasicResampler
+and the function tests if the target output sampling frequency (interval)
+of both operators are the same.  The function will throw an exception if
+any of the verify tests fail.   Standard practice should be to verify
+the operators and valid before running a large workflow and running
+production with this arg set False for efficiency.  That should
+acceptable in any case I can conceive as once the operators are
+defined in a parallel workflow they should be invariant for the
+entire application in a map operator.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
