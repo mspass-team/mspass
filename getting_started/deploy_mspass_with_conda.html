@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deploy MsPASS with Conda &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Deploying MsPASS on an HPC cluster" href="deploy_mspass_on_HPC.html" />
+    <link rel="prev" title="Deploy MsPASS with Docker Compose" href="deploy_mspass_with_docker_compose.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Getting Started in a Nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Deploy MsPASS with Conda</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-the-mspass-conda-package">Installing the MsPASS Conda package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#first-steps-installing-conda">First Steps: Installing Conda</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-an-isolated-environment">Creating an Isolated Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-necessary-channels">Adding Necessary Channels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installing-mspass">Installing MsPASS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#define-mspass-home">Define MSPASS_HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-mongodb">Setting up MongoDB</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#advanced-setup-considerations">Advanced Setup Considerations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#handling-conda-and-pip-installations">Handling Conda and pip installations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#conda-vs-pip-precedence">Conda vs. pip Precedence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#understanding-pip-and-conda">Understanding pip and Conda</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Deploy MsPASS with Conda</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/getting_started/deploy_mspass_with_conda.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deploy-mspass-with-conda">
+<span id="id1"></span><h1>Deploy MsPASS with Conda<a class="headerlink" href="#deploy-mspass-with-conda" title="Permalink to this heading"></a></h1>
+<section id="installing-the-mspass-conda-package">
+<h2>Installing the MsPASS Conda package<a class="headerlink" href="#installing-the-mspass-conda-package" title="Permalink to this heading"></a></h2>
+<p>MsPASS is available as a Conda package, offering a convenient method for installing a local copy suitable for desktop environments.
+This installation method is ideal for users primarily focused on development, although it may also be beneficial in other scenarios.
+This guide focuses on setting up MsPASS for desktop usage.</p>
+<section id="first-steps-installing-conda">
+<h3>First Steps: Installing Conda<a class="headerlink" href="#first-steps-installing-conda" title="Permalink to this heading"></a></h3>
+<p>Before installing MsPASS, ensure you have a Conda distribution installed. If not, follow the system-specific instructions provided by Anaconda:</p>
+<ul class="simple">
+<li><p>For a comprehensive setup on personal devices, a full installation of Anaconda is recommended. Visit the <a class="reference external" href="https://docs.anaconda.com/free/anaconda/install/">Anaconda installation guide</a> for detailed instructions.</p></li>
+<li><p>For shared systems, lighter versions such as <a class="reference external" href="https://docs.anaconda.com/free/miniconda/miniconda-install/">Miniconda</a> or <a class="reference external" href="https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html">Mamba</a> are advised.</p></li>
+</ul>
+</section>
+<section id="creating-an-isolated-environment">
+<h3>Creating an Isolated Environment<a class="headerlink" href="#creating-an-isolated-environment" title="Permalink to this heading"></a></h3>
+<p>To prevent conflicts with pre-existing Python packages, it is strongly advised to create a separate Conda environment for MsPASS:</p>
+<ol class="arabic">
+<li><p>Ensure you are in the base environment, then create a new environment named <code class="docutils literal notranslate"><span class="pre">mspass_env</span></code> (you can choose a different name if preferred):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>mspass_env
+</pre></div>
+</div>
+</li>
+<li><p>Activate the new environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>mspass_env
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="adding-necessary-channels">
+<h3>Adding Necessary Channels<a class="headerlink" href="#adding-necessary-channels" title="Permalink to this heading"></a></h3>
+<p>To install MsPASS successfully, add the required channels to your Conda configuration:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>mspass
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
+</pre></div>
+</div>
+</section>
+<section id="installing-mspass">
+<h3>Installing MsPASS<a class="headerlink" href="#installing-mspass" title="Permalink to this heading"></a></h3>
+<p>With the environment set and channels added, you can now install MsPASS:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>mspasspy
+</pre></div>
+</div>
+<p>The MsPASS Conda package is available on <a class="reference external" href="https://anaconda.org/mspass/mspasspy">Anaconda Cloud</a> and supports multiple platforms including Linux and macOS (both Intel and ARM architectures).</p>
+</section>
+</section>
+<section id="define-mspass-home">
+<h2>Define MSPASS_HOME<a class="headerlink" href="#define-mspass-home" title="Permalink to this heading"></a></h2>
+<p>MsPASS requires specific data from the <code class="docutils literal notranslate"><span class="pre">data/yaml</span></code> directory found in the MsPASS code repository.
+Download a local copy of the repository and set the <code class="docutils literal notranslate"><span class="pre">MSPASS_HOME</span></code> environment variable to this directory or to a custom location if you prefer.
+Ensure the variable is correctly set in your shell’s initialization file.</p>
+</section>
+<section id="setting-up-mongodb">
+<h2>Setting up MongoDB<a class="headerlink" href="#setting-up-mongodb" title="Permalink to this heading"></a></h2>
+<p>MsPASS workflows typically utilize MongoDB.
+Setting up a MongoDB instance on your desktop is easier using the standard MsPASS Docker container:</p>
+<ol class="arabic">
+<li><p>Open a terminal and navigate to the directory you wish to use for MongoDB data storage.
+When launched, the MsPASS container will automatically create a <code class="docutils literal notranslate"><span class="pre">data</span></code> directory for workspace and a <code class="docutils literal notranslate"><span class="pre">logs</span></code> directory for server logs.</p></li>
+<li><p>Execute the following Docker command to start the MongoDB server within the MsPASS container:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--env<span class="w"> </span><span class="nv">MSPASS_ROLE</span><span class="o">=</span>db<span class="w"> </span>-p<span class="w"> </span><span class="m">27017</span>:27017<span class="w"> </span>--mount<span class="w"> </span><span class="nv">src</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>,target<span class="o">=</span>/home,type<span class="o">=</span><span class="nb">bind</span><span class="w"> </span>mspass/mspass
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">-p</span></code> option is essential to expose the MongoDB server port (27017) for external access.
+If port 27017 is already in use on your system, modify this parameter as necessary.</p>
+</section>
+</section>
+<section id="advanced-setup-considerations">
+<h1>Advanced Setup Considerations<a class="headerlink" href="#advanced-setup-considerations" title="Permalink to this heading"></a></h1>
+<section id="handling-conda-and-pip-installations">
+<h2>Handling Conda and pip installations<a class="headerlink" href="#handling-conda-and-pip-installations" title="Permalink to this heading"></a></h2>
+<p>When building MsPASS from the source, it is common to use pip to install the Python bindings after compiling the C++ core.
+The recommended command from the root of the source tree is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>./
+</pre></div>
+</div>
+<p>This command installs MsPASS locally within the user’s <code class="docutils literal notranslate"><span class="pre">~/.local</span></code> directory on Linux systems.
+The behavior on macOS should be similar, although slight variations in directory structures can occur.</p>
+<section id="conda-vs-pip-precedence">
+<h3>Conda vs. pip Precedence<a class="headerlink" href="#conda-vs-pip-precedence" title="Permalink to this heading"></a></h3>
+<p>If both a local pip installation (in <code class="docutils literal notranslate"><span class="pre">~/.local</span></code>) and a Conda environment installation exist,
+the system’s behavior depends on the environment configuration and the order of paths in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable.
+Typically, Python packages installed with <code class="docutils literal notranslate"><span class="pre">--user</span></code> are placed in a path that has precedence over Conda environments.
+You can verify which installation is currently active by using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>which<span class="w"> </span>python
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import mspasspy; print(mspasspy.__path__)&quot;</span>
+</pre></div>
+</div>
+<p>This will show you the path of the Python interpreter and the location of the MsPASS module being used, helping you determine which version is being prioritized.</p>
+</section>
+<section id="understanding-pip-and-conda">
+<h3>Understanding pip and Conda<a class="headerlink" href="#understanding-pip-and-conda" title="Permalink to this heading"></a></h3>
+<p>While both pip and Conda are package managers, they handle package installations differently.
+Conda manages packages and the environment to which they are installed, ensuring compatibility and avoiding conflicts.
+pip, on the other hand, installs Python packages and may not consider the broader environment, leading to potential conflicts.</p>
+<ul class="simple">
+<li><p><strong>Use Conda for environments and binary dependencies</strong>: It is best to use Conda to create environments and manage packages that have binary dependencies.</p></li>
+<li><p><strong>Use pip for Python-only packages not available on Conda</strong>: If a package is only available via pip and does not have complex dependencies, it can be safely installed in a Conda environment.</p></li>
+</ul>
+<p><strong>Best Practices</strong>:
+Avoid using <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">pip</span> <span class="pre">install</span></code> as it may change files that are managed by the system’s package manager, potentially leading to inconsistent states.
+Always prefer installing packages within a user environment (<code class="docutils literal notranslate"><span class="pre">--user</span></code>) or within a virtual environment managed by Conda or virtualenv.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deploy_mspass_with_docker_compose.html" class="btn btn-neutral float-left" title="Deploy MsPASS with Docker Compose" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="deploy_mspass_on_HPC.html" class="btn btn-neutral float-right" title="Deploying MsPASS on an HPC cluster" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
