@@ -4218,7 +4218,7 @@ class Database(pymongo.database.Database):
                     message += "C++ function _fread_from_file failed while reading Seismogram sample data from file={}".format(
                         dfile
                     )
-                    raise MsPASSError(message,ErrorSeverity.Fatal) from merr
+                    raise MsPASSError(message, ErrorSeverity.Fatal) from merr
 
         else:
             fname = os.path.join(dir, dfile)
