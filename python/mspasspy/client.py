@@ -234,9 +234,7 @@ class Client:
                         "Fatal",
                     )
         else:
-            print(
-                "There is no spark or dask installed, this client has no scheduler"
-            )
+            print("There is no spark or dask installed, this client has no scheduler")
 
     def get_database_client(self):
         """
