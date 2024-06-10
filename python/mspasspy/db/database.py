@@ -132,13 +132,18 @@ class Database(pymongo.database.Database):
                 self.metadata_schema = MetadataSchema(md_schema)
             else:
                 self.metadata_schema = MetadataSchema()
+        self._from_serialization = False
         # This import has to appear here to avoid a circular import problem
         # the name stedronsky is a programming joke - name of funeral director
         # in the home town of glp
         from mspasspy.util.Undertaker import Undertaker
 
         self.stedronsky = Undertaker(self)
-
+        
+    def __del__(self):
+        if self._from_serialization:
+            self.client.close()
+            
     def __getstate__(self):
         ret = self.__dict__.copy()
         ret["_Database__client"] = self.client.__repr__()
@@ -161,6 +166,7 @@ class Database(pymongo.database.Database):
         data["_Database__client"] = eval(data["_Database__client"])
         data["_BaseObject__codec_options"] = eval(data["_BaseObject__codec_options"])
         self.__dict__.update(data)
+        self._from_serialization = True
 
     def __getitem__(self, name):
         """
