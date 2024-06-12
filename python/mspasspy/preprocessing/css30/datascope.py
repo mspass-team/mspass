@@ -84,7 +84,7 @@ class DatascopeDatabase:
 
         """
         self.dbname = dbname
-        if pffile == "master":
+        if pffile == None:
             home = os.getenv("MSPASS_HOME")
             if home == None:
                 raise MsPASSError(
@@ -94,7 +94,7 @@ class DatascopeDatabase:
                     "Fatal",
                 )
             else:
-                path = os.path.join(home, "data/pf", "AntelopeDatabase.pf")
+                path = os.path.join(home, "data/pf", "DatascopeDatabase.pf")
         else:
             path = pffile
         self.pf = AntelopePf(path)
