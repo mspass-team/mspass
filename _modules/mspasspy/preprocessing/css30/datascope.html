@@ -227,7 +227,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbname</span> <span class="o">=</span> <span class="n">dbname</span>
-        <span class="k">if</span> <span class="n">pffile</span> <span class="o">==</span> <span class="s2">&quot;master&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">pffile</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MSPASS_HOME&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">home</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
@@ -237,7 +237,7 @@
                     <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="s2">&quot;data/pf&quot;</span><span class="p">,</span> <span class="s2">&quot;AntelopeDatabase.pf&quot;</span><span class="p">)</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="s2">&quot;data/pf&quot;</span><span class="p">,</span> <span class="s2">&quot;DatascopeDatabase.pf&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">pffile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pf</span> <span class="o">=</span> <span class="n">AntelopePf</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
