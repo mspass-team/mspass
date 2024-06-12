@@ -222,6 +222,9 @@ RUN python -c "import site; print(site.getsitepackages()[0])" > site_packages_pa
 	sed -i "s/'localhost'/'127.0.0.1'/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/pool.py" && \
 	rm site_packages_path.txt
 
+# install Dask JupyterLab extension
+RUN pip install dask-labextension && docker-clean
+
 ENV PATH="${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${PATH}"
 
 # Set the default behavior of this container
