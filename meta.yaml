@@ -29,26 +29,14 @@ requirements:
   host:
     - python {{ PYTHON_VERSION }}
     - pip
-    - gsl
-    - ipympl
-    - boost
-    - boost-cpp
-    - lapack
-    - libblas
-    - yaml-cpp
     - setuptools>=64
     - setuptools_scm>=8.0
     - wheel
 
   run:
     - python {{ PYTHON_VERSION }}
-    - boost
-    - libboost-devel
     - libzlib
-    - gsl
     - pyyaml
-    - yaml-cpp
-    - libblas
     - pymongo
     - numpy
     - obspy
