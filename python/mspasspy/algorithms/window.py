@@ -385,6 +385,9 @@ def WindowData_with_duration(
     alg_id=None,
     dryrun=False,
 ):
+    """
+    THIS FUNCTION NEEDS A DOCSTRING.   I DON'T WANT TO WRITE IT AS I DON'T SEE WHY IT EVEN EXIST.  THERE IS A BUG IN THE CODE BELOW.
+    """
     if duration < 0:
         detailline = "Window duration: {dur}  Data range:  {dst},{det}".format(
             dur=duration, dst=d.t0, det=d.endtime()
@@ -396,7 +399,7 @@ def WindowData_with_duration(
         )
         d.kill()
         return d
-    win_start = d.t0 + 1
+    win_start = d.t0
     win_end = win_start + duration
     if d.dead():
         return d
