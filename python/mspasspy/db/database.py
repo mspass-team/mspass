@@ -150,6 +150,7 @@ class Database(pymongo.database.Database):
         # work without it.  Not sure how the symbol MongoClient is required
         # here but it is - ignore if a lint like ide says MongoClient is not used
         from pymongo import MongoClient
+        from mspasspy.db.client import DBClient
 
         # The following is also needed for this object to be serialized correctly
         # with dask distributed. Otherwise, the deserialized codec_options
