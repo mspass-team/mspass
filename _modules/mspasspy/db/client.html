@@ -142,6 +142,7 @@
              
   <h1>Source code for mspasspy.db.client</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">pymongo</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">Database</span>
 
 
@@ -159,9 +160,51 @@
 <span class="sd">    creating a MongoClient or the MsPASS DBClient (this class).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__default_database_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MongoClient__default_database_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mspass_db_host</span><span class="o">=</span><span class="n">host</span>
+
+    <span class="k">def</span> <span class="nf">_repr_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">option_repr</span><span class="p">(</span><span class="n">option</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Fix options whose __repr__ isn&#39;t usable in a constructor.&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;document_class&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="s2">&quot;document_class=dict&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;document_class=</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">TIMEOUT_OPTIONS</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">&quot;</span>
+
+        <span class="c1"># Host first...</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mspass_db_host</span><span class="p">:</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;host=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mspass_db_host</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;host=</span><span class="si">%r</span><span class="s2">&quot;</span>
+                <span class="o">%</span> <span class="p">[</span>
+                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="k">if</span> <span class="n">port</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">host</span>
+                    <span class="k">for</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topology_settings</span><span class="o">.</span><span class="n">seeds</span>
+                <span class="p">]</span>
+            <span class="p">]</span>
+        <span class="c1"># ... then everything in self._constructor_args...</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">option_repr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constructor_args</span>
+        <span class="p">)</span>
+        <span class="c1"># ... then everything else.</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">option_repr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">_options</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_constructor_args</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;username&quot;</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;password&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_repr_helper</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

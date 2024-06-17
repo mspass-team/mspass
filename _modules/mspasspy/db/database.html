@@ -293,6 +293,7 @@
         <span class="c1"># work without it.  Not sure how the symbol MongoClient is required</span>
         <span class="c1"># here but it is - ignore if a lint like ide says MongoClient is not used</span>
         <span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+        <span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">DBClient</span>
 
         <span class="c1"># The following is also needed for this object to be serialized correctly</span>
         <span class="c1"># with dask distributed. Otherwise, the deserialized codec_options</span>
