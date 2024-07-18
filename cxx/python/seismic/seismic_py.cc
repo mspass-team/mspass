@@ -264,6 +264,7 @@ PYBIND11_MODULE(seismic, m) {
     .def("rtoa",&BasicTimeSeries::rtoa,"Restore relative time to absolute if possible")
     .def("ator",&BasicTimeSeries::ator,"Switch time standard from absolute (UTC) to a relative time scale")
     .def("shift",&BasicTimeSeries::shift,"Shift time reference by a specified number of seconds")
+    .def("get_t0shift",&BasicTimeSeries::get_t0shift,"Get the t0shift attribute used for relative time reference")
     .def("time_reference",&BasicTimeSeries::time_reference,"Return time standard")
     .def("shifted",&BasicTimeSeries::shifted,"Return true if data are UTC standard with a time shift applied")
     .def("force_t0_shift",&BasicTimeSeries::force_t0_shift,"Force a time shift value to make data shifted UTC in relative time")

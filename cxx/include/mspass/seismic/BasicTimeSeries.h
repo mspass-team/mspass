@@ -89,6 +89,11 @@ of this data object.
 	{
 		return t0shift_is_valid;
 	};
+/*! Return the current value of the t0shift attribute - argument to restore to UTC */
+  double get_t0shift() const
+  {
+    return this->t0shift;
+  };
 /*! Return the reference time.
 
   We distinguish relative and UTC time by a time shift constant
