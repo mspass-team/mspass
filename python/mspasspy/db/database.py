@@ -150,6 +150,7 @@ class Database(pymongo.database.Database):
         # work without it.  Not sure how the symbol MongoClient is required
         # here but it is - ignore if a lint like ide says MongoClient is not used
         from pymongo import MongoClient
+        from mspasspy.db.client import DBClient
 
         # The following is also needed for this object to be serialized correctly
         # with dask distributed. Otherwise, the deserialized codec_options
@@ -4218,7 +4219,7 @@ class Database(pymongo.database.Database):
                     message += "C++ function _fread_from_file failed while reading Seismogram sample data from file={}".format(
                         dfile
                     )
-                    raise MsPASSError(message.ErrorSeverity.Fatal) from merr
+                    raise MsPASSError(message, ErrorSeverity.Fatal) from merr
 
         else:
             fname = os.path.join(dir, dfile)

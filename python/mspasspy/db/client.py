@@ -1,4 +1,5 @@
 import pymongo
+from typing import Any
 from mspasspy.db.database import Database
 
 
@@ -16,9 +17,51 @@ class DBClient(pymongo.MongoClient):
     creating a MongoClient or the MsPASS DBClient (this class).
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, host=None, *args, **kwargs):
+        super().__init__(host=host, *args, **kwargs)
         self.__default_database_name = self._MongoClient__default_database_name
+        self._mspass_db_host=host
+
+    def _repr_helper(self) -> str:
+        def option_repr(option: str, value: Any) -> str:
+            """Fix options whose __repr__ isn't usable in a constructor."""
+            if option == "document_class":
+                if value is dict:
+                    return "document_class=dict"
+                else:
+                    return f"document_class={value.__module__}.{value.__name__}"
+            if option in pymongo.common.TIMEOUT_OPTIONS and value is not None:
+                return f"{option}={int(value * 1000)}"
+
+            return f"{option}={value!r}"
+
+        # Host first...
+        if self._mspass_db_host:
+            options = [
+                "host='{}'".format(self._mspass_db_host)
+            ]
+        else:
+            options = [
+                "host=%r"
+                % [
+                    "%s:%d" % (host, port) if port is not None else host
+                    for host, port in self._topology_settings.seeds
+                ]
+            ]
+        # ... then everything in self._constructor_args...
+        options.extend(
+            option_repr(key, self.options._options[key]) for key in self._constructor_args
+        )
+        # ... then everything else.
+        options.extend(
+            option_repr(key, self.options._options[key])
+            for key in self.options._options
+            if key not in set(self._constructor_args) and key != "username" and key != "password"
+        )
+        return ", ".join(options)
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({self._repr_helper()})"
 
     def __getitem__(self, name):
         """
