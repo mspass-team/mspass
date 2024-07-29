@@ -20,7 +20,7 @@ class DBClient(pymongo.MongoClient):
     def __init__(self, host=None, *args, **kwargs):
         super().__init__(host=host, *args, **kwargs)
         self.__default_database_name = self._MongoClient__default_database_name
-        self._mspass_db_host=host
+        self._mspass_db_host = host
 
     def _repr_helper(self) -> str:
         def option_repr(option: str, value: Any) -> str:
@@ -37,9 +37,7 @@ class DBClient(pymongo.MongoClient):
 
         # Host first...
         if self._mspass_db_host:
-            options = [
-                "host='{}'".format(self._mspass_db_host)
-            ]
+            options = ["host='{}'".format(self._mspass_db_host)]
         else:
             options = [
                 "host=%r"
@@ -50,13 +48,16 @@ class DBClient(pymongo.MongoClient):
             ]
         # ... then everything in self._constructor_args...
         options.extend(
-            option_repr(key, self.options._options[key]) for key in self._constructor_args
+            option_repr(key, self.options._options[key])
+            for key in self._constructor_args
         )
         # ... then everything else.
         options.extend(
             option_repr(key, self.options._options[key])
             for key in self.options._options
-            if key not in set(self._constructor_args) and key != "username" and key != "password"
+            if key not in set(self._constructor_args)
+            and key != "username"
+            and key != "password"
         )
         return ", ".join(options)
 
