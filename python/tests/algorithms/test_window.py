@@ -299,8 +299,32 @@ def test_windowdata():
     d = WindowData(se, 2, 3)
     assert d.dead()
     assert d.npts == 1000
-    # verify "kill" keyword behaves correctly
-    # same test as earlier but with kill explicit
+    # test the t0shift argument.
+    # We only test this for TimeSeries because the exact same
+    # code would be used by Seismogram data and ensembles
+    # a complication is that we need to changes the times
+    # completely and make the data look like UTC data
+    # that requires a few special tricks used in the
+    # dithering with TimeSeries object below
+    ts = TimeSeries(ts0)
+    UTC_offset = 10000.0
+    ts.set_t0(UTC_offset)
+    # this is method normal users should never use except for simulations
+    ts.force_t0_shift(UTC_offset)
+    ts.tref = TimeReferenceType.UTC
+    # save this for use with string mode for t0shift next
+    ts_UTC = TimeSeries(ts)
+    d = WindowData(ts, 2.0, 3.0, t0shift=UTC_offset)
+    assert d.live
+    assert np.isclose(d.t0, UTC_offset + 2.0)
+    assert np.isclose(d.endtime(), UTC_offset + 3.0)
+    # repeat putting the shift in Metadata and using "shifttest" as the Metadata key
+    ts = TimeSeries(ts_UTC)
+    ts["shifttest"] = UTC_offset
+    d = WindowData(ts, 2.0, 3.0, t0shift="shifttest")
+    assert d.live
+    assert np.isclose(d.t0, UTC_offset + 2.0)
+    assert np.isclose(d.endtime(), UTC_offset + 3.0)
 
     # verify ensembles work for a valid time interval
     ts_ens = TimeSeriesEnsemble(ts_ens0)
@@ -642,5 +666,3 @@ def test_TopMute():
 
     with pytest.raises(MsPASSError, match="must be a TimeSeries or Seismogram"):
         failmute.apply([1, 2, 3])
-
-
