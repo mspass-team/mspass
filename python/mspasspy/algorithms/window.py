@@ -448,8 +448,8 @@ def WindowDataAtomic(
                 message += "Setting shift to 0.0 - this is likely to cause later handling to kill this datum"
                 d.elog.log_error(alg, message, ErrorSeverity.Complaint)
                 t0shift = 0.0
-        twcut.shift(t0shift)
-        twcut0.shift(t0shift)
+        twcut = twcut.shift(t0shift)
+        twcut0 = twcut.shift(t0shift)
     if twcut.end < d.t0 or twcut.start > d.endtime():
         # always kill and return a zero length datum if there is no overlap
         message = "Data time range is outside the time range window time range\n"
