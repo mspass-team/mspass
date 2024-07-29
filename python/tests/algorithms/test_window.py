@@ -203,12 +203,12 @@ def test_scale():
 
 def test_windowdata():
     """
-    This pytest function tests WindowData for the default configuration where 
+    This pytest function tests WindowData for the default configuration where
     the "short_segment_handling" argument defaults to "kill".   It mostly tests
-    the case where the window requested is consistent with the data.  It touches 
-    some of the error cases, but the related function test_windowdata_exceptions 
-    covers that and more.  i.e. all the error handling functions are tested 
-    in test_windowdata_exceptions. 
+    the case where the window requested is consistent with the data.  It touches
+    some of the error cases, but the related function test_windowdata_exceptions
+    covers that and more.  i.e. all the error handling functions are tested
+    in test_windowdata_exceptions.
     """
     npts = 1000
     ts = TimeSeries()
@@ -220,14 +220,14 @@ def test_windowdata():
     for k in range(3):
         for i in range(npts):
             se.data[k, i] = 100 * (k + 1) + float(i)
-    # these patterns have t0=0 and endtime 9.99 because 
-    # d.dt is 0.01  
+    # these patterns have t0=0 and endtime 9.99 because
+    # d.dt is 0.01
     # make copies because WindowData can alter content
     ts0 = TimeSeries(ts)
     se0 = Seismogram(se)
     # ensembles are this length with first datum having a different t0
-    Nmembers=3
-    offset_m0=1.0
+    Nmembers = 3
+    offset_m0 = 1.0
     ts_ens0 = TimeSeriesEnsemble(3)
     se_ens0 = SeismogramEnsemble(3)
     for i in range(Nmembers):
@@ -236,96 +236,95 @@ def test_windowdata():
     ts_ens0.member[0].t0 += offset_m0
     se_ens0.member[0].t0 += offset_m0
 
-    # first test case where the operator should work and return 
+    # first test case where the operator should work and return
     # live (all live for ensemble) results
     d = WindowData(ts, 2, 3)
     assert d.live
-    #print("t y")
-    #for j in range(d.npts):
+    # print("t y")
+    # for j in range(d.npts):
     #    print(d.time(j), d.data[j])
     assert len(d.data) == 101
-    assert np.isclose(d.t0,2.0)
-    assert np.isclose(d.endtime(),3.0)
+    assert np.isclose(d.t0, 2.0)
+    assert np.isclose(d.endtime(), 3.0)
     d = WindowData(se, 2, 3)
     assert d.live
-    #print("t x0 x1 x2")
-    #for j in range(d.npts):
+    # print("t x0 x1 x2")
+    # for j in range(d.npts):
     #    print(d.time(j), d.data[0, j], d.data[1, j], d.data[2, j])
     assert d.data.columns() == 101
-    assert np.isclose(d.t0,2.0)
-    assert np.isclose(d.endtime(),3.0)
+    assert np.isclose(d.t0, 2.0)
+    assert np.isclose(d.endtime(), 3.0)
     se = Seismogram(se0)
-    # verify windowing uses a round operator in converting times to 
-    # compute the sample number of the window to retrieve.  
+    # verify windowing uses a round operator in converting times to
+    # compute the sample number of the window to retrieve.
     # first test left on TimeSeries and Seismogram
     ts = TimeSeries(ts0)
     dt = ts.dt
-    stime2p = 2.0 + 0.6*dt
-    d = WindowData(ts,stime2p,3.0)
+    stime2p = 2.0 + 0.6 * dt
+    d = WindowData(ts, stime2p, 3.0)
     # WindowData finds nearest sample to window start time but
     # sets t0 of the output to the exact time given
     # hence this test is the form to use
-    assert np.isclose(d.t0,stime2p)
+    assert np.isclose(d.t0, stime2p)
     # should be one less than with start 2.0 which is 101
     assert d.npts == 100
     se = Seismogram(se0)
     dt = ts.dt
-    d = WindowData(se,stime2p,3.0)
-    assert np.isclose(d.t0,stime2p)
+    d = WindowData(se, stime2p, 3.0)
+    assert np.isclose(d.t0, stime2p)
     assert d.npts == 100
     # now rounding test for right (endtime of window)
     ts = TimeSeries(ts0)
     dt = ts.dt
-    d = WindowData(ts,2.0,3.0+0.6*dt)
-    # now it should be one more than 2.0 to 3.0 window 
+    d = WindowData(ts, 2.0, 3.0 + 0.6 * dt)
+    # now it should be one more than 2.0 to 3.0 window
     assert d.npts == 102
     se = Seismogram(se0)
     dt = ts.dt
-    d = WindowData(se,2.0,3.0+0.6*dt)
+    d = WindowData(se, 2.0, 3.0 + 0.6 * dt)
     assert d.npts == 102
-    
-    
-    #print("verifying previously killed data are returned unaltered")
+
+    # print("verifying previously killed data are returned unaltered")
     se.kill()
     d = WindowData(se, 2, 3)
     assert d.dead()
     assert d.npts == 1000
-    ts=TimeSeries(ts0)
+    ts = TimeSeries(ts0)
     ts.kill()
     d = WindowData(ts, 2, 3)
     assert d.dead()
     assert d.npts == 1000
-    se=Seismogram(se0)
+    se = Seismogram(se0)
     se.kill()
     d = WindowData(se, 2, 3)
     assert d.dead()
     assert d.npts == 1000
     # verify "kill" keyword behaves correctly
     # same test as earlier but with kill explicit
-    
+
     # verify ensembles work for a valid time interval
     ts_ens = TimeSeriesEnsemble(ts_ens0)
     se_ens = SeismogramEnsemble(se_ens0)
-    e = WindowData(ts_ens,2,3)
-    e3 = WindowData(se_ens,2,3)
+    e = WindowData(ts_ens, 2, 3)
+    e3 = WindowData(se_ens, 2, 3)
     assert e.live
     assert e3.live
     assert len(e.member) == 3
     for i in range(Nmembers):
         assert e.member[i].live
         assert e3.member[i].live
-        
-    # test window that will kill member 0 of ensembles only 
+
+    # test window that will kill member 0 of ensembles only
     # note member 0 has t0 of 1.0 while the other have t0 == 0
     ts_ens = TimeSeriesEnsemble(ts_ens0)
     se_ens = SeismogramEnsemble(se_ens0)
-    e = WindowData(ts_ens,0.5,3)
-    e3 = WindowData(se_ens,0.5,3)
+    e = WindowData(ts_ens, 0.5, 3)
+    e3 = WindowData(se_ens, 0.5, 3)
     assert e.live
     assert e3.live
     assert len(e.member) == 3
     for i in range(Nmembers):
-        if i==0:
+        if i == 0:
             assert e.member[i].dead()
             assert e3.member[i].dead()
         else:
@@ -334,30 +333,32 @@ def test_windowdata():
     # repeat exact same test but with "kill" specified explicitly
     ts_ens = TimeSeriesEnsemble(ts_ens0)
     se_ens = SeismogramEnsemble(se_ens0)
-    e = WindowData(ts_ens,0.5,3,short_segment_handling="kill")
-    e3 = WindowData(se_ens,0.5,3,short_segment_handling="kill")
+    e = WindowData(ts_ens, 0.5, 3, short_segment_handling="kill")
+    e3 = WindowData(se_ens, 0.5, 3, short_segment_handling="kill")
     assert e.live
     assert e3.live
     assert len(e.member) == 3
     for i in range(Nmembers):
-        if i==0:
+        if i == 0:
             assert e.member[i].dead()
             assert e3.member[i].dead()
         else:
             assert e.member[i].live
             assert e3.member[i].live
+
+
 def test_windowdata_exceptions():
     """
-    This function tests the wide range possible error handling for 
-    the WindowData function.  It is a companion to test_WindowData 
-    that mainly tests the cases where the data are processed without 
+    This function tests the wide range possible error handling for
+    the WindowData function.  It is a companion to test_WindowData
+    that mainly tests the cases where the data are processed without
     any problems.
-    
-    Most of these tests are applied only to atomic data and usually only 
-    only TimeSeries.  That is done because, at this time at least, 
-    the error handling is all with atomic data and all tests with 
-    time ranges visit the same code base for both TimeSeries and 
-    Seismogram data.   
+
+    Most of these tests are applied only to atomic data and usually only
+    only TimeSeries.  That is done because, at this time at least,
+    the error handling is all with atomic data and all tests with
+    time ranges visit the same code base for both TimeSeries and
+    Seismogram data.
     """
     # This duplicates the same data generator as test_WindowData
     # it probably should be turned into a pytest fixture for this file
@@ -371,14 +372,14 @@ def test_windowdata_exceptions():
     for k in range(3):
         for i in range(npts):
             se.data[k, i] = 100 * (k + 1) + float(i)
-    # these patterns have t0=0 and endtime 9.99 because 
-    # d.dt is 0.01  
+    # these patterns have t0=0 and endtime 9.99 because
+    # d.dt is 0.01
     # make copies because WindowData can alter content
     ts0 = TimeSeries(ts)
     se0 = Seismogram(se)
     # ensembles are this length with first datum having a different t0
-    Nmembers=3
-    offset_m0=1.0
+    Nmembers = 3
+    offset_m0 = 1.0
     ts_ens0 = TimeSeriesEnsemble(3)
     se_ens0 = SeismogramEnsemble(3)
     for i in range(Nmembers):
@@ -386,107 +387,124 @@ def test_windowdata_exceptions():
         se_ens0.member.append(Seismogram(se0))
     ts_ens0.member[0].t0 += offset_m0
     se_ens0.member[0].t0 += offset_m0
-    
-    # First test argument mistake handler.  i.e. these cases throw 
+
+    # First test argument mistake handler.  i.e. these cases throw
     # exceptions instead of posting elog messages
     ts = TimeSeries(ts0)
     with pytest.raises(ValueError, match="illegal option"):
-        d = WindowData(ts,2,3,short_segment_handling="notvalid")
+        d = WindowData(ts, 2, 3, short_segment_handling="notvalid")
     ts = TimeSeries(ts0)
     # note this message actually comes from the decorator
-    # the error handler in WindowData to handle this can't be 
+    # the error handler in WindowData to handle this can't be
     # reached with the decorator enable.  Caution of the decorator
     # changes this could break
     with pytest.raises(TypeError, match="only accepts mspass object as data input"):
-        d = WindowData(0.0,2.0,3.0)
-    
-    # We don't test explicit kill mode.  That is default and assume 
-    # the explicit use is tested in test_WindowData 
-    # First run the special, dogmatic test where the window range is outside 
+        d = WindowData(0.0, 2.0, 3.0)
+
+    # We don't test explicit kill mode.  That is default and assume
+    # the explicit use is tested in test_WindowData
+    # First run the special, dogmatic test where the window range is outside
     # the data range.  That should always kill
     # interval less than t0
     stime = -5.0
     etime = -2.0
     ts = TimeSeries(ts0)
-    d = WindowData(ts,stime,etime)
+    d = WindowData(ts, stime, etime)
     assert d.dead()
     ts = TimeSeries(ts0)
-    d = WindowData(ts,stime,etime,short_segment_handling='truncate')
+    d = WindowData(ts, stime, etime, short_segment_handling="truncate")
     assert d.dead()
     ts = TimeSeries(ts0)
-    d = WindowData(ts,stime,etime,short_segment_handling='pad')
+    d = WindowData(ts, stime, etime, short_segment_handling="pad")
     assert d.dead()
     # interval greater than endtime()
     stime = 20.0
     etime = 22.0
     ts = TimeSeries(ts0)
-    d = WindowData(ts,stime,etime)
+    d = WindowData(ts, stime, etime)
     assert d.dead()
     ts = TimeSeries(ts0)
-    d = WindowData(ts,stime,etime,short_segment_handling='truncate')
+    d = WindowData(ts, stime, etime, short_segment_handling="truncate")
     assert d.dead()
     ts = TimeSeries(ts0)
-    d = WindowData(ts,stime,etime,short_segment_handling='pad')
+    d = WindowData(ts, stime, etime, short_segment_handling="pad")
     assert d.dead()
     # Now do a set of tests in truncate mode
     # each test runs with error logging turned on and in silent mode
-    # 
+    #
     # test truncation on the left (starttime)
     # with logging
-    stime=-0.5
-    etime=2.0
+    stime = -0.5
+    etime = 2.0
     ts = TimeSeries(ts0)
     dt = ts0.dt
-    d = WindowData(ts,stime,etime,short_segment_handling='truncate',log_recoverable_errors=True)
+    d = WindowData(
+        ts, stime, etime, short_segment_handling="truncate", log_recoverable_errors=True
+    )
     assert d.live
-    assert d.t0==0.0
-    npts_expected = round((etime-d.t0)/dt) + 1
+    assert d.t0 == 0.0
+    npts_expected = round((etime - d.t0) / dt) + 1
     assert d.npts == npts_expected
     assert d.elog.size() == 1
     # silent mode
     ts = TimeSeries(ts0)
     dt = ts0.dt
-    d = WindowData(ts,stime,etime,short_segment_handling='truncate',log_recoverable_errors=False)
+    d = WindowData(
+        ts,
+        stime,
+        etime,
+        short_segment_handling="truncate",
+        log_recoverable_errors=False,
+    )
     assert d.live
-    assert d.t0==0.0
-    npts_expected = round((etime-d.t0)/dt) + 1
+    assert d.t0 == 0.0
+    npts_expected = round((etime - d.t0) / dt) + 1
     assert d.npts == npts_expected
     assert d.elog.size() == 0
     # similar test but truncated on the right
-    stime=2.0
-    etime=15.0
+    stime = 2.0
+    etime = 15.0
     ts = TimeSeries(ts0)
     dt = ts0.dt
-    d = WindowData(ts,stime,etime,short_segment_handling='truncate',log_recoverable_errors=True)
+    d = WindowData(
+        ts, stime, etime, short_segment_handling="truncate", log_recoverable_errors=True
+    )
     assert d.live
-    assert d.t0==2.0
-    npts_expected = round((ts0.endtime()-stime)/dt) + 1
+    assert d.t0 == 2.0
+    npts_expected = round((ts0.endtime() - stime) / dt) + 1
     assert d.npts == npts_expected
     assert d.elog.size() == 1
     # silent mode
     ts = TimeSeries(ts0)
     dt = ts0.dt
-    d = WindowData(ts,stime,etime,short_segment_handling='truncate',log_recoverable_errors=False)
+    d = WindowData(
+        ts,
+        stime,
+        etime,
+        short_segment_handling="truncate",
+        log_recoverable_errors=False,
+    )
     assert d.live
-    assert d.t0==2.0
-    npts_expected = round((ts0.endtime()-stime)/dt) + 1
+    assert d.t0 == 2.0
+    npts_expected = round((ts0.endtime() - stime) / dt) + 1
     assert d.npts == npts_expected
     assert d.elog.size() == 0
-    
-    
-    # Similar tests in pad mode 
+
+    # Similar tests in pad mode
     # each test runs with error logging turned on and in silent mode
-    # 
+    #
     # test padding on the left (starttime)
     # with logging
-    stime=-0.5
-    etime=2.0
+    stime = -0.5
+    etime = 2.0
     ts = TimeSeries(ts0)
     dt = ts0.dt
-    d = WindowData(ts,stime,etime,short_segment_handling='pad',log_recoverable_errors=True)
+    d = WindowData(
+        ts, stime, etime, short_segment_handling="pad", log_recoverable_errors=True
+    )
     assert d.live
-    assert d.t0==stime
-    npts_expected = round((etime-stime)/dt) + 1
+    assert d.t0 == stime
+    npts_expected = round((etime - stime) / dt) + 1
     assert d.npts == npts_expected
     assert d.elog.size() == 1
     padend = d.sample_number(0.0) - 1
@@ -495,73 +513,84 @@ def test_windowdata_exceptions():
     # silent mode
     ts = TimeSeries(ts0)
     dt = ts0.dt
-    d = WindowData(ts,stime,etime,short_segment_handling='pad',log_recoverable_errors=False)
+    d = WindowData(
+        ts, stime, etime, short_segment_handling="pad", log_recoverable_errors=False
+    )
     assert d.live
-    assert d.t0==stime
-    npts_expected = round((etime-stime)/dt) + 1
+    assert d.t0 == stime
+    npts_expected = round((etime - stime) / dt) + 1
     assert d.npts == npts_expected
     assert d.elog.size() == 0
-    
+
     # similar test but padding on the right
-    stime=2.0
-    etime=15.0
+    stime = 2.0
+    etime = 15.0
     ts = TimeSeries(ts0)
     dt = ts0.dt
-    d = WindowData(ts,stime,etime,short_segment_handling='pad',log_recoverable_errors=True)
+    d = WindowData(
+        ts, stime, etime, short_segment_handling="pad", log_recoverable_errors=True
+    )
     assert d.live
-    assert d.t0==stime
-    npts_expected = round((etime-stime)/dt) + 1
+    assert d.t0 == stime
+    npts_expected = round((etime - stime) / dt) + 1
     assert d.npts == npts_expected
     pad_start = d.sample_number(ts0.endtime()) + 1
-    for i in range(pad_start,d.npts):
+    for i in range(pad_start, d.npts):
         assert d.data[i] == 0.0
     assert d.elog.size() == 1
     # silent mode
     ts = TimeSeries(ts0)
     dt = ts0.dt
-    d = WindowData(ts,stime,etime,short_segment_handling='pad',log_recoverable_errors=False)
+    d = WindowData(
+        ts, stime, etime, short_segment_handling="pad", log_recoverable_errors=False
+    )
     assert d.live
-    assert d.t0==stime
-    npts_expected = round((etime-stime)/dt) + 1
+    assert d.t0 == stime
+    npts_expected = round((etime - stime) / dt) + 1
     assert d.npts == npts_expected
     assert d.elog.size() == 0
-    # in truncate mode TimeSeries and Seismogram handling do not 
+    # in truncate mode TimeSeries and Seismogram handling do not
     # require independent tests (at least at this time July 2024)
-    # with padding, however, a different section of code is required 
-    # to handle the matrix padding done in python.  This section 
-    # tests that for left and right padding.  We don't retest 
-    # silent mode because that is the same for TimeSeries and 
+    # with padding, however, a different section of code is required
+    # to handle the matrix padding done in python.  This section
+    # tests that for left and right padding.  We don't retest
+    # silent mode because that is the same for TimeSeries and
     # Seismogram data
-    stime=-0.5
-    etime=2.0
+    stime = -0.5
+    etime = 2.0
     se = Seismogram(se0)
     dt = se0.dt
-    d = WindowData(se,stime,etime,short_segment_handling='pad',log_recoverable_errors=True)
+    d = WindowData(
+        se, stime, etime, short_segment_handling="pad", log_recoverable_errors=True
+    )
     assert d.live
-    assert d.t0==stime
-    npts_expected = round((etime-stime)/dt) + 1
+    assert d.t0 == stime
+    npts_expected = round((etime - stime) / dt) + 1
     assert d.npts == npts_expected
     assert d.elog.size() == 1
     padend = d.sample_number(0.0) - 1
     for i in range(3):
         for j in range(padend):
-            assert d.data[i,j] == 0.0
-    
+            assert d.data[i, j] == 0.0
+
     # similar test but padding on the right
-    stime=2.0
-    etime=15.0
+    stime = 2.0
+    etime = 15.0
     se = Seismogram(se0)
     dt = se0.dt
-    d = WindowData(se,stime,etime,short_segment_handling='pad',log_recoverable_errors=True)
+    d = WindowData(
+        se, stime, etime, short_segment_handling="pad", log_recoverable_errors=True
+    )
     assert d.live
-    assert d.t0==stime
-    npts_expected = round((etime-stime)/dt) + 1
+    assert d.t0 == stime
+    npts_expected = round((etime - stime) / dt) + 1
     assert d.npts == npts_expected
     pad_start = d.sample_number(se0.endtime()) + 1
     for i in range(3):
-        for j in range(pad_start,d.npts):
-            assert d.data[i,j] == 0.0
+        for j in range(pad_start, d.npts):
+            assert d.data[i, j] == 0.0
     assert d.elog.size() == 1
+
 
 def test_TopMute():
     ts = TimeSeries(100)
@@ -613,6 +642,7 @@ def test_TopMute():
 
     with pytest.raises(MsPASSError, match="must be a TimeSeries or Seismogram"):
         failmute.apply([1, 2, 3])
+
 
 # temporary for use with vscode to build new tests
 test_windowdata()
