@@ -644,6 +644,3 @@ def test_TopMute():
         failmute.apply([1, 2, 3])
 
 
-# temporary for use with vscode to build new tests
-test_windowdata()
-test_windowdata_exceptions()
