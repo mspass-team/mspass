@@ -295,7 +295,7 @@ def WindowDataAtomic(
     short_segment_handling="kill",
     log_recoverable_errors=True,
     object_history=False,
-    alg_name="scale",
+    alg_name="WindowDataAtomic",
     alg_id=None,
     dryrun=False,
 ):
@@ -536,7 +536,7 @@ def WindowData(
     short_segment_handling="kill",
     log_recoverable_errors=True,
     object_history=False,
-    alg_name="scale",
+    alg_name="WindowData",
     alg_id=None,
     dryrun=False,
 ):
@@ -865,7 +865,7 @@ def merge(
       implemented via the mspass_func_wrapper decorator.
     :param alg_name:   When history is enabled this is the algorithm name
       assigned to the stamp for applying this algorithm.
-      Default ("WindowData") should normally be just used.
+      Default ("merge") should normally be just used.
       Note this functionality is implemented via the mspass_func_wrapper decorator.
     :param ald_id:  algorithm id to assign to history record (used only if
       object_history is set True.)
