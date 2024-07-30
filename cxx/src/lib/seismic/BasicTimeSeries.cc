@@ -98,4 +98,11 @@ double BasicTimeSeries::time_reference() const
                           + "cannot return time reference as it is marked invalid",
                           ErrorSeverity::Invalid);
 }
+std::vector<double>  BasicTimeSeries::time_axis() const
+{
+  std::vector<double> t;
+  t.reserve(this->nsamp);
+  for(int i=0;i<nsamp;++i) t.push_back(mt0 + this->mdt*static_cast<double>(i));
+  return t;
+}
 }  // end mspass namespace encapsulation
