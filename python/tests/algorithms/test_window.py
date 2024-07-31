@@ -263,8 +263,8 @@ def test_windowdata():
     stime2p = 2.0 + 0.6 * dt
     d = WindowData(ts, stime2p, 3.0)
     # WindowData finds nearest sample to window start time but
-    # sets t0 of the output to the computed time for the nearest 
-    # sample.   That means t0 of the windowed data is usually not 
+    # sets t0 of the output to the computed time for the nearest
+    # sample.   That means t0 of the windowed data is usually not
     # exactly matching window start time
     istart = ts.sample_number(stime2p)
     t0_expected = ts.time(istart)
@@ -273,7 +273,7 @@ def test_windowdata():
     assert d.npts == 100
     se = Seismogram(se0)
     dt = ts.dt
-    stime2p = 2.0 + 0.6 * dt 
+    stime2p = 2.0 + 0.6 * dt
     istart = ts.sample_number(stime2p)
     t0_expected = ts.time(istart)
     d = WindowData(se, stime2p, 3.0)
@@ -331,17 +331,17 @@ def test_windowdata():
     assert d.live
     assert np.isclose(d.t0, UTC_offset + 2.0)
     assert np.isclose(d.endtime(), UTC_offset + 3.0)
-    
-    # Data collected with a UTC timing system often have 
-    # timing precision better than the sample interval.  
-    # This tests that WindowData preserves subsample timing.   
+
+    # Data collected with a UTC timing system often have
+    # timing precision better than the sample interval.
+    # This tests that WindowData preserves subsample timing.
     ts = TimeSeries(ts0)
     # skew t0 by 1/4 sample
-    ts.set_t0(1.0 + 0.25*ts.dt)
-    d = WindowData(ts,2.0,3.0)
+    ts.set_t0(1.0 + 0.25 * ts.dt)
+    d = WindowData(ts, 2.0, 3.0)
     assert d.live
-    assert d.t0 == 2.0 + 0.25*ts.dt
-    assert d.endtime() == 3.0 + 0.25*ts.dt
+    assert d.t0 == 2.0 + 0.25 * ts.dt
+    assert d.endtime() == 3.0 + 0.25 * ts.dt
 
     # verify ensembles work for a valid time interval
     ts_ens = TimeSeriesEnsemble(ts_ens0)
@@ -568,7 +568,7 @@ def test_windowdata_exceptions():
     ts = TimeSeries(ts0)
     # dither t0 by 1/4 sample
     dt = ts0.dt
-    ts.t0 += 0.25*dt
+    ts.t0 += 0.25 * dt
     d = WindowData(
         ts, stime, etime, short_segment_handling="pad", log_recoverable_errors=True
     )
@@ -701,4 +701,3 @@ def test_TopMute():
 
     with pytest.raises(MsPASSError, match="must be a TimeSeries or Seismogram"):
         failmute.apply([1, 2, 3])
-

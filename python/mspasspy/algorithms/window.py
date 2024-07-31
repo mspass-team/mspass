@@ -464,10 +464,10 @@ def WindowDataAtomic(
     cut_on_right = False
     padding_required = False
     if short_segment_handling != "kill":
-        # earthquake data start times are not on a synchronous time mesh so we 
+        # earthquake data start times are not on a synchronous time mesh so we
         # have to use a rounding algorithm in this block to set windows
-        # relative to the sample grid for each datum. 
-        if twcut.start < (d.t0 - d.dt/2.0):
+        # relative to the sample grid for each datum.
+        if twcut.start < (d.t0 - d.dt / 2.0):
             if log_recoverable_errors:
                 message += "Window start time is less than data start time\n"
                 message += window_message(d, twcut)
@@ -477,7 +477,7 @@ def WindowDataAtomic(
                 d.elog.log_error(alg, message, ErrorSeverity.Complaint)
             twcut.start = d.t0
             cut_on_left = True
-        elif twcut.end > (d.endtime() + d.dt/2.0):
+        elif twcut.end > (d.endtime() + d.dt / 2.0):
             if log_recoverable_errors:
                 message += "Window end time is after data end time\n"
                 message += window_message(d, twcut)
