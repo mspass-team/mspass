@@ -263,15 +263,21 @@ def test_windowdata():
     stime2p = 2.0 + 0.6 * dt
     d = WindowData(ts, stime2p, 3.0)
     # WindowData finds nearest sample to window start time but
-    # sets t0 of the output to the exact time given
-    # hence this test is the form to use
-    assert np.isclose(d.t0, stime2p)
+    # sets t0 of the output to the computed time for the nearest 
+    # sample.   That means t0 of the windowed data is usually not 
+    # exactly matching window start time
+    istart = ts.sample_number(stime2p)
+    t0_expected = ts.time(istart)
+    assert np.isclose(d.t0, t0_expected)
     # should be one less than with start 2.0 which is 101
     assert d.npts == 100
     se = Seismogram(se0)
     dt = ts.dt
+    stime2p = 2.0 + 0.6 * dt 
+    istart = ts.sample_number(stime2p)
+    t0_expected = ts.time(istart)
     d = WindowData(se, stime2p, 3.0)
-    assert np.isclose(d.t0, stime2p)
+    assert np.isclose(d.t0, t0_expected)
     assert d.npts == 100
     # now rounding test for right (endtime of window)
     ts = TimeSeries(ts0)
@@ -325,6 +331,17 @@ def test_windowdata():
     assert d.live
     assert np.isclose(d.t0, UTC_offset + 2.0)
     assert np.isclose(d.endtime(), UTC_offset + 3.0)
+    
+    # Data collected with a UTC timing system often have 
+    # timing precision better than the sample interval.  
+    # This tests that WindowData preserves subsample timing.   
+    ts = TimeSeries(ts0)
+    # skew t0 by 1/4 sample
+    ts.set_t0(1.0 + 0.25*ts.dt)
+    d = WindowData(ts,2.0,3.0)
+    assert d.live
+    assert d.t0 == 2.0 + 0.25*ts.dt
+    assert d.endtime() == 3.0 + 0.25*ts.dt
 
     # verify ensembles work for a valid time interval
     ts_ens = TimeSeriesEnsemble(ts_ens0)
@@ -545,6 +562,24 @@ def test_windowdata_exceptions():
     npts_expected = round((etime - stime) / dt) + 1
     assert d.npts == npts_expected
     assert d.elog.size() == 0
+    # verify subsample timing is preserved
+    stime = -0.5
+    etime = 2.0
+    ts = TimeSeries(ts0)
+    # dither t0 by 1/4 sample
+    dt = ts0.dt
+    ts.t0 += 0.25*dt
+    d = WindowData(
+        ts, stime, etime, short_segment_handling="pad", log_recoverable_errors=True
+    )
+    assert d.live
+    assert d.t0 == stime + 0.25 * dt
+    npts_expected = round((etime - stime) / dt) + 1
+    assert d.npts == npts_expected
+    assert d.elog.size() == 1
+    padend = d.sample_number(0.0) - 1
+    for i in range(padend):
+        assert d.data[i] == 0.0
 
     # similar test but padding on the right
     stime = 2.0
@@ -666,3 +701,6 @@ def test_TopMute():
 
     with pytest.raises(MsPASSError, match="must be a TimeSeries or Seismogram"):
         failmute.apply([1, 2, 3])
+
+test_windowdata()
+test_windowdata_exceptions()

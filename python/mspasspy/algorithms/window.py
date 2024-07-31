@@ -464,7 +464,10 @@ def WindowDataAtomic(
     cut_on_right = False
     padding_required = False
     if short_segment_handling != "kill":
-        if twcut.start < d.t0:
+        # earthquake data start times are not on a synchronous time mesh so we 
+        # have to use a rounding algorithm in this block to set windows
+        # relative to the sample grid for each datum. 
+        if twcut.start < (d.t0 - d.dt/2.0):
             if log_recoverable_errors:
                 message += "Window start time is less than data start time\n"
                 message += window_message(d, twcut)
@@ -474,7 +477,7 @@ def WindowDataAtomic(
                 d.elog.log_error(alg, message, ErrorSeverity.Complaint)
             twcut.start = d.t0
             cut_on_left = True
-        elif twcut.end > d.endtime():
+        elif twcut.end > (d.endtime() + d.dt/2.0):
             if log_recoverable_errors:
                 message += "Window end time is after data end time\n"
                 message += window_message(d, twcut)
@@ -503,8 +506,10 @@ def WindowDataAtomic(
                 dpadded = TimeSeries(dcut)
             else:
                 dpadded = Seismogram(dcut)
-            dpadded.t0 = twcut0.start
-            npts = round((twcut0.end - twcut0.start) / d.dt) + 1
+            # preserve subsample timing of t0 from parent
+            istart = dcut.sample_number(twcut0.start)
+            dpadded.t0 = dcut.time(istart)
+            npts = round((twcut0.end - dpadded.t0) / d.dt) + 1
             dpadded.set_npts(npts)  # assume this initializes arrays to zeros
             # a bit more obscure with the : notation here but much faster
             # than using python loops
