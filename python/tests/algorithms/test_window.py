@@ -702,5 +702,3 @@ def test_TopMute():
     with pytest.raises(MsPASSError, match="must be a TimeSeries or Seismogram"):
         failmute.apply([1, 2, 3])
 
-test_windowdata()
-test_windowdata_exceptions()
