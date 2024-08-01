@@ -1,4 +1,5 @@
 from mspasspy.ccore.utility import (
+    Metadata,
     MsPASSError,
     AtomicType,
     ErrorSeverity,
@@ -344,6 +345,20 @@ def WindowDataAtomic(
                 the span define dby win_start to win_end but
                 the sections where the data are undefined will
                 be set to zeros.
+    
+    Users should also be aware that this function preserves subsample timing 
+    in modern earthquake data.   All seismic reflection processing 
+    systems treat timing as synchronous on all channels.   That assumption 
+    is not true for data acquired by independent digitizers with 
+    external timing systems (today always GPS timing).   In MsPASS
+    that is handled through the `t0` attribute of atomic data objects and 
+    the (internal) time shift from GMT used when the time standard is 
+    shifted to "relative".   A detail of this function is it preserves 
+    t0 subsample timing so if you carefully examine the t0 value 
+    on the return of this function it will match the `twin_start` 
+    value only to the nearest sample.   Similarly, the output of the 
+    `endtime` method of the output will only match twin_end to the 
+    nearest sample.   
 
     :param d: is the input data.  d must be either a
       :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -540,6 +555,7 @@ def WindowData(
     t0shift=None,
     short_segment_handling="kill",
     log_recoverable_errors=True,
+    overwrite_members=False,
     object_history=False,
     alg_name="WindowData",
     alg_id=None,
@@ -547,7 +563,7 @@ def WindowData(
 ):
     """
     Apply a window operation to cut out data within a specified time range
-    from a MsPASS seismic data object.
+    to any MsPASS seismic data object.
 
     Cutting a smaller waveform segment from a larger waveform segment
     is a very common seismic data processing task.  Handling that low
@@ -596,13 +612,29 @@ def WindowData(
     object.  For atomic data it is a very thin wrapper for the
     related function `WindowDataAtomic`.   For atomic data this
     is nothing more than a convenience function that allows you
-    to not add the "Atomic" qualifier.  For ensemble data
+    to omit the "Atomic" qualifier.  For ensemble data
     this function is more-or-less a loop over all ensemble
     members running `WindowDataAtomic` on each member datum.
     In all cases the return is the same type as the input but
     either shortened to the specified range or killed.
     A special case is ensembles where only some members
     may be killed.
+    
+    A special option for ensembles only can be triggered by 
+    setting the optional argument `overwrite_members` to True.  
+    Default behavior returns an independent ensemble created 
+    from the input cut to the requested window interval.   
+    When `overwrite_members` is set True the windowing of the 
+    members will be done in place ovewriting the original 
+    ensemble contents.  i.e. in tha output is a reference to 
+    the same object as the input.  The primary use of the 
+    `overwrite_members == False` option is for use in map
+    operators on large ensembles as it can significantly 
+    reduce the memory footprint.   
+    
+    Note the description of subsample time handling in the 
+    related docstring for `WindowDataAtomic`.   For ensembles 
+    each member output preserves subsample timing.   
 
     :param d: is the input data.  d must be either a
       :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -645,6 +677,15 @@ def WindowData(
     output.  When False recovery will be done silently.  Note when
     `short_segment_handling` is set to "kill" logging is not optional and
     kill will always create an error log entry.
+    :param overwrite_members:   controls handling of the member vector of 
+    ensembles as described above.  When True the member atomic data will 
+    be overwritten by the windowed version and the ensmble returned will 
+    be a reference to the same container as the input.  When False
+    (the default) a new container is created and returned.  Note in that 
+    mode dead data are copied to the same slot as the input unaltered.  
+    This argument will be silently ignored if the input is an atomic 
+    MsPASS seismic object. 
+    :type overwrite_members:  boolean
     :param object_history: boolean to enable or disable saving object
       level history.  Default is False.  Note this functionality is
       implemented via the mspass_func_wrapper decorator.
@@ -678,31 +719,58 @@ def WindowData(
             dryrun=dryrun,
         )
     elif isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
-        if mspass_object.live:
+        if mspass_object.dead():
+            return mspass_object
+        else:
             nlive = 0
-            for i in range(len(mspass_object.member)):
-                if mspass_object.member[i].live:
-                    mspass_object.member[i] = WindowDataAtomic(
-                        mspass_object.member[i],
-                        win_start,
-                        win_end,
-                        t0shift=t0shift,
-                        short_segment_handling=short_segment_handling,
-                        log_recoverable_errors=log_recoverable_errors,
-                        object_history=object_history,
-                        alg_name=alg_name,
-                        alg_id=alg_id,
-                        dryrun=dryrun,
-                    )
+            if overwrite_members:
+                for i in range(len(mspass_object.member)):
                     if mspass_object.member[i].live:
-                        nlive += 1
+                        mspass_object.member[i] = WindowDataAtomic(
+                            mspass_object.member[i],
+                            win_start,
+                            win_end,
+                            t0shift=t0shift,
+                            short_segment_handling=short_segment_handling,
+                            log_recoverable_errors=log_recoverable_errors,
+                            object_history=object_history,
+                            alg_name=alg_name,
+                            alg_id=alg_id,
+                            dryrun=dryrun,
+                        )
+                        if mspass_object.member[i].live:
+                            nlive += 1
+                # In this case this just creates a duplicate reference
+                ensout = mspass_object
+            else:
+                if isinstance(mspass_object,TimeSeriesEnsemble):
+                    ensout = TimeSeriesEnsemble(Metadata(mspass_object))
+                else:
+                    ensout = SeismogramEnsemble(Metadata(mspass_object))
+                for i in range(len(mspass_object.member)):
+                    if mspass_object.member[i].live:
+                        d = WindowDataAtomic(
+                                mspass_object.member[i],
+                                win_start,
+                                win_end,
+                                t0shift=t0shift,
+                                short_segment_handling=short_segment_handling,
+                                log_recoverable_errors=log_recoverable_errors,
+                                object_history=object_history,
+                                alg_name=alg_name,
+                                alg_id=alg_id,
+                                dryrun=dryrun,
+                            )
+                        ensout.member.append(d)
+                        if d.live:
+                            nlive += 1
             if nlive == 0:
                 message = "All members of this ensemble were killed by WindowDataAtomic;  ensemble returned will be marked dead"
-                mspass_object.elog.log_error(
+                ensout.elog.log_error(
                     "WindowData", message, ErrorSeverity.Invalid
                 )
-                mspass_object.kill()
-        return mspass_object
+                ensout.kill()
+            return ensout
     else:
         message = (
             "Illegal type for arg0={}.  Must be a MsPASS seismic data object".format(
