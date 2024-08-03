@@ -36,7 +36,16 @@ CoreSeismogram WindowData(const CoreSeismogram& parent, const TimeWindow& tw)
 		return(tmp);
 	}
   int is=parent.sample_number(tw.start);
+  /* This calculation was used in earlier versions but was found to 
+     differ by 1 depending on the subsample timing of t0 of parent.  the 
+     problem is that sample_number uses rounding which can produce that
+     effect due to a subtle interaction with tw.start and tw.end 
+     relative to the sample grid. 
   int ie=parent.sample_number(tw.end);
+  */
+  int outns,ie;
+  outns = round((tw.end-tw.start)/parent.dt()) + 1;  
+  ie = is + outns - 1;
   if( (is<0) || (ie>parent.npts()) )
   {
       ostringstream mess;
@@ -48,11 +57,11 @@ CoreSeismogram WindowData(const CoreSeismogram& parent, const TimeWindow& tw)
                 << "Parent has "<<parent.npts()<<" samples"<<endl;
       throw MsPASSError(mess.str(),ErrorSeverity::Invalid);
   }
-  int outns=ie-is+1;
 	CoreSeismogram result(parent);
   result.u=dmatrix(3,outns);
 	result.set_npts(outns);
-	result.set_t0(tw.start);
+  /* Using the time method here preserves subsample timing.*/
+	result.set_t0(parent.time(is));
   // Perhaps should do this with blas or memcpy for efficiency
   //  but this makes the algorithm much clearer
   int i,ii,k;
@@ -89,7 +98,16 @@ CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw)
 		return(tmp);
 	}
   int is=parent.sample_number(tw.start);
+  /* This calculation was used in earlier versions but was found to 
+     differ by 1 depending on the subsample timing of t0 of parent.  the 
+     problem is that sample_number uses rounding which can produce that
+     effect due to a subtle interaction with tw.start and tw.end 
+     relative to the sample grid. 
   int ie=parent.sample_number(tw.end);
+  */
+  int outns,ie;
+  outns = round((tw.end-tw.start)/parent.dt()) + 1;  
+  ie = is + outns - 1;
 	//Ridiculous (int) case to silence a bogus compiler warning
   if( (is<0) || (ie>=((int)parent.npts())) )
   {
@@ -102,11 +120,11 @@ CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw)
               << "Parent has "<<parent.npts()<<" samples"<<endl;
       throw MsPASSError(mess.str(),ErrorSeverity::Invalid);
   }
-  int outns=ie-is+1;
 	CoreTimeSeries result(parent);
 	result.s.reserve(outns);
 	result.set_npts(outns);
-	result.set_t0(tw.start);
+  /* Using the time method here preserves subsample timing.*/
+	result.set_t0(parent.time(is));
 	// Necessary to use the push_back method below or we get leading zeros
 	result.s.clear();
 
@@ -141,7 +159,16 @@ Seismogram WindowData(const Seismogram& parent, const TimeWindow& tw)
 		return parent;
 	}
   int is=parent.sample_number(tw.start);
+  /* This calculation was used in earlier versions but was found to 
+     differ by 1 depending on the subsample timing of t0 of parent.  the 
+     problem is that sample_number uses rounding which can produce that
+     effect due to a subtle interaction with tw.start and tw.end 
+     relative to the sample grid. 
   int ie=parent.sample_number(tw.end);
+  */
+  int outns,ie;
+  outns = round((tw.end-tw.start)/parent.dt()) + 1;  
+  ie = is + outns - 1;
   if( (is<0) || (ie>parent.npts()) )
   {
       ostringstream mess;
@@ -160,7 +187,6 @@ Seismogram WindowData(const Seismogram& parent, const TimeWindow& tw)
 			dead_return.set_npts(0);
 			return dead_return;
   }
-  int outns=ie-is+1;
 	/* MAINTENANCE ISSUE:  The original implementation of this code used a copy constructor
 	here to initalize result.   We realized that was very inefficient when
 	slicing down long input signals like data blocked in day files.
@@ -175,7 +201,8 @@ Seismogram WindowData(const Seismogram& parent, const TimeWindow& tw)
 	would be lost.  Reason is the constructor uses CoreTimeSeries. */
 	BasicTimeSeries btstmp(dynamic_cast<const BasicTimeSeries&>(parent));
 	btstmp.set_npts(outns);
-	btstmp.set_t0(tw.start);
+  /* Using the time method here preserves subsample timing.*/
+	btstmp.set_t0(parent.time(is));
 	/* WARNING MAINTENANCE ISSUE:  this is less than ideal fix for a problem
 	found when debugging the revision of this algorithm to improve its
 	performance May 2022.  the constuctor called here assumes the
@@ -230,7 +257,16 @@ TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw)
 		return(tmp);
 	}
   int is=parent.sample_number(tw.start);
+  /* This calculation was used in earlier versions but was found to 
+     differ by 1 depending on the subsample timing of t0 of parent.  the 
+     problem is that sample_number uses rounding which can produce that
+     effect due to a subtle interaction with tw.start and tw.end 
+     relative to the sample grid. 
   int ie=parent.sample_number(tw.end);
+  */
+  int outns,ie;
+  outns = round((tw.end-tw.start)/parent.dt()) + 1;  
+  ie = is + outns - 1;
 	//Ridiculous (int) case to silence a bogus compiler warning
   if( (is<0) || (ie>=((int)parent.npts())) )
   {
@@ -251,7 +287,6 @@ TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw)
 			dret.elog.log_error("WindowData",mess.str(),ErrorSeverity::Invalid);
 			return dret;
   }
-  int outns=ie-is+1;
 	/* MAINTENANCE ISSUE:  The original implementation of this code used a copy constructor
 	here to initalize result.   We realized that was very inefficient when
 	slicing down long input signals like data blocked in day files.
@@ -267,7 +302,8 @@ TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw)
 
 	BasicTimeSeries btstmp(dynamic_cast<const BasicTimeSeries&>(parent));
 	btstmp.set_npts(outns);
-	btstmp.set_t0(tw.start);
+  /* Using the time method here preserves subsample timing.*/
+	btstmp.set_t0(parent.time(is));
 	TimeSeries result(btstmp,dynamic_cast<const Metadata&>(parent));
 	/* That constuctor initalizes s to zeroes so we can copy directly
 	to the container without push_back.  memcpy might buy a small performance

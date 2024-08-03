@@ -1,4 +1,5 @@
 from mspasspy.ccore.utility import (
+    Metadata,
     MsPASSError,
     AtomicType,
     ErrorSeverity,
@@ -287,30 +288,80 @@ def scale(
 
 
 @mspass_func_wrapper
-def WindowData(
+def WindowDataAtomic(
     d,
     win_start,
     win_end,
     t0shift=None,
+    short_segment_handling="kill",
+    log_recoverable_errors=True,
     object_history=False,
-    alg_name="scale",
+    alg_name="WindowDataAtomic",
     alg_id=None,
     dryrun=False,
 ):
     """
-    Cut data defined by a TimeWindow object.
+    Cut atomic data to a shorter time segment defined by a time range.
 
     Cutting a smaller waveform segment from a larger waveform segment
-    is a very common seismic data processing task.   The function is
-    a python wrapper to adapt C++ code that accomplishes that task
-    to the MsPASS framework.
+    is a very common seismic data processing task.  Handling that low
+    level operation needs to be done efficiently but with a reasonable
+    number of options.   This function is very fast if the inputs
+    match the expected model where the requested time segment is
+    inside the range of the datum passed via arg0.   In that mode the
+    function is a thin wrapper on a C++ function that does most of
+    the work.   When the window is inconsistent with the data,
+    which is defined here as a "short segment", more overhead
+    is involved if you want to recover something.   To be specific
+    a "short segment" means the requested time span for a the
+    window operation form win_start to win_end is not completely
+    inside (inclusive of the endpoints) the range of the data.
 
-    Note this function uses one model for being bombproof with a map
-    operation.  Any exception that makes the result invalid will cause
-    an error message to be posted to the elog attribute of the input
-    datum AND the data will be marked dead (killed).
+    Handling of "short segments" has these elements:
+    1.  If the window range is completely outside the range of
+        the data the result is always killed and returned
+        as a dead datum with no sample data. (d.npts=0)
+    2.  Behavior if there is the window range overlaps but
+        has boundaries outside the data range depends on the setting
+        of the argument `short_segment_handling` and the
+        boolean argument `log_recoverable_errors`.
+        If `log_recoverable_errors` is set True (default) and
+        the result is returned live (i.e. the error was recoverable
+        but the data are flawed) a complaint message describing
+        what was done will be posted to the elog container
+        of the return.   If False recoveries will be done
+        silently.   That can be useful in some algorithms
+        (e.g. cross-correlation) where partial segments can be
+        handled.  What defines possible recovery is set by
+        the `short_segment_handling` string.  It must be
+        one of only three possible values or the function
+        will abort with a ValueError exception:
+        "kill" - (default) does not recovery attempt and will
+                 kill any data with time inconsistencies.
+        "truncate" - this truncates to the output to the
+                time range max(d.t0,win.starttime) to
+                min(d.endtime(),win.endtime).
+        "pad" - will cause the function to have data in
+                the span define dby win_start to win_end but
+                the sections where the data are undefined will
+                be set to zeros.
 
-    :param d: is the input data.  d must be either a :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+    Users should also be aware that this function preserves subsample timing
+    in modern earthquake data.   All seismic reflection processing
+    systems treat timing as synchronous on all channels.   That assumption
+    is not true for data acquired by independent digitizers with
+    external timing systems (today always GPS timing).   In MsPASS
+    that is handled through the `t0` attribute of atomic data objects and
+    the (internal) time shift from GMT used when the time standard is
+    shifted to "relative".   A detail of this function is it preserves
+    t0 subsample timing so if you carefully examine the t0 value
+    on the return of this function it will match the `twin_start`
+    value only to the nearest sample.   That way time computed with the
+    time method (endtime is a special case for sample npts-1)
+    will have subsample accuracy.
+
+    :param d: is the input data.  d must be either a
+      :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
       object or the function will log an error to d and return a None.
     :param twin_start: defines the start of timeWindow to be cut
     :type twin_start: :class:`float`
@@ -321,6 +372,35 @@ def WindowData(
       A typical example would be to set t0shift to an arrival time and let
       the window define time relative to that arrival time.  Default is None
       which cause the function to assume twin is to be used directly.
+      It can be specified one of two ways:  (1) as a number where it
+      is assumed to be a time shift to apply in seconds, or (2) as a
+      a string.  In the later case the string is assumed to be a valid
+      key for fetching a time from a datum's Metadata container.
+      Note the name t0shift is a bit inconsistent with this usage but
+      was retained as the original api did not have the string
+      option.
+    :type t0shift:  real number (float) or a string that defines a
+    Metadata container key.
+    :param short_segment_handling: Defines method for handling data where
+    the requested interval is shorter than the requested window but does
+    have some overlap. `segment_handling_methods` must be one of the following:
+      `kill` - in this mode any issues cause the return to be marked dead
+               (this is the default)
+      'pad' -  in this mode return will have short segments will be padded
+               with zeros to define data of the required length.
+      'truncate' - in this mode short segments will be truncated on left
+                  and/or right to match actual data range.
+      Note that if the input time range does not overlap the requested
+      interval "kiLl" is always the behavior as by definition the result
+      is null.
+    :type short_segment_handle:  string (from list above)  Default is "kill".
+    Throws a ValueError exception of not one of the accepted values.
+    :param log_recoverable_errors:  When True (default) any recoverable
+    windowing error (meaning at least a partial overlap in time range)
+    will cause a log message to be posted to the elog container of the
+    output.  When False recovery will be done silently.  Note when
+    `short_segment_handling` is set to "kill" logging is not optional and
+    kill will always create an error log entry.
     :param object_history: boolean to enable or disable saving object
       level history.  Default is False.  Note this functionality is
       implemented via the mspass_func_wrapper decorator.
@@ -340,97 +420,370 @@ def WindowData(
       an empty version of the parent data type (default constructor) if
       the input is marked dead
     """
+    alg = "WindowDataAtomic"
+    segment_handling_methods = ["kill", "pad", "truncate"]
+    if short_segment_handling not in segment_handling_methods:
+        message = (
+            "WindowData:   illegal option given for segment_handling_method={}".format(
+                str(segment_handling_methods)
+            )
+        )
+        raise ValueError(message)
+    if not isinstance(d, (TimeSeries, Seismogram)):
+        message = "WindowData:   illegal type for arg0={}\nMust be either TimeSeries or Seismogram".format(
+            str(type(d))
+        )
+        raise TypeError(message)
     if d.dead():
         return d
-    twcut = TimeWindow(win_start, win_end)
+
+    def window_message(this_d, tw):
+        """
+        File scope function standardizes error message for problems.
+        """
+        message = (
+            "Window range: {wst} < t < {wet}  Data range:  {dst} < t < {det}\n".format(
+                wst=tw.start, wet=tw.end, dst=this_d.t0, det=this_d.endtime()
+            )
+        )
+        return message
+
+    # This block defines the TimeWindow object twcut to implement the options
+    # for handling the possible issues with inconsistencies of the time range requested and data
+    # time span.   First define it as the full range and dither the time window if appropriate
+    twcut0 = TimeWindow(win_start, win_end)
+    twcut = TimeWindow(twcut0)  # the start and end time of this copy may be changed
     if t0shift:
-        twcut.shift(t0shift)
+        if isinstance(t0shift, str):
+            if d.is_defined(t0shift):
+                t0shift = d[t0shift]
+            else:
+                message = "t0shift argument passed as string value={}\n".format(t0shift)
+                message += "Implies use as key to fetch Metadata from datum, but the requested key is not defined\n"
+                message += "Setting shift to 0.0 - this is likely to cause later handling to kill this datum"
+                d.elog.log_error(alg, message, ErrorSeverity.Complaint)
+                t0shift = 0.0
+        twcut = twcut.shift(t0shift)
+        twcut0 = twcut.shift(t0shift)
+    if twcut.end < d.t0 or twcut.start > d.endtime():
+        # always kill and return a zero length datum if there is no overlap
+        message = "Data time range is outside the time range window time range\n"
+        message += window_message(d, twcut)
+        d.elog.log_error(alg, message, ErrorSeverity.Invalid)
+        d.set_npts(0)
+        d.kill()
+        return d
+    message = str()
+    # If either of these get set true we set padding_required True
+    cut_on_left = False
+    cut_on_right = False
+    padding_required = False
+    if short_segment_handling != "kill":
+        # earthquake data start times are not on a synchronous time mesh so we
+        # have to use a rounding algorithm in this block to set windows
+        # relative to the sample grid for each datum.
+        if twcut.start < (d.t0 - d.dt / 2.0):
+            if log_recoverable_errors:
+                message += "Window start time is less than data start time\n"
+                message += window_message(d, twcut)
+                message += "Setting window start time to data start time={}\n".format(
+                    d.t0
+                )
+                d.elog.log_error(alg, message, ErrorSeverity.Complaint)
+            twcut.start = d.t0
+            cut_on_left = True
+        elif twcut.end > (d.endtime() + d.dt / 2.0):
+            if log_recoverable_errors:
+                message += "Window end time is after data end time\n"
+                message += window_message(d, twcut)
+                message += "Setting window end time to data end time={}\n".format(
+                    d.endtime()
+                )
+                d.elog.log_error(alg, message, ErrorSeverity.Complaint)
+            twcut.end = d.endtime()
+            cut_on_right = True
+        if len(message) > 0:
+            if short_segment_handling == "truncate":
+                message += "This data segment will be shorter than requested"
+            elif short_segment_handling == "pad":
+                message += "Datum returned will be zero padded in undefined time range"
+        if short_segment_handling == "pad":
+            if cut_on_right or cut_on_left:
+                padding_required = True
     try:
-        # This handler duplicates an error test in the WindowData C code but
-        # it will be more efficient to handle it here.
-        if twcut.start < d.t0 or twcut.end > d.endtime():
-            detailline = "Window range: {wst},{wet}  Data range:  {dst},{det}".format(
-                wst=twcut.start, wet=twcut.end, dst=d.t0, det=d.endtime()
-            )
-            d.elog.log_error(
-                "WindowData",
-                "Data range is smaller than window range\n" + detailline,
-                ErrorSeverity.Invalid,
-            )
-            d.kill()
-            return d
         if isinstance(d, TimeSeries):
             dcut = _WindowData(d, twcut)
-            return dcut
-        elif isinstance(d, Seismogram):
-            dcut = _WindowData3C(d, twcut)
-            return dcut
         else:
-            raise RuntimeError(
-                "WindowData:  Invalid input data type received=" + str(type(d))
-            )
+            # not with current logic this alway means we are handling a Seismogram here
+            dcut = _WindowData3C(d, twcut)
+        if padding_required:
+            if isinstance(d, TimeSeries):
+                dpadded = TimeSeries(dcut)
+            else:
+                dpadded = Seismogram(dcut)
+            # preserve subsample timing of t0 from parent
+            istart = dcut.sample_number(twcut0.start)
+            # this has to be computed from window duration NOT the computed
+            # start time using the t0 + i*dt formula of the time method of
+            # BasicTimeSeries.   The reason is a subtle rounding issue with
+            # subsample timing that can cause a factor of 1 ambiguity from rounding.
+            # C++ code uses this same formula so we also need to be consistent
+            dpadded.t0 = dcut.time(istart)
+            npts = round((twcut0.end - dpadded.t0) / d.dt) + 1
+            dpadded.set_npts(npts)  # assume this initializes arrays to zeros
+            # a bit more obscure with the : notation here but much faster
+            # than using python loops
+            istart = dpadded.sample_number(dcut.t0)
+            iend = dpadded.sample_number(dcut.endtime()) + 1
+            if isinstance(d, TimeSeries):
+                dpadded.data[istart:iend] = dcut.data
+            else:
+                dpadded.data[:, istart:iend] = dcut.data
+            return dpadded
+        else:
+            return dcut
+
     except MsPASSError as err:
-        d.log_error("WindowData", str(err), ErrorSeverity.Invalid)
+        # This handler is needed in case the C++ functions WindowData or WindowData3C
+        # throw an exception.  With the current logic that should not happen but
+        # this makes the code base more robust in the event changes occur
+        d.log_error(alg, str(err), ErrorSeverity.Invalid)
         d.kill()
         return d
 
 
 @mspass_func_wrapper
-def WindowData_with_duration(
-    d,
-    duration,
+def WindowData(
+    mspass_object,
+    win_start,
+    win_end,
     t0shift=None,
+    short_segment_handling="kill",
+    log_recoverable_errors=True,
+    overwrite_members=False,
     object_history=False,
-    alg_name="scale",
+    alg_name="WindowData",
     alg_id=None,
     dryrun=False,
 ):
-    if duration < 0:
-        detailline = "Window duration: {dur}  Data range:  {dst},{det}".format(
-            dur=duration, dst=d.t0, det=d.endtime()
+    """
+    Apply a window operation to cut out data within a specified time range
+    to any MsPASS seismic data object.
+
+    Cutting a smaller waveform segment from a larger waveform segment
+    is a very common seismic data processing task.  Handling that low
+    level operation needs to be done efficiently but with a reasonable
+    number of options.   This function is very fast if the inputs
+    match the expected model where the requested time segment is
+    inside the range of the datum passed via arg0.   In that mode the
+    function is a thin wrapper on a C++ function that does most of
+    the work.   When the window is inconsistent with the data,
+    which is defined here as a "short segment", more overhead
+    is involved if you want to recover something.   To be specific
+    a "short segment" means the requested time span for a the
+    window operation form win_start to win_end is not completely
+    inside (inclusive of the endpoints) the range of the data.
+
+    Handling of "short segments" has these elements:
+    1.  If the window range is completely outside the range of
+        the data the result is always killed and returned
+        as a dead datum with no sample data. (d.npts=0)
+    2.  Behavior if there is the window range overlaps but
+        has boundaries outside the data range depends on the setting
+        of the argument `short_segment_handling` and the
+        boolean argument `log_recoverable_errors`.
+        If `log_recoverable_errors` is set True (default) and
+        the result is returned live (i.e. the error was recoverable
+        but the data are flawed) a complaint message describing
+        what was done will be posted to the elog container
+        of the return.   If False recoveries will be done
+        silently.   That can be useful in some algorithms
+        (e.g. cross-correlation) where partial segments can be
+        handled.  What defines possible recovery is set by
+        the `short_segment_handling` string.  It must be
+        one of only three possible values or the function
+        will abort with a ValueError exception:
+        "kill" - (default) does not recovery attempt and will
+                 kill any data with time inconsistencies.
+        "truncate" - this truncates to the output to the
+                time range max(d.t0,win.starttime) to
+                min(d.endtime(),win.endtime).
+        "pad" - will cause the function to have data in
+                the span define dby win_start to win_end but
+                the sections where the data are undefined will
+                be set to zeros.
+
+    This function handles input that is any valid MsPASS data
+    object.  For atomic data it is a very thin wrapper for the
+    related function `WindowDataAtomic`.   For atomic data this
+    is nothing more than a convenience function that allows you
+    to omit the "Atomic" qualifier.  For ensemble data
+    this function is more-or-less a loop over all ensemble
+    members running `WindowDataAtomic` on each member datum.
+    In all cases the return is the same type as the input but
+    either shortened to the specified range or killed.
+    A special case is ensembles where only some members
+    may be killed.
+
+    A special option for ensembles only can be triggered by
+    setting the optional argument `overwrite_members` to True.
+    Default behavior returns an independent ensemble created
+    from the input cut to the requested window interval.
+    When `overwrite_members` is set True the windowing of the
+    members will be done in place ovewriting the original
+    ensemble contents.  i.e. in tha output is a reference to
+    the same object as the input.  The primary use of the
+    `overwrite_members == False` option is for use in map
+    operators on large ensembles as it can significantly
+    reduce the memory footprint.
+
+    Note the description of subsample time handling in the
+    related docstring for `WindowDataAtomic`.   For ensembles
+    each member output preserves subsample timing.
+
+    :param d: is the input data.  d must be either a
+      :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+      object or the function will log an error to d and return a None.
+    :param twin_start: defines the start of timeWindow to be cut
+    :type twin_start: :class:`float`
+    :param twin_end: defines the end of timeWindow to be cut
+    :type twin_end: :class:`float`
+    :param t0shift: is an optional time shift to apply to the time window.
+      This parameter is convenient to avoid conversions to relative time.
+      A typical example would be to set t0shift to an arrival time and let
+      the window define time relative to that arrival time.  Default is None
+      which cause the function to assume twin is to be used directly.
+      It can be specified one of two ways:  (1) as a number where it
+      is assumed to be a time shift to apply in seconds, or (2) as a
+      a string.  In the later case the string is assumed to be a valid
+      key for fetching a time from a datum's Metadata container.
+      Note the name t0shift is a bit inconsistent with this usage but
+      was retained as the original api did not have the string
+      option.
+    :type t0shift:  real number (float) or a string that defines a
+    Metadata container key.
+    :param short_segment_handling: Defines method for handling data where
+    the requested interval is shorter than the requested window but does
+    have some overlap. `segment_handling_methods` must be one of the following:
+      `kill` - in this mode any issues cause the return to be marked dead
+               (this is the default)
+      'pad' -  in this mode return will have short segments will be padded
+               with zeros to define data of the required length.
+      'truncate' - in this mode short segments will be truncated on left
+                  and/or right to match actual data range.
+      Note that if the input time range does not overlap the requested
+      interval "kiLl" is always the behavior as by definition the result
+      is null.
+    :type short_segment_handle:  string (from list above)  Default is "kill".
+    Throws a ValueError exception of not one of the accepted values.
+    :param log_recoverable_errors:  When True (default) any recoverable
+    windowing error (meaning at least a partial overlap in time range)
+    will cause a log message to be posted to the elog container of the
+    output.  When False recovery will be done silently.  Note when
+    `short_segment_handling` is set to "kill" logging is not optional and
+    kill will always create an error log entry.
+    :param overwrite_members:   controls handling of the member vector of
+    ensembles as described above.  When True the member atomic data will
+    be overwritten by the windowed version and the ensmble returned will
+    be a reference to the same container as the input.  When False
+    (the default) a new container is created and returned.  Note in that
+    mode dead data are copied to the same slot as the input unaltered.
+    This argument will be silently ignored if the input is an atomic
+    MsPASS seismic object.
+    :type overwrite_members:  boolean
+    :param object_history: boolean to enable or disable saving object
+      level history.  Default is False.  Note this functionality is
+      implemented via the mspass_func_wrapper decorator.
+    :param alg_name:   When history is enabled this is the algorithm name
+      assigned to the stamp for applying this algorithm.
+      Default ("WindowData") should normally be just used.
+      Note this functionality is implemented via the mspass_func_wrapper decorator.
+    :param ald_id:  algorithm id to assign to history record (used only if
+      object_history is set True.)
+      Note this functionality is implemented via the mspass_func_wrapper decorator.
+    :param dryrun:
+      Note this functionality is implemented via the mspass_func_wrapper decorator.
+    :param dryrun:
+      Note this functionality is implemented via the mspass_func_wrapper decorator.
+
+    :return: copy of d with sample range reduced to twin range.  Returns
+      an empty version of the parent data type (default constructor) if
+      the input is marked dead
+    """
+    if isinstance(mspass_object, (TimeSeries, Seismogram)):
+        return WindowDataAtomic(
+            mspass_object,
+            win_start,
+            win_end,
+            t0shift=t0shift,
+            short_segment_handling=short_segment_handling,
+            log_recoverable_errors=log_recoverable_errors,
+            object_history=object_history,
+            alg_name=alg_name,
+            alg_id=alg_id,
+            dryrun=dryrun,
         )
-        d.elog.log_error(
-            "WindowData",
-            "Duration is a negative number.\n" + detailline,
-            ErrorSeverity.Invalid,
-        )
-        d.kill()
-        return d
-    win_start = d.t0 + 1
-    win_end = win_start + duration
-    if d.dead():
-        return d
-    twcut = TimeWindow(win_start, win_end)
-    if t0shift:
-        twcut.shift(t0shift)
-    try:
-        # This handler duplicates an error test in the WindowData C code but
-        # it will be more efficient to handle it here.
-        if win_start < d.t0 or win_end > d.endtime():
-            detailline = "Window range: {wst},{wet}  Data range:  {dst},{det}".format(
-                wst=win_start, wet=win_end, dst=d.t0, det=d.endtime()
-            )
-            d.elog.log_error(
-                "WindowData",
-                "Data range is smaller than window range\n" + detailline,
-                ErrorSeverity.Invalid,
-            )
-            d.kill()
-            return d
-        if isinstance(d, TimeSeries):
-            dcut = _WindowData(d, twcut)
-            return dcut
-        elif isinstance(d, Seismogram):
-            dcut = _WindowData3C(d, twcut)
-            return dcut
+    elif isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
+        if mspass_object.dead():
+            return mspass_object
         else:
-            raise RuntimeError(
-                "WindowData:  Invalid input data type received=" + str(type(d))
+            nlive = 0
+            if overwrite_members:
+                for i in range(len(mspass_object.member)):
+                    if mspass_object.member[i].live:
+                        mspass_object.member[i] = WindowDataAtomic(
+                            mspass_object.member[i],
+                            win_start,
+                            win_end,
+                            t0shift=t0shift,
+                            short_segment_handling=short_segment_handling,
+                            log_recoverable_errors=log_recoverable_errors,
+                            object_history=object_history,
+                            alg_name=alg_name,
+                            alg_id=alg_id,
+                            dryrun=dryrun,
+                        )
+                        if mspass_object.member[i].live:
+                            nlive += 1
+                # In this case this just creates a duplicate reference
+                ensout = mspass_object
+            else:
+                Nmembers = len(mspass_object.member)
+                if isinstance(mspass_object, TimeSeriesEnsemble):
+                    ensout = TimeSeriesEnsemble(Metadata(mspass_object), Nmembers)
+                else:
+                    ensout = SeismogramEnsemble(Metadata(mspass_object), Nmembers)
+                for i in range(len(mspass_object.member)):
+                    if mspass_object.member[i].live:
+                        d = WindowDataAtomic(
+                            mspass_object.member[i],
+                            win_start,
+                            win_end,
+                            t0shift=t0shift,
+                            short_segment_handling=short_segment_handling,
+                            log_recoverable_errors=log_recoverable_errors,
+                            object_history=object_history,
+                            alg_name=alg_name,
+                            alg_id=alg_id,
+                            dryrun=dryrun,
+                        )
+                        ensout.member.append(d)
+                        if d.live:
+                            nlive += 1
+                # always set live and let the next line kill it if nlive is 0
+                ensout.live = True
+            if nlive == 0:
+                message = "All members of this ensemble were killed by WindowDataAtomic;  ensemble returned will be marked dead"
+                ensout.elog.log_error("WindowData", message, ErrorSeverity.Invalid)
+                ensout.kill()
+            return ensout
+    else:
+        message = (
+            "Illegal type for arg0={}.  Must be a MsPASS seismic data object".format(
+                str(type(mspass_object))
             )
-    except MsPASSError as err:
-        d.log_error("WindowData", str(err), ErrorSeverity.Invalid)
-        d.kill()
-        return d
+        )
+        raise TypeError(message)
 
 
 # @mspass_func_wrapper
@@ -591,7 +944,7 @@ def merge(
       implemented via the mspass_func_wrapper decorator.
     :param alg_name:   When history is enabled this is the algorithm name
       assigned to the stamp for applying this algorithm.
-      Default ("WindowData") should normally be just used.
+      Default ("merge") should normally be just used.
       Note this functionality is implemented via the mspass_func_wrapper decorator.
     :param ald_id:  algorithm id to assign to history record (used only if
       object_history is set True.)
