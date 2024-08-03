@@ -206,7 +206,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.window">window</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.TopMute"><code class="docutils literal notranslate"><span class="pre">TopMute</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.WindowData"><code class="docutils literal notranslate"><span class="pre">WindowData()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.WindowData_with_duration"><code class="docutils literal notranslate"><span class="pre">WindowData_with_duration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.WindowDataAtomic"><code class="docutils literal notranslate"><span class="pre">WindowDataAtomic()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.ensemble_error_post"><code class="docutils literal notranslate"><span class="pre">ensemble_error_post()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.merge"><code class="docutils literal notranslate"><span class="pre">merge()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.window.scale"><code class="docutils literal notranslate"><span class="pre">scale()</span></code></a></li>
@@ -637,7 +637,7 @@ or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismi
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is set false to
 handle exception directly in the function, without passing it to mspass_func_wrapper.</p></li>
@@ -666,7 +666,7 @@ variable and alters t0 by tshift.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -698,7 +698,7 @@ only one sided.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -801,7 +801,7 @@ as a signal to fetch this quantity from Metadata using the vs0_key.
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -831,7 +831,7 @@ right. Setting t0 == t1 will disable the taper on the specified end (e.g., t0hea
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -862,7 +862,7 @@ related rotate with it.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -893,7 +893,7 @@ datum return will be marked dead.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -926,7 +926,7 @@ internally stored time shift attribute.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -952,7 +952,7 @@ transformations to data.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -1026,7 +1026,7 @@ phi is not null (None type)
 :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
 :type alg_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
-:type alg_id: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>
+:type alg_id: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>
 :param dryrun: True for dry-run, which return “OK”. Used in the mspass_func_wrapper.
 :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
 :param function_return_key:  Some functions one might want to wrap with this decorator</p>
@@ -1087,7 +1087,7 @@ with the anticlockwise positive convention.
 :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
 :type alg_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
-:type alg_id: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>
+:type alg_id: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>
 :param dryrun: True for dry-run, which return “OK”. Used in the mspass_func_wrapper.
 :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
 :param function_return_key:  Some functions one might want to wrap with this decorator</p>
@@ -1118,7 +1118,7 @@ data of the same length as the taper defined in the operator.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
@@ -3061,7 +3061,7 @@ entire application in a map operator.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>demean</strong> (<em>bool</em>) – Demean data beforehand.</p></li>
 <li><p><strong>normalize</strong> – Method for normalization of cross-correlation. One of ‘naive’ or None (True and False are
@@ -3108,7 +3108,7 @@ so the processing history and error logs can be preserved.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper.</p></li>
 <li><p><strong>options</strong> – extra kv options</p></li>
@@ -3136,7 +3136,7 @@ history and error logs can be preserved.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper.</p></li>
 <li><p><strong>options</strong> – extra kv options</p></li>
@@ -3162,7 +3162,7 @@ so the processing history and error logs can be preserved.</p>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper.</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – One of “linear”, “nearest”, “zero”, “slinear”, “quadratic”, “cubic”, “lanczos”,
@@ -3676,7 +3676,7 @@ the automatic naming will be overridden.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.snr.save_snr_arrival">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">save_snr_arrival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc_to_save</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wfid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wf_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_Seismogram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdocument_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_wfid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.7.3)"><span class="pre">ObjectId</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#save_snr_arrival"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.save_snr_arrival" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">save_snr_arrival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc_to_save</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wfid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wf_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_Seismogram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdocument_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_wfid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.8.0)"><span class="pre">ObjectId</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#save_snr_arrival"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.save_snr_arrival" title="Permalink to this definition"></a></dt>
 <dd><p>This function is a companion to broadband_snr_QC.   It handles the
 situation where the workflow aims to post calculated snr metrics to
 an output database (normally in the “arrival” collection but optionally
@@ -3938,31 +3938,150 @@ come from the global history manager or be set manually.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.window.WindowData">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.window.</span></span><span class="sig-name descname"><span class="pre">WindowData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">win_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">win_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scale'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#WindowData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.window.WindowData" title="Permalink to this definition"></a></dt>
-<dd><p>Cut data defined by a TimeWindow object.</p>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.window.</span></span><span class="sig-name descname"><span class="pre">WindowData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">win_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">win_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">short_segment_handling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kill'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_recoverable_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'WindowData'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#WindowData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.window.WindowData" title="Permalink to this definition"></a></dt>
+<dd><p>Apply a window operation to cut out data within a specified time range
+to any MsPASS seismic data object.</p>
 <p>Cutting a smaller waveform segment from a larger waveform segment
-is a very common seismic data processing task.   The function is
-a python wrapper to adapt C++ code that accomplishes that task
-to the MsPASS framework.</p>
-<p>Note this function uses one model for being bombproof with a map
-operation.  Any exception that makes the result invalid will cause
-an error message to be posted to the elog attribute of the input
-datum AND the data will be marked dead (killed).</p>
+is a very common seismic data processing task.  Handling that low
+level operation needs to be done efficiently but with a reasonable
+number of options.   This function is very fast if the inputs
+match the expected model where the requested time segment is
+inside the range of the datum passed via arg0.   In that mode the
+function is a thin wrapper on a C++ function that does most of
+the work.   When the window is inconsistent with the data,
+which is defined here as a “short segment”, more overhead
+is involved if you want to recover something.   To be specific
+a “short segment” means the requested time span for a the
+window operation form win_start to win_end is not completely
+inside (inclusive of the endpoints) the range of the data.</p>
+<p>Handling of “short segments” has these elements:
+1.  If the window range is completely outside the range of</p>
+<blockquote>
+<div><p>the data the result is always killed and returned
+as a dead datum with no sample data. (d.npts=0)</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>Behavior if there is the window range overlaps but
+has boundaries outside the data range depends on the setting
+of the argument <cite>short_segment_handling</cite> and the
+boolean argument <cite>log_recoverable_errors</cite>.
+If <cite>log_recoverable_errors</cite> is set True (default) and
+the result is returned live (i.e. the error was recoverable
+but the data are flawed) a complaint message describing
+what was done will be posted to the elog container
+of the return.   If False recoveries will be done
+silently.   That can be useful in some algorithms
+(e.g. cross-correlation) where partial segments can be
+handled.  What defines possible recovery is set by
+the <cite>short_segment_handling</cite> string.  It must be
+one of only three possible values or the function
+will abort with a ValueError exception:
+“kill” - (default) does not recovery attempt and will</p>
+<blockquote>
+<div><p>kill any data with time inconsistencies.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>“truncate” - this truncates to the output to the</dt><dd><p>time range max(d.t0,win.starttime) to
+min(d.endtime(),win.endtime).</p>
+</dd>
+<dt>“pad” - will cause the function to have data in</dt><dd><p>the span define dby win_start to win_end but
+the sections where the data are undefined will
+be set to zeros.</p>
+</dd>
+</dl>
+</li>
+</ol>
+<p>This function handles input that is any valid MsPASS data
+object.  For atomic data it is a very thin wrapper for the
+related function <cite>WindowDataAtomic</cite>.   For atomic data this
+is nothing more than a convenience function that allows you
+to omit the “Atomic” qualifier.  For ensemble data
+this function is more-or-less a loop over all ensemble
+members running <cite>WindowDataAtomic</cite> on each member datum.
+In all cases the return is the same type as the input but
+either shortened to the specified range or killed.
+A special case is ensembles where only some members
+may be killed.</p>
+<p>A special option for ensembles only can be triggered by
+setting the optional argument <cite>overwrite_members</cite> to True.
+Default behavior returns an independent ensemble created
+from the input cut to the requested window interval.
+When <cite>overwrite_members</cite> is set True the windowing of the
+members will be done in place ovewriting the original
+ensemble contents.  i.e. in tha output is a reference to
+the same object as the input.  The primary use of the
+<cite>overwrite_members == False</cite> option is for use in map
+operators on large ensembles as it can significantly
+reduce the memory footprint.</p>
+<p>Note the description of subsample time handling in the
+related docstring for <cite>WindowDataAtomic</cite>.   For ensembles
+each member output preserves subsample timing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>d</strong> – is the input data.  d must be either a <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>
+<li><p><strong>d</strong> – is the input data.  d must be either a
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>
 object or the function will log an error to d and return a None.</p></li>
 <li><p><strong>twin_start</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – defines the start of timeWindow to be cut</p></li>
 <li><p><strong>twin_end</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – defines the end of timeWindow to be cut</p></li>
-<li><p><strong>t0shift</strong> – is an optional time shift to apply to the time window.
+<li><p><strong>t0shift</strong> (<em>real number</em><em> (</em><em>float</em><em>) or </em><em>a string that defines a</em>) – is an optional time shift to apply to the time window.
 This parameter is convenient to avoid conversions to relative time.
 A typical example would be to set t0shift to an arrival time and let
 the window define time relative to that arrival time.  Default is None
-which cause the function to assume twin is to be used directly.</p></li>
-<li><p><strong>object_history</strong> – boolean to enable or disable saving object
-level history.  Default is False.  Note this functionality is
-implemented via the mspass_func_wrapper decorator.</p></li>
+which cause the function to assume twin is to be used directly.
+It can be specified one of two ways:  (1) as a number where it
+is assumed to be a time shift to apply in seconds, or (2) as a
+a string.  In the later case the string is assumed to be a valid
+key for fetching a time from a datum’s Metadata container.
+Note the name t0shift is a bit inconsistent with this usage but
+was retained as the original api did not have the string
+option.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Metadata container key.
+:param short_segment_handling: Defines method for handling data where
+the requested interval is shorter than the requested window but does
+have some overlap. <cite>segment_handling_methods</cite> must be one of the following:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><cite>kill</cite> - in this mode any issues cause the return to be marked dead</dt><dd><p>(this is the default)</p>
+</dd>
+<dt>‘pad’ -  in this mode return will have short segments will be padded</dt><dd><p>with zeros to define data of the required length.</p>
+</dd>
+<dt>‘truncate’ - in this mode short segments will be truncated on left</dt><dd><p>and/or right to match actual data range.</p>
+</dd>
+</dl>
+<p>Note that if the input time range does not overlap the requested
+interval “kiLl” is always the behavior as by definition the result
+is null.</p>
+</div></blockquote>
+<dl class="field-list simple">
+</dl>
+<p>Throws a ValueError exception of not one of the accepted values.
+:param log_recoverable_errors:  When True (default) any recoverable
+windowing error (meaning at least a partial overlap in time range)
+will cause a log message to be posted to the elog container of the
+output.  When False recovery will be done silently.  Note when
+<cite>short_segment_handling</cite> is set to “kill” logging is not optional and
+kill will always create an error log entry.
+:param overwrite_members:   controls handling of the member vector of
+ensembles as described above.  When True the member atomic data will
+be overwritten by the windowed version and the ensmble returned will
+be a reference to the same container as the input.  When False
+(the default) a new container is created and returned.  Note in that
+mode dead data are copied to the same slot as the input unaltered.
+This argument will be silently ignored if the input is an atomic
+MsPASS seismic object.
+:type overwrite_members:  boolean
+:param object_history: boolean to enable or disable saving object</p>
+<blockquote>
+<div><p>level history.  Default is False.  Note this functionality is
+implemented via the mspass_func_wrapper decorator.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>alg_name</strong> – When history is enabled this is the algorithm name
 assigned to the stamp for applying this algorithm.
 Default (“WindowData”) should normally be just used.
@@ -3983,9 +4102,147 @@ the input is marked dead</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.algorithms.window.WindowData_with_duration">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.window.</span></span><span class="sig-name descname"><span class="pre">WindowData_with_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scale'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#WindowData_with_duration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.window.WindowData_with_duration" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="mspasspy.algorithms.window.WindowDataAtomic">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.window.</span></span><span class="sig-name descname"><span class="pre">WindowDataAtomic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">win_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">win_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">short_segment_handling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kill'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_recoverable_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'WindowDataAtomic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#WindowDataAtomic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.window.WindowDataAtomic" title="Permalink to this definition"></a></dt>
+<dd><p>Cut atomic data to a shorter time segment defined by a time range.</p>
+<p>Cutting a smaller waveform segment from a larger waveform segment
+is a very common seismic data processing task.  Handling that low
+level operation needs to be done efficiently but with a reasonable
+number of options.   This function is very fast if the inputs
+match the expected model where the requested time segment is
+inside the range of the datum passed via arg0.   In that mode the
+function is a thin wrapper on a C++ function that does most of
+the work.   When the window is inconsistent with the data,
+which is defined here as a “short segment”, more overhead
+is involved if you want to recover something.   To be specific
+a “short segment” means the requested time span for a the
+window operation form win_start to win_end is not completely
+inside (inclusive of the endpoints) the range of the data.</p>
+<p>Handling of “short segments” has these elements:
+1.  If the window range is completely outside the range of</p>
+<blockquote>
+<div><p>the data the result is always killed and returned
+as a dead datum with no sample data. (d.npts=0)</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>Behavior if there is the window range overlaps but
+has boundaries outside the data range depends on the setting
+of the argument <cite>short_segment_handling</cite> and the
+boolean argument <cite>log_recoverable_errors</cite>.
+If <cite>log_recoverable_errors</cite> is set True (default) and
+the result is returned live (i.e. the error was recoverable
+but the data are flawed) a complaint message describing
+what was done will be posted to the elog container
+of the return.   If False recoveries will be done
+silently.   That can be useful in some algorithms
+(e.g. cross-correlation) where partial segments can be
+handled.  What defines possible recovery is set by
+the <cite>short_segment_handling</cite> string.  It must be
+one of only three possible values or the function
+will abort with a ValueError exception:
+“kill” - (default) does not recovery attempt and will</p>
+<blockquote>
+<div><p>kill any data with time inconsistencies.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>“truncate” - this truncates to the output to the</dt><dd><p>time range max(d.t0,win.starttime) to
+min(d.endtime(),win.endtime).</p>
+</dd>
+<dt>“pad” - will cause the function to have data in</dt><dd><p>the span define dby win_start to win_end but
+the sections where the data are undefined will
+be set to zeros.</p>
+</dd>
+</dl>
+</li>
+</ol>
+<p>Users should also be aware that this function preserves subsample timing
+in modern earthquake data.   All seismic reflection processing
+systems treat timing as synchronous on all channels.   That assumption
+is not true for data acquired by independent digitizers with
+external timing systems (today always GPS timing).   In MsPASS
+that is handled through the <cite>t0</cite> attribute of atomic data objects and
+the (internal) time shift from GMT used when the time standard is
+shifted to “relative”.   A detail of this function is it preserves
+t0 subsample timing so if you carefully examine the t0 value
+on the return of this function it will match the <cite>twin_start</cite>
+value only to the nearest sample.   That way time computed with the
+time method (endtime is a special case for sample npts-1)
+will have subsample accuracy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – is the input data.  d must be either a
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>
+object or the function will log an error to d and return a None.</p></li>
+<li><p><strong>twin_start</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – defines the start of timeWindow to be cut</p></li>
+<li><p><strong>twin_end</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – defines the end of timeWindow to be cut</p></li>
+<li><p><strong>t0shift</strong> (<em>real number</em><em> (</em><em>float</em><em>) or </em><em>a string that defines a</em>) – is an optional time shift to apply to the time window.
+This parameter is convenient to avoid conversions to relative time.
+A typical example would be to set t0shift to an arrival time and let
+the window define time relative to that arrival time.  Default is None
+which cause the function to assume twin is to be used directly.
+It can be specified one of two ways:  (1) as a number where it
+is assumed to be a time shift to apply in seconds, or (2) as a
+a string.  In the later case the string is assumed to be a valid
+key for fetching a time from a datum’s Metadata container.
+Note the name t0shift is a bit inconsistent with this usage but
+was retained as the original api did not have the string
+option.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Metadata container key.
+:param short_segment_handling: Defines method for handling data where
+the requested interval is shorter than the requested window but does
+have some overlap. <cite>segment_handling_methods</cite> must be one of the following:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><cite>kill</cite> - in this mode any issues cause the return to be marked dead</dt><dd><p>(this is the default)</p>
+</dd>
+<dt>‘pad’ -  in this mode return will have short segments will be padded</dt><dd><p>with zeros to define data of the required length.</p>
+</dd>
+<dt>‘truncate’ - in this mode short segments will be truncated on left</dt><dd><p>and/or right to match actual data range.</p>
+</dd>
+</dl>
+<p>Note that if the input time range does not overlap the requested
+interval “kiLl” is always the behavior as by definition the result
+is null.</p>
+</div></blockquote>
+<dl class="field-list simple">
+</dl>
+<p>Throws a ValueError exception of not one of the accepted values.
+:param log_recoverable_errors:  When True (default) any recoverable
+windowing error (meaning at least a partial overlap in time range)
+will cause a log message to be posted to the elog container of the
+output.  When False recovery will be done silently.  Note when
+<cite>short_segment_handling</cite> is set to “kill” logging is not optional and
+kill will always create an error log entry.
+:param object_history: boolean to enable or disable saving object</p>
+<blockquote>
+<div><p>level history.  Default is False.  Note this functionality is
+implemented via the mspass_func_wrapper decorator.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alg_name</strong> – When history is enabled this is the algorithm name
+assigned to the stamp for applying this algorithm.
+Default (“WindowData”) should normally be just used.
+Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>ald_id</strong> – algorithm id to assign to history record (used only if
+object_history is set True.)
+Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>dryrun</strong> – Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>dryrun</strong> – Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>copy of d with sample range reduced to twin range.  Returns
+an empty version of the parent data type (default constructor) if
+the input is marked dead</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.window.ensemble_error_post">
@@ -4156,7 +4413,7 @@ level history.  Default is False.  Note this functionality is
 implemented via the mspass_func_wrapper decorator.</p></li>
 <li><p><strong>alg_name</strong> – When history is enabled this is the algorithm name
 assigned to the stamp for applying this algorithm.
-Default (“WindowData”) should normally be just used.
+Default (“merge”) should normally be just used.
 Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
 <li><p><strong>ald_id</strong> – algorithm id to assign to history record (used only if
 object_history is set True.)

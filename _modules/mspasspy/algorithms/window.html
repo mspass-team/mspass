@@ -142,6 +142,7 @@
              
   <h1>Source code for mspasspy.algorithms.window</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Metadata</span><span class="p">,</span>
     <span class="n">MsPASSError</span><span class="p">,</span>
     <span class="n">AtomicType</span><span class="p">,</span>
     <span class="n">ErrorSeverity</span><span class="p">,</span>
@@ -429,31 +430,81 @@
             <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="WindowData"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">WindowData</span><span class="p">(</span>
+<div class="viewcode-block" id="WindowDataAtomic"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowDataAtomic">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">WindowDataAtomic</span><span class="p">(</span>
     <span class="n">d</span><span class="p">,</span>
     <span class="n">win_start</span><span class="p">,</span>
     <span class="n">win_end</span><span class="p">,</span>
     <span class="n">t0shift</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">short_segment_handling</span><span class="o">=</span><span class="s2">&quot;kill&quot;</span><span class="p">,</span>
+    <span class="n">log_recoverable_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;scale&quot;</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;WindowDataAtomic&quot;</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Cut data defined by a TimeWindow object.</span>
+<span class="sd">    Cut atomic data to a shorter time segment defined by a time range.</span>
 
 <span class="sd">    Cutting a smaller waveform segment from a larger waveform segment</span>
-<span class="sd">    is a very common seismic data processing task.   The function is</span>
-<span class="sd">    a python wrapper to adapt C++ code that accomplishes that task</span>
-<span class="sd">    to the MsPASS framework.</span>
+<span class="sd">    is a very common seismic data processing task.  Handling that low</span>
+<span class="sd">    level operation needs to be done efficiently but with a reasonable</span>
+<span class="sd">    number of options.   This function is very fast if the inputs</span>
+<span class="sd">    match the expected model where the requested time segment is</span>
+<span class="sd">    inside the range of the datum passed via arg0.   In that mode the</span>
+<span class="sd">    function is a thin wrapper on a C++ function that does most of</span>
+<span class="sd">    the work.   When the window is inconsistent with the data,</span>
+<span class="sd">    which is defined here as a &quot;short segment&quot;, more overhead</span>
+<span class="sd">    is involved if you want to recover something.   To be specific</span>
+<span class="sd">    a &quot;short segment&quot; means the requested time span for a the</span>
+<span class="sd">    window operation form win_start to win_end is not completely</span>
+<span class="sd">    inside (inclusive of the endpoints) the range of the data.</span>
 
-<span class="sd">    Note this function uses one model for being bombproof with a map</span>
-<span class="sd">    operation.  Any exception that makes the result invalid will cause</span>
-<span class="sd">    an error message to be posted to the elog attribute of the input</span>
-<span class="sd">    datum AND the data will be marked dead (killed).</span>
+<span class="sd">    Handling of &quot;short segments&quot; has these elements:</span>
+<span class="sd">    1.  If the window range is completely outside the range of</span>
+<span class="sd">        the data the result is always killed and returned</span>
+<span class="sd">        as a dead datum with no sample data. (d.npts=0)</span>
+<span class="sd">    2.  Behavior if there is the window range overlaps but</span>
+<span class="sd">        has boundaries outside the data range depends on the setting</span>
+<span class="sd">        of the argument `short_segment_handling` and the</span>
+<span class="sd">        boolean argument `log_recoverable_errors`.</span>
+<span class="sd">        If `log_recoverable_errors` is set True (default) and</span>
+<span class="sd">        the result is returned live (i.e. the error was recoverable</span>
+<span class="sd">        but the data are flawed) a complaint message describing</span>
+<span class="sd">        what was done will be posted to the elog container</span>
+<span class="sd">        of the return.   If False recoveries will be done</span>
+<span class="sd">        silently.   That can be useful in some algorithms</span>
+<span class="sd">        (e.g. cross-correlation) where partial segments can be</span>
+<span class="sd">        handled.  What defines possible recovery is set by</span>
+<span class="sd">        the `short_segment_handling` string.  It must be</span>
+<span class="sd">        one of only three possible values or the function</span>
+<span class="sd">        will abort with a ValueError exception:</span>
+<span class="sd">        &quot;kill&quot; - (default) does not recovery attempt and will</span>
+<span class="sd">                 kill any data with time inconsistencies.</span>
+<span class="sd">        &quot;truncate&quot; - this truncates to the output to the</span>
+<span class="sd">                time range max(d.t0,win.starttime) to</span>
+<span class="sd">                min(d.endtime(),win.endtime).</span>
+<span class="sd">        &quot;pad&quot; - will cause the function to have data in</span>
+<span class="sd">                the span define dby win_start to win_end but</span>
+<span class="sd">                the sections where the data are undefined will</span>
+<span class="sd">                be set to zeros.</span>
 
-<span class="sd">    :param d: is the input data.  d must be either a :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">    Users should also be aware that this function preserves subsample timing</span>
+<span class="sd">    in modern earthquake data.   All seismic reflection processing</span>
+<span class="sd">    systems treat timing as synchronous on all channels.   That assumption</span>
+<span class="sd">    is not true for data acquired by independent digitizers with</span>
+<span class="sd">    external timing systems (today always GPS timing).   In MsPASS</span>
+<span class="sd">    that is handled through the `t0` attribute of atomic data objects and</span>
+<span class="sd">    the (internal) time shift from GMT used when the time standard is</span>
+<span class="sd">    shifted to &quot;relative&quot;.   A detail of this function is it preserves</span>
+<span class="sd">    t0 subsample timing so if you carefully examine the t0 value</span>
+<span class="sd">    on the return of this function it will match the `twin_start`</span>
+<span class="sd">    value only to the nearest sample.   That way time computed with the</span>
+<span class="sd">    time method (endtime is a special case for sample npts-1)</span>
+<span class="sd">    will have subsample accuracy.</span>
+
+<span class="sd">    :param d: is the input data.  d must be either a</span>
+<span class="sd">      :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
 <span class="sd">      object or the function will log an error to d and return a None.</span>
 <span class="sd">    :param twin_start: defines the start of timeWindow to be cut</span>
 <span class="sd">    :type twin_start: :class:`float`</span>
@@ -464,6 +515,35 @@
 <span class="sd">      A typical example would be to set t0shift to an arrival time and let</span>
 <span class="sd">      the window define time relative to that arrival time.  Default is None</span>
 <span class="sd">      which cause the function to assume twin is to be used directly.</span>
+<span class="sd">      It can be specified one of two ways:  (1) as a number where it</span>
+<span class="sd">      is assumed to be a time shift to apply in seconds, or (2) as a</span>
+<span class="sd">      a string.  In the later case the string is assumed to be a valid</span>
+<span class="sd">      key for fetching a time from a datum&#39;s Metadata container.</span>
+<span class="sd">      Note the name t0shift is a bit inconsistent with this usage but</span>
+<span class="sd">      was retained as the original api did not have the string</span>
+<span class="sd">      option.</span>
+<span class="sd">    :type t0shift:  real number (float) or a string that defines a</span>
+<span class="sd">    Metadata container key.</span>
+<span class="sd">    :param short_segment_handling: Defines method for handling data where</span>
+<span class="sd">    the requested interval is shorter than the requested window but does</span>
+<span class="sd">    have some overlap. `segment_handling_methods` must be one of the following:</span>
+<span class="sd">      `kill` - in this mode any issues cause the return to be marked dead</span>
+<span class="sd">               (this is the default)</span>
+<span class="sd">      &#39;pad&#39; -  in this mode return will have short segments will be padded</span>
+<span class="sd">               with zeros to define data of the required length.</span>
+<span class="sd">      &#39;truncate&#39; - in this mode short segments will be truncated on left</span>
+<span class="sd">                  and/or right to match actual data range.</span>
+<span class="sd">      Note that if the input time range does not overlap the requested</span>
+<span class="sd">      interval &quot;kiLl&quot; is always the behavior as by definition the result</span>
+<span class="sd">      is null.</span>
+<span class="sd">    :type short_segment_handle:  string (from list above)  Default is &quot;kill&quot;.</span>
+<span class="sd">    Throws a ValueError exception of not one of the accepted values.</span>
+<span class="sd">    :param log_recoverable_errors:  When True (default) any recoverable</span>
+<span class="sd">    windowing error (meaning at least a partial overlap in time range)</span>
+<span class="sd">    will cause a log message to be posted to the elog container of the</span>
+<span class="sd">    output.  When False recovery will be done silently.  Note when</span>
+<span class="sd">    `short_segment_handling` is set to &quot;kill&quot; logging is not optional and</span>
+<span class="sd">    kill will always create an error log entry.</span>
 <span class="sd">    :param object_history: boolean to enable or disable saving object</span>
 <span class="sd">      level history.  Default is False.  Note this functionality is</span>
 <span class="sd">      implemented via the mspass_func_wrapper decorator.</span>
@@ -483,97 +563,370 @@
 <span class="sd">      an empty version of the parent data type (default constructor) if</span>
 <span class="sd">      the input is marked dead</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;WindowDataAtomic&quot;</span>
+    <span class="n">segment_handling_methods</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;kill&quot;</span><span class="p">,</span> <span class="s2">&quot;pad&quot;</span><span class="p">,</span> <span class="s2">&quot;truncate&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">short_segment_handling</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">segment_handling_methods</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;WindowData:   illegal option given for segment_handling_method=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">segment_handling_methods</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;WindowData:   illegal type for arg0=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">Must be either TimeSeries or Seismogram&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">d</span>
-    <span class="n">twcut</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">win_start</span><span class="p">,</span> <span class="n">win_end</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">window_message</span><span class="p">(</span><span class="n">this_d</span><span class="p">,</span> <span class="n">tw</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        File scope function standardizes error message for problems.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Window range: </span><span class="si">{wst}</span><span class="s2"> &lt; t &lt; </span><span class="si">{wet}</span><span class="s2">  Data range:  </span><span class="si">{dst}</span><span class="s2"> &lt; t &lt; </span><span class="si">{det}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">wst</span><span class="o">=</span><span class="n">tw</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">wet</span><span class="o">=</span><span class="n">tw</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">this_d</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">det</span><span class="o">=</span><span class="n">this_d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">message</span>
+
+    <span class="c1"># This block defines the TimeWindow object twcut to implement the options</span>
+    <span class="c1"># for handling the possible issues with inconsistencies of the time range requested and data</span>
+    <span class="c1"># time span.   First define it as the full range and dither the time window if appropriate</span>
+    <span class="n">twcut0</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">win_start</span><span class="p">,</span> <span class="n">win_end</span><span class="p">)</span>
+    <span class="n">twcut</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">twcut0</span><span class="p">)</span>  <span class="c1"># the start and end time of this copy may be changed</span>
     <span class="k">if</span> <span class="n">t0shift</span><span class="p">:</span>
-        <span class="n">twcut</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">t0shift</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t0shift</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">t0shift</span><span class="p">):</span>
+                <span class="n">t0shift</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">t0shift</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;t0shift argument passed as string value=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t0shift</span><span class="p">)</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Implies use as key to fetch Metadata from datum, but the requested key is not defined</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Setting shift to 0.0 - this is likely to cause later handling to kill this datum&quot;</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                <span class="n">t0shift</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">twcut</span> <span class="o">=</span> <span class="n">twcut</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">t0shift</span><span class="p">)</span>
+        <span class="n">twcut0</span> <span class="o">=</span> <span class="n">twcut</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">t0shift</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">twcut</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="ow">or</span> <span class="n">twcut</span><span class="o">.</span><span class="n">start</span> <span class="o">&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">():</span>
+        <span class="c1"># always kill and return a zero length datum if there is no overlap</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Data time range is outside the time range window time range</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="n">window_message</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">twcut</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">d</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
+    <span class="c1"># If either of these get set true we set padding_required True</span>
+    <span class="n">cut_on_left</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">cut_on_right</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">padding_required</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">short_segment_handling</span> <span class="o">!=</span> <span class="s2">&quot;kill&quot;</span><span class="p">:</span>
+        <span class="c1"># earthquake data start times are not on a synchronous time mesh so we</span>
+        <span class="c1"># have to use a rounding algorithm in this block to set windows</span>
+        <span class="c1"># relative to the sample grid for each datum.</span>
+        <span class="k">if</span> <span class="n">twcut</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">-</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">log_recoverable_errors</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Window start time is less than data start time</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="n">window_message</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">twcut</span><span class="p">)</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Setting window start time to data start time=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
+                <span class="p">)</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+            <span class="n">twcut</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
+            <span class="n">cut_on_left</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">twcut</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span> <span class="o">+</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">log_recoverable_errors</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Window end time is after data end time</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="n">window_message</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">twcut</span><span class="p">)</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Setting window end time to data end time=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+                <span class="p">)</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+            <span class="n">twcut</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+            <span class="n">cut_on_right</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">short_segment_handling</span> <span class="o">==</span> <span class="s2">&quot;truncate&quot;</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;This data segment will be shorter than requested&quot;</span>
+            <span class="k">elif</span> <span class="n">short_segment_handling</span> <span class="o">==</span> <span class="s2">&quot;pad&quot;</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Datum returned will be zero padded in undefined time range&quot;</span>
+        <span class="k">if</span> <span class="n">short_segment_handling</span> <span class="o">==</span> <span class="s2">&quot;pad&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cut_on_right</span> <span class="ow">or</span> <span class="n">cut_on_left</span><span class="p">:</span>
+                <span class="n">padding_required</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># This handler duplicates an error test in the WindowData C code but</span>
-        <span class="c1"># it will be more efficient to handle it here.</span>
-        <span class="k">if</span> <span class="n">twcut</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="ow">or</span> <span class="n">twcut</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">():</span>
-            <span class="n">detailline</span> <span class="o">=</span> <span class="s2">&quot;Window range: </span><span class="si">{wst}</span><span class="s2">,</span><span class="si">{wet}</span><span class="s2">  Data range:  </span><span class="si">{dst}</span><span class="s2">,</span><span class="si">{det}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">wst</span><span class="o">=</span><span class="n">twcut</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">wet</span><span class="o">=</span><span class="n">twcut</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">det</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
-            <span class="p">)</span>
-            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                <span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Data range is smaller than window range</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">detailline</span><span class="p">,</span>
-                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">d</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
             <span class="n">dcut</span> <span class="o">=</span> <span class="n">_WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">twcut</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">dcut</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
-            <span class="n">dcut</span> <span class="o">=</span> <span class="n">_WindowData3C</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">twcut</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">dcut</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;WindowData:  Invalid input data type received=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
-            <span class="p">)</span>
+            <span class="c1"># not with current logic this alway means we are handling a Seismogram here</span>
+            <span class="n">dcut</span> <span class="o">=</span> <span class="n">_WindowData3C</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">twcut</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">padding_required</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+                <span class="n">dpadded</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">dcut</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dpadded</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="n">dcut</span><span class="p">)</span>
+            <span class="c1"># preserve subsample timing of t0 from parent</span>
+            <span class="n">istart</span> <span class="o">=</span> <span class="n">dcut</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">twcut0</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+            <span class="c1"># this has to be computed from window duration NOT the computed</span>
+            <span class="c1"># start time using the t0 + i*dt formula of the time method of</span>
+            <span class="c1"># BasicTimeSeries.   The reason is a subtle rounding issue with</span>
+            <span class="c1"># subsample timing that can cause a factor of 1 ambiguity from rounding.</span>
+            <span class="c1"># C++ code uses this same formula so we also need to be consistent</span>
+            <span class="n">dpadded</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">dcut</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">istart</span><span class="p">)</span>
+            <span class="n">npts</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">twcut0</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="n">dpadded</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">dpadded</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span>  <span class="c1"># assume this initializes arrays to zeros</span>
+            <span class="c1"># a bit more obscure with the : notation here but much faster</span>
+            <span class="c1"># than using python loops</span>
+            <span class="n">istart</span> <span class="o">=</span> <span class="n">dpadded</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">dcut</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
+            <span class="n">iend</span> <span class="o">=</span> <span class="n">dpadded</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">dcut</span><span class="o">.</span><span class="n">endtime</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+                <span class="n">dpadded</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">istart</span><span class="p">:</span><span class="n">iend</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcut</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dpadded</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">istart</span><span class="p">:</span><span class="n">iend</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcut</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">return</span> <span class="n">dpadded</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dcut</span>
+
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="c1"># This handler is needed in case the C++ functions WindowData or WindowData3C</span>
+        <span class="c1"># throw an exception.  With the current logic that should not happen but</span>
+        <span class="c1"># this makes the code base more robust in the event changes occur</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">d</span></div>
 
 
-<div class="viewcode-block" id="WindowData_with_duration"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData_with_duration">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">WindowData_with_duration</span><span class="p">(</span>
-    <span class="n">d</span><span class="p">,</span>
-    <span class="n">duration</span><span class="p">,</span>
+<div class="viewcode-block" id="WindowData"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">WindowData</span><span class="p">(</span>
+    <span class="n">mspass_object</span><span class="p">,</span>
+    <span class="n">win_start</span><span class="p">,</span>
+    <span class="n">win_end</span><span class="p">,</span>
     <span class="n">t0shift</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">short_segment_handling</span><span class="o">=</span><span class="s2">&quot;kill&quot;</span><span class="p">,</span>
+    <span class="n">log_recoverable_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">overwrite_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;scale&quot;</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="k">if</span> <span class="n">duration</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">detailline</span> <span class="o">=</span> <span class="s2">&quot;Window duration: </span><span class="si">{dur}</span><span class="s2">  Data range:  </span><span class="si">{dst}</span><span class="s2">,</span><span class="si">{det}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">dur</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">det</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply a window operation to cut out data within a specified time range</span>
+<span class="sd">    to any MsPASS seismic data object.</span>
+
+<span class="sd">    Cutting a smaller waveform segment from a larger waveform segment</span>
+<span class="sd">    is a very common seismic data processing task.  Handling that low</span>
+<span class="sd">    level operation needs to be done efficiently but with a reasonable</span>
+<span class="sd">    number of options.   This function is very fast if the inputs</span>
+<span class="sd">    match the expected model where the requested time segment is</span>
+<span class="sd">    inside the range of the datum passed via arg0.   In that mode the</span>
+<span class="sd">    function is a thin wrapper on a C++ function that does most of</span>
+<span class="sd">    the work.   When the window is inconsistent with the data,</span>
+<span class="sd">    which is defined here as a &quot;short segment&quot;, more overhead</span>
+<span class="sd">    is involved if you want to recover something.   To be specific</span>
+<span class="sd">    a &quot;short segment&quot; means the requested time span for a the</span>
+<span class="sd">    window operation form win_start to win_end is not completely</span>
+<span class="sd">    inside (inclusive of the endpoints) the range of the data.</span>
+
+<span class="sd">    Handling of &quot;short segments&quot; has these elements:</span>
+<span class="sd">    1.  If the window range is completely outside the range of</span>
+<span class="sd">        the data the result is always killed and returned</span>
+<span class="sd">        as a dead datum with no sample data. (d.npts=0)</span>
+<span class="sd">    2.  Behavior if there is the window range overlaps but</span>
+<span class="sd">        has boundaries outside the data range depends on the setting</span>
+<span class="sd">        of the argument `short_segment_handling` and the</span>
+<span class="sd">        boolean argument `log_recoverable_errors`.</span>
+<span class="sd">        If `log_recoverable_errors` is set True (default) and</span>
+<span class="sd">        the result is returned live (i.e. the error was recoverable</span>
+<span class="sd">        but the data are flawed) a complaint message describing</span>
+<span class="sd">        what was done will be posted to the elog container</span>
+<span class="sd">        of the return.   If False recoveries will be done</span>
+<span class="sd">        silently.   That can be useful in some algorithms</span>
+<span class="sd">        (e.g. cross-correlation) where partial segments can be</span>
+<span class="sd">        handled.  What defines possible recovery is set by</span>
+<span class="sd">        the `short_segment_handling` string.  It must be</span>
+<span class="sd">        one of only three possible values or the function</span>
+<span class="sd">        will abort with a ValueError exception:</span>
+<span class="sd">        &quot;kill&quot; - (default) does not recovery attempt and will</span>
+<span class="sd">                 kill any data with time inconsistencies.</span>
+<span class="sd">        &quot;truncate&quot; - this truncates to the output to the</span>
+<span class="sd">                time range max(d.t0,win.starttime) to</span>
+<span class="sd">                min(d.endtime(),win.endtime).</span>
+<span class="sd">        &quot;pad&quot; - will cause the function to have data in</span>
+<span class="sd">                the span define dby win_start to win_end but</span>
+<span class="sd">                the sections where the data are undefined will</span>
+<span class="sd">                be set to zeros.</span>
+
+<span class="sd">    This function handles input that is any valid MsPASS data</span>
+<span class="sd">    object.  For atomic data it is a very thin wrapper for the</span>
+<span class="sd">    related function `WindowDataAtomic`.   For atomic data this</span>
+<span class="sd">    is nothing more than a convenience function that allows you</span>
+<span class="sd">    to omit the &quot;Atomic&quot; qualifier.  For ensemble data</span>
+<span class="sd">    this function is more-or-less a loop over all ensemble</span>
+<span class="sd">    members running `WindowDataAtomic` on each member datum.</span>
+<span class="sd">    In all cases the return is the same type as the input but</span>
+<span class="sd">    either shortened to the specified range or killed.</span>
+<span class="sd">    A special case is ensembles where only some members</span>
+<span class="sd">    may be killed.</span>
+
+<span class="sd">    A special option for ensembles only can be triggered by</span>
+<span class="sd">    setting the optional argument `overwrite_members` to True.</span>
+<span class="sd">    Default behavior returns an independent ensemble created</span>
+<span class="sd">    from the input cut to the requested window interval.</span>
+<span class="sd">    When `overwrite_members` is set True the windowing of the</span>
+<span class="sd">    members will be done in place ovewriting the original</span>
+<span class="sd">    ensemble contents.  i.e. in tha output is a reference to</span>
+<span class="sd">    the same object as the input.  The primary use of the</span>
+<span class="sd">    `overwrite_members == False` option is for use in map</span>
+<span class="sd">    operators on large ensembles as it can significantly</span>
+<span class="sd">    reduce the memory footprint.</span>
+
+<span class="sd">    Note the description of subsample time handling in the</span>
+<span class="sd">    related docstring for `WindowDataAtomic`.   For ensembles</span>
+<span class="sd">    each member output preserves subsample timing.</span>
+
+<span class="sd">    :param d: is the input data.  d must be either a</span>
+<span class="sd">      :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">      object or the function will log an error to d and return a None.</span>
+<span class="sd">    :param twin_start: defines the start of timeWindow to be cut</span>
+<span class="sd">    :type twin_start: :class:`float`</span>
+<span class="sd">    :param twin_end: defines the end of timeWindow to be cut</span>
+<span class="sd">    :type twin_end: :class:`float`</span>
+<span class="sd">    :param t0shift: is an optional time shift to apply to the time window.</span>
+<span class="sd">      This parameter is convenient to avoid conversions to relative time.</span>
+<span class="sd">      A typical example would be to set t0shift to an arrival time and let</span>
+<span class="sd">      the window define time relative to that arrival time.  Default is None</span>
+<span class="sd">      which cause the function to assume twin is to be used directly.</span>
+<span class="sd">      It can be specified one of two ways:  (1) as a number where it</span>
+<span class="sd">      is assumed to be a time shift to apply in seconds, or (2) as a</span>
+<span class="sd">      a string.  In the later case the string is assumed to be a valid</span>
+<span class="sd">      key for fetching a time from a datum&#39;s Metadata container.</span>
+<span class="sd">      Note the name t0shift is a bit inconsistent with this usage but</span>
+<span class="sd">      was retained as the original api did not have the string</span>
+<span class="sd">      option.</span>
+<span class="sd">    :type t0shift:  real number (float) or a string that defines a</span>
+<span class="sd">    Metadata container key.</span>
+<span class="sd">    :param short_segment_handling: Defines method for handling data where</span>
+<span class="sd">    the requested interval is shorter than the requested window but does</span>
+<span class="sd">    have some overlap. `segment_handling_methods` must be one of the following:</span>
+<span class="sd">      `kill` - in this mode any issues cause the return to be marked dead</span>
+<span class="sd">               (this is the default)</span>
+<span class="sd">      &#39;pad&#39; -  in this mode return will have short segments will be padded</span>
+<span class="sd">               with zeros to define data of the required length.</span>
+<span class="sd">      &#39;truncate&#39; - in this mode short segments will be truncated on left</span>
+<span class="sd">                  and/or right to match actual data range.</span>
+<span class="sd">      Note that if the input time range does not overlap the requested</span>
+<span class="sd">      interval &quot;kiLl&quot; is always the behavior as by definition the result</span>
+<span class="sd">      is null.</span>
+<span class="sd">    :type short_segment_handle:  string (from list above)  Default is &quot;kill&quot;.</span>
+<span class="sd">    Throws a ValueError exception of not one of the accepted values.</span>
+<span class="sd">    :param log_recoverable_errors:  When True (default) any recoverable</span>
+<span class="sd">    windowing error (meaning at least a partial overlap in time range)</span>
+<span class="sd">    will cause a log message to be posted to the elog container of the</span>
+<span class="sd">    output.  When False recovery will be done silently.  Note when</span>
+<span class="sd">    `short_segment_handling` is set to &quot;kill&quot; logging is not optional and</span>
+<span class="sd">    kill will always create an error log entry.</span>
+<span class="sd">    :param overwrite_members:   controls handling of the member vector of</span>
+<span class="sd">    ensembles as described above.  When True the member atomic data will</span>
+<span class="sd">    be overwritten by the windowed version and the ensmble returned will</span>
+<span class="sd">    be a reference to the same container as the input.  When False</span>
+<span class="sd">    (the default) a new container is created and returned.  Note in that</span>
+<span class="sd">    mode dead data are copied to the same slot as the input unaltered.</span>
+<span class="sd">    This argument will be silently ignored if the input is an atomic</span>
+<span class="sd">    MsPASS seismic object.</span>
+<span class="sd">    :type overwrite_members:  boolean</span>
+<span class="sd">    :param object_history: boolean to enable or disable saving object</span>
+<span class="sd">      level history.  Default is False.  Note this functionality is</span>
+<span class="sd">      implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">    :param alg_name:   When history is enabled this is the algorithm name</span>
+<span class="sd">      assigned to the stamp for applying this algorithm.</span>
+<span class="sd">      Default (&quot;WindowData&quot;) should normally be just used.</span>
+<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">    :param ald_id:  algorithm id to assign to history record (used only if</span>
+<span class="sd">      object_history is set True.)</span>
+<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">    :param dryrun:</span>
+<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">    :param dryrun:</span>
+<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+
+<span class="sd">    :return: copy of d with sample range reduced to twin range.  Returns</span>
+<span class="sd">      an empty version of the parent data type (default constructor) if</span>
+<span class="sd">      the input is marked dead</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">WindowDataAtomic</span><span class="p">(</span>
+            <span class="n">mspass_object</span><span class="p">,</span>
+            <span class="n">win_start</span><span class="p">,</span>
+            <span class="n">win_end</span><span class="p">,</span>
+            <span class="n">t0shift</span><span class="o">=</span><span class="n">t0shift</span><span class="p">,</span>
+            <span class="n">short_segment_handling</span><span class="o">=</span><span class="n">short_segment_handling</span><span class="p">,</span>
+            <span class="n">log_recoverable_errors</span><span class="o">=</span><span class="n">log_recoverable_errors</span><span class="p">,</span>
+            <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
+            <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
+            <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
+            <span class="n">dryrun</span><span class="o">=</span><span class="n">dryrun</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-            <span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Duration is a negative number.</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">detailline</span><span class="p">,</span>
-            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">d</span>
-    <span class="n">win_start</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">win_end</span> <span class="o">=</span> <span class="n">win_start</span> <span class="o">+</span> <span class="n">duration</span>
-    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">d</span>
-    <span class="n">twcut</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">win_start</span><span class="p">,</span> <span class="n">win_end</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">t0shift</span><span class="p">:</span>
-        <span class="n">twcut</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">t0shift</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># This handler duplicates an error test in the WindowData C code but</span>
-        <span class="c1"># it will be more efficient to handle it here.</span>
-        <span class="k">if</span> <span class="n">win_start</span> <span class="o">&lt;</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="ow">or</span> <span class="n">win_end</span> <span class="o">&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">():</span>
-            <span class="n">detailline</span> <span class="o">=</span> <span class="s2">&quot;Window range: </span><span class="si">{wst}</span><span class="s2">,</span><span class="si">{wet}</span><span class="s2">  Data range:  </span><span class="si">{dst}</span><span class="s2">,</span><span class="si">{det}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">wst</span><span class="o">=</span><span class="n">win_start</span><span class="p">,</span> <span class="n">wet</span><span class="o">=</span><span class="n">win_end</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">det</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
-            <span class="p">)</span>
-            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                <span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Data range is smaller than window range</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">detailline</span><span class="p">,</span>
-                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">d</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
-            <span class="n">dcut</span> <span class="o">=</span> <span class="n">_WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">twcut</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">dcut</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
-            <span class="n">dcut</span> <span class="o">=</span> <span class="n">_WindowData3C</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">twcut</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">dcut</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">mspass_object</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;WindowData:  Invalid input data type received=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+            <span class="n">nlive</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">overwrite_members</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">WindowDataAtomic</span><span class="p">(</span>
+                            <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                            <span class="n">win_start</span><span class="p">,</span>
+                            <span class="n">win_end</span><span class="p">,</span>
+                            <span class="n">t0shift</span><span class="o">=</span><span class="n">t0shift</span><span class="p">,</span>
+                            <span class="n">short_segment_handling</span><span class="o">=</span><span class="n">short_segment_handling</span><span class="p">,</span>
+                            <span class="n">log_recoverable_errors</span><span class="o">=</span><span class="n">log_recoverable_errors</span><span class="p">,</span>
+                            <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
+                            <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
+                            <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
+                            <span class="n">dryrun</span><span class="o">=</span><span class="n">dryrun</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                            <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># In this case this just creates a duplicate reference</span>
+                <span class="n">ensout</span> <span class="o">=</span> <span class="n">mspass_object</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Nmembers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+                    <span class="n">ensout</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">Metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">),</span> <span class="n">Nmembers</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ensout</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="n">Metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">),</span> <span class="n">Nmembers</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                        <span class="n">d</span> <span class="o">=</span> <span class="n">WindowDataAtomic</span><span class="p">(</span>
+                            <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                            <span class="n">win_start</span><span class="p">,</span>
+                            <span class="n">win_end</span><span class="p">,</span>
+                            <span class="n">t0shift</span><span class="o">=</span><span class="n">t0shift</span><span class="p">,</span>
+                            <span class="n">short_segment_handling</span><span class="o">=</span><span class="n">short_segment_handling</span><span class="p">,</span>
+                            <span class="n">log_recoverable_errors</span><span class="o">=</span><span class="n">log_recoverable_errors</span><span class="p">,</span>
+                            <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
+                            <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
+                            <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
+                            <span class="n">dryrun</span><span class="o">=</span><span class="n">dryrun</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                            <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># always set live and let the next line kill it if nlive is 0</span>
+                <span class="n">ensout</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">nlive</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;All members of this ensemble were killed by WindowDataAtomic;  ensemble returned will be marked dead&quot;</span>
+                <span class="n">ensout</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+                <span class="n">ensout</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">ensout</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Illegal type for arg0=</span><span class="si">{}</span><span class="s2">.  Must be a MsPASS seismic data object&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">))</span>
             <span class="p">)</span>
-    <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">d</span></div>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
 
 <span class="c1"># @mspass_func_wrapper</span>
@@ -734,7 +1087,7 @@
 <span class="sd">      implemented via the mspass_func_wrapper decorator.</span>
 <span class="sd">    :param alg_name:   When history is enabled this is the algorithm name</span>
 <span class="sd">      assigned to the stamp for applying this algorithm.</span>
-<span class="sd">      Default (&quot;WindowData&quot;) should normally be just used.</span>
+<span class="sd">      Default (&quot;merge&quot;) should normally be just used.</span>
 <span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
 <span class="sd">    :param ald_id:  algorithm id to assign to history record (used only if</span>
 <span class="sd">      object_history is set True.)</span>

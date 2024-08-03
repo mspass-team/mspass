@@ -163,7 +163,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__default_database_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MongoClient__default_database_name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mspass_db_host</span><span class="o">=</span><span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mspass_db_host</span> <span class="o">=</span> <span class="n">host</span>
 
     <span class="k">def</span> <span class="nf">_repr_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">def</span> <span class="nf">option_repr</span><span class="p">(</span><span class="n">option</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -180,9 +180,7 @@
 
         <span class="c1"># Host first...</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mspass_db_host</span><span class="p">:</span>
-            <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="s2">&quot;host=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mspass_db_host</span><span class="p">)</span>
-            <span class="p">]</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;host=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mspass_db_host</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="s2">&quot;host=</span><span class="si">%r</span><span class="s2">&quot;</span>
@@ -193,13 +191,16 @@
             <span class="p">]</span>
         <span class="c1"># ... then everything in self._constructor_args...</span>
         <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-            <span class="n">option_repr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constructor_args</span>
+            <span class="n">option_repr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constructor_args</span>
         <span class="p">)</span>
         <span class="c1"># ... then everything else.</span>
         <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
             <span class="n">option_repr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">_options</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_constructor_args</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;username&quot;</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;password&quot;</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_constructor_args</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;username&quot;</span>
+            <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;password&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
 
