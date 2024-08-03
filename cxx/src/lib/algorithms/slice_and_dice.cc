@@ -36,7 +36,16 @@ CoreSeismogram WindowData(const CoreSeismogram& parent, const TimeWindow& tw)
 		return(tmp);
 	}
   int is=parent.sample_number(tw.start);
+  /* This calculation was used in earlier versions but was found to 
+     differ by 1 depending on the subsample timing of t0 of parent.  the 
+     problem is that sample_number uses rounding which can produce that
+     effect due to a subtle interaction with tw.start and tw.end 
+     relative to the sample grid. 
   int ie=parent.sample_number(tw.end);
+  */
+  int outns,ie;
+  outns = round((tw.end-tw.start)/parent.dt()) + 1;  
+  ie = is + outns - 1;
   if( (is<0) || (ie>parent.npts()) )
   {
       ostringstream mess;
@@ -48,7 +57,6 @@ CoreSeismogram WindowData(const CoreSeismogram& parent, const TimeWindow& tw)
                 << "Parent has "<<parent.npts()<<" samples"<<endl;
       throw MsPASSError(mess.str(),ErrorSeverity::Invalid);
   }
-  int outns=ie-is+1;
 	CoreSeismogram result(parent);
   result.u=dmatrix(3,outns);
 	result.set_npts(outns);
@@ -90,7 +98,16 @@ CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw)
 		return(tmp);
 	}
   int is=parent.sample_number(tw.start);
+  /* This calculation was used in earlier versions but was found to 
+     differ by 1 depending on the subsample timing of t0 of parent.  the 
+     problem is that sample_number uses rounding which can produce that
+     effect due to a subtle interaction with tw.start and tw.end 
+     relative to the sample grid. 
   int ie=parent.sample_number(tw.end);
+  */
+  int outns,ie;
+  outns = round((tw.end-tw.start)/parent.dt()) + 1;  
+  ie = is + outns - 1;
 	//Ridiculous (int) case to silence a bogus compiler warning
   if( (is<0) || (ie>=((int)parent.npts())) )
   {
@@ -103,7 +120,6 @@ CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw)
               << "Parent has "<<parent.npts()<<" samples"<<endl;
       throw MsPASSError(mess.str(),ErrorSeverity::Invalid);
   }
-  int outns=ie-is+1;
 	CoreTimeSeries result(parent);
 	result.s.reserve(outns);
 	result.set_npts(outns);
@@ -143,7 +159,16 @@ Seismogram WindowData(const Seismogram& parent, const TimeWindow& tw)
 		return parent;
 	}
   int is=parent.sample_number(tw.start);
+  /* This calculation was used in earlier versions but was found to 
+     differ by 1 depending on the subsample timing of t0 of parent.  the 
+     problem is that sample_number uses rounding which can produce that
+     effect due to a subtle interaction with tw.start and tw.end 
+     relative to the sample grid. 
   int ie=parent.sample_number(tw.end);
+  */
+  int outns,ie;
+  outns = round((tw.end-tw.start)/parent.dt()) + 1;  
+  ie = is + outns - 1;
   if( (is<0) || (ie>parent.npts()) )
   {
       ostringstream mess;
@@ -162,7 +187,6 @@ Seismogram WindowData(const Seismogram& parent, const TimeWindow& tw)
 			dead_return.set_npts(0);
 			return dead_return;
   }
-  int outns=ie-is+1;
 	/* MAINTENANCE ISSUE:  The original implementation of this code used a copy constructor
 	here to initalize result.   We realized that was very inefficient when
 	slicing down long input signals like data blocked in day files.
@@ -233,7 +257,16 @@ TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw)
 		return(tmp);
 	}
   int is=parent.sample_number(tw.start);
+  /* This calculation was used in earlier versions but was found to 
+     differ by 1 depending on the subsample timing of t0 of parent.  the 
+     problem is that sample_number uses rounding which can produce that
+     effect due to a subtle interaction with tw.start and tw.end 
+     relative to the sample grid. 
   int ie=parent.sample_number(tw.end);
+  */
+  int outns,ie;
+  outns = round((tw.end-tw.start)/parent.dt()) + 1;  
+  ie = is + outns - 1;
 	//Ridiculous (int) case to silence a bogus compiler warning
   if( (is<0) || (ie>=((int)parent.npts())) )
   {
@@ -254,7 +287,6 @@ TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw)
 			dret.elog.log_error("WindowData",mess.str(),ErrorSeverity::Invalid);
 			return dret;
   }
-  int outns=ie-is+1;
 	/* MAINTENANCE ISSUE:  The original implementation of this code used a copy constructor
 	here to initalize result.   We realized that was very inefficient when
 	slicing down long input signals like data blocked in day files.

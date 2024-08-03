@@ -356,9 +356,9 @@ def WindowDataAtomic(
     shifted to "relative".   A detail of this function is it preserves
     t0 subsample timing so if you carefully examine the t0 value
     on the return of this function it will match the `twin_start`
-    value only to the nearest sample.   Similarly, the output of the
-    `endtime` method of the output will only match twin_end to the
-    nearest sample.
+    value only to the nearest sample.   That way time computed with the 
+    time method (endtime is a special case for sample npts-1) 
+    will have subsample accuracy.   
 
     :param d: is the input data.  d must be either a
       :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -481,7 +481,7 @@ def WindowDataAtomic(
     if short_segment_handling != "kill":
         # earthquake data start times are not on a synchronous time mesh so we
         # have to use a rounding algorithm in this block to set windows
-        # relative to the sample grid for each datum.
+        # relative to the sample grid for each datum.  
         if twcut.start < (d.t0 - d.dt / 2.0):
             if log_recoverable_errors:
                 message += "Window start time is less than data start time\n"
@@ -523,6 +523,11 @@ def WindowDataAtomic(
                 dpadded = Seismogram(dcut)
             # preserve subsample timing of t0 from parent
             istart = dcut.sample_number(twcut0.start)
+            # this has to be computed from window duration NOT the computed 
+            # start time using the t0 + i*dt formula of the time method of 
+            # BasicTimeSeries.   The reason is a subtle rounding issue with 
+            # subsample timing that can cause a factor of 1 ambiguity from rounding.
+            # C++ code uses this same formula so we also need to be consistent
             dpadded.t0 = dcut.time(istart)
             npts = round((twcut0.end - dpadded.t0) / d.dt) + 1
             dpadded.set_npts(npts)  # assume this initializes arrays to zeros
