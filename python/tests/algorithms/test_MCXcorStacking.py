@@ -305,7 +305,8 @@ def test_align_and_stack():
     #  Cannot get weights 
     test_lags(eo,lag_in_samples)
         
-    # test handling with ensemble data prewindowed but beam requiring a window
+    # test handling with ensemble data prewindowed but beam requiring a window 
+    # also tests passing correlation window via metadata
     e = TimeSeriesEnsemble(e0)
     e = WindowData(e,xcorwin.start,xcorwin.end)
     # use w here as a shorthand - different from w0 
@@ -323,26 +324,69 @@ def test_align_and_stack():
     print_elog(eo)
     test_lags(eo,lag_in_samples)
     
-    return[eo,beam]
+    # similar to above but also define robust window via beam metadata
+    e = TimeSeriesEnsemble(e0)
+    e = WindowData(e,xcorwin.start,xcorwin.end)
+    # use w here as a shorthand - different from w0 
+    # alias for member 0
+    w = TimeSeries(e0.member[0])
+    # this should resolve to -1.5 to 8
+    w['correlation_window_start'] = xcorwin.start + 0.5  
+    w['correlation_window_end'] = xcorwin.end - 2.0
+    w['robust_window_start'] = rwin.start
+    w['robust_window_end'] = rwin.end
+    [eo,beam]=align_and_stack(e, 
+                              w,
+                              window_beam=True,
+                              robust_stack_method="dbxcor")
+    assert count_live(eo) == 20
+    print_elog(eo)
+    test_lags(eo,lag_in_samples)
+    
+    # test output_stack window option
+    output_window = TimeWindow(-3.0,10.0)
+    e = TimeSeriesEnsemble(e0)
+    # use w here as a shorthand - different from w0 
+    # alias for member 0
+    w = TimeSeries(e0.member[0])
+    # this should resolve to -1.5 to 8
+    w['correlation_window_start'] = xcorwin.start + 0.5  
+    w['correlation_window_end'] = xcorwin.end - 2.0
+    w['robust_window_start'] = rwin.start
+    w['robust_window_end'] = rwin.end
+    [eo,beam]=align_and_stack(e, 
+                              w,
+                              window_beam=True,
+                              output_stack_window=output_window,
+                              robust_stack_method="dbxcor")
+    assert count_live(eo) == 20
+    print_elog(eo)
+    test_lags(eo,lag_in_samples)
+    # beam output should match output window definition
+    Tdata = beam.endtime() - beam.t0
+    Twinlength = output_window.end - output_window.start
+    assert np.isclose(Tdata,Twinlength)
+    
+    # test handing of input with a member marked dead
+    e=TimeSeriesEnsemble(e0)
+    rwin = TimeWindow(-1.0,3.0)
+    xcorwin=TimeWindow(-2.0,10.0)
+    deadguy = 3
+    e.member[deadguy].kill()
+    [eo,beam]=align_and_stack(e, 
+                              e.member[0],
+                              window_beam=True,
+                              robust_stack_window=rwin,
+                              correlation_window=xcorwin)
+    assert eo.member[deadguy].dead()
+    print_elog(eo)
+    test_lags(eo,lag_in_samples)
+    
+    #return[eo,beam]
     
 
-import matplotlib.pyplot as plt
-from mspasspy.graphics import SeismicPlotter
-plotter = SeismicPlotter()
-plotter.change_style('wtva')
-[eo,beam] = test_align_and_stack()
-#for d in eo.member:
-#    if d.live:
-#        print(d['robust_stack_weight'],d['arrival_time_correction'])
-#print(lag_in_sec)
-#plt.plot(beam.time_axis(),beam.data)
-plotter.plot(beam)
-plt.show()
-xcorwin=TimeWindow(-4.0,10.0)
-eow=WindowData(eo,xcorwin.start,xcorwin.end)
-#plotter.plot(eow)
-plotter.plot(eo)
-plt.show()
+
+test_align_and_stack()
 
 
 

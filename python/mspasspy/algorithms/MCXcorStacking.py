@@ -10,6 +10,7 @@ Created on Tue Jul  9 05:37:40 2024
 from mspasspy.ccore.utility import ErrorLogger,ErrorSeverity,Metadata
 from mspasspy.ccore.seismic import (TimeSeries,
                                     TimeSeriesEnsemble,
+                                    SeismogramEnsemble,
                                     TimeReferenceType,
                                     DoubleVector)
 from mspasspy.ccore.algorithms.basic import TimeWindow
@@ -76,75 +77,160 @@ def dbxcor_weights(ensemble,stack):
     wts /= maxwt
     return wts
 
-def validate_ensemble(ensemble):
+# TODO:   this  functions following belong somewhere else in some utility 
+# module
+def number_live(ensemble)->int:
     """
-    The stacking algorithm used in the robust_stack function below 
-    requires all members to be the same sample interval.   This function 
-    checks that all LIVE data have a common sample interval.   In the same 
-    scan it computes the time range spanned by all members.   It returns 
-    a tuple with the following 4 components:
-        0 - "ok" boolean.  That is, if the scan showed now issues returns 
-            True.  If False component 1 will have error log messages.
-        1 - ErrorLogger.   When 0 is False the log will contain one 
-            or more error messages.  When true it will be empty and 
-            can be ignored.
-        2 - start time of time interval spanned by all data
-        3 - end time of time interval spanned by all data.
-        
-
+    Scans an ensemble and returns the number of live members.  If the 
+    ensemble is marked dead it immediately return 0.  Otherwise it loops 
+    through the members countinng the number live.
+    :param ensemble:  ensemble to be scanned
+    :type ensemble:  Must be a `TimeSeriesEnsemble` or `SeismogramEnsemble` or 
+    it will throw a TypeError exception. 
     """
-    alg = "validate_ensemble"
-    # empty ensembles are by definition not ok
-    elog = ErrorLogger()
-    if len(ensemble.member) <= 0:
-        message = "Ensemble is empty - no data to process"
-        elog.log_error(alg,message,ErrorSeverity.Invalid)
-        return [False,elog,0.0,0.0]
-    t0values=[]
-    endvalues=[]
-    dtvalues=[]
-    for i in range(len(ensemble.member)):
-        d = ensemble.member[i]  # used as a shorthand symbol 
+    if not isinstance(ensemble,(TimeSeriesEnsemble,SeismogramEnsemble)):
+        message = "number_live:   illegal type for arg0={}\n".format(type(ensemble))
+        message += "Must be a TimeSeriesEnsemble or SeismogramEnsemble\n"
+        raise TypeError(message)
+    if ensemble.dead():
+        return 0
+    nlive = 0
+    for d in ensemble.member:
         if d.live:
-            t0values.append(d.t0)
-            endvalues.append(d.endtime())
-            dtvalues.append(d.dt)
-    starttime = np.max(t0values)
-    endtime = np.min(endvalues)
-    dt_test = np.median(dtvalues)
-    # isclose warns tests against number less than one 
-    # should not use default atol.  The solution we use 
-    # her is to test dt values scaled to 1.0 dividing by median dt
-    aok=True
-    nlive=0
+            nlive += 1
+    return nlive
+    
+def regularize_sampling(ensemble,dt_expected,Nsamp=10000,abort_on_error=False):
+    """
+    This is a utility function that can be used to validate that all the members 
+    of an ensemble have a sample interval that is indistinguishable from a specified 
+    constant (dt_expected)   The test for constant is soft to allow handling 
+    data created by some older digitizers that skewed the recorded sample interval to force 
+    time computed from N*dt to match time stamps on successive data packets.   
+    The formula used is the datum dt is declared constant if the difference from 
+    the expected dt is less than or equal to dt_expected/2*(Nsamp-1).  That means 
+    the computed endtime difference from that using dt_expected is less than 
+    or equal to dt/2.  
+    
+    The function by default will kill members that have mismatched sample
+    intervals and log an informational message to the datum's elog container.
+    In this mode the entire ensemble can end up marked dead if all the members 
+    are killed (That situation can easily happen if the entire data set has the wrong dt.);
+    If the argument `abort_on_errors` is set True a ValueError exception will be 
+    thrown if ANY member of the input ensemble.  
+    
+    An important alternative to this function is to pass a data set 
+    through the MsPASS `resample` function found in mspasspy.algorithms.resample.  
+    That function will guarantee all live data have the same sample interval 
+    and not kill them like this function will.   Use this function for 
+    algorithms that can't be certain the input data will have been resampled 
+    and need to be robust for what might otherwise be considered a user error.  
+    
+    :param ensemble:  ensemble container of data to be scanned for irregular 
+    sampling.
+    :type ensemble:  `TimeSeriesEnsemble` or `SeismogramEnsemble`.   The 
+    function does not test for type and will abort with an undefined method
+    error if sent anything else.
+    :param dt_expected:  constant data sample interval expected.   
+    :type dt_expected:  float
+    :param Nsamp:   Nominal number of samples expected in the ensemble members. 
+    This number is used to compute the soft test to allow for slippery clocks 
+    discussed above.   (Default 10000) 
+    :type Nsamp:  integer
+    :param abort_on_error:  Controls what the function does if it 
+    encountered a datum with a sample interval different that dt_expected. 
+    When True the function aborts with a ValueError exception if ANY 
+    ensemble member does not have a matching sample interval.  When 
+    False (the default) the function uses the MsPASS error logging
+    to hold a message an kills any member datum with a problem.
+    :type abort_on_error:  boolean
+    
+    """
+    alg = "regularize_sampling"
+    if ensemble.dead():
+        return ensemble
+    # this formula will flag any ensemble member for which the sample 
+    # rate yields a computed end time that differs from the beam 
+    # by more than one half sample
+    delta_dt_cutoff = dt_expected/(2.0*(Nsamp - 1))
     for i in range(len(ensemble.member)):
         d = ensemble.member[i]
         if d.live:
-            nlive += 1
-            dt_scaled = d.dt/dt_test
-            if not np.isclose(dt_scaled,1.0):
-                message = "Irregular sample interval in ensemble member {}\n".format(i)
-                message = "Median sample interval={} but this datum has dt={}\n",format(dt_test,d.dt)
-                # a single problem is a complaint, caller should decide if we need to kill
-                elog.log_error(alg,message,ErrorSeverity.Complaint)
-                aok = False
-    if nlive == 0:
-        message = "Ensemble has no live data - all members are marked dead"
-        elog.log_error(alg,message,ErrorSeverity.Invalid)
-        aok = False
-    else:
-        nbad=0
-        for d in ensemble.member:
-            if d.live and  d.time_is_UTC():
-                nbad += 1
-        if nbad>0:
-            aok=False
-            message = "{} of {} ensemble members are on UTC time base\n".format(nbad,len(ensemble.member))
-            message += "Use ator to convert the ensemble to relative time base required by this algorithm"
-            elog.log_error(alg,message,ErrorSeverity.Invalid)
-    return [aok,elog,starttime,endtime]
+            if not np.isclose(dt_expected,d.dt):
+                if abs(dt_expected-d.dt) > delta_dt_cutoff:
+                    message = "Member {} of input ensemble has different sample rate than expected constant dt\n",format(i)
+                    message += "Expected dt={} but this datum has dt={}\n".format(expected_dt,d.dt)
+                    if abort_on_error:
+                        raise ValueError(message)
+                    else:
+                        ensemble.member[i].elog.log_error(alg,message,ErrorSeverity.Invalid)
+                        ensemble.member[i].kill()
+    if not abort_on_error:
+        nlive = number_live(ensemble)
+        if nlive <= 0:
+            message = "All members of this ensemble were killed.\n"
+            messagge += "expected dt may be wrong or you need to run the resample function on this data set"
+            ensemble.kill()
+    return ensemble
 
-def regularize_ensemble(ensemble,starttime,endtime)->TimeSeriesEnsemble:
+def ensemble_time_range(ensemble,metric="inner")->TimeWindow:
+    """
+    Scans a Seismic data ensemble returning a measure of the 
+    time span of members.   The metric returned ban be either 
+    smallest time range containing all the data, the range 
+    defined by the minimum start time and maximum endtime, 
+    or an average defined by either the median or the 
+    arithmetic mean of the vector of startime and endtime 
+    values.   
+    
+    :param ensemble:  ensemble container to be scanned for 
+    time range. 
+    :type ensemble:  `TimeSeriesEnsemble` or `SeismogramEnsemble`. 
+    :param metric:   measure to use to define the time range.  
+    Accepted values are:
+      "inner" - (default) return range defined by largest 
+          start time to smallest end time.
+      "outer" - return range defined by minimum start time and 
+          largest end time (maximum time span of data)
+      "median" - return range as the median of the extracted 
+          vectors of start time and end time values. 
+      "mean" - return range as arithmetic average of 
+          start and end time vectors 
+    :return:  `TimeWindow` object with start and end times.
+    """
+    if not isinstance(ensemble,(TimeSeriesEnsemble,SeismogramEnsemble)):
+        message = "ensemble_time_range:   illegal type for arg0={}\n".format(type(ensemble))
+        message += "Must be a TimeSeriesEnsemble or SeismogramEnsemble\n"
+        raise TypeError(message)
+    if metric not in ["inner","outer","median","mean"]:
+        message = "ensemble_time_range:  illegal value for metric={}\n".format(metric)
+        message += "Must be one of:  inner, outer, median, or mean"
+        raise ValueError(message)
+    stvector=[]
+    etvector=[]
+    for d in ensemble.member:
+        if d.live:
+            stvector.append(d.t0)
+            etvector.append(d.endtime())
+    if metric=="inner":
+        stime = max(stvector)
+        etime = min(etvector)
+    elif metric == "outer":
+        stime =  max(stvector)
+        etime = min(etvector)
+    elif metric == "median":
+        stime = np.median(stvector)
+        etime = np.median(etvector)
+    elif metric == "mean":
+        # note numpy's mean an average are different with average being 
+        # more generic - intentionally use mean which is also consistent with 
+        # the keyword used
+        stime = np.mean(stvector)
+        etime = np.mean(etvector)
+    # Intentionally not using else to allow an easier extension
+    return TimeWindow(stime,etime)
+
+def regularize_ensemble(ensemble,starttime,endtime,fractional_mistmatch_limit)->TimeSeriesEnsemble:
     """
     Secondary function to regularize an ensemble for input to robust 
     stacking algorithm.  ASsumes all data have the same sample rate.  
@@ -158,19 +244,72 @@ def regularize_ensemble(ensemble,starttime,endtime)->TimeSeriesEnsemble:
         d = ensemble.member[i]
         if d.live:
             if np.fabs((d.t0-starttime)) > d.dt or np.fabs(d.endtime()-endtime) > d.dt:
-                d = WindowData(d,starttime,endtime)
-            ensout.member.append(d)
+                d = WindowWithCutoff(d,
+                               starttime,
+                               endtime,
+                               fractional_mismatch_limit=fractional_mistmatch_limit,
+                               )
+                if d.live:
+                    message = "Dropped member number {} because undefined data range exceeded limit of {}\n".format(i,fractional_mistmatch_limit)
+                    ensout.member.append(d)
+            else:
+                ensout.member.append(d)
         else:
-            message = "Dropped member number {} that was marked dead".format(i)
+            message = "Dropped member number {} that was marked dead on input".format(i)
             ensout.elog.log_error("regularize_ensemble",message,ErrorSeverity.Complaint)
     if len(ensout.member)>0:
         ensout.set_live()
     return ensout
+
+# TODO;  this should go in window.py
+def WindowWithCutoff(d,stime,etime,fractional_mismatch_limit=0.05):
+    """
+    Windows an atomic data object with automatic padding if the 
+    undefined section is not too large.  
+    
+    When using numpy or MsPASS data arrays the : notation can be used 
+    to drastically speed performance over using a python loop.  
+    This function is most useful for contexts here the size of the 
+    output of a window must exactly match what is expected from 
+    the time range.   The algorithm will silently zero pad any 
+    undefined samples IF the fraction of undefined data relative to 
+    the number of samples expected from the time range defined by 
+    etime-stime is less than the "fractional_mismatch_limit".  
+    
+    :param d:  atomic MsPASS seismic data object to be windowed. 
+    :type d:  works with either `TimeSeries` or `Seismogram` 
+    objects.
+    :param stime:  start time of window range 
+    :type stime:  float
+    :param etime:  end time of window range
+    :type etime:  float
+    :param fractional_mismatch_limit:  limit for the 
+    fraction of data with undefined values before the datum is
+    killed.   (see above)  If set to 0.0 this is an expensive way 
+    to behave the same as WindowData
+    :return:  object of the same type as d.   Will be marked dead 
+    if the fraction of undefined data exceeds fractional_mismatch_limit.
+    Otherwise will return a data vector of constant size that may 
+    be padded.  This function never leaves an error log message. 
+    """
+    N_expected = round((etime-stime)/d.dt) + 1
+    dw = WindowData(d,stime,etime)
+    if dw.dead():
+        # assumes default kills if stime and etime are not with data bounds
+        dw = WindowData(d,stime,etime,short_segment_handling='truncate')
+        if dw.npts/N_expected < fractional_mismatch_limit:
+            dw = WindowData(d,stime,etime,short_segment_handling="pad")
+        else:
+            dw.kill()
+    return dw
+    
     
 def robust_stack(ensemble,
                  method='dbxcor',
                  stack0=None,
                  stack_md=None,
+                 timespan_method="ensemble_inner",
+                 fractional_mismatch_limit=0.05,
                  )->TimeSeries:
     """
     Generic function for robust stacking live members of a `TimeSeriesEnsemble`.
@@ -178,6 +317,53 @@ def robust_stack(ensemble,
     The function currently supports two methods:  "median" for a median 
     stack and "dbxcor" to implement the robust loss function 
     used in the dbxcor program defined in Pavlis and Vernon (2010).
+    Other algorithms could easily be implemented via this same api 
+    by adding an option for the "method" argument.
+    
+    All robust estimators I am aware of that use some form of penalty 
+    function (e.g. m-estimators or the dbxcor penalty function) require 
+    an initial estimator for the stack.  They do that because the 
+    penalty function is defined from a metric of residuals relative to 
+    the current estimate of center.   The median, however, does not 
+    require an initial estimator which complicates the API for this function. 
+    For the current options understand that stack0 is required for 
+    the dbxcor algorithm but will be ignored if median is requested.  
+    
+    The other complication of this function is handling of potential 
+    irregular time ranges of the ensemble input and how to set the 
+    time range for the output.   The problem is further complicated by 
+    use in an algorithm like `align_and_stack` in this module where 
+    the data can get shifted to have undefined data within the 
+    time range the data aims to utilize.   The behavior of the 
+    algorithm for this issue is controlled by the kwarg values 
+    with the keys "timespan_method" and "fractional_mismatch_limit".  
+    As the name imply "timespan_method" defines how the time span 
+    for the stack should be defined.   The following options 
+    are supported:
+    
+    "stack0" - sets the time span to that of the input 
+    `TimeSeries` passed as stack0.  i.e. the range is set to 
+    stack0.dt to stack0.endtime().
+    
+    "ensemble_inner" - (default) use the range defined by the "inner" method 
+    for computing the range with the function `ensemble_time_range`. 
+    (see `ensemble_time_range` docstring for the definition).
+    
+    "ensemble_outer" - use the range defined by the "outer" method 
+    for computing the range with the function `ensemble_time_range`. 
+    (see `ensemble_time_range` docstring for the definition).
+    
+    "ensemble_median" -  use the range defined by the "median" method 
+    for computing the range with the function `ensemble_time_range`. 
+    (see `ensemble_time_range` docstring for the definition).
+    
+    These interact with the value passed via "fractional_mismatch_level". 
+    When the time range computed is larger than the range of a particular 
+    member of the input ensemble this parameter determines whether or not 
+    the member will be used in the stack.  If the fraction of 
+    undefined samples (i.e. N_undefined/Nsamp) is greater than this cutoff 
+    that datum will be ignored.   Otherwise if there are undefined 
+    values they will be zero padded.   
     
     :param ensemble:   input data to be stacked.   Should all be in 
     relative time with all members having the same relative time span.
@@ -207,42 +393,59 @@ def robust_stack(ensemble,
     Metadata that duplicate required internal attributes (e.g. t0 and npts).  
     An exception is if stack0 is used the Metadata of that container will 
     be copied and this argument will be ignored.  
-    :type stack_md:  Metadata container or None.  When None (default) 
-    the output will have only minimal Metadata content.   Most applications 
-    will need to override the default as the output will be completely 
-    ambiguous. 
+    :type stack_md:  Metadata container or None.  If stack0 is defined 
+    this argument is ignored.   Otherwise it should be used to add 
+    whatever Metadata is required to provide a tag that can be used to 
+    identify the output.  If not specified the stack Metadata 
+    will be only those produce from default construction of a 
+    TimeSeries.  That is almost never what you want.   Reiterate, 
+    however, that if stack0 is defined the output stack will be a 
+    clone of stack0 with possible modifications of time and data 
+    range attributes and anything the stack algorithm posts.
     """
+    alg = "robust_stack"
     # if other values for method are added they need to be added here
     if method not in ["median","dbxcor"]:
-        message = "Illegal value for argument method={}\n".format(method)
+        message = alg + ":  Illegal value for argument method={}\n".format(method)
         message += "Currently must be either median or dbxcor"
         raise ValueError(message)
     # don't test type - if we get illegal type let it thro0w an exception
     if ensemble.dead():
         return ensemble
-    [aok,elog,starttime,endtime] = validate_ensemble(ensemble)
-    # dogmatically refuse to continue aok is not returned True 
-    # by the above function.  Alterantive is to have an optional 
-    # expeced sample interval and kill everything that doesn't match
-    # here we assume user should use the resample function before calling 
-    # this function
-    if not aok:
-        ensemble.elog += elog
-        ensemble.kill()
-        return ensemble
-    # This function should guarantee all data are within 
-    # one sample of the startime:endtime range.   It should 
-    # also discard any dead data to simplify indexing
-    # intitionally overwriting input for memory management
-    ensemble = regularize_ensemble(ensemble,starttime,endtime)
+    if timespan_method == "stack0":
+        if stack0:
+            # intentionally don't test type of stack0 
+            # if not a TimeSeries this will throw an exception
+            timespan = TimeWindow(stack0.t0,stack0.endtime())
+        else:
+            message = alg + ":  usage error\n"
+            message += "timespan_method was set to stack0 but the stack0 argument is None\n"
+            message += "stack0 must be a TimeSeries to use this option"
+            raise ValueError(message)
+    elif timespan_method == "ensemble_inner":
+        timespan = ensemble_time_range(ensemble,metric="inner")
+    elif timespan_method == "ensemble_outer":
+        timespan = ensemble_time_range(ensemble,metric="outer")
+    elif timespan_method == "ensemble_median":
+        timespan = ensemble_time_range(ensemble,metric="median")
+    else:
+        message = alg + ":  illegal value for argument ensemble_metric={}".format(ensemble_metric)
+        raise ValueError(message)
+    
+    ensemble = regularize_ensemble(ensemble,timespan.start,timespan.end,fractional_mismatch_limit)
+    # the above can remove some members 
     M = len(ensemble.member)
     # can now assume they are all the same length and don't need to worry about empty ensembles
     N = ensemble.member[0].npts
 
     if stack0:
-        stack = WindowData(stack0,starttime,endtime)
+        stack = WindowWithCutoff(stack0,
+                                 timespan.start,
+                                 timespan.end,
+                                 fractional_mismatch_limit=fractional_mismatch_limit,
+                                 )
         if stack.dead():
-            message = "Received an initial stack estimate with time range smaller than stack window\n"
+            message = "Received an initial stack estimate with time range inconsistent with data\n"
             message = "Recovery not implemented - stack returned is invalid"
             
             stack.elog.log_error("robust_stack",message,ErrorSeverity.Invalid)
@@ -419,11 +622,11 @@ def align_and_stack(ensemble,
                     robust_stack_window=None,
                     robust_stack_window_keys=['robust_window_start','robust_window_end'],
                     robust_stack_method="dbxcor",
-                    output_stack_window=None,  # None means use ensemble range maxt0 to minendtime
-                    ensemble_index_key="i0",  # interal - should not change but warn in docstring
+                    output_stack_window=None, 
                     robust_weight_key='robust_stack_weight',
                     time_shift_key='arrival_time_correction',
-                    time_shift_limit=2.0,    
+                    time_shift_limit=2.0,
+                    abort_irregular_sampling=False,    
                     convergence=0.001,
                     )->tuple:
     """
@@ -448,7 +651,7 @@ def align_and_stack(ensemble,
     was designed to work as part of a GUI where the user had to pick 
     a set of required parameters for the algorithm.   In this function 
     those are supplied through Metadata key-value pairs and/or arguments.
-    This function uses a pythonic approach aimed to allow this program 
+    This function uses a pythonic approach aimed to allow this function
     to be run in batch without user intervention.  The original dbxcor 
     algorithm required four interactive picks to set the input.   
     The way we set them for this automated algorithm is described in the 
@@ -462,7 +665,7 @@ def align_and_stack(ensemble,
             Alternative, this window can be specified either by 
             fetching values from the `Metadata` container of beam 
             or via the `correlation_window` argument.   The algorithm 
-            first tests if `correlation_window` is set an is an 
+            first tests if `correlation_window` is set and is an 
             instance of a `TimeWindow` object.   If the type of 
             the argument is not a `TimeWindow` object an error is logged 
             and the program reverts to using the span of the beam 
@@ -510,7 +713,7 @@ def align_and_stack(ensemble,
             algorithm.   The point is it is a research problem for 
             different types of data to know how to best handle the 
             align and stack problem.  
-        4.  dbxcor had a final stage that require picking the arrival time 
+        4.  dbxcor had a final stage that required picking the arrival time 
             to use as the reference from the computed beam trace.  That is 
             actually necessary if absolute times are needed because the 
             method used will be biased by the time shift of the beam 
@@ -527,7 +730,7 @@ def align_and_stack(ensemble,
     cause the return to be a dead ensemble with an explanation in the 
     elog container of the ensemble (in these situation the stack is an 
     empty `TimeSeries` container):
-        1.  Irreglar sample intervals of live data.
+        1.  Irregular sample intervals of live data.
         2.  Any live data with the time reference set to UTC 
         3.  Inconsistency of the time range of the data and the 
             time windows parsed for the correlation and robust windows.  
@@ -629,6 +832,21 @@ def align_and_stack(ensemble,
     iterative loop to define convergence.  This should not be changed 
     unless you deeply understand the algorithm.
     :type convergence:  real number (default 0.001)
+    
+    :param time_shift_limit:
+    :param  abort_irregular_sampling: boolean that controls error 
+    handling of data with irregular sample rates.  This function uses 
+    a generous test for sample rate mismatch.  A mismatch is 
+    detected only if the computed time skew over the time span of 
+    the input beam signal is more than 1/2 of the beam sample interval 
+    (beam.dt).  When set true the function will 
+    abort with a ValueError exception if any ensemble member fails the 
+    sample interval test.  If False (the default) offending ensemble
+    members are killed and a message is posted.  Note the actual 
+    ensemble is modified so the return may have fewer data live 
+    than the input when this mode is enabled. 
+    :type abort_irregular_sampling:  boolean
+    
     :return: tuple with 0 containing the original ensemble but time 
     shifted by cross-correlation.   Failed/discarded signals for the 
     stack are not killed but should be detected by not having the 
@@ -636,6 +854,11 @@ def align_and_stack(ensemble,
     stack windowed to the range defined by `stack_time_window`.
     """
     alg="align_and_stack"
+    # xcor ensemble has the initial start time posted to each 
+    # member using this key - that content goes away because 
+    # xcorens has function scope
+    it0_key = "_initial_t0_value_"
+    ensemble_index_key="_ensemble_i0_"
     # maximum iterations.  could be passed as an argument but I have 
     # never seen this algorithm not converge in 20 interation
     MAXITERATION=20
@@ -650,6 +873,7 @@ def align_and_stack(ensemble,
         raise ValueError
     if ensemble.dead():
         return
+    ensemble = regularize_sampling(ensemble,beam.dt,Nsamp=beam.npts)
     # we need to make sure this is part of a valid set of algorithms 
     if robust_stack_method not in ["dbxcor","median"]:
         message = "Invalid value for robust_stack_method={}.  See docstring".format(robust_stack_method)
@@ -767,85 +991,85 @@ def align_and_stack(ensemble,
             return [ensemble,beam]
         else:
             raise ValueError(alg + ":  " + message)
-    # this function does all other ensemble validation and returns an estimate of the time span
-    # of the data
-    [aok,elog,stime,etime] = validate_ensemble(ensemble)
-    if aok:
-        if stime > xcorwin.start or etime < xcorwin.end:
-            message = "Correlation window defined is not consistent with input ensemble\n"
-            message += "Estimated ensemble time span is {} to {}\n".format(stime,etime)
-            message += "Correlation window time span is {} to {}\n".format(xcorwin.start,xcorwin.end)
-            message += "Correlation window range must be inside the data range"
-            # we don't use the windows_extracted_from_metadata boolean and never throw 
-            # an exception in this case because data range depends upon each ensemble 
-            # so there is not always fail case
-            beam.elog.log_error(alg,message,ErrorSeverity.Invalid)
-            beam.kill()
-            return [ensemble,beam]
-    else:
-        beam.elog += elog
+    ensemble_timespan = ensemble_time_range(ensemble,metric="median") 
+    if ensemble_timespan.start > xcorwin.start or ensemble_timespan.end < xcorwin.end:
+        message = "Correlation window defined is not consistent with input ensemble\n"
+        message += "Estimated ensemble time span is {} to {}\n".format(ensemble_timespan.start,ensemble_timespan.end)
+        message += "Correlation window time span is {} to {}\n".format(xcorwin.start,xcorwin.end)
+        message += "Correlation window range must be inside the data range"
+        # we don't use the windows_extracted_from_metadata boolean and never throw 
+        # an exception in this case because data range depends upon each ensemble 
+        # so there is not always fail case
+        beam.elog.log_error(alg,message,ErrorSeverity.Invalid)
         beam.kill()
         return [ensemble,beam]
     # need this repeatedly so set it
     N_members = len(ensemble.member)
-    output_stack = TimeSeries(beam)
+    
     if output_stack_window:
-        output_stack.set_t0(output_stack_window.start)
-        npts = int((output_stack_window.start-output_stack_window.end)/beam.dt) + 1
-        # this algorithm depends on the data array be initialized to zeros 
-        # with this step
-        output_stack.set_npts(npts)
+        # this will clone the beam trace metadata automatically
+        # using pad option assures t0 will be output_stack_window.start
+        # and npts is consistent with window requested
+        output_stack = WindowData(beam,output_stack_window.start,output_stack_window.end,short_segment_handling="pad")
+        # this is an obscure but fast way to initialize the data vector to all 0s
+        output_stack.set_npts(output_stack.npts)
     else:
-        t0values=[]
-        etimevalues=[]
-        for i in range(N_members):
-            d = ensemble.member[i]
-            t0values.append(d.t0)
-            etimevalues.append(d.endtime())
-        stime = np.max(t0values)
-        etime = np.min(etimevalues)
-        output_stack_window = TimeWindow(stime,etime)
-        output_stack.set_t0(stime)
-        npts = int((etime-stime)/beam.dt) + 1
+        # also clones beam metadata but in this case we get the size from the ensemble time span
+        output_stack = TimeSeries(beam)
+        output_stack_window = TimeWindow(ensemble_timespan)
+        output_stack.set_t0(output_stack_window.start)
+        npts = int((output_stack_window.end - output_stack_window.start)/beam.dt) + 1
         output_stack.set_npts(npts)
-    # need to build this internal reference as algorithm will
-    # discard dead data in processing for efficiency
+    # the loop below builds cross-referencing index positions 
+    # stored in the windowed ensemble's metadata container 
+    # with the key defined by ensemble_index_key
+    # note that baggage is used to unscramble xcorens later but 
+    # does not appear in the output ensemble derived form the 
+    # content of the "ensemble" symbol   
+    xcorens = TimeSeriesEnsemble(Metadata(ensemble),N_members)
     for i in range(N_members):
         if ensemble.member[i].live:
-            ensemble.member[i][ensemble_index_key] = i
-    # this could be updated on each iteration but the assumption 
-    # here is that the shifts are a small fraction of the window length 
-    # used for correlation
-    xcorens = WindowData(ensemble, xcorwin.start, xcorwin.end)
+            d = WindowData(ensemble.member[i],
+                           xcorwin.start,
+                           xcorwin.end,
+                           )
+            if d.live:
+                d[ensemble_index_key] = i
+                xcorens.member.append(d)
+    xcorens.set_live()
+    nlive = number_live(xcorens)
+    if nlive==0:
+        message = "WindowData with range {} to {} killed all members\n".format(xcorwin.start,xcorwin.end)
+        message += "All members have time ranges inconsistent with that cross-correlation window"
+        ensemble.elog.log_error(alg,message,ErrorSeverity.Invalid)
+        ensemble.kill()
+        return [ensemble,beam]
+    # We need this Metadata posted to sort out total time
+    # shifts needed for arrival time estimates
+    for i in range(len(xcorens.member)):
+        xcorens.member[i].put_double(it0_key,
+                                     xcorens.member[i].t0)
 
-    initial_starttimes = np.zeros(N_members)
-    for i in range(N_members):
-        if xcorens.member[i].live:
-            # assume algorithm below does not do resurrection of the dead
-            initial_starttimes[i] = xcorens.member[i].t0
+    # above guarantees this cannot return a dead datum
     rbeam0=WindowData(beam,rwin.start,rwin.end)
     nrm_rbeam = np.linalg.norm(rbeam0.data)
     for i in range(MAXITERATION):
         xcorens = beam_align(xcorens,beam,time_shift_limit=time_shift_limit)
-        print("shifts computed iteration ",i)
-        for j in range(len(initial_starttimes)):
-            print(j,xcorens.member[j].t0,initial_starttimes[j],
-                    xcorens.member[j].t0-initial_starttimes[j],
-                  )
-        # pad option is essential here to avoid killing data 
-        # hitting window edges - large padding will likely strongly 
-        # penalize that datum
         rens = WindowData(xcorens,
-                          rwin.start, 
-                          rwin.end,
+                          rwin.start,rwin.end,
                           short_segment_handling='pad')
         # this clones the Metadata of beam for the output
-        rbeam = robust_stack(rens,stack0=rbeam0,method=robust_stack_method)
+        rbeam = robust_stack(rens,
+                             stack0=rbeam0,
+                             method=robust_stack_method,
+                             timespan_method="stack0",
+                             )
         delta_rbeam = rbeam - rbeam0
         nrm_delta = np.linalg.norm(delta_rbeam.data)
         if nrm_delta/nrm_rbeam < convergence:
             break
         rbeam0 = rbeam
+        nrm_rbeam = np.linalg.norm(rbeam0.data)
     if i>=MAXITERATION:
         output_stack=rbeam
         rbeam.kill()
@@ -857,19 +1081,25 @@ def align_and_stack(ensemble,
     # and set the value for the attribute defined by "time_shift_key" 
     # argument.   This has to be done here so we can properly cut the 
     # window to be stacked
-    for i in range(len(rens.member)):
-        d = rens.member[i]
+    for i in range(len(xcorens.member)):
+        d = xcorens.member[i]
+        # this test is needed in case the processing above 
+        # killed one of the members of xcorens.  That can 
+        # happen a number of ways.  Note the index cross reference 
+        # in xcorens may not match that in enemble
         if d.live:
+            initial_starttime = xcorens.member[i][it0_key]
+            tshift = d.t0 - initial_starttime
             j = d[ensemble_index_key]
-            tshift = xcorens.member[i].t0 - initial_starttimes[i]
+            print(i,j,initial_starttime,tshift)
             #tshift =  initial_starttimes[i] - xcorens.member[i].t0
             # this shift maybe should be optional
             # a positive lag from xcor requires a negative shift 
             # for a TimeSeries object  
-            ensemble.member[i].shift(-tshift)
+            ensemble.member[j].shift(-tshift)
             # not this posts the lag not the origin shift which is 
             # the minus of the lag
-            ensemble.member[i].put_double(time_shift_key,tshift)
+            ensemble.member[j].put_double(time_shift_key,tshift)
     
     if robust_stack_method=="dbxcor":
         # We need to post the final weights to all live members
