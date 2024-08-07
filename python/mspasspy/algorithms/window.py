@@ -561,6 +561,7 @@ def WindowData(
     short_segment_handling="kill",
     log_recoverable_errors=True,
     overwrite_members=False,
+    retain_dead_members=True,
     object_history=False,
     alg_name="WindowData",
     alg_id=None,
@@ -640,6 +641,24 @@ def WindowData(
     Note the description of subsample time handling in the
     related docstring for `WindowDataAtomic`.   For ensembles
     each member output preserves subsample timing.
+    
+    Finally, how the function handles data marked dead is \
+    important.  For atomic data the is no complexity.  
+    dead is dead and the function just immediately returns
+    a reference to the input.  For ensembles some members 
+    can be dead or the entire ensemble can be marked dead. 
+    If the ensemble is marked dead the function immediately
+    returns a reference to the input.  If any members are 
+    dead the result will depend on the boolean argument 
+    "retain_data_members".  When True (the default) dead 
+    members will be copied verbatim to the output.   
+    If False the dead members will be SILENTLY deleted.  
+    The False option is only recommended if the windowing is 
+    internal to a function and the windowed output will be 
+    discarded during processing.  Otherwise the error log of why 
+    data were killed will be lost.   If you need to save 
+    memory by clearing dead bodies use the `Undertaker` 
+    class to bury the dead and retain the error log data.  
 
     :param d: is the input data.  d must be either a
       :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -691,6 +710,11 @@ def WindowData(
     This argument will be silently ignored if the input is an atomic
     MsPASS seismic object.
     :type overwrite_members:  boolean
+    :param retain_dead_members:   Controls how dead data are handled with 
+    ensembles.  When True (default) dead ensemble members are copied verbatim 
+    to the output.  When False they are silently deleted. (see above for 
+    a more complete description).  This argument is ignored for Atomic data.
+    :type retain_dead_members: boolean
     :param object_history: boolean to enable or disable saving object
       level history.  Default is False.  Note this functionality is
       implemented via the mspass_func_wrapper decorator.
@@ -745,6 +769,9 @@ def WindowData(
                         )
                         if mspass_object.member[i].live:
                             nlive += 1
+                        # when returning the original reference the 
+                        # retain_dead_members option  is always True
+                        
                 # In this case this just creates a duplicate reference
                 ensout = mspass_object
             else:
@@ -770,6 +797,8 @@ def WindowData(
                         ensout.member.append(d)
                         if d.live:
                             nlive += 1
+                    elif retain_dead_members:
+                        ensout.member.append(mspass_object.member[i])
                 # always set live and let the next line kill it if nlive is 0
                 ensout.live = True
             if nlive == 0:
