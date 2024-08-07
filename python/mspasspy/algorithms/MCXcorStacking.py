@@ -55,9 +55,6 @@ def dbxcor_weights(ensemble,stack):
         if ensemble.member[i].dead():
             wts[i] = -1.0
         else:
-            # debug
-            print("dbxcor_weights:  datum.npts=",ensemble.member[i].npts,
-                  "stack vector size=",len(s_unit))
             d_dot_stack = np.dot(ensemble.member[i].data,s_unit)
             r = ensemble.member[i].data - d_dot_stack*s_unit
             nrm_r = np.linalg.norm(r)
@@ -1091,8 +1088,6 @@ def align_and_stack(ensemble,
             initial_starttime = xcorens.member[i][it0_key]
             tshift = d.t0 - initial_starttime
             j = d[ensemble_index_key]
-            print(i,j,initial_starttime,tshift)
-            #tshift =  initial_starttimes[i] - xcorens.member[i].t0
             # this shift maybe should be optional
             # a positive lag from xcor requires a negative shift 
             # for a TimeSeries object  
