@@ -23,7 +23,7 @@ from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.algorithms.window import scale
 #from mspasspy.algorithms.MCXcorStacking import align_and_stack
-from MCXcorStacking import align_and_stack
+from mspasspy.algorithms.MCXcorStacking import align_and_stack
 
 def make_impulse_vector(lag,imp,n=500):
     """
@@ -212,7 +212,7 @@ def count_live(e):
             if d.live:
                 nlive += 1
     return nlive
-def test_lags(e,lag_expected,i0=0,klag="arrival_time_correction"):
+def validate_lags(e,lag_expected,i0=0,klag="arrival_time_correction"):
     """
     Standardizes test for full vector of input lags in samples (integer) 
     matching computed lag posted to Metadata with key defined by the 
@@ -274,7 +274,7 @@ def test_align_and_stack():
     # note this assumes robust_stack_method defaults to 'dbxcor'
     [eo,beam]=align_and_stack(e, e.member[0],window_beam=True,robust_stack_window=rwin,correlation_window=xcorwin)
     # test if this is right
-    test_lags(eo,lag_in_samples)
+    validate_lags(eo,lag_in_samples)
     # Repeat with one signal replaced by random noise
     # Main difference will be that bad signal should have a low weight 
     # Established "low" from a few trials
@@ -303,7 +303,7 @@ def test_align_and_stack():
                               correlation_window=xcorwin,
                               robust_stack_method="median")
     #  Cannot get weights 
-    test_lags(eo,lag_in_samples)
+    validate_lags(eo,lag_in_samples)
         
     # test handling with ensemble data prewindowed but beam requiring a window 
     # also tests passing correlation window via metadata
@@ -322,7 +322,7 @@ def test_align_and_stack():
                               robust_stack_method="dbxcor")
     assert count_live(eo) == 20
     print_elog(eo)
-    test_lags(eo,lag_in_samples)
+    validate_lags(eo,lag_in_samples)
     
     # similar to above but also define robust window via beam metadata
     e = TimeSeriesEnsemble(e0)
@@ -341,7 +341,7 @@ def test_align_and_stack():
                               robust_stack_method="dbxcor")
     assert count_live(eo) == 20
     print_elog(eo)
-    test_lags(eo,lag_in_samples)
+    validate_lags(eo,lag_in_samples)
     
     # test output_stack window option
     output_window = TimeWindow(-3.0,10.0)
@@ -361,7 +361,7 @@ def test_align_and_stack():
                               robust_stack_method="dbxcor")
     assert count_live(eo) == 20
     print_elog(eo)
-    test_lags(eo,lag_in_samples)
+    validate_lags(eo,lag_in_samples)
     # beam output should match output window definition
     Tdata = beam.endtime() - beam.t0
     Twinlength = output_window.end - output_window.start
@@ -380,13 +380,13 @@ def test_align_and_stack():
                               correlation_window=xcorwin)
     assert eo.member[deadguy].dead()
     print_elog(eo)
-    test_lags(eo,lag_in_samples)
+    validate_lags(eo,lag_in_samples)
     
     #return[eo,beam]
     
 
 
-test_align_and_stack()
+#test_align_and_stack()
 
 
 
