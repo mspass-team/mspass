@@ -42,7 +42,11 @@ def annotate_arrival_time(
         # 'stead' model was trained on STEAD for 100 epochs with a learning rate of 0.01.
         # use sbm.PhaseNet.list_pretrained(details=True) to list out other supported models
         # when using this model, please reference the SeisBench publications listed at https://github.com/seisbench/seisbench
-        pretrained_model = "stead" if (model_args == None or "name" not in model_args) else model_args["name"]
+        pretrained_model = (
+            "stead"
+            if (model_args == None or "name" not in model_args)
+            else model_args["name"]
+        )
         model = sbm.PhaseNet.from_pretrained(pretrained_model)
 
     ts_ensemble = TimeSeriesEnsemble()
@@ -52,7 +56,10 @@ def annotate_arrival_time(
     # apply the window if provided and convert time series to stream
     start_time = stream[0].stats.starttime
     windowed_stream = (
-        stream.trim(starttime=start_time + time_window.start, endtime=start_time + time_window.end)
+        stream.trim(
+            starttime=start_time + time_window.start,
+            endtime=start_time + time_window.end,
+        )
         if time_window
         else stream
     )

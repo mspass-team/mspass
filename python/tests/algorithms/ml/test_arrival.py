@@ -14,6 +14,7 @@ from helper import get_live_timeseries
 
 pn_model = sbm.PhaseNet.from_pretrained("stead")
 
+
 def test_annotate_arrival_time():
     stream = get_trace_for_test()
 
@@ -29,6 +30,7 @@ def test_annotate_arrival_time():
     seis_picks = trace.times()
 
     assert np.array_equal(mspass_picks, seis_picks)
+
 
 def test_annotate_arrival_time_threshold():
     stream = get_trace_for_test()
@@ -46,12 +48,13 @@ def test_annotate_arrival_time_threshold():
 
     assert len(mspass_picks) < len(seis_picks)
 
+
 def test_annotate_arrival_time_window():
     stream = get_trace_for_test()
 
     # picks from mspass
     timeseries = Trace2TimeSeries(stream[0])
-    annotate_arrival_time(timeseries, threshold = 0, time_window=TimeWindow(100, 1000))
+    annotate_arrival_time(timeseries, threshold=0, time_window=TimeWindow(100, 1000))
     mspass_picks = timeseries["p_wave_picks"]
 
     assert len(mspass_picks) > 0
@@ -60,11 +63,15 @@ def test_annotate_arrival_time_window():
 
     # picks from seisbench
     new_stream = Stream(stream[0])
-    new_stream.trim(starttime=new_stream[0].stats.starttime + 100, endtime=new_stream[0].stats.starttime + 1000)
+    new_stream.trim(
+        starttime=new_stream[0].stats.starttime + 100,
+        endtime=new_stream[0].stats.starttime + 1000,
+    )
     pn_preds = pn_model.annotate(new_stream)
     seis_picks = pn_preds[0].times() + 100
 
     assert np.array_equal(mspass_picks, seis_picks)
+
 
 def get_trace_for_test():
     client = Client("INGV")
@@ -77,6 +84,7 @@ def get_trace_for_test():
         starttime=t,
         endtime=t + 3600,
     )
+
 
 if __name__ == "__main__":
     test_annotate_arrival_time_window()
