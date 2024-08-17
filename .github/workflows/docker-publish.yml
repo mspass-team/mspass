@@ -33,6 +33,25 @@ jobs:
       packages: write
 
     steps:
+      # Remove software and language runtimes we're not using
+      - name: Remove unnecessary files
+        run: |
+          sudo rm -rf \
+            "$AGENT_TOOLSDIRECTORY" \
+            /opt/google/chrome \
+            /opt/microsoft/msedge \
+            /opt/microsoft/powershell \
+            /opt/pipx \
+            /usr/lib/mono \
+            /usr/local/julia* \
+            /usr/local/lib/android \
+            /usr/local/lib/node_modules \
+            /usr/local/share/chromium \
+            /usr/local/share/powershell \
+            /usr/share/dotnet \
+            /usr/share/swift
+          df -h /
+          
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -128,6 +147,25 @@ jobs:
       packages: write
 
     steps:
+      # Remove software and language runtimes we're not using
+      - name: Remove unnecessary files
+        run: |
+          sudo rm -rf \
+            "$AGENT_TOOLSDIRECTORY" \
+            /opt/google/chrome \
+            /opt/microsoft/msedge \
+            /opt/microsoft/powershell \
+            /opt/pipx \
+            /usr/lib/mono \
+            /usr/local/julia* \
+            /usr/local/lib/android \
+            /usr/local/lib/node_modules \
+            /usr/local/share/chromium \
+            /usr/local/share/powershell \
+            /usr/share/dotnet \
+            /usr/share/swift
+          df -h /
+          
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -223,6 +261,25 @@ jobs:
       packages: write
 
     steps:
+      # Remove software and language runtimes we're not using
+      - name: Remove unnecessary files
+        run: |
+          sudo rm -rf \
+            "$AGENT_TOOLSDIRECTORY" \
+            /opt/google/chrome \
+            /opt/microsoft/msedge \
+            /opt/microsoft/powershell \
+            /opt/pipx \
+            /usr/lib/mono \
+            /usr/local/julia* \
+            /usr/local/lib/android \
+            /usr/local/lib/node_modules \
+            /usr/local/share/chromium \
+            /usr/local/share/powershell \
+            /usr/share/dotnet \
+            /usr/share/swift
+          df -h /
+          
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
