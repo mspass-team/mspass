@@ -7,6 +7,12 @@ Created on Tue Jul  9 05:37:40 2024
 
 @author: pavlis
 """
+import numpy as np
+from scipy import signal
+from  mspasspy.ccore.algorithms.amplitudes import MADAmplitude,RMSAmplitude,PeakAmplitude
+from mspasspy.algorithms.window import WindowData
+from obspy.geodetics.base import gps2dist_azimuth
+
 from mspasspy.ccore.utility import ErrorLogger,ErrorSeverity,Metadata
 from mspasspy.ccore.seismic import (TimeSeries,
                                     TimeSeriesEnsemble,
@@ -15,8 +21,496 @@ from mspasspy.ccore.seismic import (TimeSeries,
                                     DoubleVector)
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.algorithms.window import WindowData
-import numpy as np
-from scipy import signal
+def _coda_duration(ts,level,t0=0.0,search_start=None)->TimeWindow:
+    """
+    Low-level function to estimate the range of the "coda" of a particular 
+    seismic phase. This function first computes the envelope of the 
+    input signal passed via arg0 as a `TimeSeries` object.   The function 
+    then searches backward in time from `search_start` to the first 
+    sample of the envelop function that exceeds the value defined by 
+    `level`.  It returns a `TimeWindow` object with a `start` set as the 
+    value passed as t0 and the `end` atribute set to the time stamp 
+    of that sample computed via the "time" method of `TimeSeries`.   
+    This function should normally be run only on data with a 
+    "relative" time standard shifted with 0.0 at or near the arrival 
+    time of the phase for which the coda is to be measured.  
+    
+    It will return a zero length `TimeWindow` (start == end) if the 
+    level of the envelope never exceeds the value defined by the level 
+    argument.  
+    :param ts:  Datum to be processed.   The function will return a null 
+    result (zero length window) if ts.t0> t0 (argument value).  The sample 
+    data is assumed filtered to an appropriate band where the envelope will 
+    properly define the coda.  
+    :type ts: TimeSeries
+    :param level:  amplitude of where the backward time search will be 
+    terminated.   This value should nomrally be computed from a background 
+    noise estimate.
+    :type level:   float
+    :param t0:  beginning of coda search interval.  This time is mainly used 
+    as the failed search.  That is, if the level never rises above the 
+    value defined by the `level` argument a xero lenght window will be 
+    returned with start and end both set to this value.
+    :type t0:  float (default 0.0)
+    :param search_start:  optional time after to from to search backward from. 
+    The default, which is defined with a None type, is to start the search 
+    from ts.endtime().  If a value is given and it exceeds ts.endtime() 
+    the search will silently be truncated to start at ts.endtime().  
+    :type search_start:  float (time - either relative time or an epoch time)
+    :return:  `TimeWindow` object with window `end` value defining the 
+    end of the coda.  window.end-window.start is a measure of coda duration. 
+    Returns a zero length window if the amplitude never exceeds the
+    valued defined by the `level` parameter.   Not the start value may 
+    be different from the input t0 value if the data start time (ts.t0) is 
+    greater than the value defined by the `t0` argument.
+    """
+    # checks go here - TODO includes range checks on these two
+    it0 =ts.sample_number(t0)
+    # silently reset to 0 if t0 is not valid for
+    if it0<0:
+        it0 = 0
+        t0used = ts.time(0)
+    else:
+        t0used = t0
+    if search_start:
+        itss = ts.sample_number(search_start)
+        if itss >= ts.npts:
+            itss = ts.npts - 1
+    else:
+        itss = ts.npts - 1
+    if itss <= it0:
+        message = "_coda_durations:   values for inferred search range {} to {} do not overlap data range"
+        raise ValueError(message)
+    httsd = signal.hilbert(ts.data)
+    envelope = np.abs(httsd)
+    it0 = ts.sample_number(t0)
+    i = itss
+    while(i>it0):
+        if envelope[i]>level:
+            break
+        i -= 1
+    # A failed search will have start and end the same
+    return TimeWindow(t0,ts.time(i))
+
+def _set_phases(d,
+                model,
+                Ptime_key="Ptime",
+                pPtime_key="pPtime",
+                PPtime_key="PPtime",
+                station_collection="channel",
+                default_depth=10.0)->TimeSeries:
+    """
+    Cautiously sets model-based arrival times in Metadata of input 
+    d for first arrival of the phases P pP, and PP.   pP and PP 
+    do not exist at all distances and depths so the times may be 
+    left undefined.   A value for P should always be set unless that 
+    datum was marked dead on input. 
+    
+    The input datum must contain Metadata entries required to compute the 
+    travel times.  That can be in one of two forms:
+        (1)  The normal expectation is to source coordinates are defined with
+             keys "source_iat" , "source_lon", and "source_time", and 
+             "source_depth" while receiver coordinates are defined with 
+             "channel_lat" and "channel_lon".   A common variant is possible 
+             if the `station_collection` argument is set to "site".  Then 
+             the function will try to fetch "site_lat" and "site_lon".
+             A special case is source depth.  If "source_depth" is not 
+             defined the value defined with the `default_depth` argument is
+             used.
+        (2)  If the key "dist" is defined in d it is assumed to contain 
+             a previously computed distance in degrees from source to this 
+             receiver.  
+    :param d:  seismic datum to process.   This datum requires source and 
+    receiver metadata attributes as noted above  
+    :type d:   Assumed to be a `TimeSeries`.   That is not tested as this is 
+    an internal function.  Use outside the module should assure input is 
+    a `TimeSeries` or create an error handler for TypeError exceptions. 
+    :param model:   an instance of an obspy TauPyModel object used to 
+    compute times. 
+    :type model:   obspy TauPyModel object
+    :param Ptime_key:  key uwed to set the pP arrival time.
+    :type pPtime_key:  string (default "pPtime")
+    :param pPtime_key:  key uwed to set the P arrival time.
+    :type PPtime_key:  string (default "PPtime")
+    :param PPtime_key:  key uwed to set the PP arrival time.
+    :type PPtime_key:  string (default "PPtime")
+    :param station_collection:   normalizing collection used to define 
+    receiver coordinates.   Used only to create names for coordinates.   
+    e.g. if set to "site" expects to find "site_lat" while if set to 
+    default "channel" would expect to find "channel_lat".
+    :type station_collection:  string (normally default "channel" or "site")
+    :param default_depth:   source depth to use is the attribute "source_depth"
+    is not defined.   This is a rare recoverly to handle the cas where 
+    the epicenter and origin time are defined but the depth is not. 
+    :type default_depth:  float
+    :return:  `TimeSeries` copy of input with model-based arrival times posted
+    to Metadata container with the specified keys.   
+    """
+    if d.dead():
+        return d
+    alg = "_set_phases"
+    if d.is_defined("dist"):
+        dist = d["dist"]
+    else:
+        if d.is_defined("source_lat") and d.is_defined("source_lon") and d.is_defined("source_time"):
+            srclat=d["source_lat"]
+            srclon=d["source_lon"]
+            origin_time = d["source_time"]
+            # compute dist
+        else:
+            message = "Missing required source coordinates:  source_lat,source_lon, and/or source_time values\n"
+            message += "Cannot handle this datum"
+            d.elog.log_error(alg,message,ErrorSeverity.Invalid)
+            d.kill()
+            return d
+        lat_key = station_collection + "_lat"
+        lon_key = station_collection + "_lon"
+        if d.is_defined(lat_key) and d.is_defined(lon_key):
+            stalat = d[lat_key]
+            stalon = d[lon_key]
+            [dist,seaz,esaz]=gps2dist_azimuth(stalat,stalon,srclat,srclon)
+        else:
+            message = "Missing required rceiver coordinates defined with keys: {} and {}\n".format(stalat,stalon)
+            message += "Cannot handle this datum"
+            d.elog.log_error(alg,message,ErrorSeverity.Invalid)
+            d.kill()
+            return d
+            
+    if d.is_defined("source_depth"):
+        depth = d["source_depth"]
+    else:
+        depth = default_depth
+        message = "source_depth value was not defined - using default value={}".format(depth)
+        d.elog.log_error(alg,message,ErrorSeverity.Complaint)
+    arrivals = model.get_travel_times(source_depth_in_km=depth,
+                                      distance_in_degrees=dist,
+                                      phase_list=['P','pP','PP'])
+    # only set first arrival for multivalued arrivals
+    P=[]
+    pP=[]
+    PP=[]
+    for arr in arrivals:
+        if arr.name == "P":
+            P.append(arr.time)
+        elif arr.name == "pP":
+            pP.append(arr.time)
+        elif arr.name == "PP":
+            PP.append(arr.time)
+    d[Ptime_key] = min(P) + origin_time
+    if len(pP)>0:
+        d[pPtime_key] = min(pP) + origin_time
+    if len(PP)>0:
+        d[PPtime_key] = min(PP) + origin_time
+    return d
+
+def extract_initial_beam_estimate(ensemble,
+                                  metric="bandwidth",
+                                  subdoc_key="Parrival",
+                                  )->TimeSeries:
+    """
+    Scans ensemble to extract member with largest measure of 
+    quality returning a copy to use as initial beam estimate 
+    for multichannel correlation and stacking.  Returns a default 
+    `TimeSeries` if the input ensemble is dead or has no members with
+    the required metrics defined. Return should test output is marked 
+    live as a test that the function succeeded. 
+    
+    The metrics are assumed to be one of those computed by the 
+    mspass function `broadband_snr_QC`.   See below for list.
+    
+    :param ensemble:   ensemble to be scanned
+    :type ensemble:  `TimeSeriesEnsemble`
+    :param metric:   quality metric to use for selecting member to use 
+    as return.  Always scans for the maximum of specified value as it 
+    assume the value is some norm measure.   Accepted values at present 
+    are all those computed by `broadband_snr_QC`:  bandwidth, 
+    filtered_envelope, filtered_L2, filtered_Linf, or filtered_perc. 
+    Default is "bandwidth".   A ValueError exception will be thrown 
+    if not one of those values. 
+    :type metric:  string
+    :param subdoc_key:   `broadband_snr_QC` normally posts output to 
+    a subdocument (dictionary).  This is the key that is used to 
+    extract that subdocument from each member.   Default is "Parrival" 
+    which is the default of `broadband_snr_QC`. 
+    :type subdoc_key:  string
+    :return:  `TimeSeries` that is a copy of the ensemble member with 
+    the largest value of the requested member.   A dead datum 
+    is returned if the algorithm failed.   
+    
+    """
+    if ensemble.dead():
+        return TimeSeries()
+    if metric=="bandwidth":
+        key2use="bandwidth"
+    elif metric=="filtered_envelope":
+        key2use="filtered_envelope"
+    elif metric=="filtered_L2":
+        key2use="filtered_L2"
+    elif metric=="filtered_MAD":
+        key2use="filtered_MAD"
+    elif metric=="filtered_Linf":
+        key2use="filtered_Linf"
+    elif metric=="filtered_perc":
+        key2use="filtered_perc"
+    else:
+        message = "extract_initial_beam_estimate:  illegal value for argument metric={}".format(metric)
+        message += "Must one of:  bandwidth, filtered_envelope, filtered_L2, filtered_MAD, filtered_Linf, or filtered_perc"
+        raise ValueError(message)
+    N = len(ensemble.member)
+    # this holds metric values - use the index of to associate with correct member
+    # works because zero is never the maximum unless none are defined
+    mvals = np.zeros(N)
+    n_set = 0
+    for i in range(len(ensemble.member)):
+        d = ensemble.member[i]
+        if d.live and d.is_defined(subdoc_key):
+            subdoc = d[subdoc_key]
+            mvals[i] = subdoc[key2use]
+            n_set += 1
+    if n_set>0:
+        imax = np.argmax(mvals)
+        return TimeSeries(ensemble.member[imax])
+    else:
+        return TimeSeries()
+
+def estimate_ensemble_bandwidth(ensemble,
+                                snr_doc_key="Parrival",
+                                ):
+    """
+    Estimate average bandwidth of an ensemble of data using the output of 
+    broadband_snr_QC.   
+    
+    This function only works on ensembles processed previously with the 
+    mspass function `broadband_snr_QC`.   The function computes a series of 
+    metrics for signal-to-noise ratio.  The only one this one uses is 
+    the two values defined by "low_f_band_edge" and "high_f_band_edge".  
+    The verbose names should make their definition obvious.   This 
+    function returns the median of the values of all values of those 
+    two attributes extracted from all live members of the input ensemble.  
+    The result is returned as a tuple.   
+    """
+    f_l = []
+    f_h = []
+    for d in ensemble.member:
+        if d.live:
+            if d.is_defined(snr_doc_key):
+                doc = d[snr_doc_key]
+                f = doc['low_f_band_edge']
+                f_l.append(f)
+                f = doc['high_f_band_edge']
+                f_h.append(f)
+    if len(f_h)>0:
+        f_low = np.median(f_l)
+        f_high = np.median(f_h)
+        return [f_low,f_high,len(f_h)]
+    else:
+        return [0,0,0]
+    
+def _get_search_range(d,Pkey="Ptime",
+                     pPkey="pPTime",
+                     PPkey="PPtime"):
+    if d.live:
+        depth = d['source_depth']
+        if depth>100.0:
+            tend=d[pPkey]
+        else:
+            tend = d[PPkey]
+        duration = tend - d[Pkey]
+    else:
+        duration = 0.0
+    return duration
+
+    
+
+def MCXcorPrepP(ensemble,
+               noise_window,
+               noise_metric="mad",
+               initial_beam_metric="bandwidth",
+               snr_doc_key="Parrival",
+               low_f_corner=None,
+               high_f_corner=None,
+               npoles=4,
+               coda_level_factor=2.0,
+               set_phases=True,
+               Ptime_key="Ptime",
+               pPtime_key="pPtime",
+               PPtime_key="PPtime",
+               model=None,
+               search_window_fraction=0.9,
+               minimum_coda_duration=5.0,
+               correlation_window_start=-2.0,
+               )->TimeSeriesEnsemble:
+    """
+    Function used to preprocess an ensemble  to prepare input for 
+    running multichannel cross-correlation and stacking method 
+    (automated dbxcor algorithm) of P phase data.  This function should 
+    not be used for anything but teleseismic P data.  
+    
+    The multichannel correlation and stacking function in this module called 
+    `align_and_stack` requires one to define a number of parameters that 
+    in the original dbxcor implementation were input through a graphical 
+    user interface.   This function can be thought of a robot that will 
+    attempt to set some of the required parameters automatically using signal processing.
+    It will attempt to produce two inputs required by the `align_and_stack`:
+    1.  What I call a "correlation window".   
+    2.  The ensemble member that is to be used as the initial estimate of the 
+        beam (stack of the data aligned by cross correlation).   
+    A CRITICAL assumption of this function is that the input ensemble's data 
+    have been processed with the snr module function `broadband_snr_QC`.   
+    That function computes and posts multiple snr metrics to a subdocument 
+    (dictionary) accessed with a single key.   This function requires that 
+    data exist and be accessible with the key defined by the argument 
+    "snr_doc_key".   The data in that dictionary are used in the following 
+    algorithms run within this function:
+    1.  The working bandwidth of the data is established by computing the median 
+        of the attributes "low_f_band_edge" and "high_f_band_edge" extracted from 
+        each live member.  The working ensemble (which is what is returned on success)
+        will be filtered in band defined by the median between the low and 
+        high "band edge" with a Butterworth filter with the number of poles 
+        defined by the "npoles" argument.  
+    2.  What I call the correlation window is estimated by a complex recipe 
+        best understood from the user manual page and example jupyter notebooks 
+        related to this module.   Briefly, the correlation window is defined by 
+        applying an envelope function to each signal and defining the coda
+        end using a common recipe for coda magnitudes where end of the coda is 
+        defined by some multiple of the background noise level.   The correlation 
+        window is then set as the median of the coda durations subject to 
+        corrections to assure the range does intersect secondary pP or PP phases.
+    3.  It then extracts one member from the ensemble the algorithm judges to 
+        be the best choice for an initial beam estimate.   That is, in 
+        align_and_stack the first step  is to align the data with a reference 
+        signal using cross-correlation of the "beam" with each member.  The
+        aligned data are then summed with a robust stack to refine the beam. 
+        That is repeated until the stack does not change significantly.   
+        That algorithm requires a seed for the initial beam estimate.   That
+        initial signal is extracted as the ensemble member with the largest
+        value of the snr metric defined with the `initial_beam_metric` argument. 
+        The correlation window parameters computed earlier are then posted 
+        to the `Metadata` of that `TimeSeries` where `align_and_stack` 
+        can parse them to set the correlation time window.  
+        
+    The function returns a copy of the input ensemble filtered to the 
+    average bandwidth and the initial beam estimate.  They are return 
+    as a tuple with 0 the ensemble and 1 the initial beam estimate. 
+    Callers should verify the beam signal is marked live.  A dead 
+    beam signal indicates the algorithm failed in one way or another. 
+    Errors at the level will result in errors being posted to the 
+    `ErrorLogger` container of the output ensemble.  Note also this 
+    algorithm can kill some ensemble members in the output that 
+    were marked live in the input. 
+    
+    TODO:   param definitions for docstring
+    """
+    alg = "MCXcorPrepP"
+    if not isinstance(ensemble,TimeSeriesEnsemble):
+        message = alg + ":  Illegal type={} for arg0\n".format(type(ensemble))
+        message += "Must be a TimeSeriesEnsemble object"
+        raise TypeError(message)
+    if ensemble.dead():
+        return [ensemble,TimeSeries()]
+    # TODO  test that noise_window is a TimeWindow object
+    
+    # first sort out the issue of the passband to use for this 
+    # analysis.   Use kwargs if they are defined but otherwise assume 
+    # we extract what we need from the output of `broadband_snr_QC`.  
+    if low_f_corner and high_f_corner:
+        f_low = low_f_corner
+        f_high = high_f_corner
+    else:
+       [f_low,f_high,nused] = estimate_ensemble_bandwidth(ensemble,
+                                                snr_doc_key=snr_doc_key,
+                                                )
+       if (f_low is None) or (f_high is None):
+           message = "estimate_ensemble_bandwidth failed\n"
+           message += "Either all members are dead or data were not previously processed with broadband_snr_QC"
+           ensemble.elog.log_error(alg,message,ErrorSeverity.Invalid)
+           ensemble.kill()
+           return ensemble
+    enswork = filter(ensemble,
+                     type="bandpass",
+                     freqmin=f_low,
+                     freqmax=f_high,
+                     corners=npoles,
+                     )
+    if set_phases:
+        for i in range(enswork.member):
+            # this handles dead data so don't test for life
+            enswork.member[i] = _set_phases(enswork.member[i],
+                                         model,
+                                         Ptime_key=Ptime_key,
+                                         pPtime_key=pPtime_key,
+                                         PPtime_key=PPtime_key,
+                                         station_collection="channel",
+                                         )   
+    # if set_phases is False we assume P, pP, and/or PP times were previously 
+    # set.   First make sure all data are in relative time with 0 as P time.  
+    # kill any datum for which P is not defined 
+    for i in range(enswork.member):
+        d = enswork.member[i]
+        if d.live:
+            if d.is_defined(Ptime_key):
+                Ptime = d[Ptime_key]
+                if d.time_is_relative():
+                    d.rtoa()
+                d.ator(Ptime)
+            else:
+                message="Required key={} defining P arrival time is not defined\n".format(Ptime_key)
+                message += "Cannot process this datum without a P wave time value"
+                d.elog.log_error(alg,message,ErrorSeverity.Invalid)
+                d.kill()
+            enswork.member[i] = d
+    
+    # now get coda durations and set the correlation window as median of 
+    # the coda durations
+    coda_duration=[]  # coda estimates are placed here
+    search_range=[]  # use this to set ranges - duration limited to min of these
+    for d in enswork.member:
+        if d.live:
+            sr = _get_search_range(d)
+            sr *= search_window_fraction
+            search_range.append(sr)
+            # compute a noise estimate without being too dogmatic about 
+            # window range 
+            if d.t0<noise_window.start:
+                nw = TimeWindow(d.t0,noise_window.end)
+            else:
+                nw = TimeWindow(noise_window)
+            nd = WindowData(d,nw.start,nw.end,short_segment_handling="truncate")
+            if noise_metric=="rms":
+                namp = RMSAmplitude(nd)
+            elif noise_metric=="peak":
+                namp = PeakAmplitude(nd)
+            else:
+                # silently default to MAD - maybe should log an error to ensemble or throw an exception
+                namp = MADAmplitude(nd)
+            coda_window = _coda_duration(d,coda_level_factor,search_start=sr)
+            # silently drop any retun value less than the floor defined 
+            # by minimum_coda_duration
+            duration=coda_window.end-coda_window.start
+            if duration>minimum_coda_duration:
+                coda_duration.append(duration)
+    if len(coda_duration)==0:
+        message = "Calculation of correlation window from the envelop of filtered ensemble members failed\n"
+        message += "No data detected with signal level in the passband above the floor value={}\n".format(coda_level_factor)
+        message += "noise_window range or value of floor value are likely inconsistent with the data\n"
+        message += "Killing this ensemble"
+        enswork.elog.log_error(alg,message,ErrorSeverity.Invalid)
+        enswork.kill()
+        return [enswork,TimeSeries()]
+    correlation_window_endtime = np.median(coda_duration)   # relative time 
+    min_range = np.min(search_range)
+    min_range *= search_window_fraction
+    if correlation_window_endtime>min_range:
+        correlation_window_endtime = min_range
+    
+    beam0 = extract_initial_beam_estimate(enswork,
+                                        initial_beam_metric=initial_beam_metric,
+                                        subdoc_key=snr_doc_key,
+                                        )
+    beam0['correlation_window_start'] = correlation_window_start
+    beam0['correlation_window_end'] = correlation_window_endtime
+    return [enswork,beam0]
+             
 
 def dbxcor_weights(ensemble,stack):
     """
@@ -59,15 +553,12 @@ def dbxcor_weights(ensemble,stack):
             r = ensemble.member[i].data - d_dot_stack*s_unit
             nrm_r = np.linalg.norm(r)
             nrm_d = np.linalg.norm(ensemble.member[i].data)
-            if nrm_r < norm_floor:
-                nrm_r = norm_floor
-            if nrm_d < norm_floor:
-                # this shouldn't happen but better to do this
-                # than get a nan for a wt value which we could 
-                # otherwise
-                nrm_d = norm_floor
-
-            wts[i] = abs(d_dot_stack)/(nrm_r*nrm_d)
+            # see Pavlis and Vernon (2011) for why this is needed
+            # briefly this can result in a nan if denominator is close to 0
+            denom = nrm_r*nrm_d
+            if denom < norm_floor:
+                denom = norm_floor
+            wts[i] = abs(d_dot_stack)/denom
  
     # rescale weights so largest is 1 - easier to understand
     maxwt = np.max(wts)
@@ -84,7 +575,7 @@ def number_live(ensemble)->int:
     :param ensemble:  ensemble to be scanned
     :type ensemble:  Must be a `TimeSeriesEnsemble` or `SeismogramEnsemble` or 
     it will throw a TypeError exception. 
-    """
+    """ 
     if not isinstance(ensemble,(TimeSeriesEnsemble,SeismogramEnsemble)):
         message = "number_live:   illegal type for arg0={}\n".format(type(ensemble))
         message += "Must be a TimeSeriesEnsemble or SeismogramEnsemble\n"
@@ -156,7 +647,7 @@ def regularize_sampling(ensemble,dt_expected,Nsamp=10000,abort_on_error=False):
             if not np.isclose(dt_expected,d.dt):
                 if abs(dt_expected-d.dt) > delta_dt_cutoff:
                     message = "Member {} of input ensemble has different sample rate than expected constant dt\n",format(i)
-                    message += "Expected dt={} but this datum has dt={}\n".format(expected_dt,d.dt)
+                    message += "Expected dt={} but this datum has dt={}\n".format(dt_expected,d.dt)
                     if abort_on_error:
                         raise ValueError(message)
                     else:
@@ -426,7 +917,7 @@ def robust_stack(ensemble,
     elif timespan_method == "ensemble_median":
         timespan = ensemble_time_range(ensemble,metric="median")
     else:
-        message = alg + ":  illegal value for argument ensemble_metric={}".format(ensemble_metric)
+        message = alg + ":  illegal value for argument timespan_method={}".format(timespan_method)
         raise ValueError(message)
     
     ensemble = regularize_ensemble(ensemble,timespan.start,timespan.end,fractional_mismatch_limit)
@@ -461,7 +952,7 @@ def robust_stack(ensemble,
         stack = TimeSeries(N)
         if stack_md:
             stack = TimeSeries(stack,stack_md)
-            stack.t0 = starttime
+            stack.t0 = timespan.start
             # this works because we can assume ensemble is not empty and clean
             stack.dt = ensemble.member[0].dt
         # constructor defaults time base to relative so need to handle GMT 
@@ -486,8 +977,7 @@ def robust_stack(ensemble,
     
 def _dbxcor_stacker(ensemble,stack0,eps=0.0001,maxiterations=20)->tuple:
     """
-    Runs the dbxcor robust stacking algorithm using initial stack estimate 
-    stack0.   Returns a clone of stack0 but with the sample data replaced
+    Runs the dbxcor robust stacking algor    and with correlation window estimate in ensemble metadataut with the sample data replaced
     by the output of the robust algorithm using the dbxcor weighting function.
     Returns a tuple with the stack as component 0 and a numpy vector 
     of the final robust weights as component 1.   
@@ -516,7 +1006,6 @@ def _dbxcor_stacker(ensemble,stack0,eps=0.0001,maxiterations=20)->tuple:
             # use that feature here as we assume all are live
             newstack += wts[j]*ensemble.member[i].data
             sumwts += wts[j]
-        newstack /= sumwts   # standard formula or weighted stack 
         # order may matter herre.  In this case delta becomes a numpy 
         # array which is cleaner in this context
         delta = newstack - stack.data
@@ -735,7 +1224,7 @@ def align_and_stack(ensemble,
             if the time range of all members (min of start time and maximum end times).
             is not outside (inclusive) the range of the correlation and robust 
             windows it is viewed as invalid.
-        4.  What we called the "robust window" in the dbxcor paper is
+        4.  What we called the "robust window" in the dbxcor paper isextract_input_beam_estimate
             required to be inside (inclusive of endpoints) the cross-correlation window 
             time window.   That could be relaxed but is a useful constraint because 
             in my (glp) experience the most coherent part of phase arrivals is the 
@@ -814,13 +1303,13 @@ def align_and_stack(ensemble,
     compute the robust stack output is posted to the Metadata container of 
     each live member with this key.  
     :type robust_weight_key:  string
-    :param robust_stack_method:   keyword defining the method to use for 
+    :param robust_stack_method:   keyword defining the method textract_input_beam_estimateo use for 
     computing the robust stack.  Currently accepted value are:
     "dbxcor" (default) and "median".  
     :type robust_stack_method:  string  - must be one of options listed above.
     :param time_shift_key:  the time shift applied relative to the starting 
     point is posted to each live member with this key.  It is 
-    IMPORTANT to realize this is the time for this pass.  If this functions 
+    IMPORTANT to realize this is the time for this pass.  If thisextract_input_beam_estimatefunctions 
     is applied more than once and you reuse this key the shift from the 
     previous run will be overwritten.  If you need to accumulate shifts 
     it needs to be handled outside this function. 
@@ -863,11 +1352,11 @@ def align_and_stack(ensemble,
     if not isinstance(ensemble,TimeSeriesEnsemble):
         message = alg + ":  illegal type for arg0 (ensemble) = {}\n".format(str(type(ensemble)))
         message += "Must be a TimeSeriesEnsemble"
-        raise ValueError
+        raise TypeError(message)
     if not isinstance(beam,TimeSeries):
         message = alg + ":  illegal type for arg1 (beam) = {}\n".format(str(type(beam)))
         message += "Must be a TimeSeries"
-        raise ValueError
+        raise TypeError(message)
     if ensemble.dead():
         return
     ensemble = regularize_sampling(ensemble,beam.dt,Nsamp=beam.npts)
@@ -890,8 +1379,8 @@ def align_and_stack(ensemble,
             windows_extracted_from_metadata = False
         else:
             message = "Illegal type for correlation_window={}\m".format(str(type(correlation_window)))
-            message = "For this option must be a TimeWindow object"
-            raise ValueError(message)
+            message += "For this option must be a TimeWindow object"
+            raise TypeError(message)
     elif correlation_window_keys:
         # this is a bit dogmatic - I know there is a less restrictive 
         # test than this
@@ -902,18 +1391,18 @@ def align_and_stack(ensemble,
                 stime=beam[skey]
                 etime=beam[ekey]
             else:
-                message = "missing one or both of correlation_window_keys\n"
+                message0 = "missing one or both of correlation_window_keys\n"
                 if beam.is_defined(skey):
                     stime = beam[skey]
                 else:
-                    message += 'start time key={} is not set in beam signal\n'.format(skey)
+                    message = message0 + 'start time key={} is not set in beam signal\n'.format(skey)
                     message += 'reverting to beam signal start time'
                     ensemble.elog.log_error(alg,message,ErrorSeverity.Complaint)
                     stime = beam.t0
                 if beam.is_defined(ekey):
                     etime = beam[ekey]
                 else:
-                    message += 'emd time key={} is not set in beam signal\n'.format(ekey)
+                    message = message0 + 'end time key={} is not set in beam signal\n'.format(ekey)
                     message += 'reverting to beam signal endtime() method output'
                     ensemble.elog.log_error(alg,message,ErrorSeverity.Complaint)
                     etime = beam.endtime()
@@ -922,7 +1411,7 @@ def align_and_stack(ensemble,
         else:
             message = "Illegal type={} for correlation_window_keys argument\n".format(str(type(correlation_window_keys)))
             message += "If defined must be a list with 2 component string used as keys"
-            raise ValueError(message)
+            raise TypeError(message)
     else:
         # it isn't considered an error to land here as this is actually the default 
         # note it is important in the logic that xcor_window_is_defined be 
@@ -960,10 +1449,10 @@ def align_and_stack(ensemble,
                     message += 'reverting to beam signal start time'
                     ensemble.elog.log_error(alg,message,ErrorSeverity.Complaint)
                     stime = beam.t0
-                if beam.is_define(ekey):
+                if beam.is_defined(ekey):
                     etime = beam[ekey]
                 else:
-                    message += 'emd time key={} is not set in beam signal\n'.format(ekey)
+                    message += 'endtime key={} is not set in beam signal\n'.format(ekey)
                     message += 'reverting to beam signal endtime() method output'
                     ensemble.elog.log_error(alg,message,ErrorSeverity.Complaint)
                     etime = beam.endtime()
@@ -1004,7 +1493,7 @@ def align_and_stack(ensemble,
     N_members = len(ensemble.member)
     
     if output_stack_window:
-        # this will clone the beam trace metadata automatically
+        # this will clone the beam trace metadata automaticallyextract_input_beam_estimate
         # using pad option assures t0 will be output_stack_window.start
         # and npts is consistent with window requested
         output_stack = WindowData(beam,output_stack_window.start,output_stack_window.end,short_segment_handling="pad")
@@ -1088,6 +1577,8 @@ def align_and_stack(ensemble,
             initial_starttime = xcorens.member[i][it0_key]
             tshift = d.t0 - initial_starttime
             j = d[ensemble_index_key]
+            print(i,j,initial_starttime,tshift)
+            #tshift =  initial_starttimes[i] - xcorens.member[i].t0
             # this shift maybe should be optional
             # a positive lag from xcor requires a negative shift 
             # for a TimeSeries object  

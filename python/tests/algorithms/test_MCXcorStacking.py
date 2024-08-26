@@ -11,6 +11,7 @@ functions.
 import numpy as np
 from scipy import signal
 from numpy.random import randn
+import pytest
 
 from mspasspy.ccore.seismic import (Seismogram,
                                     TimeSeries,
@@ -382,11 +383,69 @@ def test_align_and_stack():
     print_elog(eo)
     validate_lags(eo,lag_in_samples)
     
-    #return[eo,beam]
+def test_align_and_stack_error_handlers():
+    """
+    Like above but only tests error handlers.  Uses the 
+    same simulated data genration. 
+    """
+    [w,e,lag_in_sec] = make_test_data()
+    # Make a copies for variation tests in this function
+    e0 = TimeSeriesEnsemble(e)
+    w0 = TimeSeries(w)
+    lag_in_samples=[]
+    for lag in lag_in_sec:
+        # use w.dt for shorthand - all data have to have constant dt at this point
+        lag_s = round(lag/w.dt)
+        lag_in_samples.append(lag_s)
+    e = TimeSeriesEnsemble(e0)
+        
+    # test handler for unsupported type for arg0 and arg1
+    with pytest.raises(TypeError,match="illegal type for arg0"):
+        [eo,beam]=align_and_stack("badtype", 
+                              e.member[0],
+        )
+    with pytest.raises(TypeError,match="illegal type for arg1"):
+        [eo,beam]=align_and_stack(e, 
+                              "badtype",
+        )
+    with pytest.raises(ValueError,match="Invalid value for robust_stack_method="):
+        [eo,beam]=align_and_stack(e, 
+                              e.member[0],
+                              robust_stack_method="notvalid",
+        )
+    # test handlers for setting correlation window
+    with pytest.raises(TypeError,match="Illegal type for correlation_window="):
+        [eo,beam]=align_and_stack(e, 
+                              e.member[0],
+                              correlation_window="badarg",
+        )
+    with pytest.raises(TypeError,match="Illegal type="):
+        [eo,beam]=align_and_stack(e, 
+                              e.member[0],
+                              correlation_window_keys="badarg",
+        )
+    e = TimeSeriesEnsemble(e0)
+    beam = TimeSeries(e0.member[0])
+    # these are not defaults
+    cwsk='cwstart'
+    cwek='cwend'
+    cwk=[cwsk,cwek]
+    rwin = TimeWindow(-1.0,4.0)
+    # first test pure recovery
+    beam[cwsk]=-1.5
+    beam[cwek]=8.0
+    [eo,beam]=align_and_stack(e, 
+                              beam,
+                              correlation_window_keys=cwk,
+                              robust_stack_window=rwin,
+        )
+    assert eo.live
+    assert eo.elog.size()==0
+
     
 
-
-#test_align_and_stack()
+test_align_and_stack()
+test_align_and_stack_error_handlers()
 
 
 
