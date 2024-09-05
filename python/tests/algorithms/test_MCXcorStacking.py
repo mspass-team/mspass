@@ -206,7 +206,7 @@ def load_test_data():
     # for testing use this
     dir = "../data"
     # with pytest use this
-    # dir = "./python/tests/data"
+    dir = "./python/tests/data"
     path = dir + "/" + filename
     fd = open(path,'rb')
     w_r = pickle.load(fd)
