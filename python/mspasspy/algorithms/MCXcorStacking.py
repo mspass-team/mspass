@@ -679,7 +679,8 @@ def regularize_sampling(ensemble,dt_expected,Nsamp=10000,abort_on_error=False):
         nlive = number_live(ensemble)
         if nlive <= 0:
             message = "All members of this ensemble were killed.\n"
-            messagge += "expected dt may be wrong or you need to run the resample function on this data set"
+            message += "expected dt may be wrong or you need to run the resample function on this data set"
+            ensemble.elog.log_error(alg,message,ErrorSeverity.Invalid)
             ensemble.kill()
     return ensemble
 
@@ -1406,6 +1407,8 @@ def align_and_stack(ensemble,
     if ensemble.dead():
         return
     ensemble = regularize_sampling(ensemble,beam.dt,Nsamp=beam.npts)
+    if ensemble.dead():
+        return [ensemble,beam]
     # we need to make sure this is part of a valid set of algorithms 
     if robust_stack_method not in ["dbxcor","median"]:
         message = "Invalid value for robust_stack_method={}.  See docstring".format(robust_stack_method)
@@ -1474,7 +1477,7 @@ def align_and_stack(ensemble,
             
         else:
             message = "Illegal type for robust_stack_window={}\m".format(str(type(robust_stack_window)))
-            message = "For this option must be a TimeWindow object"
+            message += "For this option must be a TimeWindow object"
             raise ValueError(message)
         
     elif robust_stack_window_keys:
@@ -1515,7 +1518,7 @@ def align_and_stack(ensemble,
     #  First verify the robust window is inside the correlation window (inclusive of edges)
     if not ( rwin.start >= xcorwin.start and rwin.end <= xcorwin.end):
         message = "Cross correlation window and robust window intervals are not consistent\n"
-        message += "Cross-correlation window:  {}->{}.   Robust window:  {}->{}\n".format(correlation_window.start,correlation_window.end,robust_stack_window.start,robust_stack_window.end)
+        message += "Cross-correlation window:  {}->{}.   Robust window:  {}->{}\n".format(xcorwin.start,xcorwin.end,rwin.start,rwin.end)
         message += "Robust window interval must be within bounds of correlation window"
         if windows_extracted_from_metadata:
             beam.elog.log_error(alg,message,ErrorSeverity.Invalid)
@@ -1564,18 +1567,19 @@ def align_and_stack(ensemble,
             d = WindowData(ensemble.member[i],
                            xcorwin.start,
                            xcorwin.end,
+                           short_segment_handling='truncate',
                            )
             if d.live:
                 d[ensemble_index_key] = i
                 xcorens.member.append(d)
-    xcorens.set_live()
-    nlive = number_live(xcorens)
-    if nlive==0:
+    if len(xcorens.member)==0:
         message = "WindowData with range {} to {} killed all members\n".format(xcorwin.start,xcorwin.end)
         message += "All members have time ranges inconsistent with that cross-correlation window"
         ensemble.elog.log_error(alg,message,ErrorSeverity.Invalid)
         ensemble.kill()
         return [ensemble,beam]
+    else:
+        xcorens.set_live()
     # We need this Metadata posted to sort out total time
     # shifts needed for arrival time estimates
     for i in range(len(xcorens.member)):
