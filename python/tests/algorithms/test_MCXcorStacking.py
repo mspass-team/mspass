@@ -410,6 +410,9 @@ def test_align_and_stack_error_handlers():
     same simulated data genration. 
     """
     [w,e,lag_in_sec] = load_test_data()
+    # simulates aligning to P wave time
+    for d in e.member:
+        d.ator(1000.0)
     # Make a copies for variation tests in this function
     e0 = TimeSeriesEnsemble(e)
     w0 = TimeSeries(w)
@@ -445,14 +448,30 @@ def test_align_and_stack_error_handlers():
                               e.member[0],
                               correlation_window_keys="badarg",
         )
+    # these handlers log errors but don't throw exceptions - test them differently
+    e = TimeSeriesEnsemble(e0)
+    w = TimeSeries(e.member[0])
+    w = WindowData(w,-2.0,10.0)
+    rw = TimeWindow(-1.0,5.0)
+    # default key values are not defined so this should generate two log messages
+    # note with current logic this tests covers start and end errors 
+    # and we don't need to test for case where only one key is undefined or wrong
+    # note the use of the is_defined method covers case of incorrect key and 
+    # undefined key as the same
+    [eo,beam] = align_and_stack(e,w,robust_stack_window=rw)
+    nentries = eo.elog.size()
+    #for e in eo.elog.get_error_log():
+    #    print(e.message)
+    assert nentries==2
+    # test handling of alternate keys for correlation window
     e = TimeSeriesEnsemble(e0)
     beam = TimeSeries(e0.member[0])
+    beam = WindowData(beam,-2.0,10.0)
     # these are not defaults
     cwsk='cwstart'
     cwek='cwend'
     cwk=[cwsk,cwek]
     rwin = TimeWindow(-1.0,4.0)
-    # first test pure recovery
     beam[cwsk]=-1.5
     beam[cwek]=8.0
     [eo,beam]=align_and_stack(e, 
@@ -462,11 +481,81 @@ def test_align_and_stack_error_handlers():
         )
     assert eo.live
     assert eo.elog.size()==0
+    # test handlers for setting robust window
+    with pytest.raises(ValueError,match="Illegal type for robust_stack_window"):
+        [eo,beam]=align_and_stack(e, 
+                              e.member[0],
+                              robust_stack_window="badarg",
+        )
+    with pytest.raises(ValueError,match="Illegal type="):
+        [eo,beam]=align_and_stack(e, 
+                              e.member[0],
+                              robust_stack_window_keys="badarg",
+        )
+    # these handlers log errors but don't throw exceptions - test them differently
+    # as above but for section setting robust window
+    e = TimeSeriesEnsemble(e0)
+    w = TimeSeries(e.member[0])
+    # these are defaults for correlation window keys
+    w['correlation_window_start'] = -2.5  # intentionally longer than w range
+    w['correlation_window_end'] = 15.0
+    w = WindowData(w,-2.0,10.0)
+    # default key values are not defined so this should generate two log messages
+    # note with current logic this tests covers start and end errors 
+    # and we don't need to test for case where only one key is undefined or wrong
+    # note the use of the is_defined method covers case of incorrect key and 
+    # undefined key as the same
+    [eo,beam] = align_and_stack(e,w)
+    nentries = eo.elog.size()
+    #for e in eo.elog.get_error_log():
+    #    print(e.message)
+    assert nentries==2    
 
+    # test case where windows are not consistent - this case kills the beam output
+    e = TimeSeriesEnsemble(e0)
+    w = TimeSeries(e.member[0])
+    # these are defaults for correlation window keys
+    w['correlation_window_start'] = -2.5  
+    w['correlation_window_end'] = 15.0
+    w['robust_window_start'] = -5.0
+    w['robust_window_end'] = 20.0
+    w = WindowData(w,-2.0,10.0)
+    [eo,beam] = align_and_stack(e,w)
+    assert beam.dead()
+    assert beam.elog.size()==1
     
+    # test case where the correlation window is larger than the data range
+    # also kills the beam with a message posted
+    e = TimeSeriesEnsemble(e0)
+    w = TimeSeries(e.member[0])
+    # these are defaults for correlation window keys
+    w['correlation_window_start'] = -2.5  
+    w['correlation_window_end'] = 5000.0
+    w['robust_window_start'] = -5.0
+    w['robust_window_end'] = 20.0
+    w = WindowData(w,-2.0,10.0)
+    [eo,beam] = align_and_stack(e,w)
+    assert beam.dead()
+    assert beam.elog.size()==1
+    
+    # test handling of case with all data marked dead but ensemble is 
+    # set live
+    e = TimeSeriesEnsemble(e0)
+    w = TimeSeries(e.member[0])
+    # these are defaults for correlation window keys
+    cw = TimeWindow(-2.0,10.0)
+    # intentionally absurd - need to not abort from not overlapping error
+    w['robust_window_start'] = -1.0
+    w['robust_window_end'] = 5.0
+    w = WindowData(w,-2.0,10.0)
+    for i in range(len(e.member)):
+        e.member[i].kill()
+    [eo,beam] = align_and_stack(e,w,correlation_window=cw)
+    assert eo.dead()
+    assert eo.elog.size()==1
 
-test_align_and_stack()
-test_align_and_stack_error_handlers()
+#test_align_and_stack()
+#test_align_and_stack_error_handlers()
 
 
 
