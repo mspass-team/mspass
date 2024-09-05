@@ -512,7 +512,7 @@ def MCXcorPrepP(ensemble,
     return [enswork,beam0]
              
 
-def dbxcor_weights(ensemble,stack):
+def dbxcor_weights(ensemble,stack,residual_norm_floor=0.01):
     """
     Computes the robust weights used originally in dbxcor for each 
     member of ensemble.   Result is returned in a parallel numpy 
@@ -522,6 +522,17 @@ def dbxcor_weights(ensemble,stack):
     all the members of ensemble are the same and it is the same length 
     as stack.  It will throw an exception if that is violated so callers 
     should guarantee that happens.  
+    
+    This function adds a feature not found in the original Pavlis and Vernon(2011)
+    paper via the `residual_norm_floor` argument.   Experience with this algorithm
+    showed it tends to converge to a state with very high weights on one or two 
+    signals and low weights on the rest.   The high weights are given to the 
+    one or two signals most closely matching the stack at convergence.  This 
+    has the undesirable effect of causing a strong initial value dependence 
+    and suboptimal noise reduction.  This argument handles that by not allowing 
+    the L2 norm of the residual to fall below a floor computed from the 
+    ratio ||r||/||d||.   i.e. if ||r|| < residual_norm_floor*||d|| it is 
+    set to the value passed as `residual_norm_floor`.  
     
     Returns a numpy vector of weights.  Any dead data will have a weight of 
     -1.0 (test for negative is sufficient).   
@@ -535,6 +546,11 @@ def dbxcor_weights(ensemble,stack):
     The method returns robust weights relative to the vector of data in 
     this object.
     :type stack:  `TimeSeries`.
+    :param residual_norm_floor:   floor in the ratio norm2(r)/norm2(d) 
+    used as described above.
+    :type residual_norm_floor:  float
+    :return: numpy vector of weights parallel with ensemble.member.  Dead 
+    members will have a negative weight in this vector.
     
     """
     norm_floor = np.finfo(np.float32).eps * stack.npts
@@ -553,12 +569,18 @@ def dbxcor_weights(ensemble,stack):
             r = ensemble.member[i].data - d_dot_stack*s_unit
             nrm_r = np.linalg.norm(r)
             nrm_d = np.linalg.norm(ensemble.member[i].data)
-            # see Pavlis and Vernon (2011) for why this is needed
-            # briefly this can result in a nan if denominator is close to 0
-            denom = nrm_r*nrm_d
-            if denom < norm_floor:
-                denom = norm_floor
-            wts[i] = abs(d_dot_stack)/denom
+            if nrm_d<norm_floor:
+                # this is a test for all zeros
+                # Give zero weight in this situation 
+                wts[i] = 0.0
+            elif nrm_r/nrm_d < residual_norm_floor:
+                denom = residual_norm_floor*nrm_d
+                wts[i] = abs(d_dot_stack)/denom
+            else:
+                denom = nrm_r*nrm_d
+                # dbxcor has logic to avoid an nan from a machine 0 
+                # denom.  Not needed her because of conditional chain here
+                wts[i] = abs(d_dot_stack)/denom
  
     # rescale weights so largest is 1 - easier to understand
     maxwt = np.max(wts)
@@ -798,6 +820,7 @@ def robust_stack(ensemble,
                  stack_md=None,
                  timespan_method="ensemble_inner",
                  fractional_mismatch_limit=0.05,
+                 residual_norm_floor=0.01,
                  )->TimeSeries:
     """
     Generic function for robust stacking live members of a `TimeSeriesEnsemble`.
@@ -890,6 +913,10 @@ def robust_stack(ensemble,
     however, that if stack0 is defined the output stack will be a 
     clone of stack0 with possible modifications of time and data 
     range attributes and anything the stack algorithm posts.
+    :param residual_norm_floor: floor on residuals used to compute dbxcor weight
+    function.  See docstring for `dbxcor_weights` for details.  Ignored 
+    unless method is "dbxcor"
+    :type residual_norm_floor:   float (default 0.01)
     """
     alg = "robust_stack"
     # if other values for method are added they need to be added here
@@ -970,15 +997,23 @@ def robust_stack(ensemble,
         stack.data=DoubleVector(stack_vector)
         stack.set_live()
     if method == "dbxcor":
-        stack = _dbxcor_stacker(ensemble,stack)
+        stack = _dbxcor_stacker(ensemble,
+                                stack,
+                                residual_norm_floor=residual_norm_floor,
+                                )
 
     return stack
         
     
-def _dbxcor_stacker(ensemble,stack0,eps=0.0001,maxiterations=20)->tuple:
+def _dbxcor_stacker(ensemble,
+                    stack0,
+                    eps=0.001,
+                    maxiterations=20,
+                    residual_norm_floor=0.01,
+                    )->tuple:
     """
-    Runs the dbxcor robust stacking algor    and with correlation window estimate in ensemble metadataut with the sample data replaced
-    by the output of the robust algorithm using the dbxcor weighting function.
+    Runs the dbxcor robust stacking algorithm on `enemble` with initial 
+    stack estimate stack0.  
     Returns a tuple with the stack as component 0 and a numpy vector 
     of the final robust weights as component 1.   
     
@@ -992,29 +1027,36 @@ def _dbxcor_stacker(ensemble,stack0,eps=0.0001,maxiterations=20)->tuple:
     :param eps:  relative norm convergence criteria.  Stop iteration when 
     norm(delta stack data)/norm(stack.data)<eps.
     :param maxiterations:  maximum number of iterations (default 20)
+    :param residual_norm_floor: floor on residuals used to compute dbxcor weight
+    function.  See docstring for `dbxcor_weights` for details. 
+    :type residual_norm_floor:   float (default 0.01)
     """
     stack=TimeSeries(stack0)
     # useful shorthands
     N=stack0.npts
     M=len(ensemble.member)
     for i in range(maxiterations):
-        wts = dbxcor_weights(ensemble,stack)
+        wts = dbxcor_weights(ensemble,stack,residual_norm_floor=residual_norm_floor)
         newstack = np.zeros(N)
         sumwts = 0.0
+        print("Debug:   dbxcor weights for iteration ",i)
         for j in range(M):
-            # dbxcor_weights returns -1 for dead data but we don't 
-            # use that feature here as we assume all are live
-            newstack += wts[j]*ensemble.member[i].data
-            sumwts += wts[j]
-        # order may matter herre.  In this case delta becomes a numpy 
+            if ensemble.member[i].live and wts[j]>0.0:
+                newstack += wts[j]*ensemble.member[i].data
+                sumwts += wts[j]
+            print(wts[j])
+        newstack /= sumwts
+        # order may matter here.  In this case delta becomes a numpy 
         # array which is cleaner in this context
         delta = newstack - stack.data
         relative_delta = np.linalg.norm(delta)/np.linalg.norm(stack.data)
+        # normalize by sample size or there is a window length dependency
+        relative_delta /= N
         # update stack here so if we break loop we don't have to repeat
-        # this copying
+        # this copying.  Force one iteration to make this a do-while loop
         # newstack is a numpy vector so this cast is necesary
         stack.data = DoubleVector(newstack)
-        if relative_delta<eps:
+        if i>0 and relative_delta<eps:
             break
     return stack
         
@@ -1114,6 +1156,7 @@ def align_and_stack(ensemble,
                     time_shift_limit=2.0,
                     abort_irregular_sampling=False,    
                     convergence=0.001,
+                    residual_norm_floor=0.01,
                     )->tuple:
     """
     This function uses an initial estimate of the array stack passed as
@@ -1332,6 +1375,9 @@ def align_and_stack(ensemble,
     ensemble is modified so the return may have fewer data live 
     than the input when this mode is enabled. 
     :type abort_irregular_sampling:  boolean
+    :param residual_norm_floor: floor on residuals used to compute dbxcor weight
+    function.  See docstring for `dbxcor_weights` for details. 
+    :type residual_norm_floor:   float (default 0.01)
     
     :return: tuple with 0 containing the original ensemble but time 
     shifted by cross-correlation.   Failed/discarded signals for the 
@@ -1549,6 +1595,7 @@ def align_and_stack(ensemble,
                              stack0=rbeam0,
                              method=robust_stack_method,
                              timespan_method="stack0",
+                             residual_norm_floor=residual_norm_floor,
                              )
         delta_rbeam = rbeam - rbeam0
         nrm_delta = np.linalg.norm(delta_rbeam.data)
@@ -1589,7 +1636,7 @@ def align_and_stack(ensemble,
     
     if robust_stack_method=="dbxcor":
         # We need to post the final weights to all live members
-        wts = dbxcor_weights(rens,rbeam)
+        wts = dbxcor_weights(rens,rbeam,residual_norm_floor=residual_norm_floor)
         # these need to be normalized so sum is 1 to simplify array stack below
         sum_live_wts=0.0
         for w in wts:

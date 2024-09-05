@@ -8,6 +8,7 @@ functions.
 
 @author: Gary L Pavlis
 """
+import pickle
 import numpy as np
 from scipy import signal
 from numpy.random import randn
@@ -200,6 +201,20 @@ def make_test_data():
         e.member[i]['lag_in_sec'] = lag_in_sec[i]
     return [w,e,lag_in_sec]
 
+def load_test_data():
+    filename="MCXcorStacking.testdata"
+    # for testing use this
+    dir = "../data"
+    # with pytest use this
+    # dir = "./python/tests/data"
+    path = dir + "/" + filename
+    fd = open(path,'rb')
+    w_r = pickle.load(fd)
+    e_r = pickle.load(fd)
+    lags_r = pickle.load(fd)
+    fd.close()
+    return [w_r,e_r,lags_r]
+
 def count_live(e):
     """
     Returns the number of live members in an ensemble.  
@@ -254,7 +269,10 @@ def test_align_and_stack():
     
     """
 
-    [w,e,lag_in_sec] = make_test_data()
+    [w,e,lag_in_sec] = load_test_data()
+    # simulates aligning to P wave time
+    for d in e.member:
+        d.ator(1000.0)
     # Make a copies for variation tests in this function
     e0 = TimeSeriesEnsemble(e)
     w0 = TimeSeries(w)
@@ -292,8 +310,11 @@ def test_align_and_stack():
     # pending in issues discussion but for now this is ok 
     # for this test.  For now marked dead is equivalent to a small weight
     # i.e. if datum is dead is also means the test was passed
-    if eo.member[ibad].live:
-        assert eo.member[ibad]['robust_stack_weight'] < 0.002
+    print("robust weights for one bad datum test")
+    for d in eo.member:
+        print(d['robust_stack_weight'])
+    assert eo.member[ibad].live
+    assert eo.member[ibad]['robust_stack_weight'] < 0.002
     # Repeat test 1 with median stack
     e = TimeSeriesEnsemble(e0)
     w = TimeSeries(w0)
@@ -388,7 +409,7 @@ def test_align_and_stack_error_handlers():
     Like above but only tests error handlers.  Uses the 
     same simulated data genration. 
     """
-    [w,e,lag_in_sec] = make_test_data()
+    [w,e,lag_in_sec] = load_test_data()
     # Make a copies for variation tests in this function
     e0 = TimeSeriesEnsemble(e)
     w0 = TimeSeries(w)
