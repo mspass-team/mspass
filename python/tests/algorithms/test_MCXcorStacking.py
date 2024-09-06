@@ -25,188 +25,25 @@ from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.algorithms.window import scale
 #from mspasspy.algorithms.MCXcorStacking import align_and_stack
-from mspasspy.algorithms.MCXcorStacking import align_and_stack
+from mspasspy.algorithms.MCXcorStacking import (align_and_stack,
+                                                _coda_duration,
+                                               )
 
-def make_impulse_vector(lag,imp,n=500):
-    """
-    Computes a (sparse) vector of impulse functions at a specified set of
-    lags.   Used for generating fake data for a number of contexts.
-    
-    :param lag: is a list of lag values (int in samples) parallel with imp
-    :param imp: is a list of values (amplitudes) for each lag.  Algorithm is
-       simply to insert imp value at specified lag.  
-    :param n: length of output vector returned.
-    :return: numpy vector of doubles of length n.  zero where lag,imp not defined.
-    """
-    if(len(lag)!=len(imp)):
-        raise RuntimeError("make_impulse_vector:  lag and imp vectors must be equal length")
-    d=np.ndarray(n)
-    for i in range(n):
-        d[i]=0.0
-    for i in range(len(lag)):
-        if((lag[i]<0) | (lag[i]>=n)):
-            raise RuntimeError("make_impulse_vector:  lag out of range");
-        d[lag[i]]=imp[i]
-    return d
-
-def make_wavelet_noise_data(nscale=0.1,ns=2048,padlength=512,
-        dt=0.05,npoles=3,corners=[0.08,0.8]):
-    wn=TimeSeries(ns)
-    wn.t0=0.0
-    wn.dt=dt
-    wn.tref=TimeReferenceType.Relative
-    wn.live=True
-    nd=ns+2*padlength
-    y=nscale*randn(nd)
-    sos=signal.butter(npoles,corners,btype='bandpass',output='sos',fs=1.0/dt)
-    y=signal.sosfilt(sos,y)
-    for i in range(ns):
-        wn.data[i]=y[i+padlength]
-    return(wn)
-def make_simulation_wavelet(n=100,dt=0.05,t0=-1.0,
-                            imp=(20.0,-15.0,4.0,-1.0),
-                            lag=(20,24,35,45),
-                            npoles=3,
-                            corners=[2.0,6.0]):
-    dvec=make_impulse_vector(lag,imp,n)
-    fsampling=int(1.0/dt)
-    sos=signal.butter(npoles,corners,btype='bandpass',output='sos',fs=fsampling)
-    f=signal.sosfilt(sos,dvec)
-    wavelet=TimeSeries(n)
-    wavelet.set_t0(t0)
-    wavelet.set_dt(dt)
-    # This isn't necessary at the moment because relative is the default
-    #wavelet.set_tref(TimeReferenceType.Relative)
-    wavelet.set_npts(n)
-    wavelet.set_live()
-    for i in range(n):
-        wavelet.data[i]=f[i]
-    return wavelet
-def make_impulse_data(n=1024,dt=0.05,t0=-5.0):
-    # Compute lag for spike at time=0
-    lag0=int(-t0/dt)
-    z=make_impulse_vector([lag0],[150.0],n)
-    rf_lags=(lag0,lag0+50,lag0+60,lag0+150,lag0+180)
-    amps1=(10.0,20.0,-60.0,-3.0,2.0)
-    amps2=(-15.0,30.0,10.0,-20.0,15.0)
-    ns=make_impulse_vector(rf_lags,amps1,n)
-    ew=make_impulse_vector(rf_lags,amps2,n)
-    d=Seismogram(n)
-    d.set_t0(t0)
-    d.set_dt(dt)
-    d.set_live()
-    d.tref=TimeReferenceType.Relative
-    for i in range(n):
-        d.data[0,i]=ew[i]
-        d.data[1,i]=ns[i]
-        d.data[2,i]=z[i]
-    return d
-
-def convolve_wavelet(d,w):
-    """
-    Convolves wavelet w with 3C data stored in Seismogram object d 
-    to create simulated data d*w.   Returns a copy of d with the data 
-    matrix replaced by the convolved data.
-    """
-    dsim=Seismogram(d)
-    # We use scipy convolution routine which requires we copy the 
-    # data out of the d.data container one channel at a time.
-    wavelet=[]
-    n=w.npts
-    for i in range(n):
-        wavelet.append(w.data[i])
-    for k in range(3):
-        work=[]
-        n=d.npts
-        for i in range(n):
-            work.append(d.data[k,i])
-        # Warning important to put work first and wavelet second in this call
-        # or timing will be foobarred
-        work=signal.convolve(work,wavelet)
-        for i in range(n):
-            dsim.data[k,i]=work[i]
-    # timing correction needed to preserve timing
-    # A version of this in decon simulation has this wrong
-    dsim.t0 += w.t0
-    return dsim
-def addnoise(d,nscale=1.0,padlength=1024,npoles=3,corners=[0.1,1.0]):
-    """
-    Helper function to add noise to Seismogram d.  The approach is a 
-    little weird in that we shift the data to the right by padlength 
-    adding filtered random data to the front of the signal.   
-    The padding is compensated by changes to t0 to preserve relative time 
-    0.0.  The purpose of this is to allow adding colored noise to 
-    a simulated 3C seismogram. 
-    
-    :param d: Seismogram data to which noise is to be added and padded
-    :param nscale:  noise scale for gaussian normal noise
-    :param padlength:   data padded on front by this many sample of noise
-    :param npoles: number of poles for butterworth filter 
-    :param corners:  2 component array with corner frequencies for butterworth bandpass.
-    """
-    nd=d.npts
-    n=nd+padlength
-    result=Seismogram(d)
-    result.set_npts(n)
-    newt0=d.t0-d.dt*padlength
-    result.set_t0(newt0)
-    # at the time this code was written we had a hole in the ccore 
-    # api wherein operator+ and operator+= were not defined. Hence in this 
-    # loop we stack the noise and signal inline.
-    for k in range(3):
-        dnoise=nscale*randn(n)
-        sos=signal.butter(npoles,corners,btype='bandpass',output='sos',fs=20.0)
-        nfilt=signal.sosfilt(sos,dnoise)
-        for i in range(n):
-            result.data[k,i]=nfilt[i]
-        for i in range(nd):
-            t=d.time(i)
-            ii=result.sample_number(t)
-            # We don't test range here because we know we won't 
-            # go outside bounds because of the logic of this function
-            result.data[k,ii]+=d.data[k,i]
-    return result
-def make_test_data():
-    """
-    Uses functions above, which were taken from the deconvolution tutorial, 
-    to create a test data set for the MCXcorStacking module.   
-    Returns a tuple with 3 components:
-        1.  noise free wavelet estimate stored in a TimeSeries
-        2.  TimeSeriesEnsemble of data with time shifts applied
-        3.  vector of time shifts applied in seconds.   Note these 
-            are constants original derived as random normal values.  
-    """
-    M = 20
-    w = make_simulation_wavelet()
-    d = make_impulse_data()
-    d = convolve_wavelet(d, w)
-    d = scale(d,method='peak',level=0.5)
-    d=ExtractComponent(d,2)
-    d.force_t0_shift(1000.0)
-    # originally created as on instance of this
-    # lag_in_sec = np.random.normal(scale=0.2,size=M)
-    lag_in_sec = np.array([ 0.11377978,  0.14157338, -0.19732775, -0.10456551, -0.13559048,
-           -0.17318283, -0.01108572, -0.28340258,  0.02973805, -0.05159073,
-           -0.46799437,  0.04016743,  0.12821589,  0.17210118,  0.28651398,
-           -0.00429737, -0.2394207 , -0.05986124, -0.00274017, -0.1206297 ])
-    e = TimeSeriesEnsemble(M)
-    d0 = TimeSeries(d)
-    for i in range(20):
-        d = TimeSeries(d0)
-        d.t0 += lag_in_sec[i]
-        e.member.append(d)
-    e.set_live()
-    # set these for assert tests
-    for i in range(M):
-        e.member[i]['lag_in_sec'] = lag_in_sec[i]
-    return [w,e,lag_in_sec]
 
 def load_test_data():
+    """
+    A jupyter notebook can be found in python/tests/data with 
+    the file name "MCXcorStacking_data_generator.ipynb".   It contains 
+    the code used to generate this test data.   The test data are
+    20 copies of the same waveform with time shifts similar to 
+    typical teleseismic P wave data with a small level of filtered 
+    Gaussian random noise added to each signal.   
+    """
     filename="MCXcorStacking.testdata"
     # for testing use this
     dir = "../data"
     # with pytest use this
-    dir = "./python/tests/data"
+    #dir = "./python/tests/data"
     path = dir + "/" + filename
     fd = open(path,'rb')
     w_r = pickle.load(fd)
@@ -554,9 +391,67 @@ def test_align_and_stack_error_handlers():
     assert eo.dead()
     assert eo.elog.size()==1
 
+def test_coda_duration():
+    """
+    Tests _coda_duration function using a 1 hz sine wave with an 
+    exponentially decaying amplitude.   Note we use a sine wave 
+    instead of random noise because the envelope algorithm returns 
+    a simple curve for a sine. 
+    """
+    N = 2000
+    dt = 0.05
+    T = 1.0
+    t0 = -5.0  # simulate P wave a time 0
+    a = 0.05   # decay constant of exp(-ax) amplitude
+    AP0 = 20.0   # amplitude of signal at 0 at simulating P wave onset
+    d = TimeSeries()
+    d.set_npts(N)
+    d.dt = dt
+    d.t0 = t0
+    d.set_live()
+    for i in range(N):
+        t = d.time(i)
+        x = 2.0*np.pi*t/T
+        if t<0.0:
+            A = 1.0
+        else:
+            A = AP0*np.exp(-a*t)
+        #print(t,x,A)
+        d.data[i] = A*np.sin(x)
+    #################################################
+    # for maintenance if someone needs to see the input to this test
+    # import SeismicPlotter and matplotlib and uncomment the lines below 
+    # that do the graphics
+    #plotter = SeismicPlotter()
+    #plotter.change_style('wt')
+    #plotter.plot(d)
+    #de = TimeSeries(d)
+    #httsd = signal.hilbert(de.data)
+    #envelope = np.abs(httsd)
+    #de.data = DoubleVector(envelope)
+    #plotter.plot(de)
+    #plt.show()
+    #################################################
+    test_level = 2.0
+    tw = _coda_duration(d,test_level)
+    # this relationship is solving A=AP0*exp(-at) for t when A=test_level
+    # i.e. log(A) = log(AP0)-a*t so t = (log(AP0) - log(A))/a
+    t_coda = ( np.log(AP0) - np.log(test_level))/a
+    assert np.isclose(tw.start,0.0)
+    # testing showed envelope ripples make this nearest second test
+    # reliable.   If the parameters change for the test signal 
+    # this may need to change
+    assert abs(tw.end-t_coda) < 1.0
+    return
+
+def test_MCXcorPrepP():
+    pass
+def test_estimate_ensemble_bandwidth():
+    pass
+
 #test_align_and_stack()
 #test_align_and_stack_error_handlers()
-
+test_coda_duration()
 
 
 
