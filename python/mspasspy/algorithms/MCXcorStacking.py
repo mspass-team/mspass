@@ -20,6 +20,7 @@ from mspasspy.ccore.seismic import (TimeSeries,
                                     TimeReferenceType,
                                     DoubleVector)
 from mspasspy.ccore.algorithms.basic import TimeWindow
+from mspasspy.algorithms.signals import filter
 from mspasspy.algorithms.window import WindowData
 def _coda_duration(ts,level,t0=0.0,search_start=None)->TimeWindow:
     """
@@ -149,6 +150,10 @@ def _set_phases(d,
     if d.dead():
         return d
     alg = "_set_phases"
+    # these symbols need to be effectively declared here or the go out of scope 
+    # before being used as arguments for the get_travel_time method of the taup calculator
+    depth=0.0
+    dist=0.0
     if d.is_defined("dist"):
         dist = d["dist"]
     else:
@@ -170,7 +175,7 @@ def _set_phases(d,
             stalon = d[lon_key]
             [dist,seaz,esaz]=gps2dist_azimuth(stalat,stalon,srclat,srclon)
         else:
-            message = "Missing required rceiver coordinates defined with keys: {} and {}\n".format(stalat,stalon)
+            message = "Missing required receiver coordinates defined with keys: {} and {}\n".format(stalat,stalon)
             message += "Cannot handle this datum"
             d.elog.log_error(alg,message,ErrorSeverity.Invalid)
             d.kill()
@@ -183,24 +188,30 @@ def _set_phases(d,
         message = "source_depth value was not defined - using default value={}".format(depth)
         d.elog.log_error(alg,message,ErrorSeverity.Complaint)
     arrivals = model.get_travel_times(source_depth_in_km=depth,
-                                      distance_in_degrees=dist,
+                                      distance_in_degree=dist,
                                       phase_list=['P','pP','PP'])
-    # only set first arrival for multivalued arrivals
-    P=[]
-    pP=[]
-    PP=[]
-    for arr in arrivals:
-        if arr.name == "P":
-            P.append(arr.time)
-        elif arr.name == "pP":
-            pP.append(arr.time)
-        elif arr.name == "PP":
-            PP.append(arr.time)
-    d[Ptime_key] = min(P) + origin_time
-    if len(pP)>0:
-        d[pPtime_key] = min(pP) + origin_time
-    if len(PP)>0:
-        d[PPtime_key] = min(PP) + origin_time
+    if len(arrivals)==0:
+        message = "Travel time calculator failed to compute any time for P, PP, or pP"
+        d.elog.log_error(alg,message,ErrorSeverity.Invalid)
+        d.kill()
+    else:
+        # only set first arrival for multivalued arrivals
+        P=[]
+        pP=[]
+        PP=[]
+        for arr in arrivals:
+            if arr.name == "P":
+                P.append(arr.time)
+            elif arr.name == "pP":
+                pP.append(arr.time)
+            elif arr.name == "PP":
+                PP.append(arr.time)
+        if len(P)>0:
+            d[Ptime_key] = min(P) + origin_time
+        if len(pP)>0:
+            d[pPtime_key] = min(pP) + origin_time
+        if len(PP)>0:
+            d[PPtime_key] = min(PP) + origin_time
     return d
 
 def extract_initial_beam_estimate(ensemble,
@@ -330,12 +341,12 @@ def MCXcorPrepP(ensemble,
                low_f_corner=None,
                high_f_corner=None,
                npoles=4,
-               coda_level_factor=2.0,
+               coda_level_factor=4.0,
                set_phases=True,
                Ptime_key="Ptime",
                pPtime_key="pPtime",
                PPtime_key="PPtime",
-               model=None,
+               station_collection="channel",
                search_window_fraction=0.9,
                minimum_coda_duration=5.0,
                correlation_window_start=-2.0,
@@ -400,6 +411,11 @@ def MCXcorPrepP(ensemble,
     were marked live in the input. 
     
     TODO:   param definitions for docstring
+    Caution particularly about coda_level_factor dependency on 
+    metric used for measuring noise amplitude.  default 4.0 is for 
+    mad where 2 is about the right correction for noise level and 
+    the envelope to yield a cutoff level of 2.0.   I won't finish this 
+    until I've done testing with real data.
     """
     alg = "MCXcorPrepP"
     if not isinstance(ensemble,TimeSeriesEnsemble):
@@ -408,7 +424,14 @@ def MCXcorPrepP(ensemble,
         raise TypeError(message)
     if ensemble.dead():
         return [ensemble,TimeSeries()]
-    # TODO  test that noise_window is a TimeWindow object
+    
+    if model is None:
+        model = TauPyModel(model="iasp91")
+    
+    if not isinstance(noise_window,TimeWindow):
+        message = alg + ":  Illegal type={} for arg1\n".format(type(noise_window))
+        message += "Must be a TimeWindow object"
+        raise TypeError(message)
     
     # first sort out the issue of the passband to use for this 
     # analysis.   Use kwargs if they are defined but otherwise assume 
@@ -433,7 +456,7 @@ def MCXcorPrepP(ensemble,
                      corners=npoles,
                      )
     if set_phases:
-        for i in range(enswork.member):
+        for i in range(len(enswork.member)):
             # this handles dead data so don't test for life
             enswork.member[i] = _set_phases(enswork.member[i],
                                          model,
@@ -445,7 +468,7 @@ def MCXcorPrepP(ensemble,
     # if set_phases is False we assume P, pP, and/or PP times were previously 
     # set.   First make sure all data are in relative time with 0 as P time.  
     # kill any datum for which P is not defined 
-    for i in range(enswork.member):
+    for i in range(len(enswork.member)):
         d = enswork.member[i]
         if d.live:
             if d.is_defined(Ptime_key):
