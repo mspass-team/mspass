@@ -911,7 +911,7 @@ class SeismicPlotter:
         maxdt = 0.0
         # this is no doubt a faster vector way to do this calculation, but
         # this loop is guaranteed by screen limits to never be huge
-        for i in range(ndata):
+        for i in range(len(t0)):
             dt = endtimes[i] - t0[i]
             maxdt = max(maxdt, dt)
         if maxdt / (tmax - tmin) < self._RANGE_RATIO_TEST:
