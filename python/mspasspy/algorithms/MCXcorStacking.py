@@ -11,7 +11,9 @@ import numpy as np
 from scipy import signal
 from  mspasspy.ccore.algorithms.amplitudes import MADAmplitude,RMSAmplitude,PeakAmplitude
 from mspasspy.algorithms.window import WindowData
-from obspy.geodetics.base import gps2dist_azimuth
+from obspy.geodetics.base import gps2dist_azimuth,kilometers2degrees
+from obspy.taup import TauPyModel
+
 
 from mspasspy.ccore.utility import ErrorLogger,ErrorSeverity,Metadata
 from mspasspy.ccore.seismic import (TimeSeries,
@@ -174,6 +176,7 @@ def _set_phases(d,
             stalat = d[lat_key]
             stalon = d[lon_key]
             [dist,seaz,esaz]=gps2dist_azimuth(stalat,stalon,srclat,srclon)
+            dist=kilometers2degrees(dist/1000.0)
         else:
             message = "Missing required receiver coordinates defined with keys: {} and {}\n".format(stalat,stalon)
             message += "Cannot handle this datum"
@@ -343,6 +346,7 @@ def MCXcorPrepP(ensemble,
                npoles=4,
                coda_level_factor=4.0,
                set_phases=True,
+               model=None,
                Ptime_key="Ptime",
                pPtime_key="pPtime",
                PPtime_key="PPtime",
@@ -443,7 +447,7 @@ def MCXcorPrepP(ensemble,
        [f_low,f_high,nused] = estimate_ensemble_bandwidth(ensemble,
                                                 snr_doc_key=snr_doc_key,
                                                 )
-       if (f_low is None) or (f_high is None):
+       if (f_low == 0) or (f_high == 0):
            message = "estimate_ensemble_bandwidth failed\n"
            message += "Either all members are dead or data were not previously processed with broadband_snr_QC"
            ensemble.elog.log_error(alg,message,ErrorSeverity.Invalid)
@@ -463,7 +467,7 @@ def MCXcorPrepP(ensemble,
                                          Ptime_key=Ptime_key,
                                          pPtime_key=pPtime_key,
                                          PPtime_key=PPtime_key,
-                                         station_collection="channel",
+                                         station_collection=station_collection,
                                          )   
     # if set_phases is False we assume P, pP, and/or PP times were previously 
     # set.   First make sure all data are in relative time with 0 as P time.  
@@ -499,6 +503,10 @@ def MCXcorPrepP(ensemble,
             else:
                 nw = TimeWindow(noise_window)
             nd = WindowData(d,nw.start,nw.end,short_segment_handling="truncate")
+            # silently skip any datum for which the WindowData algorithm fails
+            # can happen if the noise window does not overlap with data
+            if nd.dead():
+              continue
             if noise_metric=="rms":
                 namp = RMSAmplitude(nd)
             elif noise_metric=="peak":
@@ -527,7 +535,7 @@ def MCXcorPrepP(ensemble,
         correlation_window_endtime = min_range
     
     beam0 = extract_initial_beam_estimate(enswork,
-                                        initial_beam_metric=initial_beam_metric,
+                                        metric=initial_beam_metric,
                                         subdoc_key=snr_doc_key,
                                         )
     beam0['correlation_window_start'] = correlation_window_start
@@ -1098,8 +1106,8 @@ def _xcor_shift(ts,beam):
     :param beam:  TimeSeries defining the common signal (beam) for
       correlation - the b argument to correlation.  
     """
-    xcor = signal.correlate(ts.data,beam.data,mode='same')
-    lags=signal.correlation_lags(ts.npts,beam.npts,mode='same')
+    xcor = signal.correlate(ts.data,beam.data,mode='valid')
+    lags=signal.correlation_lags(ts.npts,beam.npts,mode='valid')
     # numpy/scipy treat sample 0 as time 0 
     # with TimeSeries we have to correct with the t0 values to get timing right
     lag_of_max_in_samples = lags[np.argmax(xcor)]
@@ -1626,6 +1634,7 @@ def align_and_stack(ensemble,
                              )
         delta_rbeam = rbeam - rbeam0
         nrm_delta = np.linalg.norm(delta_rbeam.data)
+        print("nrm_delta=",nrm_delta)
         if nrm_delta/nrm_rbeam < convergence:
             break
         rbeam0 = rbeam
