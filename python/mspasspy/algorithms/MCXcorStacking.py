@@ -1086,12 +1086,10 @@ def _dbxcor_stacker(ensemble,
         wts = dbxcor_weights(ensemble,stack,residual_norm_floor=residual_norm_floor)
         newstack = np.zeros(N)
         sumwts = 0.0
-        print("Debug:   dbxcor weights for iteration ",i)
         for j in range(M):
             if ensemble.member[i].live and wts[j]>0.0:
                 newstack += wts[j]*ensemble.member[i].data
                 sumwts += wts[j]
-            print(wts[j])
         newstack /= sumwts
         # order may matter here.  In this case delta becomes a numpy 
         # array which is cleaner in this context
@@ -1649,7 +1647,6 @@ def align_and_stack(ensemble,
                              )
         delta_rbeam = rbeam - rbeam0
         nrm_delta = np.linalg.norm(delta_rbeam.data)
-        print("nrm_delta=",nrm_delta)
         if nrm_delta/nrm_rbeam < convergence:
             break
         rbeam0 = rbeam
@@ -1675,8 +1672,6 @@ def align_and_stack(ensemble,
             initial_starttime = xcorens.member[i][it0_key]
             tshift = d.t0 - initial_starttime
             j = d[ensemble_index_key]
-            print(i,j,initial_starttime,tshift)
-            #tshift =  initial_starttimes[i] - xcorens.member[i].t0
             # this shift maybe should be optional
             # a positive lag from xcor requires a negative shift 
             # for a TimeSeries object  
