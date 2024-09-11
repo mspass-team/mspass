@@ -690,7 +690,8 @@ def regularize_sampling(ensemble,dt_expected,Nsamp=10000,abort_on_error=False):
     :type dt_expected:  float
     :param Nsamp:   Nominal number of samples expected in the ensemble members. 
     This number is used to compute the soft test to allow for slippery clocks 
-    discussed above.   (Default 10000) 
+    discussed above.   (Default 10000) e = regularize_sampling(e,dt)
+    assert e.live
     :type Nsamp:  integer
     :param abort_on_error:  Controls what the function does if it 
     encountered a datum with a sample interval different that dt_expected. 
@@ -713,8 +714,8 @@ def regularize_sampling(ensemble,dt_expected,Nsamp=10000,abort_on_error=False):
         if d.live:
             if not np.isclose(dt_expected,d.dt):
                 if abs(dt_expected-d.dt) > delta_dt_cutoff:
-                    message = "Member {} of input ensemble has different sample rate than expected constant dt\n",format(i)
-                    message += "Expected dt={} but this datum has dt={}\n".format(dt_expected,d.dt)
+                    message = str()
+                    message = "Member {} of input ensemble has different sample rate={} than expected dt={}".format(i,d.dt,dt_expected)
                     if abort_on_error:
                         raise ValueError(message)
                     else:
@@ -1120,8 +1121,8 @@ def _xcor_shift(ts,beam):
     :param beam:  TimeSeries defining the common signal (beam) for
       correlation - the b argument to correlation.  
     """
-    xcor = signal.correlate(ts.data,beam.data,mode='valid')
-    lags=signal.correlation_lags(ts.npts,beam.npts,mode='valid')
+    xcor = signal.correlate(ts.data,beam.data)
+    lags=signal.correlation_lags(ts.npts,beam.npts)
     # numpy/scipy treat sample 0 as time 0 
     # with TimeSeries we have to correct with the t0 values to get timing right
     lag_of_max_in_samples = lags[np.argmax(xcor)]
