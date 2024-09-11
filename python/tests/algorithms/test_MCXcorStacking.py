@@ -24,9 +24,13 @@ from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.algorithms.window import scale
-#from mspasspy.algorithms.MCXcorStacking import align_and_stack
+from obspy.taup import TauPyModel
+
 from mspasspy.algorithms.MCXcorStacking import (align_and_stack,
                                                 _coda_duration,
+                                                MCXcorPrepP,
+                                                number_live,
+                                                _set_phases,
                                                )
 
 
@@ -51,6 +55,29 @@ def load_test_data():
     lags_r = pickle.load(fd)
     fd.close()
     return [w_r,e_r,lags_r]
+
+def load_TAtestdata():
+    """
+    Loads pickle file of real data recordings of a large Japanese 
+    earthquake recorded by the Earthscope TA.   The ensemble 
+    that is loaded is the 20 closest stations to that event.
+    The notebook that creates this file is the data directory 
+    for these tests with and has the file name 'create_MCXcor_testdata.ipynb`.
+    It is more or less like the file used by `load_test_data` but the file 
+    that notebook creates, and which we load here, is real data.  
+    
+    Return is a `TimeSeriesEnsemble` containing the real data set for testing.
+    """
+    filename="MCXcor_testdata.pickle"
+    # for testing use this
+    dir = "../data"
+    # with pytest use this
+    #dir = "./python/tests/data"
+    path = dir + "/" + filename
+    fd = open(path,'rb')
+    ensemble = pickle.load(fd)
+    fd.close()
+    return ensemble
 
 def count_live(e):
     """
@@ -443,15 +470,131 @@ def test_coda_duration():
     # this may need to change
     assert abs(tw.end-t_coda) < 1.0
     return
-
+def test_set_phases():
+    """
+    Test private (module scope) function _set_phases.   Note this 
+    function has not type checking by design.   If that is changed 
+    add a tests for handlers for required arg0 and arg1.  
+    """
+    e = load_TAtestdata()
+    d0 = TimeSeries(e.member[0])
+    model=TauPyModel()
+    # run tests on combinations of dist, depth present or not to test handlers
+    # test_MCXcorPrepP will test case when all is good
+    d = TimeSeries(d0)
+    d = _set_phases(d,model,station_collection='site')
+    assert d.live
+    # for this geometry pP is not defined by the travel time calculator so 
+    # we only verify P and PP are set
+    defined_keys=['dist','seaz','esaz','Ptime','PPtime']
+    for k in defined_keys:
+        assert d.is_defined(k)
+    # test handling of default source depth 
+    d = TimeSeries(d0)
+    d.erase('source_depth')
+    d = _set_phases(d,model,station_collection='site')
+    # this should create an elog entry - test just that exists no content
+    assert d.elog.size() == 1
+    assert d.live
+    dkeylist=['Ptime','PPtime']
+    for k in dkeylist:
+        assert d.is_defined(k)
+    # test handling with dist already defined
+    d = TimeSeries(d0)
+    d['dist']=84.0   # approximately dist valued computed from coordinates
+    d = _set_phases(d,model,station_collection='site')
+    assert d.live
+    for k in dkeylist:
+        assert d.is_defined(k)
+    
+    
+    
+    
 def test_MCXcorPrepP():
-    pass
+    e0 = load_TAtestdata()
+    e = TimeSeriesEnsemble(e0)
+    N = len(e0.member)
+    nw = TimeWindow(-90.0,-2.0)
+    # the test data are the output of an ExtractComponent ensemble an the 
+    # member were normalized by the site collection.   Hence we have to 
+    # change the station_collection argument to site - default is channel
+    [e,beam] = MCXcorPrepP(e,nw,station_collection="site")
+    assert number_live(e)==N
+    assert np.isclose(beam['correlation_window_start'],-2.0)
+    assert np.isclose(beam['correlation_window_end'],154.65957854747774)
+    for d in e.member:
+        assert d.is_defined('Ptime')
+        assert d.is_defined('PPtime')
+            
+    # may not retain this but verify this works with align_and_stack
+    rw = TimeWindow(-1.0,20.0)
+    [e,beam] = align_and_stack(e,beam,robust_stack_window=rw)  
+    assert e.live
+    assert beam.live
+    assert number_live(e)==N
+    for d in e.member:
+        assert d.is_defined('arrival_time_correction')
+        assert d.is_defined('robust_stack_weight')
+        print(d['arrival_time_correction'],d['robust_stack_weight'])
+        
+    # test with snr_doc_key not matching anything.   This should 
+    # not abort but return an ensembled marked dead
+    e = TimeSeriesEnsemble(e0)
+    [e,beam] = MCXcorPrepP(e,nw,station_collection="site",snr_doc_key="invalid")
+    assert e.dead()
+    assert beam.dead()
+    
+    # test sending wrong collection name which will cause all data to 
+    # be killed from failing to compute travel times - lack receiver coordinates
+    # using default for "station_collection" which will not work with these data
+    e = TimeSeriesEnsemble(e0)
+    [e,beam] = MCXcorPrepP(e,nw)
+    assert e.dead()
+    assert beam.dead()
+    
+    # test error handlers for arguments to MCXorPrepP - could be a different 
+    # file but there aren't that many currently so put them here
+    #
+    # first check dogmatic type tests
+    e = TimeSeriesEnsemble(e0)
+    with pytest.raises(TypeError,match="MCXcorPrepP:  Illegal type="):
+        [eo,beam]=MCXcorPrepP("foo",nw)
+    with pytest.raises(TypeError,match="MCXcorPrepP:  Illegal type="):
+        [eo,beam]=MCXcorPrepP(e,"foo")
+    # test handling of dead ensemble
+    e.kill()
+    [eo,beam] = MCXcorPrepP(e,nw,station_collection="site")
+    assert eo.dead()
+    assert beam.dead()
+    # replace all data with gaussian noise to simulate an ensemble with 
+    # no signals present.  
+    e = TimeSeriesEnsemble(e0)
+    for i in range(len(e.member)):
+        e.member[i].data = DoubleVector(np.random.normal(size=e.member[i].npts))
+    [eo,beam] = MCXcorPrepP(e,nw,station_collection="site")
+    assert eo.dead()
+    assert eo.elog.size() == 1
+    
+    
+#    from mspasspy.graphics import SeismicPlotter
+#    import matplotlib.pyplot as plt
+#    from mspasspy.algorithms.window import scale
+#    plotter=SeismicPlotter(scale=0.1)
+#    plotter.change_style('wt')
+#    e=scale(e,level=0.5)
+#    plotter.plot(e)
+#    plt.show()
+#    plotter.plot(beam)
+#    plt.show()
+
 def test_estimate_ensemble_bandwidth():
     pass
 
 #test_align_and_stack()
 #test_align_and_stack_error_handlers()
-test_coda_duration()
+#test_coda_duration()
+#test_MCXcorPrepP()
+test_set_phases()
 
 
 
