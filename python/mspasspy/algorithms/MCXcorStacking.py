@@ -158,6 +158,7 @@ def _set_phases(d,
     dist=0.0
     if d.is_defined("dist"):
         dist = d["dist"]
+        origin_time = d["source_time"]
     else:
         if d.is_defined("source_lat") and d.is_defined("source_lon") and d.is_defined("source_time"):
             srclat=d["source_lat"]
@@ -177,8 +178,14 @@ def _set_phases(d,
             stalon = d[lon_key]
             [dist,seaz,esaz]=gps2dist_azimuth(stalat,stalon,srclat,srclon)
             dist=kilometers2degrees(dist/1000.0)
+            # always post these - warning produces a state dependency as there is no guarantee these 
+            # get posted if "dist" was defined on input
+            # keys are frozen and based on standard mspass schema
+            d['dist'] = dist
+            d['seaz'] = seaz
+            d['esaz'] = esaz
         else:
-            message = "Missing required receiver coordinates defined with keys: {} and {}\n".format(stalat,stalon)
+            message = "Missing required receiver coordinates defined with keys: {} and {}\n".format(lat_key,lon_key)
             message += "Cannot handle this datum"
             d.elog.log_error(alg,message,ErrorSeverity.Invalid)
             d.kill()
@@ -412,7 +419,8 @@ def MCXcorPrepP(ensemble,
     Errors at the level will result in errors being posted to the 
     `ErrorLogger` container of the output ensemble.  Note also this 
     algorithm can kill some ensemble members in the output that 
-    were marked live in the input. 
+    were marked live in the input. with pytest.raises(TypeError,match="MCXcorPrepP:  Illegal type="):
+        [eo,beam]=MCXcorPrepP("foo",nw)
     
     TODO:   param definitions for docstring
     Caution particularly about coda_level_factor dependency on 
@@ -452,7 +460,7 @@ def MCXcorPrepP(ensemble,
            message += "Either all members are dead or data were not previously processed with broadband_snr_QC"
            ensemble.elog.log_error(alg,message,ErrorSeverity.Invalid)
            ensemble.kill()
-           return ensemble
+           return [ensemble,TimeSeries()]
     enswork = filter(ensemble,
                      type="bandpass",
                      freqmin=f_low,
@@ -468,7 +476,13 @@ def MCXcorPrepP(ensemble,
                                          pPtime_key=pPtime_key,
                                          PPtime_key=PPtime_key,
                                          station_collection=station_collection,
-                                         )   
+                                         )
+        if number_live(enswork)==0:
+            message = "_set_phases killed all members of this ensemble\n"
+            message += "station_collection is probably incorrect or the data have not been normalized for source and receiver coordinates"
+            enswork.elog.log_error(alg,message,ErrorSeverity.Invalid)
+            enswork.kill()
+            return [enswork,TimeSeries()]
     # if set_phases is False we assume P, pP, and/or PP times were previously 
     # set.   First make sure all data are in relative time with 0 as P time.  
     # kill any datum for which P is not defined 
