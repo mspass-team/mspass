@@ -769,9 +769,9 @@ def WindowData(
                         )
                         if mspass_object.member[i].live:
                             nlive += 1
-                        # when returning the original reference the 
+                        # when returning the original reference the
                         # retain_dead_members option  is always True
-                        
+
                 # In this case this just creates a duplicate reference
                 ensout = mspass_object
             else:
