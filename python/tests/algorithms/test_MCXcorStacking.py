@@ -45,9 +45,9 @@ def load_test_data():
     """
     filename="MCXcorStacking.testdata"
     # for testing use this
-    dir = "../data"
+    #dir = "../data"
     # with pytest use this
-    #dir = "./python/tests/data"
+    dir = "./python/tests/data"
     path = dir + "/" + filename
     fd = open(path,'rb')
     w_r = pickle.load(fd)
@@ -70,9 +70,9 @@ def load_TAtestdata():
     """
     filename="MCXcor_testdata.pickle"
     # for testing use this
-    dir = "../data"
+    #dir = "../data"
     # with pytest use this
-    #dir = "./python/tests/data"
+    dir = "./python/tests/data"
     path = dir + "/" + filename
     fd = open(path,'rb')
     ensemble = pickle.load(fd)
@@ -685,7 +685,7 @@ def test_ensemble_time_range():
 #test_align_and_stack()
 #test_align_and_stack_error_handlers()
 #test_coda_duration()
-test_MCXcorPrepP()
+#test_MCXcorPrepP()
 #test_set_phases()
 #test_regularize_sampling()
 #test_ensemble_time_range()
