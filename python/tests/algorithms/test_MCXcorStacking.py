@@ -45,9 +45,9 @@ def load_test_data():
     """
     filename="MCXcorStacking.testdata"
     # for testing use this
-    #dir = "../data"
+    dir = "../data"
     # with pytest use this
-    dir = "./python/tests/data"
+    #dir = "./python/tests/data"
     path = dir + "/" + filename
     fd = open(path,'rb')
     w_r = pickle.load(fd)
@@ -70,9 +70,9 @@ def load_TAtestdata():
     """
     filename="MCXcor_testdata.pickle"
     # for testing use this
-    #dir = "../data"
+    dir = "../data"
     # with pytest use this
-    dir = "./python/tests/data"
+    #dir = "./python/tests/data"
     path = dir + "/" + filename
     fd = open(path,'rb')
     ensemble = pickle.load(fd)
@@ -459,6 +459,8 @@ def test_coda_duration():
     #plotter.plot(de)
     #plt.show()
     #################################################
+    # copt d to allow use of clean version in later variants
+    d0=TimeSeries(d)
     test_level = 2.0
     tw = _coda_duration(d,test_level)
     # this relationship is solving A=AP0*exp(-at) for t when A=test_level
@@ -469,6 +471,15 @@ def test_coda_duration():
     # reliable.   If the parameters change for the test signal 
     # this may need to change
     assert abs(tw.end-t_coda) < 1.0
+    # test that window start is set to d.t0 if less than that value
+    # test end position reset at the same time - algorithm will allow that
+    # as both are handled automatically with no complaint
+    d=TimeSeries(d0)
+    tw = _coda_duration(d,test_level,t0=-100.0,search_start=1000.0)
+    assert tw.start == d.time(0)
+    # end should be the same as above
+    assert abs(tw.end-t_coda) < 1.0
+    
     return
 def test_set_phases():
     """
@@ -506,12 +517,20 @@ def test_set_phases():
     assert d.live
     for k in dkeylist:
         assert d.is_defined(k)
-    
-    
-    
-    
+        
+    # verify handler for no source coordinates defined
+    # removing only one is enough
+    d = TimeSeries(d0)
+    d.erase('source_time')
+    d = _set_phases(d,model,station_collection='site')
+    assert d.dead()
+    assert d.elog.size()==1
+ 
 def test_MCXcorPrepP():
     e0 = load_TAtestdata()
+    # The test data has Ptime set and we need to clear it for these tests
+    for i in range(len(e0.member)):
+        e0.member[i].erase('Ptime')
     e = TimeSeriesEnsemble(e0)
     N = len(e0.member)
     nw = TimeWindow(-90.0,-2.0)
@@ -573,6 +592,24 @@ def test_MCXcorPrepP():
     [eo,beam] = MCXcorPrepP(e,nw,station_collection="site")
     assert eo.dead()
     assert eo.elog.size() == 1
+    # test handling setting frequency parameters manually
+    e = TimeSeriesEnsemble(e0)
+    [eo,beam] = MCXcorPrepP(e,nw,station_collection="site",low_f_corner=0.1,high_f_corner=1.0,npoles=2)
+    assert eo['MCXcor_f_low'] == 0.1
+    assert eo['MCXcor_f_high'] == 1.0
+    assert eo['MCXcor_npoles'] == 2
+    
+    # test handling a member where the P phase can't be calculated
+    # that happens often if an array spans the core shadow for an event
+    # this test depends on the dist content overriding computing distance form coordinates
+    # current implementation does that but that wouldn't be automatically true
+    e = TimeSeriesEnsemble(e0)
+    ibad = 2
+    e.member[ibad]['dist'] = 110.0
+    [eo,beam] = MCXcorPrepP(e,nw,station_collection="site")
+    assert eo.live
+    assert number_live(eo)==19
+    assert eo.member[ibad].dead()
     
     
 #    from mspasspy.graphics import SeismicPlotter
@@ -648,7 +685,7 @@ def test_ensemble_time_range():
 #test_align_and_stack()
 #test_align_and_stack_error_handlers()
 #test_coda_duration()
-#test_MCXcorPrepP()
+test_MCXcorPrepP()
 #test_set_phases()
 #test_regularize_sampling()
 #test_ensemble_time_range()

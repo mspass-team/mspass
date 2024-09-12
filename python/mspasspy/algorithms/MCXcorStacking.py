@@ -67,7 +67,8 @@ def _coda_duration(ts,level,t0=0.0,search_start=None)->TimeWindow:
     be different from the input t0 value if the data start time (ts.t0) is 
     greater than the value defined by the `t0` argument.
     """
-    # checks go here - TODO includes range checks on these two
+    # silently handle inconsistencies in t0 and search_start
+    # perhaps should have these issue an elog complaint
     it0 =ts.sample_number(t0)
     # silently reset to 0 if t0 is not valid for
     if it0<0:
@@ -93,7 +94,7 @@ def _coda_duration(ts,level,t0=0.0,search_start=None)->TimeWindow:
             break
         i -= 1
     # A failed search will have start and end the same
-    return TimeWindow(t0,ts.time(i))
+    return TimeWindow(t0used,ts.time(i))
 
 def _set_phases(d,
                 model,
@@ -200,28 +201,27 @@ def _set_phases(d,
     arrivals = model.get_travel_times(source_depth_in_km=depth,
                                       distance_in_degree=dist,
                                       phase_list=['P','pP','PP'])
-    if len(arrivals)==0:
-        message = "Travel time calculator failed to compute any time for P, PP, or pP"
-        d.elog.log_error(alg,message,ErrorSeverity.Invalid)
-        d.kill()
-    else:
-        # only set first arrival for multivalued arrivals
-        P=[]
-        pP=[]
-        PP=[]
-        for arr in arrivals:
-            if arr.name == "P":
-                P.append(arr.time)
-            elif arr.name == "pP":
-                pP.append(arr.time)
-            elif arr.name == "PP":
-                PP.append(arr.time)
-        if len(P)>0:
-            d[Ptime_key] = min(P) + origin_time
-        if len(pP)>0:
-            d[pPtime_key] = min(pP) + origin_time
-        if len(PP)>0:
-            d[PPtime_key] = min(PP) + origin_time
+    # from all I can tell with the list above arrivals always has entries for at least one of 
+    # the phases in phase_list.   If depth is invalid it throws an exception and it seems to 
+    # handle dist for anything.   Hence, this assumes arrivals is not empty.  An earlier 
+    # had an unnecessary error handler for that case.
+    # only set first arrival for multivalued arrivals
+    P=[]
+    pP=[]
+    PP=[]
+    for arr in arrivals:
+        if arr.name == "P":
+            P.append(arr.time)
+        elif arr.name == "pP":
+            pP.append(arr.time)
+        elif arr.name == "PP":
+            PP.append(arr.time)
+    if len(P)>0:
+        d[Ptime_key] = min(P) + origin_time
+    if len(pP)>0:
+        d[pPtime_key] = min(pP) + origin_time
+    if len(PP)>0:
+        d[PPtime_key] = min(PP) + origin_time
     return d
 
 def extract_initial_beam_estimate(ensemble,
@@ -351,6 +351,7 @@ def MCXcorPrepP(ensemble,
                low_f_corner=None,
                high_f_corner=None,
                npoles=4,
+               filter_parameter_keys=['MCXcor_f_low','MCXcor_f_high','MCXcor_npoles'],
                coda_level_factor=4.0,
                set_phases=True,
                model=None,
@@ -448,6 +449,10 @@ def MCXcorPrepP(ensemble,
     # first sort out the issue of the passband to use for this 
     # analysis.   Use kwargs if they are defined but otherwise assume 
     # we extract what we need from the output of `broadband_snr_QC`.  
+    # effectively a declaration to keep these from going away when they 
+    # go out of scope
+    f_low=0.0
+    f_high=0.0
     if low_f_corner and high_f_corner:
         f_low = low_f_corner
         f_high = high_f_corner
@@ -461,12 +466,18 @@ def MCXcorPrepP(ensemble,
            ensemble.elog.log_error(alg,message,ErrorSeverity.Invalid)
            ensemble.kill()
            return [ensemble,TimeSeries()]
+
     enswork = filter(ensemble,
                      type="bandpass",
                      freqmin=f_low,
                      freqmax=f_high,
                      corners=npoles,
                      )
+    # using a list like this creates this odd construct but docstring (should at least) advise againtst 
+    # changing these
+    enswork[filter_parameter_keys[0]] = f_low
+    enswork[filter_parameter_keys[1]] = f_high
+    enswork[filter_parameter_keys[2]] = npoles 
     if set_phases:
         for i in range(len(enswork.member)):
             # this handles dead data so don't test for life
@@ -1008,7 +1019,7 @@ def robust_stack(ensemble,
                                  )
         if stack.dead():
             message = "Received an initial stack estimate with time range inconsistent with data\n"
-            message = "Recovery not implemented - stack returned is invalid"
+            message += "Recovery not implemented - stack returned is invalid"
             
             stack.elog.log_error("robust_stack",message,ErrorSeverity.Invalid)
             return stack
@@ -1672,6 +1683,7 @@ def align_and_stack(ensemble,
             initial_starttime = xcorens.member[i][it0_key]
             tshift = d.t0 - initial_starttime
             j = d[ensemble_index_key]
+            #tshift =  initial_starttimes[i] - xcorens.member[i].t0
             # this shift maybe should be optional
             # a positive lag from xcor requires a negative shift 
             # for a TimeSeries object  
