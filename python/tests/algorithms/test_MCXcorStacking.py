@@ -479,7 +479,11 @@ def test_coda_duration():
     assert tw.start == d.time(0)
     # end should be the same as above
     assert abs(tw.end-t_coda) < 1.0
-    
+    # test handler for completely invalid search_start
+    d=TimeSeries(d0)
+    d.t0=100000.0
+    with pytest.raises(ValueError,match="_coda_durations:   values for inferred search range"):
+        tw = _coda_duration(d,test_level,search_start=10.0)
     return
 def test_set_phases():
     """
