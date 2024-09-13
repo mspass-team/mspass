@@ -515,7 +515,7 @@ def test_coda_duration():
     with pytest.raises(
         ValueError, match="_coda_durations:   values for inferred search range"
     ):
-        tw = _coda_duration(d, test_level, search_start=10.0)
+        tw = _coda_duration(d, test_level, t0=d.t0+50.0, search_start=d.t0+10.0)
     return
 
 
@@ -576,7 +576,7 @@ def test_MCXcorPrepP():
     # the test data are the output of an ExtractComponent ensemble an the
     # member were normalized by the site collection.   Hence we have to
     # change the station_collection argument to site - default is channel
-    [e, beam] = MCXcorPrepP(e, nw, station_collection="site")
+    [e, beam] = MCXcorPrepP(e, nw, station_collection="site",correlation_window_start=-2.0)
     assert number_live(e) == N
     assert np.isclose(beam["correlation_window_start"], -2.0)
     assert np.isclose(beam["correlation_window_end"], 154.65957854747774)
@@ -651,6 +651,15 @@ def test_MCXcorPrepP():
     assert eo.live
     assert number_live(eo) == 19
     assert eo.member[ibad].dead()
+    
+    # test handling of frequency bandwidth override with arguments 
+    # low_f_corner and high_f_corner
+    e = TimeSeriesEnsemble(e0)
+    with pytest.raises(ValueError,match="low_f_corner value is greater than high_f_corner value"):
+        [eo, beam] = MCXcorPrepP(e, nw, station_collection="site",low_f_corner=10.0,high_f_corner=0.1)
+    with pytest.raises(ValueError,match="If you specify one you must specify the other"):
+        [eo, beam] = MCXcorPrepP(e, nw, station_collection="site",low_f_corner=0.1)
+    
 
 
 #    from mspasspy.graphics import SeismicPlotter
