@@ -33,7 +33,6 @@ from mspasspy.algorithms.signals import filter
 from mspasspy.algorithms.window import WindowData, WindowData_autopad
 
 
-
 def extract_initial_beam_estimate(
     ensemble,
     metric="bandwidth",
@@ -167,6 +166,7 @@ def estimate_ensemble_bandwidth(
         return [f_low, f_high, len(f_h)]
     else:
         return [0, 0, 0]
+
 
 def MCXcorPrepP(
     ensemble,
@@ -600,6 +600,7 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.01):
     wts /= maxwt
     return wts
 
+
 def regularize_ensemble(
     ensemble, starttime, endtime, pad_fraction_cutoff
 ) -> TimeSeriesEnsemble:
@@ -640,6 +641,7 @@ def regularize_ensemble(
     if len(ensout.member) > 0:
         ensout.set_live()
     return ensout
+
 
 def robust_stack(
     ensemble,
@@ -894,9 +896,6 @@ def _dbxcor_stacker(
         if i > 0 and relative_delta < eps:
             break
     return stack
-
-
-
 
 
 def beam_align(ensemble, beam, time_shift_limit=10.0):
@@ -1796,6 +1795,7 @@ def _set_phases(
         d[PPtime_key] = min(PP) + origin_time
     return d
 
+
 def _get_search_range(d, Pkey="Ptime", pPkey="pPTime", PPkey="PPtime"):
     """
     Small internal function used to standardize the handling of the search
@@ -1820,6 +1820,7 @@ def _get_search_range(d, Pkey="Ptime", pPkey="pPTime", PPkey="PPtime"):
     else:
         duration = 0.0
     return duration
+
 
 def _xcor_shift(ts, beam):
     """

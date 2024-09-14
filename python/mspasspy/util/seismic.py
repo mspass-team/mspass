@@ -1,46 +1,50 @@
 from mspasspy.ccore.seismic import (
-        TimeSeries,
-        Seismogram,
-        TimeSeriesEnsemble,
-        SeismogramEnsemble,
-    )
-from mspasspy.ccore.utility import Metadata,ErrorSeverity
+    TimeSeries,
+    Seismogram,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+)
+from mspasspy.ccore.utility import Metadata, ErrorSeverity
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from bson import json_util
 import numpy as np
 
-def print_metadata(d,indent=2):
+
+def print_metadata(d, indent=2):
     """
-    Prints Metadata stored in the object passed as arg0 (d) as json 
-    format output with indentation defined by the optional 
+    Prints Metadata stored in the object passed as arg0 (d) as json
+    format output with indentation defined by the optional
     indent argument.  Indent is always on and defaults to 2 characters.
-    The purpose of this function is to standardize printing 
-    the Metadata contents of any MsPASS data object.   It has the 
-    beneficial side effect of producing the same print for 
+    The purpose of this function is to standardize printing
+    the Metadata contents of any MsPASS data object.   It has the
+    beneficial side effect of producing the same print for
     documents (python dictionaries) retrieved directly from MongoDB.
-    
-    It is important to realize that when applied to a 
-    `TimeSeriesEnsemble` or `SeismogramEnsemble` only the ensemble 
-    Metadata container will be printed.   
-    
+
+    It is important to realize that when applied to a
+    `TimeSeriesEnsemble` or `SeismogramEnsemble` only the ensemble
+    Metadata container will be printed.
+
     :param d:  datum for which the Metadata is to be printed.
-    :type d:  any subclass of `mspasspy.ccore.Metadata` or a 
-    python dictionary (the container used for documents returned 
-    by pymongo).  If d is anything else a TypeError exception 
-    will be thrown. 
+    :type d:  any subclass of `mspasspy.ccore.Metadata` or a
+    python dictionary (the container used for documents returned
+    by pymongo).  If d is anything else a TypeError exception
+    will be thrown.
     :param indent:   indentation argument for json printing
     :type indent:  integer (default 2)
     """
-    if isinstance(d,Metadata):
+    if isinstance(d, Metadata):
         doc = dict(d)
-    elif isinstance(d,dict):
+    elif isinstance(d, dict):
         doc = d
     else:
-        message = "print_metadata:   arg0 must be a dictionary or a subclass of Metadata\n"
+        message = (
+            "print_metadata:   arg0 must be a dictionary or a subclass of Metadata\n"
+        )
         message += "type of arg0={}".format(type(d))
         raise TypeError(message)
-    print(json_util.dumps(doc,indent=indent))
-    
+    print(json_util.dumps(doc, indent=indent))
+
+
 def number_live(ensemble) -> int:
     """
     Scans an ensemble and returns the number of live members.  If the
@@ -166,8 +170,8 @@ def ensemble_time_range(ensemble, metric="inner") -> TimeWindow:
           vectors of start time and end time values.
       "mean" - return range as arithmetic average of
           start and end time vectors
-    :return:  `TimeWindow` object with start and end times.  If the 
-    ensemble has all dead member the default constructed TimeWindow 
+    :return:  `TimeWindow` object with start and end times.  If the
+    ensemble has all dead member the default constructed TimeWindow
     object will be returned which has zero length.
     """
     if not isinstance(ensemble, (TimeSeriesEnsemble, SeismogramEnsemble)):
@@ -186,7 +190,7 @@ def ensemble_time_range(ensemble, metric="inner") -> TimeWindow:
         if d.live:
             stvector.append(d.t0)
             etvector.append(d.endtime())
-    if len(stvector)==0:
+    if len(stvector) == 0:
         return TimeWindow()
     if metric == "inner":
         stime = max(stvector)
