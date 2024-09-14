@@ -889,17 +889,15 @@ def WindowData_autopad(
     return dw
 
 
-@mspass_func_wrapper
+# TODO:   this function does not support history mechanism because the 
+# standard decorator is does not support a bound std::vector<TimeSeries> 
+# container.  I requires one of the four MsPASS data objects.
 def merge(
     tsvector,
     starttime=None,
     endtime=None,
     fix_overlaps=False,
     zero_gaps=False,
-    object_history=False,
-    alg_name="merge",
-    alg_id=None,
-    dryrun=False,
 ) -> TimeSeries:
     """
     Splices a vector of TimeSeries objects together and optionally carves
@@ -1042,20 +1040,6 @@ def merge(
       gap positions posted to the Metadata of the output.  See above
       for details.
     :param zero_gaps:  boolean
-    :param object_history: boolean to enable or disable saving object
-      level history.  Default is False.  Note this functionality is
-      implemented via the mspass_func_wrapper decorator.
-    :param alg_name:   When history is enabled this is the algorithm name
-      assigned to the stamp for applying this algorithm.
-      Default ("merge") should normally be just used.
-      Note this functionality is implemented via the mspass_func_wrapper decorator.
-    :param ald_id:  algorithm id to assign to history record (used only if
-      object_history is set True.)
-      Note this functionality is implemented via the mspass_func_wrapper decorator.
-    :param dryrun:
-      Note this functionality is implemented via the mspass_func_wrapper decorator.
-    :param dryrun:
-      Note this functionality is implemented via the mspass_func_wrapper decorator.
 
     :return: TimeSeries in the range defined by the time span of the input
       vector of segments or if starttime or endtime are specified a reduced
