@@ -898,6 +898,7 @@ def merge(
     endtime=None,
     fix_overlaps=False,
     zero_gaps=False,
+    object_history=False,
 ) -> TimeSeries:
     """
     Splices a vector of TimeSeries objects together and optionally carves
@@ -1039,7 +1040,12 @@ def merge(
       dead.  When set True, gaps will be zeroed and with a record of
       gap positions posted to the Metadata of the output.  See above
       for details.
-    :param zero_gaps:  boolean
+    :param zero_gaps:  boolean controlling how gaps are to be handled. 
+    See above for details of the algorithm.
+    :type zero_gaps:  boolean (default False)
+    :param object_history: boolean to enable or disable saving object
+      level history.  Default is False.  Note this functionality is
+      implemented via the mspass_func_wrapper decorator.
 
     :return: TimeSeries in the range defined by the time span of the input
       vector of segments or if starttime or endtime are specified a reduced
