@@ -90,28 +90,7 @@ def extract_initial_beam_estimate(
     elif metric == "filtered_envelope":
         key2use = "filtered_envelope"
     elif metric == "filtered_L2":
-        key2use = "filtered_L2"# TODO:   this  functions following belong somewhere else in some utility
-# module
-def number_live(ensemble) -> int:
-    """
-    Scans an ensemble and returns the number of live members.  If the
-    ensemble is marked dead it immediately return 0.  Otherwise it loops
-    through the members countinng the number live.
-    :param ensemble:  ensemble to be scanned
-    :type ensemble:  Must be a `TimeSeriesEnsemble` or `SeismogramEnsemble` or
-    it will throw a TypeError exception.
-    """
-    if not isinstance(ensemble, (TimeSeriesEnsemble, SeismogramEnsemble)):
-        message = "number_live:   illegal type for arg0={}\n".format(type(ensemble))
-        message += "Must be a TimeSeriesEnsemble or SeismogramEnsemble\n"
-        raise TypeError(message)
-    if ensemble.dead():
-        return 0
-    nlive = 0
-    for d in ensemble.member:
-        if d.live:
-            nlive += 1
-    return nlive
+        key2use = "filtered_L2"
     elif metric == "filtered_perc":
         key2use = "filtered_perc"
     else:
@@ -622,7 +601,7 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.01):
     return wts
 
 def regularize_ensemble(
-    ensemble, starttime, endtime, fractional_mistmatch_limit
+    ensemble, starttime, endtime, pad_fraction_cutoff
 ) -> TimeSeriesEnsemble:
     """
     Secondary function to regularize an ensemble for input to robust
@@ -644,11 +623,11 @@ def regularize_ensemble(
                     d,
                     starttime,
                     endtime,
-                    fractional_mismatch_limit=fractional_mistmatch_limit,
+                    pad_fraction_cutoff=pad_fraction_cutoff,
                 )
                 if d.live:
                     message = "Dropped member number {} because undefined data range exceeded limit of {}\n".format(
-                        i, fractional_mistmatch_limit
+                        i, pad_fraction_cutoff
                     )
                     ensout.member.append(d)
             else:
@@ -668,7 +647,7 @@ def robust_stack(
     stack0=None,
     stack_md=None,
     timespan_method="ensemble_inner",
-    fractional_mismatch_limit=0.05,
+    pad_fraction_cutoff=0.05,
     residual_norm_floor=0.01,
 ) -> TimeSeries:
     """
@@ -696,7 +675,7 @@ def robust_stack(
     the data can get shifted to have undefined data within the
     time range the data aims to utilize.   The behavior of the
     algorithm for this issue is controlled by the kwarg values
-    with the keys "timespan_method" and "fractional_mismatch_limit".
+    with the keys "timespan_method" and "pad_fraction_cutoff".
     As the name imply "timespan_method" defines how the time span
     for the stack should be defined.   The following options
     are supported:
@@ -801,7 +780,7 @@ def robust_stack(
         raise ValueError(message)
 
     ensemble = regularize_ensemble(
-        ensemble, timespan.start, timespan.end, fractional_mismatch_limit
+        ensemble, timespan.start, timespan.end, pad_fraction_cutoff
     )
     # the above can remove some members
     M = len(ensemble.member)
@@ -813,7 +792,7 @@ def robust_stack(
             stack0,
             timespan.start,
             timespan.end,
-            fractional_mismatch_limit=fractional_mismatch_limit,
+            pad_fraction_cutoff=pad_fraction_cutoff,
         )
         if stack.dead():
             message = "Received an initial stack estimate with time range inconsistent with data\n"
