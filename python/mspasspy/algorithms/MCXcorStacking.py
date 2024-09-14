@@ -27,229 +27,11 @@ from mspasspy.ccore.seismic import (
     TimeReferenceType,
     DoubleVector,
 )
+from mspasspy.util.seismic import number_live, regularize_sampling, ensemble_time_range
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.algorithms.signals import filter
-from mspasspy.algorithms.window import WindowData
+from mspasspy.algorithms.window import WindowData, WindowData_autopad
 
-
-def _coda_duration(ts, level, t0=0.0, search_start=None) -> TimeWindow:
-    """
-    Low-level function to estimate the range of the "coda" of a particular
-    seismic phase. This function first computes the envelope of the
-    input signal passed via arg0 as a `TimeSeries` object.   The function
-    then searches backward in time from `search_start` to the first
-    sample of the envelop function that exceeds the value defined by
-    `level`.  It returns a `TimeWindow` object with a `start` set as the
-    value passed as t0 and the `end` attribute set to the time stamp
-    of the estimated coda end time.   Normal use by processing functions
-    inside this module assume the input has a relative time standard
-    but the function could work with UTC data you treat `t0` and
-    `search_start` as required, not optional, arguments.
-
-    The function return a zero length `TimeWindow` (start == end) if the
-    level of the envelope never exceeds the value defined by the level
-    argument.
-
-    :param ts:  Datum to be processed.   The function will return a null
-    result (zero length window) if ts.t0> t0 (argument value).  The sample
-    data is assumed filtered to an appropriate band where the envelope will
-    properly define the coda.
-    :type ts: `TimeSeries` is assumed.  There is not explicit type checking
-    but a type mismatch will always cause an error.
-    :param level:  amplitude of where the backward time search will be
-    terminated.   This value should normally be computed from a background
-    noise estimate.
-    :type level:   float
-    :param t0:  beginning of coda search interval.  This time is mainly used
-    as the failed search.  That is, if the level never rises above the
-    value defined by the `level` argument a zero length window will be
-    returned with start and end both set to this value.   If the value
-    is inconsistent with the start time of the data it is reset to the
-    time of the first data sample.
-    :type t0:  float (default 0.0 - appropriate for normal use with data
-    time shifted so 0 is a P or S phase arrival time)
-    :param search_start:  optional time to start backward search.
-    The default, which is defined with a None type, is to start the search
-    at ts.endtime().  If a value is given and it exceeds ts.endtime()
-    the search will silently be truncated to start at ts.endtime().
-    Similarly if `search_start` is less than ts.t0 the search will also
-    be silently reset to the ts.endtime().
-    :type search_start:  float (time - either relative time or an epoch time)
-    :return:  `TimeWindow` object with window `end` value defining the
-    end of the coda.  window.end-window.start is a measure of coda duration.
-    Returns a zero length window if the amplitude never exceeds the
-    valued defined by the `level` parameter.   Not the start value may
-    be different from the input t0 value if the data start time (ts.t0) is
-    greater than the value defined by the `t0` argument.
-    """
-    # silently handle inconsistencies in t0 and search_start
-    # perhaps should have these issue an elog complaint
-    it0 = ts.sample_number(t0)
-    # silently reset to 0 if t0 is not valid for
-    if it0 < 0:
-        it0 = 0
-        t0used = ts.time(0)
-    else:
-        t0used = t0
-    if search_start:
-        itss = ts.sample_number(search_start)
-        if itss >= ts.npts or itss < 0:
-            itss = ts.npts - 1
-    else:
-        itss = ts.npts - 1
-    if itss <= it0:
-        message = "_coda_durations:   values for inferred search range {} to {} do not overlap data range"
-        raise ValueError(message)
-    httsd = signal.hilbert(ts.data)
-    envelope = np.abs(httsd)
-    it0 = ts.sample_number(t0)
-    i = itss
-    while i > it0:
-        if envelope[i] > level:
-            break
-        i -= 1
-    # A failed search will have start and end the same
-    return TimeWindow(t0used, ts.time(i))
-
-
-def _set_phases(
-    d,
-    model,
-    Ptime_key="Ptime",
-    pPtime_key="pPtime",
-    PPtime_key="PPtime",
-    station_collection="channel",
-    default_depth=10.0,
-) -> TimeSeries:
-    """
-    Cautiously sets model-based arrival times in Metadata of input
-    d for first arrival of the phases P pP, and PP.   pP and PP
-    do not exist at all distances and depths so the times may be
-    left undefined.   A value for P should always be set unless that
-    datum was marked dead on input.
-
-    The input datum must contain Metadata entries required to compute the
-    travel times.  That can be in one of two forms:
-        (1)  The normal expectation is to source coordinates are defined with
-             keys "source_iat" , "source_lon", and "source_time", and
-             "source_depth" while receiver coordinates are defined with
-             "channel_lat" and "channel_lon".   A common variant is possible
-             if the `station_collection` argument is set to "site".  Then
-             the function will try to fetch "site_lat" and "site_lon".
-             A special case is source depth.  If "source_depth" is not
-             defined the value defined with the `default_depth` argument is
-             used.
-        (2)  If the key "dist" is defined in d it is assumed to contain
-             a previously computed distance in degrees from source to this
-             receiver.  In that case the only other required source property
-             is "source_time" - event origin time.
-    :param d:  seismic datum to process.   This datum requires source and
-    receiver metadata attributes as noted above
-    :type d:   Assumed to be a `TimeSeries`.   That is not tested as this is
-    an internal function.  Use outside the module should assure input is
-    a `TimeSeries` or create an error handler for exceptions.
-    :param model:   an instance of an obspy TauPyModel object used to
-    compute times.
-    :type model:   obspy TauPyModel object
-    :param Ptime_key:  key used to set the pP arrival time.
-    :type pPtime_key:  string (default "pPtime")
-    :param pPtime_key:  key used to set the P arrival time.
-    :type PPtime_key:  string (default "PPtime")
-    :param PPtime_key:  key used to set the PP arrival time.
-    :type PPtime_key:  string (default "PPtime")
-    :param station_collection:   normalizing collection used to define
-    receiver coordinates.   Used only to create names for coordinates.
-    e.g. if set to "site" expects to find "site_lat" while if set to
-    default "channel" would expect to find "channel_lat".
-    :type station_collection:  string (default "channel")
-    :param default_depth:   source depth to use if the attribute "source_depth"
-    is not defined.   This is a rare recovery to handle the case where
-    the epicenter and origin time are defined but the depth is not.
-    :type default_depth:  float
-    :return:  `TimeSeries` copy of input with model-based arrival times posted
-    to Metadata container with the specified keys.
-    """
-    if d.dead():
-        return d
-    alg = "_set_phases"
-    # these symbols need to be effectively declared here or the go out of scope
-    # before being used as arguments for the get_travel_time method of the taup calculator
-    depth = 0.0
-    dist = 0.0
-    if d.is_defined("dist"):
-        dist = d["dist"]
-        origin_time = d["source_time"]
-    else:
-        if (
-            d.is_defined("source_lat")
-            and d.is_defined("source_lon")
-            and d.is_defined("source_time")
-        ):
-            srclat = d["source_lat"]
-            srclon = d["source_lon"]
-            origin_time = d["source_time"]
-            # compute dist
-        else:
-            message = "Missing required source coordinates:  source_lat,source_lon, and/or source_time values\n"
-            message += "Cannot handle this datum"
-            d.elog.log_error(alg, message, ErrorSeverity.Invalid)
-            d.kill()
-            return d
-        lat_key = station_collection + "_lat"
-        lon_key = station_collection + "_lon"
-        if d.is_defined(lat_key) and d.is_defined(lon_key):
-            stalat = d[lat_key]
-            stalon = d[lon_key]
-            [dist, seaz, esaz] = gps2dist_azimuth(stalat, stalon, srclat, srclon)
-            dist = kilometers2degrees(dist / 1000.0)
-            # always post these - warning produces a state dependency as there is no guarantee these
-            # get posted if "dist" was defined on input
-            # keys are frozen and based on standard mspass schema
-            d["dist"] = dist
-            d["seaz"] = seaz
-            d["esaz"] = esaz
-        else:
-            message = "Missing required receiver coordinates defined with keys: {} and {}\n".format(
-                lat_key, lon_key
-            )
-            message += "Cannot handle this datum"
-            d.elog.log_error(alg, message, ErrorSeverity.Invalid)
-            d.kill()
-            return d
-
-    if d.is_defined("source_depth"):
-        depth = d["source_depth"]
-    else:
-        depth = default_depth
-        message = "source_depth value was not defined - using default value={}".format(
-            depth
-        )
-        d.elog.log_error(alg, message, ErrorSeverity.Complaint)
-    arrivals = model.get_travel_times(
-        source_depth_in_km=depth, distance_in_degree=dist, phase_list=["P", "pP", "PP"]
-    )
-    # from all I can tell with the list above arrivals always has entries for at least one of
-    # the phases in phase_list.   If depth is invalid it throws an exception and it seems to
-    # handle dist for anything.   Hence, this assumes arrivals is not empty.  An earlier
-    # had an unnecessary error handler for that case.
-    # only set first arrival for multivalued arrivals
-    P = []
-    pP = []
-    PP = []
-    for arr in arrivals:
-        if arr.name == "P":
-            P.append(arr.time)
-        elif arr.name == "pP":
-            pP.append(arr.time)
-        elif arr.name == "PP":
-            PP.append(arr.time)
-    if len(P) > 0:
-        d[Ptime_key] = min(P) + origin_time
-    if len(pP) > 0:
-        d[pPtime_key] = min(pP) + origin_time
-    if len(PP) > 0:
-        d[PPtime_key] = min(PP) + origin_time
-    return d
 
 
 def extract_initial_beam_estimate(
@@ -308,11 +90,28 @@ def extract_initial_beam_estimate(
     elif metric == "filtered_envelope":
         key2use = "filtered_envelope"
     elif metric == "filtered_L2":
-        key2use = "filtered_L2"
-    elif metric == "filtered_MAD":
-        key2use = "filtered_MAD"
-    elif metric == "filtered_Linf":
-        key2use = "filtered_Linf"
+        key2use = "filtered_L2"# TODO:   this  functions following belong somewhere else in some utility
+# module
+def number_live(ensemble) -> int:
+    """
+    Scans an ensemble and returns the number of live members.  If the
+    ensemble is marked dead it immediately return 0.  Otherwise it loops
+    through the members countinng the number live.
+    :param ensemble:  ensemble to be scanned
+    :type ensemble:  Must be a `TimeSeriesEnsemble` or `SeismogramEnsemble` or
+    it will throw a TypeError exception.
+    """
+    if not isinstance(ensemble, (TimeSeriesEnsemble, SeismogramEnsemble)):
+        message = "number_live:   illegal type for arg0={}\n".format(type(ensemble))
+        message += "Must be a TimeSeriesEnsemble or SeismogramEnsemble\n"
+        raise TypeError(message)
+    if ensemble.dead():
+        return 0
+    nlive = 0
+    for d in ensemble.member:
+        if d.live:
+            nlive += 1
+    return nlive
     elif metric == "filtered_perc":
         key2use = "filtered_perc"
     else:
@@ -389,33 +188,6 @@ def estimate_ensemble_bandwidth(
         return [f_low, f_high, len(f_h)]
     else:
         return [0, 0, 0]
-
-
-def _get_search_range(d, Pkey="Ptime", pPkey="pPTime", PPkey="PPtime"):
-    """
-    Small internal function used to standardize the handling of the search
-    range for P coda.   It returns a time duration to use as the search
-    range relative to 0 (P time) based on a simple recipe to avoid interference
-    from pP and PP phases.   Specifically, if the source depth is greater than
-    100 km the pP phase is used as the maximum duration of the coda.
-    For shallower sources PP is used.
-
-    This function should not normally be used except as a component of the
-    MCXcorPrepP function.   It has no safeties and is pretty simple.
-    That simple recipe, however, took some work to establish tha tis documented
-    a notebook in the distribution.
-    """
-    if d.live:
-        depth = d["source_depth"]
-        if depth > 100.0:
-            tend = d[pPkey]
-        else:
-            tend = d[PPkey]
-        duration = tend - d[Pkey]
-    else:
-        duration = 0.0
-    return duration
-
 
 def MCXcorPrepP(
     ensemble,
@@ -814,7 +586,6 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.01):
     :type residual_norm_floor:  float
     :return: numpy vector of weights parallel with ensemble.member.  Dead
     members will have a negative weight in this vector.
-
     """
     norm_floor = np.finfo(np.float32).eps * stack.npts
     N = len(ensemble.member)
@@ -850,171 +621,6 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.01):
     wts /= maxwt
     return wts
 
-
-# TODO:   this  functions following belong somewhere else in some utility
-# module
-def number_live(ensemble) -> int:
-    """
-    Scans an ensemble and returns the number of live members.  If the
-    ensemble is marked dead it immediately return 0.  Otherwise it loops
-    through the members countinng the number live.
-    :param ensemble:  ensemble to be scanned
-    :type ensemble:  Must be a `TimeSeriesEnsemble` or `SeismogramEnsemble` or
-    it will throw a TypeError exception.
-    """
-    if not isinstance(ensemble, (TimeSeriesEnsemble, SeismogramEnsemble)):
-        message = "number_live:   illegal type for arg0={}\n".format(type(ensemble))
-        message += "Must be a TimeSeriesEnsemble or SeismogramEnsemble\n"
-        raise TypeError(message)
-    if ensemble.dead():
-        return 0
-    nlive = 0
-    for d in ensemble.member:
-        if d.live:
-            nlive += 1
-    return nlive
-
-
-def regularize_sampling(ensemble, dt_expected, Nsamp=10000, abort_on_error=False):
-    """
-    This is a utility function that can be used to validate that all the members
-    of an ensemble have a sample interval that is indistinguishable from a specified
-    constant (dt_expected)   The test for constant is soft to allow handling
-    data created by some older digitizers that skewed the recorded sample interval to force
-    time computed from N*dt to match time stamps on successive data packets.
-    The formula used is the datum dt is declared constant if the difference from
-    the expected dt is less than or equal to dt_expected/2*(Nsamp-1).  That means
-    the computed endtime difference from that using dt_expected is less than
-    or equal to dt/2.
-
-    The function by default will kill members that have mismatched sample
-    intervals and log an informational message to the datum's elog container.
-    In this mode the entire ensemble can end up marked dead if all the members
-    are killed (That situation can easily happen if the entire data set has the wrong dt.);
-    If the argument `abort_on_errors` is set True a ValueError exception will be
-    thrown if ANY member of the input ensemble.
-
-    An important alternative to this function is to pass a data set
-    through the MsPASS `resample` function found in mspasspy.algorithms.resample.
-    That function will guarantee all live data have the same sample interval
-    and not kill them like this function will.   Use this function for
-    algorithms that can't be certain the input data will have been resampled
-    and need to be robust for what might otherwise be considered a user error.
-
-    :param ensemble:  ensemble container of data to be scanned for irregular
-    sampling.
-    :type ensemble:  `TimeSeriesEnsemble` or `SeismogramEnsemble`.   The
-    function does not test for type and will abort with an undefined method
-    error if sent anything else.
-    :param dt_expected:  constant data sample interval expected.
-    :type dt_expected:  float
-    :param Nsamp:   Nominal number of samples expected in the ensemble members.
-    This number is used to compute the soft test to allow for slippery clocks
-    discussed above.   (Default 10000) e = regularize_sampling(e,dt)
-    assert e.live
-    :type Nsamp:  integer
-    :param abort_on_error:  Controls what the function does if it
-    encountered a datum with a sample interval different that dt_expected.
-    When True the function aborts with a ValueError exception if ANY
-    ensemble member does not have a matching sample interval.  When
-    False (the default) the function uses the MsPASS error logging
-    to hold a message an kills any member datum with a problem.
-    :type abort_on_error:  boolean
-
-    """
-    alg = "regularize_sampling"
-    if ensemble.dead():
-        return ensemble
-    # this formula will flag any ensemble member for which the sample
-    # rate yields a computed end time that differs from the beam
-    # by more than one half sample
-    delta_dt_cutoff = dt_expected / (2.0 * (Nsamp - 1))
-    for i in range(len(ensemble.member)):
-        d = ensemble.member[i]
-        if d.live:
-            if not np.isclose(dt_expected, d.dt):
-                if abs(dt_expected - d.dt) > delta_dt_cutoff:
-                    message = str()
-                    message = "Member {} of input ensemble has different sample rate={} than expected dt={}".format(
-                        i, d.dt, dt_expected
-                    )
-                    if abort_on_error:
-                        raise ValueError(message)
-                    else:
-                        ensemble.member[i].elog.log_error(
-                            alg, message, ErrorSeverity.Invalid
-                        )
-                        ensemble.member[i].kill()
-    if not abort_on_error:
-        nlive = number_live(ensemble)
-        if nlive <= 0:
-            message = "All members of this ensemble were killed.\n"
-            message += "expected dt may be wrong or you need to run the resample function on this data set"
-            ensemble.elog.log_error(alg, message, ErrorSeverity.Invalid)
-            ensemble.kill()
-    return ensemble
-
-
-def ensemble_time_range(ensemble, metric="inner") -> TimeWindow:
-    """
-    Scans a Seismic data ensemble returning a measure of the
-    time span of members.   The metric returned ban be either
-    smallest time range containing all the data, the range
-    defined by the minimum start time and maximum endtime,
-    or an average defined by either the median or the
-    arithmetic mean of the vector of startime and endtime
-    values.
-
-    :param ensemble:  ensemble container to be scanned for
-    time range.
-    :type ensemble:  `TimeSeriesEnsemble` or `SeismogramEnsemble`.
-    :param metric:   measure to use to define the time range.
-    Accepted values are:
-      "inner" - (default) return range defined by largest
-          start time to smallest end time.
-      "outer" - return range defined by minimum start time and
-          largest end time (maximum time span of data)
-      "median" - return range as the median of the extracted
-          vectors of start time and end time values.
-      "mean" - return range as arithmetic average of
-          start and end time vectors
-    :return:  `TimeWindow` object with start and end times.
-    """
-    if not isinstance(ensemble, (TimeSeriesEnsemble, SeismogramEnsemble)):
-        message = "ensemble_time_range:   illegal type for arg0={}\n".format(
-            type(ensemble)
-        )
-        message += "Must be a TimeSeriesEnsemble or SeismogramEnsemble\n"
-        raise TypeError(message)
-    if metric not in ["inner", "outer", "median", "mean"]:
-        message = "ensemble_time_range:  illegal value for metric={}\n".format(metric)
-        message += "Must be one of:  inner, outer, median, or mean"
-        raise ValueError(message)
-    stvector = []
-    etvector = []
-    for d in ensemble.member:
-        if d.live:
-            stvector.append(d.t0)
-            etvector.append(d.endtime())
-    if metric == "inner":
-        stime = max(stvector)
-        etime = min(etvector)
-    elif metric == "outer":
-        stime = max(stvector)
-        etime = min(etvector)
-    elif metric == "median":
-        stime = np.median(stvector)
-        etime = np.median(etvector)
-    elif metric == "mean":
-        # note numpy's mean an average are different with average being
-        # more generic - intentionally use mean which is also consistent with
-        # the keyword used
-        stime = np.mean(stvector)
-        etime = np.mean(etvector)
-    # Intentionally not using else to allow an easier extension
-    return TimeWindow(stime, etime)
-
-
 def regularize_ensemble(
     ensemble, starttime, endtime, fractional_mistmatch_limit
 ) -> TimeSeriesEnsemble:
@@ -1034,7 +640,7 @@ def regularize_ensemble(
                 np.fabs((d.t0 - starttime)) > d.dt
                 or np.fabs(d.endtime() - endtime) > d.dt
             ):
-                d = WindowWithCutoff(
+                d = WindowData_autopad(
                     d,
                     starttime,
                     endtime,
@@ -1055,50 +661,6 @@ def regularize_ensemble(
     if len(ensout.member) > 0:
         ensout.set_live()
     return ensout
-
-
-# TODO;  this should go in window.py
-def WindowWithCutoff(d, stime, etime, fractional_mismatch_limit=0.05):
-    """
-    Windows an atomic data object with automatic padding if the
-    undefined section is not too large.
-
-    When using numpy or MsPASS data arrays the : notation can be used
-    to drastically speed performance over using a python loop.
-    This function is most useful for contexts where the size of the
-    output of a window must exactly match what is expected from
-    the time range.   The algorithm will silently zero pad any
-    undefined samples IF the fraction of undefined data relative to
-    the number of samples expected from the time range defined by
-    etime-stime is less than the "fractional_mismatch_limit".
-
-    :param d:  atomic MsPASS seismic data object to be windowed.
-    :type d:  works with either `TimeSeries` or `Seismogram`
-    objects.
-    :param stime:  start time of window range
-    :type stime:  float
-    :param etime:  end time of window range
-    :type etime:  float
-    :param fractional_mismatch_limit:  limit for the
-    fraction of data with undefined values before the datum is
-    killed.   (see above)  If set to 0.0 this is an expensive way
-    to behave the same as WindowData
-    :return:  object of the same type as d.   Will be marked dead
-    if the fraction of undefined data exceeds fractional_mismatch_limit.
-    Otherwise will return a data vector of constant size that may
-    be padded.  This function never leaves an error log message.
-    """
-    N_expected = round((etime - stime) / d.dt) + 1
-    dw = WindowData(d, stime, etime)
-    if dw.dead():
-        # assumes default kills if stime and etime are not with data bounds
-        dw = WindowData(d, stime, etime, short_segment_handling="truncate")
-        if dw.npts / N_expected < fractional_mismatch_limit:
-            dw = WindowData(d, stime, etime, short_segment_handling="pad")
-        else:
-            dw.kill()
-    return dw
-
 
 def robust_stack(
     ensemble,
@@ -1247,7 +809,7 @@ def robust_stack(
     N = ensemble.member[0].npts
 
     if stack0:
-        stack = WindowWithCutoff(
+        stack = WindowData_autopad(
             stack0,
             timespan.start,
             timespan.end,
@@ -1355,28 +917,7 @@ def _dbxcor_stacker(
     return stack
 
 
-def _xcor_shift(ts, beam):
-    """
-    Internal function with no safeties to compute a time shift in
-    seconds for beam correlation.   The shift is computed by
-    using the scipy correlate function.  The computed shift is the
-    time shift that would need to be applied to ts to align with
-    that of beam.   Note that number can be enormous if using UTC
-    times and it will still work.   The expected use, however,
-    in this function is with data prealigned by an phase arrival
-    time (predicted from a mdoel of an estimate).
-    :param ts:  TimeSeries datum to correlate with beam
-    :param beam:  TimeSeries defining the common signal (beam) for
-      correlation - the b argument to correlation.
-    """
-    # note this assumed default mode of "full"
-    xcor = signal.correlate(ts.data, beam.data)
-    lags = signal.correlation_lags(ts.npts, beam.npts)
-    # numpy/scipy treat sample 0 as time 0
-    # with TimeSeries we have to correct with the t0 values to get timing right
-    lag_of_max_in_samples = lags[np.argmax(xcor)]
-    lagtime = ts.dt * lag_of_max_in_samples + ts.t0 - beam.t0
-    return lagtime
+
 
 
 def beam_align(ensemble, beam, time_shift_limit=10.0):
@@ -2055,3 +1596,271 @@ def align_and_stack(
         )
     # TODO:  may want to always or optionally window ensemble output to output_stack_window
     return [ensemble, output_stack]
+
+
+def _coda_duration(ts, level, t0=0.0, search_start=None) -> TimeWindow:
+    """
+    Low-level function to estimate the range of the "coda" of a particular
+    seismic phase. This function first computes the envelope of the
+    input signal passed via arg0 as a `TimeSeries` object.   The function
+    then searches backward in time from `search_start` to the first
+    sample of the envelop function that exceeds the value defined by
+    `level`.  It returns a `TimeWindow` object with a `start` set as the
+    value passed as t0 and the `end` attribute set to the time stamp
+    of the estimated coda end time.   Normal use by processing functions
+    inside this module assume the input has a relative time standard
+    but the function could work with UTC data you treat `t0` and
+    `search_start` as required, not optional, arguments.
+
+    The function return a zero length `TimeWindow` (start == end) if the
+    level of the envelope never exceeds the value defined by the level
+    argument.
+
+    :param ts:  Datum to be processed.   The function will return a null
+    result (zero length window) if ts.t0> t0 (argument value).  The sample
+    data is assumed filtered to an appropriate band where the envelope will
+    properly define the coda.
+    :type ts: `TimeSeries` is assumed.  There is not explicit type checking
+    but a type mismatch will always cause an error.
+    :param level:  amplitude of where the backward time search will be
+    terminated.   This value should normally be computed from a background
+    noise estimate.
+    :type level:   float
+    :param t0:  beginning of coda search interval.  This time is mainly used
+    as the failed search.  That is, if the level never rises above the
+    value defined by the `level` argument a zero length window will be
+    returned with start and end both set to this value.   If the value
+    is inconsistent with the start time of the data it is reset to the
+    time of the first data sample.
+    :type t0:  float (default 0.0 - appropriate for normal use with data
+    time shifted so 0 is a P or S phase arrival time)
+    :param search_start:  optional time to start backward search.
+    The default, which is defined with a None type, is to start the search
+    at ts.endtime().  If a value is given and it exceeds ts.endtime()
+    the search will silently be truncated to start at ts.endtime().
+    Similarly if `search_start` is less than ts.t0 the search will also
+    be silently reset to the ts.endtime().
+    :type search_start:  float (time - either relative time or an epoch time)
+    :return:  `TimeWindow` object with window `end` value defining the
+    end of the coda.  window.end-window.start is a measure of coda duration.
+    Returns a zero length window if the amplitude never exceeds the
+    valued defined by the `level` parameter.   Not the start value may
+    be different from the input t0 value if the data start time (ts.t0) is
+    greater than the value defined by the `t0` argument.
+    """
+    # silently handle inconsistencies in t0 and search_start
+    # perhaps should have these issue an elog complaint
+    it0 = ts.sample_number(t0)
+    # silently reset to 0 if t0 is not valid for
+    if it0 < 0:
+        it0 = 0
+        t0used = ts.time(0)
+    else:
+        t0used = t0
+    if search_start:
+        itss = ts.sample_number(search_start)
+        if itss >= ts.npts or itss < 0:
+            itss = ts.npts - 1
+    else:
+        itss = ts.npts - 1
+    if itss <= it0:
+        message = "_coda_durations:   values for inferred search range {} to {} do not overlap data range"
+        raise ValueError(message)
+    httsd = signal.hilbert(ts.data)
+    envelope = np.abs(httsd)
+    it0 = ts.sample_number(t0)
+    i = itss
+    while i > it0:
+        if envelope[i] > level:
+            break
+        i -= 1
+    # A failed search will have start and end the same
+    return TimeWindow(t0used, ts.time(i))
+
+
+def _set_phases(
+    d,
+    model,
+    Ptime_key="Ptime",
+    pPtime_key="pPtime",
+    PPtime_key="PPtime",
+    station_collection="channel",
+    default_depth=10.0,
+) -> TimeSeries:
+    """
+    Cautiously sets model-based arrival times in Metadata of input
+    d for first arrival of the phases P pP, and PP.   pP and PP
+    do not exist at all distances and depths so the times may be
+    left undefined.   A value for P should always be set unless that
+    datum was marked dead on input.
+
+    The input datum must contain Metadata entries required to compute the
+    travel times.  That can be in one of two forms:
+        (1)  The normal expectation is to source coordinates are defined with
+             keys "source_iat" , "source_lon", and "source_time", and
+             "source_depth" while receiver coordinates are defined with
+             "channel_lat" and "channel_lon".   A common variant is possible
+             if the `station_collection` argument is set to "site".  Then
+             the function will try to fetch "site_lat" and "site_lon".
+             A special case is source depth.  If "source_depth" is not
+             defined the value defined with the `default_depth` argument is
+             used.
+        (2)  If the key "dist" is defined in d it is assumed to contain
+             a previously computed distance in degrees from source to this
+             receiver.  In that case the only other required source property
+             is "source_time" - event origin time.
+    :param d:  seismic datum to process.   This datum requires source and
+    receiver metadata attributes as noted above
+    :type d:   Assumed to be a `TimeSeries`.   That is not tested as this is
+    an internal function.  Use outside the module should assure input is
+    a `TimeSeries` or create an error handler for exceptions.
+    :param model:   an instance of an obspy TauPyModel object used to
+    compute times.
+    :type model:   obspy TauPyModel object
+    :param Ptime_key:  key used to set the pP arrival time.
+    :type pPtime_key:  string (default "pPtime")
+    :param pPtime_key:  key used to set the P arrival time.
+    :type PPtime_key:  string (default "PPtime")
+    :param PPtime_key:  key used to set the PP arrival time.
+    :type PPtime_key:  string (default "PPtime")
+    :param station_collection:   normalizing collection used to define
+    receiver coordinates.   Used only to create names for coordinates.
+    e.g. if set to "site" expects to find "site_lat" while if set to
+    default "channel" would expect to find "channel_lat".
+    :type station_collection:  string (default "channel")
+    :param default_depth:   source depth to use if the attribute "source_depth"
+    is not defined.   This is a rare recovery to handle the case where
+    the epicenter and origin time are defined but the depth is not.
+    :type default_depth:  float
+    :return:  `TimeSeries` copy of input with model-based arrival times posted
+    to Metadata container with the specified keys.
+    """
+    if d.dead():
+        return d
+    alg = "_set_phases"
+    # these symbols need to be effectively declared here or the go out of scope
+    # before being used as arguments for the get_travel_time method of the taup calculator
+    depth = 0.0
+    dist = 0.0
+    if d.is_defined("dist"):
+        dist = d["dist"]
+        origin_time = d["source_time"]
+    else:
+        if (
+            d.is_defined("source_lat")
+            and d.is_defined("source_lon")
+            and d.is_defined("source_time")
+        ):
+            srclat = d["source_lat"]
+            srclon = d["source_lon"]
+            origin_time = d["source_time"]
+            # compute dist
+        else:
+            message = "Missing required source coordinates:  source_lat,source_lon, and/or source_time values\n"
+            message += "Cannot handle this datum"
+            d.elog.log_error(alg, message, ErrorSeverity.Invalid)
+            d.kill()
+            return d
+        lat_key = station_collection + "_lat"
+        lon_key = station_collection + "_lon"
+        if d.is_defined(lat_key) and d.is_defined(lon_key):
+            stalat = d[lat_key]
+            stalon = d[lon_key]
+            [dist, seaz, esaz] = gps2dist_azimuth(stalat, stalon, srclat, srclon)
+            dist = kilometers2degrees(dist / 1000.0)
+            # always post these - warning produces a state dependency as there is no guarantee these
+            # get posted if "dist" was defined on input
+            # keys are frozen and based on standard mspass schema
+            d["dist"] = dist
+            d["seaz"] = seaz
+            d["esaz"] = esaz
+        else:
+            message = "Missing required receiver coordinates defined with keys: {} and {}\n".format(
+                lat_key, lon_key
+            )
+            message += "Cannot handle this datum"
+            d.elog.log_error(alg, message, ErrorSeverity.Invalid)
+            d.kill()
+            return d
+
+    if d.is_defined("source_depth"):
+        depth = d["source_depth"]
+    else:
+        depth = default_depth
+        message = "source_depth value was not defined - using default value={}".format(
+            depth
+        )
+        d.elog.log_error(alg, message, ErrorSeverity.Complaint)
+    arrivals = model.get_travel_times(
+        source_depth_in_km=depth, distance_in_degree=dist, phase_list=["P", "pP", "PP"]
+    )
+    # from all I can tell with the list above arrivals always has entries for at least one of
+    # the phases in phase_list.   If depth is invalid it throws an exception and it seems to
+    # handle dist for anything.   Hence, this assumes arrivals is not empty.  An earlier
+    # had an unnecessary error handler for that case.
+    # only set first arrival for multivalued arrivals
+    P = []
+    pP = []
+    PP = []
+    for arr in arrivals:
+        if arr.name == "P":
+            P.append(arr.time)
+        elif arr.name == "pP":
+            pP.append(arr.time)
+        elif arr.name == "PP":
+            PP.append(arr.time)
+    if len(P) > 0:
+        d[Ptime_key] = min(P) + origin_time
+    if len(pP) > 0:
+        d[pPtime_key] = min(pP) + origin_time
+    if len(PP) > 0:
+        d[PPtime_key] = min(PP) + origin_time
+    return d
+
+def _get_search_range(d, Pkey="Ptime", pPkey="pPTime", PPkey="PPtime"):
+    """
+    Small internal function used to standardize the handling of the search
+    range for P coda.   It returns a time duration to use as the search
+    range relative to 0 (P time) based on a simple recipe to avoid interference
+    from pP and PP phases.   Specifically, if the source depth is greater than
+    100 km the pP phase is used as the maximum duration of the coda.
+    For shallower sources PP is used.
+
+    This function should not normally be used except as a component of the
+    MCXcorPrepP function.   It has no safeties and is pretty simple.
+    That simple recipe, however, took some work to establish tha tis documented
+    a notebook in the distribution.
+    """
+    if d.live:
+        depth = d["source_depth"]
+        if depth > 100.0:
+            tend = d[pPkey]
+        else:
+            tend = d[PPkey]
+        duration = tend - d[Pkey]
+    else:
+        duration = 0.0
+    return duration
+
+def _xcor_shift(ts, beam):
+    """
+    Internal function with no safeties to compute a time shift in
+    seconds for beam correlation.   The shift is computed by
+    using the scipy correlate function.  The computed shift is the
+    time shift that would need to be applied to ts to align with
+    that of beam.   Note that number can be enormous if using UTC
+    times and it will still work.   The expected use, however,
+    in this function is with data prealigned by an phase arrival
+    time (predicted from a mdoel of an estimate).
+    :param ts:  TimeSeries datum to correlate with beam
+    :param beam:  TimeSeries defining the common signal (beam) for
+      correlation - the b argument to correlation.
+    """
+    # note this assumed default mode of "full"
+    xcor = signal.correlate(ts.data, beam.data)
+    lags = signal.correlation_lags(ts.npts, beam.npts)
+    # numpy/scipy treat sample 0 as time 0
+    # with TimeSeries we have to correct with the t0 values to get timing right
+    lag_of_max_in_samples = lags[np.argmax(xcor)]
+    lagtime = ts.dt * lag_of_max_in_samples + ts.t0 - beam.t0
+    return lagtime
