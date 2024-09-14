@@ -492,7 +492,7 @@ def WindowDataAtomic(
                 d.elog.log_error(alg, message, ErrorSeverity.Complaint)
             twcut.start = d.t0
             cut_on_left = True
-        elif twcut.end > (d.endtime() + d.dt / 2.0):
+        if twcut.end > (d.endtime() + d.dt / 2.0):
             if log_recoverable_errors:
                 message += "Window end time is after data end time\n"
                 message += window_message(d, twcut)
@@ -814,8 +814,74 @@ def WindowData(
         )
         raise TypeError(message)
 
+@mspass_func_wrapper
+def WindowData_autopad(
+    d, 
+    stime, 
+    etime, 
+    pad_fraction_cutoff=0.05,
+    object_history=False,
+    alg_name="WindowData_autopad",
+    alg_id=None,
+    dryrun=False,
+):
+    """
+    Windows an atomic data object with automatic padding if the
+    undefined section is not too large.
 
-# @mspass_func_wrapper
+    When using numpy or MsPASS data arrays the : notation can be used
+    to drastically speed performance over using a python loop.
+    This function is most useful for contexts where the size of the
+    output of a window must exactly match what is expected from
+    the time range.   A type example is a multichannel algorithm 
+    where you need to use an API that loads a set of signals into 
+    a matrix that is used as the workspace for processing.  That is 
+    the univeral model, for example, in seismic reflection processing.
+    This algorithm will silently zero pad any undefined samples 
+    at the end of the window IF the fraction of undefined data relative to
+    the number of samples expected from the time range defined by
+    etime-stime is less than the "pad_fraction_cutoff".  If 
+    the input time span shorter than the computed mismatch limit 
+    the result will be returned marked dead with an elog entry
+    highlighting the problem.  
+
+    :param d:  atomic MsPASS seismic data object to be windowed.
+    :type d:  works with either `TimeSeries` or `Seismogram`
+    objects.  Will raise a TypeError exception if d is not one of 
+    the two atomic data types.
+    :param stime:  start time of window range
+    :type stime:  float
+    :param etime:  end time of window range
+    :type etime:  float
+    :param pad_fraction_cutoff:  limit for the
+    fraction of data with undefined values before the datum is
+    killed.   (see above)  If set to 0.0 this is an expensive way
+    to behave the same as WindowData
+    :return:  object of the same type as d.   Will be marked dead
+    if the fraction of undefined data exceeds pad_fraction_cutoff.
+    Otherwise will return a data vector of constant size that may
+    be padded. 
+    """
+    if not isinstance(d,(TimeSeries,Seismogram)):
+        message = "WindowData_autopad:  arg0 must be either a TimeSeries or Seismogram object.  Actual type={}".format(type(d))
+        raise TypeError(message)
+    N_expected = round((etime - stime) / d.dt) + 1
+    dw = WindowData(d, stime, etime)
+    if dw.dead():
+        # assumes default kills if stime and etime are not within data bounds 
+        # in that situation the first call to WindowData will kill and we don't get here
+        dw = WindowData(d, stime, etime, short_segment_handling="truncate")
+        pad_fraction = abs(N_expected - dw.npts)/N_expected
+        if pad_fraction < pad_fraction_cutoff:
+            dw = WindowData(d, stime, etime, short_segment_handling="pad")
+        else:
+            message = "time span of data is too short for cutoff fraction={}\n".format(pad_fraction_cutoff)
+            message += "padded_time_range/(etime-stime)={} is below cutoff".format(pad_fraction)
+            dw.elog.log_error("WindowData_autopad",message,ErrorSeverity.Invalid)
+            dw.kill()
+    return dw
+
+@mspass_func_wrapper
 def merge(
     tsvector,
     starttime=None,
