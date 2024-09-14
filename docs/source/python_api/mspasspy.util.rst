@@ -25,6 +25,14 @@ logging_helper
     :undoc-members:
     :show-inheritance:
 
+seismic
+------
+
+.. automodule:: mspasspy.util.seismic
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 seispp
 ------
 
